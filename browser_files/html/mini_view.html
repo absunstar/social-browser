@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>##query.url##</title>
+    <style>
+        body {
+            background-image: url('browser://images/loading2.gif');
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+        }
+
+        iframe {
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            height: 100%;
+            width: 100%;
+            background-color: #292929;
+            border: none;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <iframe frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+    <script>
+        let url = document.location.href.split('?url=')[1]
+        document.querySelector('iframe').src = url
+        document.querySelector("iframe").addEventListener("load", function () {
+            this.style.display = "block";
+            let doc = null
+            if(doc = this.contentWindow.document){
+               document.querySelector('title').innerText = doc.querySelector('title').innerText
+            }
+
+        })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,19 @@
+@font-face {
+    font-family: 'Droid Arabic Kufi';
+    font-style: normal;
+    font-weight: 400;
+    src: url(http://127.0.0.1:60080/fonts/DroidKufi-Regular.eot);
+    src: url(http://127.0.0.1:60080/fonts/DroidKufi-Regular.eot?#iefix) format('embedded-opentype'),
+         url(http://127.0.0.1:60080/fonts/DroidKufi-Regular.woff2) format('woff2'),
+         url(http://127.0.0.1:60080/fonts/DroidKufi-Regular.woff) format('woff'),
+         url(http://127.0.0.1:60080/fonts/DroidKufi-Regular.ttf) format('truetype');
+  }
+  @font-face {
+    font-family: 'Droid Arabic Kufi';
+    font-style: normal;
+    font-weight: 700;
+    src: url(http://127.0.0.1:60080/fonts/DroidKufi-Bold.eot);
+    src: url(http://127.0.0.1:60080/fonts/DroidKufi-Bold.eot?#iefix) format('embedded-opentype'),
+         url(http://127.0.0.1:60080/fonts/DroidKufi-Bold.woff) format('woff'),
+         url(http://127.0.0.1:60080/fonts/DroidKufi-Bold.ttf) format('truetype');
+  }

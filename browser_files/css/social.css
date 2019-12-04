@@ -1,0 +1,267 @@
+body {
+  user-select: none;
+  -webkit-user-select: none;
+  font-family: 'Droid Arabic Kufi', 'sans-serif';
+  margin: 0px;
+  padding: 0px;
+  border: none;
+  background-color:#000;
+}
+
+.hidden {
+  display: none;
+}
+
+
+
+
+#message {
+  display: none;
+  position: fixed;
+  right: 50px;
+  left: 50px;
+  top: 200px;
+  z-index: 9999;
+  text-align: center;
+}
+
+#message .content {
+  font-weight: bold;
+  margin: 0px auto;
+  padding: 10px;
+  color: #ffc107;
+  background-color: #2b2b2b;
+  box-shadow: 1px 1px 20px 0px #353535;
+  font-size: 18px;
+}
+
+.in-page-search {
+  visibility: collapse;
+  background-color: var(--social-background-color);
+  position: fixed;
+  right: 10px;
+  top: 30px;
+  border: 2px solid var(--social-background-color);
+  padding: 3px;
+  width: 320px;
+  box-shadow: 1px 1px 8px 2px var(--social-background-color);
+}
+
+.in-page-search input {
+  height: 20px;
+  outline: none;
+  border: none;
+  margin: 0px;
+  width: 120px;
+}
+
+.in-page-search span {
+  font-size: 12px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.in-page-search i {
+  padding: 2px;
+  background-color: #fff;
+  border-radius: 100px;
+  color: red;
+  cursor: pointer;
+  font-size: 12px;
+  float: right;
+  margin-right: 8px;
+  margin-top: 8px;
+}
+
+.in-page-search i:hover {
+  font-size: 14px;
+}
+
+.user-box {
+  background-color: var(--social-background-color);
+  padding: 3px;
+  margin: 5px;
+  text-align: center;
+  border: 1px solid #ffffff;
+  box-shadow: var(--social-box-shadow);
+  cursor: pointer;
+}
+
+.user-box p {
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  color: #ffffff;
+}
+
+.user-box img {
+  width: 48px;
+  height: 48px;
+}
+
+.user-box:hover {
+  transform: scale(1.1)
+}
+
+button {
+  font-family: inherit;
+  display: inline-block;
+  background: #e0e0e0;
+  border: 0;
+  border-radius: 3px;
+  padding: 0.6em 1em 0.7em;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: 0 0.5px rgba(0, 0, 0, 0.5);
+}
+
+
+
+
+.social-webviews {
+  position: fixed;
+  top: 4.3em;
+  bottom: 2px;
+  left: 2px;
+  right: 2px;
+  background-color: var(--social-background-color);
+}
+
+.social-webviews webview {
+  position: static;
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+}
+
+.social-status-bar {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  width: auto;
+  color: #fff;
+  padding: 0px;
+  margin: 0px;
+  background-color: #282828;
+  font-size: 12px;
+  word-wrap: normal;
+  opacity: 0.9;
+  border-radius: 2px;
+}
+
+.ui.search>.results {
+  width: 40em;
+  font-size: 12px;
+}
+
+.url-list {
+  max-height: 450px;
+  background-color: #fff;
+  color: #292929;
+  position: fixed;
+  top: 5em;
+  right: 30px;
+  left: 10px;
+  min-width: 300px;
+  z-index: 99999;
+  padding-bottom: 10px;
+  box-shadow: 1px 1px 2px 1px var(--social-background-color);
+}
+
+.url-list ul {
+  max-height: 350px;
+  overflow: auto;
+  background-color: #fff;
+  color: #292929;
+  list-style: none;
+  padding: 5px;
+}
+
+.url-list ul li {
+  padding: 5px;
+}
+
+.url-list ul li img {
+  width: 18px;
+  height: 18px;
+  ;
+}
+
+.url-list ul li:hover,
+.url-list ul li.selected {
+  background-color: #ddd;
+  cursor: pointer;
+}
+
+.youtube-mini {
+  padding: 3px;
+  padding-top: 20px;
+  position: fixed;
+  z-index: 99999;
+  width: 320px;
+  height: 240px;
+  bottom: 20px;
+  right: 20px;
+  background-color: #292929;
+  resize: both;
+}
+
+.youtube-mini iframe {
+  width: 100%;
+  height: 100%;
+}
+
+.div-window {
+  padding: 5px;
+  position: fixed;
+  width: 800px;
+  height: 500px;
+  left: 200px;
+  top: 200px;
+  background-color: #292929;
+}
+
+.div-window iframe {
+  width: 100%;
+  height: 100%;
+}
+
+
+.social-tabs .social-tab {
+  width: 243px
+}
+
+.social-tabs .social-tab:nth-child(1) {
+  transform: translate3d(0px, 0, 0)
+}
+
+.social-tabs .social-tab:nth-child(2) {
+  transform: translate3d(229px, 0, 0)
+}
+
+@media only screen and (max-width: 1024px) {
+  .brand {
+    display: none;
+  }
+}
+
+@media only screen and (max-width: 700px) {
+  .brand {
+    display: none;
+  }
+
+
+  .social-address-bar .address-input {
+    width: 60% !important;
+  }
+}
+
+@media only screen and (max-width: 360px) {
+  .social-history {
+    display: none;
+  }
+
+  .social-address-bar .address-inpu {
+    width: 50% !important;
+  }
+}

@@ -1,0 +1,75 @@
+{
+    "enabled" : true,
+    "fast_open" : true,
+    "skip_ads": true,
+    "safty_mode": false,
+    "blocking": {
+        "selector": [
+            "[href='http://www.youtube.com/t/community_guidelines']",
+            "[href='https://support.google.com/youtube/?p=age_restrictions&hl=en]"
+        ],
+        "words": [
+            {
+                "text": "*brazzers*"
+            },
+            {
+                "text": "*sex*"
+            },
+            {
+                "text": "*porn*"
+            },
+            {
+                "text": "*fuck*"
+            },
+            {
+                "text": "*hot|dance|kiss[\\s]*"
+            },
+            {
+                "text": "*[\\s]hot|dance|kiss*"
+            },
+            {
+                "text": "*xxx*"
+            },
+            {
+                "text": "*رقص*"
+            },
+            {
+                "text": "*سكس*"
+            },
+            {
+                "text": "*جنس*"
+            },
+            {
+                "text": "*للكبار فقط*"
+            },
+            {
+                "text": "*ممنوع*"
+            },
+            {
+                "text": "*18*"
+            },
+            {
+                "text": "*lesbian*"
+            },
+            {
+                "text": "*سحاق*"
+            },
+            {
+                "text": "*erotic*"
+            },
+            {
+                "text": "*سافل*"
+            },
+            {
+                "text": "*ايتشى*|*ايتشي*|*echii*"
+            },
+            {
+                "text": "*هنتاى*|*هنتاي*|*hentia*|*hentai*"
+            },
+            {
+                "text": "*Romance*|*رومانسى*|*رومانسي*"
+            }
+        ],
+        "links": []
+    }
+}

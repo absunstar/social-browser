@@ -1,0 +1,61 @@
+.red {
+    color: red !important;
+}
+
+.green {
+    color: green !important;
+}
+
+.blue {
+    color: #3f51b5 !important;
+}
+
+.yellow {
+    color: #ffc107 !important;
+}
+
+.black {
+    color: black !important;
+}
+
+.white {
+    color: white !important;
+}
+
+.brown {
+    color: #795548 !important;
+}
+.orange{
+    color: orange !important;
+}
+
+.bg-red {
+    background-color: red  !important;
+}
+
+.bg-green {
+    background-color: green !important;
+}
+
+.bg-blue {
+    background-color: #3f51b5 !important;
+}
+
+.bg-yellow {
+    background-color: #ffc107 !important;
+}
+
+.bg-black {
+    background-color: black !important;
+}
+
+.bg-white {
+    background-color: white !important;
+}
+
+.bg-brown {
+    background-color: #795548 !important;
+}
+.bg-orange{
+    background-color: orange !important;
+}

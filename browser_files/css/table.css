@@ -1,0 +1,32 @@
+.table {
+  border-collapse: collapse;
+  width: 100%;
+  border: var(--table-border);
+  padding: 5px;
+  background-color: var(--table-background-color);
+  color: var(--table-color);
+  direction: var(--direction);
+  float: var(--float);
+  
+}
+
+.table tr {
+  border-bottom: var(--table-border);
+  transition: all .3s ease;
+}
+.table.hover tr:hover {
+  background-color: yellow;
+}
+.table td {
+  border: var(--table-border);
+  padding: 5px;
+  vertical-align:top;
+}
+.table th {
+  background-color: var(--navbar-background-color);
+  color: var(--navbar-color);
+  border: var(--table-border);
+  padding: 5px;
+  text-align: center;
+  font-weight: bold;
+}

@@ -1,0 +1,26 @@
+[
+    
+    {
+        "name": "persist:user_1",
+        "display": "User 1",
+        "can_delete": false
+    },
+    {
+        "name": "persist:user_2",
+        "display": "User 2",
+        "can_delete": false
+    },    {
+        "name": "persist:user_3",
+        "display": "User 3",
+        "can_delete": false
+    },    {
+        "name": "persist:user_4",
+        "display": "User 4",
+        "can_delete": false
+    },
+    {
+        "name": "memory",
+        "display": "Memory",
+        "can_delete": false
+    }
+]

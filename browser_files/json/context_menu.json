@@ -1,0 +1,6 @@
+{
+    "copy_div_content" : false,
+    "page_options" : true ,
+    "inspect" : true ,
+    "dev_tools" : true 
+}

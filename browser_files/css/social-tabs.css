@@ -1,0 +1,333 @@
+.social-tabs {
+  margin: 0px;
+  -webkit-app-region: drag;
+  box-sizing: border-box;
+  position: relative;
+  font-size: 10px;
+  height: 32px;
+  background: var(--social-background-color);
+  /* padding: 1em 1.2em 0.45em 1.2em; */
+  overflow: hidden;
+}
+
+.social-tabs * {
+  box-sizing: inherit;
+  font-family: inherit;
+}
+
+.social-tabs .social-tabs-bottom-bar {
+  position: absolute;
+  bottom: 0;
+  height: 0.45em;
+  left: 0;
+  width: 100%;
+  background: #f2f2f2;
+  box-shadow: 0 -0.05em rgba(0, 0, 0, 0.27);
+  z-index: 20;
+}
+
+.social-tabs .social-tabs-content {
+  margin: 0px;
+  position: relative;
+  width: 90%;
+  height: 100%;
+  overflow: hidden;
+  display: -webkit-inline-box;
+}
+
+.social-tabs .social-close {
+  -webkit-app-region: no-drag;
+  position: fixed;
+  width: 30px;
+  height: 30px;
+  top: 0px;
+  right: 0px;
+  z-index: 1000;
+  /* padding: 5px 8px; */
+  font-size: 12px;
+  color: #fff;
+  cursor: default;
+}
+
+.social-tabs .social-close:hover {
+  color: red;
+}
+
+.social-tabs .social-maxmize {
+  -webkit-app-region: no-drag;
+  position: fixed;
+  width: 30px;
+  height: 30px;
+  top: 0px;
+  right: 35px;
+  z-index: 1000;
+  /* padding: 5px 8px; */
+  font-size: 12px;
+  color: #fff;
+  cursor: default;
+}
+
+.social-tabs .social-maxmize:hover {
+  color: yellow;
+}
+
+.social-tabs .social-minmize {
+  -webkit-app-region: no-drag;
+  position: fixed;
+  width: 30px;
+  height: 30px;
+  top: 0px;
+  right: 70px;
+  z-index: 1000;
+  /* padding: 5px 8px; */
+  font-size: 12px;
+  color: #fff;
+  cursor: default;
+}
+
+.social-tabs .social-minmize:hover {
+  color: yellow;
+}
+
+.social-tabs .social-tab {
+  -webkit-app-region: no-drag;
+  position: absolute;
+  left: 0;
+  height: 2.8em;
+  width: 24em;
+  border: 0;
+  margin: 0;
+  z-index: 1;
+}
+
+.social-tabs .social-tab.plus {
+  width: 20px !important;
+  height: 17px;
+  bottom: 8px;
+  left: 20px;
+}
+
+.social-tab.plus:hover {
+  cursor: pointer;
+}
+
+.social-tabs .social-tab.plus .social-tab-title {
+  max-width: none;
+  margin-top: -1px;
+  padding: 0 0.4em;
+  color: #fff;
+}
+
+
+.social-tabs .social-tab,
+.social-tabs .social-tab * {
+  user-select: none;
+  cursor: default;
+}
+
+.social-tabs .social-tab .social-tab-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.social-tabs .social-tab .social-tab-background>svg {
+  width: 100%;
+  height: 100%;
+}
+
+.social-tabs .social-tab .social-tab-background>svg .social-tab-shadow {
+  fill: none;
+  stroke: rgba(0, 0, 0, 0.27);
+  stroke-width: 0.5px;
+}
+
+.social-tabs .social-tab .social-tab-background>svg .social-tab-background {
+  fill: #d0d0d0;
+  transform: translateX(0.25px) translateY(0.25px);
+}
+
+.social-tabs .social-tab .social-tab-background>svg rect {
+  fill: var(--social-background-color);
+  transform: translateX(0.25px) translateY(0.25px);
+}
+
+.social-tabs .social-tab.social-tab-current {
+  z-index: 999;
+}
+
+.social-tabs .social-tab.social-tab-current .social-tab-background>svg .social-tab-background {
+  fill: #f2f2f2;
+}
+
+.social-tabs .social-tab.social-tab-just-added {
+  top: 10px;
+  animation: social-tab-just-added 120ms forwards ease-in-out;
+}
+
+@-webkit-keyframes social-tab-just-added {
+  to {
+    top: 0;
+  }
+}
+
+
+.social-tabs.social-tabs-sorting .social-tab:not(.social-tab-currently-dragged),
+.social-tabs:not(.social-tabs-sorting) .social-tab.social-tab-just-dragged {
+  transition: transform 120ms ease-in-out;
+}
+
+.social-tabs .social-tab-loading {
+  position: relative;
+  height: 1.6em;
+  width: 1.6em;
+  background-size: cover;
+  background-repeat: no-repeat;
+  margin-top: 0.6em;
+  z-index: 3;
+  display: inline-block;
+  vertical-align: top;
+  pointer-events: none;
+}
+
+.social-tabs .social-tab-favicon {
+  position: relative;
+  height: 1.6em;
+  width: 1.6em;
+  background-size: cover;
+  background-repeat: no-repeat;
+  margin-top: 0.6em;
+  z-index: 3;
+  display: inline-block;
+  vertical-align: top;
+  pointer-events: none;
+}
+
+.social-tabs .social-tab-title {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  color: #222;
+  padding: 0 0.25em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 1.2em;
+  margin-top: 0.5em;
+  max-width: calc(100% - 7em);
+  pointer-events: none;
+}
+
+.social-tabs .social-tab-close {
+  position: absolute;
+  width: 1.4em;
+  height: 1.4em;
+  border-radius: 50%;
+  z-index: 2;
+  right: 1.4em;
+  top: 0.7em;
+  background: #bbb;
+}
+
+.social-tabs .social-tab-current .social-tab-close {
+  background: green;
+}
+
+.social-tabs .social-tab-close::before {
+  content: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'><path stroke='#5a5a5a' stroke-linecap='round' stroke-width='1.125' d='M4 4 L10 10 M10 4 L4 10'></path></svg>");
+  position: absolute;
+  display: block;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.social-tabs .social-tab-close:hover::before,
+.social-tabs .social-tab-close:hover:active::before {
+  content: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'><path stroke='#fff' stroke-linecap='round' stroke-width='1.2' d='M4 4 L10 10 M10 4 L4 10'></path></svg>");
+}
+
+.social-tabs .social-tab-close:hover {
+  background: #e25c4b;
+}
+
+.social-tabs .social-tab-close:hover:active {
+  background: #b74a3b;
+}
+
+.social-address-bar {
+  height: 2.4em;
+  border-bottom: 1px solid #dad8d8;
+  background-color: #f2f2f2;
+  box-shadow: 0 -0.05em rgba(0, 0, 0, 0.27);
+}
+
+.social-address-bar2 {
+  height: 2.4em;
+  border-bottom: 1px solid #dad8d8;
+  background-color: #f2f2f2;
+  box-shadow: 0 -0.05em rgba(0, 0, 0, 0.27);
+}
+
+
+#window_actions {
+  display: block;
+}
+#window_actions a{
+  color: #fff;
+  border-radius: 20px;
+  padding: 6px 11px;
+  cursor: pointer;
+  font-size: 18px;
+
+}
+
+.social-address-bar a {
+  color: #fff;
+  border-radius: 20px;
+  padding: 6px 11px;
+  cursor: pointer;
+  font-size: 22px;
+}
+
+.window-option{
+  float: right;
+  padding: 0px !important;
+  padding-right: 15px !important;
+  font-size: 22px !important;
+}
+
+.social-address-bar a:hover , #window_actions a:hover {
+  color: yellow;
+}
+
+
+
+.social-address-bar .brand {
+  font-family: cursive;
+  font-weight: bold;
+  padding: 5px;
+  padding-left: 10px;
+  color: #030303;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.social-address-bar .logo {
+  -webkit-app-region: no-drag;
+     height: 30px;
+     position: fixed;
+     top: 5px;
+     right: 100px;
+     z-index: 999;
+}
+
+.social-address-bar .logo img {
+  width: 16px;
+  height: 16px;
+}

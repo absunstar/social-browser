@@ -1,0 +1,181 @@
+
+
+h1,h2{
+    font-weight: normal;
+}
+.loaded{
+    visibility:collapse;
+}
+.hidden{
+    display: none;
+}
+
+.rtl{
+    direction: rtl;
+}
+.ltr{
+    direction: ltr;
+}
+
+.center{
+	margin: 0 auto;
+	text-align: center;
+}
+.left{
+    text-align: left;
+}
+.right{
+    text-align: right;
+}
+
+.container{
+	display: block;
+	width: 100%;
+	margin: 0 auto;
+	padding: 10px;
+}
+
+.block{
+    display: block;
+    min-width: 80%;
+}
+
+.row , .row10{
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+}
+
+
+.row::after , .row10::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+.col1,
+.col2,
+.col3,
+.col4,
+.col5,
+.col6,
+.col7,
+.col8,
+.col9,
+.col10 {
+    vertical-align: top;
+    margin: 0px;
+    padding: 0px;
+    float: var(--float);
+    display: inline-block;
+    min-height: 1px;
+}
+
+.row .col1 , .row10 .row .col1 {
+    width: 8.33% ;
+}
+
+.row .col2 , .row10 .row .col2 {
+    width: 16.66% ;
+}
+
+.row .col3, .row10 .row .col3 {
+    width: 25% ;
+}
+
+.row .col4, .row10 .row .col4 {
+    width: 33.33% ;
+}
+
+.row .col5, .row10 .row .col5 {
+    width: 41.66% ;
+}
+
+.row .col6, .row10 .row .col6 {
+    width: 50% ;
+}
+
+.row .col7, .row10 .row .col7 {
+    width: 58.33% ;
+}
+
+.row .col8 , .row10 .row .col8 {
+    width: 66.66% ;
+}
+
+.row .col9, .row10 .row .col9 {
+    width: 75%;
+}
+.row .col10 , .row10 .row .col10{
+    width: 83.33% ;
+}
+.row .col11 , .row10 .row .col11{
+    width: 91.636% ;
+}
+.row .col12 , .row10 .row .col12{
+    width: 100% ;
+}
+
+.row10 .col1 , .row .row10 .col1 {
+    width: 10% ;
+}
+
+.row10 .col2 , .row .row10 .col2{
+    width: 20% ;
+}
+
+.row10 .col3 , .row .row10 .col3{
+    width: 30% ;
+}
+
+.row10 .col4 , .row .row10 .col4{
+    width: 40% ;
+}
+
+.row10 .col5, .row .row10 .col5 {
+    width: 50% ;
+}
+
+.row10 .col6 , .row .row10 .col6{
+    width: 60% ;
+}
+
+.row10 .col7, .row .row10 .col7 {
+    width: 70% ;
+}
+
+.row10 .col8 , .row .row10 .col8{
+    width: 80% ;
+}
+
+.row10 .col9, .row .row10 .col9 {
+    width: 90% ;
+}
+.row10 .col10 , .row .row10 .col10{
+    width: 100% ;
+}
+
+
+@media screen and (min-width: 768px/*desktop*/) {
+    .mobile{
+        display: none !important;
+    }
+}
+@media  screen and (max-width: 768px /*mobile*/) {
+    .col1,
+    .col2,
+    .col3,
+    .col4,
+    .col5,
+    .col6,
+    .col7,
+    .col8,
+    .col9 {
+        vertical-align: top;
+        width: 100% !important;
+    }
+    .desktop{
+        display: none !important;
+    }
+
+}

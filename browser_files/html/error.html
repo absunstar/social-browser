@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,social=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Error</title>
+    <meta name="description" content="Error">
+
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/layout.css">
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/modal.css">
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/form.css">
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/color.css">
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/effect.css">
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/table.css">
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/theme.css">
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/font-awesome.css">
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/fonts.css">
+
+</head>
+
+<body class="padding">
+        <br><br><br>
+    <div class="row center">
+        <h2>
+            Can't connecting to
+            <a href="##query.url##">##query.url##</a>
+        </h2>
+
+        <h2>This error was throw [ <span class="red"> ##query.description## </span> ]
+        </h2>
+        <br><br><br>
+        <div class="row left">
+            <p class="bold"> Please Check These Points</p>
+            <ul>
+                <li> Check Network Caple or Wireless Connection </li>
+                <li> If You Use Proxy re-check Configration </li>
+                <li> May be Your Internet Provider Blocked or Closed Your Account</li>
+            </ul>
+        </div>
+      
+        <!-- <p> Auto Reload After
+            <b class="green" id="t"></b> s
+        </p> -->
+
+    </div>
+
+
+    <script src="http://127.0.0.1:60080/js/client.js"></script>
+    <script src="http://127.0.0.1:60080/js/jquery.js"></script>
+    <script src="http://127.0.0.1:60080/js/modal.js"></script>
+    <script>
+    //     var t = 15
+
+    //     document.querySelector('#t').textContent = t
+
+    //    var i1 = setInterval(() => {
+    //         t--
+    //         if (t < 0) {
+    //             clearInterval(i1)
+    //             return
+    //         }
+    //         if(!document){
+    //             return
+    //         }
+    //         document.querySelector('#t').textContent = t
+    //     }, 1000)
+
+    //     setTimeout(() => {
+    //         if(window && window.location){
+    //             window.location.href = "##query.url##"
+    //         } 
+    //     }, 1000 * t)
+
+    </script>
+</body>
+
+</html>

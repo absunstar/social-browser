@@ -1,0 +1,138 @@
+form {
+    display: block;
+    width: 100%;
+    margin: 0 auto;
+    padding: 5px;
+}
+
+form .control {
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    margin: 0 auto;
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+label input[type=checkbox],
+label input[type=radio],
+label img {
+    vertical-align: bottom;
+}
+
+label span {
+    vertical-align: super;
+}
+
+textarea {
+    overflow-x: hidden;
+}
+
+input,
+select,
+textarea {
+    font-family: 'Droid Arabic Kufi', monospace, sans-serif, Tahoma, serif;
+    height: 33px;
+    padding: 0px 0px 0px 0px;
+    line-height: 1.42857143;
+    font-size: 14px;
+    color: var(--input-color);
+    background-color: var(--input-background-color);
+    background-image: none;
+    border: var(--input-border);
+    border-radius: 4px;
+    outline: none;
+    /* -webkit-box-shadow: inset 0 -1px 0 0  var(--input-box-shadow-color);
+     box-shadow: inset 0 -1px 0 0  var(--input-box-shadow-color); */
+}
+
+input[type=text] , input[type=email] , input[type=password]{
+    padding: 6px 12px;
+}
+input[type=checkbox],
+input[type=radio] {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    cursor: pointer;
+}
+input[type=file] {
+    padding: 3px;
+}
+input[type=date]  , input[type=datetime] , input[type=datetime-local]{
+    padding: 5px;
+}
+input[type=number]{
+    text-align: center;
+}
+form .control textarea{
+    padding: 6px 12px;
+    display: block;
+    width : 100%;
+    height: 100px;
+}
+form .control input[type=text],
+form .control input[type=email],
+form .control input[type=number],
+form .control input[type=password],
+form .control input[type=file],
+form .control input[type=date],
+form .control input[type=datetime],
+form .control input[type=datetime-local],
+form .control textarea,
+form .control label,
+form .control select {
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+}
+
+input:focus , select:focus , textarea:focus{
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+form .control .btn {
+    display: block;
+    width: 90%;
+}
+
+.btn {
+    text-align: center;
+    margin: 10px;
+    padding: 7px 9px;
+    font-size: 14px;
+    color: var(--btn-color);
+    background-color: var(--btn-background-color);
+    -moz-box-shadow: 0px 10px 14px -7px var(--btn-box-shadow-color);
+    -webkit-box-shadow: 0px 10px 14px -7px var(--btn-box-shadow-color);
+    box-shadow: 0px 10px 14px -7px var(--btn-box-shadow-color);
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    border-radius: 8px;
+    display: inline-block;
+    cursor: pointer;
+    min-width: 90px;
+}
+
+.btn-danger {
+    background-color: red;
+    color: #fff;
+}
+
+.btn:active {
+    position: relative;
+    top: 1px;
+}
+
+.btn:hover {
+    transform: scale(1.1);
+}
+
+fieldset{
+    color: #000000;
+    border-color: #ffffff;
+}
+
+fieldset legend{
+    color: blue;
+}

@@ -1,0 +1,1 @@
+document.querySelector('body').innerHTML = "<h1>Error $error</h1><br><h2>While Loading $url</h2>"

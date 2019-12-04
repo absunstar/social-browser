@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Downloads</title>
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/font-awesome.css">
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/downloads.css">
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/color.css">
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/effect.css">
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/layout.css">
+
+</head>
+
+<body ng-controller="mainController">
+
+    <h1 class="center"> Downloads </h1>
+
+    <div class="downloads">
+        <div class="item" ng-show="d.path" ng-repeat="d in download_list | orderBy:'-date'">
+            <div class="row">
+                <a class="btn" ng-click="redownload(d)"> Re-Download </a>
+                <a class="btn" ng-click="copyLink(d)"> Copy Link </a>
+                <a class="btn bg-red white bold" ng-click="remove(d)">
+                    <i class="fa fa-trash"></i> Delete </a>
+                <span class="item-date"> {{d.date | date:' yyyy-MM-dd HH:mm:ss '}} </span>
+                <a ng-show="d.status === 'completed'" class="btn" ng-click="openFolder(d)"> Open Folder </a>
+                <a ng-show="d.status === 'completed'" class="btn" ng-click="openFile(d)"> Open File </a>
+                <a ng-show="d.status === 'downloading'" class="btn" ng-click="pause(d)"> Pause </a>
+                <a ng-show="d.status === 'paused'" class="btn" ng-click="resume(d)"> Resume </a>
+
+            </div>
+            <div class="row">
+
+                <p title="{{d.url}}" class="item-name">{{d.name}}
+                    <small class=""> [ {{d.type}} ] </small>
+                    <small class=""> ( {{d.status}} ) </small>
+                </p>
+
+                <p class="item-path">{{d.path}}
+                 
+                    <span class="item-percent"> ( {{d.received/1000000 | number:2}}mb / {{d.total/1000000 | number:2}}mb ) {{d.received / d.total * 100
+                        | number:2}} % </span>
+                </p>
+                <div class="item-progress">
+                    <progress max="{{d.total}}" value="{{d.received}}" class="progress-bar"></progress>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="http://127.0.0.1:60080/js/an.min.js"></script>
+    <script>
+        var app = angular.module('myApp', [])
+        app.controller('mainController', function ($scope, $http, $interval) {
+
+
+            $scope.pause = function (item) {
+                $$$.browser.ipcRenderer.send('pause-item', item)
+            }
+
+
+            $scope.resume = function (item) {
+                $$$.browser.ipcRenderer.send('resume-item', item)
+            }
+
+            $scope.redownload = function (item) {
+                $$$.browser.ipcRenderer.send('redownload-item', item)
+            }
+
+            $scope.copyLink = function (item) {
+                $$$.browser.ipcRenderer.send('render_message', {name : 'copy' , text : item.url})
+            }
+
+            $scope.remove = function (item) {
+                $$$.browser.ipcRenderer.send('remove-item', item)
+            }
+
+            $scope.openFile = function (item) {
+                if (item.path) {
+                    $$$.browser.shell.openItem(item.path)
+                }
+            }
+            $scope.openFolder = function (item) {
+                if (item.path) {
+                    $$$.browser.shell.openItem($$$.browser.path.dirname(item.path))
+                }
+            }
+            $scope.loadDownloads = function () {
+                $http({
+                    method: 'GET',
+                    url: 'http://127.0.0.1:60080/api/download_list'
+                }).then(function (response) {
+                    if (response.data.length === 0) {
+                        $scope.download_list = []
+                    } else {
+                        $scope.download_list = response.data
+                    }
+
+
+                })
+            }
+            $scope.download_list = []
+            $scope.loadDownloads()
+            $interval(function () {
+                $scope.loadDownloads()
+            }, 1000 * 2)
+
+
+        })
+    </script>
+</body>
+
+</html>

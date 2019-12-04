@@ -1,0 +1,12 @@
+body{
+    background-color: #fff;
+    font-family: monospace;
+}
+h1{
+    text-align: center;
+    color: red;
+}
+h2{
+    text-align: center;
+    color: blue;
+}

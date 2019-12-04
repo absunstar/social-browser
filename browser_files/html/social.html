@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,social=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Social Browser</title>
+  <meta name="description" content="Social Browser">
+
+
+  <link rel="stylesheet" href="browser://css/layout.css">
+  <link rel="stylesheet" href="browser://css/modal.css">
+  <link rel="stylesheet" href="browser://css/form.css">
+  <link rel="stylesheet" href="browser://css/color.css">
+  <link rel="stylesheet" href="browser://css/effect.css">
+  <link rel="stylesheet" href="browser://css/table.css">
+  <link rel="stylesheet" href="browser://css/theme.css">
+
+  <link rel="stylesheet" href="browser://css/social.css">
+  <link rel="stylesheet" href="browser://css/social-tabs.css">
+  <link rel="stylesheet" href="browser://css/font-awesome.css">
+  <link rel="stylesheet" href="browser://css/fonts.css">
+  
+  <link rel="stylesheet" href="browser://css/social-tabs-custom-theme.css">
+
+  <style>
+
+  </style>
+</head>
+
+<body ng-click="bodyclicked()" ng-keydown="bodyKeydown()" ng-controller="mainController">
+
+
+  <div class="social-tabs">
+    <div title="Close Browser" class="social-close">
+      <i class="fa fa-close"></i>
+    </div>
+    <div title="Maximize Browser" class="social-maxmize">
+      <i class="fa fa-window-maximize"></i>
+    </div>
+    <div title="minimize Browser" class="social-minmize">
+      <i class="fa fa-window-minimize"></i>
+    </div>
+
+    <div onclick="sendToMain({name : 'show profiles'})" id="user_name"></div>
+
+    <div class="social-tabs-content">
+
+    </div>
+
+    <div class="social-tabs-bottom-bar"></div>
+
+   
+  </div>
+
+  <!-- <div class="social-address-bar hidden">
+    <div ng-click="showProfiles()" id="user_name"></div>
+    <div class="address-input">
+      <input ng-keydown="addressbarKeydown($event)" ng-model="url" ng-change="loadUrls()" type="text" >
+    </div>
+    <a onclick="$('.social-address-bar').hide();$('.social-address-bar2').show();" class="window-option">
+      <i class="fa fa-exchange"></i>
+    </a>
+  </div> -->
+
+  <div class="row social-address-bar2">
+    <div id="window_actions">
+     
+      <a class="go-back" onclick="sendToMain({name : 'go back'})" >
+        <i class="fa fa-arrow-left"></i>
+      </a>
+      <a class="go-forward"  onclick="sendToMain({name : 'go forward'})" >
+        <i class="fa fa-arrow-right"></i>
+      </a>
+
+      <div class="address-input pointer"  onclick="showURL()">
+        <div class="https"></div>
+        <div class="http"></div>
+        <div class="ftp"></div>
+        <div class="file"></div>
+        <div class="browser"></div>
+        <p class="url"></p>
+       
+      </div>
+
+        <a title="Reload All Page Files" onclick="sendToMain({name : 'reload'})" >
+          <i class="fa fa-refresh"></i>
+        </a>
+  
+        <a title="Developer Tools" onclick="sendToMain({name : 'developer tools'})">
+          <i class="fa fa-cogs"></i>
+        </a>
+  
+        <a class="Page-audio" onclick="sendToMain({name : 'audio'})">
+          <i class="fa fa-volume-up"></i>
+        </a>
+  
+        <a title="Zoom Out" onclick="sendToMain({name : 'zoom-'})">
+          <i class="fa fa-search-minus"></i>
+        </a>
+  
+        <a title="Zoom In" onclick="sendToMain({name : 'zoom+'})">
+          <i class="fa fa-search-plus"></i>
+        </a>
+  
+        <a title="Edit Page" onclick="sendToMain({name : 'edit-page'})">
+          <i class="fa fa-edit"></i>
+        </a>
+  
+        <a title="Downloads" onclick="showDownloads()" >
+          <i class="fa fa-download"></i>
+        </a>
+  
+        <a id="setting" onclick="renderMessage({name : 'show setting'})" >
+            <i class="fa fa-cog"></i>
+          </a>
+          
+      <!-- <a onclick="$('.social-address-bar').show();$('.social-address-bar2').hide();" class="window-option">
+        <i class="fa fa-exchange"></i> -->
+      </a>
+    </div>
+  </div>
+
+  <div ng-show="show_urls === true" class="url-list loaded">
+    <ul>
+      <li ng-click="goUrl(u.url);$event.stopPropagation()" ng-class="{'selected' : u.selected}" href="{{u.url}}"
+        ng-repeat="u in url_list">
+        <a ng-click="goUrl(u.url);$event.stopPropagation()">
+          <img ng-src="{{u.logo}}" onerror="this.src='browser://images/no.png'">
+          <span class="bold green" ng-click="goUrl(u.url);$event.stopPropagation()"> ( {{u.count}} ) </span>
+          <span class="blue" ng-click="goUrl(u.url);$event.stopPropagation()"> {{u.url | limitTo:70}} </span>
+
+          <b class="black" ng-click="goUrl(u.url);$event.stopPropagation()"> {{u.title | limitTo:70}} </b>
+        </a>
+
+
+      </li>
+    </ul>
+    <div class="row">
+      <span class="btn bg-blue white bold" onclick="event.preventDefault();event.stopPropagation();" ng-click="urls_sort_property = 'last_visit' ; loadUrls()">
+        Sort by Last Visit </span>
+      <span class="btn bg-blue white bold" onclick="event.preventDefault();event.stopPropagation();" ng-click="urls_sort_property = 'url'; loadUrls()">
+        Sort by URL </span>
+      <span class="btn bg-blue white bold" onclick="event.preventDefault();event.stopPropagation();" ng-click="urls_sort_property = 'count'; loadUrls()">
+        Sort by Visit Count </span>
+    </div>
+  </div>
+
+
+  <div class="social-status-bar"></div>
+
+  <script src="browser://js/an.min.js"></script>
+
+  <script>
+
+
+    if (typeof module === 'object') {
+      window.module = module;
+      module = undefined;
+    }
+  </script>
+
+  <script src="browser://js/client.js"></script>
+  <script src="browser://js/jquery.js"></script>
+
+  <script src="browser://js/modal.js"></script>
+
+
+  <script src="browser://js/draggabilly.js"></script>
+  <script src="browser://js/social-tabs.js"></script>
+  <script src="browser://js/social.js"></script>
+
+  <script>
+    if (window.module) module = window.module;
+
+  </script>
+
+<script src="browser://js/setting.js"></script>
+
+</body>
+
+</html>

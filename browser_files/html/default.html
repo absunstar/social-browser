@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,social=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/layout.css">
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/modal.css">
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/color.css">
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/effect.css">
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/table.css">
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/theme.css">
+
+
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/default.css">
+    <title>Home Page</title>
+</head>
+
+<body>
+    <header>
+        <h1>
+            Social Browser
+        </h1>
+
+    </header>
+
+    <div class="row center">
+        <div class="col4  padding">
+            <form class="hidden" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+                <input type="hidden" name="cmd" value="_s-xclick">
+                <input type="hidden" name="hosted_button_id" value="8S88SPF6UC83L">
+                <input type="image" src="browser://images/paypal2.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+            </form>
+
+        </div>
+        <div class="col4">
+            <h2 class="tags">
+                    For Smart Users
+            </h2>
+           
+        </div>
+        <div class="col4 ">
+            <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+                <input type="hidden" name="cmd" value="_s-xclick">
+                <input type="hidden" name="hosted_button_id" value="UUWVWTLENTR98">
+                <input type="image" src="browser://images/paypal.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+            </form>
+        </div>
+
+
+
+    </div>
+
+
+<br><br>
+    <contents>
+
+        <div id="searchDiv" class="ui search">
+            <input class="prompt" type="text" autofocus id="searchInput" onfocus="this.setSelectionRange(0, this.value.length)">
+            <ul class="url-list">
+
+            </ul>
+            <button onclick="go()">
+                Search
+            </button>
+        </div>
+
+
+    </contents>
+
+    <script src="http://127.0.0.1:60080/js/jquery.js"></script>
+
+    <script>
+        $(document).click(() => {
+            $('ul.url-list').html('')
+        })
+
+        function handleURL(u) {
+            if (u.indexOf("://") !== -1) {
+                return u
+            }
+            if (u.indexOf(".") != -1) {
+                u = "http://" + u
+            } else {
+                u = "https://google.com/search?q=" + encodeURIComponent(u)
+            }
+            return u
+        }
+
+        function go() {
+            var url = $('#searchInput').val()
+            if (url !== '') {
+                $$$.sendMessage({
+                    name : 'open new tab',
+                    url : url
+                })
+            }
+        }
+
+
+        $('#searchInput').keypress((e) => {
+            if (e.which == 13) {
+                go()
+            }
+        })
+    </script>
+</body>
+
+</html>

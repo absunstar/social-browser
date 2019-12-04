@@ -1,0 +1,109 @@
+@media (max-width: 768px /*mobile*/) {
+	.left-fixed-menu , .right-fixed-menu {
+		top:auto !important;
+		width: auto !important;
+		height: 70%;
+		bottom:-68% !important;
+		padding: 3px !important;
+		padding-top: 0px !important;
+		right: 5% !important;
+		left: 5% !important;
+	}
+	.mobile{
+		display: block !important;
+	}
+
+	
+	.left-fixed-menu:hover , .right-fixed-menu:hover{
+		bottom: 0px !important;
+	}
+}
+.mobile{
+	display: none;
+}
+.left-fixed-menu , .right-fixed-menu , .bottom-fixed-menu{
+    display: block;
+    padding: 3px;
+    margin: 0px;
+	position: fixed;
+	background: #282828;
+	box-shadow: 0 -0.05em rgba(0,0,0,0.5);
+	font-size: 16px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	z-index: 500;
+}
+.left-fixed-menu {
+	top:200px;
+	width: 250px;
+	left: -245px;
+	padding-right: 5px;
+}
+.right-fixed-menu{
+	top:200px;
+	width: 250px;
+	text-align: right;
+	padding-left: 25px;
+    right: -230px;
+}
+.bottom-fixed-menu{
+	bottom:-245px;
+	height: 250px;
+	padding-top: 5px;
+	right: 30px;
+	left: 30px;
+}
+.left-fixed-menu:hover{
+	left: 0px;
+}
+.right-fixed-menu:hover{
+    right: 0px;
+}
+.bottom-fixed-menu:hover{
+	bottom: 0px;
+}
+.left-fixed-menu li  , .right-fixed-menu li{
+	list-style: none;
+    margin: 4px;
+	padding: 0px;
+	min-height: 30px;
+}
+.left-fixed-menu li a , .right-fixed-menu li a{
+	color: white;
+	display: block;
+	padding: 0px;
+	border-bottom: 1px #fff;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+}
+.right-fixed-menu li a{
+    padding-right: 10px;
+}
+.left-fixed-menu li:first-child a , .right-fixed-menu li:first-child a{
+	border-top: none;
+}
+.left-fixed-menu li:last-child a , .right-fixed-menu li:last-child a{
+	border-bottom: none;
+}
+
+.left-fixed-menu li a:hover , .right-fixed-menu li a:hover{
+background-color: #030303;
+color: #fff;
+
+}
+.left-fixed-menu li a:hover {
+    padding-left: 10px;
+}
+.right-fixed-menu li a:hover{
+    padding-right: 20px;
+}
+
+.left-fixed-menu li a.selected{
+background-color: #030303;
+color: #fff;
+}
+

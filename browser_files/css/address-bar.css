@@ -1,0 +1,67 @@
+body {
+    background: #3F51B5;
+    overflow-x: hidden;
+    margin: 3px;
+}
+
+.address-input {
+    height: 30px;
+    width: 100%;
+}
+
+.address-input input {
+    width: 95%;
+    height: 100%;
+    font-size: 16px;
+    padding: 0px;
+    padding-left: 10px;
+    color: #fff;
+    margin: 0px;
+    border-radius: 20px;
+    outline: none;
+    border: none;
+    background: #697de8;
+}
+
+
+.url-list {
+    background-color: #fff;
+    color: #292929;
+    position: fixed;
+    top: 40px;
+    right: 3px;
+    left: 3px;
+    bottom: 3px;
+    z-index: 99999;
+    padding-bottom: 10px;
+    box-shadow: 1px 1px 2px 1px var(--social-background-color);
+}
+
+.url-list ul {
+    max-height: 300px;
+    overflow-y: auto;
+    background-color: #fff;
+    color: #292929;
+    list-style: none;
+    padding: 5px;
+    margin: 0px;
+}
+
+.url-list ul li {
+    padding: 5px;
+}
+
+.url-list ul li img {
+    width: 18px;
+    height: 18px;
+}
+
+.url-list ul li:hover,
+.url-list ul li.selected {
+    background-color: #ddd;
+    cursor: pointer;
+}
+
+.btn{
+    font-size: 12px;
+}
