@@ -106,9 +106,9 @@ module.exports = function init(browser) {
       let bounds = browser.mainWindow.getBounds()
       win.setBounds({
         x: browser.mainWindow.isMaximized() ? bounds.x + 8 : bounds.x,
-        y: browser.mainWindow.isMaximized() ? bounds.y + 75 : bounds.y + 70,
-        width: browser.mainWindow.isMaximized() ? bounds.width - 20 : bounds.width - 2,
-        height: browser.mainWindow.isMaximized() ? bounds.height - 85 : bounds.height - 75
+        y: browser.mainWindow.isMaximized() ? bounds.y + 78 : bounds.y + 70,
+        width: browser.mainWindow.isMaximized() ? bounds.width - 15 : bounds.width - 2,
+        height: browser.mainWindow.isMaximized() ? bounds.height - 84 : bounds.height - 72
       })
       
     }

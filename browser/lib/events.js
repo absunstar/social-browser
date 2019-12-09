@@ -208,8 +208,7 @@ module.exports = function (browser) {
                     if (info.origin.replace('://', '').indexOf(':') == -1) {
                         info.origin = info.origin + ':80'
                     }
-                    console.log('Force Reload ::')
-                    console.log(info)
+                   
                     if (info.storages[0] == 'cookies') {
                         browser.session.fromPartition(browser.current_view.partition).clearStorageData({
                             origin: info.origin,

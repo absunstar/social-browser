@@ -1,0 +1,11 @@
+node_modules/
+social-data/
+data/
+dist/
+build/
+release-builds/
+plugins/
+test/
+downloads/
+uploads/
+
