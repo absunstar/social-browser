@@ -542,6 +542,7 @@ module.exports = function (browser) {
                 browser.set_var('download_list', browser.var.download_list)
                 let _path = item.getSavePath()
                 let _url = item.getURL()
+                browser.backAllViews()
                 browser.dialog.showMessageBox({
                   title: "Download Complete",
                   type: "info",
@@ -549,7 +550,7 @@ module.exports = function (browser) {
                   message: `Saved URL \n ${_url} \n To \n ${_path} `
                 }).then(
                 result => {
-
+                  console.log(result)
                   browser.shell.beep()
                   if (result.response == 1) {
                     browser.shell.showItemInFolder(_path)

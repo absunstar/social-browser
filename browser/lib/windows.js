@@ -128,7 +128,7 @@ module.exports = function init(browser) {
 
     let win = new BrowserWindow({
       parent: browser.mainWindow,
-      show: true,
+      show: false,
       width: bounds.width - 5,
       height: browser.mainWindow.isMaximized() ? bounds.height - 85 : bounds.height - 75,
       x: bounds.x,
@@ -257,7 +257,7 @@ module.exports = function init(browser) {
     contents.on("update-target-url", (e , url) => {
       contents.send('render_message', {
         name: 'update-target-url',
-        url: url
+        url: decodeURI(url)
       })
     })
 
@@ -271,7 +271,7 @@ module.exports = function init(browser) {
       browser.mainWindow.webContents.send('render_message', {
         name: 'update-url',
         tab_id: tab_id,
-        url: win.getURL()
+        url: decodeURI(win.getURL())
     })
 
       browser.mainWindow.webContents.send('render_message', {
@@ -292,7 +292,7 @@ module.exports = function init(browser) {
           tab_id: tab_id
         })
         browser.addURL({
-          url: win.getURL(),
+          url: decodeURI(win.getURL()),
           logo: tab_icon
         })
       }
@@ -304,7 +304,7 @@ module.exports = function init(browser) {
       browser.mainWindow.webContents.send('render_message', {
         name: 'update-url',
         tab_id: tab_id,
-        url: win.getURL()
+        url: decodeURI(win.getURL())
     })
 
       browser.mainWindow.webContents.send('render_message', {
@@ -351,14 +351,14 @@ module.exports = function init(browser) {
     contents.on("dom-ready", e => {
 
       browser.addURL({
-        url: win.getURL(),
+        url: decodeURI(win.getURL()),
         title: contents.getTitle(),
         logo: tab_icon
       })
 
       browser.mainWindow.webContents.send('render_message', {
         name: 'update-url',
-        url: win.getURL(),
+        url: decodeURI(win.getURL()),
         tab_id: tab_id
       })
       browser.mainWindow.webContents.send('render_message', {
@@ -847,9 +847,7 @@ module.exports = function init(browser) {
       icon: (process.platform != 'darwin' && process.platform != 'win32') ? browser.path.join(browser.files_dir, "images", "logo.png") : browser.path.join(browser.files_dir, "images", "logo.ico")
     })
 
-    // if (process.platform != 'darwin' && process.platform != 'win32'){
-    //   newWindow.webPreferences.icon = browser.path.join(browser.files_dir, "images", "logo.png")
-    // }
+    
 
 
 
@@ -911,7 +909,7 @@ module.exports = function init(browser) {
 
     })
 
-    newWindow.setMinimumSize(480, 450)
+    newWindow.setMinimumSize(240, 500)
 
     //  newWindow.loadURL('browser://html/social.html')
     // newWindow.openDevTools()

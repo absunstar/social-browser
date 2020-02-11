@@ -26,6 +26,9 @@ module.exports = function init_isite(browser) {
   site.loadLocalApp('client-side')
   site.loadLocalApp('charts')
 
+  require(site.dir + '/spiders/page-info.js')(site , browser)
+  require(site.dir + '/spiders/page-urls.js')(site , browser)
+
   browser.site = site
 
   site.get('/empty', (req, res) => {

@@ -257,7 +257,10 @@ class SocialTabs {
     this.emit('tabAdd', {
       tabEl
     })
-    this.setCurrentTab(tabEl, tabProperties)
+    if ($('.social-tab').length == 2){
+        this.setCurrentTab(tabEl, tabProperties)
+    }
+    
     this.layoutTabs()
     this.fixZIndexes()
     this.setupDraggabilly()

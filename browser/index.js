@@ -221,5 +221,6 @@ module.exports = function (op) {
     require(__dirname + '/lib/plugins.js')(browser)
     require(__dirname + '/lib/session.js')(browser)
 
+
     return browser
 }

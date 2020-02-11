@@ -30,6 +30,14 @@ module.exports = function (browser) {
             }
         })
     }
+    browser.backAllViews = function(){
+        browser.views.forEach(v => {
+            let win = browser.electron.BrowserWindow.fromId(v.id)
+            if (win) {
+                win.setAlwaysOnTop(false)
+            }
+        })
+    }
 
     if (ipcMain) {
 
@@ -83,37 +91,43 @@ module.exports = function (browser) {
                 let win = BrowserWindow.fromId(info.win_id)
                 if (win) {
 
-                    browser.dialog.showSaveDialog({
-                            defaultPath: win.webContents.title,
-                            title: "Save Downloading URL As PDF",
-                            properties: ["openFile", "createDirectory"]
-                        },
-                        filename => {
+                    browser.backAllViews()
 
-                            win.webContents.printToPDF({}, function (error, data) {
+                    browser.dialog.showSaveDialog({
+                        defaultPath: win.webContents.title,
+                        title: "Save Downloading URL As PDF",
+                        properties: ["openFile", "createDirectory"]
+                    }).then(result => {
+                        if (result.canceled) {
+                            console.log(result)
+                            return
+                        }
+                        win.webContents.printToPDF({}).then(data => {
+
+                            browser.fs.writeFile(result.filePath, data, function (error) {
                                 if (!error) {
-                                    browser.fs.writeFile(filename, data, function (error) {
-                                        if (!error) {
-                                            browser.dialog.showMessageBox({
-                                                    title: "Download Complete",
-                                                    type: "info",
-                                                    buttons: ["Open File", "Open Folder", "Close"],
-                                                    message: `Save Page As PDF \n To \n ${filename} `
-                                                },
-                                                index => {
-                                                    browser.shell.beep()
-                                                    if (index == 1) {
-                                                        browser.shell.showItemInFolder(filename)
-                                                    }
-                                                    if (index == 0) {
-                                                        browser.shell.openItem(filename)
-                                                    }
-                                                })
+                                    browser.backAllViews()
+                                    browser.dialog.showMessageBox({
+                                        title: "Download Complete",
+                                        type: "info",
+                                        buttons: ["Open File", "Open Folder", "Close"],
+                                        message: `Save Page As PDF \n To \n ${result.filePath} `
+                                    }).then(result3 => {
+                                        browser.shell.beep()
+                                        if (result3.response == 1) {
+                                            browser.shell.showItemInFolder(result.filePath)
+                                        }
+                                        if (result3.response == 0) {
+                                            browser.shell.openItem(result.filePath)
                                         }
                                     })
+                                } else {
+                                    console.log(error)
                                 }
                             })
+
                         })
+                    })
 
                 }
             } else if (info.name == 'full_screen') {
@@ -208,7 +222,7 @@ module.exports = function (browser) {
                     if (info.origin.replace('://', '').indexOf(':') == -1) {
                         info.origin = info.origin + ':80'
                     }
-                   
+
                     if (info.storages[0] == 'cookies') {
                         browser.session.fromPartition(browser.current_view.partition).clearStorageData({
                             origin: info.origin,
@@ -234,13 +248,15 @@ module.exports = function (browser) {
             } else if (info.name == 'show addressbar') {
                 browser.showAddressbar(info)
             } else if (info.name == 'show setting') {
+                console.log('show setting')
                 let bounds = browser.mainWindow.getBounds()
-                browser.newWindow({
+               let win = browser.newWindow({
                     url: 'http://127.0.0.1:60080/setting',
-                    x: 10,
-                    y: 70,
-                    width: bounds.width - 20,
-                    height: bounds.height - 70
+                    x: bounds.x + 50,
+                    y: 100,
+                    width: bounds.width - 100,
+                    height: bounds.height - 200,
+                    alwaysOnTop : true
                 })
             } else if (info.name == 'show profiles') {
                 browser.showUserProfile()
@@ -332,7 +348,7 @@ module.exports = function (browser) {
 
 
         ipcMain.on('new-view', (e, info) => {
-
+            console.log('new-view')
             if (browser.addressbarWindow) {
                 browser.addressbarWindow.hide()
             }
@@ -347,38 +363,42 @@ module.exports = function (browser) {
                 })
             }
             let win = browser.newView(info)
-            browser.current_view = {
+            let new_view = {
                 _id: info._id,
                 id: win.id,
                 partition: info.partition,
                 user_name: info.user_name,
-                zoom : 1
+                zoom: 1
             }
-            browser.views.push(browser.current_view)
-            browser.mainWindow.webContents.send('render_message', {
-                name: 'update-url',
-                tab_id: browser.current_view._id,
-                url: info.url
-            });
-            browser.mainWindow.webContents.send('render_message', {
-                name: 'update-audio',
-                tab_id: browser.current_view._id,
-                muted: win.webContents.audioMuted
-            });
-            browser.mainWindow.webContents.send('render_message', {
-                name: 'update-buttons',
-                tab_id: browser.current_view._id,
-                forward: win.webContents.canGoForward(),
-                back: win.webContents.canGoBack()
-            });
+            browser.views.push(new_view)
+            if (browser.views.length == 0) {
+                browser.current_view = new_view
+                browser.mainWindow.webContents.send('render_message', {
+                    name: 'update-url',
+                    tab_id: browser.current_view._id,
+                    url: decodeURI(info.url)
+                });
+                browser.mainWindow.webContents.send('render_message', {
+                    name: 'update-audio',
+                    tab_id: browser.current_view._id,
+                    muted: win.webContents.audioMuted
+                });
+                browser.mainWindow.webContents.send('render_message', {
+                    name: 'update-buttons',
+                    tab_id: browser.current_view._id,
+                    forward: win.webContents.canGoForward(),
+                    back: win.webContents.canGoBack()
+                });
+                hideOthersViews()
+            }
+
             e.returnValue = win
-            hideOthersViews()
             return win
         })
 
         ipcMain.on('show-view', (e, info) => {
 
-
+            console.log('show-view')
             if (browser.addressbarWindow) {
                 browser.addressbarWindow.hide()
             }
@@ -395,7 +415,7 @@ module.exports = function (browser) {
                     browser.mainWindow.webContents.send('render_message', {
                         name: 'update-url',
                         tab_id: browser.current_view._id,
-                        url: win.getURL()
+                        url: decodeURI(win.getURL())
                     });
                     browser.mainWindow.webContents.send('render_message', {
                         name: 'update-audio',
@@ -423,12 +443,12 @@ module.exports = function (browser) {
 
             browser.mainWindow.webContents.send('render_message', {
                 name: 'update-url',
-                url: info.url,
+                url: decodeURI(info.url),
                 tab_id: info._id || browser.current_view._id
             })
             browser.mainWindow.webContents.send('render_message', {
                 name: 'update-title',
-                title: info.url,
+                title: decodeURI(info.url),
                 tab_id: info._id || browser.current_view._id
             })
 
@@ -443,7 +463,7 @@ module.exports = function (browser) {
             browser.views.forEach(v => {
                 let win = BrowserWindow.fromId(v.id)
                 if (win && v._id == info._id) {
-                    
+
                     win.webContents.stop()
                     win.loadURL(info.url)
                     e.returnValue = win
@@ -476,7 +496,7 @@ module.exports = function (browser) {
 
         ipcMain.on('new-window', (e, info) => {
 
-            info.partition = info.partition ||  browser.current_view.partition
+            info.partition = info.partition || browser.current_view.partition
             info.user_name = info.user_name || browser.current_view.user_name
             let win = browser.newWindow(info)
             e.returnValue = win

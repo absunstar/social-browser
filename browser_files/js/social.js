@@ -245,9 +245,9 @@ function renderMessage(cm) {
     }
 
   } else if (cm.name == "show setting") {
-    render_new_tab({
-      url: 'http://127.0.0.1:60080/setting'
-    })
+    // render_new_tab({
+    //   url: 'http://127.0.0.1:60080/setting'
+    // })
   } else if (cm.name == "download-url") {
     browser.sendToMain("download-url", cm.url)
   } else if (cm.name == "downloads") {

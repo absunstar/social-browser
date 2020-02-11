@@ -13,9 +13,12 @@
 
 ## Top Options
 
+- Import & Export All Browser Data [ passwords , sessions , ...]
 - Setting Password Protected
 - Open Same-Site with Diffrent Users
 - Passwords Manager
+- Auto Fill Forms
+- Keyboard Shortcuts
 - Cloud Sync
 - Youtube Video Downloader
 - Youtube/Videos Mini Viewer
@@ -39,6 +42,7 @@
 - Login by external sites [ google , facebook , ....]
 - PC Browsing [ File Manager / FTP ] 
 - PC Applications Integrated [ Keyboard , Calc , Paint , ...]
+- Edit Websites Permissions
 
 - History Manager [ browsing timeline ]
 - bookmarks Manager [favorite Sites]
@@ -46,7 +50,7 @@
 - Json Reader
 - API Tester
 - Page Analyize [Contents , Doms , images , js , css , videos , links]
-
+- Site Notes
 - Torrents Manager
 - Share Site Session [ cookies , storages ]
 

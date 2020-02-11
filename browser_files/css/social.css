@@ -246,6 +246,9 @@ button {
 }
 
 @media only screen and (max-width: 700px) {
+  #user_name{
+    display: none;
+  }
   .brand {
     display: none;
   }
@@ -257,6 +260,9 @@ button {
 }
 
 @media only screen and (max-width: 360px) {
+  #user_name{
+    display: none;
+  }
   .social-history {
     display: none;
   }

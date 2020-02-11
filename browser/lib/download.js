@@ -120,13 +120,7 @@ module.exports = function (browser) {
       }
     }
 
-    browser.views.forEach(v => {
-      let win = browser.electron.BrowserWindow.fromId(v.id)
-      if (win) {
-        win.setAlwaysOnTop(false)
-      }
-    })
-
+    browser.backAllViews()
     browser.dialog.showSaveDialog({
       defaultPath: item.name,
       title: "Save Downloading URL As",
@@ -149,12 +143,12 @@ module.exports = function (browser) {
               buttons: ["Open File", "Open Folder", "Close"],
               message: `Downloaded URL \n ${info.url} \n To \n ${info.path} `
             },
-            index => {
+            result => {
               browser.shell.beep()
-              if (index == 1) {
+              if (result.response == 1) {
                 browser.shell.showItemInFolder(info.path)
               }
-              if (index == 0) {
+              if (result.response == 0) {
                 browser.shell.openItem(info.path)
               }
             }

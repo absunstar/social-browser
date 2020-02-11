@@ -50,12 +50,12 @@ module.exports = function (___) {
                     if (node.id && node.id == d.id) {
 
                         let exists = false
-                        arr1.forEach(a=>{
-                            if(a.label.trim() == d.value.trim() ){
+                        arr1.forEach(a => {
+                            if (a.label.trim() == d.value.trim()) {
                                 exists = true
                             }
                         })
-                        if(!exists){
+                        if (!exists) {
                             arr1.push({
                                 label: d.value,
                                 click() {
@@ -78,9 +78,9 @@ module.exports = function (___) {
                                         if (!e1 && d2.name) {
                                             e1 = doc.getElementsByName(d2.name)
                                         }
-    
+
                                         if (e1) {
-    
+
                                             e1.value = d2.value
                                             e1.dispatchEvent(change_event);
                                         }
@@ -88,28 +88,28 @@ module.exports = function (___) {
                                 }
                             })
                         }
-                        
 
-                      
+
+
 
 
                     } else if (node.name && node.name == d.name) {
                         let exists = false
-                        arr1.forEach(a=>{
-                            if(a.label.trim()  == d.value.trim() ){
+                        arr1.forEach(a => {
+                            if (a.label.trim() == d.value.trim()) {
                                 exists = true
                             }
                         })
-                        if(!exists){
+                        if (!exists) {
                             arr1.push({
                                 label: d.value,
                                 click() {
-    
+
                                     node.value = d.value
                                     node.dispatchEvent(change_event);
                                 }
                             })
-    
+
                             arr2.push({
                                 label: d.value,
                                 click() {
@@ -125,9 +125,9 @@ module.exports = function (___) {
                                         if (!e1 && d2.name) {
                                             e1 = doc.getElementsByName(d2.name)
                                         }
-    
+
                                         if (e1) {
-    
+
                                             e1.value = d2.value
                                             e1.dispatchEvent(change_event);
                                         }
@@ -135,28 +135,28 @@ module.exports = function (___) {
                                 }
                             })
                         }
-                      
+
 
 
                     } else if (!node.id && !node.name) {
 
                         let exists = false
-                        arr1.forEach(a=>{
-                            if(a.label.trim()  == d.value.trim() ){
+                        arr1.forEach(a => {
+                            if (a.label.trim() == d.value.trim()) {
                                 exists = true
                             }
                         })
-                        if(!exists){
+                        if (!exists) {
                             arr1.push({
                                 label: d.value,
                                 click() {
-    
+
                                     node.value = d.value
                                     node.dispatchEvent(change_event);
                                 }
                             })
                         }
-                        
+
                     }
 
                 })
@@ -164,101 +164,101 @@ module.exports = function (___) {
             })
 
             if (arr1.length === 0) {
-            ___.domain_user_data = ___.domain_user_data || []
-            ___.domain_user_data.forEach(dd => {
-                dd.data.forEach(d => {
+                ___.domain_user_data = ___.domain_user_data || []
+                ___.domain_user_data.forEach(dd => {
+                    dd.data.forEach(d => {
 
-                    if(arr1.some(a=> a.label.trim() == d.value.trim())){
-                        return;
-                    }
+                        if (arr1.some(a => a.label.trim() == d.value.trim())) {
+                            return;
+                        }
 
-                    if (node.id && node.id == d.id) {
-                       
-                        arr1.push({
-                            label: d.value,
-                            click() {
-                                node.value = d.value
-                                node.dispatchEvent(change_event);
-                            }
-                        })
+                        if (node.id && node.id == d.id) {
 
-                        arr2.push({
-                            label: d.value,
-                            click() {
-                                node.value = d.value
-                                dd.data.forEach(d2 => {
-                                    if (d2.type == 'hidden' || d2.type == 'submit') {
-                                        return
-                                    }
-                                    let e1 = null
-                                    if (d2.id) {
-                                        e1 = doc.getElementById(d2.id)
-                                    }
-                                    if (!e1 && d2.name) {
-                                        e1 = doc.getElementsByName(d2.name)
-                                    }
+                            arr1.push({
+                                label: d.value,
+                                click() {
+                                    node.value = d.value
+                                    node.dispatchEvent(change_event);
+                                }
+                            })
 
-                                    if (e1) {
+                            arr2.push({
+                                label: d.value,
+                                click() {
+                                    node.value = d.value
+                                    dd.data.forEach(d2 => {
+                                        if (d2.type == 'hidden' || d2.type == 'submit') {
+                                            return
+                                        }
+                                        let e1 = null
+                                        if (d2.id) {
+                                            e1 = doc.getElementById(d2.id)
+                                        }
+                                        if (!e1 && d2.name) {
+                                            e1 = doc.getElementsByName(d2.name)
+                                        }
 
-                                        e1.value = d2.value
-                                        e1.dispatchEvent(change_event);
-                                    }
-                                })
-                            }
-                        })
+                                        if (e1) {
 
-
-                    } else if (node.name && node.name == d.name) {
-
-                        arr1.push({
-                            label: d.value,
-                            click() {
-
-                                node.value = d.value
-                                node.dispatchEvent(change_event);
-                            }
-                        })
-
-                        arr2.push({
-                            label: d.value,
-                            click() {
-                                node.value = d.value
-                                dd.data.forEach(d2 => {
-                                    if (d2.type == 'hidden' || d2.type == 'submit') {
-                                        return
-                                    }
-                                    let e1 = null
-                                    if (d2.id) {
-                                        e1 = doc.getElementById(d2.id)
-                                    }
-                                    if (!e1 && d2.name) {
-                                        e1 = doc.getElementsByName(d2.name)
-                                    }
-
-                                    if (e1) {
-
-                                        e1.value = d2.value
-                                        e1.dispatchEvent(change_event);
-                                    }
-                                })
-                            }
-                        })
+                                            e1.value = d2.value
+                                            e1.dispatchEvent(change_event);
+                                        }
+                                    })
+                                }
+                            })
 
 
-                    } else if (!node.id && !node.name) {
-                        arr1.push({
-                            label: d.value,
-                            click() {
-                                node.value = d.value
-                                node.dispatchEvent(change_event);
-                            }
-                        })
-                    }
+                        } else if (node.name && node.name == d.name) {
+
+                            arr1.push({
+                                label: d.value,
+                                click() {
+
+                                    node.value = d.value
+                                    node.dispatchEvent(change_event);
+                                }
+                            })
+
+                            arr2.push({
+                                label: d.value,
+                                click() {
+                                    node.value = d.value
+                                    dd.data.forEach(d2 => {
+                                        if (d2.type == 'hidden' || d2.type == 'submit') {
+                                            return
+                                        }
+                                        let e1 = null
+                                        if (d2.id) {
+                                            e1 = doc.getElementById(d2.id)
+                                        }
+                                        if (!e1 && d2.name) {
+                                            e1 = doc.getElementsByName(d2.name)
+                                        }
+
+                                        if (e1) {
+
+                                            e1.value = d2.value
+                                            e1.dispatchEvent(change_event);
+                                        }
+                                    })
+                                }
+                            })
+
+
+                        } else if (!node.id && !node.name) {
+                            arr1.push({
+                                label: d.value,
+                                click() {
+                                    node.value = d.value
+                                    node.dispatchEvent(change_event);
+                                }
+                            })
+                        }
+
+                    })
 
                 })
-
-            })
-        }
+            }
 
             if (arr1.length > 0) {
                 menu.append(new $menuItem({
@@ -276,7 +276,7 @@ module.exports = function (___) {
             }
 
 
-            if (node.nodeName === 'INPUT' && (node.getAttribute('type') || '').toLowerCase() == 'password' && node.value.length > 0){
+            if (node.nodeName === 'INPUT' && (node.getAttribute('type') || '').toLowerCase() == 'password' && node.value.length > 0) {
                 menu.append(
                     new $menuItem({
                         label: 'Show Password',
@@ -353,11 +353,14 @@ module.exports = function (___) {
     function add_a_menu(node, menu, doc, xwin) {
         if (!node) return
         if (node.nodeName === 'A' && node.getAttribute("href") && !node.getAttribute("href").startsWith("#")) {
-            let u = node.getAttribute("href")
-            if (u.indexOf('/') === 0) {
-                u = window.location.protocol + "//" + window.location.host + u
-            } else if (!u.like('http*') && !u.like('*.*.*') && !u.like('www.*')) {
-                u = window.location.protocol + "//" + window.location.host + u
+            let u = node.getAttribute("href").trim()
+
+            if (u.like('http*') || u.indexOf('//') === 0) {
+                u = u
+            } else if (u.indexOf('/') === 0) {
+                u = window.location.origin + u
+            } else if (u.split('?')[0].split('.').length < 3) {
+                u = window.location.origin + '/' + u
             }
 
             if (u.like('mailto:*')) {
@@ -388,7 +391,7 @@ module.exports = function (___) {
                 if (___.browser.var.session_list.length > 1) {
                     let arr = []
 
-                    if(___.browser.var.core.id.like('*master*')){
+                    if (___.browser.var.core.id.like('*master*')) {
                         arr.push({
                             label: ' in Trusted window',
                             click() {
@@ -484,7 +487,7 @@ module.exports = function (___) {
                         click() {
                             ___.browser.sendToMain('render_message', {
                                 name: 'open new tab',
-                                url:  "https://www.onlinevideoconverter.com/en/youtube-converter?url=" + u ,
+                                url: "https://www.onlinevideoconverter.com/gbr/youtube-converter?url=" + u,
                                 referrer: doc.location.href
                             })
                         }
@@ -842,7 +845,7 @@ module.exports = function (___) {
                     click() {
                         ___.browser.sendToMain('render_message', {
                             name: 'download-url',
-                            text: f.src
+                            url: f.src
                         })
                     }
                 })
@@ -895,7 +898,7 @@ module.exports = function (___) {
                     click() {
                         ___.browser.sendToMain('render_message', {
                             name: 'download-url',
-                            text: f.src
+                            url: f.src
                         })
                     }
                 })
@@ -992,7 +995,7 @@ module.exports = function (___) {
                             }
                         })
                     )
-                    if(v.src.like('http*')){
+                    if (v.src.like('http*')) {
                         menu.append(
                             new $menuItem({
                                 label: "Download playing video ",
@@ -1005,7 +1008,7 @@ module.exports = function (___) {
                             })
                         )
                     }
-                    
+
                     menu.append(
                         new $menuItem({
                             type: "separator"
@@ -1018,7 +1021,7 @@ module.exports = function (___) {
 
 
 
-    
+
 
 
         if (doc.location.href.like('*youtube.com/watch*v=*')) {
@@ -1044,7 +1047,7 @@ module.exports = function (___) {
                         ___.browser.sendToMain('render_message', {
                             name: 'open new tab',
                             referrer: doc.location.href,
-                            url: "https://www.onlinevideoconverter.com/en/youtube-converter?url=" + doc.location.href
+                            url: "https://www.onlinevideoconverter.com/gbr/youtube-converter?url=" + doc.location.href
                         })
                     }
                 }))
@@ -1118,22 +1121,22 @@ module.exports = function (___) {
     }
 
 
-    function getTableObject(selector){
+    function getTableObject(selector) {
 
         let table = {
-            selector : selector ,
-            headers : [],
-            rows : []
+            selector: selector,
+            headers: [],
+            rows: []
         }
 
-        document.querySelectorAll(`${selector} thead tr th`).forEach(th=>{
+        document.querySelectorAll(`${selector} thead tr th`).forEach(th => {
             table.headers.push(th.innerText)
         })
 
-        document.querySelectorAll(`${selector} tbody tr `).forEach(tr=>{
+        document.querySelectorAll(`${selector} tbody tr `).forEach(tr => {
             let row = []
 
-            tr.childNodes.forEach((td , i)=>{
+            tr.childNodes.forEach((td, i) => {
                 row[i] = td.innerText
             })
             table.rows.push(row)
@@ -1142,52 +1145,52 @@ module.exports = function (___) {
         return table
     }
 
-    function createTestMenu(menu){
+    function createTestMenu(menu) {
 
         let arr = []
 
 
-     
-            arr.push({
-                label: 'Desktop Sharing',
-                click() {
-                    ___.browser.sendToMain('render_message', {
-                        name: 'new_trusted_window',
-                        url: "http://127.0.0.1:60080/html/desktop.html",
-                        show: true
-                    })
-                }
-            })
-        
+
+        arr.push({
+            label: 'Desktop Sharing',
+            click() {
+                ___.browser.sendToMain('render_message', {
+                    name: 'new_trusted_window',
+                    url: "http://127.0.0.1:60080/html/desktop.html",
+                    show: true
+                })
+            }
+        })
+
 
         arr.push({
             label: ' Add All To Proxies',
             click() {
 
-               let table = getTableObject('#proxylisttable')
+                let table = getTableObject('#proxylisttable')
 
-                table.rows.forEach(row=>{
-                    let exists  =  false;
+                table.rows.forEach(row => {
+                    let exists = false;
 
                     let url = row[0] + ':' + row[1];
 
-                    ___.browser.var.proxy_list.forEach(p=>{
-                        if(p.url == url){
+                    ___.browser.var.proxy_list.forEach(p => {
+                        if (p.url == url) {
                             exists = true
                         }
                     })
 
-                    if(!exists){
+                    if (!exists) {
                         ___.browser.var.proxy_list.push({
-                            url : url,
-                            name :url + ' ,  Country : ' + row[3] + ' , Https : ' + row[6]
+                            url: url,
+                            name: url + ' ,  Country : ' + row[3] + ' , Https : ' + row[6]
                         })
                     }
                 })
 
                 ___.browser.sendToMain('render_message', {
                     name: 'set_var',
-                    key : 'proxy_list',
+                    key: 'proxy_list',
                     value: ___.browser.var.proxy_list
                 })
 
@@ -1239,7 +1242,7 @@ module.exports = function (___) {
                     }
                 })
             )
-            
+
             menu.append(
                 new $menuItem({
                     label: "Translate",
@@ -1285,7 +1288,7 @@ module.exports = function (___) {
 
                     if (o.multi) {
                         let arr = []
-                        if(___.browser.var.core.id.like('*master*')){
+                        if (___.browser.var.core.id.like('*master*')) {
                             arr.push({
                                 label: ' in Trusted window',
                                 click() {
@@ -1298,7 +1301,7 @@ module.exports = function (___) {
                                 }
                             })
                         }
-                        
+
 
                         arr.push({
                             label: ' in New window',
@@ -1371,23 +1374,23 @@ module.exports = function (___) {
 
         }
 
-        
+
         if (___.browser.var.vip && ___.browser.var.vip.enabled) {
 
             let arr = []
             ___.browser.var.vip.list.forEach(v => {
-              
-                        arr.push({
-                            label: v.name,
-                            click() {
-                                ___.browser.sendToMain('render_message', {
-                                    name: 'new_trusted_window',
-                                    url: ___.browser.var.vip.server_url + v.url,
-                                    referrer: doc.location.href,
-                                    show: true
-                                })
-                            }
+
+                arr.push({
+                    label: v.name,
+                    click() {
+                        ___.browser.sendToMain('render_message', {
+                            name: 'new_trusted_window',
+                            url: ___.browser.var.vip.server_url + v.url,
+                            referrer: doc.location.href,
+                            show: true
                         })
+                    }
+                })
             })
 
             if (arr.length > 0) {
@@ -1398,12 +1401,12 @@ module.exports = function (___) {
                 }))
             }
 
-       
 
-        menu.append(
-            new $menuItem({
-                type: "separator"
-            }))
+
+            menu.append(
+                new $menuItem({
+                    type: "separator"
+                }))
 
         }
 
@@ -1486,7 +1489,7 @@ module.exports = function (___) {
                 })
             )
         }
-      
+
         if (___.browser.var.context_menu.dev_tools) {
             menu.append(
                 new $menuItem({
@@ -1499,7 +1502,7 @@ module.exports = function (___) {
             )
         }
 
-        if(___.browser.var.core.id.like('*test*')){
+        if (___.browser.var.core.id.like('*test*')) {
             createTestMenu(menu)
         }
 
@@ -1514,7 +1517,7 @@ module.exports = function (___) {
                 }
             })
         )
-      
+
 
         return menu
     }
@@ -1535,7 +1538,7 @@ module.exports = function (___) {
 
             let node = e.target;
 
-            if(!!node.oncontextmenu){
+            if (!!node.oncontextmenu) {
                 return
             }
 
