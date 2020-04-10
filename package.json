@@ -2,7 +2,7 @@
   "name": "social_browser",
   "productName": "Social Browser",
   "homepage": "https://social-browser.com",
-  "version": "2019.12.01",
+  "version": "2020.04.10",
   "description": "Browsing Any Site with  Multi Users And without Ads",
   "author": {
     "name": "Social Developer",
@@ -22,7 +22,7 @@
   "build": {
     "productName": "Social Browser",
     "appId": "com.social.browser",
-    "copyright": "@2019 Social Developer",
+    "copyright": "@2020 Social Developer",
     "target": "NSIS",
     "files": [
       "**/*",
@@ -64,12 +64,12 @@
   },
   "license": "ISC",
   "dependencies": {
-    "ibrowser": "*",
-    "isite": "^1.13.27",
+    "ibrowser":"*",
+    "isite": "^1.13.33",
     "jquery": "*"
   },
   "devDependencies": {
-    "electron": "^7.1.7",
+    "electron": "^8.1.1",
     "electron-builder": "^21.2.0",
     "gulp": "*"
   }

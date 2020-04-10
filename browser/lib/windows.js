@@ -15,6 +15,7 @@ module.exports = function init(browser) {
 
     
     var view = browser.getView(this.id)
+   
 
     if (event.url) {
       if (event.url.like('https://www.youtube.com/watch*')) {
@@ -46,8 +47,6 @@ module.exports = function init(browser) {
 
     let url_p = browser.url.parse(event.options.url)
     let url2_p = browser.url.parse(this.getURL())
-
-
 
     if (url_p.host === url2_p.host && browser.var.popup.internal) {
       browser.sendToRender('render_message', {
@@ -587,9 +586,9 @@ module.exports = function init(browser) {
     options.webPreferences = options.webPreferences || {}
 
     options.x = options.x || 200
-    options.x = options.x > 1200 ? 200 : options.x
+   // options.x = options.x > 1200 ? 200 : options.x
     options.y = options.y || 200
-    options.y = options.y > 600 ? 200 : options.y
+   // options.y = options.y > 600 ? 200 : options.y
 
     if (!options.partition && !options.webPreferences.partition) {
       options.partition = browser.current_view.partition
@@ -674,7 +673,7 @@ module.exports = function init(browser) {
     options.width = 420
     options.height = 280
     options.x = width - 430,
-      options.y = height - 310
+    options.y = height - 310
     options.alwaysOnTop = true
     options.disableEvents = true
     options.backgroundColor = '#030303'

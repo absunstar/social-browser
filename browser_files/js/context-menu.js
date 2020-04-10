@@ -3,11 +3,9 @@
     
     var $social_browser = {}
     var $is_dom_ready = false
-    $social_browser.browser = require('ibrowser')();
+    $social_browser.browser = require('ibrowser')({is_render : true});
 
   
-
-
     require($social_browser.browser.files_dir + '/js/context-menu/init.js')($social_browser)
     require($social_browser.browser.files_dir + '/js/context-menu/custom.js')($social_browser)
     require($social_browser.browser.files_dir + '/js/context-menu/fn.js')($social_browser)
@@ -44,25 +42,16 @@
         document.body.appendChild(__downloads);
     
 
-        window.__is_white_site = false
-        $social_browser.browser.var.white_list = $social_browser.browser.var.white_list ||[]
-        $social_browser.browser.var.white_list.forEach(s=>{
-            if(document.location.href.like(s.url)){
-                window.__is_white_site = true
-            }
-        })
-
-      
         require($social_browser.browser.files_dir + '/js/context-menu/doms.js')($social_browser)
         require($social_browser.browser.files_dir + '/js/context-menu/iframes.js')($social_browser)
         require($social_browser.browser.files_dir + '/js/context-menu/safty.js')($social_browser)
 
-        if ($social_browser.browser.setting.youtube.enabled && document.location.href.toLowerCase().like('https://www.youtube.com*')) {
+        if ($social_browser.browser.var.youtube.enabled && document.location.href.toLowerCase().like('https://www.youtube.com*')) {
             
             require($social_browser.browser.files_dir + '/js/context-menu/youtube.com.js')($social_browser)
         }
 
-        if ($social_browser.browser.setting.facebook.enabled && document.location.href.toLowerCase().like('https://www.facebook.com*')) {
+        if ($social_browser.browser.var.facebook.enabled && document.location.href.toLowerCase().like('https://www.facebook.com*')) {
             
             require($social_browser.browser.files_dir + '/js/context-menu/facebook.com.js')($social_browser)
         }

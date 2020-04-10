@@ -1,13 +1,13 @@
 module.exports = function (browser) {
     const fs = require('fs')
 
-   
 
-    browser.mkdirSync = function(path){
+
+    browser.mkdirSync = function (path) {
         try {
             fs.mkdirSync(path)
         } catch (error) {
-            
+            console.log(error.message)
         }
     }
 
@@ -34,9 +34,14 @@ module.exports = function (browser) {
     }
 
     browser.deleteFileSync = function (path) {
-        if (fs.existsSync(path)) {
-            return fs.unlinkSync(path)
+        try {
+            if (fs.existsSync(path)) {
+                return fs.unlinkSync(path)
+            }
+        } catch (error) {
+            return null
         }
+
         return null
     }
 

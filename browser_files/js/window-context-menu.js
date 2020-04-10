@@ -10,7 +10,7 @@
     }
 
 
-    var browser = browser || require('ibrowser')()
+    var browser = browser || require('ibrowser')({is_render : true})
     const electron = browser.electron
     const remote = electron.remote
     const {

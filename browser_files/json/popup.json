@@ -1,18 +1,24 @@
 {
-    "external" : false,
-    "internal" : true,
-    "ignore_urls" : [
+    "external": false,
+    "internal": true,
+    "ignore_urls": [
         {
-            "url" : "*facebook.com*"
+            "url": "*facebook.com*"
         },
         {
-            "url" : "*google.com*"
+            "url": "*google.com*"
         },
         {
-            "url" : "*youtube.com*"
+            "url": "*youtube.com*"
         },
         {
-            "url" : "*microsoft.com*"
+            "url": "*microsoft.com*"
+        },
+        {
+            "url": "*linkedin.com*"
+        },
+        {
+            "url": "127.0.0.1"
         }
     ]
 }

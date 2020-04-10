@@ -1,6 +1,7 @@
 module.exports = function (___) {
     let rightClickPosition = null
     let $menuItem = ___.browser.electron.remote.MenuItem
+    let webFrame = ___.browser.electron.webFrame
     let full_screen = false;
 
     // var change_event = doc.createEvent("HTMLEvents");
@@ -35,12 +36,15 @@ module.exports = function (___) {
         which: 13
     });
 
-
+    function isContentEditable(node) {
+        if (node.contentEditable) return true;
+        return node.parentNode && isContentEditable(node.parentNode);
+    }
     function add_input_menu(node, menu, doc, xwin) {
         if (!node) return
 
 
-        if (node.nodeName === 'INPUT' || node.contentEditable == true) {
+        if (node.nodeName === 'INPUT' || isContentEditable(node)) {
 
             let arr1 = []
             let arr2 = []
@@ -59,14 +63,14 @@ module.exports = function (___) {
                             arr1.push({
                                 label: d.value,
                                 click() {
-                                    node.value = d.value
+                                    node.nodeName === 'INPUT' ? node.value = d.value : node.innerHTML = d.value
                                     node.dispatchEvent(change_event);
                                 }
                             })
                             arr2.push({
                                 label: d.value,
                                 click() {
-                                    node.value = d.value
+                                    node.nodeName === 'INPUT' ? node.value = d.value : node.innerHTML = d.value
                                     dd.data.forEach(d2 => {
                                         if (d2.type == 'hidden' || d2.type == 'submit') {
                                             return
@@ -80,8 +84,7 @@ module.exports = function (___) {
                                         }
 
                                         if (e1) {
-
-                                            e1.value = d2.value
+                                            e1.nodeName === 'INPUT' ? e1.value = d2.value : e1.innerHTML = d2.value
                                             e1.dispatchEvent(change_event);
                                         }
                                     })
@@ -105,7 +108,7 @@ module.exports = function (___) {
                                 label: d.value,
                                 click() {
 
-                                    node.value = d.value
+                                    node.nodeName === 'INPUT' ? node.value = d.value : node.innerHTML = d.value
                                     node.dispatchEvent(change_event);
                                 }
                             })
@@ -113,7 +116,7 @@ module.exports = function (___) {
                             arr2.push({
                                 label: d.value,
                                 click() {
-                                    node.value = d.value
+                                    node.nodeName === 'INPUT' ? node.value = d.value : node.innerHTML = d.value
                                     dd.data.forEach(d2 => {
                                         if (d2.type == 'hidden' || d2.type == 'submit') {
                                             return
@@ -127,8 +130,7 @@ module.exports = function (___) {
                                         }
 
                                         if (e1) {
-
-                                            e1.value = d2.value
+                                            e1.nodeName === 'INPUT' ? e1.value = d2.value : e1.innerHTML = d2.value
                                             e1.dispatchEvent(change_event);
                                         }
                                     })
@@ -150,8 +152,7 @@ module.exports = function (___) {
                             arr1.push({
                                 label: d.value,
                                 click() {
-
-                                    node.value = d.value
+                                    node.nodeName === 'INPUT' ? node.value = d.value : node.innerHTML = d.value
                                     node.dispatchEvent(change_event);
                                 }
                             })
@@ -177,7 +178,7 @@ module.exports = function (___) {
                             arr1.push({
                                 label: d.value,
                                 click() {
-                                    node.value = d.value
+                                    node.nodeName === 'INPUT' ? node.value = d.value : node.innerHTML = d.value
                                     node.dispatchEvent(change_event);
                                 }
                             })
@@ -185,7 +186,7 @@ module.exports = function (___) {
                             arr2.push({
                                 label: d.value,
                                 click() {
-                                    node.value = d.value
+                                    node.nodeName === 'INPUT' ? node.value = d.value : node.innerHTML = d.value
                                     dd.data.forEach(d2 => {
                                         if (d2.type == 'hidden' || d2.type == 'submit') {
                                             return
@@ -199,8 +200,7 @@ module.exports = function (___) {
                                         }
 
                                         if (e1) {
-
-                                            e1.value = d2.value
+                                            e1.nodeName === 'INPUT' ? e1.value = d2.value : e1.innerHTML = d2.value
                                             e1.dispatchEvent(change_event);
                                         }
                                     })
@@ -213,8 +213,7 @@ module.exports = function (___) {
                             arr1.push({
                                 label: d.value,
                                 click() {
-
-                                    node.value = d.value
+                                    node.nodeName === 'INPUT' ? node.value = d.value : node.innerHTML = d.value
                                     node.dispatchEvent(change_event);
                                 }
                             })
@@ -222,7 +221,8 @@ module.exports = function (___) {
                             arr2.push({
                                 label: d.value,
                                 click() {
-                                    node.value = d.value
+                                    node.nodeName === 'INPUT' ? node.value = d.value : node.innerHTML = d.value
+
                                     dd.data.forEach(d2 => {
                                         if (d2.type == 'hidden' || d2.type == 'submit') {
                                             return
@@ -236,8 +236,7 @@ module.exports = function (___) {
                                         }
 
                                         if (e1) {
-
-                                            e1.value = d2.value
+                                            e1.nodeName === 'INPUT' ? e1.value = d2.value : e1.innerHTML = d2.value
                                             e1.dispatchEvent(change_event);
                                         }
                                     })
@@ -249,7 +248,7 @@ module.exports = function (___) {
                             arr1.push({
                                 label: d.value,
                                 click() {
-                                    node.value = d.value
+                                    node.nodeName === 'INPUT' ? node.value = d.value : node.innerHTML = d.value
                                     node.dispatchEvent(change_event);
                                 }
                             })
@@ -486,8 +485,8 @@ module.exports = function (___) {
                         label: "Download :: " + u,
                         click() {
                             ___.browser.sendToMain('render_message', {
-                                name: 'open new tab',
-                                url: "https://www.onlinevideoconverter.com/gbr/youtube-converter?url=" + u,
+                                name: 'new_window',
+                                url: u.replace('youtube', 'youtubepp'),
                                 referrer: doc.location.href
                             })
                         }
@@ -1045,9 +1044,9 @@ module.exports = function (___) {
                     label: "Download Playing youtube video",
                     click() {
                         ___.browser.sendToMain('render_message', {
-                            name: 'open new tab',
+                            name: 'new_window',
                             referrer: doc.location.href,
-                            url: "https://www.onlinevideoconverter.com/gbr/youtube-converter?url=" + doc.location.href
+                            url: doc.location.href.replace('youtube', 'youtubepp')
                         })
                     }
                 }))
@@ -1483,8 +1482,15 @@ module.exports = function (___) {
                 new $menuItem({
                     label: "Inspect Element",
                     click() {
-                        xwin.webContents.inspectElement(rightClickPosition.x,
-                            rightClickPosition.y)
+                        if (xwin.inspectElement) {
+                            xwin.inspectElement(rightClickPosition.x,
+                                rightClickPosition.y)
+                        } else if (xwin.webContents.inspectElement) {
+                            xwin.webContents.inspectElement(rightClickPosition.x,
+                                rightClickPosition.y)
+                        }
+
+
                     }
                 })
             )
@@ -1496,7 +1502,11 @@ module.exports = function (___) {
                     label: "Developer Tools",
                     accelerator: 'F12',
                     click() {
-                        xwin.webContents.openDevTools()
+                        if (xwin.openDevTools) {
+                            xwin.openDevTools()
+                        } else if (xwin.webContents.openDevTools) {
+                            xwin.webContents.openDevTools()
+                        }
                     }
                 })
             )
@@ -1511,8 +1521,7 @@ module.exports = function (___) {
                 label: "Browser Setting",
                 click() {
                     ___.browser.sendToMain('render_message', {
-                        name: 'open new tab',
-                        url: 'http://127.0.0.1:60080/setting',
+                        name: 'show setting'
                     })
                 }
             })
@@ -1528,9 +1537,13 @@ module.exports = function (___) {
 
         doc.addEventListener('contextmenu', (e) => {
 
+            let factor = webFrame.getZoomFactor();
+            let x = Math.round(e.x * factor);
+            let y = Math.round(e.y * factor);
+
             rightClickPosition = {
-                x: e.x,
-                y: e.y
+                x: x,
+                y: y
             }
 
             e.preventDefault();

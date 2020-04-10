@@ -226,9 +226,11 @@ class SocialTabs {
     }
 
     if (!tabProperties.partition || !tabProperties.user_name) {
+    
+      
       sendToMain({
         name: 'open new tab',
-        url: tabProperties.url,
+        url: tabProperties.url || defaultTapProperties.url,
         source: 'session'
       })
       return;

@@ -93,6 +93,8 @@ browser.mainWindow = mainWindow
 
 const gotTheLock = app.requestSingleInstanceLock()
 
+app.allowRendererProcessReuse = true
+
 app.on('second-instance', (commandLine, workingDirectory) => {
   console.log('second-instance')
   if (mainWindow && mainWindow.webContents && !mainWindow.webContents.isDestroyed()) {
@@ -164,9 +166,9 @@ browser.on("message", function (event, data) {
 })
 
 
-app.setPath('userData', browser.path.join(process.cwd(), '/../social-data', 'default'))
+app.setPath('userData', browser.path.join(browser.data_dir, 'default'))
 
-browser.allow_widevinecdm()
+// browser.allow_widevinecdm(app)
 
 if (app.setUserTasks) {
   app.setUserTasks([])
@@ -204,6 +206,7 @@ app.on("ready", function () {
   
   }, 1000 * 60 * 5);
 
+  browser.var.cookies = browser.var.cookies || []
   browser.var.session_list.forEach(s1 => {
     let ss = browser.session.fromPartition(s1.name)
     ss.cookies.get({}).then(cookies=> {

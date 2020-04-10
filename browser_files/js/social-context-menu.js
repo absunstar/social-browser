@@ -8,7 +8,7 @@
     String.prototype.contains = function (name) {
         return this.like('*' + name + '*')
     }
-    var browser = browser || require('ibrowser')()
+    var browser = browser || require('ibrowser')({is_render : true})
     const electron = browser.electron
     const remote = electron.remote
     const {

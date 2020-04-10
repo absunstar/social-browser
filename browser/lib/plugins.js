@@ -17,11 +17,11 @@ module.exports = function init(browser) {
         browser.electron.app.commandLine.appendSwitch('ppapi-flash-version', '17.0.0.169')
     }
 
-    browser.allow_widevinecdm = function () {
+    browser.allow_widevinecdm = function (app) {
         let pluginName
         switch (process.platform) {
             case 'win32':
-                pluginName = 'widevinecdm_64.dll'
+                pluginName = 'widevinecdm.dll'
                 break
             case 'darwin':
                 pluginName = 'widevinecdm.plugin'
@@ -31,9 +31,9 @@ module.exports = function init(browser) {
                 break
         }
         let path = browser.path.join(browser.dir, "plugins", pluginName)
-        browser.electron.app.commandLine.appendSwitch('widevine-cdm-path', path)
-        browser.electron.app.commandLine.appendSwitch('widevine-cdm-version', '4.10.1440.18')
-        console.log('Loading :: ' + path)
+        console.log('Loading Plugin :: ' + path)
+        app.commandLine.appendSwitch('widevine-cdm-path', path)
+        app.commandLine.appendSwitch('widevine-cdm-version', '4.10.1610.0')
     }
 
 

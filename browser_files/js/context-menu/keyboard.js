@@ -26,7 +26,7 @@ module.exports = function (___) {
       
         if (e.keyCode == 123 /*f12*/ ) {
             ___.browser.sendToMain('render_message', {
-                name: 'DeveloperTools',
+                name: 'Developer Tools',
                 win_id: $window.id
             })
         } else if (e.keyCode == 122 /*f11*/ ) {

@@ -4,7 +4,7 @@ module.exports = function (___) {
 
     let iframes = []
 
-    function setIframeContextMenu(){
+    function setIframeContextMenu() {
         let iframe_list = document.querySelectorAll("iframe , frame")
         let frame_list = document.querySelectorAll("frame")
 
@@ -20,8 +20,12 @@ module.exports = function (___) {
                     iframes.push(f)
                     f.addEventListener("load", function () {
                         let doc = null
-                        if (doc = this.contentWindow.document) {
-                            window.___activate_context_menu(doc, this.contentWindow);
+                        try {
+                            if (doc = this.contentWindow.document) {
+                                window.___activate_context_menu(doc, this.contentWindow);
+                            }
+                        } catch (error) {
+                            console.log(error)
                         }
 
                     })
@@ -29,10 +33,10 @@ module.exports = function (___) {
             })
         }
 
-      
+
         if (frame_list.length > 0) {
             frame_list.forEach(f => {
-                f.setAttribute('preload' , ___.browser.files_dir + '/js/window-context-menu.js')
+                f.setAttribute('preload', ___.browser.files_dir + '/js/window-context-menu.js')
             })
         }
 
@@ -48,7 +52,7 @@ module.exports = function (___) {
     function removeExternalIframes() {
 
         console.log('try removing external iframes ...')
-        if(document.location.href.like('*youtube.com*')){
+        if (document.location.href.like('*youtube.com*')) {
             return false
         }
 

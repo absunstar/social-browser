@@ -24,12 +24,17 @@
             "ex_url": "*openload.co*",
             "url": "*",
             "hide": false,
-            "select": "[class*='_ad_']",
+            "select": "[class*='_ad_'],[class=\"e3lanblock\"]",
             "remove": true
         },
         {
             "select": ".video-masthead-v2,#watch7-sidebar-ads,#masthead-ad",
             "url": "*www.youtube.com*",
+            "remove": true
+        },
+        {
+            "select": "#sidebar",
+            "url": "*milfzr.com*",
             "remove": true
         }
     ],
@@ -159,6 +164,9 @@
         },
         {
             "url": "*omapetor.xyz*"
+        },
+        {
+            "url": "*n214adserv.com*"
         }
     ],
     "un_safe_links": [

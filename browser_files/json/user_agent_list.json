@@ -1,8 +1,8 @@
 [
     {
-        "url": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36",
-        "name": "Windows Chrome 79",
-        "$display": "Windows Chrome 79 "
+        "url": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36",
+        "name": "Windows Chrome 80",
+        "$display": "Windows Chrome 80 "
     },
     {
         "url": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:66.0) Gecko/20100101 Firefox/66.0",

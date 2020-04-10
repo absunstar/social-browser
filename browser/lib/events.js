@@ -12,12 +12,12 @@ module.exports = function (browser) {
     browser.getView = function (id) {
         for (let i = 0; i < browser.views.length; i++) {
             if (browser.views[i].id == id) {
+                console.log(browser.views[i])
                 return browser.views[i]
             }
         }
-        return {
-            id: 0
-        }
+        console.log(browser.current_view)
+        return browser.current_view
     }
 
     function hideOthersViews() {
@@ -200,7 +200,7 @@ module.exports = function (browser) {
                     })()
                     `, false)
                 }
-            } else if (info.name == 'developer tools') {
+            } else if (info.name == 'Developer Tools') {
                 info.win_id = info.win_id || browser.current_view.id
                 let win = BrowserWindow.fromId(info.win_id)
                 if (win) {

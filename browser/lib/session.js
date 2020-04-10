@@ -53,14 +53,17 @@ module.exports = function (browser) {
 
 
         if (browser.var.internet_speed.type == 'custom') {
+          console.log('enableNetworkEmulation custom ' + s1.name)
           ss.enableNetworkEmulation({
             latency: browser.var.internet_speed.latency,
             downloadThroughput: browser.var.internet_speed.download / 8 * 1024,
-            uploadThroughput:browser.var.internet_speed.upload / 8 * 1024
+            uploadThroughput: browser.var.internet_speed.upload / 8 * 1024
           })
-        } else if (browser.var.internet_speed.type == 'offline'){
-          ss.enableNetworkEmulation({offline: true})
-        }else{
+        } else if (browser.var.internet_speed.type == 'offline') {
+          console.log('enableNetworkEmulation offline ' + s1.name)
+          ss.enableNetworkEmulation({offline: true, latency: 0, downloadThroughput: -1, uploadThroughput: -1})
+        } else {
+          console.log('disableNetworkEmulation ' + s1.name)
           ss.disableNetworkEmulation()
         }
 
@@ -86,24 +89,24 @@ module.exports = function (browser) {
 
         if (is_new_session) {
 
-          ss.protocol.registerHttpProtocol("browser", (request, callback)=> {
-              let url = request.url.substr(10)
-              url = `http://127.0.0.1:60080/${url}`
-              request.url = url
-              callback(request)
-              // callback({
-              //   url : request.url,
-              //   method : request.method,
-              //   session : request.session,
-              //   uploadData : request.uploadData 
-              // })
-            })
+          ss.protocol.registerHttpProtocol("browser", (request, callback) => {
+            let url = request.url.substr(10)
+            url = `http://127.0.0.1:60080/${url}`
+            request.url = url
+            callback(request)
+            // callback({
+            //   url : request.url,
+            //   method : request.method,
+            //   session : request.session,
+            //   uploadData : request.uploadData 
+            // })
+          })
 
-        
+
 
           const filter = {
-            urls : ["*://*/*"]
-        }
+            urls: ["*://*/*"]
+          }
 
           let ids = []
 
@@ -316,26 +319,26 @@ module.exports = function (browser) {
             delete details.responseHeaders['Content-Security-Policy']
             delete details.responseHeaders['Content-Security-Policy-Report-Only']
             delete details.responseHeaders['x-content-type-options']
-           
+
             callback({
-              cancel : false,
-              responseHeaders :  {
+              cancel: false,
+              responseHeaders: {
                 ...details.responseHeaders
               },
-              statusLine : details.statusLine
+              statusLine: details.statusLine
             })
           })
           ss.webRequest.onResponseStarted(filter, function (details) {
-           
+
           })
           ss.webRequest.onBeforeRedirect(filter, function (details) {
-           
+
           })
           ss.webRequest.onCompleted(filter, function (details) {
-           
+
           })
           ss.webRequest.onErrorOccurred(filter, function (details) {
-           
+
           })
 
 
@@ -356,10 +359,10 @@ module.exports = function (browser) {
           })
 
           ss.on('will-download', (event, item, webContents) => {
-            console.log('session will-download')
+            console.log(' [ session will-download ] ')
 
-            if (browser.var.downloader.enabled) {
-              if (browser.site.isFileExistsSync(browser.var.downloader.app) && !item.getURL().like('blob*')) {
+            if (browser.var.downloader.enabled && !item.getURL().like('*127.0.0.1*') && !item.getURL().like('blob*')) {
+              if (browser.site.isFileExistsSync(browser.var.downloader.app) ) {
                 event.preventDefault()
 
                 let dl = {
@@ -392,7 +395,7 @@ module.exports = function (browser) {
               }
             }
 
-            console.log('will-download ::::::::::')
+            console.log(' [ Bulit in will-download :::::::::: ] ')
             browser.views.forEach(v => {
               let win = BrowserWindow.fromId(v.id)
               if (win) {
@@ -549,17 +552,17 @@ module.exports = function (browser) {
                   buttons: ["Open File", "Open Folder", "Close"],
                   message: `Saved URL \n ${_url} \n To \n ${_path} `
                 }).then(
-                result => {
-                  console.log(result)
-                  browser.shell.beep()
-                  if (result.response == 1) {
-                    browser.shell.showItemInFolder(_path)
+                  result => {
+                    console.log(result)
+                    browser.shell.beep()
+                    if (result.response == 1) {
+                      browser.shell.showItemInFolder(_path)
+                    }
+                    if (result.response == 0) {
+                      browser.shell.openItem(_path)
+                    }
                   }
-                  if (result.response == 0) {
-                    browser.shell.openItem(_path)
-                  }
-                }
-              )
+                )
 
 
               } else {

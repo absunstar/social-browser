@@ -9,7 +9,9 @@
         return this.like('*' + name + '*')
     }
 
-    var browser = browser || require('ibrowser')()
+   
+
+    var browser = browser || require('ibrowser')({is_render : true})
     const electron = browser.electron
     const remote = electron.remote
     const {
@@ -21,7 +23,9 @@
     let currentWindow = remote.getCurrentWindow()
 
     require(browser.files_dir + '/js/context-menu/keyboard.js')({browser : browser});
-
+    function goURL(){
+      angular.element(document.getElementById('addressbar_id')).scope().goUrl();
+    }
 
     document.addEventListener('DOMContentLoaded', () => {
 

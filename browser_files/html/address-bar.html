@@ -75,7 +75,7 @@
             $('#addressbar_id').focus()
         }
 
-        var browser = browser || require('ibrowser')()
+        var browser = browser || require('ibrowser')({is_render : true})
 
         var app = angular.module('myApp', []);
 

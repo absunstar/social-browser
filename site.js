@@ -26,8 +26,8 @@ module.exports = function init_isite(browser) {
   site.loadLocalApp('client-side')
   site.loadLocalApp('charts')
 
-  require(site.dir + '/spiders/page-info.js')(site , browser)
-  require(site.dir + '/spiders/page-urls.js')(site , browser)
+  require(site.dir + '/spiders/page-info.js')(site, browser)
+  require(site.dir + '/spiders/page-urls.js')(site, browser)
 
   browser.site = site
 
@@ -135,12 +135,22 @@ module.exports = function init_isite(browser) {
 
   })
 
-
+  let export_busy = false
   site.get('/api/var/export', (req, res) => {
-
-    site.writeFileSync(site.options.download_dir + '/var.json', site.toJson(browser.var))
+    if(export_busy){
+      res.error()
+      return
+    }
+    export_busy= true
+    setTimeout(() => {
+      export_busy= false
+    }, 1000 * 5);
+    console.log('/api/var/export')
+    console.log(req.headers)
+    if(!req.headers.range){
+      site.writeFileSync(site.options.download_dir + '/var.json', site.toJson(browser.var))
+    }
     res.download(site.options.download_dir + '/var.json')
-
   })
 
   site.post('/api/var/import', (req, res) => {
@@ -157,20 +167,20 @@ module.exports = function init_isite(browser) {
 
     let v = site.fromJson(site.readFileSync(file.path))
     for (let k of Object.keys(v)) {
-      if(k == 'cookies'){
-        v[k].forEach(c=>{
+      if (k == 'cookies') {
+        v[k].forEach(c => {
           let ss = browser.session.fromPartition(c.name)
-          c.cookies.forEach(cookie=>{
+          c.cookies.forEach(cookie => {
             cookie.url = "";
-            if(cookie.secure){
+            if (cookie.secure) {
               cookie.url = "https://"
-            }else{
+            } else {
               cookie.url = "http://"
             }
-            if(cookie.domain.indexOf('.') === 0){
-              cookie.url +=  cookie.domain.replace('.' , '') + cookie.path
-            }else{
-                cookie.url +=  cookie.domain + cookie.path
+            if (cookie.domain.indexOf('.') === 0) {
+              cookie.url += cookie.domain.replace('.', '') + cookie.path
+            } else {
+              cookie.url += cookie.domain + cookie.path
             }
 
             ss.cookies.set(cookie).then(() => {
@@ -180,12 +190,12 @@ module.exports = function init_isite(browser) {
               console.error(error)
             })
           })
-         
+
         })
-      }else{
+      } else {
         browser.set_var(k, v[k])
       }
-     
+
     }
 
     browser.handleSessions()
@@ -271,7 +281,7 @@ module.exports = function init_isite(browser) {
 
 
   site.post('/saveImage', (req, res) => {
-    let file_name = process.cwd() + '/../social-data/logs/' + new Date().getTime()
+    let file_name = browser.data_dir + '/logs/' + new Date().getTime()
 
     let zip = null
     let d = req.data.imgBase64
@@ -300,7 +310,7 @@ module.exports = function init_isite(browser) {
   })
 
   site.post('/getLocalImages', (req, res) => {
-    let dir = process.cwd() + '/../social-data/logs'
+    let dir = browser.data_dir + '/logs'
     let arr = []
     site.fs.readdir(dir, (err, files) => {
       files.forEach(file => {
@@ -368,20 +378,30 @@ module.exports = function init_isite(browser) {
 
 
 
+  site.get('/api/cookies2', (req, res) => {
+
+    res.json(browser.var.cookies)
+
+  })
 
   site.get('/api/cookies', (req, res) => {
     let all_cookies = []
     browser.var.session_list = browser.var.session_list || []
+
     browser.var.session_list.forEach(s1 => {
       let ss = s1.name == null ? browser.session.defaultSession : browser.session.fromPartition(s1.name)
-      ss.cookies.get({}, (error, cookies) => {
-        if (!error) {
-          all_cookies.push({
-            name: s1.name,
-            cookies: cookies
-          })
-        }
+      ss.cookies.get({}).then(cookies => {
 
+        all_cookies.push({
+          name: s1.name,
+          cookies: cookies
+        })
+
+      }).catch(error => {
+        all_cookies.push({
+          name: s1.name,
+          cookies: []
+        })
       })
     })
 
@@ -395,7 +415,6 @@ module.exports = function init_isite(browser) {
       }, 100)
     }
     out()
-
 
   })
 

@@ -1,7 +1,7 @@
 window.setting = window.setting || {}
 
 const browser = require('ibrowser')({
-    render: true,
+    is_render: true,
     message: "IBROWSER From User Profiles"
   })
   
@@ -20,7 +20,7 @@ var app = app || angular.module('myApp', []);
 app.controller('mainController', ($scope, $http, $interval) => {
 
 
-    $scope.setting = {};
+    $scope.setting = {core : {} , session_list:[]};
    
 
     $scope.selectSession = function (_se) {
@@ -68,6 +68,12 @@ app.controller('mainController', ($scope, $http, $interval) => {
             url: 'http://127.0.0.1:60080/api/var/setting/session_list'
         }).then(function (response) {
             $scope.setting.session_list =  response.data.var.session_list;
+        });
+        $http({
+            method: 'GET',
+            url: 'http://127.0.0.1:60080/api/var/setting/core'
+        }).then(function (response) {
+            $scope.setting.core =  response.data.var.core;
         });
     }
 

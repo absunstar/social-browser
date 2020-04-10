@@ -1,8 +1,9 @@
 const browser = require('ibrowser')({
-  render: true,
+  is_render: true,
   message: "from social.html"
 })
 window._setting_ = browser.var
+
 const {
   remote,
   ipcRenderer
