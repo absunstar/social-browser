@@ -168,11 +168,13 @@ module.exports = function (browser) {
 
             if (!browser.var.core.enabled) {
               callback({
-                cancel: false
+                cancel: false,
+                requestHeaders: details.requestHeaders
               })
               return
             }
 
+            details.requestHeaders = details.requestHeaders || {}
             details.requestHeaders['x-browser'] = "social-browser";
             details.requestHeaders['DNT'] = "1";
             details.requestHeaders['User-Agent'] = details.requestHeaders['User-Agent'] || browser.var.core.user_agent;
@@ -189,7 +191,8 @@ module.exports = function (browser) {
               if (cancel) {
 
                 callback({
-                  cancel: true
+                  cancel: true,
+                  requestHeaders: details.requestHeaders
                 })
                 browser.sendToRender('user_info', {
                   message: 'un Safty List Blocked :: ' + details.url,
@@ -212,7 +215,8 @@ module.exports = function (browser) {
               if (cancel) {
 
                 callback({
-                  cancel: true
+                  cancel: true,
+                  requestHeaders: details.requestHeaders
                 })
                 browser.sendToRender('user_info', {
                   message: 'Black List Blocked :: ' + details.url,
@@ -257,7 +261,8 @@ module.exports = function (browser) {
 
             if (_allowRequest) {
               callback({
-                cancel: false
+                cancel: false,
+                requestHeaders: details.requestHeaders
               })
               return
             }
@@ -273,7 +278,8 @@ module.exports = function (browser) {
               if (cancel) {
 
                 callback({
-                  cancel: true
+                  cancel: true,
+                  requestHeaders: details.requestHeaders
                 })
                 browser.sendToRender('user_info', {
                   message: 'Ads List Blocked :: ' + details.url,
@@ -288,7 +294,8 @@ module.exports = function (browser) {
 
             if (cancel) {
               callback({
-                cancel: true
+                cancel: true,
+                requestHeaders: details.requestHeaders
               })
               browser.sendToRender('user_info', {
                 message: 'un Resone Blocked :: ' + details.url,

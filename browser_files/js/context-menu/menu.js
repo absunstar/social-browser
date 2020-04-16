@@ -37,9 +37,17 @@ module.exports = function (___) {
     });
 
     function isContentEditable(node) {
-        if (node.contentEditable) return true;
-        return node.parentNode && isContentEditable(node.parentNode);
+        if (node && node.contentEditable == 'true') {
+            return true;
+        }
+
+        if (node.parentNode) {
+            return isContentEditable(node.parentNode);
+        }
+
+        return false;
     }
+
     function add_input_menu(node, menu, doc, xwin) {
         if (!node) return
 

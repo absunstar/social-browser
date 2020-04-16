@@ -38,6 +38,7 @@
 
 ## Coming soon
 
+- Auto Update Ads , blocking , white site , ...
 - Multi-Profile [user-agent , proxy-setting , ...]
 - Login by external sites [ google , facebook , ....]
 - PC Browsing [ File Manager / FTP ] 
