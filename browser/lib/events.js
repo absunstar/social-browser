@@ -12,15 +12,23 @@ module.exports = function (browser) {
     browser.getView = function (id) {
         for (let i = 0; i < browser.views.length; i++) {
             if (browser.views[i].id == id) {
-                console.log(browser.views[i])
                 return browser.views[i]
             }
         }
-        console.log(browser.current_view)
         return browser.current_view
     }
-
-    function hideOthersViews() {
+    browser.showYoutubeWindows = function () {
+            browser.window_list.forEach(v => {
+                if (v.is_youtube) {
+                    let win = BrowserWindow.fromId(v.id)
+                    if (win && !win.isMinimized()) {
+                        win.setAlwaysOnTop(true)
+                        win.showInactive()
+                    }
+                }
+            })
+    }
+    browser.hideOthersViews = function () {
         browser.views.forEach(v => {
             if (browser.current_view.id != v.id) {
                 let win = BrowserWindow.fromId(v.id)
@@ -29,8 +37,9 @@ module.exports = function (browser) {
                 }
             }
         })
+
     }
-    browser.backAllViews = function(){
+    browser.backAllViews = function () {
         browser.views.forEach(v => {
             let win = browser.electron.BrowserWindow.fromId(v.id)
             if (win) {
@@ -46,6 +55,7 @@ module.exports = function (browser) {
 
 
             if (info.name == 'open new tab') {
+                console.log('event new tab fire')
                 info.win_id = info.win_id || browser.current_view.id
                 if (info.source == 'session') {
                     info.partition = info.partition || browser.var.core.session.name
@@ -99,7 +109,6 @@ module.exports = function (browser) {
                         properties: ["openFile", "createDirectory"]
                     }).then(result => {
                         if (result.canceled) {
-                            console.log(result)
                             return
                         }
                         win.webContents.printToPDF({}).then(data => {
@@ -248,16 +257,15 @@ module.exports = function (browser) {
             } else if (info.name == 'show addressbar') {
                 browser.showAddressbar(info)
             } else if (info.name == 'show setting') {
-                console.log('show setting')
-                let bounds = browser.mainWindow.getBounds()
-               let win = browser.newWindow({
-                    url: 'http://127.0.0.1:60080/setting',
-                    x: bounds.x + 50,
-                    y: 100,
-                    width: bounds.width - 100,
-                    height: bounds.height - 200,
-                    alwaysOnTop : true
-                })
+                // let bounds = browser.mainWindow.getBounds()
+                // let win = browser.newWindow({
+                //     url: 'http://127.0.0.1:60080/setting',
+                //     x: bounds.x + 25,
+                //     y: 20,
+                //     width: bounds.width - 50,
+                //     height: bounds.height - 50,
+                //     alwaysOnTop: true
+                // })
             } else if (info.name == 'show profiles') {
                 browser.showUserProfile()
             } else if (info.name == 'go back') {
@@ -276,7 +284,6 @@ module.exports = function (browser) {
                 browser.hideAddressbar()
             } else if (info.name == 'copy') {
                 browser.clipboard.writeText(info.text)
-                console.log('copy : ' + info.text)
             } else if (info.name == 'user-input') {
 
                 if (info.host == '127.0.0.1:60080') {
@@ -348,7 +355,6 @@ module.exports = function (browser) {
 
 
         ipcMain.on('new-view', (e, info) => {
-            console.log('new-view')
             if (browser.addressbarWindow) {
                 browser.addressbarWindow.hide()
             }
@@ -389,7 +395,7 @@ module.exports = function (browser) {
                     forward: win.webContents.canGoForward(),
                     back: win.webContents.canGoBack()
                 });
-                hideOthersViews()
+                // browser.hideOthersViews()
             }
 
             e.returnValue = win
@@ -398,10 +404,10 @@ module.exports = function (browser) {
 
         ipcMain.on('show-view', (e, info) => {
 
-            console.log('show-view')
             if (browser.addressbarWindow) {
                 browser.addressbarWindow.hide()
             }
+
             browser.views.forEach(v => {
                 let win = BrowserWindow.fromId(v.id)
                 if (win && v._id == info._id) {
@@ -432,7 +438,8 @@ module.exports = function (browser) {
                     e.returnValue = win
                 }
             })
-            hideOthersViews()
+
+            // browser.hideOthersViews()
         })
 
         ipcMain.on('update-view', (e, info) => {

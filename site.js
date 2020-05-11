@@ -372,7 +372,12 @@ module.exports = function init_isite(browser) {
         break
       }
     }
-
+    if (response.result.length == 0) {
+      response.result.push({
+        title : word,
+        url : word
+      })
+    }
     res.json(response)
   })
 

@@ -1,5 +1,5 @@
 body {
-    background: #3F51B5;
+    background: var(--social-current-tab-fill);
     overflow-x: hidden;
     margin: 3px;
 }
@@ -15,12 +15,12 @@ body {
     font-size: 16px;
     padding: 0px;
     padding-left: 10px;
-    color: #fff;
+    color: var(--color);
     margin: 0px;
     border-radius: 20px;
     outline: none;
     border: none;
-    background: #697de8;
+    background: var(--social-address-background);
 }
 
 
@@ -38,7 +38,7 @@ body {
 }
 
 .url-list ul {
-    max-height: 300px;
+    max-height: 350px;
     overflow-y: auto;
     background-color: #fff;
     color: #292929;

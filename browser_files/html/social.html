@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="browser://css/font-awesome.css">
   <link rel="stylesheet" href="browser://css/fonts.css">
   
-  <link rel="stylesheet" href="browser://css/social-tabs-custom-theme.css">
+  <link rel="stylesheet" href="browser://css/social-tabs-custom-theme2.css">
 
   <style>
 
@@ -67,13 +67,15 @@
   <div class="row social-address-bar2">
     <div id="window_actions">
      
-      <a class="go-back" onclick="sendToMain({name : 'go back'})" >
+      <a title="Go Back Page" class="go-back" onclick="sendToMain({name : 'go back'})" >
         <i class="fa fa-arrow-left"></i>
       </a>
-      <a class="go-forward"  onclick="sendToMain({name : 'go forward'})" >
+      <a title="Go Forward Page" class="go-forward"  onclick="sendToMain({name : 'go forward'})" >
         <i class="fa fa-arrow-right"></i>
       </a>
-
+      <a title="Reload All Page Files" onclick="sendToMain({name : 'reload'})" >
+        <i class="fa fa-refresh"></i>
+      </a>
       <div class="address-input pointer"  onclick="showURL()">
         <div class="https"></div>
         <div class="http"></div>
@@ -84,15 +86,11 @@
        
       </div>
 
-        <a title="Reload All Page Files" onclick="sendToMain({name : 'reload'})" >
-          <i class="fa fa-refresh"></i>
-        </a>
+       
   
-        <a title="Developer Tools" onclick="sendToMain({name : 'developer tools'})">
-          <i class="fa fa-cogs"></i>
-        </a>
+      
   
-        <a class="Page-audio" onclick="sendToMain({name : 'audio'})">
+        <a title="Mute Page Audio" class="Page-audio" onclick="sendToMain({name : 'audio'})">
           <i class="fa fa-volume-up"></i>
         </a>
   
@@ -111,8 +109,10 @@
         <a title="Downloads" onclick="showDownloads()" >
           <i class="fa fa-download"></i>
         </a>
-  
-        <a id="setting" onclick="sendToMain({name : 'show setting'})" >
+        <a title="Developer Tools" onclick="sendToMain({name : 'Developer Tools'})">
+          <i class="fa fa-bug"></i>
+        </a>
+        <a title="Show Setting" id="setting" onclick="sendToMain({name : 'show setting'})" >
             <i class="fa fa-cog"></i>
           </a>
           

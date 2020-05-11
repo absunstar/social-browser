@@ -1,4 +1,6 @@
 
+git config credential.helper store
+
 ```json
 
  "devDependencies": {

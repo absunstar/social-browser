@@ -1,6 +1,4 @@
 {
-    "enabled" : true,
-    "fast_open" : true,
     "skip_ads": true,
     "safty_mode": false,
     "blocking": {
@@ -34,13 +32,13 @@
                 "text": "*رقص*"
             },
             {
-                "text": "*سكس*"
+                "text": "*سكس*|*نيك*"
             },
             {
                 "text": "*جنس*"
             },
             {
-                "text": "*للكبار فقط*"
+                "text": "*للكبار*"
             },
             {
                 "text": "*ممنوع*"
@@ -61,7 +59,7 @@
                 "text": "*سافل*"
             },
             {
-                "text": "*ايتشى*|*ايتشي*|*echii*"
+                "text": "*ايتشى*|*ايتش��*|*echii*"
             },
             {
                 "text": "*هنتاى*|*هنتاي*|*hentia*|*hentai*"
@@ -71,5 +69,7 @@
             }
         ],
         "links": []
-    }
+    },
+    "enabled": true,
+    "fast_open": true
 }

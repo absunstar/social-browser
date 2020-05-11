@@ -458,7 +458,10 @@
                   <i-control ng-model="site.username"></i-control>
                 </td>
                 <td>
-                  <i-control ng-model="site.password"></i-control>
+                  <div class="row">
+                    <i-control type="password" ng-model="site.password"></i-control>
+                    <i-button label="copy" ng-click="copy(site.password)"></i-button>
+                  </div>
                 </td>
               </tr>
             </table>

@@ -20,7 +20,7 @@ module.exports = function (op) {
         browser.ready = true
     }
 
-    op = op || {}
+    browser.op = op || {}
 
     if (op.message) {
         console.log(op.message)
@@ -77,7 +77,7 @@ module.exports = function (op) {
                 browser.var.core.session = browser.var.session_list[0]
             }
             if (!browser.var.core.id) {
-                browser.var.id = '' + new Date().getTime() + '_' + Math.random()
+                browser.var.id = browser.op.package.version+ '_' + browser.op.md5(new Date().getTime() + '_' + Math.random())
                 browser.var.core.id = browser.var.id
                 browser.var.core.started_date = Date.now()
                 browser.set_var('core', browser.var.core)
@@ -145,7 +145,7 @@ module.exports = function (op) {
     
     browser.get_var('vip')
    
-    
+    browser.var['package'] = require( browser.dir + '/package.json')
 
     // if call from render mode only
     if (op.is_render) {

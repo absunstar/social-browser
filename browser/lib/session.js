@@ -85,7 +85,7 @@ module.exports = function (browser) {
         }
 
         ss.allowNTLMCredentialsForDomains('*')
-        ss.setUserAgent(browser.var.core.user_agent)
+        ss.userAgent = browser.var.core.user_agent
 
         if (is_new_session) {
 
@@ -152,6 +152,13 @@ module.exports = function (browser) {
               source_url = source_url.toLowerCase()
             }
 
+            details.requestHeaders = details.requestHeaders || {}
+            details.requestHeaders['x-browser'] = "social-browser";
+            //details.requestHeaders['DNT'] = "1";
+            details.requestHeaders['User-Agent'] = details.requestHeaders['User-Agent'] || browser.var.core.user_agent;
+            //details.requestHeaders['Referrer-Policy'] = 'no-referrer';
+
+
             if (url.like('browser*') || url.like('http://127.0.0.1*') || url.like('https://127.0.0.1*')) {
               exit = true
 
@@ -174,12 +181,7 @@ module.exports = function (browser) {
               return
             }
 
-            details.requestHeaders = details.requestHeaders || {}
-            details.requestHeaders['x-browser'] = "social-browser";
-            details.requestHeaders['DNT'] = "1";
-            details.requestHeaders['User-Agent'] = details.requestHeaders['User-Agent'] || browser.var.core.user_agent;
-            details.requestHeaders['Referrer-Policy'] = 'no-referrer';
-
+          
             if (browser.var.blocking.safty_mode) {
               browser.var.blocking.un_safe_links.forEach(s => {
                 if (url.like(s.url)) {
@@ -322,10 +324,10 @@ module.exports = function (browser) {
           })
 
           ss.webRequest.onHeadersReceived(filter, function (details, callback) {
-            delete details.responseHeaders['x-frame-options'] // sameorigin | deny
-            delete details.responseHeaders['Content-Security-Policy']
-            delete details.responseHeaders['Content-Security-Policy-Report-Only']
-            delete details.responseHeaders['x-content-type-options']
+            // delete details.responseHeaders['x-frame-options'] // sameorigin | deny
+            // delete details.responseHeaders['Content-Security-Policy']
+            // delete details.responseHeaders['Content-Security-Policy-Report-Only']
+            // delete details.responseHeaders['x-content-type-options']
 
             callback({
               cancel: false,

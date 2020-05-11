@@ -1,5 +1,10 @@
 [
     {
+        "url": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; ServiceUI 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.18363",
+        "name": "Windows Edge 64",
+        "$display": "Windows Edge 64 "
+    },
+    {
         "url": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36",
         "name": "Windows Chrome 80",
         "$display": "Windows Chrome 80 "
@@ -9,11 +14,7 @@
         "name": "Windows Firefox 66",
         "$display": "Windows Firefox 66 "
     },
-    {
-        "url": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.18363",
-        "name": "Windows Edge 64",
-        "$display": "Windows Edge 64 "
-    },
+  
     {
         "url": "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko",
         "name": "Windows internet explorer 11",

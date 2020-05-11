@@ -83,6 +83,21 @@ module.exports = function (___) {
                 })
             }
 
+            let title = document.querySelector('title')
+            if (title && document.location.href.like('*watch*')) {
+                setting.youtube.blocking.words.forEach(w => {
+                    if (title.innerText.toLowerCase().like(w.text)) {
+                        console.log(`Remove Video By title ${w}`)
+                        let body = document.querySelector('body')
+                        if(body){
+                            body.className = 'blurxxx'
+                        }
+                        title.innerText = "Youtube Safty Mode Activated"
+                        remove_current_youtube_video()
+                    }
+                })
+            }
+
 
             setTimeout(() => {
                 remove_unsafe_youtubes()

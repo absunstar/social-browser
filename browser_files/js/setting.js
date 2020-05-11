@@ -644,6 +644,13 @@ app.controller('mainController', ($scope, $http, $timeout) => {
       
     };
 
+    $scope.copy = function(text){
+        $$$.browser.ipcRenderer.send('render_message', {
+            name: 'copy',
+            text: text
+        });
+        alert('Password Copied !')
+    };
 
     $scope.loadSetting();
 

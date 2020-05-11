@@ -9,7 +9,9 @@ const tabTemplate = `
       <div class="social-tab-loading"></div>
       <div class="social-tab-favicon"></div>
       <div class="social-tab-title"></div>
-      <div class="social-tab-close pointer" title="Close Tab"></div>
+      <div class="social-tab-close pointer" title="Close Tab">
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'><path stroke='#5a5a5a' stroke-linecap='round' stroke-width='1.125' d='M4 4 L10 10 M10 4 L4 10'></path></svg>
+      </div>
     </div>
   `
 
@@ -236,6 +238,21 @@ class SocialTabs {
       return;
     }
 
+    if (tabProperties.url.like('http://127.0.0.1:60080*')){
+      let exists = false;
+      
+      document.querySelectorAll('.social-tab').forEach(tb=>{
+        if(tb.getAttribute('url') == tabProperties.url){
+          exists = true
+          this.setCurrentTab(tb)
+        }
+      })
+
+      if(exists){
+        return
+      }
+  }
+
     const tabEl = this.createNewTabEl()
 
     tabEl.classList.add('social-tab-just-added')
@@ -261,8 +278,10 @@ class SocialTabs {
     })
     if ($('.social-tab').length == 2){
         this.setCurrentTab(tabEl, tabProperties)
-    }
-    
+    }else  if (tabProperties.url.like('http://127.0.0.1:60080*')){
+      this.setCurrentTab(tabEl, tabProperties)
+  }
+  
     this.layoutTabs()
     this.fixZIndexes()
     this.setupDraggabilly()

@@ -251,22 +251,10 @@
     ],
     "un_safe_words": [
         {
-            "text": "sex"
+            "text": "*sex*|*porn*|erotic*"
         },
         {
-            "text": "سكس"
-        },
-        {
-            "text": "hot"
-        },
-        {
-            "text": "جنس"
-        },
-        {
-            "text": "porn"
-        },
-        {
-            "text": "erotic"
+            "text": "*سكس*|*جنس*"
         }
     ]
 }

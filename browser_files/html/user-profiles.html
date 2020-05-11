@@ -6,6 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="http://127.0.0.1:60080/x-css/site.css">
     <link rel="stylesheet" href="http://127.0.0.1:60080/x-css/theme_paper.css">
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/social-tabs-custom-theme2.css">
+
     <style>
     
 .user-box {
@@ -19,9 +21,11 @@
 }
 
 .user-box:hover {
-  background-color: #dddddd;
+  background-color: var(--social-background-color);
 }
-
+.user-box:hover p{
+  color: var(--social-current-tab-fill);
+}
 .user-box p {
     display: inline-block;
     font-size: 14px;

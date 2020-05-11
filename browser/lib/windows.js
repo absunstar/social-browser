@@ -8,14 +8,16 @@ module.exports = function init(browser) {
     ipcMain
   } = electron
 
+  browser.window_list = []
+
   function newWindowEvent(event, url, frameName, disposition, options, additionalFeatures) {
 
     event.preventDefault()
 
 
-    
+
     var view = browser.getView(this.id)
-   
+
 
     if (event.url) {
       if (event.url.like('https://www.youtube.com/watch*')) {
@@ -46,6 +48,27 @@ module.exports = function init(browser) {
 
 
     let url_p = browser.url.parse(event.options.url)
+    console.log('call new url from new window ' + event.options.url)
+
+    if (event.options.url.like('*##trusted_window##*')) {
+      browser.sendToRender('render_message', {
+        name: 'new_trusted_window',
+        url: event.options.url.replace('##trusted_window##' , ''),
+        show: true
+      })
+      return
+    }
+
+    if (event.options.url.like('*##new_window##*')) {
+      browser.sendToRender('render_message', {
+        name: 'new_window',
+        url: event.options.url.replace('##new_window##' , ''),
+        show: true
+      })
+      return
+    }
+
+
     let url2_p = browser.url.parse(this.getURL())
 
     if (url_p.host === url2_p.host && browser.var.popup.internal) {
@@ -85,12 +108,12 @@ module.exports = function init(browser) {
 
   }
 
-  browser.handleViewPosition = function(win){
-    if(!win){
+  browser.handleViewPosition = function (win) {
+    if (!win) {
       return
     }
     let view = browser.getView(win.id)
-    if(view.full_screen == true){
+    if (view.full_screen == true) {
       let display = browser.electron.screen.getPrimaryDisplay()
       let width = display.bounds.width
       let height = display.bounds.height
@@ -100,8 +123,8 @@ module.exports = function init(browser) {
         width: width,
         height: height
       })
-      
-    }else{
+
+    } else {
       let bounds = browser.mainWindow.getBounds()
       win.setBounds({
         x: browser.mainWindow.isMaximized() ? bounds.x + 8 : bounds.x,
@@ -109,9 +132,8 @@ module.exports = function init(browser) {
         width: browser.mainWindow.isMaximized() ? bounds.width - 15 : bounds.width - 2,
         height: browser.mainWindow.isMaximized() ? bounds.height - 84 : bounds.height - 72
       })
-      
     }
-    
+
   }
 
 
@@ -169,13 +191,14 @@ module.exports = function init(browser) {
 
     win.on('focus', function () {
 
-      if(browser.getView(win.id).full_screen){
+      if (browser.getView(win.id).full_screen) {
         win.setAlwaysOnTop(true)
         win.show()
-      }else{
+      } else {
         browser.mainWindow.setAlwaysOnTop(true)
+        browser.showYoutubeWindows()
       }
-     
+
 
     })
 
@@ -186,7 +209,7 @@ module.exports = function init(browser) {
     })
 
     win.setMenuBarVisibility(false)
-    
+
     if (options.url) {
       win.loadURL(options.url, {
         referrer: options.referrer
@@ -201,14 +224,14 @@ module.exports = function init(browser) {
       let view = browser.getView(win.id)
       view.full_screen = true
       browser.handleViewPosition(win)
-      if(browser.getView(win.id).full_screen){
+      if (browser.getView(win.id).full_screen) {
         win.setAlwaysOnTop(true)
         win.show()
-      }else{
+      } else {
         browser.mainWindow.setAlwaysOnTop(true)
       }
     })
- 
+
     win.on("leave-full-screen", e => {
       console.log('leave-full-screen')
       let view = browser.getView(win.id)
@@ -225,10 +248,10 @@ module.exports = function init(browser) {
       let view = browser.getView(win.id)
       view.html_full_screen = true
       browser.handleViewPosition(win)
-      if(browser.getView(win.id).full_screen){
+      if (browser.getView(win.id).full_screen) {
         win.setAlwaysOnTop(true)
         win.show()
-      }else{
+      } else {
         browser.mainWindow.setAlwaysOnTop(true)
       }
     })
@@ -253,7 +276,7 @@ module.exports = function init(browser) {
       }
     })
 
-    contents.on("update-target-url", (e , url) => {
+    contents.on("update-target-url", (e, url) => {
       contents.send('render_message', {
         name: 'update-target-url',
         url: decodeURI(url)
@@ -271,7 +294,7 @@ module.exports = function init(browser) {
         name: 'update-url',
         tab_id: tab_id,
         url: decodeURI(win.getURL())
-    })
+      })
 
       browser.mainWindow.webContents.send('render_message', {
         name: 'update-buttons',
@@ -298,13 +321,13 @@ module.exports = function init(browser) {
 
     })
 
-    contents.on("did-start-loading", (e , url) => {
-    
+    contents.on("did-start-loading", (e, url) => {
+
       browser.mainWindow.webContents.send('render_message', {
         name: 'update-url',
         tab_id: tab_id,
         url: decodeURI(win.getURL())
-    })
+      })
 
       browser.mainWindow.webContents.send('render_message', {
         name: 'show-loading',
@@ -439,7 +462,7 @@ module.exports = function init(browser) {
       parent: browser.mainWindow,
       show: false,
       width: 600,
-      height: 450,
+      height: 500,
       x: 90,
       y: 30,
       alwaysOnTop: true,
@@ -501,7 +524,7 @@ module.exports = function init(browser) {
     let bounds = browser.mainWindow.getBounds()
     browser.addressbarWindow.setBounds({
       width: bounds.y == -8 ? bounds.width - 100 : bounds.width - 95,
-      height: 400,
+      height: 500,
       x: bounds.x + 95,
       y: (bounds.y == -8 ? 0 : bounds.y - 5) + 30,
     })
@@ -586,9 +609,9 @@ module.exports = function init(browser) {
     options.webPreferences = options.webPreferences || {}
 
     options.x = options.x || 200
-   // options.x = options.x > 1200 ? 200 : options.x
+    // options.x = options.x > 1200 ? 200 : options.x
     options.y = options.y || 200
-   // options.y = options.y > 600 ? 200 : options.y
+    // options.y = options.y > 600 ? 200 : options.y
 
     if (!options.partition && !options.webPreferences.partition) {
       options.partition = browser.current_view.partition
@@ -622,6 +645,19 @@ module.exports = function init(browser) {
       }
     })
 
+    browser.window_list.push({
+      id: win.id,
+      is_youtube: options.title == 'Youtube' ? true : false,
+      partition: options.webPreferences.partition || options.partition
+    })
+
+    win.on('close', (e) => {
+      browser.window_list.forEach((v, i) => {
+        if (v.id == win.id) {
+          browser.window_list.splice(i, 1)
+        }
+      });
+    })
 
     if (options.max) {
       win.maximize()
@@ -673,7 +709,7 @@ module.exports = function init(browser) {
     options.width = 420
     options.height = 280
     options.x = width - 430,
-    options.y = height - 310
+      options.y = height - 310
     options.alwaysOnTop = true
     options.disableEvents = true
     options.backgroundColor = '#030303'
@@ -778,7 +814,7 @@ module.exports = function init(browser) {
 
   browser.newTrustedWindow = function (op) {
 
-    
+
     browser.mainWindow.setAlwaysOnTop(false)
     let w = new BrowserWindow({
       show: typeof op.show == 'undefined' ? false : op.show,
@@ -846,9 +882,6 @@ module.exports = function init(browser) {
       icon: (process.platform != 'darwin' && process.platform != 'win32') ? browser.path.join(browser.files_dir, "images", "logo.png") : browser.path.join(browser.files_dir, "images", "logo.ico")
     })
 
-    
-
-
 
     newWindow.setMenuBarVisibility(false)
     newWindow.maximize()
@@ -866,7 +899,6 @@ module.exports = function init(browser) {
       browser.views.forEach(v => {
         let win = BrowserWindow.fromId(v.id)
         browser.handleViewPosition(win)
-
       })
     })
     newWindow.on('unmaximize', function () {})

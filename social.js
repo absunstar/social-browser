@@ -61,9 +61,13 @@ process.on('warning', warning => {
 })
 
 
+var package = require('./package.json')
+var md5 = require('md5')
 
 const browser = require('ibrowser')({
-  is_main: true
+  is_main: true,
+  md5 : md5,
+  package :package
 })
 
 
@@ -92,7 +96,7 @@ browser.mainWindow = mainWindow
 
 
 const gotTheLock = app.requestSingleInstanceLock()
-
+// app.disableHardwareAcceleration()
 app.allowRendererProcessReuse = true
 
 app.on('second-instance', (commandLine, workingDirectory) => {

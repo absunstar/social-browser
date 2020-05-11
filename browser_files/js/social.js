@@ -246,9 +246,9 @@ function renderMessage(cm) {
     }
 
   } else if (cm.name == "show setting") {
-    // render_new_tab({
-    //   url: 'http://127.0.0.1:60080/setting'
-    // })
+    render_new_tab({
+      url: 'http://127.0.0.1:60080/setting'
+    })
   } else if (cm.name == "download-url") {
     browser.sendToMain("download-url", cm.url)
   } else if (cm.name == "downloads") {
@@ -287,21 +287,21 @@ function renderMessage(cm) {
 
 
     if (!cm.muted) {
-      $('.Page-audio i').css('color', '#fff')
+      $('.Page-audio i').css('color', '#4caf50')
     } else {
-      $('.Page-audio i').css('color', '#888888')
+      $('.Page-audio i').css('color', '#f44336')
     }
 
   } else if (cm.name == "update-buttons") {
     if (!cm.forward) {
-      $('.go-forward i').css('color', '#888888')
+      $('.go-forward i').css('color', '#9E9E9E')
     } else {
-      $('.go-forward i').css('color', '#fff')
+      $('.go-forward i').css('color', '#4caf50')
     }
     if (!cm.back) {
-      $('.go-back i').css('color', '#888888')
+      $('.go-back i').css('color', '#9E9E9E')
     } else {
-      $('.go-back i').css('color', '#fff')
+      $('.go-back i').css('color', '#4caf50')
     }
 
   } else if (cm.name == "update-url") {
