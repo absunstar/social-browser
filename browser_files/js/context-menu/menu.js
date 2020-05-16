@@ -1,7 +1,9 @@
 module.exports = function (___) {
-    let rightClickPosition = null
+    let rightClickPosition  = {}
     let $menuItem = ___.browser.electron.remote.MenuItem
     let webFrame = ___.browser.electron.webFrame
+    let webContents = ___.browser.remote.getCurrentWindow().webContents.getWebPreferences().partition
+    let partition = ___.browser.remote.getCurrentWindow().webContents.getWebPreferences().partition
     let full_screen = false;
 
     // var change_event = doc.createEvent("HTMLEvents");
@@ -1550,10 +1552,10 @@ module.exports = function (___) {
 
         doc.addEventListener('contextmenu', (e) => {
 
-            let factor = webFrame.zoomFactor;
+            let factor = ___.browser.remote.getCurrentWindow().webContents.zoomFactor || 1;
             let x = Math.round(e.x * factor);
             let y = Math.round(e.y * factor);
-
+            console.log(factor)
             rightClickPosition = {
                 x: x,
                 y: y
