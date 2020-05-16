@@ -27,13 +27,14 @@ module.exports = function init(site , browser) {
             return null
         }
 
-        console.log('Spider page-info >>> ' + info.url)
+        console.log('Spider page-info >>> ' + info.data.url)
 
          win = new BrowserWindow({
             show: false,
             width: 1200,
             height: 800,
             webPreferences: {
+                partition : info.data.partition,
                 webaudio : false,
                 enableRemoteModule: true,
                 contextIsolation: false,
@@ -50,7 +51,7 @@ module.exports = function init(site , browser) {
 
         win.webContents.audioMuted = true
 
-        win.loadURL(info.url)
+        win.loadURL(info.data.url)
 
         win.webContents.on('permissionrequest', function (e) {
             e.request.allow();
@@ -65,25 +66,24 @@ module.exports = function init(site , browser) {
         })
 
         win.once('ready-to-show', () => {
-           // win.show()
-        })
+            win.showInactive()
+       })
 
     }
 
     findPageInfo()
 
-    function tryFindPageInfo(url, res, js) {
+    function tryFindPageInfo(data, res) {
         search_list.push({
             win : null,
-            url: url,
+            data: data,
             res: res
         })
     }
 
     site.post('/api/page-info-spider', (req, res) => {
-        const url = req.data.url
-        if(url){
-            tryFindPageInfo(url, res)
+        if(req.data.url){
+            tryFindPageInfo(req.data, res)
         }else{
             res.json({done : false , error : 'No URL Requested'})
         }

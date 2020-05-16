@@ -232,7 +232,7 @@ app.on("ready", function () {
     })
 
     if (browser.setting.id.like('*updater*')) {
-      w.show()
+      w.showInactive()
     }
 
   }, 1000 * 10);

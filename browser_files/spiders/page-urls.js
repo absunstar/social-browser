@@ -20,12 +20,16 @@ module.exports = function init(site, browser) {
                 info.data = data
                 info.data.count = 0
                 info.data.match_url = info.option.match
+                info.data.not_match_url = info.option.not_match
                 for (let i = info.data.list.length - 1; i >= 0 ; i--) {
-                    if (!info.data.list[i].like(info.option.match)) {
+                    if (!info.data.list[i].like(info.data.match_url)) {
+                        info.data.list.splice(i, 1)
+                    }else if (info.data.not_match_url && info.data.list[i].like(info.data.not_match_url)) {
                         info.data.list.splice(i, 1)
                     }
                 }
                 info.data.match_url_count = info.data.list.length
+                info.data.option = info.option
                 if (info.res) {
                     info.res.json(info.data);
                 }
@@ -38,9 +42,8 @@ module.exports = function init(site, browser) {
     function findPageInfo(op, res) {
         console.log('[ .... Spider URLs in URL : ' + op.url + ' ... ]')
         let exists = false
-        let guid = site.md5(op.url+op.match)
         search_list.forEach(info => {
-            if (info.guid == guid) {
+            if (info.guid == op.guid) {
                 exists = true
                 info.data.count++
                 res.json(info.data)
@@ -52,7 +55,7 @@ module.exports = function init(site, browser) {
         }
 
         search_list.push({
-            guid : guid ,
+            guid : op.guid ,
             win_id: null,
             data: null,
             url: op.url,
@@ -65,6 +68,7 @@ module.exports = function init(site, browser) {
             width: 1200,
             height: 800,
             webPreferences: {
+                partition : op.partition,
                 webaudio: false,
                 enableRemoteModule: true,
                 contextIsolation: false,
@@ -91,7 +95,7 @@ module.exports = function init(site, browser) {
             console.log('... URLS window closed ...')
         })
         win.once('ready-to-show', () => {
-            // win.show()
+             win.showInactive()
         })
 
     }
@@ -100,7 +104,18 @@ module.exports = function init(site, browser) {
 
     site.post('/api/page-urls-spider', (req, res) => {
         const op = req.data
+        if(!op.url){
+            res.json({done : false , error : "Must Type URL"})
+            return
+        }
+        
+        op.not_match = op.not_match || ""
+        if(op.url.like('https://www.youtube.com*')){
+            op.match = op.match || "https://www.youtube.com/watch*"
+            op.not_match = op.not_match || "*list=*"
+        }
         op.match = op.match || "*"
+        op.guid = site.md5(op.url + op.match + op.not_match )
         findPageInfo(op, res)
     })
 

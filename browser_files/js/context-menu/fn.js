@@ -124,21 +124,35 @@
     })
 
 
+    function handle_url(u) {
+        u = u.trim()
+        if (u.like('http*') || u.indexOf('//') === 0) {
+            u = u
+        } else if (u.indexOf('/') === 0) {
+            u = window.location.origin + u
+        } else if (u.split('?')[0].split('.').length < 3) {
+            let page = window.location.pathname.split('/').pop()
+            u = window.location.origin + window.location.pathname.replace(page, "") + u
+        }
+        return u
+    }
+
 
      window.open = function (url, frameName, features) {
 
          if (!url) {
              return null
          }
-         if (url.startsWith('//')) {
-             url = document.location.protocol + url
-         }else if (url.startsWith('/')) {
-            url = document.location.protocol + '//' + document.location.host + url
-        }
+         url = handle_url(url)
 
-         if (!url.startsWith('http') && !url.startsWith('browser')) {
-             return null
-         }
+         if (url.like('https://www.youtube.com/watch*')) {
+            ___.browser.sendToMain('new-youtube-window', {
+                referrer: document.location.href,
+                url: url
+            })
+
+            return null
+        }
 
          let url_p = ___.browser.url.parse(url)
          let url2_p = ___.browser.url.parse(this.document.location.href)

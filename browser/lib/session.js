@@ -33,6 +33,7 @@ module.exports = function (browser) {
     let old_sessions = []
 
     browser.handleSessions = function () {
+      console.log('  Handleing Sessions       ')
       browser.var.session_list.push({})
       browser.var.session_list.forEach(s1 => {
 
@@ -155,7 +156,8 @@ module.exports = function (browser) {
             details.requestHeaders = details.requestHeaders || {}
             details.requestHeaders['x-browser'] = "social-browser";
             //details.requestHeaders['DNT'] = "1";
-            details.requestHeaders['User-Agent'] = details.requestHeaders['User-Agent'] || browser.var.core.user_agent;
+           
+            details.requestHeaders['User-Agent'] = ss.userAgent || browser.var.core.user_agent;
             //details.requestHeaders['Referrer-Policy'] = 'no-referrer';
 
 

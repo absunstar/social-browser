@@ -244,6 +244,7 @@ function renderMessage(cm) {
       browser.setting[k] = cm.var[k]
       _setting_[k] = cm.var[k]
     }
+    
 
   } else if (cm.name == "show setting") {
     render_new_tab({

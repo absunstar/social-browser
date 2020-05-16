@@ -172,6 +172,14 @@ module.exports = function (browser) {
                         muted: win.webContents.audioMuted
                     });
                 }
+            } else if (info.name == 'zoom') {
+                info.win_id = info.win_id || browser.current_view.id
+                let win = BrowserWindow.fromId(info.win_id)
+                if (win) {
+                    let view = browser.getView(win.id)
+                    view.zoom = 1
+                    win.webContents.zoomFactor = 1
+                }
             } else if (info.name == 'zoom+') {
                 info.win_id = info.win_id || browser.current_view.id
                 let win = BrowserWindow.fromId(info.win_id)

@@ -50,6 +50,14 @@ module.exports = function init(browser) {
     let url_p = browser.url.parse(event.options.url)
     console.log('call new url from new window ' + event.options.url)
 
+    if (event.options.url.like('*##new_tab##*')) {
+      browser.sendToRender('render_message', {
+        name: 'open new tab',
+        url: event.options.url.replace('##new_tab##' , '')
+      })
+      return
+    }
+
     if (event.options.url.like('*##trusted_window##*')) {
       browser.sendToRender('render_message', {
         name: 'new_trusted_window',

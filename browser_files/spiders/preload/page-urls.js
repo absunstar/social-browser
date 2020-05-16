@@ -1,8 +1,29 @@
+String.prototype.like = function matchRuleShort(rule) {
+    rule = rule.replace('.', '\.')
+    return new RegExp("^" + rule.split("*").join(".*") + "$", "giu").test(this);
+}
+
+String.prototype.contains = function (name) {
+    return this.like('*' + name + '*')
+}
+
 const {
     ipcRenderer,
     remote
 } = require('electron');
 
+function handle_url(u) {
+    u = u.trim()
+    if (u.like('http*') || u.indexOf('//') === 0) {
+        u = u
+    } else if (u.indexOf('/') === 0) {
+        u = window.location.origin + u
+    } else if (u.split('?')[0].split('.').length < 3) {
+        let page = window.location.pathname.split('/').pop()
+        u = window.location.origin + window.location.pathname.replace(page, "") + u
+    }
+    return u
+}
 
 window.addEventListener('load', () => {
 
@@ -17,7 +38,9 @@ window.addEventListener('load', () => {
     }
 
     setTimeout(() => {
-        let data = {timeout : timeout}
+        let data = {
+            timeout: timeout
+        }
 
         let image = document.querySelector('meta[property="og:image"]') ||
             document.querySelector('link[rel="icon"]')
@@ -39,10 +62,9 @@ window.addEventListener('load', () => {
         }
 
         let a_list = []
-        document.querySelectorAll('a').forEach(a => {
-            if (a.href.indexOf('/') === 0 && a.href.indexOf('//') !== 0) {
-                a.href = window.location.protocol + "//" + window.location.host + a.href
-            }
+        document.querySelectorAll('a[href]').forEach(a => {
+            a.href = handle_url(a.href)
+
             if (!a_list.includes(a.href)) {
                 a_list.push(a.href)
             }

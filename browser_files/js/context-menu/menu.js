@@ -357,18 +357,24 @@ module.exports = function (___) {
 
     }
 
+    function handle_url(u){
+        u = u.trim()
+        if (u.like('http*') || u.indexOf('//') === 0) {
+            u = u
+        } else if (u.indexOf('/') === 0) {
+            u = window.location.origin + u
+        } else if (u.split('?')[0].split('.').length < 3) {
+            let page = window.location.pathname.split('/').pop()
+            u = window.location.origin + window.location.pathname.replace(page , "") + u
+        }
+        return u
+    }
+
     function add_a_menu(node, menu, doc, xwin) {
         if (!node) return
         if (node.nodeName === 'A' && node.getAttribute("href") && !node.getAttribute("href").startsWith("#")) {
-            let u = node.getAttribute("href").trim()
-
-            if (u.like('http*') || u.indexOf('//') === 0) {
-                u = u
-            } else if (u.indexOf('/') === 0) {
-                u = window.location.origin + u
-            } else if (u.split('?')[0].split('.').length < 3) {
-                u = window.location.origin + '/' + u
-            }
+            let u = node.getAttribute("href")
+            u = handle_url(u)
 
             if (u.like('mailto:*')) {
                 let mail = u.replace('mailto:', '')
@@ -529,9 +535,8 @@ module.exports = function (___) {
         if (!node) return
         if (node.nodeName == "IMG" && node.getAttribute("src")) {
             let url = node.getAttribute("src")
-            if (url.indexOf('/') === 0) {
-                url = window.location.protocol + "//" + window.location.host + url
-            }
+            url = handle_url(url)
+           
             menu.append(
                 new $menuItem({
                     label: "Open image in new tab",
@@ -1545,7 +1550,7 @@ module.exports = function (___) {
 
         doc.addEventListener('contextmenu', (e) => {
 
-            let factor = webFrame.getZoomFactor();
+            let factor = webFrame.zoomFactor;
             let x = Math.round(e.x * factor);
             let y = Math.round(e.y * factor);
 

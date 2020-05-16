@@ -419,7 +419,8 @@ app.controller('mainController', ($scope, $http, $timeout) => {
                     })
                 }
                 if (close) {
-                    window.close();
+                    alert('Setting Saved ')
+                    /*window.close();*/
                     return false;
                 }
                 $scope.hideSetting();
