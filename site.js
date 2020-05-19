@@ -137,17 +137,17 @@ module.exports = function init_isite(browser) {
 
   let export_busy = false
   site.get('/api/var/export', (req, res) => {
-    if(export_busy){
+    if (export_busy) {
       res.error()
       return
     }
-    export_busy= true
+    export_busy = true
     setTimeout(() => {
-      export_busy= false
+      export_busy = false
     }, 1000 * 5);
     console.log('/api/var/export')
     console.log(req.headers)
-    if(!req.headers.range){
+    if (!req.headers.range) {
       site.writeFileSync(site.options.download_dir + '/var.json', site.toJson(browser.var))
     }
     res.download(site.options.download_dir + '/var.json')
@@ -183,14 +183,56 @@ module.exports = function init_isite(browser) {
               cookie.url += cookie.domain + cookie.path
             }
 
-            ss.cookies.set(cookie).then(() => {
-              // console.log('ok')
-            }, (error) => {
-              console.log(cookie)
-              console.error(error)
-            })
+            try {
+              ss.cookies.set(cookie).then(() => {
+                // console.log('ok')
+              }, (error) => {
+                console.log(cookie)
+                console.error(error)
+              })
+            } catch (error) {
+              console.log(error)
+            }
+            
+
           })
 
+        })
+      }else if (k == 'session_list') {
+        v[k].forEach(s1 => {
+          let exists = false
+          browser.var.session_list.forEach(s2 => {
+            if (s1.name == s2.name) {
+              exists = true
+            }
+          })
+          if(!exists){
+            browser.var.session_list.push(s1)
+          }
+        })
+      }else if (k == 'user_data_input') {
+        v[k].forEach(u1 => {
+          let exists = false
+          browser.var.user_data_input.forEach(u2 => {
+            if (u1.id == u2.id) {
+              exists = true
+            }
+          })
+          if(!exists){
+            browser.var.user_data_input.push(u1)
+          }
+        })
+      }else if (k == 'user_data') {
+        v[k].forEach(u1 => {
+          let exists = false
+          browser.var.user_data.forEach(u2 => {
+            if (u1.id == u2.id) {
+              exists = true
+            }
+          })
+          if(!exists){
+            browser.var.user_data.push(u1)
+          }
         })
       } else {
         browser.set_var(k, v[k])
@@ -374,8 +416,8 @@ module.exports = function init_isite(browser) {
     }
     if (response.result.length == 0) {
       response.result.push({
-        title : word,
-        url : word
+        title: word,
+        url: word
       })
     }
     res.json(response)

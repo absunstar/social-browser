@@ -1,5 +1,6 @@
 module.exports = function (___) {
 
+
     let setting = ___.browser.var
 
 
@@ -31,7 +32,13 @@ module.exports = function (___) {
 
     if (___.browser.var.blocking.doms) {
 
-        removeAdDoms()
+        document.addEventListener('DOMContentLoaded', () => {
+            removeAdDoms()
+        })
+        document.addEventListener('load', () => {
+            removeAdDoms()
+        })
+       
 
     }
 }

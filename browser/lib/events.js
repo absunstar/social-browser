@@ -299,6 +299,8 @@ module.exports = function (browser) {
                 }
 
                 let exists = false
+                browser.var.user_data_input = browser.var.user_data_input || []
+                browser.var.user_data =  browser.var.user_data || []
                 browser.var.user_data_input.forEach(u => {
 
                     if (u.id === info.id) {

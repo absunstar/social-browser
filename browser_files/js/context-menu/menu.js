@@ -414,6 +414,7 @@ module.exports = function (___) {
                                     name: 'new_trusted_window',
                                     url: o.url || doc.location.href,
                                     referrer: doc.location.href,
+                                    partition : partition,
                                     show: true
                                 })
                             }
@@ -427,6 +428,7 @@ module.exports = function (___) {
                                 name: 'new_window',
                                 url: u,
                                 referrer: doc.location.href,
+                                partition : partition ,
                                 show: true
                             })
                         }
@@ -492,6 +494,7 @@ module.exports = function (___) {
                             ___.browser.sendToMain('render_message', {
                                 name: 'mini_youtube',
                                 url: u,
+                                partition : partition ,
                                 referrer: doc.location.href
                             })
                         }
@@ -503,6 +506,7 @@ module.exports = function (___) {
                             ___.browser.sendToMain('render_message', {
                                 name: 'new_window',
                                 url: u.replace('youtube', 'youtubepp'),
+                                partition : partition,
                                 referrer: doc.location.href
                             })
                         }
@@ -840,6 +844,7 @@ module.exports = function (___) {
                     click() {
                         ___.browser.sendToMain('render_message', {
                             name: 'mini_iframe',
+                            partition : partition ,
                             url: f.src,
                             referrer: doc.location.href
                         })
@@ -893,6 +898,7 @@ module.exports = function (___) {
                     click() {
                         ___.browser.sendToMain('render_message', {
                             name: 'mini_video',
+                            partition : partition ,
                             url: f.src,
                             referrer: doc.location.href
                         })
@@ -929,6 +935,7 @@ module.exports = function (___) {
                     click() {
                         ___.browser.sendToMain('render_message', {
                             name: 'mini_video',
+                            partition : partition ,
                             url: f.src,
                             referrer: doc.location.href
                         })
@@ -1047,6 +1054,7 @@ module.exports = function (___) {
                     click() {
                         ___.browser.sendToMain('render_message', {
                             name: 'mini_youtube',
+                            partition : partition ,
                             url: doc.location.href,
                             referrer: doc.location.href
                         })
@@ -1060,6 +1068,7 @@ module.exports = function (___) {
                     click() {
                         ___.browser.sendToMain('render_message', {
                             name: 'new_window',
+                            partition : partition ,
                             referrer: doc.location.href,
                             url: doc.location.href.replace('youtube', 'youtubepp')
                         })
@@ -1087,6 +1096,7 @@ module.exports = function (___) {
                     click() {
                         ___.browser.sendToMain('render_message', {
                             name: 'mini_iframe',
+                            partition : partition ,
                             url: u,
                             referrer: doc.location.href
                         })
@@ -1098,6 +1108,7 @@ module.exports = function (___) {
                     click() {
                         ___.browser.sendToMain('render_message', {
                             name: 'open new tab',
+                            partition : partition ,
                             url: u.replace('embed', 'f'),
                             referrer: doc.location.href
                         })
@@ -1263,6 +1274,7 @@ module.exports = function (___) {
                     click() {
                         ___.browser.sendToMain('render_message', {
                             name: 'new_window',
+                            partition : partition ,
                             url: 'https://translate.google.com/?num=100&newwindow=1&um=1&ie=UTF-8&hl=en&client=tw-ob#auto/ar/' + encodeURIComponent(text)
                         })
                     }
@@ -1322,6 +1334,7 @@ module.exports = function (___) {
                             click() {
                                 ___.browser.sendToMain('render_message', {
                                     name: 'new_window',
+                                    partition : partition ,
                                     url: o.url || doc.location.href,
                                     referrer: doc.location.href,
                                     show: true
@@ -1555,7 +1568,7 @@ module.exports = function (___) {
             let factor = ___.browser.remote.getCurrentWindow().webContents.zoomFactor || 1;
             let x = Math.round(e.x * factor);
             let y = Math.round(e.y * factor);
-            console.log(factor)
+
             rightClickPosition = {
                 x: x,
                 y: y

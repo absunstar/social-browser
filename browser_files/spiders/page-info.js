@@ -49,6 +49,11 @@ module.exports = function init(site , browser) {
             }
         })
 
+        setTimeout(() => {
+            if(win){
+                win.close()
+            }
+        }, 1000 * 10);
         win.webContents.audioMuted = true
 
         win.loadURL(info.data.url)

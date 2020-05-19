@@ -64,8 +64,8 @@
   },
   "license": "ISC",
   "dependencies": {
-    "ibrowser":"*",
-    "isite": "^1.13.33",
+    "ibrowser": "*",
+    "isite": "^1.13.38",
     "jquery": "*"
   },
   "devDependencies": {

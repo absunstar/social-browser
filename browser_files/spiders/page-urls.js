@@ -95,7 +95,7 @@ module.exports = function init(site, browser) {
             console.log('... URLS window closed ...')
         })
         win.once('ready-to-show', () => {
-             win.showInactive()
+             //win.showInactive()
         })
 
     }

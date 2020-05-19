@@ -128,12 +128,10 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         $scope.dom = {};
     }
 
-    $scope.removeDom = function (_dom) {
-        $scope.setting.blocking.dom_selectors.forEach((dom, i) => {
-            if (dom.url === _dom.url) {
-                $scope.setting.blocking.dom_selectors.splice(i, 1);
-            }
-        });
+    $scope.removeDom = function (_dom, index) {
+
+        $scope.setting.blocking.dom_selectors.splice(index, 1);
+
     }
 
 
@@ -442,17 +440,17 @@ app.controller('mainController', ($scope, $http, $timeout) => {
 
     $scope.urls_sort_property = '-count';
 
-   /* $scope.loadUrls = function () {
+    /* $scope.loadUrls = function () {
 
 
-        if (typeof browser === 'object') {
-            browser.sendToMain('render_message', {
-                name: 'show addressbar',
-                url: $scope.url
-            })
-        }
+         if (typeof browser === 'object') {
+             browser.sendToMain('render_message', {
+                 name: 'show addressbar',
+                 url: $scope.url
+             })
+         }
 
-    }*/
+     }*/
 
     $scope.url_index = -1;
 
@@ -628,24 +626,24 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         });
     };
 
-    $scope.remove_url = function (site , url) {
-        if(site){
+    $scope.remove_url = function (site, url) {
+        if (site) {
             $scope.setting.urls.forEach((s, i) => {
                 if (s.url == site.url) {
                     $scope.setting.urls.splice(i, 1);
                 }
             });
-        }else if(url){
+        } else if (url) {
             $scope.setting.urls.forEach((s, i) => {
                 if (s.url.indexOf(url) !== -1) {
                     $scope.setting.urls.splice(i, 1);
                 }
             });
         }
-      
+
     };
 
-    $scope.copy = function(text){
+    $scope.copy = function (text) {
         $$$.browser.ipcRenderer.send('render_message', {
             name: 'copy',
             text: text

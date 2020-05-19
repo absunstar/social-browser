@@ -13,6 +13,7 @@
     :root {
       --fieldset-border: 1px solid #bbb;
       --modal-color: #000000;
+      --modal-background: #00000026;
     }
 
     body {
@@ -558,7 +559,7 @@
 
 
 
-  <div id="profileModal" class="modal">
+  <div id="profileModal" class="modal small" fixed>
     <div class="modal-content">
       <div class="modal-header">
         <span class="close">&times;</span>
@@ -612,7 +613,7 @@
     </div>
   </div>
 
-  <div id="sessionsModal" class="modal">
+  <div id="sessionsModal" class="modal small" fixed>
 
     <div class="modal-content">
       <div class="modal-header">
@@ -685,8 +686,7 @@
     </div>
   </div>
 
-
-  <div id="openListModal" class="modal">
+  <div id="openListModal" class="modal small" fixed>
 
     <div class="modal-content">
       <div class="modal-header">
@@ -754,8 +754,7 @@
     </div>
   </div>
 
-
-  <div id="adsModal" class="modal">
+  <div id="adsModal" class="modal small" fixed>
 
     <div class="modal-content">
       <div class="modal-header">
@@ -806,13 +805,7 @@
     </div>
   </div>
 
-
-
-
-
-
-  
-  <div id="popupIgnoreURLsModal" class="modal">
+  <div id="popupIgnoreURLsModal" class="modal small" fixed>
 
     <div class="modal-content">
       <div class="modal-header">
@@ -861,10 +854,7 @@
     </div>
   </div>
 
-
-
-
-  <div id="domsModal" class="modal">
+  <div id="domsModal" class="modal small" fixed>
 
     <div class="modal-content">
       <div class="modal-header">
@@ -923,7 +913,7 @@
                 </form>
               </div>
               <div class="col4 center">
-                <a class="btn bg-red white" ng-click="removeDom(_dom)"> Remove </a>
+                <a class="btn bg-red white" ng-click="removeDom(_dom , $index)"> Remove </a>
               </div>
             </div>
           </fieldset>
@@ -942,7 +932,7 @@
     </div>
   </div>
 
-  <div id="unsafeLinksModal" class="modal">
+  <div id="unsafeLinksModal" class="modal small" fixed>
 
     <div class="modal-content">
       <div class="modal-header">
@@ -992,7 +982,7 @@
     </div>
   </div>
 
-  <div id="unsafeWordsModal" class="modal">
+  <div id="unsafeWordsModal" class="modal small" fixed>
 
     <div class="modal-content">
       <div class="modal-header">
@@ -1040,7 +1030,7 @@
   </div>
 
 
-  <div id="youtubeWordsModal" class="modal">
+  <div id="youtubeWordsModal" class="modal small" fixed>
 
     <div class="modal-content">
       <div class="modal-header">
@@ -1094,7 +1084,7 @@
     </div>
   </div>
 
-  <div id="whiteListModal" class="modal">
+  <div id="whiteListModal" class="modal small" fixed>
 
     <div class="modal-content">
       <div class="modal-header">
@@ -1138,7 +1128,7 @@
   </div>
 
 
-  <div id="blackListModal" class="modal">
+  <div id="blackListModal" class="modal small" fixed>
 
     <div class="modal-content">
       <div class="modal-header">
@@ -1182,10 +1172,10 @@
   </div>
 
 
+  <script src="http://127.0.0.1:60080/x-js/jquery.js"></script>
   <script src="http://127.0.0.1:60080/x-js/site.js"></script>
   <script src="http://127.0.0.1:60080/x-js/angular.js"></script>
   <script src="http://127.0.0.1:60080/x-js/directive.js"></script>
-  <script src="http://127.0.0.1:60080/x-js/jquery.js"></script>
   <script src="http://127.0.0.1:60080/js/setting.js"></script>
   <script>
     document.querySelector('.tab-link').click();
