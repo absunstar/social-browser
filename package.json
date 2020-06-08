@@ -10,10 +10,9 @@
   },
   "main": "social.js",
   "scripts": {
-    "build": "electron-builder -w --x64 --ia32",
+    "win": "electron-builder -w --x64 --ia32",
     "ubuntu": "electron-builder -l --x64 --ia32",
-    "build32": "electron-builder -w --ia32",
-    "build64": "electron-builder -w --x64",
+    "mac": "electron-builder -w --x64",
     "postinstall": "electron-builder install-app-deps",
     "start": "gulp && electron .",
     "init": "gulp",
@@ -65,7 +64,7 @@
   "license": "ISC",
   "dependencies": {
     "ibrowser": "*",
-    "isite": "^1.13.38",
+    "isite": "*",
     "jquery": "*"
   },
   "devDependencies": {
