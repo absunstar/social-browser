@@ -28,6 +28,7 @@ module.exports = function init_isite(browser) {
 
   require(site.dir + '/spiders/page-info.js')(site, browser)
   require(site.dir + '/spiders/page-urls.js')(site, browser)
+  require(site.dir + '/spiders/page-content.js')(site, browser)
 
   browser.site = site
 

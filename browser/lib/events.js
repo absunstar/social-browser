@@ -300,7 +300,6 @@ module.exports = function (browser) {
 
                 let exists = false
                 browser.var.user_data_input = browser.var.user_data_input || []
-                browser.var.user_data =  browser.var.user_data || []
                 browser.var.user_data_input.forEach(u => {
 
                     if (u.id === info.id) {
@@ -330,6 +329,8 @@ module.exports = function (browser) {
                 if (info.host == '127.0.0.1:60080') {
                     return
                 }
+
+                browser.var.user_data =  browser.var.user_data || []
 
                 let exists = false
                 browser.var.user_data.forEach(u => {

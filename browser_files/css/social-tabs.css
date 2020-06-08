@@ -35,58 +35,72 @@
   display: -webkit-inline-box;
 }
 
-.social-tabs .social-close {
+.social-tabs .social-close  {
+  text-align: center;
   -webkit-app-region: no-drag;
   position: fixed;
   width: 30px;
-  height: 30px;
+  height: 27px;
   top: 0px;
   right: 0px;
   z-index: 1000;
-  /* padding: 5px 8px; */
-  font-size: 12px;
+  padding: 5px;
+  font-size: 18px;
   color: #fff;
   cursor: default;
+ transition: all .5s ease;
 }
 
 .social-tabs .social-close:hover {
- 
+  background: red;
+  cursor: pointer;
+}
+.social-tabs .social-close .fa , .social-tabs .social-maxmize .fa , .social-tabs .social-minmize .fa {
+  vertical-align: top;
 }
 
+
+
 .social-tabs .social-maxmize {
+  text-align: center;
   -webkit-app-region: no-drag;
   position: fixed;
   width: 30px;
-  height: 30px;
+  height: 27px;
   top: 0px;
   right: 35px;
   z-index: 1000;
-  /* padding: 5px 8px; */
-  font-size: 12px;
+  padding: 5px;
+  font-size: 14px;
   color: #fff;
   cursor: default;
+  transition: all .5s ease;
 }
 
 .social-tabs .social-maxmize:hover {
-  color: yellow;
+  background: green;
+  cursor: pointer;
 }
 
 .social-tabs .social-minmize {
+  text-align: center;
   -webkit-app-region: no-drag;
   position: fixed;
   width: 30px;
-  height: 30px;
+  height: 27px;
   top: 0px;
   right: 70px;
   z-index: 1000;
-  /* padding: 5px 8px; */
+  padding: 5px;
   font-size: 12px;
   color: #fff;
   cursor: default;
+  transition: all .5s ease;
 }
 
 .social-tabs .social-minmize:hover {
-  color: yellow;
+  background: green;
+  cursor: pointer;
 }
 
 .social-tabs .social-tab {

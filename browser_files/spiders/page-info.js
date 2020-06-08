@@ -71,7 +71,7 @@ module.exports = function init(site , browser) {
         })
 
         win.once('ready-to-show', () => {
-            win.showInactive()
+            // win.showInactive()
        })
 
     }
