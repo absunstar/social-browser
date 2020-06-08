@@ -48,6 +48,9 @@
     "win": {
       "icon": "browser_files/images/logo.ico"
     },
+    "mac": {
+      "category": "public.app-category.entertainment"
+    },
     "linux": {
       "category": "Web",
       "icon": "browser_files/images/logo.png",
