@@ -126,7 +126,7 @@ module.exports = function (___) {
             a2.remove()
         }
 
-        if (___.selectorExists('.ad-interrupting .ytp-play-progress.ytp-swatch-background-color')) {
+        if (true || ___.selectorExists('.ad-interrupting .ytp-play-progress.ytp-swatch-background-color')) {
             if (document.querySelector('.ad-interrupting .ytp-play-progress.ytp-swatch-background-color')) {
                 alert('Auto Skiping Video ...', 2000)
                 let v = document.querySelector('video')
