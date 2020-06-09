@@ -12,9 +12,9 @@
   "scripts": {
     "win": "electron-builder -w --x64 --ia32",
     "ubuntu": "electron-builder -l --x64 --ia32",
-    "mac": "electron-builder -w --x64",
+    "mac": "electron-builder -m --x64",
     "postinstall": "electron-builder install-app-deps",
-    "start": "gulp && electron .",
+    "start": "electron .",
     "init": "gulp",
     "reload": "gulp && electron-rebuild"
   },
@@ -66,7 +66,7 @@
   },
   "license": "ISC",
   "dependencies": {
-    "ibrowser": "*",
+    "ibrowser": "^1.0.0",
     "isite": "*",
     "jquery": "*"
   },
