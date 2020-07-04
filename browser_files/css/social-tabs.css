@@ -48,7 +48,7 @@
   font-size: 18px;
   color: #fff;
   cursor: default;
- transition: all .5s ease;
+ transition: all .2s ease;
 }
 
 .social-tabs .social-close:hover {
@@ -74,7 +74,7 @@
   font-size: 14px;
   color: #fff;
   cursor: default;
-  transition: all .5s ease;
+  transition: all .2s ease;
 }
 
 .social-tabs .social-maxmize:hover {
@@ -95,7 +95,7 @@
   font-size: 12px;
   color: #fff;
   cursor: default;
-  transition: all .5s ease;
+  transition: all .2s ease;
 }
 
 .social-tabs .social-minmize:hover {

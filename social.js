@@ -66,12 +66,12 @@ var md5 = require('md5')
 
 const browser = require('ibrowser')({
   is_main: true,
-  md5 : md5,
-  package :package
+  md5: md5,
+  package: package
 })
 
 
- require('./proxy')(browser)
+require('./proxy')(browser)
 
 const {
   app,
@@ -108,9 +108,15 @@ app.on('second-instance', (commandLine, workingDirectory) => {
     let u = commandLine.length > 1 ? commandLine[1] : null
     if (typeof u === 'string') {
       u = u.split('\\').join('...');
-      browser.mainWindow.send('render_message' , {name : 'open new tab' , url : u})
+      browser.mainWindow.send('render_message', {
+        name: 'open new tab',
+        url: u
+      })
     } else {
-      browser.mainWindow.send('render_message' , {name : 'open new tab' , url : browser.var.core.home_page})
+      browser.mainWindow.send('render_message', {
+        name: 'open new tab',
+        url: browser.var.core.home_page
+      })
     }
 
   } else {
@@ -118,9 +124,15 @@ app.on('second-instance', (commandLine, workingDirectory) => {
       let u = commandLine.length > 1 ? commandLine[1] : null
       if (typeof u === 'string') {
         u = u.split('\\').join('...');
-        browser.mainWindow.send('render_message' , {name : 'open new tab' , url : u})
+        browser.mainWindow.send('render_message', {
+          name: 'open new tab',
+          url: u
+        })
       } else {
-        browser.mainWindow.send('render_message' , {name : 'open new tab' , url : browser.var.core.home_page})
+        browser.mainWindow.send('render_message', {
+          name: 'open new tab',
+          url: browser.var.core.home_page
+        })
       }
     })
   }
@@ -169,7 +181,7 @@ browser.on("message", function (event, data) {
   event.sender.send("message", "ok")
 })
 
-
+app.setAsDefaultProtocolClient('browser');
 app.setPath('userData', browser.path.join(browser.data_dir, 'default'))
 
 // browser.allow_widevinecdm(app)
@@ -204,22 +216,22 @@ app.on("ready", function () {
   // })
 
   setInterval(() => {
-    (async()=>{
-      browser.set_var('urls' , browser.var.urls)
+    (async () => {
+      browser.set_var('urls', browser.var.urls)
     })()
-  
+
   }, 1000 * 60 * 5);
 
   browser.var.cookies = browser.var.cookies || []
   browser.var.session_list.forEach(s1 => {
     let ss = browser.session.fromPartition(s1.name)
-    ss.cookies.get({}).then(cookies=> {
-        browser.var.cookies.push({
-          name: s1.name,
-          display: s1.display,
-          cookies: cookies
-        })
-      
+    ss.cookies.get({}).then(cookies => {
+      browser.var.cookies.push({
+        name: s1.name,
+        display: s1.display,
+        cookies: cookies
+      })
+
     })
   })
 
@@ -275,13 +287,13 @@ app.on("ready", function () {
 
       delete webPreferences.preloadURL
 
-     // webPreferences.nodeIntegration = false
-     // webPreferences.contextIsolation = false
-     // webPreferences.webviewTag = false
-     // webPreferences.webSecurity = false
-     // webPreferences.experimentalFeatures = false
-     // webPreferences.nativeWindowOpen = false
-     // webPreferences.allowRunningInsecureContent = true
+      // webPreferences.nodeIntegration = false
+      // webPreferences.contextIsolation = false
+      // webPreferences.webviewTag = false
+      // webPreferences.webSecurity = false
+      // webPreferences.experimentalFeatures = false
+      // webPreferences.nativeWindowOpen = false
+      // webPreferences.allowRunningInsecureContent = true
       webPreferences.plugins = true
       // webPreferences.affinity =  'main-window' // main window, and addition windows should work in one process
 
@@ -339,14 +351,14 @@ app.on("ready", function () {
 
   app.on('crashed', (event, session) => {
     console.log('app crashed')
-    // app.relaunch({ args: process.argv.slice(1).concat(['--relaunch']) })
-    // app.exit(0)
+     app.relaunch({ args: process.argv.slice(1).concat(['--relaunch']) })
+     app.exit(0)
   })
 
   app.on('gpu-process-crashed', (event, session) => {
     console.log('app gpu-process-crashed')
-    // app.relaunch({ args: process.argv.slice(1).concat(['--relaunch']) })
-    // app.exit(0)
+     app.relaunch({ args: process.argv.slice(1).concat(['--relaunch']) })
+     app.exit(0)
   })
 
 
@@ -375,8 +387,10 @@ app.on("ready", function () {
     })
   }
 
+  setTimeout(() => {
+    setMainWindow()
+  }, 1000);
 
-  setMainWindow()
   browser.addressbarWindow = browser.newAddressbarWindow()
   browser.userProfileWindow = browser.newUserProfileWindow()
 

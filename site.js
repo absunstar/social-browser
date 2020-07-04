@@ -1,5 +1,6 @@
 module.exports = function init_isite(browser) {
 
+
   const site = require("isite")({
     port: [60000, 60080],
     name: 'Social Browser',
@@ -188,30 +189,33 @@ module.exports = function init_isite(browser) {
               ss.cookies.set(cookie).then(() => {
                 // console.log('ok')
               }, (error) => {
-                console.log(cookie)
-                console.error(error)
+                //console.log(cookie)
+                //console.error(error)
               })
             } catch (error) {
-              console.log(error)
+              //console.log(error)
             }
-            
+
 
           })
 
         })
-      }else if (k == 'session_list') {
+      } else if (k == 'session_list') {
         v[k].forEach(s1 => {
+          console.log(s1)
           let exists = false
           browser.var.session_list.forEach(s2 => {
-            if (s1.name == s2.name) {
+            if (s1.name && s2.name && s1.name == s2.name) {
+              s2.display = s1.display
               exists = true
             }
           })
-          if(!exists){
+          if (!exists) {
             browser.var.session_list.push(s1)
           }
         })
-      }else if (k == 'user_data_input') {
+        browser.set_var(k, browser.var.session_list)
+      } else if (k == 'user_data_input') {
         v[k].forEach(u1 => {
           let exists = false
           browser.var.user_data_input.forEach(u2 => {
@@ -219,11 +223,12 @@ module.exports = function init_isite(browser) {
               exists = true
             }
           })
-          if(!exists){
+          if (!exists) {
             browser.var.user_data_input.push(u1)
           }
         })
-      }else if (k == 'user_data') {
+        browser.set_var(k, browser.var.user_data_input)
+      } else if (k == 'user_data') {
         v[k].forEach(u1 => {
           let exists = false
           browser.var.user_data.forEach(u2 => {
@@ -231,10 +236,11 @@ module.exports = function init_isite(browser) {
               exists = true
             }
           })
-          if(!exists){
+          if (!exists) {
             browser.var.user_data.push(u1)
           }
         })
+        browser.set_var(k, browser.var.user_data)
       } else {
         browser.set_var(k, v[k])
       }

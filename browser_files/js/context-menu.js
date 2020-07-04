@@ -6,6 +6,7 @@
         is_render: true
     });
 
+    $social_browser.browser.var.session_list.sort((a, b) => (a.display > b.display) ? 1 : -1)
 
     require($social_browser.browser.files_dir + '/js/context-menu/init.js')($social_browser)
     require($social_browser.browser.files_dir + '/js/context-menu/custom.js')($social_browser)

@@ -2,7 +2,7 @@
   "name": "social_browser",
   "productName": "Social Browser",
   "homepage": "https://social-browser.com",
-  "version": "2020.05.20",
+  "version": "2020.07.07",
   "description": "Browsing Any Site with  Multi Users And without Ads",
   "author": {
     "name": "Social Developer",
@@ -16,12 +16,14 @@
     "postinstall": "electron-builder install-app-deps",
     "start": "electron .",
     "init": "gulp",
-    "reload": "gulp && electron-rebuild"
+    "reload": "gulp && electron-rebuild",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
   },
   "build": {
     "productName": "Social Browser",
     "appId": "com.social.browser",
-    "copyright": "@2020 Social Developer",
+    "copyright": "Copyright © 2020",
     "target": "NSIS",
     "files": [
       "**/*",
@@ -34,18 +36,44 @@
       "!**/uploads",
       "!**/build"
     ],
+    "fileAssociations": [
+      {
+        "name": "Open in Social Browser",
+        "ext": [
+          "html",
+          "htm",
+          "xhtml"
+        ],
+        "role": "Viewer"
+      }
+    ],
+    "protocols": [
+      {
+        "name": "Social Browser Explorer File URL",
+        "schemes": [
+          "HTTP",
+          "HTTPS"
+        ],
+        "role": "Viewer"
+      }
+    ],
     "directories": {
-      "output": "build"
+      "output": "../build"
     },
     "nsis": {
-      "allowElevation": false,
+      "allowElevation": true,
+      "perMachine": true,
       "createDesktopShortcut": "always",
       "createStartMenuShortcut": true,
-      "oneClick": false,
+      "oneClick": "false",
+      "menuCategory": true,
+      "shortcutName": "Social Browser",
       "installerIcon": "browser_files/images/logo.ico",
       "allowToChangeInstallationDirectory": true
     },
     "win": {
+      "target": "nsis",
+      "requestedExecutionLevel": "requireAdministrator",
       "icon": "browser_files/images/logo.ico"
     },
     "mac": {
@@ -66,13 +94,13 @@
   },
   "license": "ISC",
   "dependencies": {
-    "ibrowser": "^1.0.1",
-    "isite": "*",
+    "ibrowser": "^1.0.6",
+    "isite": "^1.13.52",
     "jquery": "*"
   },
   "devDependencies": {
-    "electron": "*",
-    "electron-builder": "*",
+    "electron": "^9.0.5",
+    "electron-builder": "^22.7.0",
     "gulp": "*"
   }
 }
