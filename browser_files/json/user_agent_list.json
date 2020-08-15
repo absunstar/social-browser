@@ -1,44 +1,44 @@
 [
     {
-        "url": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; ServiceUI 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.18363",
-        "name": "Windows Edge 64",
-        "$display": "Windows Edge 64 "
+        "url": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36 Edg/84.0.522.59",
+        "name": "Windows Edge",
+        "$display": "Windows Edge"
     },
     {
-        "url": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36",
-        "name": "Windows Chrome 80",
-        "$display": "Windows Chrome 80 "
+        "url": " Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4147.125 Safari/537.36",
+        "name": "Windows Chrome",
+        "$display": "Windows Chrome"
     },
     {
-        "url": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:66.0) Gecko/20100101 Firefox/66.0",
-        "name": "Windows Firefox 66",
-        "$display": "Windows Firefox 66 "
+        "url": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:76.0) Gecko/20100101 Firefox/90.0",
+        "name": "Windows Firefox",
+        "$display": "Windows Firefox"
     },
   
     {
         "url": "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko",
-        "name": "Windows internet explorer 11",
-        "$display": "Windows internet explorer 11 "
+        "name": "Windows internet explorer",
+        "$display": "Windows internet explorer"
     },
     {
-        "url": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/74.0.3729.157 Safari/537.36",
-        "name": "Linux Chrome 44",
-        "$display": "Linux Chrome 44 "
+        "url": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/90.0.3729.157 Safari/537.36",
+        "name": "Linux Chrome",
+        "$display": "Linux Chrome"
     },
     {
-        "url": "Mozilla/5.0 (X11; Fedora;Linux x86; rv:60.0) Gecko/20100101 Firefox/60.0",
-        "name": "Linux Firefox 60",
-        "$display": "Linux Firefox 60 "
+        "url": "Mozilla/5.0 (X11; Fedora;Linux x86; rv:60.0) Gecko/20100101 Firefox/90.0",
+        "name": "Linux Firefox",
+        "$display": "Linux Firefox"
     },
     {
         "url": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/534.30 (KHTML, like Gecko) Ubuntu/11.04 Chromium/12.0.742.112 Chrome/12.0.742.112 Safari/534.30",
-        "name": "Linux Chromium 11",
-        "$display": "Linux Chromium 11 "
+        "name": "Linux Chromium",
+        "$display": "Linux Chromium"
     },
     {
         "url": "Mozilla/5.0 (Linux) Cobalt/11.119147-qa (unlike Gecko) Starboard/6, CVA_STB_BCM72604C0/KA99.00.17.09 (Arris, DCX4400, Wired)",
-        "name": "Linux  Netscape Navigator 5 ",
-        "$display": "Linux  Netscape Navigator 5  "
+        "name": "Linux  Netscape Navigator",
+        "$display": "Linux  Netscape Navigator "
     },
     {
         "url": "Mozilla/5.0 (SMART-TV; Linux; Tizen 2.4.0) AppleWebkit/538.1 (KHTML, like Gecko) SamsungBrowser/1.1 TV Safari/538.1",

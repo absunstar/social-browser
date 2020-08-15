@@ -10,7 +10,10 @@
     }
 
 
-    var browser = browser || require('ibrowser')({is_render : true})
+    var browser = browser || require('ibrowser')({
+        is_render: true,
+        is_window: true
+    })
     const electron = browser.electron
     const remote = electron.remote
     const {
@@ -18,14 +21,45 @@
         MenuItem
     } = remote
 
-    document.addEventListener("DOMNodeInserted", function(event) {
+    require(browser.files_dir + '/js/context-menu/fn.js')({browser : browser})
+
+    document.addEventListener("DOMNodeInserted", function (event) {
         if (!!window && !(!!window.$)) {
             window.$ = window.jQuery = require(browser.files_dir + '/js/jquery.js');
         }
     })
 
+    let $is_DOMContentLoaded = false
     document.addEventListener('DOMContentLoaded', () => {
-        
+        if ($is_DOMContentLoaded) {
+            return
+        }
+        $is_DOMContentLoaded = true
+        const xxx__browser = document.createElement('div');
+        xxx__browser.id = 'xxx__browser';
+        document.body.appendChild(xxx__browser);
+
+        const __video_element = document.createElement('video');
+        __video_element.id = '__video_element';
+        xxx__browser.appendChild(__video_element);
+
+
+        const __alertBox = document.createElement('div');
+        __alertBox.id = '__alertBox';
+        xxx__browser.appendChild(__alertBox);
+
+        const __targetUrl = document.createElement('div');
+        __targetUrl.id = '__targetUrl';
+        xxx__browser.appendChild(__targetUrl);
+
+        const __blockDiv = document.createElement('div');
+        __blockDiv.id = '__blockDiv';
+        xxx__browser.appendChild(__blockDiv);
+
+        const __downloads = document.createElement('div');
+        __downloads.id = '__downloads';
+        xxx__browser.appendChild(__downloads);
+
     }, false)
 
 

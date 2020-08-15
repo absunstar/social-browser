@@ -1,15 +1,15 @@
 module.exports = function (___) {
 
     console.log('youtube context menu loading ...')
-    
+
     let setting = ___.browser.var
 
     function remove_current_youtube_video() {
         console.log('try removing youtube video ...')
-       
-        
+
+
         let videos = document.querySelectorAll('video,audio,img')
-        videos.forEach(v=>{
+        videos.forEach(v => {
             if (v) {
                 v.remove()
             }
@@ -32,7 +32,7 @@ module.exports = function (___) {
 
             document.querySelectorAll('a').forEach(a => {
                 setting.youtube.blocking.words.forEach(w => {
-                    if (a.innerText.toLowerCase().like(w.text)) {
+                    if (a.innerText &&  a.innerText.toLowerCase().like(w.text)) {
                         let yt = ___.upTo(a, 'ytd-video-renderer') || ___.upTo(a, 'ytd-grid-video-renderer')
                         if (yt) {
                             yt.innerHTML = '<h3 style="color:red"> Unsafe Video Deleted </h3>'
@@ -44,7 +44,7 @@ module.exports = function (___) {
 
             document.querySelectorAll('span').forEach(a => {
                 setting.youtube.blocking.words.forEach(w => {
-                    if (a.innerText.toLowerCase().like(w.text)) {
+                    if (a.innerText && a.innerText.toLowerCase().like(w.text)) {
                         let yt = ___.upTo(a, 'ytd-channel-renderer') || ___.upTo(a, 'ytd-playlist-renderer') || ___.upTo(a, 'ytd-compact-video-renderer')
                         if (yt) {
                             yt.innerHTML = '<h3 style="color:red">Unsafe Video</h3>'
@@ -64,7 +64,7 @@ module.exports = function (___) {
             })
 
             let content = document.querySelector('#content')
-            if (content) {
+            if (content && content.innerText) {
                 setting.youtube.blocking.words.forEach(w => {
                     if (content.innerText.toLowerCase().like(w.text)) {
                         console.log(`Remove Video By Content ${w}`)
@@ -74,7 +74,7 @@ module.exports = function (___) {
             }
 
             let description = document.querySelector('#description')
-            if (description) {
+            if (description && description.innerText) {
                 setting.youtube.blocking.words.forEach(w => {
                     if (description.innerText.toLowerCase().like(w.text)) {
                         console.log(`Remove Video By Description ${w.text}`)
@@ -84,12 +84,12 @@ module.exports = function (___) {
             }
 
             let title = document.querySelector('title')
-            if (title && document.location.href.like('*watch*')) {
+            if (title && title.innerText && document.location.href.like('*watch*')) {
                 setting.youtube.blocking.words.forEach(w => {
                     if (title.innerText.toLowerCase().like(w.text)) {
                         console.log(`Remove Video By title ${w}`)
                         let body = document.querySelector('body')
-                        if(body){
+                        if (body) {
                             body.className = 'blurxxx'
                         }
                         title.innerText = "Youtube Safty Mode Activated"
@@ -112,7 +112,7 @@ module.exports = function (___) {
 
     function skipYoutubeVideoAds() {
 
-        if(!setting.youtube.skip_ads){
+        if (!setting.youtube.skip_ads) {
             return
         }
 
@@ -126,25 +126,24 @@ module.exports = function (___) {
             a2.remove()
         }
 
-        if (true || ___.selectorExists('.ad-interrupting .ytp-play-progress.ytp-swatch-background-color')) {
-            if (document.querySelector('.ad-interrupting .ytp-play-progress.ytp-swatch-background-color')) {
-                alert('Auto Skiping Video ...', 2000)
-                let v = document.querySelector('video')
-                if (v) {
-                    v.play()
-                    try{
-                        v.currentTime = parseFloat(v.duration)
-                    }catch{
-                        console.log(v)
-                    }
-                    
+        if (document.querySelector('.ad-interrupting .ytp-play-progress.ytp-swatch-background-color')) {
+            alert('<b> Auto Skiping Youtube Video </b>  <small><i> Changing Form Setting </i></small>', 2000)
+            let v = document.querySelector('video')
+            if (v) {
+                v.play()
+                try {
+                    v.currentTime = parseFloat(v.duration)
+                } catch {
+                    console.log(v)
                 }
+
             }
         }
 
+
     }
 
-   
+
 
     if (setting.youtube.safty_mode) {
         remove_unsafe_youtubes()

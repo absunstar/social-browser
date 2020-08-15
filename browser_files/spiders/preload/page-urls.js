@@ -13,6 +13,9 @@ const {
 } = require('electron');
 
 function handle_url(u) {
+    if(typeof u !== "string"){
+        return u
+    }
     u = u.trim()
     if (u.like('http*') || u.indexOf('//') === 0) {
         u = u

@@ -67,6 +67,7 @@ var md5 = require('md5')
 const browser = require('ibrowser')({
   is_main: true,
   md5: md5,
+  electron : electron,
   package: package
 })
 
@@ -96,8 +97,9 @@ browser.mainWindow = mainWindow
 
 
 const gotTheLock = app.requestSingleInstanceLock()
-// app.disableHardwareAcceleration()
+ app.disableHardwareAcceleration()
 app.allowRendererProcessReuse = true
+app.commandLine.appendSwitch('disable-site-isolation-trials')
 
 app.on('second-instance', (commandLine, workingDirectory) => {
   console.log('second-instance')
@@ -294,7 +296,7 @@ app.on("ready", function () {
       // webPreferences.experimentalFeatures = false
       // webPreferences.nativeWindowOpen = false
       // webPreferences.allowRunningInsecureContent = true
-      webPreferences.plugins = true
+      webPreferences.plugins = false
       // webPreferences.affinity =  'main-window' // main window, and addition windows should work in one process
 
       // Verify URL being loaded
@@ -351,14 +353,18 @@ app.on("ready", function () {
 
   app.on('crashed', (event, session) => {
     console.log('app crashed')
-     app.relaunch({ args: process.argv.slice(1).concat(['--relaunch']) })
-     app.exit(0)
+    // app.relaunch({
+    //   args: process.argv.slice(1).concat(['--relaunch'])
+    // })
+    app.exit(0)
   })
 
   app.on('gpu-process-crashed', (event, session) => {
     console.log('app gpu-process-crashed')
-     app.relaunch({ args: process.argv.slice(1).concat(['--relaunch']) })
-     app.exit(0)
+    // app.relaunch({
+    //   args: process.argv.slice(1).concat(['--relaunch'])
+    // })
+    app.exit(0)
   })
 
 
@@ -376,7 +382,9 @@ app.on("ready", function () {
     browser.newSocialBrowser(w => {
       mainWindow = w
       browser.mainWindow = mainWindow
-
+      //   w.openDevTools({
+      //     mode: 'undocked'
+      // })
 
       w.on("close", function () {
         w = null

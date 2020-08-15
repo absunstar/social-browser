@@ -1,0 +1,16 @@
+{
+    "urls" : [
+        {
+            "from" : "xxhttps://www.gstatic.com/recaptcha/releases*recaptcha*.js*",
+            "to" : "http://127.0.0.1:60080/overwrite/js/recaptcha.js"
+        },
+        {
+            "from" : "xxhttps://www.google.com/images/branding/googlelogo*.png",
+            "to" : "http://127.0.0.1:60080/images/logo.png"
+        },
+        {
+            "from" : "xxhttps://www.youtube.com/get_video_info*",
+            "to" : "http://127.0.0.1:60080/overwrite/txt/get_video_info.txt"
+        }
+    ]
+}

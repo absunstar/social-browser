@@ -51,7 +51,7 @@
      }
 
 
-     window.alert = function (msg, time) {
+     window.alert = window.prompt = function (msg, time) {
          if (msg && msg.trim()) {
              let div = document.querySelector('#__alertBox')
              if (div) {
@@ -62,6 +62,15 @@
                      div.style.display = "none";
                  }, time | 1000 * 3);
              }
+         }
+     }
+     window.__blockPage = window.prompt = function (block , msg) {
+         let div = document.querySelector('#__blockDiv')
+         if (div && block) {
+             div.style.display = "block";
+             div.innerHTML = msg || 'Block Page [ Contains Unsafe Words ] , <small> <a target="_blank" href="http://127.0.0.1:60080/setting?open=safty"> goto setting </a></small>';
+         } else if (div && !block) {
+             div.style.display = "none";
          }
      }
 
@@ -91,25 +100,25 @@
      }
 
      let __downloads = document.querySelector('#__downloads')
-     window.showDownloads = function (msg , css) {
-        
-        if(!__downloads){
-            __downloads = document.querySelector('#__downloads')
-           __downloads.addEventListener('click' , ()=>{
-               __downloads.style.display = "none";
-               __downloads.innerHTML = "";
-           })
-        }
-        if (msg) {
-            /*msg += " <strong> X <strong>"*/
-            /*__downloads.className = css*/
-            __downloads.style.display = "block";
-            __downloads.innerHTML = msg;
-        }else{
-            __downloads.style.display = "none";
-            __downloads.innerHTML = "";
-        }
-    }
+     window.showDownloads = function (msg, css) {
+
+         if (!__downloads) {
+             __downloads = document.querySelector('#__downloads')
+             __downloads.addEventListener('click', () => {
+                 __downloads.style.display = "none";
+                 __downloads.innerHTML = "";
+             })
+         }
+         if (msg) {
+             /*msg += " <strong> X <strong>"*/
+             /*__downloads.className = css*/
+             __downloads.style.display = "block";
+             __downloads.innerHTML = msg;
+         } else {
+             __downloads.style.display = "none";
+             __downloads.innerHTML = "";
+         }
+     }
 
      ___.browser.electron.ipcRenderer.on('render_message', (event, data) => {
          if (data.name == "update-target-url") {
@@ -120,39 +129,45 @@
      })
 
      ___.browser.electron.ipcRenderer.on('user_downloads', (event, data) => {
-           showDownloads(data.message , data.class)
-    })
+         showDownloads(data.message, data.class)
+     })
 
 
-    function handle_url(u) {
-        u = u.trim()
-        if (u.like('http*') || u.indexOf('//') === 0) {
-            u = u
-        } else if (u.indexOf('/') === 0) {
-            u = window.location.origin + u
-        } else if (u.split('?')[0].split('.').length < 3) {
-            let page = window.location.pathname.split('/').pop()
-            u = window.location.origin + window.location.pathname.replace(page, "") + u
-        }
-        return u
-    }
+     function handle_url(u) {
+         if (typeof u !== "string") {
+             return u
+         }
+         u = u.trim()
+         if (u.like('http*') || u.indexOf('//') === 0) {
+             u = u
+         } else if (u.indexOf('/') === 0) {
+             u = window.location.origin + u
+         } else if (u.split('?')[0].split('.').length < 3) {
+             let page = window.location.pathname.split('/').pop()
+             u = window.location.origin + window.location.pathname.replace(page, "") + u
+         }
+         return u
+     }
 
 
      window.open = function (url, frameName, features) {
 
-         if (!url) {
+        return
+
+        
+         if (typeof url !== "string") {
              return null
          }
          url = handle_url(url)
 
          if (url.like('https://www.youtube.com/watch*')) {
-            ___.browser.sendToMain('new-youtube-window', {
-                referrer: document.location.href,
-                url: url
-            })
+             ___.browser.sendToMain('new-youtube-window', {
+                 referrer: document.location.href,
+                 url: url
+             })
 
-            return null
-        }
+             return null
+         }
 
          let url_p = ___.browser.url.parse(url)
          let url2_p = ___.browser.url.parse(this.document.location.href)
@@ -164,7 +179,7 @@
          } else if (url_p.host !== url2_p.host && ___.browser.var.popup.external) {
              allow = true
          } else {
-            ___.browser.var.popup.ignore_urls.forEach(d => {
+             ___.browser.var.popup.ignore_urls.forEach(d => {
                  if (url_p.host.like(d.url) || url2_p.host.like(d.url)) {
                      allow = true
                  }
@@ -173,7 +188,7 @@
          }
 
          if (!allow) {
-            // console.log('Block popup : ' + url)
+             // console.log('Block popup : ' + url)
              return null
          }
 
@@ -206,7 +221,7 @@
                  guestInstanceId: 1,
                  openerId: ___.browser.remote.getCurrentWebContents().id,
                  allowRunningInsecureContent: true,
-                 plugins: true,
+                 plugins: false,
              }
          })
 

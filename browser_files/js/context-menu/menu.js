@@ -1,5 +1,5 @@
 module.exports = function (___) {
-    let rightClickPosition  = {}
+    let rightClickPosition = {}
     let $menuItem = ___.browser.electron.remote.MenuItem
     let webFrame = ___.browser.electron.webFrame
     let webContents = ___.browser.remote.getCurrentWindow().webContents.getWebPreferences().partition
@@ -37,6 +37,134 @@ module.exports = function (___) {
         type: "keydown",
         which: 13
     });
+
+    // Video Recording
+    const {
+        desktopCapturer,
+        remote
+    } = ___.browser.electron;
+
+    const {
+        writeFile
+    } = ___.browser.fs;
+
+    const {
+        dialog,
+        Menu
+    } = ___.browser.electron.remote;
+    let mediaRecorder;
+    let recordedChunks = [];
+
+
+    async function record(options) {
+        options = options || {
+            play: false,
+            stop: false,
+            select: true
+        }
+
+        if (options.start) {
+            console.log('start')
+            recordedChunks = []
+            mediaRecorder.start();
+            setTimeout(() => {
+                console.log('stop')
+                mediaRecorder.stop();
+            }, 1000 * 10);
+        }
+        if (options.stop) {
+            mediaRecorder.stop();
+        }
+        if (options.select) {
+            getVideoSources();
+        }
+
+        // Get the available video sources
+        async function getVideoSources() {
+            const inputSources = await desktopCapturer.getSources({
+                types: ['window', 'screen']
+            });
+
+            const videoOptionsMenu = Menu.buildFromTemplate(
+                inputSources.map(source => {
+                    return {
+                        label: source.name,
+                        click: () => selectSource(source)
+                    };
+                })
+            );
+
+
+            videoOptionsMenu.popup();
+        }
+
+        // Change the videoSource window to record
+        async function selectSource(source) {
+            let videoElement = document.querySelector('#__video_element');
+            videoElement.style.display = 'block';
+
+            console.log(videoElement)
+            const constraints = {
+                audio: false,
+                video: {
+                    mandatory: {
+                        chromeMediaSource: 'desktop',
+                        chromeMediaSourceId: source.id
+                    }
+                }
+            };
+
+            // Create a Stream
+            const stream = await navigator.mediaDevices
+                .getUserMedia(constraints);
+
+            console.log(stream);
+            // Preview the source in a video element
+            videoElement.srcObject = stream;
+            videoElement.play();
+
+            // Create the Media Recorder
+            const options = {
+                mimeType: 'video/webm; codecs=vp9'
+            };
+            mediaRecorder = new MediaRecorder(stream, options);
+
+            // Register Event Handlers
+            mediaRecorder.ondataavailable = handleDataAvailable;
+            mediaRecorder.onstop = handleStop;
+
+            // Updates the UI
+        }
+
+        // Captures all recorded chunks
+        function handleDataAvailable(e) {
+            console.log('video data available');
+            recordedChunks.push(e.data);
+        }
+
+        // Saves the video file on stop
+        async function handleStop(e) {
+            let videoElement = document.querySelector('#__video_element');
+            videoElement.style.display = 'none';
+            const blob = new Blob(recordedChunks, {
+                type: 'video/webm; codecs=vp9'
+            });
+
+            const buffer = Buffer.from(await blob.arrayBuffer());
+
+            const {
+                filePath
+            } = await dialog.showSaveDialog({
+                buttonLabel: 'Save video',
+                defaultPath: `vid-${Date.now()}.webm`
+            });
+
+            if (filePath) {
+                writeFile(filePath, buffer, () => console.log('video saved successfully!'));
+            }
+
+        }
+    }
 
     function isContentEditable(node) {
         if (node && node.contentEditable == 'true') {
@@ -359,7 +487,10 @@ module.exports = function (___) {
 
     }
 
-    function handle_url(u){
+    function handle_url(u) {
+        if (typeof u !== "string") {
+            return u
+        }
         u = u.trim()
         if (u.like('http*') || u.indexOf('//') === 0) {
             u = u
@@ -367,9 +498,9 @@ module.exports = function (___) {
             u = window.location.origin + u
         } else if (u.split('?')[0].split('.').length < 3) {
             let page = window.location.pathname.split('/').pop()
-            u = window.location.origin + window.location.pathname.replace(page , "") + u
+            u = window.location.origin + window.location.pathname.replace(page, "") + u
         }
-        return u
+        return u.replace('___new_tab___' , '').replace('___new_window__' , '')
     }
 
     function add_a_menu(node, menu, doc, xwin) {
@@ -414,7 +545,7 @@ module.exports = function (___) {
                                     name: 'new_trusted_window',
                                     url: o.url || doc.location.href,
                                     referrer: doc.location.href,
-                                    partition : partition,
+                                    partition: partition,
                                     show: true
                                 })
                             }
@@ -428,7 +559,7 @@ module.exports = function (___) {
                                 name: 'new_window',
                                 url: u,
                                 referrer: doc.location.href,
-                                partition : partition ,
+                                partition: partition,
                                 show: true
                             })
                         }
@@ -476,7 +607,11 @@ module.exports = function (___) {
                     new $menuItem({
                         label: "Copy link",
                         click() {
-                            ___.browser.electron.clipboard.writeText(u)
+                         
+                                ___.browser.sendToMain('render_message', {
+                                    name: 'copy',
+                                    text: u
+                                })
                         }
                     })
                 )
@@ -489,24 +624,24 @@ module.exports = function (___) {
                 if (u.like('https://www.youtube.com/watch*')) {
 
                     arr.push({
-                        label: "Play :: " + u,
+                        label: "Play  " + u,
                         click() {
                             ___.browser.sendToMain('render_message', {
                                 name: 'mini_youtube',
                                 url: u,
-                                partition : partition ,
+                                partition: partition,
                                 referrer: doc.location.href
                             })
                         }
                     })
 
                     arr.push({
-                        label: "Download :: " + u,
+                        label: "Download  " + u,
                         click() {
                             ___.browser.sendToMain('render_message', {
                                 name: 'new_window',
                                 url: u.replace('youtube', 'youtubepp'),
-                                partition : partition,
+                                partition: partition,
                                 referrer: doc.location.href
                             })
                         }
@@ -542,7 +677,7 @@ module.exports = function (___) {
         if (node.nodeName == "IMG" && node.getAttribute("src")) {
             let url = node.getAttribute("src")
             url = handle_url(url)
-           
+
             menu.append(
                 new $menuItem({
                     label: "Open image in new tab",
@@ -711,7 +846,17 @@ module.exports = function (___) {
             type: "separator"
         })
 
+        // arr.push({
+        //     label: "Show Other Screens",
+        //     click() {
+        //         record()
+        //     }
+        // })
 
+
+        arr.push({
+            type: "separator"
+        })
         arr.push({
             label: "Clear Site Cache",
             accelerator: 'CommandOrControl+F5',
@@ -837,21 +982,35 @@ module.exports = function (___) {
 
         let arr2 = []
 
-        doc.querySelectorAll('iframe').forEach(f => {
+        doc.querySelectorAll('iframe').forEach((f, i) => {
+            if (i > 10) {
+                return
+            }
             if (f.src && !f.src.like('*javascript*') && !f.src.like('*about:blank*')) {
                 arr2.push({
-                    label: "View :: " + f.src,
+                    label: "View  " + f.src,
                     click() {
                         ___.browser.sendToMain('render_message', {
                             name: 'mini_iframe',
-                            partition : partition ,
+                            partition: partition,
                             url: f.src,
                             referrer: doc.location.href
                         })
                     }
                 })
                 arr2.push({
-                    label: "copy :: " + f.src,
+                    label: "Open in new window",
+                    click() {
+                        ___.browser.sendToMain('render_message', {
+                            name: 'new_window',
+                            partition: partition,
+                            url: f.src,
+                            referrer: doc.location.href
+                        })
+                    }
+                })
+                arr2.push({
+                    label: "Copy link " ,
                     click() {
                         ___.browser.sendToMain('render_message', {
                             name: 'copy',
@@ -860,7 +1019,7 @@ module.exports = function (___) {
                     }
                 })
                 arr2.push({
-                    label: "download :: " + f.src,
+                    label: "Download link ",
                     click() {
                         ___.browser.sendToMain('render_message', {
                             name: 'download-url',
@@ -891,21 +1050,38 @@ module.exports = function (___) {
 
         let arr3 = []
 
-        doc.querySelectorAll('video').forEach(f => {
+        doc.querySelectorAll('video').forEach((f, i) => {
+            if (i > 10) {
+                return
+            }
             if (f.src && f.src.startsWith('http')) {
+
                 arr3.push({
-                    label: "Play :: " + f.src,
+                    label: "Play  " + f.src,
                     click() {
                         ___.browser.sendToMain('render_message', {
                             name: 'mini_video',
-                            partition : partition ,
+                            alwaysOnTop: true,
+                            partition: partition,
                             url: f.src,
                             referrer: doc.location.href
                         })
                     }
                 })
                 arr3.push({
-                    label: "copy :: " + f.src,
+                    label: "Open in new window",
+                    click() {
+                        ___.browser.sendToMain('render_message', {
+                            name: 'new_window',
+                            alwaysOnTop: true,
+                            partition: partition,
+                            url: f.src,
+                            referrer: doc.location.href
+                        })
+                    }
+                })
+                arr3.push({
+                    label: "copy link",
                     click() {
                         ___.browser.sendToMain('render_message', {
                             name: 'copy',
@@ -914,7 +1090,7 @@ module.exports = function (___) {
                     }
                 })
                 arr3.push({
-                    label: "download :: " + f.src,
+                    label: "download",
                     click() {
                         ___.browser.sendToMain('render_message', {
                             name: 'download-url',
@@ -930,20 +1106,21 @@ module.exports = function (___) {
 
         doc.querySelectorAll('video source').forEach(f => {
             if (f.src && f.src.startsWith('http')) {
+
                 arr3.push({
-                    label: "Play :: " + f.src,
+                    label: "Play Source  " + f.src,
                     click() {
                         ___.browser.sendToMain('render_message', {
-                            name: 'mini_video',
-                            partition : partition ,
+                            name: 'new_window',
+                            alwaysOnTop: true,
+                            partition: partition,
                             url: f.src,
                             referrer: doc.location.href
                         })
                     }
                 })
-
                 arr3.push({
-                    label: "copy :: " + f.src,
+                    label: "copy link ",
                     click() {
                         ___.browser.sendToMain('render_message', {
                             name: 'copy',
@@ -953,7 +1130,7 @@ module.exports = function (___) {
                 })
 
                 arr3.push({
-                    label: "download :: " + f.src,
+                    label: "download",
                     click() {
                         ___.browser.sendToMain('render_message', {
                             name: 'download-url',
@@ -1003,6 +1180,7 @@ module.exports = function (___) {
                 type: "separator"
             })
         )
+
 
         let vids = doc.querySelectorAll('video')
         if (vids.length > 0) {
@@ -1054,7 +1232,7 @@ module.exports = function (___) {
                     click() {
                         ___.browser.sendToMain('render_message', {
                             name: 'mini_youtube',
-                            partition : partition ,
+                            partition: partition,
                             url: doc.location.href,
                             referrer: doc.location.href
                         })
@@ -1068,7 +1246,7 @@ module.exports = function (___) {
                     click() {
                         ___.browser.sendToMain('render_message', {
                             name: 'new_window',
-                            partition : partition ,
+                            partition: partition,
                             referrer: doc.location.href,
                             url: doc.location.href.replace('youtube', 'youtubepp')
                         })
@@ -1081,68 +1259,6 @@ module.exports = function (___) {
                 })
             )
         }
-
-
-        let href_list = doc.querySelectorAll('[href],[src]')
-        let openload_arr = []
-        href_list.forEach(el => {
-
-            let u = el.getAttribute('href') || el.getAttribute('src') || ''
-
-            if (u.like('https://openload.co/embed*')) {
-
-                openload_arr.push({
-                    label: "Play :: " + u.split('/').pop(),
-                    click() {
-                        ___.browser.sendToMain('render_message', {
-                            name: 'mini_iframe',
-                            partition : partition ,
-                            url: u,
-                            referrer: doc.location.href
-                        })
-                    }
-                })
-
-                openload_arr.push({
-                    label: "view in openload :: " + u.split('/').pop(),
-                    click() {
-                        ___.browser.sendToMain('render_message', {
-                            name: 'open new tab',
-                            partition : partition ,
-                            url: u.replace('embed', 'f'),
-                            referrer: doc.location.href
-                        })
-                    }
-                })
-
-                openload_arr.push({
-                    label: "copy :: " + u,
-                    click() {
-                        ___.browser.sendToMain('render_message', {
-                            name: 'copy',
-                            text: u
-                        })
-                    }
-                })
-            }
-
-        })
-
-        if (openload_arr.length > 0) {
-            menu.append(new $menuItem({
-                label: "Openload",
-                type: 'submenu',
-                submenu: openload_arr
-            }))
-
-            menu.append(
-                new $menuItem({
-                    type: "separator"
-                })
-            )
-
-        }
-
     }
 
 
@@ -1274,7 +1390,7 @@ module.exports = function (___) {
                     click() {
                         ___.browser.sendToMain('render_message', {
                             name: 'new_window',
-                            partition : partition ,
+                            partition: partition,
                             url: 'https://translate.google.com/?num=100&newwindow=1&um=1&ie=UTF-8&hl=en&client=tw-ob#auto/ar/' + encodeURIComponent(text)
                         })
                     }
@@ -1334,7 +1450,7 @@ module.exports = function (___) {
                             click() {
                                 ___.browser.sendToMain('render_message', {
                                     name: 'new_window',
-                                    partition : partition ,
+                                    partition: partition,
                                     url: o.url || doc.location.href,
                                     referrer: doc.location.href,
                                     show: true
@@ -1559,13 +1675,11 @@ module.exports = function (___) {
         return menu
     }
 
-
-
-    window.___activate_context_menu = function (doc, xwin) {
-
-        doc.addEventListener('contextmenu', (e) => {
-
-            let factor = ___.browser.remote.getCurrentWindow().webContents.zoomFactor || 1;
+    let contextMenuHandle = function (e) {
+        console.log('window.oncontextmenu')
+        try {
+            let xwin = ___.browser.remote.getCurrentWindow()
+            let factor = xwin.webContents.zoomFactor || 1;
             let x = Math.round(e.x * factor);
             let y = Math.round(e.y * factor);
 
@@ -1584,16 +1698,36 @@ module.exports = function (___) {
             }
 
 
-            let m = createMenu(node, doc, xwin)
+            let m = createMenu(node, document, xwin)
 
             if (m) {
                 m.popup({
                     window: xwin
                 })
             }
-
-        })
+        } catch (error) {
+            console.error(error)
+        }
     }
 
-    window.___activate_context_menu(document, ___.browser.electron.remote.getCurrentWindow());
+    window.___activate_context_menu = function () {
+
+        window.oncontextmenu = contextMenuHandle
+        let $is_DOMContentLoaded = false
+        document.addEventListener('DOMContentLoaded', () => {
+            if ($is_DOMContentLoaded) {
+                return
+            }
+            $is_DOMContentLoaded = true
+            let body = document.querySelector('body')
+            if (body) {
+                body.addEventListener('contextmenu', contextMenuHandle)
+            }
+        })
+
+
+
+    }
+
+    window.___activate_context_menu();
 }

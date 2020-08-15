@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html dir="ltr">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, user-scalable=yes" />
+    <title>ReCAPTCHA demo</title>
+    <link rel="stylesheet" href="https://www.gstatic.com/recaptcha/releases/IU7gZ7o6RDdDE6U4Y1YJJWnN/demo__ltr.css" type="text/css" />
+    <script src="/recaptcha/api.js" async defer nonce="kS5KqljqDzIacRroSIPlDg"></script>
+  </head>
+  <body>
+    <div class="sample-form">
+      <form id="recaptcha-demo-form" method="POST">
+        <fieldset>
+          <legend>Sample Form with ReCAPTCHA</legend>
+          <ul>
+            <li><label for="input1">First Name</label><input class="jfk-textinput" id="input1" name="input1" type="text" value="Jane" disabled aria-disabled="true" /></li>
+            <li><label for="input2">Last Name</label><input class="jfk-textinput" id="input2" name="input2" type="text" value="Smith" disabled aria-disabled="true" /></li>
+            <li><label for="input3">Email</label><input class="jfk-textinput" id="input3" name="input3" type="text" value="stopallbots@gmail.com" disabled aria-disabled="true" /></li>
+            <li>
+              <p>Pick your favorite color:</p>
+              <label class="jfk-radiobutton-label" for="option1"><input class="jfk-radiobutton-checked" type="radio" id="option1" name="radios" value="option1" disabled aria-disabled="true" checked aria-checked="true" />Red</label
+              ><label class="jfk-radiobutton-label" for="option2"><input class="jfk-radiobutton" type="radio" id="option2" name="radios" value="option2" disabled aria-disabled="true" />Green</label>
+            </li>
+            <li>
+              <div class="recaptcha-error">
+                <!-- BEGIN: ReCAPTCHA implementation example. -->
+                <div id="recaptcha-demo" class="g-recaptcha" data-sitekey="6Le-wvkSAAAAAPBMRTvw0Q4Muexq9bi0DJwx_mJ-" data-callback="onSuccess"></div>
+                <script nonce="kS5KqljqDzIacRroSIPlDg">
+                  var onSuccess = function (response) {
+                    var errorDivs = document.getElementsByClassName("recaptcha-error");
+                    if (errorDivs.length) {
+                      errorDivs[0].className = "";
+                    }
+                    var errorMsgs = document.getElementsByClassName("recaptcha-error-message");
+                    if (errorMsgs.length) {
+                      errorMsgs[0].parentNode.removeChild(errorMsgs[0]);
+                    }
+                  };
+                </script>
+                <!-- Optional noscript fallback. --><noscript
+                  ><div style="width: 302px; height: 462px;">
+                    <iframe src="/recaptcha/api/fallback?k=6Le-wvkSAAAAAPBMRTvw0Q4Muexq9bi0DJwx_mJ-" frameborder="0" scrolling="no"></iframe>
+                    <div><textarea id="g-recaptcha-response" name="g-recaptcha-response" class="g-recaptcha-response"></textarea></div>
+                  </div>
+                  <br /></noscript
+                ><!-- END: ReCAPTCHA implementation example. -->
+                <div class="recaptcha-error-message">Please verify that you are not a robot.</div>
+              </div>
+            </li>
+            <li><input id="recaptcha-demo-submit" type="submit" value="Submit" /></li>
+          </ul>
+        </fieldset>
+      </form>
+    </div>
+  </body>
+</html>

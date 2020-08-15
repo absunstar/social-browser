@@ -6,6 +6,22 @@ setTimeout(() => {
 
 var app = app || angular.module('myApp', []);
 
+setTimeout(() => {
+    if (document.location.href.like('*bookmarks*')) {
+        let btn1 = document.querySelector('#bookmarks_btn');
+        if (btn1) {
+            btn1.click();
+        }
+    }else  if (document.location.href.like('*safty*')) {
+        let btn1 = document.querySelector('#safty_btn');
+        if (btn1) {
+            btn1.click();
+        }
+    }
+     
+}, 1000 * 2);
+
+
 app.controller('mainController', ($scope, $http, $timeout) => {
 
     $scope.goBack = function () {
@@ -300,10 +316,16 @@ app.controller('mainController', ($scope, $http, $timeout) => {
 
 
     $scope.loadSetting = function () {
+        $scope.busy = true;
+        $scope.setting_busy = true;
         $http({
             method: 'GET',
             url: 'http://127.0.0.1:60080/api/var/setting'
         }).then(function (response) {
+            $timeout(() => {
+                $scope.busy = false;
+                $scope.setting_busy = false;
+            }, 1000 * 1);
             $scope.setting = _setting_ = response.data.var;
             if (typeof $$$ === 'object' && typeof $$$.browser === 'object') {
 
@@ -609,6 +631,13 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     }
 
 
+    $scope.remove_bookmarks = function (site) {
+        $scope.setting.bookmarks.forEach((s, i) => {
+            if (s.url == site.url) {
+                $scope.setting.bookmarks.splice(i, 1);
+            }
+        });
+    };
 
     $scope.remove_user_data_input = function (site) {
         $scope.setting.user_data_input.forEach((s, i) => {

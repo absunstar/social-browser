@@ -43,8 +43,7 @@ module.exports = function init_isite(browser) {
 
   site.get({
     name: '/',
-    path: __dirname + '/browser_files'
-  })
+    path: __dirname + '/browser_files'  })
 
   site.get({
     name: '/setting',
@@ -90,6 +89,7 @@ module.exports = function init_isite(browser) {
         core: browser.var.core,
         login: browser.var.login,
         vip: browser.var.vip,
+        bookmarks: browser.var.bookmarks,
         black_list: browser.var.black_list,
         white_list: browser.var.white_list,
         session_list: browser.var.session_list,
@@ -147,8 +147,7 @@ module.exports = function init_isite(browser) {
     setTimeout(() => {
       export_busy = false
     }, 1000 * 5);
-    console.log('/api/var/export')
-    console.log(req.headers)
+
     if (!req.headers.range) {
       site.writeFileSync(site.options.download_dir + '/var.json', site.toJson(browser.var))
     }
@@ -577,6 +576,43 @@ module.exports = function init_isite(browser) {
       })
       site.fs.createReadStream(path).pipe(res)
     }
+  })
+
+  site.get('/favicons/:name', function (req, res) {
+    const path = browser.path.join(browser.data_dir, 'favicons' , req.params.name)
+    const stat = site.fs.statSync(path)
+    const fileSize = stat.size
+    const range = req.headers.range
+    if (range) {
+      const parts = range.replace(/bytes=/, "").split("-")
+      const start = parseInt(parts[0], 10)
+      const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1
+
+      const chunksize = (end - start) + 1
+      const file = site.fs.createReadStream(path, {
+        start,
+        end
+      })
+      res.writeHead(206, {
+        'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+        'Accept-Ranges': 'bytes',
+        'Content-Length': chunksize,
+        'Content-Type': 'image/' + path.split('.').pop()
+      })
+      file.pipe(res)
+    } else {
+      res.writeHead(200, {
+        'Content-Length': fileSize,
+        'Content-Type': 'image/'+ path.split('.').pop()
+      })
+      site.fs.createReadStream(path).pipe(res)
+    }
+    
+  })
+
+  site.get("/xfavicons/:name", (req, res) => {
+    res.set('Cache-Control', 'public, max-age=2592000')
+    res.download( browser.path.join(browser.data_dir, 'favicons' , req.params.name))
   })
 
   site.run()

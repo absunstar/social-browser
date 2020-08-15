@@ -10,7 +10,7 @@ const gulp = require('gulp')
 
 
 function build() {
-   return gulp.src(['./browser/*' , './browser/*/*.*'])
+   return gulp.src(['../ibrowser/*' , '../ibrowser/*/*.*'])
     .pipe(gulp.dest('./node_modules/ibrowser'))
 }
 

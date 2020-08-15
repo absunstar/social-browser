@@ -1,7 +1,7 @@
 {
     "port":60080,
     "enabled": true,
-    "version": "2020.07.07",
+    "version": "2020.09.01",
     "full_version": true,
     "key" : "free key",
     "session": null,
@@ -10,6 +10,6 @@
     "home_page": "https://www.google.com",
     "default_page": "https://www.google.com",
     "max_tabs": 20,
-    "windows_user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.3945.74 Safari/537.36 Edg/99.0.309.43",
-    "linux_user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.3904.97 Safari/537.36"
+    "windows_user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36 Edg/84.0.522.59",
+    "linux_user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/90.0.3729.157 Safari/537.36"
 }

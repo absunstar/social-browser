@@ -1,16 +1,171 @@
-const browser = require('ibrowser')({
+var browser = window.browser || require('ibrowser')({
   is_render: true,
+  is_social: true,
   message: "from social.html"
 })
 window._setting_ = browser.var
 
 const {
   remote,
+  nativeImage ,
   ipcRenderer
 } = browser.electron
+const {
+  Menu,
+  MenuItem
+} = remote
 
 function sendToMain(obj) {
   browser.sendToMain("render_message", obj)
+}
+browser.on('bookmarks' , (event, data)=>{
+  browser.var.bookmarks = data.list
+})
+
+function showSettingMenu() {
+  let arr = [];
+  arr.push({
+    label: 'Open Social Browser Site',
+    click: () => sendToMain({
+      name: 'open new tab',
+      url: 'https://social-browser.com'
+    })
+  })
+
+  let bookmark_arr = [];
+  bookmark_arr.push({
+    label: 'Bookmark current tab',
+    click: () => sendToMain({
+      name: 'add_to_bookmark'
+    })
+  })
+  bookmark_arr.push({
+    label: 'Bookmark all tabs',
+    click: () => sendToMain({
+      name: 'add_all_to_bookmark'
+    })
+  })
+  bookmark_arr.push({
+    type: 'separator'
+  })
+  bookmark_arr.push({
+    label: 'Bookmark manager',
+    click: () => sendToMain({
+      name: 'open new tab',
+      url: 'http://127.0.0.1:60080/setting?open=bookmarks'
+    })
+  })
+  bookmark_arr.push({
+    type: 'separator'
+  })
+  browser.var.bookmarks.forEach(b => {
+    bookmark_arr.push({
+      label: b.title,
+      sublabel : b.url,
+      icon : nativeImage.createFromPath(b.favicon).resize({width : 16 , height : 16}),
+      click: () => sendToMain({
+        name: 'open new tab',
+        url: b.url
+      })
+    })
+  })
+  bookmark_arr.push({
+    type: 'separator'
+  })
+  let bookmark = new MenuItem({
+    label: "Bookmarks",
+    type: 'submenu',
+    submenu: bookmark_arr
+  })
+  arr.push(bookmark)
+  arr.push({
+    type: 'separator'
+  })
+  arr.push({
+    label: 'Reload Page',
+    accelerator: 'F5',
+    click: () => sendToMain({
+      name: 'reload'
+    })
+  })
+  arr.push({
+    label: 'Hard Reload Page',
+    accelerator: 'CommandOrControl+F5',
+    click: () => sendToMain({
+      name: 'force reload'
+    })
+  })
+
+  arr.push({
+    type: 'separator'
+  })
+  arr.push({
+    label: 'Zoom +',
+    accelerator: 'CommandOrControl+numadd',
+    click: () => sendToMain({
+      name: 'zoom+'
+    })
+  })
+  arr.push({
+    label: 'Zoom',
+    accelerator: 'CommandOrControl+0',
+    click: () => sendToMain({
+      name: 'zoom'
+    })
+  })
+  arr.push({
+    label: 'Zoom -',
+    accelerator: 'CommandOrControl+numsub',
+    click: () => sendToMain({
+      name: 'zoom-'
+    })
+  })
+
+  arr.push({
+    type: 'separator'
+  })
+  arr.push({
+    label: 'Edit Page Content',
+    accelerator: 'CommandOrControl+E',
+    click: () => sendToMain({
+      name: 'edit-page'
+    })
+  })
+  arr.push({
+    type: 'separator'
+  })
+  arr.push({
+    label: 'Audio ON / OFF',
+    accelerator: 'CommandOrControl+1',
+    click: () => sendToMain({
+      name: 'audio'
+    })
+  })
+  arr.push({
+    type: 'separator'
+  })
+  arr.push({
+    label: 'Developer Tools',
+    accelerator: 'F12',
+    click: () => sendToMain({
+      name: 'Developer Tools'
+    })
+  })
+
+  arr.push({
+    type: 'separator'
+  })
+  arr.push({
+    label: 'Show Setting',
+    click: () => sendToMain({
+      name: 'show setting'
+    })
+  })
+
+  const settingMenu = Menu.buildFromTemplate(arr);
+
+
+  settingMenu.popup();
 }
 
 ipcRenderer.on('user_info', (event, data) => {
@@ -244,7 +399,7 @@ function renderMessage(cm) {
       browser.setting[k] = cm.var[k]
       _setting_[k] = cm.var[k]
     }
-    
+
 
   } else if (cm.name == "show setting") {
     render_new_tab({
@@ -365,12 +520,12 @@ function renderMessage(cm) {
 
         $('.address-input .protocol').html(protocol)
         let w = document.querySelectorAll('.address-input')[0].clientWidth / 13
-        if(url.length > w){
+        if (url.length > w) {
           $('.address-input .url').html(url.substring(0, w) + ' ...')
-        }else{
+        } else {
           $('.address-input .url').html(url)
         }
-       
+
 
       }
     }
@@ -488,13 +643,13 @@ function init_tab() {
 
 init_tab()
 
-window.addEventListener('resize', ()=>{
- let url =  $("#" + currentTabId ).attr('url')
- url = url.replace('https://' , '').replace('http://' , '')
+window.addEventListener('resize', () => {
+  let url = $("#" + currentTabId).attr('url')
+  url = url.replace('https://', '').replace('http://', '')
   let w = document.querySelectorAll('.address-input')[0].clientWidth / 13
-  if(url.length > w){
+  if (url.length > w) {
     $('.address-input .url').html(url.substring(0, w) + ' ...')
-  }else{
+  } else {
     $('.address-input .url').html(url)
   }
 });

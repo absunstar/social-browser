@@ -219,6 +219,7 @@ class SocialTabs {
   }
 
   addTab(tabProperties) {
+    console.log(tabProperties)
     if (typeof $$$ === 'object' && typeof $$$.browser === 'object') {
       _setting_ = $$$.browser.var
     }

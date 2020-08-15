@@ -18,25 +18,9 @@ module.exports = function (___) {
                 })
                 if (f.src && !exists) {
                     iframes.push(f)
-                    f.addEventListener("load", function () {
-                        let doc = null
-                        try {
-                            if (doc = this.contentWindow.document) {
-                                window.___activate_context_menu(doc, this.contentWindow);
-                            }
-                        } catch (error) {
-                            console.log(error)
-                        }
-
-                    })
+                  //  f.setAttribute('allow' , '')
+                   // f.setAttribute('sandbox' , '')
                 }
-            })
-        }
-
-
-        if (frame_list.length > 0) {
-            frame_list.forEach(f => {
-                f.setAttribute('preload', ___.browser.files_dir + '/js/window-context-menu.js')
             })
         }
 
@@ -61,6 +45,7 @@ module.exports = function (___) {
             if (el.src.like('*youtube.com*')) {
                 return false;
             } else if (!el.src.like(document.location.protocol + '//' + document.location.hostname + '*')) {
+                console.log(el);
                 el.remove();
             }
         })
@@ -71,10 +56,30 @@ module.exports = function (___) {
 
     }
 
+    function removeEmptyIframes() {
+        console.log('try removing empty iframes ...')
+
+        document.querySelectorAll('iframe').forEach(el => {
+            if (!el.src) {
+                console.log(el);
+                el.remove();
+            }
+        })
+
+        setTimeout(() => {
+            removeEmptyIframes()
+        }, 1000 * 3)
+
+    }
 
     if (___.browser.var.blocking.ex_iframe) {
 
         removeExternalIframes()
+
+    }
+    if (___.browser.var.blocking.empty_iframe) {
+
+        removeEmptyIframes()
 
     }
 }

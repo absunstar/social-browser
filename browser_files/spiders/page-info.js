@@ -50,7 +50,7 @@ module.exports = function init(site , browser) {
         })
 
         setTimeout(() => {
-            if(win){
+            if(win && !win.isDestroyed()){
                 win.close()
             }
         }, 1000 * 10);
@@ -71,7 +71,7 @@ module.exports = function init(site , browser) {
         })
 
         win.once('ready-to-show', () => {
-            // win.showInactive()
+             win.showInactive()
        })
 
     }

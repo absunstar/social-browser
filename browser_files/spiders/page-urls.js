@@ -11,7 +11,7 @@ module.exports = function init(site, browser) {
     ipcMain.on('page-urls', (event, data) => {
 
         let win = BrowserWindow.fromId(data.win_id)
-        if (win) {
+        if(win && !win.isDestroyed()){
             win.close()
         }
 
@@ -95,7 +95,7 @@ module.exports = function init(site, browser) {
             console.log('... URLS window closed ...')
         })
         win.once('ready-to-show', () => {
-             //win.showInactive()
+             win.showInactive()
         })
 
     }

@@ -1,34 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Mini Video</title>
+   
     <style>
-        video {
-            position: absolute;
-            left: 0px;
-            top: 0px;
-            height: 100%;
-            width: 100%;
-            background-color: #292929;
-            border: none;
-        }
+      video {
+        position: absolute;
+        left: 1%;
+        top: 1%;
+        height: 98%;
+        width: 98%;
+        border: none;
+        object-fit: fill;
+      }
     </style>
-</head>
+  </head>
 
-<body>
-
-
-
-    <video preload="auto" x-webkit-airplay="allow" webkit-playsinline controls autoplay></video>
+  <body>
+    <video  class="video-js"  data-setup="{}" preload="auto" autobuffer x-webkit-airplay="allow" webkit-playsinline controls autoplay>
+      <source type="video/mp4" />
+    </video>
 
     <script>
-        let url = document.location.href.split('?url=')[1]
-        document.querySelector('video').src = url
+      let url = document.location.href.split("?url=")[1];
+      document.querySelector("video source").src = url;
     </script>
-</body>
-
+   
+  </body>
 </html>

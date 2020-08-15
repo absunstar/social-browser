@@ -1,12 +1,42 @@
+* {
+  filter: none !important;
+  -webkit-filter: none !important;
+}
+
 .blurxxx {
   filter: blur(20px);
   -webkit-filter: blur(20px);
 }
+video {
+  width: 100%;
+  height: 90%;
+}
+#xxx__browser a {
+  color: yellow;
+  text-decoration: underline;
+  font-style: italic;
+}
 
+#__blockDiv {
+  display: none;
+  position: fixed;
+  background: #000000;
+  color: #ffffff;
+  width: auto;
+  height: auto;
+  text-align: center;
+  font-size: 22px;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  padding: 50px;
+  z-index: 9999998;
+}
 #__alertBox {
   display: none;
   position: fixed;
-  background: #272727;
+  background: #2196f3;
   color: #ffffff;
   width: auto;
   height: auto;
@@ -52,7 +82,17 @@
   border: 1px solid #bbb;
 }
 
-
+#__video_element {
+  z-index: 9999999;
+  position: fixed;
+  display: none;
+  background: #000;
+  height: 230px;
+  width: 420px;
+  padding: 1px;
+  right: 5px;
+  bottom: 5px;
+}
 /* 
 ::-webkit-scrollbar {
     width: 15px;

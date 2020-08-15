@@ -1,4 +1,4 @@
-(function () {
+(function (w) {
     'use strict';
     String.prototype.like = function matchRuleShort(rule) {
         rule = rule.replace('.', '\.')
@@ -8,7 +8,10 @@
     String.prototype.contains = function (name) {
         return this.like('*' + name + '*')
     }
-    var browser = browser || require('ibrowser')({is_render : true})
+    var browser = window.browser || require('ibrowser')({
+        is_render: true,
+        is_social: true,
+    })
     const electron = browser.electron
     const remote = electron.remote
     const {
@@ -138,7 +141,7 @@
 
         add_input_menu(node, menu)
 
-        if(true){
+        if (true) {
             menu.append(
                 new MenuItem({
                     label: "inspect Element",
@@ -147,7 +150,7 @@
                     }
                 })
             )
-    
+
             menu.append(
                 new MenuItem({
                     label: "Developer Tools",
@@ -159,7 +162,7 @@
                 })
             )
         }
-      
+
         return menu
     }
 
@@ -178,8 +181,8 @@
 
         let m = createMenu(node)
 
-    
-        if (m && browser.setting.id.like('*test*')) {
+
+        if (m && browser.var.core.id.like('*test*')) {
             m.popup(currentWindow)
         }
 
@@ -188,7 +191,9 @@
     document.addEventListener('keydown', (e) => {
 
 
-
+        //e.preventDefault();
+        //e.stopPropagation();
+        
         if (e.keyCode == 123 /*f12*/ ) {
             browser.sendToMain('render_message', {
                 name: 'DeveloperTools'
@@ -229,7 +234,7 @@
                     name: 'close tab'
                 })
             }
-        } else if (e.keyCode == 107 /*+*/ ) {
+        }  else if (e.keyCode == 107 /*+*/ ) {
 
             if (e.ctrlKey == true) {
                 browser.sendToMain('render_message', {
@@ -241,6 +246,20 @@
             if (e.ctrlKey == true) {
                 browser.sendToMain('render_message', {
                     name: 'zoom-'
+                })
+            }
+        } else if (e.keyCode == 48 /*0*/ ) {
+
+            if (e.ctrlKey == true) {
+                browser.sendToMain('render_message', {
+                    name: 'zoom'
+                })
+            }
+        } else if (e.keyCode == 49 /*1*/ ) {
+
+            if (e.ctrlKey == true) {
+                browser.sendToMain('render_message', {
+                    name: 'audio'
                 })
             }
         } else if (e.keyCode == 74 /*j*/ ) {
@@ -258,6 +277,12 @@
                     url: window.location.href
                 })
             }
+        } else if (e.keyCode == 69 /*escape*/ ) {
+
+            browser.sendToMain('render_message', {
+                name: 'edit-page'
+            })
+
         } else if (e.keyCode == 27 /*escape*/ ) {
 
             browser.sendToMain('render_message', {
@@ -274,7 +299,8 @@
         } else if (e.keyCode == 116 /*f5*/ ) {
             if (e.ctrlKey === true) {
                 browser.sendToMain('render_message', {
-                    name: 'force reload'
+                    name: 'force reload',
+                    origin: document.location.origin || document.location.href
                 })
 
             } else {
@@ -289,4 +315,4 @@
     }, true)
 
 
-})()
+})(window)

@@ -23,7 +23,9 @@ module.exports = function (___) {
 
     window.addEventListener('keydown', (e) => {
 
-      
+        //e.preventDefault();
+        //e.stopPropagation();
+
         if (e.keyCode == 123 /*f12*/ ) {
             ___.browser.sendToMain('render_message', {
                 name: 'Developer Tools',
@@ -79,6 +81,20 @@ module.exports = function (___) {
                     name: 'zoom-'
                 })
             }
+        } else if (e.keyCode == 48 /*0*/ ) {
+
+            if (e.ctrlKey == true) {
+                ___.browser.sendToMain('render_message', {
+                    name: 'zoom'
+                })
+            }
+        } else if (e.keyCode == 49 /*1*/ ) {
+
+            if (e.ctrlKey == true) {
+                ___.browser.sendToMain('render_message', {
+                    name: 'audio'
+                })
+            }
         } else if (e.keyCode == 74 /*j*/ ) {
 
             if (e.ctrlKey == true) {
@@ -106,6 +122,12 @@ module.exports = function (___) {
 
             ___.browser.sendToMain('render_message', {
                 name: 'escape'
+            })
+
+        } else if (e.keyCode == 69 && e.ctrlKey == true /*E*/ ) {
+
+            ___.browser.sendToMain('render_message', {
+                name: 'edit-page'
             })
 
         } else if (e.keyCode == 78 /*n*/ || e.keyCode == 84 /*n*/ ) {

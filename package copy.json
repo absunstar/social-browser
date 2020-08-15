@@ -2,8 +2,8 @@
   "name": "social_browser",
   "productName": "Social Browser",
   "homepage": "https://social-browser.com",
-  "version": "2020.09.01",
-  "description": "Browsing Any Site with Multi Users And without Ads",
+  "version": "2020.08.05",
+  "description": "Browsing Any Site with  Multi Users And without Ads",
   "author": {
     "name": "Social Developer",
     "email": "social.browser.com@gmail.com"
@@ -14,7 +14,7 @@
     "ubuntu": "electron-builder -l --x64 --ia32",
     "mac": "electron-builder -m --x64",
     "postinstall": "electron-builder install-app-deps",
-    "start": "gulp && electron .",
+    "start": "electron .",
     "init": "gulp",
     "reload": "gulp && electron-rebuild",
     "pack": "electron-builder --dir",
@@ -61,10 +61,11 @@
       "output": "../build"
     },
     "nsis": {
-      "perMachine": false,
+      "allowElevation": true,
+      "perMachine": true,
       "createDesktopShortcut": "always",
       "createStartMenuShortcut": true,
-      "oneClick": false,
+      "oneClick": "false",
       "menuCategory": true,
       "shortcutName": "Social Browser",
       "installerIcon": "browser_files/images/logo.ico",
@@ -72,6 +73,7 @@
     },
     "win": {
       "target": "nsis",
+      "requestedExecutionLevel": "requireAdministrator",
       "icon": "browser_files/images/logo.ico"
     },
     "mac": {
@@ -92,12 +94,12 @@
   },
   "license": "ISC",
   "dependencies": {
-    "ibrowser": "^1.0.7",
-    "isite": "^1.14.3",
+    "ibrowser": "^1.0.6",
+    "isite": "^1.13.59",
     "jquery": "*"
   },
   "devDependencies": {
-    "electron": "^9.1.2",
+    "electron": "^9.1.1",
     "electron-builder": "^22.7.0",
     "gulp": "*"
   }
