@@ -33,6 +33,39 @@ video {
   padding: 50px;
   z-index: 9999998;
 }
+
+#__bookmarkDiv {
+  display: none;
+  position: fixed;
+  width: auto;
+  height: auto;
+  text-align: center;
+  font-size: 22px;
+  left: 0px;
+  right: 0px;
+  bottom: 100px;
+  padding: 50px;
+  z-index: 9999998;
+}
+#__bookmarkDiv a {
+  display: inline-block;
+  margin: 10px;
+  background: #fff;
+  padding: 10px;
+  color: #000 !important;
+  text-decoration: none !important;
+  border: 1px solid #bbb;
+  transition: all .2s ease;
+}
+#__bookmarkDiv a:hover {
+  transform: scale(1.3);
+}
+#__bookmarkDiv p,
+#__bookmarkDiv img {
+  display: inline-block;
+  padding: 0px;
+  margin: 0px;
+}
 #__alertBox {
   display: none;
   position: fixed;

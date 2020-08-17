@@ -36,17 +36,6 @@
       "!**/uploads",
       "!**/build"
     ],
-    "fileAssociations": [
-      {
-        "name": "Open in Social Browser",
-        "ext": [
-          "html",
-          "htm",
-          "xhtml"
-        ],
-        "role": "Viewer"
-      }
-    ],
     "protocols": [
       {
         "name": "Social Browser Explorer File URL",
@@ -61,10 +50,11 @@
       "output": "../build"
     },
     "nsis": {
+      "allowElevation": true,
+      "oneClick": false,
       "perMachine": false,
       "createDesktopShortcut": "always",
       "createStartMenuShortcut": true,
-      "oneClick": false,
       "menuCategory": true,
       "shortcutName": "Social Browser",
       "installerIcon": "browser_files/images/logo.ico",
@@ -73,6 +63,9 @@
     "win": {
       "target": "nsis",
       "icon": "browser_files/images/logo.ico"
+    },
+    "squirrelWindows": {
+      "msi": true
     },
     "mac": {
       "category": "public.app-category.entertainment"

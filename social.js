@@ -184,7 +184,7 @@ browser.on("message", function (event, data) {
 })
 
 app.setAsDefaultProtocolClient('browser');
-app.setPath('userData', browser.path.join(browser.data_dir, 'default'))
+
 
 // browser.allow_widevinecdm(app)
 

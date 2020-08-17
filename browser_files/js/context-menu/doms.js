@@ -12,8 +12,8 @@ module.exports = function (___) {
         arr.forEach(sl => {
             if (window.location.href.like(sl.url) && !window.location.href.like(sl.ex_url || '')) {
                 document.querySelectorAll(sl.select).forEach(el => {
-                    console.log('Remove Next DOM With Selector : ' + sl.select)
-                    console.log(el)
+                   // console.log('Remove Next DOM With Selector : ' + sl.select)
+                   // console.log(el)
                     if (sl.remove) {
                         el.remove();
                     } else if (sl.hide) {

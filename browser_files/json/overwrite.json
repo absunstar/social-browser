@@ -9,8 +9,8 @@
             "to" : "http://127.0.0.1:60080/images/logo.png"
         },
         {
-            "from" : "xxhttps://www.youtube.com/get_video_info*",
-            "to" : "http://127.0.0.1:60080/overwrite/txt/get_video_info.txt"
+            "from" : "xxchrome-extension://*cast_sender.js",
+            "to" : "http://127.0.0.1:60080/overwrite/js/cast_sender.js"
         }
     ]
 }

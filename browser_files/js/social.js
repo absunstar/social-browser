@@ -1,3 +1,16 @@
+String.prototype.test = function matchRuleShort(reg) {
+  return new RegExp(reg).test(this);
+}
+
+String.prototype.like = function matchRuleShort(rule) {
+  rule = rule.replace('.', '\.')
+  return new RegExp("^" + rule.split("*").join(".*") + "$", "giu").test(this);
+}
+
+String.prototype.contains = function (name) {
+  return this.like('*' + name + '*')
+}
+
 var browser = window.browser || require('ibrowser')({
   is_render: true,
   is_social: true,
@@ -7,7 +20,7 @@ window._setting_ = browser.var
 
 const {
   remote,
-  nativeImage ,
+  nativeImage,
   ipcRenderer
 } = browser.electron
 const {
@@ -18,7 +31,7 @@ const {
 function sendToMain(obj) {
   browser.sendToMain("render_message", obj)
 }
-browser.on('bookmarks' , (event, data)=>{
+browser.on('bookmarks', (event, data) => {
   browser.var.bookmarks = data.list
 })
 
@@ -61,17 +74,39 @@ function showSettingMenu() {
   browser.var.bookmarks.forEach(b => {
     bookmark_arr.push({
       label: b.title,
-      sublabel : b.url,
-      icon : nativeImage.createFromPath(b.favicon).resize({width : 16 , height : 16}),
+      sublabel: b.url,
+      icon: nativeImage.createFromPath(b.favicon).resize({
+        width: 16,
+        height: 16
+      }),
       click: () => sendToMain({
         name: 'open new tab',
         url: b.url
       })
     })
   })
-  bookmark_arr.push({
-    type: 'separator'
-  })
+
+  if(browser.var.bookmarks.length > 0){
+    bookmark_arr.push({
+      type: 'separator'
+    })
+  
+    bookmark_arr.push({
+      label: 'Open all bookmarks',
+      visible : browser.var.bookmarks.length > 0,
+      click: () => {
+        browser.var.bookmarks.forEach(b => {
+          sendToMain({
+            name: 'open new tab',
+            url: b.url
+          })
+        })
+  
+      }
+    })
+  }
+
+
   let bookmark = new MenuItem({
     label: "Bookmarks",
     type: 'submenu',
@@ -189,7 +224,7 @@ browser.$is_full_screen = false
 socialTabs.init(socialTabsDom, {
   tabOverlapDistance: 14,
   minWidth: 35,
-  maxWidth: 243
+  maxWidth: 270
 })
 
 
@@ -435,8 +470,14 @@ function renderMessage(cm) {
   } else if (cm.name == "update-title") {
 
     if (cm.title) {
-      $("#" + cm.tab_id + " .social-tab-title").text(cm.title)
+
+      $("#" + cm.tab_id + " .social-tab-title p").text(cm.title)
       $("#" + cm.tab_id).attr('title', cm.title)
+      if (cm.title.test(/^[a-zA-Z\-\u0590-\u05FF\0-9\^\@\_\:\?\[\]\~\<\>\{\}\|\\ ]+$/g)) {
+        document.querySelector("#" + cm.tab_id + " .social-tab-title p").style.direction = "ltr"
+      } else {
+        document.querySelector("#" + cm.tab_id + " .social-tab-title p").style.direction = "rtl"
+      }
     }
 
   } else if (cm.name == "update-audio") {
@@ -487,9 +528,6 @@ function renderMessage(cm) {
       } else {
         let protocol = ''
         let url = ''
-
-
-
         if (cm.url.like('https*')) {
           protocol = 'https'
           $('.address-input .https').html(protocol)

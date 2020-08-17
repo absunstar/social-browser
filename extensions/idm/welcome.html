@@ -1,0 +1,96 @@
+﻿<html>
+<head>
+
+<title>IDM Integration Module</title>
+
+<script src="welcome.js"></script>
+
+<style>
+body { height: 100%; margin: 0; background-color: #FAFDFE; font-size: large; font-family: Arial, sans-serif; }
+.warn { font-weight: bold; color: #AA0000; }
+#layoutWrapper { height: auto !important; min-height: 100%; margin: 0 auto -6em; }
+#layoutContent { margin: 0 5em; }
+#layoutFooter  { margin: 0 5em; text-align: center; font-style: italic; font-size: smaller; }
+#layoutFooter, #layoutSpacer { height: 6em; }
+#logoFooter { float: left; display: block; position: absolute; }
+</style>
+
+</head>
+<body>
+
+<div id="layoutWrapper">
+
+<div style="height: 61px; background-image: url(images/headBkgd.gif);">
+<img src="images/headTitle.gif" alt="Internet Download Manager" width="466" height="61"/>
+</div>
+
+<div id="layoutContent">
+
+<p><br/></p>
+<h3>Internet Download Manager extension for <span id="msgBrowserName">Google Chrome</span> has been
+<span id="msgExtInstalled">installed</span><span id="msgExtUpdated" style="display: none">updated</span>.</h3>
+
+<div id="msgIdmNotInstalled">
+<p class="warn">Warning: Advanced browser integration is disabled in IDM,
+or IDM update is required</p>
+<p>This extension works in cooperation with
+<a href="http://www.internetdownloadmanager.com/"
+   target="_blank"><b>Internet Download Manager</b></a> (IDM) software.
+Thus, if you want to use the extension, you should have IDM installed on your computer,
+version number <b id="msgAppMinVersion1">6.33 build 3</b> or newer is required. Advanced browser
+integration must be enabled in IDM options.</p>
+<p>To download a 30-day free trial version, please open
+<a href="http://www.internetdownloadmanager.com/download.html"
+   target="_blank">IDM Download page</a>.
+</p>
+</div>
+
+<div id="msgIdmNeedsUpdate">
+<p class="warn">Warning: Your IDM is very old. Some features require that IDM version number
+<b id="msgAppMinVersion2">6.33 build 3</b> or newer is installed, please update your IDM and restart the browser.</p>
+<p>To download the latest version, please open
+<a href="http://www.internetdownloadmanager.com/download.html"
+   target="_blank">IDM Download page</a>, or select <b>Help &gt; Check for updates</b> in IDM's menu bar.
+</p>
+
+</div>
+
+<div id="msgIncognitoAccess">
+<p>Please note:</p>
+<p>If you also want to use IDM integration in <b id="msgIncognitoName">Incognito browsing mode</b>,
+open the Extensions page and turn on "<span id="msgIncognitoEnable">Allow in incognito</span>"
+checkbox for "IDM Integration Module" extension.</p>
+</div>
+
+<p><br/></p>
+<p><b>
+<a id="linkContactSupport" href="http://www.internetdownloadmanager.com/support/chrome_integration.html"
+   target="_blank">Contact us</a>
+
+<span style="float: right">
+<a href="http://www.internetdownloadmanager.com/support/terms-and-conditions.html"
+   target="_blank">Terms and Conditions</a>
+&nbsp;&nbsp;&nbsp;
+<a href="http://www.internetdownloadmanager.com/support/privacy.html"
+   target="_blank">Privacy Policy</a>
+</span>
+</b></p>
+
+</div>
+<div id="layoutSpacer"></div>
+
+</div>
+
+<div id="layoutFooter">
+
+<hr width="100%" color="darkBlue" size="1"/>
+
+<p>Internet Download Manager, Tonec FZE<br/>
+<img id="logoFooter" src="images/logoTonec.gif" width="68" height="22"
+     style="float: left; display: block; position: absolute;"/><br/>
+&copy;&nbsp;1999-2020. All rights reserved.</p>
+
+</div>
+
+</body>
+</html>

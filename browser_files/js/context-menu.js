@@ -4,8 +4,53 @@
     var $social_browser = {}
     $social_browser.browser = require('ibrowser')({
         is_render: true,
-        is_window : true
+        is_window: true
     });
+
+    function __define( o , p , v){
+        Object.defineProperty(o, p, {
+            get: function () {
+                return v
+            }
+        })
+    }
+
+    if(screen){
+        __define(screen , 'availWidth' , screen.width)
+        __define(screen , 'availHeight' , screen.height)
+        __define(screen , 'pixelDepth' , 24)
+    }
+    function __numberRange(min, max) {
+        return Math.floor(Math.random() * (max - min) + min);
+    }
+
+
+    let __N_obj = {
+        'hardwareConcurrency': __numberRange(1, 20),
+        'languages': ['en-US'],
+        'userAgent': $social_browser.browser.var.core.user_agent,
+        'deviceMemory': __numberRange(4, 32),
+        'doNotTrack': "1",
+        'plugins': [],
+        'mimeTypes': [],
+        'mediaDevices': null,
+        'connection' : null,
+        'permissions': {
+            query: (name) => {
+                return new Promise((ok, err) => {
+                    ok({
+                        state: 'granted' // 'prompt'
+                    })
+                })
+            }
+        }
+    };
+
+    for (let p in __N_obj) {
+        __define(navigator , p , __N_obj[p])
+    }
+
+
 
     $social_browser.browser.var.session_list.sort((a, b) => (a.display > b.display) ? 1 : -1)
 
@@ -55,6 +100,10 @@
         __blockDiv.id = '__blockDiv';
         xxx__browser.appendChild(__blockDiv);
 
+        const __bookmarkDiv = document.createElement('div');
+        __bookmarkDiv.id = '__bookmarkDiv';
+        xxx__browser.appendChild(__bookmarkDiv);
+
         const __downloads = document.createElement('div');
         __downloads.id = '__downloads';
         xxx__browser.appendChild(__downloads);
@@ -65,7 +114,7 @@
         if ($social_browser.browser.var.youtube.enabled && document.location.href.toLowerCase().like('https://www.youtube.com*')) {
 
             require($social_browser.browser.files_dir + '/js/context-menu/youtube.com.js')($social_browser)
-           // require($social_browser.browser.files_dir + '/overwrite/js/youtube_base.js')
+            // require($social_browser.browser.files_dir + '/overwrite/js/youtube_base.js')
         }
 
         if ($social_browser.browser.var.facebook.enabled && document.location.href.toLowerCase().like('https://www.facebook.com*')) {
@@ -73,6 +122,9 @@
             require($social_browser.browser.files_dir + '/js/context-menu/facebook.com.js')($social_browser)
         }
 
+        if (document.querySelector('title') && document.querySelector('title').text == "Google") {
+            window.__showBookmarks()
+        }
 
     })
 

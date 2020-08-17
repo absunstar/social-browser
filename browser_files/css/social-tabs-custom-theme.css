@@ -57,8 +57,13 @@
   white-space: nowrap;
   font-size: 12px;
   margin-top: 5px;
-  max-width: calc(100% - 100px);
+  max-width: calc(100% - 70px);
   pointer-events: none;
+}
+.social-tabs .social-tab-title p{
+  margin: 0px;
+  padding: 0px;
+  width: 100%;
 }
 
 .social-address-bar {

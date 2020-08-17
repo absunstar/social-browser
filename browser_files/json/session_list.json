@@ -19,8 +19,8 @@
         "can_delete": false
     },
     {
-        "name": "memory",
-        "display": "Memory",
+        "name": "private",
+        "display": "Private Mode",
         "can_delete": false
     }
 ]

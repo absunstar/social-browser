@@ -232,10 +232,14 @@
   white-space: nowrap;
   font-size: 1.2em;
   margin-top: 0.5em;
-  max-width: calc(100% - 7em);
+  max-width: calc(100% - 70px);
   pointer-events: none;
 }
-
+.social-tabs .social-tab-title p{
+  margin: 0px;
+  padding: 0px;
+  width: 100%;
+}
 .social-tabs .social-tab-close {
   position: absolute;
   width: 1.4em;

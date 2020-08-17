@@ -2,12 +2,12 @@
 
      if (___.browser.var.javascript.remove_eval) {
          window.eval = function (code) {
-             console.log(code)
+            // console.log(code)
          }
      }
 
      if (___.browser.var.javascript.remove_console_log) {
-         window.console.log = function () {}
+        // window.console.log = function () {}
      }
 
      ___.upTo = function (el, tagName) {
@@ -43,7 +43,7 @@
      }
 
      ___.browser.electron.ipcRenderer.on('webview_message', (event) => {
-         console.log(event)
+        // console.log(event)
      })
 
      ___.sendMessage = function (cm) {
@@ -64,6 +64,23 @@
              }
          }
      }
+     window.__showBookmarks = function () {
+        
+            let div = document.querySelector('#__bookmarkDiv')
+            if (div) {
+                ___.browser.var.bookmarks.forEach(b=>{
+                    b.image = b.image || ___.browser.electron.remote.nativeImage.createFromPath(b.favicon).resize({width : 16 , height : 16}).toDataURL()
+                    div.innerHTML +=`
+                    <a class="bookmark" href="${b.url}" target="_blank">
+                        <img src="${b.image}" onerror="this.src=null"/>
+                        <p class="title"> ${b.title} </p>
+                    </a>
+                    `
+                })
+                div.style.display = "block";
+            }
+        
+    }
      window.__blockPage = window.prompt = function (block , msg) {
          let div = document.querySelector('#__blockDiv')
          if (div && block) {

@@ -64,11 +64,11 @@ module.exports = function (___) {
         }
 
         if (options.start) {
-            console.log('start')
+           // console.log('start')
             recordedChunks = []
             mediaRecorder.start();
             setTimeout(() => {
-                console.log('stop')
+              //  console.log('stop')
                 mediaRecorder.stop();
             }, 1000 * 10);
         }
@@ -103,7 +103,7 @@ module.exports = function (___) {
             let videoElement = document.querySelector('#__video_element');
             videoElement.style.display = 'block';
 
-            console.log(videoElement)
+           // console.log(videoElement)
             const constraints = {
                 audio: false,
                 video: {
@@ -118,7 +118,7 @@ module.exports = function (___) {
             const stream = await navigator.mediaDevices
                 .getUserMedia(constraints);
 
-            console.log(stream);
+           // console.log(stream);
             // Preview the source in a video element
             videoElement.srcObject = stream;
             videoElement.play();
@@ -138,7 +138,7 @@ module.exports = function (___) {
 
         // Captures all recorded chunks
         function handleDataAvailable(e) {
-            console.log('video data available');
+           // console.log('video data available');
             recordedChunks.push(e.data);
         }
 
@@ -1108,7 +1108,19 @@ module.exports = function (___) {
             if (f.src && f.src.startsWith('http')) {
 
                 arr3.push({
-                    label: "Play Source  " + f.src,
+                    label: "Play video source  " + f.src,
+                    click() {
+                        ___.browser.sendToMain('render_message', {
+                            name: 'mini_video',
+                            alwaysOnTop: true,
+                            partition: partition,
+                            url: f.src,
+                            referrer: doc.location.href
+                        })
+                    }
+                })
+                arr3.push({
+                    label: "Open in new window",
                     click() {
                         ___.browser.sendToMain('render_message', {
                             name: 'new_window',
@@ -1676,7 +1688,7 @@ module.exports = function (___) {
     }
 
     let contextMenuHandle = function (e) {
-        console.log('window.oncontextmenu')
+       // console.log('window.oncontextmenu')
         try {
             let xwin = ___.browser.remote.getCurrentWindow()
             let factor = xwin.webContents.zoomFactor || 1;

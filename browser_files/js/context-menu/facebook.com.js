@@ -1,6 +1,6 @@
 module.exports = function (___) {
     let setting = ___.browser.var
-    console.log('facebook context menu loading ...')
+   // console.log('facebook context menu loading ...')
 
     function addCss(css) {
 

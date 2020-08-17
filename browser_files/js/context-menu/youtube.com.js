@@ -1,11 +1,11 @@
 module.exports = function (___) {
 
-    console.log('youtube context menu loading ...')
+   // console.log('youtube context menu loading ...')
 
     let setting = ___.browser.var
 
     function remove_current_youtube_video() {
-        console.log('try removing youtube video ...')
+       // console.log('try removing youtube video ...')
 
 
         let videos = document.querySelectorAll('video,audio,img')
@@ -26,7 +26,7 @@ module.exports = function (___) {
             return
         }
 
-        console.log('Youtube Safty Mode Activated ...')
+       // console.log('Youtube Safty Mode Activated ...')
 
         if (document.location.href.toLowerCase().like('*youtube.com*') && setting.youtube.blocking.words) {
 
@@ -36,7 +36,7 @@ module.exports = function (___) {
                         let yt = ___.upTo(a, 'ytd-video-renderer') || ___.upTo(a, 'ytd-grid-video-renderer')
                         if (yt) {
                             yt.innerHTML = '<h3 style="color:red"> Unsafe Video Deleted </h3>'
-                            console.log('Remove Video : ' + a.href)
+                           // console.log('Remove Video : ' + a.href)
                         }
                     }
                 })
@@ -48,7 +48,7 @@ module.exports = function (___) {
                         let yt = ___.upTo(a, 'ytd-channel-renderer') || ___.upTo(a, 'ytd-playlist-renderer') || ___.upTo(a, 'ytd-compact-video-renderer')
                         if (yt) {
                             yt.innerHTML = '<h3 style="color:red">Unsafe Video</h3>'
-                            console.log('Remove Video : ' + a.href)
+                           // console.log('Remove Video : ' + a.href)
                         }
                     }
                 })
@@ -58,7 +58,7 @@ module.exports = function (___) {
 
             setting.youtube.blocking.selector.forEach(s => {
                 if (document.querySelectorAll(s).length > 0) {
-                    console.log(`Remove Video By Selector ${s}`)
+                   // console.log(`Remove Video By Selector ${s}`)
                     remove_current_youtube_video()
                 }
             })
@@ -67,7 +67,7 @@ module.exports = function (___) {
             if (content && content.innerText) {
                 setting.youtube.blocking.words.forEach(w => {
                     if (content.innerText.toLowerCase().like(w.text)) {
-                        console.log(`Remove Video By Content ${w}`)
+                      //  console.log(`Remove Video By Content ${w}`)
                         remove_current_youtube_video()
                     }
                 })
@@ -77,7 +77,7 @@ module.exports = function (___) {
             if (description && description.innerText) {
                 setting.youtube.blocking.words.forEach(w => {
                     if (description.innerText.toLowerCase().like(w.text)) {
-                        console.log(`Remove Video By Description ${w.text}`)
+                       // console.log(`Remove Video By Description ${w.text}`)
                         remove_current_youtube_video()
                     }
                 })
@@ -87,7 +87,7 @@ module.exports = function (___) {
             if (title && title.innerText && document.location.href.like('*watch*')) {
                 setting.youtube.blocking.words.forEach(w => {
                     if (title.innerText.toLowerCase().like(w.text)) {
-                        console.log(`Remove Video By title ${w}`)
+                       // console.log(`Remove Video By title ${w}`)
                         let body = document.querySelector('body')
                         if (body) {
                             body.className = 'blurxxx'
@@ -134,7 +134,7 @@ module.exports = function (___) {
                 try {
                     v.currentTime = parseFloat(v.duration)
                 } catch {
-                    console.log(v)
+                   // console.log(v)
                 }
 
             }

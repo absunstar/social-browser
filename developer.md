@@ -13,6 +13,8 @@ git config credential.helper store
 
   ## need update
   browser fingerprint update
+  site time watching
+  show bookmark on google main page
   ## new features add
   
   GA cookie reuse //change cookies before send to site

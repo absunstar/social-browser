@@ -8,7 +8,7 @@ const tabTemplate = `
       </div>
       <div class="social-tab-loading"></div>
       <div class="social-tab-favicon"></div>
-      <div class="social-tab-title"></div>
+      <div class="social-tab-title"><p ></p></div>
       <div class="social-tab-close pointer" title="Close Tab">
       <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'><path stroke='#5a5a5a' stroke-linecap='round' stroke-width='1.125' d='M4 4 L10 10 M10 4 L4 10'></path></svg>
       </div>
@@ -219,7 +219,7 @@ class SocialTabs {
   }
 
   addTab(tabProperties) {
-    console.log(tabProperties)
+    // console.log(tabProperties)
     if (typeof $$$ === 'object' && typeof $$$.browser === 'object') {
       _setting_ = $$$.browser.var
     }
@@ -339,7 +339,7 @@ class SocialTabs {
     tabEl.setAttribute('useragent', tabProperties.useragent)
     tabEl.setAttribute('partition', tabProperties.partition)
     tabEl.setAttribute('user_name', tabProperties.user_name)
-    tabEl.querySelector('.social-tab-title').textContent = tabProperties.title
+    tabEl.querySelector('.social-tab-title p').innerText = tabProperties.title
     tabEl.querySelector('.social-tab-favicon').style.backgroundImage = `url('${tabProperties.favicon}')`
   }
 

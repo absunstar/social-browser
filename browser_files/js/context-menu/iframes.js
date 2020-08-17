@@ -57,11 +57,11 @@ module.exports = function (___) {
     }
 
     function removeEmptyIframes() {
-        console.log('try removing empty iframes ...')
+       // console.log('try removing empty iframes ...')
 
         document.querySelectorAll('iframe').forEach(el => {
             if (!el.src) {
-                console.log(el);
+               // console.log(el);
                 el.remove();
             }
         })

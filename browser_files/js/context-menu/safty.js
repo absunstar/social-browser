@@ -17,7 +17,7 @@ module.exports = function (___) {
         if(exit){
             return
         }
-        console.log(' checking unsafe words')
+       // console.log(' checking unsafe words')
         setting.blocking.un_safe_words = setting.blocking.un_safe_words || [];
 
         if (setting.blocking.un_safe_words.length === 0) {
@@ -38,7 +38,7 @@ module.exports = function (___) {
 
         setting.blocking.un_safe_words.forEach(word => {
             if (text.like(word.text.toLowerCase())) {
-                console.log(' Blocking unsafe words ' + word.text)
+               // console.log(' Blocking unsafe words ' + word.text)
                 block = true
             }
         })
