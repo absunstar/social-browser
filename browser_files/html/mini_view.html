@@ -37,10 +37,10 @@
         document.querySelector('iframe').src = url
         document.querySelector("iframe").addEventListener("load", function () {
             this.style.display = "block";
-            let doc = null
-            if(doc = this.contentWindow.document){
-               document.querySelector('title').innerText = doc.querySelector('title').innerText
-            }
+            // let doc = null
+            // if(doc = this.contentWindow.document){
+            //    document.querySelector('title').innerText = doc.querySelector('title').innerText
+            // }
 
         })
     </script>

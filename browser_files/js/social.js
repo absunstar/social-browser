@@ -4,36 +4,342 @@ String.prototype.test = function matchRuleShort(reg) {
 
 String.prototype.like = function matchRuleShort(rule) {
   rule = rule.replace('.', '\.')
-  return new RegExp("^" + rule.split("*").join(".*") + "$", "giu").test(this);
+  return new RegExp("^" + rule.split("*").join(".*") + "$", "gium").test(this);
 }
 
 String.prototype.contains = function (name) {
   return this.like('*' + name + '*')
 }
 
-var browser = window.browser || require('ibrowser')({
-  is_render: true,
-  is_social: true,
-  message: "from social.html"
-})
-window._setting_ = browser.var
+var ___ = {}
+___.electron = require('electron')
+___.fs = require('fs')
+___.url = require('url')
+___.path = require('path')
+___.md5 = require('md5')
 
+___.callSync = function (channel, value) {
+  return ___.electron.ipcRenderer.sendSync(channel, value)
+}
+___.call = function (channel, value) {
+  return ___.electron.ipcRenderer.send(channel, value)
+}
+___.on = function (name, callback) {
+  ___.electron.ipcRenderer.on(name, callback)
+}
+___.var = ___.callSync('get_var', {
+  name: '*'
+})
+___.files_dir = ___.callSync('get_browser', {
+  name: 'files_dir'
+})
+
+___.currentWindow = ___.electron.remote.getCurrentWindow()
 const {
   remote,
-  nativeImage,
-  ipcRenderer
-} = browser.electron
+  nativeImage
+} = ___.electron
 const {
   Menu,
   MenuItem
 } = remote
 
 function sendToMain(obj) {
-  browser.sendToMain("render_message", obj)
+  ___.call("render_message", obj)
 }
-browser.on('bookmarks', (event, data) => {
-  browser.var.bookmarks = data.list
+
+___.on('var.bookmarks', (event, obj) => {
+  console.log(obj)
+  ___.var.bookmarks = obj.data
 })
+
+
+function add_input_menu(node, menu) {
+  if (!node) return
+
+
+  if (node.nodeName === 'INPUT' || node.contentEditable == true) {
+
+    let text = getSelection().toString()
+
+
+    menu.append(
+      new MenuItem({
+        label: 'Undo',
+        role: 'undo'
+      })
+    )
+    menu.append(
+      new MenuItem({
+        label: 'Redo',
+        role: 'redo'
+      })
+    )
+    menu.append(
+      new MenuItem({
+        type: "separator"
+      })
+    )
+    menu.append(
+      new MenuItem({
+        label: 'Cut',
+        role: 'cut',
+        enabled: text.length > 0
+      })
+    )
+
+    menu.append(
+      new MenuItem({
+        label: 'Copy',
+        role: 'copy',
+        enabled: text.length > 0
+      })
+    )
+
+    menu.append(
+      new MenuItem({
+        label: 'Paste',
+        role: 'paste'
+      })
+    )
+    menu.append(
+      new MenuItem({
+        label: 'Paste and Go',
+        click() {
+          document.execCommand('paste');
+          goURL();
+        }
+      })
+    )
+    menu.append(
+      new MenuItem({
+        label: 'Delete',
+        role: 'delete'
+      })
+    )
+    menu.append(
+      new MenuItem({
+        type: "separator"
+      })
+    )
+    menu.append(
+      new MenuItem({
+        label: 'Select All',
+        role: 'selectall'
+      })
+    )
+
+    menu.append(
+      new MenuItem({
+        type: "separator"
+      })
+    )
+
+    return
+  }
+
+  add_input_menu(node.parentNode, menu)
+
+}
+
+function createMenu(node) {
+
+  let menu = new Menu()
+
+  if (node.tagName == "VIDEO") {
+    return null
+  }
+
+  if (node.tagName == "OBJECT") {
+    return null
+  }
+
+  if (node.tagName == "IFRAME") {
+    return null
+  }
+  if (node.tagName == "FRAME") {
+    return null
+  }
+
+  if (node.tagName == "WEBVIEW") {
+    return null
+  }
+
+  add_input_menu(node, menu)
+
+  if (true) {
+    menu.append(
+      new MenuItem({
+        label: "inspect Element",
+        click() {
+          ___.currentWindow.inspectElement(rightClickPosition.x, rightClickPosition.y)
+        }
+      })
+    )
+
+    menu.append(
+      new MenuItem({
+        label: "Developer Tools",
+        click() {
+          ___.currentWindow.openDevTools({
+            mode: 'undocked'
+          })
+        }
+      })
+    )
+  }
+
+  return menu
+}
+
+let rightClickPosition = null
+document.addEventListener('contextmenu', (e) => {
+
+  rightClickPosition = {
+    x: e.x,
+    y: e.y
+  }
+
+  e.preventDefault();
+  e.stopPropagation();
+
+  let node = e.target;
+
+  let m = createMenu(node)
+
+
+  if (m && ___.var.core.id.like('*test*')) {
+    m.popup(___.currentWindow)
+  }
+
+})
+
+document.addEventListener('keydown', (e) => {
+
+
+  //e.preventDefault();
+  //e.stopPropagation();
+
+  if (e.keyCode == 123 /*f12*/ ) {
+    ___.call('render_message', {
+      name: 'DeveloperTools'
+    })
+  } else if (e.keyCode == 122 /*f11*/ ) {
+
+    if (!full_screen) {
+      ___.call('render_message', {
+        name: 'full_screen'
+      })
+      full_screen = true
+    } else {
+      ___.call('render_message', {
+        name: '!full_screen'
+      })
+      full_screen = false
+    }
+
+  } else if (e.keyCode == 121 /*f10*/ ) {
+    ___.call('render_message', {
+      name: 'service worker'
+    })
+  } else if (e.keyCode == 117 /*f6*/ ) {
+    ___.call('render_message', {
+      name: 'show addressbar'
+    })
+  } else if (e.keyCode == 70 /*f*/ ) {
+
+    if (e.ctrlKey == true) {
+      ___.call('render_message', {
+        name: 'show in-page-find'
+      })
+    }
+  } else if (e.keyCode == 115 /*f4*/ ) {
+
+    if (e.ctrlKey == true) {
+      ___.call('render_message', {
+        name: 'close tab'
+      })
+    }
+  } else if (e.keyCode == 107 /*+*/ ) {
+
+    if (e.ctrlKey == true) {
+      ___.call('render_message', {
+        name: 'zoom+'
+      })
+    }
+  } else if (e.keyCode == 109 /*-*/ ) {
+
+    if (e.ctrlKey == true) {
+      ___.call('render_message', {
+        name: 'zoom-'
+      })
+    }
+  } else if (e.keyCode == 48 /*0*/ ) {
+
+    if (e.ctrlKey == true) {
+      ___.call('render_message', {
+        name: 'zoom'
+      })
+    }
+  } else if (e.keyCode == 49 /*1*/ ) {
+
+    if (e.ctrlKey == true) {
+      ___.call('render_message', {
+        name: 'audio'
+      })
+    }
+  } else if (e.keyCode == 74 /*j*/ ) {
+
+    if (e.ctrlKey == true) {
+      ___.call('render_message', {
+        name: 'downloads'
+      })
+    }
+  } else if (e.keyCode == 83 /*s*/ ) {
+
+    if (e.ctrlKey == true) {
+      ___.call('render_message', {
+        name: 'download-url',
+        url: window.location.href
+      })
+    }
+  } else if (e.keyCode == 69 /*escape*/ ) {
+
+    ___.call('render_message', {
+      name: 'edit-page'
+    })
+
+  } else if (e.keyCode == 27 /*escape*/ ) {
+
+    ___.call('render_message', {
+      name: 'escape'
+    })
+
+  } else if (e.keyCode == 78 /*n*/ || e.keyCode == 84 /*t*/ ) {
+
+    if (e.ctrlKey == true) {
+      ___.call('render_message', {
+        name: 'open new tab'
+      })
+    }
+  } else if (e.keyCode == 116 /*f5*/ ) {
+    if (e.ctrlKey === true) {
+      ___.call('render_message', {
+        name: 'force reload',
+        origin: document.location.origin || document.location.href
+      })
+
+    } else {
+      ___.call('render_message', {
+        name: 'reload'
+      })
+    }
+  }
+
+  return false
+
+}, true)
+
 
 function showSettingMenu() {
   let arr = [];
@@ -71,7 +377,7 @@ function showSettingMenu() {
   bookmark_arr.push({
     type: 'separator'
   })
-  browser.var.bookmarks.forEach(b => {
+  ___.var.bookmarks.forEach(b => {
     bookmark_arr.push({
       label: b.title,
       sublabel: b.url,
@@ -86,22 +392,22 @@ function showSettingMenu() {
     })
   })
 
-  if(browser.var.bookmarks.length > 0){
+  if (___.var.bookmarks.length > 0) {
     bookmark_arr.push({
       type: 'separator'
     })
-  
+
     bookmark_arr.push({
       label: 'Open all bookmarks',
-      visible : browser.var.bookmarks.length > 0,
+      visible: ___.var.bookmarks.length > 0,
       click: () => {
-        browser.var.bookmarks.forEach(b => {
+        ___.var.bookmarks.forEach(b => {
           sendToMain({
             name: 'open new tab',
             url: b.url
           })
         })
-  
+
       }
     })
   }
@@ -203,11 +509,11 @@ function showSettingMenu() {
   settingMenu.popup();
 }
 
-ipcRenderer.on('user_info', (event, data) => {
+___.on('user_info', (event, data) => {
   showInfo(data.message, data)
 })
 
-ipcRenderer.on('render_message', (event, data) => {
+___.on('render_message', (event, data) => {
   renderMessage(data)
 })
 
@@ -219,7 +525,7 @@ var currentWebview = null
 var currentTabId = null
 var webviewList = []
 var opendTabList = []
-browser.$is_full_screen = false
+___.$is_full_screen = false
 
 socialTabs.init(socialTabsDom, {
   tabOverlapDistance: 14,
@@ -277,7 +583,7 @@ function handleURL(u) {
 
 function showURL(u) {
   u = u || $('#' + currentTabId).attr('url')
-  browser.sendToMain('render_message', {
+  ___.call('render_message', {
     name: 'show addressbar',
     url: u
   })
@@ -289,7 +595,7 @@ var socialStatusBarT = null
 
 function showInfo(msg, options) {
 
-  if (browser.$is_full_screen) return
+  if (___.$is_full_screen) return
 
   options = Object.assign({
     class: 'bg-white black',
@@ -315,10 +621,10 @@ $(".social-close").click(() => {
   ExitSocialWindow()
 })
 $(".social-maxmize").click(() => {
-  browser.sendToMain("message", "maxmize")
+  ___.call("message", "maxmize")
 })
 $(".social-minmize").click(() => {
-  browser.sendToMain("message", "minmize")
+  ___.call("message", "minmize")
 })
 
 socialTabsDom.addEventListener("activeTabChange", ({
@@ -328,7 +634,7 @@ socialTabsDom.addEventListener("activeTabChange", ({
 
   currentTabId = detail.tabEl.id
 
-  browser.ipcRenderer.send('show-view', {
+  ___.call('show-view', {
     x: 0,
     y: 0,
     width: document.width,
@@ -350,7 +656,7 @@ socialTabsDom.addEventListener("tabAdd", ({
     })
 
     const $id = $("#" + currentTabId)
-    browser.ipcRenderer.send('new-view', {
+    ___.call('new-view', {
       x: window.screenLeft,
       y: window.screenTop + 70,
       width: document.width,
@@ -380,7 +686,7 @@ socialTabsDom.addEventListener("tabRemove", ({
 }) => {
   currentTabId = detail.id;
 
-  browser.ipcRenderer.send('close-view', {
+  ___.call('close-view', {
     _id: detail.id
   });
 })
@@ -430,18 +736,15 @@ function renderMessage(cm) {
     render_new_tab(cm)
   } else if (cm.name == "set-setting") {
     for (let k of Object.keys(cm.var)) {
-      browser.var[k] = cm.var[k]
-      browser.setting[k] = cm.var[k]
-      _setting_[k] = cm.var[k]
+      ___.var[k] = cm.var[k]
     }
-
 
   } else if (cm.name == "show setting") {
     render_new_tab({
       url: 'http://127.0.0.1:60080/setting'
     })
   } else if (cm.name == "download-url") {
-    browser.sendToMain("download-url", cm.url)
+    ___.call("download-url", cm.url)
   } else if (cm.name == "downloads") {
     showDownloads()
   } else if (cm.name == "escape") {
@@ -449,14 +752,14 @@ function renderMessage(cm) {
   } else if (cm.name == "close tab") {
     closeCurrentTab()
   } else if (cm.name == "reload") {
-    // let $window = ___.browser.electron.remote.getCurrentWindow()
+    // let $window = ___.___.electron.remote.getCurrentWindow()
   } else if (cm.name == "force reload") {
 
-    // browser.remote.session.fromPartition(currentWebview.getAttribute('partition')).clearCache(function () {
+    // ___.remote.session.fromPartition(currentWebview.getAttribute('partition')).clearCache(function () {
     //   currentWebview.reload(true)
     // });
 
-    // browser.remote.session.fromPartition(currentWebview.getAttribute('partition')).clearStorageData({
+    // ___.remote.session.fromPartition(currentWebview.getAttribute('partition')).clearStorageData({
     //   origin: cm.origin,
     //   storages: '',
     //   quotas : ''
@@ -603,23 +906,23 @@ function renderMessage(cm) {
 }
 
 function playMiniVideo(cm) {
-  return browser.ipcRenderer.send('new-video-window', cm)
+  return ___.call('new-video-window', cm)
 }
 
 function playMiniYoutube(cm) {
-  return browser.ipcRenderer.send('new-youtube-window', cm)
+  return ___.call('new-youtube-window', cm)
 }
 
 function playTrustedWindow(cm) {
-  return browser.ipcRenderer.send('new-trusted-window', cm);
+  return ___.call('new-trusted-window', cm);
 }
 
 function playWindow(cm) {
-  return browser.ipcRenderer.send('new-window', cm);
+  return ___.call('new-window', cm);
 }
 
 function playMiniIframe(cm) {
-  return browser.ipcRenderer.send('new-iframe-window', cm)
+  return ___.call('new-iframe-window', cm)
 }
 
 
@@ -638,7 +941,7 @@ function ExitSocialWindow() {
   })
 
   setTimeout(() => {
-    browser.sendToMain("message", "exit")
+    ___.call("message", "exit")
   }, 250);
 
 }
@@ -655,7 +958,7 @@ function showDownloads() {
 
 function init_tab() {
 
-  if (!_setting_ || !_setting_.core.session) {
+  if (!___.var || !___.var.core.session) {
     setTimeout(() => {
       init_tab()
     }, 250)
@@ -665,14 +968,14 @@ function init_tab() {
   client.getData('browser://api/request_url', (data) => {
     render_new_tab({
       url: data.url,
-      partition: _setting_.core.session.name,
-      user_name: _setting_.core.session.display
+      partition: ___.var.core.session.name,
+      user_name: ___.var.core.session.display
     })
   }, (err) => {
     render_new_tab({
-      url: _setting_.core.home_page,
-      partition: _setting_.core.session.name,
-      user_name: _setting_.core.session.display
+      url: ___.var.core.home_page,
+      partition: ___.var.core.session.name,
+      user_name: ___.var.core.session.display
     })
   })
 

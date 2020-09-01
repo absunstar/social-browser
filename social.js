@@ -67,10 +67,9 @@ var md5 = require('md5')
 const browser = require('ibrowser')({
   is_main: true,
   md5: md5,
-  electron : electron,
+  electron: electron,
   package: package
 })
-
 
 require('./proxy')(browser)
 
@@ -97,9 +96,8 @@ browser.mainWindow = mainWindow
 
 
 const gotTheLock = app.requestSingleInstanceLock()
- app.disableHardwareAcceleration()
-app.allowRendererProcessReuse = true
-app.commandLine.appendSwitch('disable-site-isolation-trials')
+
+
 
 app.on('second-instance', (commandLine, workingDirectory) => {
   console.log('second-instance')
@@ -144,6 +142,13 @@ app.on('second-instance', (commandLine, workingDirectory) => {
 if (!gotTheLock) {
   return app.quit()
 }
+
+
+// app.disableHardwareAcceleration()
+// app.allowRendererProcessReuse = true
+// app.commandLine.appendSwitch('disable-site-isolation-trials')
+// app.showEmojiPanel()
+//app.showAboutPanel()
 
 require(__dirname + '/site.js')(browser)
 
@@ -219,7 +224,23 @@ app.on("ready", function () {
 
   setInterval(() => {
     (async () => {
-      browser.set_var('urls', browser.var.urls)
+      if (browser.var.$urls) {
+        browser.var.$urls = false
+        browser.set_var('urls', browser.var.urls)
+      }
+      if (browser.var.$data_list) {
+        browser.var.$data_list = false
+        browser.set_var('data_list', browser.var.data_list)
+      }
+      if (browser.var.$user_data) {
+        browser.var.$user_data = false
+        browser.set_var('user_data', browser.var.user_data)
+      }
+      if (browser.var.$user_data_input) {
+        browser.var.$user_data_input = false
+        browser.set_var('user_data_input', browser.var.user_data_input)
+      }
+
     })()
 
   }, 1000 * 60 * 5);
@@ -245,7 +266,7 @@ app.on("ready", function () {
       show: false,
     })
 
-    if (browser.setting.id.like('*updater*')) {
+    if (browser.var.id.like('*updater*')) {
       w.showInactive()
     }
 

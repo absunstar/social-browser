@@ -49,7 +49,7 @@
         width: 10%;
         margin-top: 500px;
       }
-      .width-200{
+      .width-200 {
         width: 200px;
       }
     </style>
@@ -91,24 +91,25 @@
         <form ng-show="knowPassword === true" class="form">
           <div class="tabs">
             <div class="tabs-header">
-              <a class="tab-link" onclick="site.showTabContent(event, '#basic_tab')"> <i class="fa fa-info-circle"></i> Basic </a>
+              <a class="tab-link" onclick="site.showTabContent(event, '#basic_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-info-circle"></i> Basic </a>
 
-              <a class="tab-link" onclick="site.showTabContent(event, '#login_tab')"> <i class="fa fa-user"></i> Login </a>
-              <a class="tab-link" onclick="site.showTabContent(event, '#users_tab')"> <i class="fa fa-users"></i> Users </a>
-              <a class="tab-link" onclick="site.showTabContent(event, '#passwords_tab')"> <i class="fa fa-key"></i> Passwords </a>
-              <a class="tab-link" id="bookmarks_btn" onclick="site.showTabContent(event, '#bookmarks_tab')"> <i class="fa fa-bookmark"></i> Bookmarks </a>
-              <a class="tab-link" onclick="site.showTabContent(event, '#user_data_tab')"> <i class="fa fa-file"></i> User Data </a>
-              <a class="tab-link" onclick="site.showTabContent(event, '#urls_tab')"> <i class="fa fa-sitemap"></i> User Urls </a>
-              <a ng-hide="true" class="tab-link" onclick="site.showTabContent(event, '#internet_speed_tab')"> <i class="fa fa-cloud-download"></i> Internet Speed </a>
-              <a class="tab-link" onclick="site.showTabContent(event, '#blocking_tab')"> <i class="fa fa-ban"></i> Blocking Ads </a>
-              <a class="tab-link" onclick="site.showTabContent(event, '#youtube_tab')"> <i class="fa fa-youtube"></i> Youtube </a>
-              <a class="tab-link" onclick="site.showTabContent(event, '#facebook_tab')"> <i class="fa fa-facebook"></i> Facebook </a>
-              <a class="tab-link" onclick="site.showTabContent(event, '#popup_tab')"> <i class="fa fa-window-restore"></i> Popup </a>
-              <a class="tab-link" id="safty_btn" onclick="site.showTabContent(event, '#safty_tab')"> <i class="fa fa-lock"></i> Children Safty Mode </a>
-              <a class="tab-link" onclick="site.showTabContent(event, '#script_tab')"> <i class="fa fa-code"></i> Javascript </a>
-              <a class="tab-link" onclick="site.showTabContent(event, '#proxy_tab')"> <i class="fa fa-desktop"></i> Proxy </a>
-              <a class="tab-link" onclick="site.showTabContent(event, '#menu_tab')"> <i class="fa fa-bars"></i> Context Menu </a>
-              <a class="tab-link" onclick="site.showTabContent(event, '#downloader_tab')"> <i class="fa fa-download"></i> Downloader </a>
+              <a class="tab-link" id="safty_btn" onclick="site.showTabContent(event, '#safty_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-lock"></i> Children Safty Mode </a>
+              <a class="tab-link" onclick="site.showTabContent(event, '#blocking_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-ban"></i> Privacy & Security </a>
+              <a class="tab-link" onclick="site.showTabContent(event, '#passwords_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-key"></i> Passwords </a>
+
+              <a class="tab-link" onclick="site.showTabContent(event, '#youtube_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-youtube"></i> Youtube </a>
+              <a class="tab-link" onclick="site.showTabContent(event, '#facebook_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-facebook"></i> Facebook </a>
+              <a class="tab-link" onclick="site.showTabContent(event, '#user_data_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-file"></i> User Data </a>
+
+              <a class="tab-link" id="bookmarks_btn" onclick="site.showTabContent(event, '#bookmarks_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-bookmark"></i> Bookmarks </a>
+              <a class="tab-link" onclick="site.showTabContent(event, '#urls_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-sitemap"></i> User Urls </a>
+              <a ng-hide="true" class="tab-link" onclick="site.showTabContent(event, '#internet_speed_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-cloud-download"></i> Internet Speed </a>
+              <a class="tab-link" onclick="site.showTabContent(event, '#proxy_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-desktop"></i> Proxy </a>
+              <a class="tab-link" onclick="site.showTabContent(event, '#menu_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-bars"></i> Context Menu </a>
+              <a class="tab-link" onclick="site.showTabContent(event, '#downloader_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-download"></i> Downloader </a>
+
+              <a class="tab-link" onclick="site.showTabContent(event, '#users_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-users"></i> Users </a>
+              <a class="tab-link" onclick="site.showTabContent(event, '#login_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-user"></i> Login </a>
             </div>
             <div class="tabs-content">
               <div id="login_tab" class="tab-content">
@@ -159,34 +160,87 @@
               <div id="blocking_tab" class="tab-content">
                 <div class="row">
                   <fieldset>
+                    <legend>Popup window</legend>
+
+                    <br />
+                    <i-checkbox class="row" label="Allow External Popup" ng-model="setting.blocking.popup.allow_external"></i-checkbox>
+                    <i-checkbox class="row" label="Allow Internal Popup" ng-model="setting.blocking.popup.allow_internal"></i-checkbox>
+
+                    <div class="row">
+                      <i-button label="Popup White List" type="btn bg-white black" ng-click="showPopupIgnoreURLsModal()"></i-button>
+                    </div>
+                  </fieldset>
+
+                  <fieldset>
                     <legend>Blocking</legend>
 
                     <br />
 
-                    <i-checkbox class="row" label="Remove External IFRAMES " ng-model="setting.blocking.ex_iframe"> </i-checkbox>
-                    <i-checkbox class="row" label="Remove Empty IFRAMES " ng-model="setting.blocking.empty_iframe"> </i-checkbox>
-                    <i-checkbox class="row" label="Block Ads " ng-model="setting.blocking.ads"></i-checkbox>
-                    <i-checkbox class="row" label="Block Doms " ng-model="setting.blocking.doms"></i-checkbox>
+                    <i-checkbox class="row" label="Auto Skip Video Ads " ng-model="setting.blocking.skip_video_ads"> </i-checkbox>
+                    <i-checkbox class="row" label="Remove External IFRAMES " ng-model="setting.blocking.remove_external_iframe"> </i-checkbox>
+                    <i-checkbox class="row" label="Remove Empty IFRAMES " ng-model="setting.blocking.block_empty_iframe"> </i-checkbox>
+                    <i-checkbox class="row" label="Block Ads " ng-model="setting.blocking.block_ads"></i-checkbox>
+                    <i-checkbox class="row" label="Block Doms " ng-model="setting.blocking.block_html_tags"></i-checkbox>
 
                     <div class="row">
-                      <i-button type="btn bg-black white" ng-click="showAdsModal()" label="Blocking Ads Links" ng-show="setting.blocking.ads === true"></i-button>
-                      <i-button type="btn bg-black white" ng-click="showDomsModal()" label="Blocking Doms Selector" ng-show="setting.blocking.doms === true"></i-button>
+                      <i-button type="btn bg-black white" ng-click="showAdsModal()" label="Blocking Ads Links"></i-button>
+                      <i-button type="btn bg-black white" ng-click="showDomsModal()" label="Blocking Doms Selector"></i-button>
                     </div>
                   </fieldset>
+
+                  <fieldset>
+                    <legend>Privacy</legend>
+
+                    <br />
+
+                    <i-checkbox class="row" label="Hide CPU Count" ng-model="setting.blocking.privacy.hide_cpu"></i-checkbox>
+                    <i-checkbox class="row" label="Hide Memory Size" ng-model="setting.blocking.privacy.hide_memory"></i-checkbox>
+                    <i-checkbox class="row" label="Hide Screen Sizes" ng-model="setting.blocking.privacy.hide_screen"></i-checkbox>
+                    <i-checkbox class="row" label="Hide Touch Screen Information" ng-model="setting.blocking.privacy.hide_touch_screen"></i-checkbox>
+                    <i-checkbox class="row" label="Hide Graphic Card Details" ng-model="setting.blocking.privacy.hide_vega"></i-checkbox>
+                    <i-checkbox class="row" label="Hide Connection Information" ng-model="setting.blocking.privacy.hide_connection"></i-checkbox>
+                    <i-checkbox class="row" label="Hide Language Information" ng-model="setting.blocking.privacy.hide_lang"></i-checkbox>
+                    <i-checkbox class="row" label="Hide Plugins" ng-model="setting.blocking.privacy.hide_plugins"></i-checkbox>
+                    <i-checkbox class="row" label="Hide MimeTypes" ng-model="setting.blocking.privacy.hide_mimetypes"></i-checkbox>
+                    <i-checkbox class="row" label="Block Media Devices [camera , mic , ...]" ng-model="setting.blocking.privacy.hide_media_devices"></i-checkbox>
+                    <i-checkbox class="row" label="hide browser permissions" ng-model="setting.blocking.privacy.hide_permissions"></i-checkbox>
+                    <i-checkbox class="row" label="hide Battery" ng-model="setting.blocking.privacy.hide_battery"></i-checkbox>
+                    <i-checkbox class="row" label="Set Window Alawys Active" ng-model="setting.blocking.privacy.set_window_active"></i-checkbox>
+                    <i-checkbox class="row" label="Hide Google ID Tracking" ng-model="setting.blocking.privacy.hide_gid"></i-checkbox>
+                    <i-checkbox class="row" label="Send Don't Track Header" ng-model="setting.blocking.privacy.dnt"></i-checkbox>
+                    <i-checkbox class="row" label="Show Bookmarks in Google Page" ng-model="setting.blocking.privacy.show_bookmarks"></i-checkbox>
+                  </fieldset>
+
+                  <fieldset>
+                    <legend>Javascript</legend>
+
+                    <i-checkbox class="row" label="Block ( Eval functions)" ng-model="setting.blocking.javascript.block_eval"></i-checkbox>
+                    <i-checkbox class="row" label="Block ( Console functions)" ng-model="setting.blocking.javascript.block_console_output"> </i-checkbox>
+                    <i-checkbox class="row" label="Block ( window.open)" ng-model="setting.blocking.javascript.block_window_open"> </i-checkbox>
+                  </fieldset>
+
+                  <fieldset>
+                    <legend>Social Media</legend>
+
+                    <i-checkbox class="row" label="Allow 10khits.com tools" ng-model="setting.blocking.social.allow_10khits"></i-checkbox>
+                    <i-checkbox class="row" label="Allow addmefast.com tools" ng-model="setting.blocking.social.allow_addmefast"></i-checkbox>
+                    <i-checkbox class="row" label="Allow youlikehits.com tools" ng-model="setting.blocking.social.allow_youlikehits"></i-checkbox>
+                  
+                    
+                  </fieldset>
+
                 </div>
               </div>
               <div id="youtube_tab" class="tab-content">
                 <div class="row">
                   <fieldset>
                     <legend>Youtube</legend>
-                    <i-checkbox class="row" label="Enabled" ng-model="setting.youtube.enabled"></i-checkbox>
-
-                    <div ng-show="setting.youtube.enabled">
-                      <i-checkbox class="row" label="Auto Skip Youtube Video Ads" ng-model="setting.youtube.skip_ads"> </i-checkbox>
-                      <i-checkbox class="row" label="Safty Mode" ng-model="setting.youtube.safty_mode"></i-checkbox>
+                    <div>
+                      <i-checkbox class="row" label="Auto Skip Ads " ng-model="setting.blocking.youtube.skip_ads"> </i-checkbox>
+                      <i-checkbox class="row" label="Safty Mode" ng-model="setting.blocking.youtube.allow_safty_mode"></i-checkbox>
 
                       <div class="row">
-                        <i-button label="Blocing Words" ng-show="setting.youtube.safty_mode" type="btn bg-black white" ng-click="showYoutubeWordsModal()"></i-button>
+                        <i-button label="Blocing Words" ng-show="setting.blocking.youtube.allow_safty_mode" type="btn bg-black white" ng-click="showYoutubeWordsModal()"></i-button>
                       </div>
                     </div>
                   </fieldset>
@@ -205,43 +259,23 @@
                   </fieldset>
                 </div>
               </div>
-              <div id="popup_tab" class="tab-content">
-                <div class="row">
-                  <fieldset>
-                    <legend>Popups and Windows</legend>
 
-                    <i-checkbox class="row" label="Allow External links" ng-model="setting.popup.external"></i-checkbox>
-                    <i-checkbox class="row" label="Allow Internal links" ng-model="setting.popup.internal"></i-checkbox>
-
-                    <i-button label="Ignore URLs" type="btn bg-white black" ng-click="showPopupIgnoreURLsModal()"></i-button>
-                  </fieldset>
-                </div>
-              </div>
               <div id="safty_tab" class="tab-content">
                 <div class="row">
                   <fieldset>
-                    <legend>Safty Mode</legend>
+                    <legend>Children Safty Mode</legend>
 
                     <br />
 
-                    <i-checkbox class="row" label="Enable" ng-model="setting.blocking.safty_mode"></i-checkbox>
+                    <i-checkbox class="row" label="Enable" ng-model="setting.blocking.allow_safty_mode"></i-checkbox>
                     <div class="row">
-                      <i-button label="Blocking Page URLs" ng-show="setting.blocking.safty_mode === true" type="btn bg-black white" ng-click="showUnsafeLinksModal()"></i-button>
-                      <i-button label="Blocking Page Contains Words " ng-show="setting.blocking.safty_mode === true" type="btn bg-black white" ng-click="showUnsafeWordsModal()"></i-button>
+                      <i-button label="Blocking Page URLs" type="btn bg-black white" ng-click="showUnsafeLinksModal()"></i-button>
+                      <i-button label="Blocking Page Contains Words " type="btn bg-black white" ng-click="showUnsafeWordsModal()"></i-button>
                     </div>
                   </fieldset>
                 </div>
               </div>
-              <div id="script_tab" class="tab-content">
-                <div class="row">
-                  <fieldset>
-                    <legend>Javascript</legend>
-
-                    <i-checkbox class="row" label="Remove ( Eval )" ng-model="setting.javascript.remove_eval"></i-checkbox>
-                    <i-checkbox class="row" label="Remove ( console.log )" ng-model="setting.javascript.remove_console_log"> </i-checkbox>
-                  </fieldset>
-                </div>
-              </div>
+ 
               <div id="proxy_tab" class="tab-content">
                 <div class="row">
                   <fieldset>
@@ -268,8 +302,9 @@
                   <fieldset>
                     <legend>Page Context Menu</legend>
 
-                    <i-checkbox class="row" label="Page Options" ng-model="setting.context_menu.page_options"></i-checkbox>
-                    <i-checkbox class="row" label="Copy Div Content" ng-model="setting.context_menu.copy_div_content"> </i-checkbox>
+                    <i-checkbox class="row" label="Show page options" ng-model="setting.context_menu.page_options"></i-checkbox>
+                    <i-checkbox class="row" label="Show proxy options" ng-model="setting.context_menu.proxy_options"></i-checkbox>
+                    <i-checkbox class="row" label="Allow Copy div content" ng-model="setting.context_menu.copy_div_content"> </i-checkbox>
                     <i-checkbox class="row" label="Show Inspect Element" ng-model="setting.context_menu.inspect"> </i-checkbox>
                     <i-checkbox class="row" label="Show Developer Tools" ng-model="setting.context_menu.dev_tools"> </i-checkbox>
                   </fieldset>
@@ -366,23 +401,21 @@
                 <table class="table hover">
                   <tr>
                     <th>Index</th>
-                    <th>Title <input ng-model="bookmarks_title" /></th>
+                    <th>Title</th>
                     <th>URL</th>
                   </tr>
-                  <tr ng-repeat="site in setting.bookmarks | filter : {title : bookmarks_title} | limitTo:500">
+                  <tr ng-repeat="site in setting.bookmarks track by $index | limitTo:100">
                     <td>{{$index +1 }} <i-button type="remove" ng-click="remove_bookmarks(site)"></i-button></td>
                     <td>{{site.title}}</td>
                     <td>
                       <i-control ng-model="site.url"></i-control>
                     </td>
-
                   </tr>
                 </table>
               </div>
               <div id="user_data_tab" class="tab-content">
                 <div class="row">
-                  <div class="col6"><i-button ng-click="loadUserData(user_data_host)" label="Load User Data"></i-button></div>
-                  <div class="col6"><i-button type="bg-red white" ng-click="clearUserData()" label="Clear User Data"></i-button></div>
+                  <div class="col6"><i-button type="bg-red white" ng-click="clearUserData()" label="Clear All User Data"></i-button></div>
                 </div>
 
                 <table class="table hover">
@@ -391,8 +424,8 @@
                     <th>Host <input ng-model="user_data_host" /></th>
                     <th>Data</th>
                   </tr>
-                  <tr ng-repeat="site in setting.user_data | filter : {host : user_data_host} | limitTo:200">
-                    <td>{{$index +1 }} <i-button type="remove" ng-click="remove_user_data(site)"></i-button></td>
+                  <tr ng-repeat="site in setting.user_data  | filter : {host : user_data_host} | limitTo:200">
+                    <td>{{$index +1 }} <i-button type="remove default" ng-click="remove_user_data(site)"></i-button></td>
                     <td>{{site.host}}</td>
                     <td>
                       <p ng-repeat="d in site.data">{{d.value}}</p>
@@ -402,7 +435,6 @@
               </div>
 
               <div id="urls_tab" class="tab-content">
-                <i-button ng-click="loadUrls()" label="Load Urls"></i-button>
                 <table class="table hover">
                   <tr>
                     <th>Index ( {{setting.urls.length}} )</th>
@@ -642,13 +674,11 @@
                 <th class="width-200">Index</th>
                 <th>Link</th>
               </tr>
-              <tr ng-repeat="_ad in setting.blocking.ad_links | filter:ad">
-                <td>{{$index + 1}}<i-button type="remove default" ng-click="removeAd(_ad)" label="Remove"></i-button>
-                </td>
+              <tr ng-repeat="_ad in setting.blocking.ad_list | filter:ad">
+                <td>{{$index + 1}}<i-button type="remove default" ng-click="removeAd(_ad)" label="Remove"></i-button></td>
                 <td>
                   <i-control ng-model="_ad.url"></i-control>
                 </td>
-        
               </tr>
             </table>
           </div>
@@ -664,7 +694,7 @@
           <div class="modal-header">
             <span class="close">&times;</span>
             <h2>
-              Popup Ignore Url List
+              Popup White List
             </h2>
           </div>
           <div class="modal-body">
@@ -683,7 +713,7 @@
                 <th>Link</th>
                 <th>Action</th>
               </tr>
-              <tr ng-repeat="_d in setting.popup.ignore_urls | filter:popupIgnoreURL">
+              <tr ng-repeat="_d in setting.blocking.popup.white_list | filter:popupIgnoreURL">
                 <td>
                   <i-control ng-model="_d.url"></i-control>
                 </td>
@@ -735,7 +765,7 @@
             <br />
             <br />
             <br />
-            <div class="row padding" ng-repeat="_dom in setting.blocking.dom_selectors | filter:dom">
+            <div class="row padding" ng-repeat="_dom in setting.blocking.html_tags_selector_list | filter:dom">
               <fieldset>
                 <legend></legend>
                 <div class="row">
@@ -792,14 +822,11 @@
                 <th>Index</th>
                 <th>Links</th>
               </tr>
-              <tr ng-repeat="_un_safe_link in setting.blocking.un_safe_links | filter:un_safe_link">
-                <td class="width-200">
-                  {{$index}} <i-button ng-click="removeUnsafeLink(_un_safe_link)" type="remove default" label="Remove"></i-button>
-                </td>
+              <tr ng-repeat="_un_safe_link in setting.blocking.un_safe_list | filter:un_safe_link">
+                <td class="width-200">{{$index}} <i-button ng-click="removeUnsafeLink(_un_safe_link)" type="remove default" label="Remove"></i-button></td>
                 <td>
                   <i-control ng-model="_un_safe_link.url"></i-control>
                 </td>
-               
               </tr>
             </table>
           </div>
@@ -834,14 +861,11 @@
                 <th class="width-200">Index</th>
                 <th>Word</th>
               </tr>
-              <tr ng-repeat="_un_safe_word in setting.blocking.un_safe_words | filter:un_safe_word">
-                <td >
-                  {{$index}} <i-button type="remove default" ng-click="removeUnsafeWord(_un_safe_word)" label="Remove"></i-button>
-                </td>
+              <tr ng-repeat="_un_safe_word in setting.blocking.un_safe_words_list | filter:un_safe_word">
+                <td>{{$index}} <i-button type="remove default" ng-click="removeUnsafeWord(_un_safe_word)" label="Remove"></i-button></td>
                 <td>
                   <i-control ng-model="_un_safe_word.text"></i-control>
                 </td>
-               
               </tr>
             </table>
           </div>
@@ -882,7 +906,7 @@
                 <th>Word</th>
                 <th>Actions</th>
               </tr>
-              <tr ng-repeat="_un_safe_word in setting.youtube.blocking.words | filter:un_safe_word">
+              <tr ng-repeat="_un_safe_word in setting.blocking.youtube.safty_mode.words_list | filter:un_safe_word">
                 <td>
                   <i-control ng-model="_un_safe_word.text"></i-control>
                 </td>

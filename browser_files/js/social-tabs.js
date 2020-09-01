@@ -51,20 +51,19 @@ let defaultTapProperties = {
 
 
 function getDefaultTapProperties() {
-  if (_setting_) {
 
-    if (_setting_.core.default_page) {
-      defaultTapProperties.url = _setting_.core.default_page
-      if (_setting_.core.default_page == 'http://127.0.0.1:60080/newTab') {
-        defaultTapProperties.favicon = 'browser://images/logo.png'
-      }
+  if (___.var.core.default_page) {
+    defaultTapProperties.url = ___.var.core.default_page
+    if (___.var.core.default_page == 'http://127.0.0.1:60080/newTab') {
+      defaultTapProperties.favicon = 'browser://images/logo.png'
     }
-
-    if (_setting_.core.user_agent) {
-      defaultTapProperties.useragent = _setting_.core.user_agent
-    }
-
   }
+
+  if (___.var.core.user_agent) {
+    defaultTapProperties.useragent = ___.var.core.user_agent
+  }
+
+
   return Object.assign({}, defaultTapProperties)
 }
 
@@ -220,17 +219,15 @@ class SocialTabs {
 
   addTab(tabProperties) {
     // console.log(tabProperties)
-    if (typeof $$$ === 'object' && typeof $$$.browser === 'object') {
-      _setting_ = $$$.browser.var
-    }
-    if ($('.social-tab').length > _setting_.core.max_tabs) {
-      showMessage(`Sorry You Used Max Opened Tabs ( ${_setting_.core.max_tabs} ) , Change Options`)
+
+    if ($('.social-tab').length > ___.var.core.max_tabs) {
+      showMessage(`Sorry You Used Max Opened Tabs ( ${___.var.core.max_tabs} ) , Change Options`)
       return
     }
 
     if (!tabProperties.partition || !tabProperties.user_name) {
-    
-      
+
+
       sendToMain({
         name: 'open new tab',
         url: tabProperties.url || defaultTapProperties.url,
@@ -239,20 +236,20 @@ class SocialTabs {
       return;
     }
 
-    if (tabProperties.url.like('http://127.0.0.1:60080*')){
+    if (tabProperties.url.like('http://127.0.0.1:60080*')) {
       let exists = false;
-      
-      document.querySelectorAll('.social-tab').forEach(tb=>{
-        if(tb.getAttribute('url') == tabProperties.url){
+
+      document.querySelectorAll('.social-tab').forEach(tb => {
+        if (tb.getAttribute('url') == tabProperties.url) {
           exists = true
           this.setCurrentTab(tb)
         }
       })
 
-      if(exists){
+      if (exists) {
         return
       }
-  }
+    }
 
     const tabEl = this.createNewTabEl()
 
@@ -277,12 +274,12 @@ class SocialTabs {
     this.emit('tabAdd', {
       tabEl
     })
-    if ($('.social-tab').length == 2){
-        this.setCurrentTab(tabEl, tabProperties)
-    }else  if (tabProperties.url.like('http://127.0.0.1:60080*')){
+    if ($('.social-tab').length == 2) {
       this.setCurrentTab(tabEl, tabProperties)
-  }
-  
+    } else if (tabProperties.url.like('http://127.0.0.1:60080*')) {
+      this.setCurrentTab(tabEl, tabProperties)
+    }
+
     this.layoutTabs()
     this.fixZIndexes()
     this.setupDraggabilly()

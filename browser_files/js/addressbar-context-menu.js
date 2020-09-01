@@ -7,27 +7,44 @@
 
     String.prototype.like = function matchRuleShort(rule) {
         rule = rule.replace('.', '\.')
-        return new RegExp("^" + rule.split("*").join(".*") + "$", "giu").test(this);
+        return new RegExp("^" + rule.split("*").join(".*") + "$", "gium").test(this);
     }
 
     String.prototype.contains = function (name) {
         return this.like('*' + name + '*')
     }
 
-   
+    var ___ = {}
+    ___.electron = require('electron')
+    ___.fs = require('fs')
+    ___.url = require('url')
+    ___.path = require('path')
+    ___.md5 = require('md5')
+    
+    ___.callSync = function (channel, value) {
+      return ___.electron.ipcRenderer.sendSync(channel, value)
+    }
+    ___.call = function (channel, value) {
+      return ___.electron.ipcRenderer.send(channel, value)
+    }
+    ___.on = function (name, callback) {
+      ___.electron.ipcRenderer.on(name, callback)
+    }
+    ___.var = ___.callSync('get_var', {
+      name: '*'
+    })
+    ___.files_dir = ___.callSync('get_browser', {
+      name: 'files_dir'
+    })
+    
+    ___.currentWindow = ___.electron.remote.getCurrentWindow()
 
-    var browser = browser || require('ibrowser')({is_render : true})
-    const electron = browser.electron
-    const remote = electron.remote
     const {
         Menu,
         MenuItem
-    } = remote
+    } = ___.electron.remote
 
 
-    let currentWindow = remote.getCurrentWindow()
-
-    require(browser.files_dir + '/js/context-menu/keyboard.js')({browser : browser});
     function goURL(){
       angular.element(document.getElementById('addressbar_id')).scope().goUrl();
     }
@@ -136,7 +153,7 @@
             new MenuItem({
                 label: "inspect Element",
                 click() {
-                    currentWindow.inspectElement(rightClickPosition.x, rightClickPosition.y)
+                    ___.currentWindow.inspectElement(rightClickPosition.x, rightClickPosition.y)
                 }
             })
         )
@@ -145,7 +162,7 @@
             new MenuItem({
                 label: "Developer Tools",
                 click() {
-                    currentWindow.openDevTools({
+                    ___.currentWindow.openDevTools({
                         mode: 'undocked'
                     })
                 }
@@ -169,10 +186,12 @@
 
         let m = createMenu(node)
         if (m) {
-            m.popup(currentWindow)
+            m.popup(___.currentWindow)
         }
 
     })
+
+    window.___ = ___ ;
 
 
 })()

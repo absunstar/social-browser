@@ -5,7 +5,7 @@ String.prototype.test = function matchRuleShort(reg) {
 
 String.prototype.like = function matchRuleShort(rule) {
     rule = rule.replace('.', '\.')
-    return new RegExp("^" + rule.split("*").join(".*") + "$", "giu").test(this);
+    return new RegExp("^" + rule.split("*").join(".*") + "$", "gium").test(this);
 }
 
 String.prototype.contains = function (name) {

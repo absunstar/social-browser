@@ -1,9 +1,8 @@
 module.exports = function (___) {
     let rightClickPosition = {}
-    let $menuItem = ___.browser.electron.remote.MenuItem
-    let webFrame = ___.browser.electron.webFrame
-    let webContents = ___.browser.remote.getCurrentWindow().webContents.getWebPreferences().partition
-    let partition = ___.browser.remote.getCurrentWindow().webContents.getWebPreferences().partition
+    let $menuItem = ___.electron.remote.MenuItem
+    let xwin = ___.electron.remote.getCurrentWindow()
+    let partition = xwin.webContents.getWebPreferences().partition
     let full_screen = false;
 
     // var change_event = doc.createEvent("HTMLEvents");
@@ -42,16 +41,17 @@ module.exports = function (___) {
     const {
         desktopCapturer,
         remote
-    } = ___.browser.electron;
+    } = ___.electron;
 
     const {
         writeFile
-    } = ___.browser.fs;
+    } = ___.fs;
 
     const {
         dialog,
         Menu
-    } = ___.browser.electron.remote;
+    } = ___.electron.remote;
+
     let mediaRecorder;
     let recordedChunks = [];
 
@@ -64,11 +64,11 @@ module.exports = function (___) {
         }
 
         if (options.start) {
-           // console.log('start')
+            // console.log('start')
             recordedChunks = []
             mediaRecorder.start();
             setTimeout(() => {
-              //  console.log('stop')
+                //  console.log('stop')
                 mediaRecorder.stop();
             }, 1000 * 10);
         }
@@ -103,7 +103,7 @@ module.exports = function (___) {
             let videoElement = document.querySelector('#__video_element');
             videoElement.style.display = 'block';
 
-           // console.log(videoElement)
+            // console.log(videoElement)
             const constraints = {
                 audio: false,
                 video: {
@@ -118,7 +118,7 @@ module.exports = function (___) {
             const stream = await navigator.mediaDevices
                 .getUserMedia(constraints);
 
-           // console.log(stream);
+            // console.log(stream);
             // Preview the source in a video element
             videoElement.srcObject = stream;
             videoElement.play();
@@ -138,7 +138,7 @@ module.exports = function (___) {
 
         // Captures all recorded chunks
         function handleDataAvailable(e) {
-           // console.log('video data available');
+            // console.log('video data available');
             recordedChunks.push(e.data);
         }
 
@@ -500,7 +500,7 @@ module.exports = function (___) {
             let page = window.location.pathname.split('/').pop()
             u = window.location.origin + window.location.pathname.replace(page, "") + u
         }
-        return u.replace('___new_tab___' , '').replace('___new_window__' , '')
+        return u.replace('#___new_tab___', '').replace('#___new_window__', '')
     }
 
     function add_a_menu(node, menu, doc, xwin) {
@@ -515,7 +515,7 @@ module.exports = function (___) {
                     new $menuItem({
                         label: "Copy Email",
                         click() {
-                            ___.browser.electron.clipboard.writeText(mail)
+                            ___.electron.clipboard.writeText(mail)
                         }
                     })
                 )
@@ -525,7 +525,7 @@ module.exports = function (___) {
                     new $menuItem({
                         label: "Open link in new tab",
                         click() {
-                            ___.browser.sendToMain('render_message', {
+                            ___.call('render_message', {
                                 name: 'open new tab',
                                 referrer: doc.location.href,
                                 url: u
@@ -534,14 +534,14 @@ module.exports = function (___) {
                     })
                 )
 
-                if (___.browser.var.session_list.length > 1) {
+                if (___.var.session_list.length > 1) {
                     let arr = []
 
-                    if (___.browser.var.core.id.like('*master*')) {
+                    if (___.var.core.id.like('*master*')) {
                         arr.push({
                             label: ' in Trusted window',
                             click() {
-                                ___.browser.sendToMain('render_message', {
+                                ___.call('render_message', {
                                     name: 'new_trusted_window',
                                     url: o.url || doc.location.href,
                                     referrer: doc.location.href,
@@ -555,7 +555,7 @@ module.exports = function (___) {
                     arr.push({
                         label: ' in New window',
                         click() {
-                            ___.browser.sendToMain('render_message', {
+                            ___.call('render_message', {
                                 name: 'new_window',
                                 url: u,
                                 referrer: doc.location.href,
@@ -568,7 +568,7 @@ module.exports = function (___) {
                     arr.push({
                         label: ' in Ghost window',
                         click() {
-                            ___.browser.sendToMain('render_message', {
+                            ___.call('render_message', {
                                 name: 'new_window',
                                 url: u,
                                 referrer: doc.location.href,
@@ -578,11 +578,46 @@ module.exports = function (___) {
                         }
                     })
 
-                    ___.browser.var.session_list.forEach(ss => {
+                    arr.push({
+                        label: ' in 5 new tab',
+                        click() {
+                            for (let index = 0; index < 5; index++) {
+                                setTimeout(() => {
+                                    ___.call('render_message', {
+                                        name: 'open new tab',
+                                        partition: partition,
+                                        url: u,
+                                        referrer: doc.location.href,
+                                        show: true
+                                    })
+                                }, 1000 * 2 * index);
+
+                            }
+                        }
+                    })
+                    arr.push({
+                        label: ' in 5 new window',
+                        click() {
+                            for (let index = 0; index < 5; index++) {
+                                setTimeout(() => {
+                                    ___.call('render_message', {
+                                        name: 'new_window',
+                                        partition: partition,
+                                        url: u,
+                                        referrer: doc.location.href,
+                                        show: true
+                                    })
+                                }, 1000 * 2 * index);
+
+                            }
+                        }
+                    })
+
+                    ___.var.session_list.forEach(ss => {
                         arr.push({
                             label: ' As (  ' + ss.display + '  ) ',
                             click() {
-                                ___.browser.sendToMain('render_message', {
+                                ___.call('render_message', {
                                     name: 'open new tab',
                                     referrer: doc.location.href,
                                     url: u,
@@ -607,26 +642,30 @@ module.exports = function (___) {
                     new $menuItem({
                         label: "Copy link",
                         click() {
-                         
-                                ___.browser.sendToMain('render_message', {
-                                    name: 'copy',
-                                    text: u
-                                })
+
+                            ___.call('render_message', {
+                                name: 'copy',
+                                text: u
+                            })
                         }
                     })
                 )
             }
 
 
-            if (___.browser.var.youtube.enabled) {
-                let arr = []
+            if (u.like('https://www.youtube.com/watch*')) {
 
-                if (u.like('https://www.youtube.com/watch*')) {
+                menu.append(
+                    new $menuItem({
+                        type: "separator"
+                    })
+                )
 
-                    arr.push({
-                        label: "Play  " + u,
+                menu.append(
+                    new $menuItem({
+                        label: "Play video ",
                         click() {
-                            ___.browser.sendToMain('render_message', {
+                            ___.call('render_message', {
                                 name: 'mini_youtube',
                                 url: u,
                                 partition: partition,
@@ -634,11 +673,12 @@ module.exports = function (___) {
                             })
                         }
                     })
-
-                    arr.push({
-                        label: "Download  " + u,
+                )
+                menu.append(
+                    new $menuItem({
+                        label: "Download video ",
                         click() {
-                            ___.browser.sendToMain('render_message', {
+                            ___.call('render_message', {
                                 name: 'new_window',
                                 url: u.replace('youtube', 'youtubepp'),
                                 partition: partition,
@@ -646,18 +686,7 @@ module.exports = function (___) {
                             })
                         }
                     })
-
-                }
-
-
-                if (arr.length > 0) {
-                    menu.append(new $menuItem({
-                        label: "Youtube options",
-                        type: 'submenu',
-                        submenu: arr
-                    }))
-                }
-
+                )
 
                 menu.append(
                     new $menuItem({
@@ -682,7 +711,7 @@ module.exports = function (___) {
                 new $menuItem({
                     label: "Open image in new tab",
                     click() {
-                        ___.browser.sendToMain('render_message', {
+                        ___.call('render_message', {
                             name: 'open new tab',
                             url: url,
                             referrer: doc.location.href
@@ -691,15 +720,15 @@ module.exports = function (___) {
                 })
             )
 
-            if (___.browser.var.session_list.length > 1) {
+            if (___.var.session_list.length > 1) {
                 let arr = []
 
 
-                ___.browser.var.session_list.forEach(ss => {
+                ___.var.session_list.forEach(ss => {
                     arr.push({
                         label: ss.display,
                         click() {
-                            ___.browser.sendToMain('render_message', {
+                            ___.call('render_message', {
                                 name: 'open new tab',
                                 url: url,
                                 referrer: doc.location.href,
@@ -727,7 +756,7 @@ module.exports = function (___) {
                 new $menuItem({
                     label: "Copy image address",
                     click() {
-                        ___.browser.sendToMain('render_message', {
+                        ___.call('render_message', {
                             name: 'copy',
                             text: url
                         })
@@ -739,7 +768,7 @@ module.exports = function (___) {
                 new $menuItem({
                     label: "Save image as",
                     click() {
-                        ___.browser.sendToMain('render_message', {
+                        ___.call('render_message', {
                             name: 'download-url',
                             url: url
                         })
@@ -764,7 +793,7 @@ module.exports = function (___) {
                 new $menuItem({
                     label: "Copy inner text",
                     click() {
-                        ___.browser.sendToMain('render_message', {
+                        ___.call('render_message', {
                             name: 'copy',
                             text: node.innerText
                         })
@@ -775,7 +804,7 @@ module.exports = function (___) {
                 new $menuItem({
                     label: "Copy inner html",
                     click() {
-                        ___.browser.sendToMain('render_message', {
+                        ___.call('render_message', {
                             name: 'copy',
                             text: node.innerHTML
                         })
@@ -816,7 +845,7 @@ module.exports = function (___) {
             label: "Save page",
             accelerator: 'CommandOrControl+s',
             click() {
-                ___.browser.sendToMain('render_message', {
+                ___.call('render_message', {
                     name: 'download-url',
                     url: window.location.href
                 })
@@ -827,7 +856,7 @@ module.exports = function (___) {
         arr.push({
             label: "Save page as PDF",
             click() {
-                ___.browser.sendToMain('render_message', {
+                ___.call('render_message', {
                     name: 'saveAsPdf'
                 })
             }
@@ -861,7 +890,7 @@ module.exports = function (___) {
             label: "Clear Site Cache",
             accelerator: 'CommandOrControl+F5',
             click() {
-                ___.browser.sendToMain('render_message', {
+                ___.call('render_message', {
                     name: 'force reload',
                     origin: doc.location.origin || doc.location.href,
                     storages: ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage'],
@@ -872,7 +901,7 @@ module.exports = function (___) {
         arr.push({
             label: "Clear Site Cookies",
             click() {
-                ___.browser.sendToMain('render_message', {
+                ___.call('render_message', {
                     name: 'force reload',
                     origin: doc.location.origin || doc.location.href,
                     storages: ['cookies'],
@@ -883,7 +912,7 @@ module.exports = function (___) {
         arr.push({
             label: "Clear All Site Data",
             click() {
-                ___.browser.sendToMain('render_message', {
+                ___.call('render_message', {
                     name: 'force reload',
                     origin: doc.location.origin || doc.location.href,
                     storages: ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage', 'cookies'],
@@ -990,7 +1019,7 @@ module.exports = function (___) {
                 arr2.push({
                     label: "View  " + f.src,
                     click() {
-                        ___.browser.sendToMain('render_message', {
+                        ___.call('render_message', {
                             name: 'mini_iframe',
                             partition: partition,
                             url: f.src,
@@ -1001,7 +1030,7 @@ module.exports = function (___) {
                 arr2.push({
                     label: "Open in new window",
                     click() {
-                        ___.browser.sendToMain('render_message', {
+                        ___.call('render_message', {
                             name: 'new_window',
                             partition: partition,
                             url: f.src,
@@ -1010,9 +1039,9 @@ module.exports = function (___) {
                     }
                 })
                 arr2.push({
-                    label: "Copy link " ,
+                    label: "Copy link ",
                     click() {
-                        ___.browser.sendToMain('render_message', {
+                        ___.call('render_message', {
                             name: 'copy',
                             text: f.src
                         })
@@ -1021,7 +1050,7 @@ module.exports = function (___) {
                 arr2.push({
                     label: "Download link ",
                     click() {
-                        ___.browser.sendToMain('render_message', {
+                        ___.call('render_message', {
                             name: 'download-url',
                             url: f.src
                         })
@@ -1059,7 +1088,7 @@ module.exports = function (___) {
                 arr3.push({
                     label: "Play  " + f.src,
                     click() {
-                        ___.browser.sendToMain('render_message', {
+                        ___.call('render_message', {
                             name: 'mini_video',
                             alwaysOnTop: true,
                             partition: partition,
@@ -1071,7 +1100,7 @@ module.exports = function (___) {
                 arr3.push({
                     label: "Open in new window",
                     click() {
-                        ___.browser.sendToMain('render_message', {
+                        ___.call('render_message', {
                             name: 'new_window',
                             alwaysOnTop: true,
                             partition: partition,
@@ -1083,7 +1112,7 @@ module.exports = function (___) {
                 arr3.push({
                     label: "copy link",
                     click() {
-                        ___.browser.sendToMain('render_message', {
+                        ___.call('render_message', {
                             name: 'copy',
                             text: f.src
                         })
@@ -1092,7 +1121,7 @@ module.exports = function (___) {
                 arr3.push({
                     label: "download",
                     click() {
-                        ___.browser.sendToMain('render_message', {
+                        ___.call('render_message', {
                             name: 'download-url',
                             url: f.src
                         })
@@ -1110,7 +1139,7 @@ module.exports = function (___) {
                 arr3.push({
                     label: "Play video source  " + f.src,
                     click() {
-                        ___.browser.sendToMain('render_message', {
+                        ___.call('render_message', {
                             name: 'mini_video',
                             alwaysOnTop: true,
                             partition: partition,
@@ -1122,7 +1151,7 @@ module.exports = function (___) {
                 arr3.push({
                     label: "Open in new window",
                     click() {
-                        ___.browser.sendToMain('render_message', {
+                        ___.call('render_message', {
                             name: 'new_window',
                             alwaysOnTop: true,
                             partition: partition,
@@ -1134,7 +1163,7 @@ module.exports = function (___) {
                 arr3.push({
                     label: "copy link ",
                     click() {
-                        ___.browser.sendToMain('render_message', {
+                        ___.call('render_message', {
                             name: 'copy',
                             text: f.src
                         })
@@ -1144,7 +1173,7 @@ module.exports = function (___) {
                 arr3.push({
                     label: "download",
                     click() {
-                        ___.browser.sendToMain('render_message', {
+                        ___.call('render_message', {
                             name: 'download-url',
                             url: f.src
                         })
@@ -1179,7 +1208,7 @@ module.exports = function (___) {
             new $menuItem({
                 label: "Copy page Link",
                 click() {
-                    ___.browser.sendToMain('render_message', {
+                    ___.call('render_message', {
                         name: 'copy',
                         text: window.location.href
                     })
@@ -1211,7 +1240,7 @@ module.exports = function (___) {
                             new $menuItem({
                                 label: "Download playing video ",
                                 click() {
-                                    ___.browser.sendToMain('render_message', {
+                                    ___.call('render_message', {
                                         name: 'download-url',
                                         url: v.src
                                     })
@@ -1240,9 +1269,9 @@ module.exports = function (___) {
 
             menu.append(
                 new $menuItem({
-                    label: "Display playing video in mini view",
+                    label: "Open current video",
                     click() {
-                        ___.browser.sendToMain('render_message', {
+                        ___.call('render_message', {
                             name: 'mini_youtube',
                             partition: partition,
                             url: doc.location.href,
@@ -1254,9 +1283,9 @@ module.exports = function (___) {
 
             menu.append(
                 new $menuItem({
-                    label: "Download Playing youtube video",
+                    label: "Download current video",
                     click() {
-                        ___.browser.sendToMain('render_message', {
+                        ___.call('render_message', {
                             name: 'new_window',
                             partition: partition,
                             referrer: doc.location.href,
@@ -1302,53 +1331,55 @@ module.exports = function (___) {
 
         let arr = []
 
+        if (document.location.href.contains('free-proxy-list.net')) {
+            arr.push({
+                label: ' Add All To Proxies',
+                click() {
 
+                    let table = getTableObject('#proxylisttable')
+                    let list = []
 
-        arr.push({
-            label: 'Desktop Sharing',
-            click() {
-                ___.browser.sendToMain('render_message', {
-                    name: 'new_trusted_window',
-                    url: "http://127.0.0.1:60080/html/desktop.html",
-                    show: true
-                })
-            }
-        })
+                    table.rows.forEach(row => {
+                        let itm = {
+                            url: row[0] + ':' + row[1],
+                            https : row[6] == 'yes' ? true : false,
+                            country : row[3] ,
+                            name: `${row[0]}:${row[1]} | ${row[3]}`
+                        }
+                        if(itm.https){
+                            itm.name += ' | HTTPS'
+                        }
+                        list.push(itm)
+                    })
 
+                    if (list.length > 0) {
+                        console.log(list)
+                        list.sort((a, b) => (a.https < b.https) ? 1 : -1)
+                        ___.var.proxy_list = []
+                    }
 
-        arr.push({
-            label: ' Add All To Proxies',
-            click() {
-
-                let table = getTableObject('#proxylisttable')
-
-                table.rows.forEach(row => {
-                    let exists = false;
-
-                    let url = row[0] + ':' + row[1];
-
-                    ___.browser.var.proxy_list.forEach(p => {
-                        if (p.url == url) {
-                            exists = true
+                    list.forEach(row => {
+                        let exists = false;
+                        ___.var.proxy_list.forEach(p => {
+                            if (p.url == row.url) {
+                                exists = true
+                            }
+                        })
+                        if (!exists) {
+                            ___.var.proxy_list.push(row)
                         }
                     })
 
-                    if (!exists) {
-                        ___.browser.var.proxy_list.push({
-                            url: url,
-                            name: url + ' ,  Country : ' + row[3] + ' , Https : ' + row[6]
-                        })
-                    }
-                })
+                    ___.call('render_message', {
+                        name: 'set_var',
+                        key: 'proxy_list',
+                        value: ___.var.proxy_list
+                    })
 
-                ___.browser.sendToMain('render_message', {
-                    name: 'set_var',
-                    key: 'proxy_list',
-                    value: ___.browser.var.proxy_list
-                })
+                }
+            })
+        }
 
-            }
-        })
 
         if (arr.length > 0) {
             menu.append(new $menuItem({
@@ -1364,7 +1395,7 @@ module.exports = function (___) {
     function createMenu(node, doc, xwin) {
         doc = doc || document
 
-        let menu = new ___.browser.electron.remote.Menu()
+        let menu = new ___.electron.remote.Menu()
 
         if (node.tagName == "VIDEO") {
             return null
@@ -1388,7 +1419,7 @@ module.exports = function (___) {
                 new $menuItem({
                     label: "Copy selected text",
                     click() {
-                        ___.browser.sendToMain('render_message', {
+                        ___.call('render_message', {
                             name: 'copy',
                             text: text
                         })
@@ -1400,7 +1431,7 @@ module.exports = function (___) {
                 new $menuItem({
                     label: "Translate",
                     click() {
-                        ___.browser.sendToMain('render_message', {
+                        ___.call('render_message', {
                             name: 'new_window',
                             partition: partition,
                             url: 'https://translate.google.com/?num=100&newwindow=1&um=1&ie=UTF-8&hl=en&client=tw-ob#auto/ar/' + encodeURIComponent(text)
@@ -1413,7 +1444,7 @@ module.exports = function (___) {
                 new $menuItem({
                     label: "Google it",
                     click() {
-                        ___.browser.sendToMain('render_message', {
+                        ___.call('render_message', {
                             name: 'open new tab',
                             referrer: doc.location.href,
                             url: 'https://www.google.com/search?q=' + encodeURIComponent(text)
@@ -1435,18 +1466,18 @@ module.exports = function (___) {
 
 
 
-        if (___.browser.var.open_list.length > 0) {
+        if (___.var.open_list.length > 0) {
 
-            ___.browser.var.open_list.forEach(o => {
+            ___.var.open_list.forEach(o => {
                 if (o.enabled) {
 
                     if (o.multi) {
                         let arr = []
-                        if (___.browser.var.core.id.like('*master*')) {
+                        if (___.var.core.id.like('*master*')) {
                             arr.push({
                                 label: ' in Trusted window',
                                 click() {
-                                    ___.browser.sendToMain('render_message', {
+                                    ___.call('render_message', {
                                         name: 'new_trusted_window',
                                         url: o.url || doc.location.href,
                                         referrer: doc.location.href,
@@ -1454,13 +1485,26 @@ module.exports = function (___) {
                                     })
                                 }
                             })
+
                         }
 
+                        arr.push({
+                            label: ' in new tab',
+                            click() {
+                                ___.call('render_message', {
+                                    name: 'open new tab',
+                                    partition: partition,
+                                    url: o.url || doc.location.href,
+                                    referrer: doc.location.href,
+                                    show: true
+                                })
+                            }
+                        })
 
                         arr.push({
                             label: ' in New window',
                             click() {
-                                ___.browser.sendToMain('render_message', {
+                                ___.call('render_message', {
                                     name: 'new_window',
                                     partition: partition,
                                     url: o.url || doc.location.href,
@@ -1473,7 +1517,7 @@ module.exports = function (___) {
                         arr.push({
                             label: ' in Ghost window',
                             click() {
-                                ___.browser.sendToMain('render_message', {
+                                ___.call('render_message', {
                                     name: 'new_window',
                                     url: o.url || doc.location.href,
                                     referrer: doc.location.href,
@@ -1483,11 +1527,45 @@ module.exports = function (___) {
                             }
                         })
 
-                        ___.browser.var.session_list.forEach(ss => {
+                        arr.push({
+                            label: ' in 5 new tab',
+                            click() {
+                                for (let index = 0; index < 5; index++) {
+                                    setTimeout(() => {
+                                        ___.call('render_message', {
+                                            name: 'open new tab',
+                                            partition: partition,
+                                            url: o.url || doc.location.href,
+                                            referrer: doc.location.href,
+                                            show: true
+                                        })
+                                    }, 1000 * 2 * index);
+
+                                }
+                            }
+                        })
+                        arr.push({
+                            label: ' in 5 new window',
+                            click() {
+                                for (let index = 0; index < 5; index++) {
+                                    setTimeout(() => {
+                                        ___.call('render_message', {
+                                            name: 'new_window',
+                                            partition: partition,
+                                            url: o.url || doc.location.href,
+                                            referrer: doc.location.href,
+                                            show: true
+                                        })
+                                    }, 1000 * 2 * index);
+
+                                }
+                            }
+                        })
+                        ___.var.session_list.forEach(ss => {
                             arr.push({
                                 label: ' As (  ' + ss.display + '  ) ',
                                 click() {
-                                    ___.browser.sendToMain('render_message', {
+                                    ___.call('render_message', {
                                         name: 'open new tab',
                                         url: o.url || doc.location.href,
                                         referrer: doc.location.href,
@@ -1511,7 +1589,7 @@ module.exports = function (___) {
                         menu.append(new $menuItem({
                             label: o.name,
                             click() {
-                                ___.browser.sendToMain('render_message', {
+                                ___.call('render_message', {
                                     name: 'open new tab',
                                     url: o.url || doc.location.href,
                                     referrer: doc.location.href
@@ -1530,17 +1608,17 @@ module.exports = function (___) {
         }
 
 
-        if (___.browser.var.vip && ___.browser.var.vip.enabled) {
+        if (___.var.vip && ___.var.vip.enabled) {
 
             let arr = []
-            ___.browser.var.vip.list.forEach(v => {
+            ___.var.vip.list.forEach(v => {
 
                 arr.push({
                     label: v.name,
                     click() {
-                        ___.browser.sendToMain('render_message', {
+                        ___.call('render_message', {
                             name: 'new_trusted_window',
-                            url: ___.browser.var.vip.server_url + v.url,
+                            url: ___.var.vip.server_url + v.url,
                             referrer: doc.location.href,
                             show: true
                         })
@@ -1567,7 +1645,7 @@ module.exports = function (___) {
 
 
         get_custom_menu(menu, doc, xwin)
-        if (___.browser.var.context_menu.copy_div_content) {
+        if (___.var.context_menu.copy_div_content) {
             add_div_menu(node, menu, xwin)
         }
         menu.append(
@@ -1584,7 +1662,7 @@ module.exports = function (___) {
                 label: "Hard Refresh",
                 accelerator: 'CommandOrControl+F5',
                 click() {
-                    ___.browser.sendToMain('render_message', {
+                    ___.call('render_message', {
                         name: 'force reload',
                         origin: doc.location.origin || doc.location.href,
                         storages: ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage'],
@@ -1598,9 +1676,57 @@ module.exports = function (___) {
             })
         )
 
+        if (___.var.context_menu.proxy_options) {
+            let arr = []
+            if(___.var.core.id.like('*master*')){
+                
+                arr.push({
+                    label: 'My Server',
+                    click() {
+                        ___.call('render_message', {
+                            name: 'new_window',
+                            url : document.location.href,
+                            user_agent : navigator.userAgent,
+                            proxy: '104.248.211.73:55555',
+                            partition: 'proxy_' + arr.length
+                        })
+                    }
+                })
+            }
+            ___.var.proxy_list.forEach(p => {
+                // if(document.location.href.contains('https') && !p.https){
+                //     return
+                // }
+                arr.push({
+                    label: p.name,
+                    click() {
+                        ___.call('render_message', {
+                            name: 'new_window',
+                            url : document.location.href,
+                            proxy: p.url,
+                            partition: 'proxy' + new Date().getTime()
+                        })
+                    }
+                })
+            })
+            if (arr.length == 0) {
+                return
+            }
+            menu.append(
+                new $menuItem({
+                    label: "Open currnt page with proxy",
+                    type: 'submenu',
+                    submenu: arr
+                }))
+            menu.append(
+                new $menuItem({
+                    type: "separator"
+                })
+            )
 
+        }
 
-        if (___.browser.var.context_menu.page_options) {
+        if (___.var.context_menu.page_options) {
 
             get_options_menu(node, menu, doc, xwin)
         }
@@ -1612,12 +1738,12 @@ module.exports = function (___) {
                 accelerator: 'F11',
                 click() {
                     if (!full_screen) {
-                        ___.browser.sendToMain('render_message', {
+                        ___.call('render_message', {
                             name: 'full_screen'
                         })
                         full_screen = true
                     } else {
-                        ___.browser.sendToMain('render_message', {
+                        ___.call('render_message', {
                             name: '!full_screen'
                         })
                         full_screen = false
@@ -1633,7 +1759,7 @@ module.exports = function (___) {
             })
         )
 
-        if (___.browser.var.context_menu.inspect) {
+        if (___.var.context_menu.inspect) {
             menu.append(
                 new $menuItem({
                     label: "Inspect Element",
@@ -1652,7 +1778,7 @@ module.exports = function (___) {
             )
         }
 
-        if (___.browser.var.context_menu.dev_tools) {
+        if (___.var.context_menu.dev_tools) {
             menu.append(
                 new $menuItem({
                     label: "Developer Tools",
@@ -1668,29 +1794,17 @@ module.exports = function (___) {
             )
         }
 
-        if (___.browser.var.core.id.like('*test*')) {
+        if (___.var.core.id.like('*test*')) {
             createTestMenu(menu)
         }
-
-        menu.append(
-            new $menuItem({
-                label: "Browser Setting",
-                click() {
-                    ___.browser.sendToMain('render_message', {
-                        name: 'show setting'
-                    })
-                }
-            })
-        )
-
 
         return menu
     }
 
     let contextMenuHandle = function (e) {
-       // console.log('window.oncontextmenu')
+        // console.log('window.oncontextmenu')
         try {
-            let xwin = ___.browser.remote.getCurrentWindow()
+           
             let factor = xwin.webContents.zoomFactor || 1;
             let x = Math.round(e.x * factor);
             let y = Math.round(e.y * factor);

@@ -12,32 +12,31 @@ setTimeout(() => {
         if (btn1) {
             btn1.click();
         }
-    }else  if (document.location.href.like('*safty*')) {
+    } else if (document.location.href.like('*safty*')) {
         let btn1 = document.querySelector('#safty_btn');
         if (btn1) {
             btn1.click();
         }
     }
-     
+
 }, 1000 * 2);
 
 
 app.controller('mainController', ($scope, $http, $timeout) => {
 
     $scope.goBack = function () {
-        if (typeof browser === 'object') {
-            browser.sendToMain('render_message', {
-                name: 'go back'
-            })
-        }
+
+        ___.call('render_message', {
+            name: 'go back'
+        })
 
     }
     $scope.goForward = function () {
-        if (typeof browser === 'object') {
-            browser.sendToMain('render_message', {
-                name: 'go forward'
-            })
-        }
+
+        ___.call('render_message', {
+            name: 'go forward'
+        })
+
     }
 
     $scope.url = '';
@@ -118,14 +117,14 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     }
     $scope.ad = {};
     $scope.addAd = function () {
-        $scope.setting.blocking.ad_links.push($scope.ad);
+        $scope.setting.blocking.ad_list.push($scope.ad);
         $scope.ad = {};
     }
 
     $scope.removeAd = function (_ad) {
-        $scope.setting.blocking.ad_links.forEach((ad, i) => {
+        $scope.setting.blocking.ad_list.forEach((ad, i) => {
             if (ad.url === _ad.url) {
-                $scope.setting.blocking.ad_links.splice(i, 1);
+                $scope.setting.blocking.ad_list.splice(i, 1);
             }
         });
     }
@@ -140,13 +139,13 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     }
     $scope.dom = {};
     $scope.addDom = function () {
-        $scope.setting.blocking.dom_selectors.push($scope.dom);
+        $scope.setting.blocking.html_tags_selector_list.push($scope.dom);
         $scope.dom = {};
     }
 
     $scope.removeDom = function (_dom, index) {
 
-        $scope.setting.blocking.dom_selectors.splice(index, 1);
+        $scope.setting.blocking.html_tags_selector_list.splice(index, 1);
 
     }
 
@@ -159,15 +158,15 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     }
     $scope.un_safe_link = {};
     $scope.addUnsafeLink = function () {
-        $scope.setting.blocking.un_safe_links = $scope.setting.blocking.un_safe_links || [];
-        $scope.setting.blocking.un_safe_links.push($scope.un_safe_link);
+        $scope.setting.blocking.un_safe_list = $scope.setting.blocking.un_safe_list || [];
+        $scope.setting.blocking.un_safe_list.push($scope.un_safe_link);
         $scope.un_safe_link = {};
     }
 
     $scope.removeUnsafeLink = function (_un_safe_link) {
-        $scope.setting.blocking.un_safe_links.forEach((un, i) => {
+        $scope.setting.blocking.un_safe_list.forEach((un, i) => {
             if (un.url === _un_safe_link.url) {
-                $scope.setting.blocking.un_safe_links.splice(i, 1);
+                $scope.setting.blocking.un_safe_list.splice(i, 1);
             }
         });
     }
@@ -181,15 +180,15 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     }
     $scope.un_safe_word = {};
     $scope.addUnsafeWord = function () {
-        $scope.setting.blocking.un_safe_words = $scope.setting.blocking.un_safe_words || [];
-        $scope.setting.blocking.un_safe_words.push($scope.un_safe_word);
+        $scope.setting.blocking.un_safe_words_list = $scope.setting.blocking.un_safe_words_list || [];
+        $scope.setting.blocking.un_safe_words_list.push($scope.un_safe_word);
         $scope.un_safe_word = {};
     }
 
     $scope.removeUnsafeWord = function (_un_safe_word) {
-        $scope.setting.blocking.un_safe_words.forEach((un, i) => {
+        $scope.setting.blocking.un_safe_words_list.forEach((un, i) => {
             if (un.text === _un_safe_word.text) {
-                $scope.setting.blocking.un_safe_words.splice(i, 1);
+                $scope.setting.blocking.un_safe_words_list.splice(i, 1);
             }
         });
     }
@@ -203,15 +202,15 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         site.hideModal('#youtubeWordsModal');
     }
     $scope.addYoutubeWord = function () {
-        $scope.setting.youtube.blocking.words = $scope.setting.youtube.blocking.words || [];
-        $scope.setting.youtube.blocking.words.push($scope.un_safe_word);
+        $scope.setting.blocking.youtube.safty_mode.words_list = $scope.setting.blocking.youtube.safty_mode.words_list || [];
+        $scope.setting.blocking.youtube.safty_mode.words_list.push($scope.un_safe_word);
         $scope.un_safe_word = {};
     }
 
     $scope.removeYoutubeWord = function (_un_safe_word) {
-        $scope.setting.youtube.blocking.words.forEach((un, i) => {
+        $scope.setting.blocking.youtube.safty_mode.words_list.forEach((un, i) => {
             if (un.text === _un_safe_word.text) {
-                $scope.setting.youtube.blocking.words.splice(i, 1);
+                $scope.setting.blocking.youtube.safty_mode.words_list.splice(i, 1);
             }
         });
     }
@@ -272,14 +271,14 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     }
     $scope.popupIgnoreURL = {};
     $scope.addPopupIgnoreURL = function () {
-        $scope.setting.popup.ignore_urls.push($scope.popupIgnoreURL);
+        $scope.setting.blocking.popup.white_list.push($scope.popupIgnoreURL);
         $scope.popupIgnoreURL = {};
     }
 
     $scope.removePopupIgnoreURL = function (_ws) {
-        $scope.setting.popup.ignore_urls.forEach((ws, i) => {
+        $scope.setting.blocking.popup.white_list.forEach((ws, i) => {
             if (ws.url === _ws.url) {
-                $scope.setting.popup.ignore_urls.splice(i, 1);
+                $scope.setting.blocking.popup.white_list.splice(i, 1);
             }
         })
     }
@@ -318,81 +317,57 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     $scope.loadSetting = function () {
         $scope.busy = true;
         $scope.setting_busy = true;
-        $http({
-            method: 'GET',
-            url: 'http://127.0.0.1:60080/api/var/setting'
-        }).then(function (response) {
-            $timeout(() => {
-                $scope.busy = false;
-                $scope.setting_busy = false;
-            }, 1000 * 1);
-            $scope.setting = _setting_ = response.data.var;
-            if (typeof $$$ === 'object' && typeof $$$.browser === 'object') {
+        $scope.setting = ___.callSync('get_var', {
+            name: '*'
+        })
+        console.log($scope.setting)
+        if ($scope.setting.core.password.length > 0) {
+            $scope.knowPassword = false;
+            $scope.password = '';
+        } else {
+            $scope.knowPassword = true;
+        }
 
-                for (let k of Object.keys(response.data.var)) {
-                    $$$.browser.var[k] = response.data.var[k]
-                }
 
-                $$$.browser.sendToMain('render_message', {
-                    name: 'set-setting',
-                    var: response.data.var
+        $scope.setting.user_data_input.forEach(site => {
+            if (!site.password) {
+                site.data.forEach((d, i) => {
+                    if (d.type == 'password') {
+                        site.password = d.value;
+                        site.p_index = i;
+                    }
                 })
             }
-            if ($scope.setting.core.password.length > 0) {
-                $scope.knowPassword = false;
-                $scope.password = '';
-            } else {
-                $scope.knowPassword = true;
-            }
-            $scope.setting.user_data_input.forEach(site => {
-                if (!site.password) {
-                    site.data.forEach((d, i) => {
-                        if (d.type == 'password') {
-                            site.password = d.value;
-                            site.p_index = i;
-                        }
-                    })
-                }
 
-                if (!site.username) {
-                    site.data.forEach((d, i) => {
-                        if (d.name == 'username') {
-                            site.username = d.value;
-                        }
-                    })
-                }
-                if (!site.username) {
-                    site.data.forEach((d, i) => {
-                        if (d.name == 'email') {
-                            site.username = d.value;
-                        }
-                    })
-                }
-                if (!site.username) {
-                    let index = site.p_index == 0 ? 1 : site.p_index - 1;
-                    if (site.data.length > index) {
-                        site.username = site.data[index].value;
+            if (!site.username) {
+                site.data.forEach((d, i) => {
+                    if (d.name == 'username') {
+                        site.username = d.value;
                     }
-
+                })
+            }
+            if (!site.username) {
+                site.data.forEach((d, i) => {
+                    if (d.name == 'email') {
+                        site.username = d.value;
+                    }
+                })
+            }
+            if (!site.username) {
+                let index = site.p_index == 0 ? 1 : site.p_index - 1;
+                if (site.data.length > index) {
+                    site.username = site.data[index].value;
                 }
 
-            });
-        });
-    };
-
-    $scope.loadUserData = function () {
-        $scope.busy = true;
-        $http({
-            method: 'GET',
-            url: 'http://127.0.0.1:60080/api/var/setting/user_data'
-        }).then(function (response) {
-            $scope.busy = false;
-            for (let k of Object.keys(response.data.var)) {
-                $scope.setting[k] = response.data.var[k]
             }
 
         });
+
+        $scope.busy = false;
+        $scope.setting_busy = false;
+
     };
+
 
     $scope.clearUserData = function () {
         $scope.busy = true;
@@ -400,19 +375,6 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         $scope.busy = false;
     };
 
-    $scope.loadUrls = function () {
-        $scope.busy = true;
-        $http({
-            method: 'GET',
-            url: 'http://127.0.0.1:60080/api/var/setting/urls'
-        }).then(function (response) {
-            $scope.busy = false;
-            for (let k of Object.keys(response.data.var)) {
-                $scope.setting[k] = response.data.var[k]
-            }
-
-        });
-    };
 
     $scope.saveSessions = function () {
         site.hideModal('#sessionsModal');
@@ -420,60 +382,36 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     };
 
     $scope.saveSetting = function (close) {
-        $http({
-            method: 'POST',
-            url: 'http://127.0.0.1:60080/api/var',
-            data: {
-                var: $scope.setting
-            }
-        }).then(function (response) {
-            if (response.data.done) {
-                _setting_ = $scope.setting;
-                if (typeof $$$ === 'object' && typeof $$$.browser === 'object') {
-                    for (let k of Object.keys($scope.setting)) {
-                        $$$.browser.var[k] = $scope.setting[k]
-                    }
-                    $$$.browser.sendToMain('render_message', {
-                        name: 'set-setting',
-                        var: $scope.setting
-                    })
-                }
-                if (close) {
-                    alert('Setting Saved ')
-                    /*window.close();*/
-                    return false;
-                }
-                $scope.hideSetting();
-                site.hideModal('#whiteListModal');
-                site.hideModal('#YoModal');
-                site.hideModal('#adsModal');
+        $scope.busy = true;
+        $scope.setting_busy = true;
 
-                if ($scope.setting.core.password.length > 0) {
-                    $scope.knowPassword = false;
-                    $scope.password = '';
-                } else {
-                    $scope.knowPassword = true;
-                }
-
+        for (const key in $scope.setting) {
+            if (key.indexOf('$') === -1) {
+                ___.call('set_var', {
+                    name: key,
+                    data: $scope.setting[key]
+                })
             }
-        });
+        }
+
+        $scope.busy = false;
+        $scope.setting_busy = false;
+
+       
+
+        if ($scope.setting.core.password.length > 0) {
+            $scope.knowPassword = false;
+            $scope.password = '';
+        } else {
+            $scope.knowPassword = true;
+        }
+
+        alert('Setting Saved ')
+
     }
 
 
     $scope.urls_sort_property = '-count';
-
-    /* $scope.loadUrls = function () {
-
-
-         if (typeof browser === 'object') {
-             browser.sendToMain('render_message', {
-                 name: 'show addressbar',
-                 url: $scope.url
-             })
-         }
-
-     }*/
-
     $scope.url_index = -1;
 
     $scope.clearUrlSelection = function () {
@@ -547,7 +485,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
 
         const $id = $("#" + currentTabId);
         $id.attr('url', $scope.url);
-        browser.ipcRenderer.send('update-view', {
+        ___.call('update-view', {
             _id: currentTabId,
             url: $id.attr('url'),
             "partition": $id.attr("partition"),
@@ -673,7 +611,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     };
 
     $scope.copy = function (text) {
-        $$$.browser.ipcRenderer.send('render_message', {
+        ___.call('render_message', {
             name: 'copy',
             text: text
         });

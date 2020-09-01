@@ -1,21 +1,80 @@
  module.exports = function (___) {
 
-     if (___.browser.var.javascript.remove_eval) {
+    ___.sendMessage = function (cm) {
+        ___.call('renderMessage', cm)
+    }
+
+    ___.__define = function(o, p, v) {
+        if (typeof o == "undefined") {
+            return
+        }
+        Object.defineProperty(o, p, {
+            get: function () {
+                return v
+            }
+        })
+        if (o.prototype) {
+            o.prototype[p] = v
+        }
+    }
+
+
+     ___.isValidURL = function(str) {
+        var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
+            '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+            '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+            '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+            '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+            '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+        return !!pattern.test(str);
+    }
+
+     ___.handle_url = function(u) {
+         if (typeof u !== "string") {
+             return u
+         }
+         u = u.trim()
+         if (u.like('http*') || u.indexOf('//') === 0) {
+             u = u
+         } else if (u.indexOf('/') === 0) {
+             u = window.location.origin + u
+         } else if (u.split('?')[0].split('.').length < 3) {
+             let page = window.location.pathname.split('/').pop()
+             u = window.location.origin + window.location.pathname.replace(page, "") + u
+         }
+         return u
+     }
+
+
+     ___.__numberRange = function(min, max) {
+        return Math.floor(Math.random() * (max - min) + min);
+    }
+     if (___.var.blocking.javascript.block_eval) {
          window.eval = function (code) {
-            // console.log(code)
+             // console.log(code)
          }
      }
 
-     if (___.browser.var.javascript.remove_console_log) {
-        // window.console.log = function () {}
+     if (___.var.blocking.javascript.block_console_output) {
+         window.console.log = function () {}
+         window.console.error = function () {}
+         window.console.dir = function () {}
+         window.console.dirxml = function () {}
+         window.console.info = function () {}
+         window.console.warn = function () {}
+         window.console.table = function () {}
+         window.console.trace = function () {}
+         window.console.debug = function () {}
+         window.console.assert = function () {}
+         window.console.clear = function () {}
      }
 
      ___.upTo = function (el, tagName) {
-         tagName = tagName.toLowerCase();
+         tagName = tagName.toLowerCase().split(',');
 
          while (el && el.parentNode) {
              el = el.parentNode;
-             if (el.tagName && el.tagName.toLowerCase() == tagName) {
+             if (el.tagName && tagName.includes(el.tagName.toLowerCase())) {
                  return el;
              }
          }
@@ -42,50 +101,122 @@
          return false;
      }
 
-     ___.browser.electron.ipcRenderer.on('webview_message', (event) => {
-        // console.log(event)
-     })
+    
 
-     ___.sendMessage = function (cm) {
-         ___.browser.sendToMain('renderMessage', cm)
+     let translate_busy = false
+     ___.translate = function (text, callback) {
+         callback = callback || function (trans) {
+             console.log(trans)
+         }
+         if (text.test(/^[a-zA-Z\-\u0590-\u05FF\0-9\^\@\_\:\?\;\!\[\]\~\<\>\{\}\|\\ ]+$/gim)) {
+             callback(text)
+             return
+         }
+         if (!text) {
+             callback(text)
+             return
+         }
+         if (translate_busy) {
+             setTimeout(() => {
+                 ___.translate(text, callback)
+             }, 250);
+             return
+         }
+         translate_busy = true
+         fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=en&dt=t&dt=bd&dj=1&q=${text}`).then(response => {
+             return response.json()
+         }).then(data => {
+            translate_busy = false
+             translated_text = ''
+             if (data && data.sentences && data.sentences.length > 0) {
+                 data.sentences.forEach(t => {
+                     translated_text += t.trans
+                 })
+                 callback(translated_text || text)
+             }
+         }).catch(err=>{
+            translate_busy = false
+            callback(text)
+         })
      }
 
+     window.__md5 = function(txt){
+         return ___.md5(txt)
+     }
 
+     window.__img_to_base64 = function(selector){
+        let c = document.createElement('canvas');
+        let img = null;
+        if(typeof selector == "string"){
+             img = document.querySelector(selector);
+        }else{
+             img = selector;
+        }
+       
+        if(!img){
+            return ''
+        }
+        c.height = img.naturalHeight;
+        c.width = img.naturalWidth;
+        let ctx = c.getContext('2d');
+        
+        ctx.drawImage(img, 0, 0, c.width, c.height);
+        return c.toDataURL();
+     }
+
+     window.__img_code = function(selector){
+         return window.__md5(window.__img_to_base64(selector))
+     }
+
+     let alert_idle = null
      window.alert = window.prompt = function (msg, time) {
          if (msg && msg.trim()) {
              let div = document.querySelector('#__alertBox')
              if (div) {
-                 div.style.display = "block";
+                 clearTimeout(alert_idle)
                  div.innerHTML = msg;
-                 setTimeout(() => {
-                     div.innerHTML = '';
+                 div.style.display = "block";
+                 alert_idle = setTimeout(() => {
                      div.style.display = "none";
-                 }, time | 1000 * 3);
+                     div.innerHTML = '';
+                 }, time || 1000 * 3);
              }
          }
      }
+
+
      window.__showBookmarks = function () {
-        
-            let div = document.querySelector('#__bookmarkDiv')
-            if (div) {
-                ___.browser.var.bookmarks.forEach(b=>{
-                    b.image = b.image || ___.browser.electron.remote.nativeImage.createFromPath(b.favicon).resize({width : 16 , height : 16}).toDataURL()
-                    div.innerHTML +=`
+
+         let div = document.querySelector('#__bookmarkDiv')
+         if (div) {
+             ___.var.bookmarks.forEach(b => {
+                 b.image = b.image || ___.electron.remote.nativeImage.createFromPath(b.favicon).resize({
+                     width: 16,
+                     height: 16
+                 }).toDataURL()
+
+                 div.innerHTML += `
                     <a class="bookmark" href="${b.url}" target="_blank">
-                        <img src="${b.image}" onerror="this.src=null"/>
                         <p class="title"> ${b.title} </p>
                     </a>
                     `
-                })
-                div.style.display = "block";
-            }
-        
-    }
-     window.__blockPage = window.prompt = function (block , msg) {
+             })
+             div.style.display = "block";
+         }
+
+     }
+
+     window.__blockPage = window.prompt = function (block, msg, close) {
          let div = document.querySelector('#__blockDiv')
          if (div && block) {
              div.style.display = "block";
-             div.innerHTML = msg || 'Block Page [ Contains Unsafe Words ] , <small> <a target="_blank" href="http://127.0.0.1:60080/setting?open=safty"> goto setting </a></small>';
+             div.innerHTML = msg || 'This Page Blocked';
+             if (close) {
+                 setTimeout(() => {
+                     window.close()
+                 }, 1000 * 3);
+
+             }
          } else if (div && !block) {
              div.style.display = "none";
          }
@@ -127,8 +258,6 @@
              })
          }
          if (msg) {
-             /*msg += " <strong> X <strong>"*/
-             /*__downloads.className = css*/
              __downloads.style.display = "block";
              __downloads.innerHTML = msg;
          } else {
@@ -137,7 +266,7 @@
          }
      }
 
-     ___.browser.electron.ipcRenderer.on('render_message', (event, data) => {
+     ___.on('render_message', (event, data) => {
          if (data.name == "update-target-url") {
              showInfo(data.url)
          } else if (data.name == "show-info") {
@@ -145,58 +274,63 @@
          }
      })
 
-     ___.browser.electron.ipcRenderer.on('user_downloads', (event, data) => {
+     ___.on('user_downloads', (event, data) => {
          showDownloads(data.message, data.class)
      })
 
 
-     function handle_url(u) {
-         if (typeof u !== "string") {
-             return u
-         }
-         u = u.trim()
-         if (u.like('http*') || u.indexOf('//') === 0) {
-             u = u
-         } else if (u.indexOf('/') === 0) {
-             u = window.location.origin + u
-         } else if (u.split('?')[0].split('.').length < 3) {
-             let page = window.location.pathname.split('/').pop()
-             u = window.location.origin + window.location.pathname.replace(page, "") + u
-         }
-         return u
-     }
 
 
-     window.open = function (url, frameName, features) {
 
-        return
+     window.open = function (url, _name, _specs, _replace_in_history) {
 
-        
+        let opener = {
+            closed: false ,
+            opener : window ,
+            postMessage : () => {console.log('postMessage opener')},
+            eval : () => {console.log('eval opener')},
+            close : ()=>{
+                console.log('close opener')
+            },
+            focus : ()=>{
+                console.log('focus opener')
+            }
+        }
+
+        if(___.var.blocking.javascript.block_window_open){
+            return opener
+        }
+
          if (typeof url !== "string") {
-             return null
+             return opener
          }
-         url = handle_url(url)
+         if(url == "about:blank"){
+             return opener
+         }
+         url =  ___.handle_url(url)
+
+
 
          if (url.like('https://www.youtube.com/watch*')) {
-             ___.browser.sendToMain('new-youtube-window', {
+             ___.sendToMain('new-youtube-window', {
                  referrer: document.location.href,
                  url: url
              })
 
-             return null
+             return opener
          }
 
-         let url_p = ___.browser.url.parse(url)
-         let url2_p = ___.browser.url.parse(this.document.location.href)
+         let url_p = ___.url.parse(url)
+         let url2_p = ___.url.parse(this.document.location.href)
 
          let allow = false
 
-         if (url_p.host === url2_p.host && ___.browser.var.popup.internal) {
+         if (url_p.host === url2_p.host && ___.var.blocking.popup.allow_internal) {
              allow = true
-         } else if (url_p.host !== url2_p.host && ___.browser.var.popup.external) {
+         } else if (url_p.host !== url2_p.host && ___.var.blocking.popup.allow_external) {
              allow = true
          } else {
-             ___.browser.var.popup.ignore_urls.forEach(d => {
+             ___.var.blocking.popup.white_list.forEach(d => {
                  if (url_p.host.like(d.url) || url2_p.host.like(d.url)) {
                      allow = true
                  }
@@ -206,37 +340,40 @@
 
          if (!allow) {
              // console.log('Block popup : ' + url)
-             return null
+             return opener
          }
 
-         if (!features) {
-             ___.browser.sendToMain('render_message', {
+         if (!_specs) {
+             ___.sendToMain('render_message', {
                  name: 'open new tab',
                  referrer: document.location.href,
-                 url: url
+                 url: url,
+                 source : 'window.open'
              })
 
              return null
          }
 
-         let win = new ___.browser.remote.BrowserWindow({
+        
+
+         let win = new ___.remote.BrowserWindow({
              show: true,
              alwaysOnTop: true,
-             width: features.width || 800,
-             height: features.height || 600,
-             x: features.x || 200,
-             y: features.y || 200,
+             width: _specs.width || 800,
+             height: _specs.height || 600,
+             x: _specs.x || 200,
+             y: _specs.y || 200,
              backgroundColor: '#ffffff',
              frame: true,
-             icon: ___.browser.path.join(___.browser.files_dir, "images", "logo.ico"),
+             icon: ___.path.join(___.files_dir, "images", "logo.ico"),
              webPreferences: {
-                 session: ___.browser.remote.getCurrentWebContents().session,
+                 session: ___.remote.getCurrentWebContents().session,
                  sandbox: false,
-                 preload: ___.browser.files_dir + '/js/context-menu.js',
+                 preload: ___.files_dir + '/js/context-menu.js',
                  nativeWindowOpen: false,
                  webSecurity: false,
                  guestInstanceId: 1,
-                 openerId: ___.browser.remote.getCurrentWebContents().id,
+                 openerId: ___.remote.getCurrentWebContents().id,
                  allowRunningInsecureContent: true,
                  plugins: false,
              }
@@ -247,30 +384,36 @@
              referrer: document.location.href
          })
 
-         win.js = win.webContents.executeJavaScript
 
-         win.document = {
-             querySelector: function (selector) {
-                 win.js(`;(function () { return document.querySelector('${selector}'); })()`, (result) => {
-                     console.log(result)
-                 })
-             },
-             open: function () {
-                 win.js(`document.open()`)
-             },
-             write: function (code) {
-                 win.js(`document.write('${code}')`)
-             },
-             close: function () {
-                 win.js('document.close()')
-             },
-             print: function () {
-                 win.js('window.print()')
-             }
+         opener.postMessage = function (message, targetOrigin) {
+             return win.webContents.postMessage(message, targetOrigin)
          }
+         win.webContents.once('dom-ready', () => {
 
-         window.opener = win
-         return win
+             let css = ___.fs.readFileSync(___.files_dir + '/css/inject.css')
+             win.webContents.insertCSS(css)
+
+             opener.eval = function (code, userGesture = true) {
+                 win.webContents.executeJavaScript(code, userGesture).then((result) => {
+                     console.log(result)
+                 }).catch(err => {
+                     console.error(err)
+                 })
+             }
+
+         })
+
+         opener.close = function () {
+             return win.close()
+         }
+         // opener.document
+         win.on('close', (e) => {
+             opener.postMessage = () => {}
+             opener.eval = () => {}
+             opener.closed = true
+         })
+
+         return opener
      }
 
  }

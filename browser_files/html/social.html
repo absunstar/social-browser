@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="myApp">
+<html lang="en" >
 
 <head>
   <meta charset="utf-8" />
@@ -29,7 +29,7 @@
   </style>
 </head>
 
-<body ng-click="bodyclicked()" ng-keydown="bodyKeydown()" ng-controller="mainController">
+<body>
 
 
   <div class="social-tabs">
@@ -54,15 +54,6 @@
    
   </div>
 
-  <!-- <div class="social-address-bar hidden">
-    <div ng-click="showProfiles()" id="user_name"></div>
-    <div class="address-input">
-      <input ng-keydown="addressbarKeydown($event)" ng-model="url" ng-change="loadUrls()" type="text" >
-    </div>
-    <a onclick="$('.social-address-bar').hide();$('.social-address-bar2').show();" class="window-option">
-      <i class="fa fa-exchange"></i>
-    </a>
-  </div> -->
 
   <div class="row social-address-bar2">
     <div id="window_actions">
@@ -115,36 +106,10 @@
             <i class="fa fa-bars"></i>
           </a>
           
-      <!-- <a onclick="$('.social-address-bar').show();$('.social-address-bar2').hide();" class="window-option">
-        <i class="fa fa-exchange"></i> -->
       </a>
     </div>
   </div>
 
-  <div ng-show="show_urls === true" class="url-list loaded">
-    <ul>
-      <li ng-click="goUrl(u.url);$event.stopPropagation()" ng-class="{'selected' : u.selected}" href="{{u.url}}"
-        ng-repeat="u in url_list">
-        <a ng-click="goUrl(u.url);$event.stopPropagation()">
-          <img ng-src="{{u.logo}}" onerror="this.src='browser://images/no.png'">
-          <span class="bold green" ng-click="goUrl(u.url);$event.stopPropagation()"> ( {{u.count}} ) </span>
-          <span class="blue" ng-click="goUrl(u.url);$event.stopPropagation()"> {{u.url | limitTo:70}} </span>
-
-          <b class="black" ng-click="goUrl(u.url);$event.stopPropagation()"> {{u.title | limitTo:70}} </b>
-        </a>
-
-
-      </li>
-    </ul>
-    <div class="row">
-      <span class="btn bg-blue white bold" onclick="event.preventDefault();event.stopPropagation();" ng-click="urls_sort_property = 'last_visit' ; loadUrls()">
-        Sort by Last Visit </span>
-      <span class="btn bg-blue white bold" onclick="event.preventDefault();event.stopPropagation();" ng-click="urls_sort_property = 'url'; loadUrls()">
-        Sort by URL </span>
-      <span class="btn bg-blue white bold" onclick="event.preventDefault();event.stopPropagation();" ng-click="urls_sort_property = 'count'; loadUrls()">
-        Sort by Visit Count </span>
-    </div>
-  </div>
 
 
   <div class="social-status-bar"></div>
@@ -174,8 +139,6 @@
     if (window.module) module = window.module;
 
   </script>
-
-<script src="browser://js/setting.js"></script>
 
 </body>
 

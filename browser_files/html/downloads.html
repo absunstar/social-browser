@@ -57,34 +57,34 @@
 
 
             $scope.pause = function (item) {
-                $$$.browser.ipcRenderer.send('pause-item', item)
+                ___.browser.ipcRenderer.send('pause-item', item)
             }
 
 
             $scope.resume = function (item) {
-                $$$.browser.ipcRenderer.send('resume-item', item)
+                ___.browser.ipcRenderer.send('resume-item', item)
             }
 
             $scope.redownload = function (item) {
-                $$$.browser.ipcRenderer.send('redownload-item', item)
+                ___.browser.ipcRenderer.send('redownload-item', item)
             }
 
             $scope.copyLink = function (item) {
-                $$$.browser.ipcRenderer.send('render_message', {name : 'copy' , text : item.url})
+                ___.browser.ipcRenderer.send('render_message', {name : 'copy' , text : item.url})
             }
 
             $scope.remove = function (item) {
-                $$$.browser.ipcRenderer.send('remove-item', item)
+                ___.browser.ipcRenderer.send('remove-item', item)
             }
 
             $scope.openFile = function (item) {
                 if (item.path) {
-                    $$$.browser.shell.openItem(item.path)
+                    ___.browser.shell.openItem(item.path)
                 }
             }
             $scope.openFolder = function (item) {
                 if (item.path) {
-                    $$$.browser.shell.openItem($$$.browser.path.dirname(item.path))
+                    ___.browser.shell.openItem(___.browser.path.dirname(item.path))
                 }
             }
             $scope.loadDownloads = function () {

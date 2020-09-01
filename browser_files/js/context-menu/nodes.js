@@ -1,43 +1,42 @@
 module.exports = function (___) {
 
- 
-    let exit = false
-    ___.browser.var.white_list.forEach(u => {
-        if (document.location.href.like(u.url)) {
-            exit = true
-        }
-    })
-    if (exit) {
-        return
-    }
 
-    function validURL(str) {
-        var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
-            '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
-            '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-            '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-            '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-            '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
-        return !!pattern.test(str);
-    }
+    let xwin = ___.electron.remote.getCurrentWindow()
+    let partition = xwin.webContents.getWebPreferences().partition
 
-    function isNG(url){
+    function isNG(url) {
         return decodeURI(url).indexOf('{{') > -1
     }
-    function a_handle() {
-        document.querySelectorAll('a[href]').forEach(a => {
-            if (!isNG(a.href) && !a.href.like('*#*') && !a.href.like('*___new_tab___*')) {
-                a.href = a.href + '___new_tab___'
-            }
-        })
+
+    function a_handle(a) {
+
+        if (a.tagName == "A" && a.getAttribute('target') == '_blank' && !isNG(a.href) && !a.href.like('*youtube.com*') && !a.href.like('*#___new_tab___*|*#___new_window___*|*#___trusted_window___*') && !a.getAttribute('onclick') && !a.getAttribute('xlink')) {
+            a.setAttribute('xlink', 'done')
+            a.addEventListener('click', (e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                ___.call('render_message', {
+                    name: 'open new tab',
+                    referrer: document.location.href,
+                    url: a.href,
+                    partition : partition
+                })
+            })
+        }
     }
+
+
+    window.addEventListener('DOMNodeInsertedIntoDocument', (e) => {
+        a_handle(e.target)
+    }, false);
+    window.addEventListener('DOMNodeInserted', (e) => {
+        a_handle(e.target)
+    }, false);
+
     document.addEventListener('DOMContentLoaded', () => {
-        a_handle()
-        setInterval(() => {
-            a_handle()
-        })
-    }, 1000 * 5);
-
-
+            document.querySelectorAll('a').forEach(a=>{
+                a_handle(a)
+            })
+    })
 
 }

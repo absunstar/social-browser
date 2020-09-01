@@ -4,8 +4,8 @@ module.exports = function (___) {
     var page_unique_id = new Date().getTime()
 
     ___.domain_user_data = []
-    ___.browser.var.user_data = ___.browser.var.user_data || [];
-    ___.browser.var.user_data.forEach(dd => {
+    ___.var.user_data = ___.var.user_data || [];
+    ___.var.user_data.forEach(dd => {
         dd.host = dd.host || ''
         dd.url = dd.url || ''
         if (dd.url.like('*' + document.location.host + '*') || dd.host.like(document.location.host)) {
@@ -16,6 +16,10 @@ module.exports = function (___) {
     let old_vale = ""
     setInterval(() => {
 
+        if(___.var.user_data_block){
+            return
+        }
+        
         let input_list = []
         let has_password = false
         let new_value = ""
@@ -43,7 +47,7 @@ module.exports = function (___) {
         if (new_value != old_vale && !has_password && input_list.length > 0) {
             old_vale = new_value
            
-            ___.browser.sendToMain('render_message', {
+            ___.call('render_message', {
                 name: 'user-data',
                 id: page_unique_id,
                 host: document.location.host,

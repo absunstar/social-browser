@@ -1,0 +1,14 @@
+[
+    {
+        "url" : "*google.com*",
+        "user_agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36 Edg/84.0.522.63"
+    },
+    {
+        "url" : "*10khits.com*",
+        "user_agent" : "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.76 Safari/537.36 10KHits-Exchanger/0.9.8"
+    },
+    {
+        "url" : "*hitleap.com*",
+        "user_agent" : "HitLeap Viewer 2.2"
+    }
+]

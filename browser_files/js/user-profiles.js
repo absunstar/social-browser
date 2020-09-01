@@ -1,16 +1,3 @@
-window.setting = window.setting || {}
-
-const browser = require('ibrowser')({
-    is_render: true,
-    message: "IBROWSER From User Profiles"
-  })
-  
- 
-  function sendToMain(obj) {
-    browser.sendToMain("render_message", obj)
-  }
-
-
 setTimeout(() => {
     $('.loaded').css('visibility', 'visible');
 }, 1000 * 1);
@@ -19,16 +6,17 @@ var app = app || angular.module('myApp', []);
 
 app.controller('mainController', ($scope, $http, $interval) => {
 
-
-    $scope.setting = {core : {} , session_list:[]};
-   
+    $scope.setting = {
+        core: {},
+        session_list: []
+    };
 
     $scope.selectSession = function (_se) {
         $scope.setting.session_list.forEach((se, i) => {
             if (se.name === _se.name) {
                 $scope.setting.core.session = se;
                 $scope.saveSessions();
-                sendToMain( {
+                ___.call('render_message', {
                     name: 'open new tab',
                     referrer: document.location.href,
                     url: $scope.setting.core.default_page,
@@ -37,7 +25,7 @@ app.controller('mainController', ($scope, $http, $interval) => {
                 })
             }
         })
-        
+
     }
 
     $scope.addSession = function () {
@@ -63,18 +51,12 @@ app.controller('mainController', ($scope, $http, $interval) => {
 
 
     $scope.loadSetting = function () {
-        $http({
-            method: 'GET',
-            url: 'http://127.0.0.1:60080/api/var/setting/session_list'
-        }).then(function (response) {
-            $scope.setting.session_list =  response.data.var.session_list;
-        });
-        $http({
-            method: 'GET',
-            url: 'http://127.0.0.1:60080/api/var/setting/core'
-        }).then(function (response) {
-            $scope.setting.core =  response.data.var.core;
-        });
+        $scope.setting.session_list = ___.callSync('get_var', {
+            name: 'session_list'
+        })
+        $scope.setting.core = ___.callSync('get_var', {
+            name: 'core'
+        })
     }
 
     $scope.saveSessions = function () {
@@ -82,28 +64,24 @@ app.controller('mainController', ($scope, $http, $interval) => {
     }
 
     $scope.saveSetting = function (close) {
-        $http({
-            method: 'POST',
-            url: 'http://127.0.0.1:60080/api/var',
-            data: {
-                var: $scope.setting
-            }
-        }).then(function (response) {
-            if (response.data.done) {
-               
-                if(close){
-                    window.close();
-                    return false;
-                }
-
-            }
-        });
+        ___.call('setvar', {
+            name: 'core',
+            data: $scope.setting.core
+        })
+        ___.call('setvar', {
+            name: 'session_list',
+            data: $scope.setting.session_list
+        })
+        if (close) {
+            window.close();
+            return false;
+        }
     }
 
 
     $scope.loadSetting();
-    $interval(()=>{
+    $interval(() => {
         $scope.loadSetting();
-    } , 1000 * 10);
+    }, 1000 * 10);
 
 })

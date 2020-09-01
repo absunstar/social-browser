@@ -1,5 +1,5 @@
 module.exports = function (___) {
-    let setting = ___.browser.var
+    
    // console.log('facebook context menu loading ...')
 
     function addCss(css) {
@@ -19,20 +19,16 @@ module.exports = function (___) {
 
     addCss(`
             ._2s1x ._2s1y {
-            background-color: ${setting.facebook.color};
+            background-color: ${___.var.facebook.color};
             }
     `)
 
- 
-
-    if (setting.facebook.remove_ads) {
-        document.querySelectorAll('.pagelet').forEach(p => p.remove())
+    if (___.var.facebook.remove_ads) {
+        document.querySelectorAll('.pagelet , .pagelet-group.pagelet a[href*="/ad_"]').forEach(p => p.remove())
         setInterval(() => {
             document.querySelectorAll('.pagelet').forEach(p => p.remove())
-
         }, 1000 * 5);
     }
-
 
 
 }

@@ -47,13 +47,21 @@ module.exports = function (___) {
     // })
 
 
+    window.cefQuery = function(options){
+        console.log(options)
+        return 5000
+    }
 
-
-    setInterval(() => {
+    function hack_script(){
         window.googleAd = true
         window['FuckAdBlock'] = window['FuckAdBlock'] || {}
         window['zfgformats'] = []
         window.adbDetectorLoaded = 'loaded';
+    }
+
+    hack_script()
+    setInterval(() => {
+        hack_script()
     }, 1000)
 
 }

@@ -1,49 +1,71 @@
 module.exports = function (___) {
 
-    let setting = ___.browser.var
+    let translated = false
+    let translated_text = ''
 
+    let translate = function (text) {
+      
+        if (translated || !text) {
+            return
+        }
+        
+        translated = true
+        ___.translate(text , (trans)=>{
+            translated_text += trans
+            check_unsafe_words()
+        })
+    }
 
-
+    let check_unsafe_words_busy = false
     function check_unsafe_words() {
+        if(check_unsafe_words_busy){
+            return
+        }
         if (document.location.href.like('*youtube.com*')) {
             return
         }
         let exit = false
-        setting.white_list.forEach(u=>{
-            if(document.location.href.like(u.url)){
+
+        ___.var.white_list.forEach(u => {
+            if (document.location.href.like(u.url)) {
                 exit = true
             }
         })
-        if(exit){
-            return
-        }
-       // console.log(' checking unsafe words')
-        setting.blocking.un_safe_words = setting.blocking.un_safe_words || [];
 
-        if (setting.blocking.un_safe_words.length === 0) {
+        if (exit) {
             return
         }
+
+        ___.var.blocking.un_safe_words_list = ___.var.blocking.un_safe_words_list || [];
+        if (___.var.blocking.un_safe_words_list.length === 0) {
+            return
+        }
+        check_unsafe_words_busy = true
         let text = ""
         let title = document.querySelector('title')
         let body = document.querySelector('body')
 
         if (title && title.innerText) {
-            text += title.innerText.toLowerCase().replace(/\r?\n|\r/g, '') + ' ' + document.location.href.toLowerCase().replace(/\r?\n|\r/g, '')
+            translate(title.innerText)
+            text += title.innerText + ' ' + document.location.href + ' '
         }
         if (body) {
-            text += body.innerText.toLowerCase().replace(/\r?\n|\r/g, '')
+            text += body.innerText + ' '
         }
+
+        text += translated_text
 
         let block = false
 
-        setting.blocking.un_safe_words.forEach(word => {
-            if (text.like(word.text.toLowerCase())) {
-               // console.log(' Blocking unsafe words ' + word.text)
+        ___.var.blocking.un_safe_words_list.forEach(word => {
+            if (text.contains(word.text)) {
                 block = true
             }
         })
 
-        window.__blockPage(block)
+        window.__blockPage(block, 'Block Page [ Contains Unsafe Words ] , <small> <a target="_blank" href="http://127.0.0.1:60080/setting?open=safty"> goto setting </a></small>', false)
+
+        check_unsafe_words_busy = false
 
         setTimeout(() => {
             check_unsafe_words()
@@ -53,7 +75,7 @@ module.exports = function (___) {
 
 
 
-    if (setting.blocking.safty_mode) {
+    if (___.var.blocking.allow_safty_mode) {
         check_unsafe_words()
     }
 

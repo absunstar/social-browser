@@ -1,12 +1,8 @@
 module.exports = function (___) {
 
-
-    let setting = ___.browser.var
-
-
     function removeAdDoms() {
 
-        let arr = setting.blocking.dom_selectors
+        let arr = ___.var.blocking.html_tags_selector_list
 
         // let arr = ['[class="ad"]', '[class="ads"]', '[class*="_ad_"]', '[class$="_ads"]', '[class$="_ad"]', '[class$="-ad"]', '[class$="-ads"]', '[class^="ad-"]', '[class^="ads-"]']
         arr.forEach(sl => {
@@ -32,7 +28,7 @@ module.exports = function (___) {
     }
 
 
-    if (___.browser.var.blocking.doms) {
+    if (___.var.blocking.block_html_tags) {
 
         document.addEventListener('DOMContentLoaded', () => {
             removeAdDoms()
@@ -43,4 +39,5 @@ module.exports = function (___) {
 
 
     }
+
 }

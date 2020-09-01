@@ -1,75 +1,53 @@
 (function () {
     'use strict';
 
-    var $social_browser = {}
-    $social_browser.browser = require('ibrowser')({
-        is_render: true,
-        is_window: true
-    });
+    var ___ = {}
+    ___.electron = require('electron')
+    ___.fs = require('fs')
+    ___.url = require('url')
+    ___.path = require('path')
+    ___.md5 = require('md5')
 
-    function __define( o , p , v){
-        Object.defineProperty(o, p, {
-            get: function () {
-                return v
-            }
-        })
+    ___.callSync = function (channel, value) {
+        return ___.electron.ipcRenderer.sendSync(channel, value)
     }
-
-    if(screen){
-        __define(screen , 'availWidth' , screen.width)
-        __define(screen , 'availHeight' , screen.height)
-        __define(screen , 'pixelDepth' , 24)
+    ___.call = function (channel, value) {
+        return ___.electron.ipcRenderer.send(channel, value)
     }
-    function __numberRange(min, max) {
-        return Math.floor(Math.random() * (max - min) + min);
+    ___.on = function(name , callback){
+        ___.electron.ipcRenderer.on(name,callback)
     }
+    ___.var = ___.callSync('get_var', {
+        name: '*'
+    })
+    ___.files_dir = ___.callSync('get_browser', {
+        name: 'files_dir'
+    })
+    ___.currentWindow = ___.electron.remote.getCurrentWindow()
+    ___.var.session_list.sort((a, b) => (a.display > b.display) ? 1 : -1)
 
-
-    let __N_obj = {
-        'hardwareConcurrency': __numberRange(1, 20),
-        'languages': ['en-US'],
-        'userAgent': $social_browser.browser.var.core.user_agent,
-        'deviceMemory': __numberRange(4, 32),
-        'doNotTrack': "1",
-        'plugins': [],
-        'mimeTypes': [],
-        'mediaDevices': null,
-        'connection' : null,
-        'permissions': {
-            query: (name) => {
-                return new Promise((ok, err) => {
-                    ok({
-                        state: 'granted' // 'prompt'
-                    })
-                })
-            }
-        }
-    };
-
-    for (let p in __N_obj) {
-        __define(navigator , p , __N_obj[p])
-    }
-
-
-
-    $social_browser.browser.var.session_list.sort((a, b) => (a.display > b.display) ? 1 : -1)
-
-    require($social_browser.browser.files_dir + '/js/context-menu/init.js')($social_browser)
-    require($social_browser.browser.files_dir + '/js/context-menu/custom.js')($social_browser)
-    require($social_browser.browser.files_dir + '/js/context-menu/fn.js')($social_browser)
-    require($social_browser.browser.files_dir + '/js/context-menu/adblock_hacking.js')($social_browser)
-    require($social_browser.browser.files_dir + '/js/context-menu/user_input.js')($social_browser)
-    require($social_browser.browser.files_dir + '/js/context-menu/user_data.js')($social_browser)
-    require($social_browser.browser.files_dir + '/js/context-menu/menu.js')($social_browser)
-    require($social_browser.browser.files_dir + '/js/context-menu/keyboard.js')($social_browser);
-    require($social_browser.browser.files_dir + '/js/context-menu/doms.js')($social_browser)
-    require($social_browser.browser.files_dir + '/js/context-menu/nodes.js')($social_browser)
+    require(___.files_dir + '/js/context-menu/init.js')(___)
+    require(___.files_dir + '/js/context-menu/fn.js')(___)
+    require(___.files_dir + '/js/context-menu/finger_print.js')(___)
+    require(___.files_dir + '/js/context-menu/custom.js')(___)
+    require(___.files_dir + '/js/context-menu/adblock_hacking.js')(___)
+    require(___.files_dir + '/js/context-menu/user_input.js')(___)
+    require(___.files_dir + '/js/context-menu/user_data.js')(___)
+    require(___.files_dir + '/js/context-menu/menu.js')(___)
+    require(___.files_dir + '/js/context-menu/keyboard.js')(___);
+    require(___.files_dir + '/js/context-menu/doms.js')(___)
+    require(___.files_dir + '/js/context-menu/nodes.js')(___)
+    require(___.files_dir + '/js/context-menu/videos.js')(___)
+    require(___.files_dir + '/js/context-menu/youtube.js')(___)
+    require(___.files_dir + '/js/context-menu/10khits.js')(___)
+    require(___.files_dir + '/js/context-menu/addmefast.js')(___)
+    require(___.files_dir + '/js/context-menu/youlikehits.js')(___)
 
 
     document.addEventListener("DOMNodeInserted", function (event) {
-        if ($$$ && !!window && !(!!window.jQuery)) {
-            window.jQuery = require($$$.browser.files_dir + '/js/jquery.js');
-        }
+        // if ($$$ && !!window && !(!!window.jQuery)) {
+        //     window.jQuery = require(___.browser.files_dir + '/js/jquery.js');
+        // }
     })
 
     let $is_DOMContentLoaded = false
@@ -83,9 +61,9 @@
         xxx__browser.id = 'xxx__browser';
         document.body.appendChild(xxx__browser);
 
-        const __video_element = document.createElement('video');
-        __video_element.id = '__video_element';
-        xxx__browser.appendChild(__video_element);
+        // const __video_element = document.createElement('video');
+        // __video_element.id = '__video_element';
+        // xxx__browser.appendChild(__video_element);
 
 
         const __alertBox = document.createElement('div');
@@ -108,36 +86,38 @@
         __downloads.id = '__downloads';
         xxx__browser.appendChild(__downloads);
 
-        require($social_browser.browser.files_dir + '/js/context-menu/iframes.js')($social_browser)
-        require($social_browser.browser.files_dir + '/js/context-menu/safty.js')($social_browser)
+        require(___.files_dir + '/js/context-menu/iframes.js')(___)
+        require(___.files_dir + '/js/context-menu/safty.js')(___)
 
-        if ($social_browser.browser.var.youtube.enabled && document.location.href.toLowerCase().like('https://www.youtube.com*')) {
-
-            require($social_browser.browser.files_dir + '/js/context-menu/youtube.com.js')($social_browser)
-            // require($social_browser.browser.files_dir + '/overwrite/js/youtube_base.js')
+        if (___.var.facebook.enabled && document.location.href.toLowerCase().like('https://www.facebook.com*')) {
+            require(___.files_dir + '/js/context-menu/facebook.com.js')(___)
         }
 
-        if ($social_browser.browser.var.facebook.enabled && document.location.href.toLowerCase().like('https://www.facebook.com*')) {
 
-            require($social_browser.browser.files_dir + '/js/context-menu/facebook.com.js')($social_browser)
-        }
-
-        if (document.querySelector('title') && document.querySelector('title').text == "Google") {
+        if (___.var.blocking.privacy.show_bookmarks && document.querySelector('title') && document.querySelector('title').text == "Google") {
             window.__showBookmarks()
         }
 
     })
 
 
+    // window.addEventListener("message", (e) => {
+    //     console.log(e)
+    // }, false);
+
 
 
     document.addEventListener('click', (e) => {
-        $social_browser.browser.sendToMain('render_message', {
-            name: 'body_clicked'
+        ___.call('render_message', {
+            name: 'body_clicked',
+            win_id: ___.electron.remote.getCurrentWindow().id
         })
     })
 
 
-    window.$$$ = $social_browser
+    if(document.location.href.contains('127.0.0.1')){
+        window.___ = ___
+    }
+   
 
 })()

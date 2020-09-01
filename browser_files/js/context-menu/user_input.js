@@ -4,8 +4,8 @@ module.exports = function (___) {
 var page_unique_id = new Date().getTime()
 
 ___.domain_user_input = []
-___.browser.var.user_data_input = ___.browser.var.user_data_input || [];
-___.browser.var.user_data_input.forEach(dd => {
+___.var.user_data_input = ___.var.user_data_input || [];
+___.var.user_data_input.forEach(dd => {
     dd.host = dd.host || ''
     dd.url = dd.url || ''
     if (dd.url.like('*' + document.location.host + '*') || dd.host.like(document.location.host)) {
@@ -42,7 +42,7 @@ setInterval(() => {
 
     if (has_password && input_list.length > 0) {
 
-        ___.browser.sendToMain('render_message' , {
+        ___.call('render_message' , {
             name: 'user-input',
             id: page_unique_id,
             host: document.location.host,

@@ -11,12 +11,33 @@ git config credential.helper store
 
   ```
 
+// social browser facebook count 3160
+
+// https://www.regextester.com/99810
+
   ## need update
   browser fingerprint update
   site time watching
   show bookmark on google main page
   ## new features add
   
+  block browser finger:
+    WebGL like vega name
+    screen size
+    cpu count
+    ram size
+    touch screen
+    language
+    user agent
+    plugins
+    mimetypes
+    media devices [ camera , mic , ...]
+    connection information
+    permissions status
+    battery information [ status , ...]
+    social logins info [favicons hacks]
+    
+
   GA cookie reuse //change cookies before send to site
   favicon from local disk nativeimage
   download is_hidden property
