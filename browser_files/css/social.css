@@ -13,7 +13,10 @@ body {
 }
 
 
-
+.address-input {
+  width: calc(100% - 600px);
+  min-width: 250px;
+}
 
 #message {
   display: none;
@@ -254,20 +257,31 @@ button {
   }
 
 
-  .social-address-bar .address-input {
+  .address-input {
     width: 60% !important;
   }
 }
 
-@media only screen and (max-width: 360px) {
+@media only screen and (max-width: 420px) {
   #user_name{
     display: none;
   }
   .social-history {
     display: none;
   }
-
-  .social-address-bar .address-inpu {
+  .go-back{
+    display: none;
+  }
+  .go-forward{
+    display: none;
+  }
+  .address-input {
     width: 50% !important;
+  }
+}
+
+@media only screen and (max-width: 320px) {
+  .social-address-bar2{
+    display: none;
   }
 }

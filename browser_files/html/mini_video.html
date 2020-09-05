@@ -21,12 +21,11 @@
 
   <body>
     <video  class="video-js"  data-setup="{}" preload="auto" autobuffer x-webkit-airplay="allow" webkit-playsinline controls autoplay>
-      <source type="video/mp4" />
     </video>
 
     <script>
       let url = document.location.href.split("?url=")[1];
-      document.querySelector("video source").src = url;
+      document.querySelector("video").src = url;
     </script>
    
   </body>

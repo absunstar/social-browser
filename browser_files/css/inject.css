@@ -53,17 +53,18 @@ video {
   margin: 5px;
   background: #fff;
   padding: 0px;
-  color: #000 !important;
+  color: blue !important;
   transition: all 0.2s ease;
   text-decoration: none;
 }
 #__bookmarkDiv p:hover {
   text-decoration: underline !important;
 }
-#__bookmarkDiv p{
+#__bookmarkDiv p {
   font-size: 12px;
 }
-#__bookmarkDiv img , #__bookmarkDiv p {
+#__bookmarkDiv img,
+#__bookmarkDiv p {
   display: inline-block;
   padding: 0px;
   margin: 0px;
@@ -118,6 +119,33 @@ video {
   border: 1px solid #bbb;
 }
 
+#__find {
+  display: none;
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  background: #fff;
+  border: 1px solid #bbb;
+  padding: 5px;
+  z-index: 99999999;
+  width: 350px;
+  height: 40px;
+}
+#__find a {
+  color: #000 !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  border: 1px solid #000 !important;
+  padding: 7px 9px !important;
+  margin: 0px !important;
+  font-size: 12px !important;
+}
+#__find input {
+  height: 30px !important;
+  outline: #000 !important;
+  font-size: 12px !important;
+  width: 90% !important;
+}
 #__video_element {
   z-index: 9999999;
   position: fixed;
@@ -130,14 +158,14 @@ video {
   bottom: 5px;
 }
 
-.__border{
-  border : 2px solid red;
+.__border {
+  border: 2px solid red;
 }
-.__done{
-  border : 2px solid green;
+.__done {
+  border: 2px solid green;
 }
-.__waiting{
-  border : 2px dashed red;
+.__waiting {
+  border: 2px dashed red;
 }
 /* 
 ::-webkit-scrollbar {

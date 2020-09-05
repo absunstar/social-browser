@@ -443,9 +443,14 @@ function showSettingMenu() {
   arr.push({
     label: 'Zoom +',
     accelerator: 'CommandOrControl+numadd',
-    click: () => sendToMain({
-      name: 'zoom+'
-    })
+    click: (event) => {
+      console.log(event)
+      sendToMain({
+        name: 'zoom+'
+      })
+
+    }
+
   })
   arr.push({
     label: 'Zoom',
@@ -509,6 +514,73 @@ function showSettingMenu() {
   settingMenu.popup();
 }
 
+function showBookmarksMenu() {
+
+  let bookmark_arr = [];
+  bookmark_arr.push({
+    label: 'Bookmark current tab',
+    click: () => sendToMain({
+      name: 'add_to_bookmark'
+    })
+  })
+  bookmark_arr.push({
+    label: 'Bookmark all tabs',
+    click: () => sendToMain({
+      name: 'add_all_to_bookmark'
+    })
+  })
+  bookmark_arr.push({
+    type: 'separator'
+  })
+  bookmark_arr.push({
+    label: 'Bookmark manager',
+    click: () => sendToMain({
+      name: 'open new tab',
+      url: 'http://127.0.0.1:60080/setting?open=bookmarks'
+    })
+  })
+  bookmark_arr.push({
+    type: 'separator'
+  })
+  ___.var.bookmarks.forEach(b => {
+    bookmark_arr.push({
+      label: b.title,
+      sublabel: b.url,
+      icon: nativeImage.createFromPath(b.favicon).resize({
+        width: 16,
+        height: 16
+      }),
+      click: () => sendToMain({
+        name: 'open new tab',
+        url: b.url
+      })
+    })
+  })
+
+  if (___.var.bookmarks.length > 0) {
+    bookmark_arr.push({
+      type: 'separator'
+    })
+
+    bookmark_arr.push({
+      label: 'Open all bookmarks',
+      visible: ___.var.bookmarks.length > 0,
+      click: () => {
+        ___.var.bookmarks.forEach(b => {
+          sendToMain({
+            name: 'open new tab',
+            url: b.url
+          })
+        })
+
+      }
+    })
+  }
+
+  let bookmarksMenu = Menu.buildFromTemplate(bookmark_arr);
+
+  bookmarksMenu.popup();
+}
 ___.on('user_info', (event, data) => {
   showInfo(data.message, data)
 })
@@ -755,11 +827,11 @@ function renderMessage(cm) {
     // let $window = ___.___.electron.remote.getCurrentWindow()
   } else if (cm.name == "force reload") {
 
-    // ___.remote.session.fromPartition(currentWebview.getAttribute('partition')).clearCache(function () {
+    // ___.electron.remote.session.fromPartition(currentWebview.getAttribute('partition')).clearCache(function () {
     //   currentWebview.reload(true)
     // });
 
-    // ___.remote.session.fromPartition(currentWebview.getAttribute('partition')).clearStorageData({
+    // ___.electron.remote.session.fromPartition(currentWebview.getAttribute('partition')).clearStorageData({
     //   origin: cm.origin,
     //   storages: '',
     //   quotas : ''

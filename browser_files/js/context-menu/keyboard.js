@@ -56,9 +56,7 @@ module.exports = function (___) {
         } else if (e.keyCode == 70 /*f*/ ) {
 
             if (e.ctrlKey == true) {
-                ___.call('render_message', {
-                    name: 'show in-page-find'
-                })
+                window.showFind(true)
             }
         } else if (e.keyCode == 115 /*f4*/ ) {
 

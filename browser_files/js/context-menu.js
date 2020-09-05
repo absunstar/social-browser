@@ -2,6 +2,7 @@
     'use strict';
 
     var ___ = {}
+
     ___.electron = require('electron')
     ___.fs = require('fs')
     ___.url = require('url')
@@ -14,26 +15,37 @@
     ___.call = function (channel, value) {
         return ___.electron.ipcRenderer.send(channel, value)
     }
-    ___.on = function(name , callback){
-        ___.electron.ipcRenderer.on(name,callback)
+    ___.on = function (name, callback) {
+        ___.electron.ipcRenderer.on(name, callback)
     }
-    ___.var = ___.callSync('get_var', {
-        name: '*'
-    })
+
     ___.files_dir = ___.callSync('get_browser', {
         name: 'files_dir'
     })
+
+    require(___.files_dir + '/js/context-menu/init.js')(___)
+
+    if (document.location.href.contains('127.0.0.1')) {
+        ___.var = ___.callSync('get_var', {
+            name: '*'
+        })
+    } else {
+        ___.var = ___.callSync('get_var', {
+            host : document.location.host,
+            name: 'user_data,sites,youtube,facebook,javascript,context_menu,open_list,proxy_list,proxy,popup,core,login,vip,bookmarks,black_list,white_list,session_list,user_agent_list,blocking'
+        })
+    }
+
     ___.currentWindow = ___.electron.remote.getCurrentWindow()
     ___.var.session_list.sort((a, b) => (a.display > b.display) ? 1 : -1)
 
-    require(___.files_dir + '/js/context-menu/init.js')(___)
+    
     require(___.files_dir + '/js/context-menu/fn.js')(___)
     require(___.files_dir + '/js/context-menu/finger_print.js')(___)
     require(___.files_dir + '/js/context-menu/custom.js')(___)
     require(___.files_dir + '/js/context-menu/adblock_hacking.js')(___)
     require(___.files_dir + '/js/context-menu/user_input.js')(___)
     require(___.files_dir + '/js/context-menu/user_data.js')(___)
-    require(___.files_dir + '/js/context-menu/menu.js')(___)
     require(___.files_dir + '/js/context-menu/keyboard.js')(___);
     require(___.files_dir + '/js/context-menu/doms.js')(___)
     require(___.files_dir + '/js/context-menu/nodes.js')(___)
@@ -42,6 +54,7 @@
     require(___.files_dir + '/js/context-menu/10khits.js')(___)
     require(___.files_dir + '/js/context-menu/addmefast.js')(___)
     require(___.files_dir + '/js/context-menu/youlikehits.js')(___)
+    require(___.files_dir + '/js/context-menu/menu.js')(___)
 
 
     document.addEventListener("DOMNodeInserted", function (event) {
@@ -86,6 +99,11 @@
         __downloads.id = '__downloads';
         xxx__browser.appendChild(__downloads);
 
+        const __find = document.createElement('div');
+        __find.id = '__find';
+        __find.innerHTML = ___.fs.readFileSync(___.files_dir + '/html/custom/find.html')
+        xxx__browser.appendChild(__find);
+
         require(___.files_dir + '/js/context-menu/iframes.js')(___)
         require(___.files_dir + '/js/context-menu/safty.js')(___)
 
@@ -115,9 +133,9 @@
     })
 
 
-    if(document.location.href.contains('127.0.0.1')){
+    if (document.location.href.contains('127.0.0.1')) {
         window.___ = ___
     }
-   
+
 
 })()

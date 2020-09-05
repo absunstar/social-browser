@@ -1,35 +1,35 @@
  module.exports = function (___) {
 
-    ___.sendMessage = function (cm) {
-        ___.call('renderMessage', cm)
-    }
+     ___.sendMessage = function (cm) {
+         ___.call('renderMessage', cm)
+     }
 
-    ___.__define = function(o, p, v) {
-        if (typeof o == "undefined") {
-            return
-        }
-        Object.defineProperty(o, p, {
-            get: function () {
-                return v
-            }
-        })
-        if (o.prototype) {
-            o.prototype[p] = v
-        }
-    }
+     ___.__define = function (o, p, v) {
+         if (typeof o == "undefined") {
+             return
+         }
+         Object.defineProperty(o, p, {
+             get: function () {
+                 return v
+             }
+         })
+         if (o.prototype) {
+             o.prototype[p] = v
+         }
+     }
 
 
-     ___.isValidURL = function(str) {
-        var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
-            '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
-            '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-            '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-            '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-            '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
-        return !!pattern.test(str);
-    }
+     ___.isValidURL = function (str) {
+         var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
+             '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+             '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+             '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+             '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+             '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+         return !!pattern.test(str);
+     }
 
-     ___.handle_url = function(u) {
+     ___.handle_url = function (u) {
          if (typeof u !== "string") {
              return u
          }
@@ -46,12 +46,12 @@
      }
 
 
-     ___.__numberRange = function(min, max) {
-        return Math.floor(Math.random() * (max - min) + min);
-    }
+     ___.__numberRange = function (min, max) {
+         return Math.floor(Math.random() * (max - min) + min);
+     }
      if (___.var.blocking.javascript.block_eval) {
          window.eval = function (code) {
-             // console.log(code)
+             console.log(code)
          }
      }
 
@@ -101,7 +101,7 @@
          return false;
      }
 
-    
+
 
      let translate_busy = false
      ___.translate = function (text, callback) {
@@ -126,7 +126,7 @@
          fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=en&dt=t&dt=bd&dj=1&q=${text}`).then(response => {
              return response.json()
          }).then(data => {
-            translate_busy = false
+             translate_busy = false
              translated_text = ''
              if (data && data.sentences && data.sentences.length > 0) {
                  data.sentences.forEach(t => {
@@ -134,37 +134,37 @@
                  })
                  callback(translated_text || text)
              }
-         }).catch(err=>{
-            translate_busy = false
-            callback(text)
+         }).catch(err => {
+             translate_busy = false
+             callback(text)
          })
      }
 
-     window.__md5 = function(txt){
+     window.__md5 = function (txt) {
          return ___.md5(txt)
      }
 
-     window.__img_to_base64 = function(selector){
-        let c = document.createElement('canvas');
-        let img = null;
-        if(typeof selector == "string"){
+     window.__img_to_base64 = function (selector) {
+         let c = document.createElement('canvas');
+         let img = null;
+         if (typeof selector == "string") {
              img = document.querySelector(selector);
-        }else{
+         } else {
              img = selector;
-        }
-       
-        if(!img){
-            return ''
-        }
-        c.height = img.naturalHeight;
-        c.width = img.naturalWidth;
-        let ctx = c.getContext('2d');
-        
-        ctx.drawImage(img, 0, 0, c.width, c.height);
-        return c.toDataURL();
+         }
+
+         if (!img) {
+             return ''
+         }
+         c.height = img.naturalHeight;
+         c.width = img.naturalWidth;
+         let ctx = c.getContext('2d');
+
+         ctx.drawImage(img, 0, 0, c.width, c.height);
+         return c.toDataURL();
      }
 
-     window.__img_code = function(selector){
+     window.__img_code = function (selector) {
          return window.__md5(window.__img_to_base64(selector))
      }
 
@@ -266,6 +266,44 @@
          }
      }
 
+     let __find = document.querySelector('#__find')
+     let find_options = {
+         forward: true,
+         findNext: false,
+         matchCase: false,
+         wordStart: false,
+         medialCapitalAsWordStart: false
+     }
+     let find_input = null
+     window.showFind = function (from_key) {
+
+         if (!__find) {
+             __find = document.querySelector('#__find')
+         }
+         if (from_key) {
+             if (__find.style.display == "block") {
+                 __find.style.display = "none"
+                 ___.currentWindow.webContents.stopFindInPage('clearSelection')
+                 return
+             } else {
+                 __find.style.display = "block"
+             }
+         }
+
+         if (!find_input) {
+             find_input = document.querySelector('#__find_input')
+             find_input.addEventListener('input', () => {
+                 if (find_input.value) {
+                     ___.currentWindow.webContents.findInPage(find_input.value, find_options);
+                   //  ___.currentWindow.webContents.unselect();
+                 }else{
+                    ___.currentWindow.webContents.stopFindInPage('clearSelection')
+                 }
+             })
+         }
+
+     }
+
      ___.on('render_message', (event, data) => {
          if (data.name == "update-target-url") {
              showInfo(data.url)
@@ -284,35 +322,39 @@
 
      window.open = function (url, _name, _specs, _replace_in_history) {
 
-        let opener = {
-            closed: false ,
-            opener : window ,
-            postMessage : () => {console.log('postMessage opener')},
-            eval : () => {console.log('eval opener')},
-            close : ()=>{
-                console.log('close opener')
-            },
-            focus : ()=>{
-                console.log('focus opener')
-            }
-        }
+         let opener = {
+             closed: false,
+             opener: window,
+             postMessage: () => {
+                 console.log('postMessage opener')
+             },
+             eval: () => {
+                 console.log('eval opener')
+             },
+             close: () => {
+                 console.log('close opener')
+             },
+             focus: () => {
+                 console.log('focus opener')
+             }
+         }
 
-        if(___.var.blocking.javascript.block_window_open){
-            return opener
-        }
+         if (___.var.blocking.javascript.block_window_open) {
+             return opener
+         }
 
          if (typeof url !== "string") {
              return opener
          }
-         if(url == "about:blank"){
+         if (url == "about:blank") {
              return opener
          }
-         url =  ___.handle_url(url)
+         url = ___.handle_url(url)
 
 
 
          if (url.like('https://www.youtube.com/watch*')) {
-             ___.sendToMain('new-youtube-window', {
+             ___.call('new-youtube-window', {
                  referrer: document.location.href,
                  url: url
              })
@@ -344,19 +386,19 @@
          }
 
          if (!_specs) {
-             ___.sendToMain('render_message', {
+             ___.call('render_message', {
                  name: 'open new tab',
                  referrer: document.location.href,
                  url: url,
-                 source : 'window.open'
+                 source: 'window.open'
              })
 
              return null
          }
 
-        
 
-         let win = new ___.remote.BrowserWindow({
+
+         let win = new ___.electron.remote.BrowserWindow({
              show: true,
              alwaysOnTop: true,
              width: _specs.width || 800,
@@ -367,13 +409,13 @@
              frame: true,
              icon: ___.path.join(___.files_dir, "images", "logo.ico"),
              webPreferences: {
-                 session: ___.remote.getCurrentWebContents().session,
+                 session: ___.electron.remote.getCurrentWebContents().session,
                  sandbox: false,
                  preload: ___.files_dir + '/js/context-menu.js',
                  nativeWindowOpen: false,
                  webSecurity: false,
                  guestInstanceId: 1,
-                 openerId: ___.remote.getCurrentWebContents().id,
+                 openerId: ___.electron.remote.getCurrentWebContents().id,
                  allowRunningInsecureContent: true,
                  plugins: false,
              }
@@ -393,7 +435,10 @@
              let css = ___.fs.readFileSync(___.files_dir + '/css/inject.css')
              win.webContents.insertCSS(css)
 
+             console.log(css)
+
              opener.eval = function (code, userGesture = true) {
+                 code = `window.eval(${code})`
                  win.webContents.executeJavaScript(code, userGesture).then((result) => {
                      console.log(result)
                  }).catch(err => {

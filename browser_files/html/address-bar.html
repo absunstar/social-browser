@@ -26,12 +26,12 @@
 
   <body ng-controller="mainController">
     <div class="address-input">
-      <input id="addressbar_id" ng-keydown="addressbarKeydown($event)" ng-model="url"  type="text" />
+      <input id="addressbar_id" ng-change="loadUrls(url)" ng-keydown="addressbarKeydown($event)" ng-model="url" type="text" />
     </div>
 
     <div class="url-list">
       <ul>
-        <li ng-click="goUrl(u.url);$event.stopPropagation()" ng-class="{'selected' : u.selected}" href="{{u.url}}" ng-repeat="u in url_list | filter:url| limitTo:100 | orderBy : urls_sort_property">
+        <li ng-click="goUrl(u.url);$event.stopPropagation()" ng-class="{'selected' : u.selected}" href="{{u.url}}" ng-repeat="u in url_list2 | limitTo:100 ">
           <a ng-click="goUrl(u.url);$event.stopPropagation()">
             <img ng-src="{{u.logo}}" onerror="this.src='http://127.0.0.1:60080/images/no.png'" />
             <span class="bold green" ng-click="goUrl(u.url);$event.stopPropagation()"> ( {{u.count}} ) </span>
@@ -43,11 +43,11 @@
       </ul>
       <br />
       <div class="row" ng-show="url_list.length > 0">
-        <span class="btn" onclick="event.preventDefault();event.stopPropagation();" ng-click="urls_sort_property = '-count';"> Order By Visit Count </span>
+        <span class="btn" onclick="event.preventDefault();event.stopPropagation();" ng-click="urls_sort_property = '-count';loadUrls(url)"> Order By Visit Count </span>
 
-        <span class="btn" onclick="event.preventDefault();event.stopPropagation();" ng-click="urls_sort_property = '-last_visit' ; "> Order By Last Visit </span>
+        <span class="btn" onclick="event.preventDefault();event.stopPropagation();" ng-click="urls_sort_property = '-last_visit' ;loadUrls(url) "> Order By Last Visit </span>
 
-        <span class="btn" onclick="event.preventDefault();event.stopPropagation();" ng-click="urls_sort_property = 'url'; "> Order By URL </span>
+        <span class="btn" onclick="event.preventDefault();event.stopPropagation();" ng-click="urls_sort_property = 'url';loadUrls(url) "> Order By URL </span>
       </div>
     </div>
 
@@ -69,45 +69,88 @@
 
     <script>
       window.loadurl = function (url) {
-        $("#addressbar_id").val(url);
-        $("#addressbar_id").select();
-        $("#addressbar_id").click();
-        $("#addressbar_id").focus();
+        if (scope().url0 === url) {
+          scope().loadUrls();
+        } else {
+          scope().loadUrls(url);
+        }
+        scope().url0 = url;
+
       };
 
       const { remote, nativeImage, ipcRenderer } = ___.electron;
       var app = angular.module("myApp", []);
-
+      var scope = function () {
+        return angular.element(document.querySelector("body")).scope();
+      };
       app.controller("mainController", ($scope, $http, $timeout) => {
         $scope.urls_sort_property = "-count";
-        $scope.url_list = []
+        $scope.url_list = [];
+        $scope.url_list2 = [];
+        $scope.url_index = -1;
+        $scope.url0 = "";
 
         $scope.loadUrls = function (url) {
-          $scope.url = '';
-          $scope.url = url;
-          if($scope.url_list.length == 0){
-            $scope.url_list = ___.callSync('get_var' , {name : 'urls'})
-            // $scope.url_list.forEach((u) => {
-            //   if(!u.logo2){
-            //     u.logo2 = nativeImage.createFromPath(u.logo).resize({ width: 16, height: 16 }).toDataURL();
-            //   }
-            //   })
+          if (url) {
+            $scope.url = url;
           }
+
+          $timeout(() => {
+            if ($scope.url_list.length === 0) {
+              $scope.url_list = ___.callSync("get_var", { name: "urls" });
+            }
+
+            $scope.url_list2 = [];
+            $scope.url_index = -1;
+
+            let sort = $scope.urls_sort_property;
+            if (sort === "-count") {
+              $scope.url_list.sort((a, b) => {
+                return b.count - a.count;
+              });
+            } else if (sort === "-last_visit") {
+              $scope.url_list.sort((a, b) => {
+                return b.last_visit - a.last_visit;
+              });
+            } else if (sort === "url") {
+              $scope.url_list.sort((a, b) => {
+                return b.url > a.url;
+              });
+            }
+
+            let word = $scope.url;
+
+            for (let i = 0; i < $scope.url_list.length; i++) {
+              let itm = $scope.url_list[i];
+
+              if ((itm.url && itm.url.like("*" + word + "*")) || (itm.title && itm.title.like("*" + word + "*"))) {
+                $scope.url_list2.push(itm);
+              }
+              if ($scope.url_list2.length > 100) {
+                break;
+              }
+            }
+            if ($scope.url_list2.length == 0) {
+              $scope.url_list2.push({
+                title: word,
+                url: word,
+              });
+            }
+            $("#addressbar_id").focus();
+          }, 200);
         };
 
-        $scope.url_index = -1;
-
         $scope.clearUrlSelection = function () {
-          $scope.url_list.forEach((u) => {
+          $scope.url_list2.forEach((u) => {
             u.selected = false;
           });
         };
 
         $scope.selectUrl = function (index) {
           $scope.clearUrlSelection();
-          if ($scope.url_list.length > index) {
-            $scope.url_list[index].selected = true;
-            $scope.url = $scope.url_list[index].url;
+          if ($scope.url_list2.length > index) {
+            $scope.url_list2[index].selected = true;
+            $scope.url = $scope.url_list2[index].url;
             $(".url-list ul").scrollTop($(".url-list ul li")[index].offsetTop - $(".url-list ul").height() + 100);
           }
         };
@@ -127,7 +170,7 @@
             e.preventDefault();
             e.stopPropagation();
             $scope.url_index++;
-            if ($scope.url_list.length <= $scope.url_index) {
+            if ($scope.url_list2.length <= $scope.url_index) {
               $scope.url_index = 0;
             }
             $scope.selectUrl($scope.url_index);
@@ -136,9 +179,10 @@
             e.stopPropagation();
             $scope.url_index--;
             if ($scope.url_index < 0) {
-              $scope.url_index = $scope.url_list.length - 1;
+              $scope.url_index = $scope.url_list2.length - 1;
             }
             $scope.selectUrl($scope.url_index);
+          } else {
           }
         };
 
@@ -160,16 +204,14 @@
             }
           }
 
-          $scope.url = url;
-
           ___.call("update-view", {
-            url: $scope.url,
+            url: url,
           });
 
+          $scope.url = "";
         };
 
         $scope.loadUrls();
-
       });
     </script>
   </body>

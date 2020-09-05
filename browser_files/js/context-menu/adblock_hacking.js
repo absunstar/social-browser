@@ -46,17 +46,34 @@ module.exports = function (___) {
 
     // })
 
-
-    window.cefQuery = function(options){
-        console.log(options)
-        return 5000
+    let setInterval0 = window.setInterval
+    window.setInterval = function(fn , time){
+        return setInterval0(fn , time)
+    }
+    let setTimeout0 = window.setTimeout
+    window.setTimeout = function(fn , time){
+        return setTimeout0(fn , time)
     }
 
-    function hack_script(){
+    function hack_script() {
         window.googleAd = true
         window['FuckAdBlock'] = window['FuckAdBlock'] || {}
         window['zfgformats'] = []
         window.adbDetectorLoaded = 'loaded';
+        window.cefQuery = function (options) {
+            console.log(options)
+            return 5000
+        }
+        window.NativeAd = (options) => {
+            console.log(options)
+        }
+        window.ExoVideoSlider = {
+            init: () => {}
+        }
+        // if(window.a && Array.isArray(window.a)){
+        //     a[104] = ''
+        //     a[105] = ''
+        // }
     }
 
     hack_script()

@@ -615,7 +615,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
             name: 'copy',
             text: text
         });
-        alert('Password Copied !')
+        alert('Password Copied : ' + text)
     };
 
     $scope.loadSetting();

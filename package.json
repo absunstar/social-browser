@@ -2,7 +2,7 @@
   "name": "social_browser",
   "productName": "Social Browser",
   "homepage": "https://social-browser.com",
-  "version": "2020.09.02",
+  "version": "2020.09.05",
   "description": "Browsing Any Site with Multi Users And without Ads",
   "author": {
     "name": "Social Developer",
@@ -86,11 +86,11 @@
   "license": "ISC",
   "dependencies": {
     "ibrowser": "^1.0.7",
-    "isite": "^1.14.6",
+    "isite": "^1.14.11",
     "jquery": "*"
   },
   "devDependencies": {
-    "electron": "^9.1.2",
+    "electron": "^10.1.1",
     "electron-builder": "^22.7.0",
     "gulp": "*"
   }

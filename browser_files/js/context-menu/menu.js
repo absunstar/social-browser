@@ -186,8 +186,7 @@ module.exports = function (___) {
 
             let arr1 = []
             let arr2 = []
-            ___.domain_user_input = ___.domain_user_input || []
-            ___.domain_user_input.forEach(dd => {
+            ___.var.user_data_input.forEach(dd => {
                 dd.data.forEach(d => {
                     if (node.id && node.id == d.id) {
 
@@ -303,8 +302,7 @@ module.exports = function (___) {
             })
 
             if (arr1.length === 0) {
-                ___.domain_user_data = ___.domain_user_data || []
-                ___.domain_user_data.forEach(dd => {
+                ___.var.user_data.forEach(dd => {
                     dd.data.forEach(d => {
 
                         if (arr1.some(a => a.label.trim() == d.value.trim())) {
@@ -1078,25 +1076,31 @@ module.exports = function (___) {
 
 
         let arr3 = []
-
-        doc.querySelectorAll('video').forEach((f, i) => {
+        let videos = [].concat(___.video_list)
+        document.querySelectorAll('video').forEach(v=>{
+            if(v.src && !v.src.startsWith('blob:'))
+            videos.push({
+                src : v.src
+            })
+        })
+        videos.forEach((f, i) => {
             if (i > 10) {
                 return
             }
-            if (f.src && f.src.startsWith('http')) {
+            arr3.push({
+                label: "Play  " + f.src,
+                click() {
+                    ___.call('render_message', {
+                        name: 'mini_video',
+                        alwaysOnTop: true,
+                        partition: partition,
+                        url: f.src,
+                        referrer: doc.location.href
+                    })
+                }
+            })
 
-                arr3.push({
-                    label: "Play  " + f.src,
-                    click() {
-                        ___.call('render_message', {
-                            name: 'mini_video',
-                            alwaysOnTop: true,
-                            partition: partition,
-                            url: f.src,
-                            referrer: doc.location.href
-                        })
-                    }
-                })
+            if (f.src.startsWith('http')) {
                 arr3.push({
                     label: "Open in new window",
                     click() {
@@ -1110,15 +1114,6 @@ module.exports = function (___) {
                     }
                 })
                 arr3.push({
-                    label: "copy link",
-                    click() {
-                        ___.call('render_message', {
-                            name: 'copy',
-                            text: f.src
-                        })
-                    }
-                })
-                arr3.push({
                     label: "download",
                     click() {
                         ___.call('render_message', {
@@ -1127,10 +1122,20 @@ module.exports = function (___) {
                         })
                     }
                 })
-                arr3.push({
-                    type: "separator"
-                })
             }
+            arr3.push({
+                label: "copy link",
+                click() {
+                    ___.call('render_message', {
+                        name: 'copy',
+                        text: f.src
+                    })
+                }
+            })
+
+            arr3.push({
+                type: "separator"
+            })
         })
 
         doc.querySelectorAll('video source').forEach(f => {
@@ -1342,11 +1347,11 @@ module.exports = function (___) {
                     table.rows.forEach(row => {
                         let itm = {
                             url: row[0] + ':' + row[1],
-                            https : row[6] == 'yes' ? true : false,
-                            country : row[3] ,
+                            https: row[6] == 'yes' ? true : false,
+                            country: row[3],
                             name: `${row[0]}:${row[1]} | ${row[3]}`
                         }
-                        if(itm.https){
+                        if (itm.https) {
                             itm.name += ' | HTTPS'
                         }
                         list.push(itm)
@@ -1678,15 +1683,15 @@ module.exports = function (___) {
 
         if (___.var.context_menu.proxy_options) {
             let arr = []
-            if(___.var.core.id.like('*master*')){
-                
+            if (___.var.core.id.like('*master*')) {
+
                 arr.push({
                     label: 'My Server',
                     click() {
                         ___.call('render_message', {
                             name: 'new_window',
-                            url : document.location.href,
-                            user_agent : navigator.userAgent,
+                            url: document.location.href,
+                            user_agent: navigator.userAgent,
                             proxy: '104.248.211.73:55555',
                             partition: 'proxy_' + arr.length
                         })
@@ -1702,7 +1707,7 @@ module.exports = function (___) {
                     click() {
                         ___.call('render_message', {
                             name: 'new_window',
-                            url : document.location.href,
+                            url: document.location.href,
                             proxy: p.url,
                             partition: 'proxy' + new Date().getTime()
                         })
@@ -1804,7 +1809,7 @@ module.exports = function (___) {
     let contextMenuHandle = function (e) {
         // console.log('window.oncontextmenu')
         try {
-           
+
             let factor = xwin.webContents.zoomFactor || 1;
             let x = Math.round(e.x * factor);
             let y = Math.round(e.y * factor);

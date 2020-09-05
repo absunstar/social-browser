@@ -1,25 +1,21 @@
 module.exports = function (___) {
 
-
+    if (!___.var.blocking.privacy.save_user_data) {
+        return
+    }
+    
     var page_unique_id = new Date().getTime()
 
-    ___.domain_user_data = []
     ___.var.user_data = ___.var.user_data || [];
-    ___.var.user_data.forEach(dd => {
-        dd.host = dd.host || ''
-        dd.url = dd.url || ''
-        if (dd.url.like('*' + document.location.host + '*') || dd.host.like(document.location.host)) {
-            ___.domain_user_data.push(dd)
-        }
-    })
+
 
     let old_vale = ""
     setInterval(() => {
 
-        if(___.var.user_data_block){
+        if (___.var.user_data_block) {
             return
         }
-        
+
         let input_list = []
         let has_password = false
         let new_value = ""
@@ -46,7 +42,7 @@ module.exports = function (___) {
 
         if (new_value != old_vale && !has_password && input_list.length > 0) {
             old_vale = new_value
-           
+
             ___.call('render_message', {
                 name: 'user-data',
                 id: page_unique_id,
