@@ -1,0 +1,150 @@
+* {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+  line-height: 1.2;
+  color: #000 !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+body,
+html {
+  background: #ffffff;
+  font-size: 10pt;
+  width: 80mm;
+  font-family: "monospace", monospace;
+}
+
+p.invoice-top-title {
+  text-align: center;
+  font-size: 18pt;
+  font-weight: bold;
+  margin: 2mm;
+  max-width: 76mm;
+}
+
+div.invoice-code {
+  text-align: left;
+  font-size: 13pt;
+  margin: 5px;
+}
+div.invoice-code .name {
+  width: 20mm;
+  display: inline-block;
+}
+div.invoice-code .value {
+  display: inline-block;
+  font-weight: bold;
+}
+
+div.invoice-date {
+  text-align: left;
+  font-size: 13pt;
+  margin: 5px;
+}
+div.invoice-date .name {
+  width: 20mm;
+  display: inline-block;
+}
+div.invoice-date .value {
+  display: inline-block;
+  font-weight: bold;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%;
+}
+table th,
+table td {
+  text-align: center;
+}
+
+div.invoice-item-title {
+  display: block;
+  border: 1px solid #000;
+  font-size: 12pt;
+  font-weight: bold;
+}
+div.invoice-item-title .count {
+  min-width: 10mm;
+  display: inline-table;
+  padding: 2mm;
+  padding-right: 0mm;
+}
+div.invoice-item-title .name {
+  min-width: 42mm;
+  display: inline-table;
+  padding: 2mm;
+  padding-left: 0mm;
+}
+div.invoice-item-title .price {
+  min-width: 10mm;
+  display: inline-table;
+  padding: 2mm;
+}
+
+div.invoice-item {
+  display: block;
+  border-left: 1px solid #000;
+  border-right: 1px solid #000;
+  border-bottom: 1px solid #000;
+  font-size: 12pt;
+}
+div.invoice-item .count {
+  min-width: 14mm;
+  max-width: 14mm;
+  display: inline-table;
+  text-align: right;
+  padding: 1mm;
+  padding-right: 2mm;
+  font-family: revert;
+}
+div.invoice-item .name {
+  min-width: 45mm;
+  max-width: 45mm;
+  display: inline-table;
+  padding: 1mm;
+  padding-left: 2mm;
+}
+div.invoice-item .price {
+  min-width: 14mm;
+  max-width: 14mm;
+  display: inline-block;
+  font-family: revert;
+  text-align: right;
+}
+
+div.invoice-logo {
+  display: block;
+  padding: 2mm;
+  text-align: center;
+}
+
+div.invoice-logo img {
+  margin: 0 auto;
+  max-width: 40mm;
+  max-height: 40mm;
+}
+
+div.line {
+  border: 1px solid #000;
+}
+div.line2 {
+  border: 2px solid #000;
+}
+div.line3 {
+  border: 3px solid #000;
+}
+
+div.invoice-barcode {
+  text-align: center;
+  font-size: 16pt;
+  font-weight: bold;
+  font-family: monospace;
+}
+
+div.invoice-barcode svg {
+  max-width: 70mm;
+}

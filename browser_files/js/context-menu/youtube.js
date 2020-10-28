@@ -1,11 +1,11 @@
-module.exports = function (___) {
+module.exports = function (SOCIALBROWSER) {
 
     // console.log('youtube context menu loading ...')
     if (!document.location.href.toLowerCase().like('https://www.youtube.com*')) {
         return
     }
 
-    
+
     function pause_current_youtube_video() {
 
         let els = document.querySelectorAll('video')
@@ -20,14 +20,14 @@ module.exports = function (___) {
 
     function check_if_current_video_un_safe() {
 
-        if (!___.var.blocking.youtube.allow_safty_mode || !document.location.href.toLowerCase().like('*youtube.com*watch*')) {
+        if (!SOCIALBROWSER.var.blocking.youtube.allow_safty_mode || !document.location.href.toLowerCase().like('*youtube.com*watch*')) {
             return
         }
 
-        ___.var.blocking.youtube.safty_mode.words_list = ___.var.blocking.youtube.safty_mode.words_list || []
-        ___.var.blocking.youtube.safty_mode.selector_list = ___.var.blocking.youtube.safty_mode.selector_list || [];
+        SOCIALBROWSER.var.blocking.youtube.safty_mode.words_list = SOCIALBROWSER.var.blocking.youtube.safty_mode.words_list || []
+        SOCIALBROWSER.var.blocking.youtube.safty_mode.selector_list = SOCIALBROWSER.var.blocking.youtube.safty_mode.selector_list || [];
 
-        ___.var.blocking.youtube.safty_mode.selector_list.forEach(s => {
+        SOCIALBROWSER.var.blocking.youtube.safty_mode.selector_list.forEach(s => {
             if (document.querySelectorAll(s).length > 0) {
                 pause_current_youtube_video()
             }
@@ -39,8 +39,8 @@ module.exports = function (___) {
         txt += document.querySelector('ytd-video-secondary-info-renderer') ? document.querySelector('ytd-video-secondary-info-renderer').innerText : ''
 
         if (txt) {
-            ___.translate(txt, (txt2) => {
-                ___.var.blocking.youtube.safty_mode.words_list.forEach(w => {
+            SOCIALBROWSER.translate(txt, (txt2) => {
+                SOCIALBROWSER.var.blocking.youtube.safty_mode.words_list.forEach(w => {
                     if (txt.toLowerCase().contains(w.text)) {
                         pause_current_youtube_video()
                     }
@@ -117,9 +117,9 @@ module.exports = function (___) {
         setTimeout(() => {
             let txt = el.innerText
             if (txt) {
-                ___.var.blocking.youtube.safty_mode.words_list.forEach(w => {
+                SOCIALBROWSER.var.blocking.youtube.safty_mode.words_list.forEach(w => {
                     if (txt.contains(w.text)) {
-                        let p = ___.upTo(el, target_list)
+                        let p = SOCIALBROWSER.upTo(el, target_list)
                         if (p) {
                             block_links(p)
                         }
@@ -130,7 +130,7 @@ module.exports = function (___) {
 
     }
 
-    if (___.var.blocking.youtube.allow_safty_mode && document.location.href.toLowerCase().like('*youtube.com*')) {
+    if (SOCIALBROWSER.var.blocking.youtube.allow_safty_mode && document.location.href.toLowerCase().like('*youtube.com*')) {
 
         check_if_current_video_un_safe()
 
@@ -142,11 +142,18 @@ module.exports = function (___) {
         }, false);
     }
 
-    if (___.var.blocking.youtube.skip_ads && document.location.href.toLowerCase().like('*youtube.com*')) {
+    if (SOCIALBROWSER.var.blocking.youtube.skip_ads && document.location.href.toLowerCase().like('*youtube.com*')) {
         skipYoutubeVideoAds()
     }
 
     window.addEventListener('load', () => {
+
+        setInterval(() => {
+            document.querySelectorAll('.ytp-popup.ytp-generic-popup').forEach(p => {
+                p.remove()
+            })
+        }, 1000 * 5);
+
         let titleEl = window.document.querySelector('title')
 
         document.documentElement.addEventListener("DOMSubtreeModified", function (evt) {
@@ -163,7 +170,7 @@ module.exports = function (___) {
         let parentWindow = window.parent;
         if (parentWindow !== window) {
             if (titleEl) {
-                ___.currentWindow.setTitle(titleEl.innerText)
+                SOCIALBROWSER.currentWindow.setTitle(titleEl.innerText)
             }
         }
     })

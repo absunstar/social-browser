@@ -13,8 +13,12 @@
         --fieldset-border: 1px solid #bbb;
         --modal-color: #000000;
         --modal-background: #00000026;
+        --font-family: 'Droid Arabic Kufi', monospace;
       }
-
+      html,
+      body {
+        background: #ffffff;
+      }
       body {
         margin: 30px;
       }
@@ -93,7 +97,9 @@
             <div class="tabs-header">
               <a class="tab-link" onclick="site.showTabContent(event, '#basic_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-info-circle"></i> Basic </a>
 
-              <a class="tab-link" id="safty_btn" onclick="site.showTabContent(event, '#safty_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-lock"></i> Children Safty Mode </a>
+              <a class="tab-link" id="safty_btn" onclick="site.showTabContent(event, '#safty_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                <i class="fa fa-lock"></i> Children Safty Mode
+              </a>
               <a class="tab-link" onclick="site.showTabContent(event, '#blocking_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-ban"></i> Privacy & Security </a>
               <a class="tab-link" onclick="site.showTabContent(event, '#passwords_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-key"></i> Passwords </a>
 
@@ -101,9 +107,13 @@
               <a class="tab-link" onclick="site.showTabContent(event, '#facebook_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-facebook"></i> Facebook </a>
               <a class="tab-link" onclick="site.showTabContent(event, '#user_data_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-file"></i> User Data </a>
 
-              <a class="tab-link" id="bookmarks_btn" onclick="site.showTabContent(event, '#bookmarks_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-bookmark"></i> Bookmarks </a>
+              <a class="tab-link" id="bookmarks_btn" onclick="site.showTabContent(event, '#bookmarks_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                <i class="fa fa-bookmark"></i> Bookmarks
+              </a>
               <a class="tab-link" onclick="site.showTabContent(event, '#urls_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-sitemap"></i> User Urls </a>
-              <a ng-hide="true" class="tab-link" onclick="site.showTabContent(event, '#internet_speed_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-cloud-download"></i> Internet Speed </a>
+              <a ng-hide="true" class="tab-link" onclick="site.showTabContent(event, '#internet_speed_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                <i class="fa fa-cloud-download"></i> Internet Speed
+              </a>
               <a class="tab-link" onclick="site.showTabContent(event, '#proxy_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-desktop"></i> Proxy </a>
               <a class="tab-link" onclick="site.showTabContent(event, '#menu_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-bars"></i> Context Menu </a>
               <a class="tab-link" onclick="site.showTabContent(event, '#downloader_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-download"></i> Downloader </a>
@@ -146,7 +156,14 @@
                     <i-control class="col3" label="Home Page" ng-model="setting.core.home_page"></i-control>
                     <i-control class="col3" label="New Tab" ng-model="setting.core.default_page"></i-control>
                     <i-control type="number" class="col3" label="Max Opend Tabs" ng-model="setting.core.max_tabs"></i-control>
-                    <i-list ng-search="search.$user_agent" primary="name" items="setting.user_agent_list" ng-change="setting.core.user_agent = setting.core.selected_user_agent.url" ng-model="setting.core.selected_user_agent" label="Select User Agent"></i-list>
+                    <i-list
+                      ng-search="search.$user_agent"
+                      primary="name"
+                      items="setting.user_agent_list"
+                      ng-change="setting.core.user_agent = setting.core.selected_user_agent.url"
+                      ng-model="setting.core.selected_user_agent"
+                      label="Select User Agent"
+                    ></i-list>
                     <i-control class="row" label="Custom User Agent" ng-model="setting.core.user_agent"></i-control>
                   </fieldset>
 
@@ -194,6 +211,9 @@
                     <br />
 
                     <i-checkbox class="row" label="Save User Data [ any text your write in any page]" ng-model="setting.blocking.privacy.save_user_data"></i-checkbox>
+                    <i-checkbox class="row" label="Set Window Alawys Active" ng-model="setting.blocking.privacy.set_window_active"></i-checkbox>
+                    <i-checkbox class="row" label="Block Media Devices [camera , mic , ...]" ng-model="setting.blocking.privacy.hide_media_devices"></i-checkbox>
+                    <br />
                     <i-checkbox class="row" label="Hide CPU Count" ng-model="setting.blocking.privacy.hide_cpu"></i-checkbox>
                     <i-checkbox class="row" label="Hide Memory Size" ng-model="setting.blocking.privacy.hide_memory"></i-checkbox>
                     <i-checkbox class="row" label="Hide Screen Sizes" ng-model="setting.blocking.privacy.hide_screen"></i-checkbox>
@@ -203,11 +223,11 @@
                     <i-checkbox class="row" label="Hide Language Information" ng-model="setting.blocking.privacy.hide_lang"></i-checkbox>
                     <i-checkbox class="row" label="Hide Plugins" ng-model="setting.blocking.privacy.hide_plugins"></i-checkbox>
                     <i-checkbox class="row" label="Hide MimeTypes" ng-model="setting.blocking.privacy.hide_mimetypes"></i-checkbox>
-                    <i-checkbox class="row" label="Block Media Devices [camera , mic , ...]" ng-model="setting.blocking.privacy.hide_media_devices"></i-checkbox>
                     <i-checkbox class="row" label="hide browser permissions" ng-model="setting.blocking.privacy.hide_permissions"></i-checkbox>
                     <i-checkbox class="row" label="hide Battery informations" ng-model="setting.blocking.privacy.hide_battery"></i-checkbox>
-                    <i-checkbox class="row" label="Set Window Alawys Active" ng-model="setting.blocking.privacy.set_window_active"></i-checkbox>
+                    <br />
                     <i-checkbox class="row" label="Hide Google ID in other sites" ng-model="setting.blocking.privacy.hide_gid"></i-checkbox>
+                    <i-checkbox class="row" label="Block Cloud Flare Tracking" ng-model="setting.blocking.privacy.block_cloudflare"></i-checkbox>
                     <i-checkbox class="row" label="Send Don't Track Header" ng-model="setting.blocking.privacy.dnt"></i-checkbox>
                     <i-checkbox class="row" label="Show Bookmarks in Google Page" ng-model="setting.blocking.privacy.show_bookmarks"></i-checkbox>
                   </fieldset>
@@ -226,10 +246,7 @@
                     <i-checkbox class="row" label="Allow 10khits.com tools" ng-model="setting.blocking.social.allow_10khits"></i-checkbox>
                     <i-checkbox class="row" label="Allow addmefast.com tools" ng-model="setting.blocking.social.allow_addmefast"></i-checkbox>
                     <i-checkbox class="row" label="Allow youlikehits.com tools" ng-model="setting.blocking.social.allow_youlikehits"></i-checkbox>
-                  
-                    
                   </fieldset>
-
                 </div>
               </div>
               <div id="youtube_tab" class="tab-content">
@@ -276,7 +293,7 @@
                   </fieldset>
                 </div>
               </div>
- 
+
               <div id="proxy_tab" class="tab-content">
                 <div class="row">
                   <fieldset>
@@ -284,7 +301,15 @@
 
                     <i-checkbox class="col2" label="Enable" ng-model="setting.proxy.enabled"></i-checkbox>
                     <div class="row" ng-show="setting.proxy.enabled === true">
-                      <i-list ng-search="$selected_proxy" items="setting.proxy_list" display="name" label="Select Proxy" ng-model="setting.selected_proxy" ng-change="setting.proxy.url = setting.selected_proxy.url"> </i-list>
+                      <i-list
+                        ng-search="$selected_proxy"
+                        items="setting.proxy_list"
+                        display="name"
+                        label="Select Proxy"
+                        ng-model="setting.selected_proxy"
+                        ng-change="setting.proxy.url = setting.selected_proxy.url"
+                      >
+                      </i-list>
                       <i-control class="col10" label="Custom Proxy URL" type="text" ng-model="setting.proxy.url"> </i-control>
                     </div>
                   </fieldset>
@@ -364,7 +389,7 @@
                         <th>Name</th>
                         <th>Actions</th>
                       </tr>
-                      <tr ng-repeat="_se in setting.session_list | filter:session | orderBy : 'display'">
+                      <tr ng-repeat="_se in setting.session_list | filter:session | orderBy : 'display' track by $index">
                         <td>{{_se.name}}</td>
                         <td><input class="block full-width" type="text" ng-model="_se.display" /></td>
                         <td>
@@ -383,7 +408,7 @@
                     <th>User Name</th>
                     <th>Password</th>
                   </tr>
-                  <tr ng-repeat="site in setting.user_data_input | filter : {host : user_data_input_host} | limitTo:500">
+                  <tr ng-repeat="site in setting.user_data_input | filter : {host : user_data_input_host} | limitTo:500 track by $index">
                     <td>{{$index +1 }} <i-button type="remove" ng-click="remove_user_data_input(site)"></i-button></td>
                     <td>{{site.host}}</td>
                     <td>
@@ -405,7 +430,7 @@
                     <th>Title</th>
                     <th>URL</th>
                   </tr>
-                  <tr ng-repeat="site in setting.bookmarks track by $index | limitTo:100">
+                  <tr ng-repeat="site in setting.bookmarks | limitTo:100 track by $index">
                     <td>{{$index +1 }} <i-button type="remove" ng-click="remove_bookmarks(site)"></i-button></td>
                     <td>{{site.title}}</td>
                     <td>
@@ -425,11 +450,11 @@
                     <th>Host <input ng-model="user_data_host" /></th>
                     <th>Data</th>
                   </tr>
-                  <tr ng-repeat="site in setting.user_data  | filter : {host : user_data_host} | limitTo:200">
+                  <tr ng-repeat="site in setting.user_data  | filter : {host : user_data_host} | limitTo:200 track by $index">
                     <td>{{$index +1 }} <i-button type="remove default" ng-click="remove_user_data(site)"></i-button></td>
                     <td>{{site.host}}</td>
                     <td>
-                      <p ng-repeat="d in site.data">{{d.value}}</p>
+                      <p ng-repeat="d in site.data track by $index">{{d.value}}</p>
                     </td>
                   </tr>
                 </table>
@@ -442,15 +467,13 @@
                     <th>URL <input ng-model="url" /> <i-button type="remove" label="Delete By URL" ng-click="remove_url(null , url)"></i-button></th>
                     <th>Count</th>
                   </tr>
-                  <tr ng-repeat="site in setting.urls | filter : {url : url} | limitTo:500">
+                  <tr ng-repeat="site in setting.urls | filter : {url : url} | limitTo:500 track by $index">
                     <td>{{$index +1 }} <i-button type="remove" ng-click="remove_url(site)"></i-button></td>
                     <td>
                       <p class="green">{{site.url | limitTo: 100}}</p>
                       <p class="black">{{site.title | limitTo: 100}}</p>
                     </td>
-                    <td>
-                      {{site.count}}
-                    </td>
+                    <td>{{site.count}}</td>
                   </tr>
                 </table>
               </div>
@@ -490,9 +513,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <span class="close">&times;</span>
-            <h2>
-              Select User Profile
-            </h2>
+            <h2>Select User Profile</h2>
           </div>
           <div class="modal-body black">
             <form ng-show="knowPassword === false">
@@ -515,7 +536,7 @@
               </div>
 
               <div class="row" ng-hide="setting.days > 90">
-                <div class="col3" ng-repeat="ss in setting.session_list | orderBy : 'display'">
+                <div class="col3" ng-repeat="ss in setting.session_list | orderBy : 'display' track by $index">
                   <div class="user-box" ng-click="newTab(ss)">
                     <img ng-src="http://127.0.0.1:60080/images/user.png" />
                     <p>{{ss.display}}</p>
@@ -537,9 +558,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <span class="close">&times;</span>
-            <h2>
-              Users Profies
-            </h2>
+            <h2>Users Profies</h2>
           </div>
           <div class="modal-body">
             <ul>
@@ -568,7 +587,7 @@
             <br />
 
             <div class="row">
-              <div class="col6" ng-repeat="_se in setting.session_list | filter:session | orderBy : 'display'">
+              <div class="col6" ng-repeat="_se in setting.session_list | filter:session | orderBy : 'display' track by $index">
                 <div class="row">
                   <div class="col4">
                     <a ng-show="_se.can_delete" class="btn bg-red white" ng-click="removeSession(_se)"> <i class="fa fa-trash"></i> Remove </a>
@@ -592,14 +611,10 @@
         <div class="modal-content">
           <div class="modal-header">
             <span class="close">&times;</span>
-            <h2>
-              Fast Open List
-            </h2>
+            <h2>Fast Open List</h2>
           </div>
           <div class="modal-body">
-            <h2 class="padding margin center">
-              Custom Your Open List
-            </h2>
+            <h2 class="padding margin center">Custom Your Open List</h2>
             <div class="row padding">
               <fieldset>
                 <legend>New Menu</legend>
@@ -624,7 +639,7 @@
                 <th>Options</th>
                 <th>Actions</th>
               </tr>
-              <tr ng-repeat="_open_menu in setting.open_list">
+              <tr ng-repeat="_open_menu in setting.open_list track by $index">
                 <td>
                   <i-control label="Menu URL" ng-model="_open_menu.name"></i-control>
                 </td>
@@ -652,14 +667,10 @@
         <div class="modal-content">
           <div class="modal-header">
             <span class="close">&times;</span>
-            <h2>
-              Blocking Ads List
-            </h2>
+            <h2>Blocking Ads List</h2>
           </div>
           <div class="modal-body">
-            <h2 class="padding margin center">
-              Set Here Ads Site List Using Simple URL or Regex Text
-            </h2>
+            <h2 class="padding margin center">Set Here Ads Site List Using Simple URL or Regex Text</h2>
             <div class="row padding">
               <fieldset>
                 <legend>New Link</legend>
@@ -675,7 +686,7 @@
                 <th class="width-200">Index</th>
                 <th>Link</th>
               </tr>
-              <tr ng-repeat="_ad in setting.blocking.ad_list | filter:ad">
+              <tr ng-repeat="_ad in setting.blocking.ad_list | filter:ad track by $index">
                 <td>{{$index + 1}}<i-button type="remove default" ng-click="removeAd(_ad)" label="Remove"></i-button></td>
                 <td>
                   <i-control ng-model="_ad.url"></i-control>
@@ -694,9 +705,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <span class="close">&times;</span>
-            <h2>
-              Popup White List
-            </h2>
+            <h2>Popup White List</h2>
           </div>
           <div class="modal-body">
             <div class="row padding">
@@ -714,7 +723,7 @@
                 <th>Link</th>
                 <th>Action</th>
               </tr>
-              <tr ng-repeat="_d in setting.blocking.popup.white_list | filter:popupIgnoreURL">
+              <tr ng-repeat="_d in setting.blocking.popup.white_list | filter:popupIgnoreURL track by $index">
                 <td>
                   <i-control ng-model="_d.url"></i-control>
                 </td>
@@ -735,14 +744,10 @@
         <div class="modal-content">
           <div class="modal-header">
             <span class="close">&times;</span>
-            <h2>
-              Blocking doms List
-            </h2>
+            <h2>Blocking doms List</h2>
           </div>
           <div class="modal-body">
-            <h2 class="padding margin center">
-              Set Here doms Site List Using Simple URL or Regex Text
-            </h2>
+            <h2 class="padding margin center">Set Here doms Site List Using Simple URL or Regex Text</h2>
 
             <div class="row padding">
               <div class="row">
@@ -766,7 +771,7 @@
             <br />
             <br />
             <br />
-            <div class="row padding" ng-repeat="_dom in setting.blocking.html_tags_selector_list | filter:dom">
+            <div class="row padding" ng-repeat="_dom in setting.blocking.html_tags_selector_list | filter:dom track by $index">
               <fieldset>
                 <legend></legend>
                 <div class="row">
@@ -800,14 +805,10 @@
         <div class="modal-content">
           <div class="modal-header">
             <span class="close">&times;</span>
-            <h2>
-              Blocking ( un Safty ) Links
-            </h2>
+            <h2>Blocking ( un Safty ) Links</h2>
           </div>
           <div class="modal-body">
-            <h2 class="padding margin center">
-              Set Here ( un Safty ) Site List Using Simple URL or Regex Text
-            </h2>
+            <h2 class="padding margin center">Set Here ( un Safty ) Site List Using Simple URL or Regex Text</h2>
             <div class="row padding">
               <fieldset>
                 <legend>New Link</legend>
@@ -823,7 +824,7 @@
                 <th>Index</th>
                 <th>Links</th>
               </tr>
-              <tr ng-repeat="_un_safe_link in setting.blocking.un_safe_list | filter:un_safe_link">
+              <tr ng-repeat="_un_safe_link in setting.blocking.un_safe_list | filter:un_safe_link track by $index">
                 <td class="width-200">{{$index}} <i-button ng-click="removeUnsafeLink(_un_safe_link)" type="remove default" label="Remove"></i-button></td>
                 <td>
                   <i-control ng-model="_un_safe_link.url"></i-control>
@@ -842,14 +843,10 @@
         <div class="modal-content">
           <div class="modal-header">
             <span class="close">&times;</span>
-            <h2>
-              Blocking ( un Safty ) Words
-            </h2>
+            <h2>Blocking ( un Safty ) Words</h2>
           </div>
           <div class="modal-body">
-            <h2 class="padding margin center">
-              Write Here ( Any Words) Any Page Title Contains these words will block
-            </h2>
+            <h2 class="padding margin center">Write Here ( Any Words) Any Page Title Contains these words will block</h2>
             <div class="row padding">
               <fieldset>
                 <legend>New Word</legend>
@@ -862,7 +859,7 @@
                 <th class="width-200">Index</th>
                 <th>Word</th>
               </tr>
-              <tr ng-repeat="_un_safe_word in setting.blocking.un_safe_words_list | filter:un_safe_word">
+              <tr ng-repeat="_un_safe_word in setting.blocking.un_safe_words_list | filter:un_safe_word track by $index">
                 <td>{{$index}} <i-button type="remove default" ng-click="removeUnsafeWord(_un_safe_word)" label="Remove"></i-button></td>
                 <td>
                   <i-control ng-model="_un_safe_word.text"></i-control>
@@ -881,14 +878,10 @@
         <div class="modal-content">
           <div class="modal-header">
             <span class="close">&times;</span>
-            <h2>
-              Blocking ( un Safty ) Words
-            </h2>
+            <h2>Blocking ( un Safty ) Words</h2>
           </div>
           <div class="modal-body">
-            <h2 class="padding margin center">
-              Write Here ( Any Words) Any Video Contains these words will block
-            </h2>
+            <h2 class="padding margin center">Write Here ( Any Words) Any Video Contains these words will block</h2>
             <div class="row padding">
               <fieldset>
                 <legend>New Word</legend>
@@ -907,7 +900,7 @@
                 <th>Word</th>
                 <th>Actions</th>
               </tr>
-              <tr ng-repeat="_un_safe_word in setting.blocking.youtube.safty_mode.words_list | filter:un_safe_word">
+              <tr ng-repeat="_un_safe_word in setting.blocking.youtube.safty_mode.words_list | filter:un_safe_word track by $index">
                 <td>
                   <i-control ng-model="_un_safe_word.text"></i-control>
                 </td>
@@ -928,14 +921,10 @@
         <div class="modal-content">
           <div class="modal-header">
             <span class="close">&times;</span>
-            <h2>
-              White List
-            </h2>
+            <h2>White List</h2>
           </div>
           <div class="modal-body">
-            <h2 class="padding margin center">
-              This Sites Can Display [ Ads , popup , ... ]
-            </h2>
+            <h2 class="padding margin center">This Sites Can Display [ Ads , popup , ... ]</h2>
             <div class="row padding">
               <div class="col6">
                 <a ng-click="addWhiteSite()" class="btn bg-green white"> Add New </a>
@@ -945,7 +934,7 @@
               </div>
             </div>
 
-            <div class="row padding" ng-repeat="_ws in setting.white_list | filter:whiteSite">
+            <div class="row padding" ng-repeat="_ws in setting.white_list | filter:whiteSite track by $index">
               <div class="col6">
                 <a class="btn bg-red white" ng-click="removeWhiteSite(_ws)"> Remove </a>
               </div>
@@ -965,14 +954,10 @@
         <div class="modal-content">
           <div class="modal-header">
             <span class="close">&times;</span>
-            <h2>
-              Black List
-            </h2>
+            <h2>Black List</h2>
           </div>
           <div class="modal-body">
-            <h2 class="padding margin center">
-              This Sites Can't loaded
-            </h2>
+            <h2 class="padding margin center">This Sites Can't loaded</h2>
             <div class="row padding">
               <div class="col6">
                 <a ng-click="addBlackSite()" class="btn bg-black white"> Add New </a>
@@ -982,7 +967,7 @@
               </div>
             </div>
 
-            <div class="row padding" ng-repeat="_ws in setting.black_list | filter:blackSite">
+            <div class="row padding" ng-repeat="_ws in setting.black_list | filter:blackSite track by $index">
               <div class="col6">
                 <a class="btn bg-red white" ng-click="removeBlackSite(_ws)"> Remove </a>
               </div>
@@ -1005,7 +990,7 @@
     <script src="http://127.0.0.1:60080/x-js/directive.js"></script>
     <script src="http://127.0.0.1:60080/js/setting.js"></script>
     <script>
-      document.querySelector(".tab-link").click();
+      document.querySelector('.tab-link').click();
     </script>
   </body>
 </html>

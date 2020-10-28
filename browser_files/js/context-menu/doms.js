@@ -1,8 +1,8 @@
-module.exports = function (___) {
+module.exports = function (SOCIALBROWSER) {
 
     function removeAdDoms() {
 
-        let arr = ___.var.blocking.html_tags_selector_list
+        let arr = SOCIALBROWSER.var.blocking.html_tags_selector_list
 
         // let arr = ['[class="ad"]', '[class="ads"]', '[class*="_ad_"]', '[class$="_ads"]', '[class$="_ad"]', '[class$="-ad"]', '[class$="-ads"]', '[class^="ad-"]', '[class^="ads-"]']
         arr.forEach(sl => {
@@ -28,7 +28,7 @@ module.exports = function (___) {
     }
 
 
-    if (___.var.blocking.block_html_tags) {
+    if (SOCIALBROWSER.var.blocking.block_html_tags) {
 
         document.addEventListener('DOMContentLoaded', () => {
             removeAdDoms()

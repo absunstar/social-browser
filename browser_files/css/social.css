@@ -1,20 +1,19 @@
 body {
   user-select: none;
   -webkit-user-select: none;
-  font-family: 'Droid Arabic Kufi', 'sans-serif';
+  font-family: "Droid Arabic Kufi", "sans-serif";
   margin: 0px;
   padding: 0px;
   border: none;
-  background-color:#fff;
+  background-color: #fff;
 }
 
 .hidden {
   display: none;
 }
 
-
 .address-input {
-  width: calc(100% - 600px);
+  width: 50%;
   min-width: 250px;
 }
 
@@ -103,7 +102,7 @@ body {
 }
 
 .user-box:hover {
-  transform: scale(1.1)
+  transform: scale(1.1);
 }
 
 button {
@@ -117,9 +116,6 @@ button {
   cursor: pointer;
   box-shadow: 0 0.5px rgba(0, 0, 0, 0.5);
 }
-
-
-
 
 .social-webviews {
   position: fixed;
@@ -152,7 +148,7 @@ button {
   border-radius: 2px;
 }
 
-.ui.search>.results {
+.ui.search > .results {
   width: 40em;
   font-size: 12px;
 }
@@ -187,7 +183,6 @@ button {
 .url-list ul li img {
   width: 18px;
   height: 18px;
-  ;
 }
 
 .url-list ul li:hover,
@@ -229,59 +224,69 @@ button {
   height: 100%;
 }
 
-
 .social-tabs .social-tab {
-  width: 270px
+  width: 270px;
 }
 
 .social-tabs .social-tab:nth-child(1) {
-  transform: translate3d(0px, 0, 0)
+  transform: translate3d(0px, 0, 0);
 }
 
 .social-tabs .social-tab:nth-child(2) {
-  transform: translate3d(229px, 0, 0)
+  transform: translate3d(229px, 0, 0);
 }
 
-@media only screen and (max-width: 1024px) {
+@media only screen and (max-width: 1100px) {
   .brand {
+    display: none;
+  }
+  .xzoom {
     display: none;
   }
 }
 
 @media only screen and (max-width: 700px) {
-  #user_name{
+  #user_name {
     display: none;
   }
   .brand {
     display: none;
   }
 
-
+  .bookmarks {
+    display: none;
+  }
+  .Page-audio {
+    display: none;
+  }
+  .developer-tools {
+    display: none;
+  }
   .address-input {
-    width: 60% !important;
+    width: 40% !important;
   }
 }
 
-@media only screen and (max-width: 420px) {
-  #user_name{
+@media only screen and (max-width: 450px) {
+  #user_name {
     display: none;
   }
   .social-history {
     display: none;
   }
-  .go-back{
+  .go-back {
     display: none;
   }
-  .go-forward{
+  .go-forward {
     display: none;
   }
   .address-input {
-    width: 50% !important;
+    width: 30% !important;
   }
 }
 
-@media only screen and (max-width: 320px) {
-  .social-address-bar2{
+@media only screen and (max-width: 345px) {
+  .reload , .address-input {
     display: none;
   }
 }

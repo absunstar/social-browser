@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PDF Reader</title>
+    <style>
+      * {
+        padding: 0px;
+        margin: 0px;
+        overflow: hidden;
+        box-sizing: border-box;
+      }
+      embed {
+        display: inline-block;
+        width: 70%;
+        height: 100vh;
+      }
+      .setting{
+        display: inline-block;
+        width: 29%;
+        background: #ffffff;
+        border: 1px solid #000;
+        height: 100vh;
+      }
+    </style>
+  </head>
+  <body>
+
+    <embed id="plugin" type="application/pdf" src="http://127.0.0.1:60080/data-content/last" width="100%" height="100%"  headers="" background-color="0xFFDADCE0" top-toolbar-height="0" javascript="block" top-level-url="undefined">
+      <div class="setting">
+
+      </div>
+  </body>
+</html>

@@ -1,4 +1,4 @@
-module.exports = function (___) {
+module.exports = function (SOCIALBROWSER) {
 
     let translated = false
     let translated_text = ''
@@ -10,7 +10,7 @@ module.exports = function (___) {
         }
         
         translated = true
-        ___.translate(text , (trans)=>{
+        SOCIALBROWSER.translate(text , (trans)=>{
             translated_text += trans
             check_unsafe_words()
         })
@@ -26,7 +26,7 @@ module.exports = function (___) {
         }
         let exit = false
 
-        ___.var.white_list.forEach(u => {
+        SOCIALBROWSER.var.white_list.forEach(u => {
             if (document.location.href.like(u.url)) {
                 exit = true
             }
@@ -36,8 +36,8 @@ module.exports = function (___) {
             return
         }
 
-        ___.var.blocking.un_safe_words_list = ___.var.blocking.un_safe_words_list || [];
-        if (___.var.blocking.un_safe_words_list.length === 0) {
+        SOCIALBROWSER.var.blocking.un_safe_words_list = SOCIALBROWSER.var.blocking.un_safe_words_list || [];
+        if (SOCIALBROWSER.var.blocking.un_safe_words_list.length === 0) {
             return
         }
         check_unsafe_words_busy = true
@@ -57,7 +57,7 @@ module.exports = function (___) {
 
         let block = false
 
-        ___.var.blocking.un_safe_words_list.forEach(word => {
+        SOCIALBROWSER.var.blocking.un_safe_words_list.forEach(word => {
             if (text.contains(word.text)) {
                 block = true
             }
@@ -75,7 +75,7 @@ module.exports = function (___) {
 
 
 
-    if (___.var.blocking.allow_safty_mode) {
+    if (SOCIALBROWSER.var.blocking.allow_safty_mode) {
         check_unsafe_words()
     }
 

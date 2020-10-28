@@ -1,25 +1,51 @@
-module.exports = function (___) {
+module.exports = function (SOCIALBROWSER) {
 
-    console.clear = function () {
-
-    }
-
-    Object.defineProperty(String.prototype, 'test', {
-        value: function (reg) {
-            return new RegExp(reg, "gium").test(this);
+    function escape(s) {
+        if (!s) {
+          return "";
         }
-    });
-
-    Object.defineProperty(String.prototype, 'like', {
-        value: function (rule) {
-            rule = rule.toString().replace('.', '\.')
-            return this.test("^" + rule.split("*").join(".*") + "$")
+        if (typeof s !== "string") {
+          s = s.toString();
         }
-    });
-
-    Object.defineProperty(String.prototype, 'contains', {
-        value: function (name) {
-            return this.like('*' + name + '*')
-        }
-    });
+        return s.replace(/[\/\\^$*+?.()\[\]{}]/g, "\\$&");
+      }
+      
+      if (!String.prototype.test) {
+        Object.defineProperty(String.prototype, "test", {
+          value: function (reg, flag = "gium") {
+            try {
+              return new RegExp(reg, flag).test(this);
+            } catch (error) {
+              return false;
+            }
+          },
+        });
+      }
+      
+      if (!String.prototype.like) {
+        Object.defineProperty(String.prototype, "like", {
+          value: function (name) {
+            if (!name) {
+              return false;
+            }
+            name = name.split("*");
+            name.forEach((n, i) => {
+              name[i] = escape(n);
+            });
+            name = name.join(".*");
+            return this.test("^" + name + "$", "gium");
+          },
+        });
+      }
+      
+      if (!String.prototype.contains) {
+        Object.defineProperty(String.prototype, "contains", {
+          value: function (name) {
+            if (!name) {
+              return false;
+            }
+            return this.test("^.*" + escape(name) + ".*$", "gium");
+          },
+        });
+      }
 }

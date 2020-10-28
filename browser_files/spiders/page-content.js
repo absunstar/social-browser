@@ -67,7 +67,7 @@ module.exports = function init(site, browser) {
                 experimentalFeatures: false,
                 webSecurity: false,
                 allowRunningInsecureContent: true,
-                plugins: false,
+                plugins: true,
             }
         })
 

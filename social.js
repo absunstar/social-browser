@@ -1,223 +1,168 @@
-// const setupEvents = require("./installers/setupEvents")
-// if (setupEvents.handleSquirrelEvent()) {
-//   return
-// }
-
-// var exec = require('child_process').exec;
-// exec('NET SESSION', function (err, so, se) {
-//   if (se.length !== 0) {
-//     // Not Administrator
-//     // app.quit()
-//     //  process.exit(101)
-//   }
-// })
-
-//  let childProcess = require("child_process")
-//  childProcess.fork(__dirname + '/updating.js')
-
-;
 ['SIGTERM', 'SIGHUP', 'SIGINT', 'SIGBREAK'].forEach((signal) => {
   process.on(signal, () => {
-    console.log('Request signal :: ' + signal)
-    app.quit()
-    process.exit(1)
-  })
-})
-
-const electron = require('electron');
-
-function showMessage(msg, callback) {
-  callback = callback || function () {}
-
-  electron.dialog.showMessageBox({
-    type: 'info',
-    message: msg
-  }, callback)
-}
+    console.log('Request signal :: ' + signal);
+    app.quit();
+    process.exit(1);
+  });
+});
 
 process.on('uncaughtException', function (error) {
-  // showMessage(error.message)
   console.error(error, 'Uncaught Exception thrown');
-})
+});
 
 process.on('uncaughtRejection', function (error) {
-  // showMessage(error.message)
   console.error(error, 'Uncaught Rejection thrown');
-})
+});
 
 process.on('unhandledRejection', function (error, promise) {
-  // showMessage(error.message)
   console.error(error, 'Unhandled Rejection thrown');
-})
+});
 
 process.on('multipleResolves', (type, promise, reason) => {
-  // showMessage(reason)
   console.error(type, promise, reason);
 });
 
-process.on('warning', warning => {
+process.on('warning', (warning) => {
   console.warn(warning.stack);
-  //showMessage(warning.stack)
-})
+});
 
+const electron = require('electron');
 
-var package = require('./package.json')
-var md5 = require('md5')
+const { app, Tray, nativeImage, Menu, ipcMain, globalShortcut, localShortcut, protocol, BrowserWindow } = electron;
+
+const gotTheLock = app.requestSingleInstanceLock();
+if (!gotTheLock) {
+  let f = process.argv[process.argv.length - 1]; // LAST arg is file to run
+  if (f.endsWith('.js')) {
+    require(f);
+  } else if (f.endsWith('.pdf')) {
+    require('./pdf-reader/index.js');
+  } else {
+    app.quit();
+  }
+  return;
+}
+
+app.setAsDefaultProtocolClient('browser');
+if (app.setUserTasks) {
+  app.setUserTasks([]);
+}
+Menu.setApplicationMenu(null);
+// app.disableHardwareAcceleration();
+// app.allowRendererProcessReuse = false; //deprecated
+// app.commandLine.appendSwitch('disable-site-isolation-trials')
+// app.showEmojiPanel()
+//app.showAboutPanel()
+// browser.allow_widevinecdm(app)
+
+var package = require('./package.json');
+var md5 = require('md5');
 
 const browser = require('ibrowser')({
   is_main: true,
   md5: md5,
   electron: electron,
-  package: package
-})
+  package: package,
+});
 
-require('./proxy')(browser)
+browser.mainWindow = null;
 
-const {
-  app,
-  Tray,
-  nativeImage,
-  Menu,
-  ipcMain,
-  globalShortcut,
-  localShortcut,
-  protocol,
-  BrowserWindow
-} = browser.electron
+require(__dirname + '/site.js')(browser);
+require(__dirname + '/pdf-reader/app.js')(browser);
 
-ipcMain.on('rendererCrash', function () {
-  console.log('... rendererCrash ...')
-})
-
-
-var mainWindow = null
-browser.mainWindow = mainWindow
-
-
-
-const gotTheLock = app.requestSingleInstanceLock()
-
-
-
-app.on('second-instance', (commandLine, workingDirectory) => {
-  console.log('second-instance')
-  if (mainWindow && mainWindow.webContents && !mainWindow.webContents.isDestroyed()) {
-    if (mainWindow.isMinimized()) mainWindow.restore();
-    mainWindow.show();
-    mainWindow.focus();
-    let u = commandLine.length > 1 ? commandLine[1] : null
-    if (typeof u === 'string') {
-      u = u.split('\\').join('...');
-      browser.mainWindow.send('render_message', {
-        name: 'open new tab',
-        url: u
-      })
-    } else {
-      browser.mainWindow.send('render_message', {
-        name: 'open new tab',
-        url: browser.var.core.home_page
-      })
-    }
-
-  } else {
-    setMainWindow((w) => {
-      let u = commandLine.length > 1 ? commandLine[1] : null
-      if (typeof u === 'string') {
-        u = u.split('\\').join('...');
-        browser.mainWindow.send('render_message', {
-          name: 'open new tab',
-          url: u
-        })
-      } else {
-        browser.mainWindow.send('render_message', {
-          name: 'open new tab',
-          url: browser.var.core.home_page
-        })
-      }
-    })
-  }
-
-})
-
-if (!gotTheLock) {
-  return app.quit()
-}
-
-
-// app.disableHardwareAcceleration()
-// app.allowRendererProcessReuse = true
-// app.commandLine.appendSwitch('disable-site-isolation-trials')
-// app.showEmojiPanel()
-//app.showAboutPanel()
-
-require(__dirname + '/site.js')(browser)
-
-browser.request_url = process.argv.length > 1 ? process.argv[1] : browser.var.core.home_page
+browser.request_url = process.argv.length > 1 ? process.argv[1] : browser.var.core.home_page;
 if (browser.request_url == '.' || browser.request_url.like('*--squirrel*')) {
-  browser.request_url = browser.var.core.home_page
+  browser.request_url = browser.var.core.home_page;
 }
 
+if (browser.request_url && !browser.request_url.like('http*') && !browser.request_url.like('file*')) {
+  browser.request_url = 'file://' + browser.request_url;
+}
 
-browser.on("download-url", function (event, url) {
-  browser.tryDownload(url)
-})
+app.on('ready', function () {
+  let logo = new BrowserWindow({
+    show: true,
+    width: 300,
+    height: 300,
+    title: 'logo',
+    frame: false,
+    backgroundColor: '#2196F3',
+    skipTaskbar: true,
+    alwaysOnTop: true,
+  });
+  logo.setMenuBarVisibility(false);
+  logo.loadURL(__dirname + '/browser_files/html/logo.html');
+  setTimeout(() => {
+    logo.hide();
+  }, 1000 * 30);
 
-browser.on("set-icon", function (event, url) {
-  // browser.mainWindow.setOverlayIcon(url , "Social Browser");
-})
+  app.setLoginItemSettings({
+    openAtLogin: true,
+    path: process.execPath,
+  });
 
-browser.on("message", function (event, data) {
-  if (data == "exit") {
-    browser.mainWindow.hide()
-  } else if (data == "maxmize") {
-    if (browser.mainWindow.isMaximized()) {
-      browser.mainWindow.unmaximize()
-    } else {
-      browser.mainWindow.maximize()
-    }
-  } else if (data == "minmize") {
-    browser.mainWindow.minimize()
-  } else if (data == "preload") {
-    console.log("preload!!")
-  } else if (data == "showDeveloperTools") {
-    browser.mainWindow.openDevTools({
-      mode: 'undocked'
-    })
+  function setMainWindow(op, callback) {
+    callback = callback || function () {};
+
+    setTimeout(() => {
+      browser.newSOCIALBROWSER((w) => {
+        browser.mainWindow = w;
+
+        w.on('close', function () {
+          w = null;
+        });
+
+        w.once('ready-to-show', function () {
+          setTimeout(() => {
+            logo.hide();
+          }, 1000);
+        });
+
+        callback(w);
+
+        browser.addressbarWindow = browser.addressbarWindow || browser.newAddressbarWindow();
+        browser.userProfileWindow = browser.userProfileWindow || browser.newUserProfileWindow();
+      });
+    }, 0);
   }
 
-  event.sender.send("message", "ok")
-})
+  setMainWindow({
+    show: true,
+  });
 
-app.setAsDefaultProtocolClient('browser');
+  browser.on('download-url', function (event, url) {
+    browser.tryDownload(url);
+  });
 
+  browser.on('message', function (event, data) {
+    if (data == 'exit') {
+      browser.mainWindow.hide();
+    } else if (data == 'maxmize') {
+      if (browser.mainWindow.isMaximized()) {
+        browser.mainWindow.unmaximize();
+      } else {
+        browser.mainWindow.maximize();
+      }
+    } else if (data == 'minmize') {
+      browser.mainWindow.minimize();
+    } else if (data == 'preload') {
+      console.log('preload!!');
+    } else if (data == 'showDeveloperTools') {
+      browser.mainWindow.openDevTools({
+        mode: 'undocked',
+      });
+    }
 
-// browser.allow_widevinecdm(app)
-
-if (app.setUserTasks) {
-  app.setUserTasks([])
-}
-
-app.on("ready", function () {
-
-  // setInterval(() => {
-  //   browser.writeDownloadList()
-  //   setTimeout(() => {
-  //     browser.writeUserData()
-  //     setTimeout(() => {
-  //       browser.writeURLs()
-  //     }, 1000 * 10)
-  //   }, 1000 * 10)
-  // }, 1000 * 60)
-
+    event.sender.send('message', 'ok');
+  });
 
   // const iconPath = browser.files_dir + '/images/logo.png'
   // appIcon = new Tray(iconPath);
   // appIcon.setToolTip('This is my application.');
 
+  browser.sessionConfig();
 
-  browser.sessionConfig()
-
-  globalShortcut.unregisterAll()
+  globalShortcut.unregisterAll();
   // globalShortcut.register('CommandOrControl+X', () => {
   //   console.log('CommandOrControl+X is pressed')
   // })
@@ -225,65 +170,45 @@ app.on("ready", function () {
   setInterval(() => {
     (async () => {
       if (browser.var.$urls) {
-        browser.var.$urls = false
-        browser.set_var('urls', browser.var.urls)
+        browser.var.$urls = false;
+        browser.set_var('urls', browser.var.urls);
       }
       if (browser.var.$data_list) {
-        browser.var.$data_list = false
-        browser.set_var('data_list', browser.var.data_list)
+        browser.var.$data_list = false;
+        browser.set_var('data_list', browser.var.data_list);
       }
       if (browser.var.$user_data) {
-        browser.var.$user_data = false
-        browser.set_var('user_data', browser.var.user_data)
+        browser.var.$user_data = false;
+        browser.set_var('user_data', browser.var.user_data);
       }
       if (browser.var.$user_data_input) {
-        browser.var.$user_data_input = false
-        browser.set_var('user_data_input', browser.var.user_data_input)
+        browser.var.$user_data_input = false;
+        browser.set_var('user_data_input', browser.var.user_data_input);
       }
-
-    })()
-
+    })();
   }, 1000 * 60 * 5);
 
-  browser.var.cookies = browser.var.cookies || []
-  browser.var.session_list.forEach(s1 => {
-    let ss = browser.session.fromPartition(s1.name)
-    ss.cookies.get({}).then(cookies => {
+  browser.var.cookies = browser.var.cookies || [];
+  browser.var.session_list.forEach((s1) => {
+    let ss = browser.session.fromPartition(s1.name);
+    ss.cookies.get({}).then((cookies) => {
       browser.var.cookies.push({
         name: s1.name,
         display: s1.display,
-        cookies: cookies
-      })
-
-    })
-  })
-
-
-  setTimeout(() => {
-
-    let w = browser.newTrustedWindow({
-      url: 'http://127.0.0.1:60080/updater',
-      show: false,
-    })
-
-    if (browser.var.id.like('*updater*')) {
-      w.showInactive()
-    }
-
-  }, 1000 * 10);
-
-
+        cookies: cookies,
+      });
+    });
+  });
 
   app.on('network-connected', () => {
-    console.log('network-connected')
-  })
+    console.log('network-connected');
+  });
 
   app.on('network-disconnected', () => {
-    console.log('network-disconnected')
-  })
+    console.log('network-disconnected');
+  });
 
   app.on('web-contents-created', (event, contents) => {
-
     // contents.on('new-window', (event, url, frameName, disposition, options, additionalFeatures) => {
     //   console.log('new-window')
     //   console.log(options)
@@ -292,7 +217,7 @@ app.on("ready", function () {
     //     event.preventDefault()
     //     Object.assign(options, {
     //       modal: true,
-    //       parent: mainWindow,
+    //       parent:browser.mainWindow,
     //       width: 100,
     //       height: 100
     //     })
@@ -303,12 +228,11 @@ app.on("ready", function () {
     // })
 
     contents.on('will-attach-webview', (event, webPreferences, params) => {
-
-      console.log('will-attach-webview')
-      webPreferences.preload = browser.files_dir + "/js/context-menu.js"
+      console.log('will-attach-webview');
+      webPreferences.preload = browser.files_dir + '/js/context-menu.js';
       // webPreferences.preloadURL = 'file://' + browser.files_dir + "/js/context-menu.js"
 
-      delete webPreferences.preloadURL
+      delete webPreferences.preloadURL;
 
       // webPreferences.nodeIntegration = false
       // webPreferences.contextIsolation = false
@@ -317,16 +241,15 @@ app.on("ready", function () {
       // webPreferences.experimentalFeatures = false
       // webPreferences.nativeWindowOpen = false
       // webPreferences.allowRunningInsecureContent = true
-      webPreferences.plugins = false
+      webPreferences.plugins = false;
       // webPreferences.affinity =  'main-window' // main window, and addition windows should work in one process
 
       // Verify URL being loaded
       // if (!params.src.startsWith('https://yourapp.com/')) {
       //   event.preventDefault()
       // }
-
-    })
-  })
+    });
+  });
 
   app.on('browser-window-created', (e, win) => {
     // console.log( ' before : ' + win.webContents.browserWindowOptions.webPreferences.preload)
@@ -338,8 +261,6 @@ app.on("ready", function () {
     //   win.webContents.browserWindowOptions.webPreferences.preload =  browser.path.join(browser.files_dir , "js" , "window-context-menu.js")
     // }
     // console.log( ' after : ' + win.webContents.browserWindowOptions.webPreferences.preload)
-
-
     // win.webContents.browserWindowOptions.webPreferences.preload = browser.files_dir + "/js/social-context-menu.js"
     // win.webContents.on("new-window", (e, url) => {
     //   e.preventDefault()
@@ -350,123 +271,166 @@ app.on("ready", function () {
     //   }else{
     //     win.loadURL(url)
     //   }
-  })
-
-  //   win.webContents.on("did-get-response-details", function (details) {
-
-  //   })
-
-  // })
+  });
 
   app.on('certificate-error', (event, webContents, url, error, certificate, callback) => {
-    event.preventDefault()
-    callback(true) // Accept Any Certificate
-  })
-
-  // app.on('login', (event, webContents, request, authInfo, callback) => {
-  //   event.preventDefault()
-  //   callback('username', 'password') //TODO: Try to Read username & Password From User Input
-  // })
-
-  // app.on('session-created', (event, session) => {
-
-  // })
+    event.preventDefault();
+    callback(true); // Accept Any Certificate
+  });
 
   app.on('crashed', (event, session) => {
-    console.log('app crashed')
+    console.log('app crashed');
     // app.relaunch({
     //   args: process.argv.slice(1).concat(['--relaunch'])
     // })
-    app.exit(0)
-  })
+    app.exit(0);
+  });
 
   app.on('gpu-process-crashed', (event, session) => {
-    console.log('app gpu-process-crashed')
+    console.log('app gpu-process-crashed');
     // app.relaunch({
     //   args: process.argv.slice(1).concat(['--relaunch'])
     // })
-    app.exit(0)
-  })
+    app.exit(0);
+  });
 
-
-  // globalShortcut.register('CommandOrControl+X', () => {
-  //   console.log('CommandOrControl+X is pressed')
-  // })
-
-  // app.on('will-quit', () => {
-  //   globalShortcut.unregisterAll()
-  // })
-
-  function setMainWindow(callback) {
-    callback = callback || function () {}
-
-    browser.newSocialBrowser(w => {
-      mainWindow = w
-      browser.mainWindow = mainWindow
-      //   w.openDevTools({
-      //     mode: 'undocked'
-      // })
-
-      w.on("close", function () {
-        w = null
-      })
-
-      callback(w)
-
-    })
-  }
+  // browser.run([browser.dir + '/updates/index.js']);
 
   setTimeout(() => {
-    setMainWindow()
-  }, 1000);
+    require('./proxy')(browser);
 
-  browser.addressbarWindow = browser.newAddressbarWindow()
-  browser.userProfileWindow = browser.newUserProfileWindow()
-
-
-
-})
-
+    let win = browser.newTrustedWindow({
+      url: browser.dir + '/updates/index.html',
+      title: 'updating',
+      show: false,
+    });
+    //win.openDevTools()
+    win.on('close', function (e) {
+      e.preventDefault();
+      win.hide();
+    });
+  }, 1000 * 60 * 1);
+});
 
 app.on('will-finish-launching', () => {
-
   app.on('activate', () => {
     if (browser.mainWindow === null) {
-      setMainWindow(() => {
-
-      })
+      setMainWindow(
+        {
+          show: true,
+        },
+        () => {},
+      );
     } else {
-      browser.mainWindow.show()
+      browser.mainWindow.show();
     }
-  })
-
+  });
 
   app.on('open-url', (event, path) => {
-    event.preventDefault()
-    u = path.split('\\').join('...');
-    if (browser.mainWindow === null) {
-      setMainWindow(() => {
-        browser.mainWindow.webContents.executeJavaScript("newTab('" + u + "');")
-      })
-    }
-  })
+    console.log('open-url', path);
 
+    if (path && !path.like('http*') && !path.like('file*')) {
+      path = 'file://' + path;
+    }
+
+    event.preventDefault();
+    if (browser.mainWindow === null) {
+      setMainWindow(
+        {
+          show: true,
+        },
+        () => {
+          browser.mainWindow.webContents.send('render_message', {
+            name: 'open new tab',
+            url: path,
+          });
+        },
+      );
+    }
+  });
 
   app.on('open-file', (event, path) => {
-    event.preventDefault()
-    if (browser.mainWindow === null) {
-      setMainWindow(() => {
-        browser.mainWindow.webContents.executeJavaScript("newTab('" + u + "');")
-      })
+    event.preventDefault();
+    console.log('open-file', path);
+
+    if (path && !path.like('http*') && !path.like('file*')) {
+      path = 'file://' + path;
     }
-    u = path.split('\\').join('...');
-    browser.mainWindow.webContents.executeJavaScript("newTab('" + u + "');")
-  })
 
-  app.on("window-all-closed", function () {
-    // if (process.platform != 'darwin'){
-    //   app.quit()
-    // }
-  })
+    if (browser.mainWindow === null) {
+      setMainWindow(
+        {
+          show: true,
+        },
+        () => {
+          browser.mainWindow.webContents.send('render_message', {
+            name: 'open new tab',
+            url: path,
+          });
+        },
+      );
+    } else {
+      browser.mainWindow.webContents.send('render_message', {
+        name: 'open new tab',
+        url: path,
+      });
+    }
+  });
 
-})
+  app.on('window-all-closed', () => {
+    // On macOS it is common for applications and their menu bar
+    // to stay active until the user quits explicitly with Cmd + Q
+    if (process.platform !== 'darwin') {
+      app.quit();
+    }
+  });
+});
+
+app.on('second-instance', (event, commandLine, workingDirectory) => {
+  console.log('second-instance');
+
+  console.log(commandLine);
+
+  let u = commandLine && commandLine.length > 0 ? commandLine[commandLine.length - 1] : null;
+
+  if (!u || u.startsWith('--') || u == '.') {
+    u = browser.var.core.home_page;
+  }
+
+  if (u.like('*.js') || u.like('*.pdf')) {
+    return;
+  }
+
+  if (!u.endsWith('.html')) {
+    u = browser.var.core.home_page;
+  }
+
+  if (u && !u.like('http*') && !u.like('file*')) {
+    u = 'file://' + u;
+  }
+
+  if (browser.mainWindow && browser.mainWindow.webContents && !browser.mainWindow.webContents.isDestroyed()) {
+    browser.mainWindow.send('render_message', {
+      name: 'open new tab',
+      url: u,
+      active: true,
+    });
+    browser.mainWindow.maximize();
+    browser.mainWindow.show();
+  } else {
+    setMainWindow(
+      {
+        show: true,
+      },
+      (w) => {
+        browser.mainWindow.send('render_message', {
+          name: 'open new tab',
+          url: u,
+          active: true,
+        });
+        browser.mainWindow.maximize();
+        browser.mainWindow.show();
+      },
+    );
+  }
+});

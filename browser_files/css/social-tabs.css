@@ -53,7 +53,6 @@
 
 .social-tabs .social-close:hover {
   background: red;
-  cursor: pointer;
 }
 .social-tabs .social-close .fa , .social-tabs .social-maxmize .fa , .social-tabs .social-minmize .fa {
   vertical-align: top;
@@ -79,7 +78,6 @@
 
 .social-tabs .social-maxmize:hover {
   background: green;
-  cursor: pointer;
 }
 
 .social-tabs .social-minmize {
@@ -100,7 +98,6 @@
 
 .social-tabs .social-minmize:hover {
   background: green;
-  cursor: pointer;
 }
 
 .social-tabs .social-tab {

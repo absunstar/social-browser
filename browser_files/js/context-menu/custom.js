@@ -1,4 +1,4 @@
-module.exports = function (___) {
+module.exports = function (SOCIALBROWSER) {
 
     /*window.addEventListener('load' , ()=>{
         if(document.location.href.like('*onlinevideoconverter.com*')){

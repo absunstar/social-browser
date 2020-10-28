@@ -2,15 +2,22 @@
   "name": "social_browser",
   "productName": "Social Browser",
   "homepage": "https://social-browser.com",
-  "version": "2020.09.05",
+  "version": "2020.09.20",
   "description": "Browsing Any Site with Multi Users And without Ads",
   "author": {
     "name": "Social Developer",
     "email": "social.browser.com@gmail.com"
   },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/absunstar/social-browser.git"
+  },
   "main": "social.js",
   "scripts": {
     "win": "electron-builder -w --x64 --ia32",
+    "win32": "electron-builder -w --ia32",
+    "win64": "electron-builder -w --x64",
     "ubuntu": "electron-builder -l --x64 --ia32",
     "mac": "electron-builder -m --x64",
     "postinstall": "electron-builder install-app-deps",
@@ -21,8 +28,8 @@
     "dist": "electron-builder"
   },
   "build": {
-    "productName": "Social Browser",
     "appId": "com.social.browser",
+    "productName": "Social Browser",
     "copyright": "Copyright © 2020",
     "target": "NSIS",
     "files": [
@@ -49,7 +56,23 @@
     "directories": {
       "output": "../build"
     },
+    "win": {
+      "target": "NSIS",
+      "icon": "browser_files/images/logo.ico",
+      "fileAssociations": [
+        {
+          "ext": "html",
+          "icon": "browser_files/images/html.ico"
+        },
+        {
+          "ext": "pdf",
+          "icon": "browser_files/images/pdf.ico"
+        }
+      ]
+    },
     "nsis": {
+      "artifactName": "${productName} Setup.${ext}",
+      "uninstallDisplayName": "${productName}",
       "allowElevation": true,
       "oneClick": false,
       "perMachine": false,
@@ -60,15 +83,16 @@
       "installerIcon": "browser_files/images/logo.ico",
       "allowToChangeInstallationDirectory": true
     },
-    "win": {
-      "target": "nsis",
-      "icon": "browser_files/images/logo.ico"
-    },
     "squirrelWindows": {
       "msi": true
     },
     "mac": {
-      "category": "public.app-category.entertainment"
+      "category": "public.app-category.entertainment",
+      "icon": "browser_files/images/logo.icns",
+      "target": [
+        "zip",
+        "dmg"
+      ]
     },
     "linux": {
       "category": "Web",
@@ -83,14 +107,14 @@
       "useTemplateApp": "false"
     }
   },
-  "license": "ISC",
   "dependencies": {
+    "custom-electron-titlebar": "^3.2.4",
     "ibrowser": "^1.0.7",
-    "isite": "^1.14.11",
+    "isite": "^1.14.29",
     "jquery": "*"
   },
   "devDependencies": {
-    "electron": "^10.1.1",
+    "electron": "^10.1.5",
     "electron-builder": "^22.7.0",
     "gulp": "*"
   }

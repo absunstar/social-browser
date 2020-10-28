@@ -1,19 +1,19 @@
-module.exports = function (___) {
+module.exports = function (SOCIALBROWSER) {
 
-    let xwin = ___.electron.remote.getCurrentWindow()
+    let xwin = SOCIALBROWSER.electron.remote.getCurrentWindow()
 
-    ___.video_list = []
-    ___.on('new-video', (e, src) => {
+    SOCIALBROWSER.video_list = []
+    SOCIALBROWSER.on('new-video', (e, src) => {
         console.log(src)
         let exists = false
-        ___.video_list.forEach(v2 => {
+        SOCIALBROWSER.video_list.forEach(v2 => {
             if (v.src && v2.src == v.src) {
                 exists = true
             }
         })
         if (v.src && !exists) {
 
-            ___.video_list.push({
+            SOCIALBROWSER.video_list.push({
                 src: v.src
             })
         }
@@ -39,11 +39,11 @@ module.exports = function (___) {
     })
 
 
-    if (!___.var.blocking.youtube.skip_ads && document.location.href.toLowerCase().like('*youtube.com*')) {
+    if (!SOCIALBROWSER.var.blocking.youtube.skip_ads && document.location.href.toLowerCase().like('*youtube.com*')) {
         return
     }
 
-    if (!___.var.blocking.skip_video_ads && !document.location.href.toLowerCase().like('*youtube.com*')) {
+    if (!SOCIALBROWSER.var.blocking.skip_video_ads && !document.location.href.toLowerCase().like('*youtube.com*')) {
         return
     }
 

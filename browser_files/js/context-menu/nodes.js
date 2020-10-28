@@ -1,7 +1,7 @@
-module.exports = function (___) {
+module.exports = function (SOCIALBROWSER) {
 
 
-    let xwin = ___.electron.remote.getCurrentWindow()
+    let xwin = SOCIALBROWSER.electron.remote.getCurrentWindow()
     let partition = xwin.webContents.getWebPreferences().partition
 
     function isNG(url) {
@@ -15,7 +15,7 @@ module.exports = function (___) {
             a.addEventListener('click', (e) => {
                 e.preventDefault()
                 e.stopPropagation()
-                ___.call('render_message', {
+                SOCIALBROWSER.call('render_message', {
                     name: 'open new tab',
                     referrer: document.location.href,
                     url: a.href,

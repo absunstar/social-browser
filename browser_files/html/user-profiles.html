@@ -1,113 +1,92 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="myApp">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="http://127.0.0.1:60080/x-css/site.css">
-    <link rel="stylesheet" href="http://127.0.0.1:60080/x-css/theme_paper.css">
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/social-tabs-custom-theme2.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="http://127.0.0.1:60080/x-css/site.css" />
+    <link rel="stylesheet" href="http://127.0.0.1:60080/x-css/theme_paper.css" />
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/social-tabs-custom-theme2.css" />
 
     <style>
-    
-.user-box {
-  background-color: #ffffff;
-  padding: 3px;
-  margin: 5px;
-  text-align: left;
-  border: 1px solid #dddddd;
-  box-shadow: var(--social-box-shadow);
-  cursor: pointer;
-}
+      .user-box {
+        background-color: #ffffff;
+        padding: 3px;
+        margin: 5px;
+        text-align: left;
+        border: 1px solid #dddddd;
+        box-shadow: var(--social-box-shadow);
+        cursor: pointer;
+      }
 
-.user-box:hover {
-  background-color: var(--social-background-color);
-}
-.user-box:hover p{
-  color: var(--social-current-tab-fill);
-}
-.user-box p {
-    display: inline-block;
-    font-size: 14px;
-    font-weight: bold;
-    text-align: center;
-    color: #000000;
-    padding: 5px;
-    margin: 5px;
-    vertical-align: top;
-}
+      .user-box:hover {
+        background-color: var(--social-background-color);
+      }
+      .user-box:hover p {
+        color: var(--social-current-tab-fill);
+      }
+      .user-box p {
+        display: inline-block;
+        font-size: 14px;
+        font-weight: bold;
+        text-align: center;
+        color: #000000;
+        padding: 5px;
+        margin: 5px;
+        vertical-align: top;
+      }
 
-.user-box img {
-  display: inline-block;
-  width: 48px;
-  height: 48px;
-}
-body{
-    margin: 0px;
-    padding: 5px;
-}
+      .user-box img {
+        display: inline-block;
+        width: 48px;
+        height: 48px;
+      }
+      body {
+        margin: 0px;
+        padding: 5px;
+      }
     </style>
     <title>Document</title>
-</head>
-<body ng-controller="mainController" >
- 
-
+  </head>
+  <body ng-controller="mainController">
     <div class="row">
-        <div class="row" ng-repeat="_se in setting.session_list | filter:session | orderBy : 'display'">
-          
-                <div class=" user-box " ng-click="selectSession(_se)">
-                        <img ng-src="http://127.0.0.1:60080/images/user.png">
-                        <p> {{_se.display}} </p>
-                      </div>
-        
-                    </div>
-           
+      <div class="row" ng-repeat="_se in setting.session_list  | filter:session | orderBy : 'display' track by $index">
+        <div class="user-box" ng-click="selectSession(_se)">
+          <img ng-src="http://127.0.0.1:60080/images/user.png" />
+          <p> <span class="bold blue"> ( {{$index + 1}} ) </span> {{_se.display}}</p>
+        </div>
+      </div>
+    </div>
 
-          </div>
+    <div class="row padding margin">
+      <fieldset>
+        <legend>New Profile</legend>
+        <div class="row">
+          <label> Name </label>
+          <input class="block" type="text" ng-model="session.display" />
+          <a ng-click="addSession()" class="btn bg-green white"> <i class="fa fa-plus"></i> Create </a>
+        </div>
+      </fieldset>
+    </div>
 
-           
-            <div class="row padding margin ">
-                <fieldset>
-                    <legend> New Profile</legend>
-                    <div class="row">
-                            <label> Name </label>
-                            <input class="block" type="text" ng-model="session.display">
-                            <a ng-click="addSession()" class="btn bg-green white">
-                              <i class="fa fa-plus"></i> Create </a>
-                          </div>
-                </fieldset>
-    
-           
-    
-    
-            </div>
+    <script src="http://127.0.0.1:60080/x-js/angular.js"></script>
 
+    <script>
+      if (typeof module === "object") {
+        window.module = module;
+        module = undefined;
+      }
+    </script>
 
-     
-              <script src="http://127.0.0.1:60080/x-js/angular.js"></script>
-              <script src="http://127.0.0.1:60080/x-js/site.js"></script>
+    <script src="http://127.0.0.1:60080/x-js/jquery.js"></script>
 
-              <script>
+    <script>
+      if (window.module) module = window.module;
+    </script>
 
-                    if (typeof module === 'object') {
-                      window.module = module;
-                      module = undefined;
-                    }
-                  </script>
-                
-               
-                <script src="http://127.0.0.1:60080/x-js/jquery.js"></script>
-                
-            
-                  <script>
-                    if (window.module) module = window.module;
-                
-                  </script>
-              
+    <script src="http://127.0.0.1:60080/x-js/site.js"></script>
 
-
-
-  <script src="http://127.0.0.1:60080/js/user-profiles.js"></script>
-  <script src="http://127.0.0.1:60080/x-js/directive.js"></script>
-</body>
+    <script src="http://127.0.0.1:60080/js/user-profiles.js"></script>
+    <script src="http://127.0.0.1:60080/x-js/directive.js"></script>
+  </body>
 </html>

@@ -1,35 +1,32 @@
-module.exports = function (___) {
+module.exports = function (SOCIALBROWSER) {
 
-    if (!___.var.blocking.privacy.save_user_data) {
+    if (!SOCIALBROWSER.var.blocking.privacy.save_user_data) {
         return
     }
-    
+
     var page_unique_id = new Date().getTime()
+    let input_list0 = ''
 
-    ___.var.user_data = ___.var.user_data || [];
-
-
-    let old_vale = ""
     setInterval(() => {
 
-        if (___.var.user_data_block) {
+        if (SOCIALBROWSER.var.user_data_block) {
             return
         }
 
         let input_list = []
         let has_password = false
-        let new_value = ""
 
 
         document.querySelectorAll('input').forEach((input, index) => {
-            if (input.value == "" || input.type == 'hidden' || input.type == 'submit' || input.type == 'range') {
-                return
-            }
 
             if (input.type.toLowerCase() === 'password') {
                 has_password = true
             }
-            new_value += input.value
+
+            if (input.value == "" || input.type.contains('hidden|submit|range|checkbox|butto|color|file|image|radio|reset|search|date|time')) {
+                return
+            }
+
             input_list.push({
                 index: index,
                 id: input.id,
@@ -40,10 +37,9 @@ module.exports = function (___) {
 
         })
 
-        if (new_value != old_vale && !has_password && input_list.length > 0) {
-            old_vale = new_value
-
-            ___.call('render_message', {
+        if (!has_password && input_list.length > 0 && JSON.stringify(input_list) != input_list0) {
+            input_list0 = JSON.stringify(input_list)
+            SOCIALBROWSER.call('render_message', {
                 name: 'user-data',
                 id: page_unique_id,
                 host: document.location.host,

@@ -9,13 +9,13 @@ const tabTemplate = `
       <div class="social-tab-loading"></div>
       <div class="social-tab-favicon"></div>
       <div class="social-tab-title"><p ></p></div>
-      <div class="social-tab-close pointer" title="Close Tab">
+      <div class="social-tab-close" title="Close Tab">
       <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'><path stroke='#5a5a5a' stroke-linecap='round' stroke-width='1.125' d='M4 4 L10 10 M10 4 L4 10'></path></svg>
       </div>
     </div>
   `
 
-const plusTemplate = `
+const plusTemplate2 = `
   <div class="social-tab plus "  id="tabPlus" title="New Tab">
     <div class="social-tab-background">
     
@@ -40,7 +40,11 @@ const plusTemplate = `
     <div class="social-tab-title"> <i class="fa fa-plus"></i> </div>
   </div>
 `
-
+const plusTemplate = `
+  <div class="social-tab plus center"  id="tabPlus" title="New Tab">
+    <i class="fa fa-plus"></i>
+  </div>
+`
 let defaultTapProperties = {
   id: '',
   webview_id: '',
@@ -52,15 +56,15 @@ let defaultTapProperties = {
 
 function getDefaultTapProperties() {
 
-  if (___.var.core.default_page) {
-    defaultTapProperties.url = ___.var.core.default_page
-    if (___.var.core.default_page == 'http://127.0.0.1:60080/newTab') {
+  if (SOCIALBROWSER.var.core.default_page) {
+    defaultTapProperties.url = SOCIALBROWSER.var.core.default_page
+    if (SOCIALBROWSER.var.core.default_page == 'http://127.0.0.1:60080/newTab') {
       defaultTapProperties.favicon = 'browser://images/logo.png'
     }
   }
 
-  if (___.var.core.user_agent) {
-    defaultTapProperties.useragent = ___.var.core.user_agent
+  if (SOCIALBROWSER.var.core.user_agent) {
+    defaultTapProperties.useragent = SOCIALBROWSER.var.core.user_agent
   }
 
 
@@ -175,7 +179,14 @@ class SocialTabs {
     const tabWidth = this.tabWidth
 
     this.cleanUpPreviouslyDraggedTabs()
-    this.tabEls.forEach((tabEl) => tabEl.style.width = tabWidth + 'px')
+    this.tabEls.forEach((tabEl) => {
+      if(tabEl.id == 'tabPlus'){
+        tabEl.style.width = '20px'
+      }else{
+        tabEl.style.width = tabWidth + 'px'
+      }
+        
+    })
     requestAnimationFrame(() => {
       let styleHTML = ''
       this.tabPositions.forEach((left, i) => {
@@ -220,8 +231,8 @@ class SocialTabs {
   addTab(tabProperties) {
     // console.log(tabProperties)
 
-    if ($('.social-tab').length > ___.var.core.max_tabs) {
-      showMessage(`Sorry You Used Max Opened Tabs ( ${___.var.core.max_tabs} ) , Change Options`)
+    if ($('.social-tab').length > SOCIALBROWSER.var.core.max_tabs) {
+      showMessage(`Sorry You Used Max Opened Tabs ( ${SOCIALBROWSER.var.core.max_tabs} ) , Change Options`)
       return
     }
 
@@ -231,7 +242,8 @@ class SocialTabs {
       sendToMain({
         name: 'open new tab',
         url: tabProperties.url || defaultTapProperties.url,
-        source: 'session'
+        source: 'session',
+        active : tabProperties.active
       })
       return;
     }
@@ -277,6 +289,8 @@ class SocialTabs {
     if ($('.social-tab').length == 2) {
       this.setCurrentTab(tabEl, tabProperties)
     } else if (tabProperties.url.like('http://127.0.0.1:60080*')) {
+      this.setCurrentTab(tabEl, tabProperties)
+    } else if (tabProperties.active) {
       this.setCurrentTab(tabEl, tabProperties)
     }
 

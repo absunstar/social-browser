@@ -1,48 +1,85 @@
 (function () {
     'use strict';
 
-    String.prototype.test = function matchRuleShort(reg) {
-        return new RegExp(reg).test(this);
-    }
+    function escape(s) {
+        if (!s) {
+          return "";
+        }
+        if (typeof s !== "string") {
+          s = s.toString();
+        }
+        return s.replace(/[\/\\^$*+?.()\[\]{}]/g, "\\$&");
+      }
+      
+      if (!String.prototype.test) {
+        Object.defineProperty(String.prototype, "test", {
+          value: function (reg, flag = "gium") {
+            try {
+              return new RegExp(reg, flag).test(this);
+            } catch (error) {
+              return false;
+            }
+          },
+        });
+      }
+      
+      if (!String.prototype.like) {
+        Object.defineProperty(String.prototype, "like", {
+          value: function (name) {
+            if (!name) {
+              return false;
+            }
+            name = name.split("*");
+            name.forEach((n, i) => {
+              name[i] = escape(n);
+            });
+            name = name.join(".*");
+            return this.test("^" + name + "$", "gium");
+          },
+        });
+      }
+      
+      if (!String.prototype.contains) {
+        Object.defineProperty(String.prototype, "contains", {
+          value: function (name) {
+            if (!name) {
+              return false;
+            }
+            return this.test("^.*" + escape(name) + ".*$", "gium");
+          },
+        });
+      }
 
-    String.prototype.like = function matchRuleShort(rule) {
-        rule = rule.replace('.', '\.')
-        return new RegExp("^" + rule.split("*").join(".*") + "$", "gium").test(this);
-    }
-
-    String.prototype.contains = function (name) {
-        return this.like('*' + name + '*')
-    }
-
-    var ___ = {}
-    ___.electron = require('electron')
-    ___.fs = require('fs')
-    ___.url = require('url')
-    ___.path = require('path')
-    ___.md5 = require('md5')
+    var SOCIALBROWSER = {}
+    SOCIALBROWSER.electron = require('electron')
+    SOCIALBROWSER.fs = require('fs')
+    SOCIALBROWSER.url = require('url')
+    SOCIALBROWSER.path = require('path')
+    SOCIALBROWSER.md5 = require('md5')
     
-    ___.callSync = function (channel, value) {
-      return ___.electron.ipcRenderer.sendSync(channel, value)
+    SOCIALBROWSER.callSync = function (channel, value) {
+      return SOCIALBROWSER.electron.ipcRenderer.sendSync(channel, value)
     }
-    ___.call = function (channel, value) {
-      return ___.electron.ipcRenderer.send(channel, value)
+    SOCIALBROWSER.call = function (channel, value) {
+      return SOCIALBROWSER.electron.ipcRenderer.send(channel, value)
     }
-    ___.on = function (name, callback) {
-      ___.electron.ipcRenderer.on(name, callback)
+    SOCIALBROWSER.on = function (name, callback) {
+      SOCIALBROWSER.electron.ipcRenderer.on(name, callback)
     }
-    ___.var = ___.callSync('get_var', {
+    SOCIALBROWSER.var = SOCIALBROWSER.callSync('get_var', {
+      url: document.location.href,
       name: '*'
     })
-    ___.files_dir = ___.callSync('get_browser', {
+    SOCIALBROWSER.files_dir = SOCIALBROWSER.callSync('get_browser', {
       name: 'files_dir'
     })
     
-    ___.currentWindow = ___.electron.remote.getCurrentWindow()
+    SOCIALBROWSER.currentWindow = SOCIALBROWSER.electron.remote.getCurrentWindow()
 
     const {
         Menu,
         MenuItem
-    } = ___.electron.remote
+    } = SOCIALBROWSER.electron.remote
 
 
     function goURL(){
@@ -153,7 +190,7 @@
             new MenuItem({
                 label: "inspect Element",
                 click() {
-                    ___.currentWindow.inspectElement(rightClickPosition.x, rightClickPosition.y)
+                    SOCIALBROWSER.currentWindow.inspectElement(rightClickPosition.x, rightClickPosition.y)
                 }
             })
         )
@@ -162,7 +199,7 @@
             new MenuItem({
                 label: "Developer Tools",
                 click() {
-                    ___.currentWindow.openDevTools({
+                    SOCIALBROWSER.currentWindow.openDevTools({
                         mode: 'undocked'
                     })
                 }
@@ -186,12 +223,12 @@
 
         let m = createMenu(node)
         if (m) {
-            m.popup(___.currentWindow)
+            m.popup(SOCIALBROWSER.currentWindow)
         }
 
     })
 
-    window.___ = ___ ;
+    window.SOCIALBROWSER = SOCIALBROWSER ;
 
 
 })()

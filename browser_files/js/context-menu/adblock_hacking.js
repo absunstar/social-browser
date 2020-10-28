@@ -1,4 +1,4 @@
-module.exports = function (___) {
+module.exports = function (SOCIALBROWSER) {
 
     function isFunction(functionToCheck) {
         return functionToCheck && {}.toString.call(functionToCheck) === '[object Function]';
@@ -14,7 +14,6 @@ module.exports = function (___) {
                 style.type = 'text/css';
                 style.innerText = `.plyr-container2{width: 100% !important;height: 100% !important;}`;
                 document.getElementsByTagName('head')[0].appendChild(style);
-
                 p.classList.add('plyr-container2');
             }
         }
@@ -46,14 +45,7 @@ module.exports = function (___) {
 
     // })
 
-    let setInterval0 = window.setInterval
-    window.setInterval = function(fn , time){
-        return setInterval0(fn , time)
-    }
-    let setTimeout0 = window.setTimeout
-    window.setTimeout = function(fn , time){
-        return setTimeout0(fn , time)
-    }
+
 
     function hack_script() {
         window.googleAd = true

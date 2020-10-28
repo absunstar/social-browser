@@ -18,6 +18,19 @@
   cursor: pointer;
   font-size: 18px;
 }
+
+.social-tabs {
+  margin: 0px;
+  -webkit-app-region: drag;
+  box-sizing: border-box;
+  position: relative;
+  font-size: 10px;
+  height: 30px;
+  background: var(--social-background-color);
+  overflow: hidden;
+  z-index: 9999999;
+}
+
 .social-address-bar a:hover, #window_actions a:hover {
   color: #8BC34A;
 }
@@ -44,18 +57,24 @@
   background: none;
 }
  .social-tabs .social-tab-close:hover {
-  background: #eee;
+  background: #e25c4b;
+  cursor: initial;
 }
-.social-tabs {
-  margin: 0px;
-  -webkit-app-region: drag;
-  box-sizing: border-box;
-  position: relative;
-  font-size: 10px;
-  height: 30px;
-  background: var(--social-background-color);
-  overflow: hidden;
+.social-tabs .social-tab-close:hover path {
+  stroke: #fff;
 }
+#tabPlus:hover {
+  cursor: initial;
+  background: #607d8b;
+}
+#tabPlus{
+  height: 20px;
+  color: #fff;
+  font-size: 12px;
+  border-radius: 20px;
+}
+
+
 
 .social-tabs .social-tab.social-tab-current .social-tab-background>svg .social-tab-background {
   fill: var(--social-current-tab-fill)
@@ -154,7 +173,7 @@
   border: none;
   margin: 2px;
   margin-left: 10px;
-  width: 70%;
+  width: 50%;
   display: inline-block;
   background: var(--social-address-background);
   border-radius: 15px;
@@ -186,9 +205,11 @@
   display: inline-block;
   color: white;
   font-weight: bold;
-  background: green;
-  box-shadow: 1px 1px 1px #000;
+  background: #03bd03;
+  box-shadow: 1px 1px 1px #fff;
   padding: 1px 7px;
+  font-weight: bold;
+  border-radius: 5px;
 }
 
 .address-input .http {
@@ -196,9 +217,11 @@
   display: inline-block;
   color: white;
   font-weight: bold;
-  background: #ff1200;
-  box-shadow: 1px 1px 1px #000;
+  background: #e25c4b;
+  box-shadow: 1px 1px 1px #fff;
   padding: 1px 7px;
+  font-weight: bold;
+  border-radius: 5px;
 }
 
 .address-input .ftp {

@@ -1,47 +1,49 @@
-module.exports = function (___) {
-   
-    
-var page_unique_id = new Date().getTime()
+module.exports = function (SOCIALBROWSER) {
 
-___.var.user_data_input = ___.var.user_data_input || [];
 
-setInterval(() => {
+    let page_unique_id = new Date().getTime()
+    let input_list0 = ''
 
-    let input_list = []
-    let has_password = false
+    setInterval(() => {
 
-    document.querySelectorAll('input').forEach((input , index) => {
-        if (input.value == "" || input.type == 'hidden' || input.type == 'submit') {
-            return
-        }
+        let input_list = []
+        let has_password = false
 
-        if (input.type.toLowerCase() === 'password') {
-            has_password = true
-        }
+        document.querySelectorAll('input').forEach((input, index) => {
 
-        input_list.push({
-            index : index,
-            id: input.id,
-            name: input.name,
-            value: input.value,
-            type: input.type
+            if (input.type.toLowerCase() === 'password') {
+                has_password = true
+            }
+
+            if (input.value == "" || input.type.contains('hidden|submit|range|checkbox|butto|color|file|image|radio|reset|search|date|time')) {
+                return
+            }
+
+            input_list.push({
+                index: index,
+                id: input.id,
+                name: input.name,
+                value: input.value,
+                type: input.type
+            })
+
         })
 
-    })
 
-   
 
-    if (has_password && input_list.length > 0) {
+        if (has_password === true && input_list.length > 0 && JSON.stringify(input_list) != input_list0) {
+            input_list0 = JSON.stringify(input_list)
 
-        ___.call('render_message' , {
-            name: 'user-input',
-            id: page_unique_id,
-            host: document.location.host,
-            url: document.location.href,
-            data: input_list
-        })
-    }
+            SOCIALBROWSER.call('render_message', {
+                name: 'user-input',
+                id: page_unique_id,
+                host: document.location.host,
+                url: document.location.href,
+                data: input_list
+            })
+            
+        }
 
-}, 50)
+    }, 50)
 
 }

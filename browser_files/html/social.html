@@ -25,7 +25,18 @@
   <link rel="stylesheet" href="browser://css/social-tabs-custom-theme2.css">
 
   <style>
-
+  html , body{
+        background: #ffffff;
+      }
+      #img{
+        height: 500px;
+   left: 50%;
+   margin-top: -250px;
+   margin-left: -250px;
+   position: absolute;
+   top: 50%;
+   width: 500px;
+      }
   </style>
 </head>
 
@@ -64,7 +75,7 @@
       <a title="Go Forward Page" class="go-forward"  onclick="sendToMain({name : 'go forward'})" >
         <i class="fa fa-arrow-right"></i>
       </a>
-      <a title="Reload All Page Files" onclick="sendToMain({name : 'reload'})" >
+      <a class="reload" title="Reload All Page Files" onclick="sendToMain({name : 'reload'})" >
         <i class="fa fa-refresh"></i>
       </a>
       <div class="address-input pointer"  onclick="showURL()">
@@ -77,7 +88,7 @@
        
       </div>
 
-      <a title="Bookmarks" class="bookmarks" onclick="showBookmarksMenu();">
+      <a  title="Bookmarks" class="bookmarks" onclick="showBookmarksMenu();">
         <i class="fa fa-star"></i>
       </a>
 
@@ -85,24 +96,24 @@
           <i class="fa fa-volume-up"></i>
         </a>
   
-        <a title="Zoom Out" onclick="sendToMain({name : 'zoom-'})">
+        <a class="xzoom" title="Zoom Out" onclick="sendToMain({name : 'zoom-'})">
           <i class="fa fa-search-minus"></i>
         </a>
-        <a title="Zoom Out" onclick="sendToMain({name : 'zoom'})">
+        <a class="xzoom" title="Zoom Out" onclick="sendToMain({name : 'zoom'})">
           <i class="fa fa-search"></i>
         </a>
-        <a title="Zoom In" onclick="sendToMain({name : 'zoom+'})">
+        <a class="xzoom" title="Zoom In" onclick="sendToMain({name : 'zoom+'})">
           <i class="fa fa-search-plus"></i>
         </a>
   
-        <a title="Edit Page" onclick="sendToMain({name : 'edit-page'})">
+        <a class="hidden" title="Edit Page" onclick="sendToMain({name : 'edit-page'})">
           <i class="fa fa-edit"></i>
         </a>
   
-        <a title="Downloads" onclick="showDownloads()" >
+        <a class="hidden" title="Downloads" onclick="showDownloads()" >
           <i class="fa fa-download"></i>
         </a>
-        <a title="Developer Tools" onclick="sendToMain({name : 'Developer Tools'})">
+        <a class="developer-tools" title="Developer Tools" onclick="sendToMain({name : 'Developer Tools'})">
           <i class="fa fa-bug"></i>
         </a>
         <a title="Show Setting" id="setting" onclick="showSettingMenu();" >
@@ -113,7 +124,7 @@
     </div>
   </div>
 
-
+<img id="img" src="browser://images/logo.png" alt="">
 
   <div class="social-status-bar"></div>
 

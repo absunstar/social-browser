@@ -1,16 +1,16 @@
-module.exports = function (___) {
+module.exports = function (SOCIALBROWSER) {
 
     if (!document.location.href.contains('addmefast.com')) {
         return
     }
 
-    if (!___.var.blocking.social.allow_addmefast) {
+    if (!SOCIALBROWSER.var.blocking.social.allow_addmefast) {
         return
     }
 
     alert('addmefast Activated .....')
 
-    ___.var.blocking.block_empty_iframe = false
+    SOCIALBROWSER.var.blocking.block_empty_iframe = false
 
     window.addEventListener('load', () => {
 
@@ -37,7 +37,7 @@ module.exports = function (___) {
 
     if (document.location.href.contains('youtube_views|soundcloud_views|youtube_likes')) {
 
-        ___.var.user_data_block = true
+        SOCIALBROWSER.var.user_data_block = true
         let like_count = 0
         window.open = function (url, _name, _specs, _replace_in_history) {
 
@@ -64,9 +64,9 @@ module.exports = function (___) {
             if (url == "about:blank") {
                 return opener
             }
-            url = ___.handle_url(url)
+            url = SOCIALBROWSER.handle_url(url)
 
-            let win = new ___.electron.remote.BrowserWindow({
+            let win = new SOCIALBROWSER.electron.remote.BrowserWindow({
                 show: false,
                 alwaysOnTop: true,
                 width: _specs.width || 800,
@@ -75,20 +75,20 @@ module.exports = function (___) {
                 y: _specs.y || 200,
                 backgroundColor: '#ffffff',
                 frame: true,
-                icon: ___.path.join(___.files_dir, "images", "logo.ico"),
+                icon: SOCIALBROWSER.path.join(SOCIALBROWSER.files_dir, "images", "logo.ico"),
                 webPreferences: {
                     webaudio: false,
                     nativeWindowOpen: false,
                     nodeIntegration: false,
                     nodeIntegrationInWorker: false,
-                    session: ___.electron.remote.getCurrentWebContents().session,
+                    session: SOCIALBROWSER.electron.remote.getCurrentWebContents().session,
                     sandbox: false,
-                    preload: ___.files_dir + '/js/context-menu.js',
+                    preload: SOCIALBROWSER.files_dir + '/js/context-menu.js',
                     webSecurity: false,
                     guestInstanceId: 1,
-                    openerId: ___.electron.remote.getCurrentWebContents().id,
+                    openerId: SOCIALBROWSER.electron.remote.getCurrentWebContents().id,
                     allowRunningInsecureContent: true,
-                    plugins: false,
+                    plugins: true,
                 }
             })
 
@@ -205,7 +205,7 @@ module.exports = function (___) {
                             if (img.complete && img.naturalHeight !== 0 && !img.getAttribute('x-id')) {
                                 let id = window.__img_code(img)
                                 img.setAttribute('x-id', id)
-                                let img_data = ___.callSync('get_data', {
+                                let img_data = SOCIALBROWSER.callSync('get_data', {
                                     id: id
                                 })
                                 console.log(id)
@@ -218,7 +218,7 @@ module.exports = function (___) {
                                     }
                                 } else {
                                     img.classList.add('__waiting')
-                                    ___.call('set_data', {
+                                    SOCIALBROWSER.call('set_data', {
                                         id: id,
                                         click_count: 0
                                     })
@@ -227,7 +227,7 @@ module.exports = function (___) {
                                     let click_count = img.getAttribute('click_count') || 0
                                     click_count++
                                     img.setAttribute('click_count', click_count)
-                                    ___.call('set_data', {
+                                    SOCIALBROWSER.call('set_data', {
                                         id: id,
                                         click_count: click_count
                                     })
@@ -259,7 +259,7 @@ module.exports = function (___) {
 
 
     if (document.location.href.contains('websites')) {
-        ___.var.user_data_block = true
+        SOCIALBROWSER.var.user_data_block = true
         setInterval(() => {
             document.querySelectorAll('iframe').forEach(f => {
                 if (f.id == "preview-frame") {

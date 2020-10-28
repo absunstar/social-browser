@@ -31,7 +31,7 @@
 
     <div class="url-list">
       <ul>
-        <li ng-click="goUrl(u.url);$event.stopPropagation()" ng-class="{'selected' : u.selected}" href="{{u.url}}" ng-repeat="u in url_list2 | limitTo:100 ">
+        <li ng-click="goUrl(u.url);$event.stopPropagation()" ng-class="{'selected' : u.selected}" href="{{u.url}}" ng-repeat="u in url_list2  track by $index">
           <a ng-click="goUrl(u.url);$event.stopPropagation()">
             <img ng-src="{{u.logo}}" onerror="this.src='http://127.0.0.1:60080/images/no.png'" />
             <span class="bold green" ng-click="goUrl(u.url);$event.stopPropagation()"> ( {{u.count}} ) </span>
@@ -69,20 +69,38 @@
 
     <script>
       window.loadurl = function (url) {
-        if (scope().url0 === url) {
-          scope().loadUrls();
-        } else {
-          scope().loadUrls(url);
-        }
-        scope().url0 = url;
+        $("#addressbar_id").focus();
+        $("#addressbar_id").select();
 
+        if (scope().url0 === url) {
+          scope().loadUrls(null, () => {
+            setTimeout(() => {
+              $("#addressbar_id").focus();
+              $("#addressbar_id").select();
+            }, 200);
+          });
+        } else {
+          scope().url0 = url;
+          scope().loadUrls(url, () => {
+            setTimeout(() => {
+              $("#addressbar_id").focus();
+              $("#addressbar_id").select();
+            }, 200);
+          });
+        }
       };
 
-      const { remote, nativeImage, ipcRenderer } = ___.electron;
+      const { remote, nativeImage, ipcRenderer } = SOCIALBROWSER.electron;
       var app = angular.module("myApp", []);
       var scope = function () {
         return angular.element(document.querySelector("body")).scope();
       };
+
+      SOCIALBROWSER.on("var.urls", (e, res) => {
+        console.log('here')
+        scope().url_list = res.data;
+      });
+
       app.controller("mainController", ($scope, $http, $timeout) => {
         $scope.urls_sort_property = "-count";
         $scope.url_list = [];
@@ -90,14 +108,16 @@
         $scope.url_index = -1;
         $scope.url0 = "";
 
-        $scope.loadUrls = function (url) {
+        $scope.loadUrls = function (url, callback) {
+          callback = callback || function () {};
+
           if (url) {
             $scope.url = url;
           }
 
           $timeout(() => {
             if ($scope.url_list.length === 0) {
-              $scope.url_list = ___.callSync("get_var", { name: "urls" });
+              $scope.url_list = SOCIALBROWSER.callSync("get_var", { name: "urls" });
             }
 
             $scope.url_list2 = [];
@@ -136,7 +156,8 @@
                 url: word,
               });
             }
-            $("#addressbar_id").focus();
+
+            callback();
           }, 200);
         };
 
@@ -204,7 +225,7 @@
             }
           }
 
-          ___.call("update-view", {
+          SOCIALBROWSER.call("update-view", {
             url: url,
           });
 

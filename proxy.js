@@ -98,9 +98,6 @@ var getHostPortFromString = function (hostString, defaultPort) {
 
 server.addListener('connect', function (req, socket, bodyhead) {
 
-    console.log('Proxy SSL :: ' + req.url)
-    console.log(req.headers)
-
     var hostPort = getHostPortFromString(req.url, 443);
     var hostDomain = hostPort[0];
     var port = parseInt(hostPort[1]);

@@ -21,6 +21,13 @@ module.exports = function init_isite(browser) {
     },
     security: {
       enabled: false
+    },
+    proto: {
+      object: false
+    },
+    require : {
+      features : [],
+      permissions : []
     }
   })
 
@@ -43,7 +50,8 @@ module.exports = function init_isite(browser) {
 
   site.get({
     name: '/',
-    path: __dirname + '/browser_files'  })
+    path: __dirname + '/browser_files'
+  })
 
   site.get({
     name: '/setting',
@@ -250,6 +258,137 @@ module.exports = function init_isite(browser) {
 
   })
 
+  site.get('/printers/all' , (req , res)=>{
+    res.json({
+      done : true,
+      list :  browser.mainWindow.webContents.getPrinters()
+    })
+  })
+  site.post(['/printing' , '/print'], (req, res) => {
+
+    let id = new Date().getTime()
+
+    let print_options = {
+      silent: false,
+      printBackground: false,
+      printSelectionOnly: false,
+      deviceName: null,
+      color: true,
+      margins: {
+        marginType: 'default',
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0
+      },
+      landscape: false,
+      scaleFactor: 70,
+      pagesPerSheet: 1,
+      collate: false,
+      copies: 1,
+      pageRanges: {
+        from: 0,
+        to: 0
+      },
+      duplexMode: null,
+      dpi: {},
+      header: null,
+      footer: null,
+      pageSize: 'A4',
+      width : 850 ,
+      marginsType: 0
+    }
+
+    if(req.data.data){
+      req.data.type = 'html'
+      req.data.html =  browser.json_to_html(req.data.data)
+      print_options.width = 320
+    }
+
+    // req.data.view = true
+
+    if(req.data.view){
+      print_options.view = true
+    }else{
+       print_options.silent = true
+      print_options.deviceName = req.data.printer || 'Microsoft Print to PDF'
+    }
+
+    browser.content_list.push({
+      id: id,
+      data: req.data.html,
+      type: req.data.type,
+      origin: req.data.origin,
+      url: req.data.href,
+      win_id: req.data.win_id,
+      options: Object.assign(print_options, req.data.options)
+    })
+
+    browser.backAllViews()
+
+    browser.run([browser.dir + '/printing/index.js']);
+
+    res.json({
+      done: true
+    })
+
+  })
+
+  site.get('/pdf-viewer', (req, res) => {
+    res.render('pdf.html')
+  })
+
+  site.get('/pdf/:id', (req, res) => {
+    let id = req.params.id
+    let pdf = null
+    browser.content_list.forEach(_pdf => {
+      if (_pdf.id == id) {
+        pdf = _pdf
+      }
+    })
+    if (pdf) {
+      res.set('Content-Type', 'application/pdf')
+      // res.set('Content-Length', data.length);
+      res.end(pdf.data)
+    } else {
+      res.json({
+        error: 'pdf id not exists'
+      })
+    }
+
+  })
+
+  site.get('/data-content/last', (req, res) => {
+
+    let pdf = browser.content_list[browser.content_list.length - 1]
+    if (pdf) {
+      if (pdf.type == 'html') {
+        res.set('Content-Type', 'text/html; charset=utf-8')
+        res.end(pdf.data, 'utf8')
+      } else {
+        res.set('Content-Type', 'application/pdf')
+        res.end(pdf.data)
+      }
+
+    } else {
+      res.json({
+        error: 'pdf id not exists',
+        length: browser.content_list.length
+      })
+    }
+
+  })
+
+
+  site.post('/data-content/details', (req, res) => {
+
+    let content = browser.content_list[browser.content_list.length - 1]
+    res.json({
+      options: content.options
+    })
+
+  })
+
   site.get('/api/urls', (req, res) => {
     res.json(browser.var.urls)
   })
@@ -285,11 +424,11 @@ module.exports = function init_isite(browser) {
   })
 
 
-  site.get({
-    name: '/updater',
-    path: site.dir + '/html/updater.html',
-    compress: false
-  })
+  // site.get({
+  //   name: '/updater',
+  //   path: site.dir + '/html/updater.html',
+  //   compress: false
+  // })
 
   site.post('/api/new_user_data_input', (req, res) => {
 
@@ -579,7 +718,7 @@ module.exports = function init_isite(browser) {
   })
 
   site.get('/favicons/:name', function (req, res) {
-    const path = browser.path.join(browser.data_dir, 'favicons' , req.params.name)
+    const path = browser.path.join(browser.data_dir, 'favicons', req.params.name)
     const stat = site.fs.statSync(path)
     const fileSize = stat.size
     const range = req.headers.range
@@ -603,16 +742,16 @@ module.exports = function init_isite(browser) {
     } else {
       res.writeHead(200, {
         'Content-Length': fileSize,
-        'Content-Type': 'image/'+ path.split('.').pop()
+        'Content-Type': 'image/' + path.split('.').pop()
       })
       site.fs.createReadStream(path).pipe(res)
     }
-    
+
   })
 
   site.get("/xfavicons/:name", (req, res) => {
     res.set('Cache-Control', 'public, max-age=2592000')
-    res.download( browser.path.join(browser.data_dir, 'favicons' , req.params.name))
+    res.download(browser.path.join(browser.data_dir, 'favicons', req.params.name))
   })
 
   site.run()

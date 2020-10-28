@@ -1,14 +1,14 @@
-module.exports = function (___) {
+module.exports = function (SOCIALBROWSER) {
 
     if (!document.location.href.contains('https://www.10khits.com/dashboard/surf/sessions')) {
         return
     }
 
-    if(!___.var.blocking.social.allow_10khits){
+    if(!SOCIALBROWSER.var.blocking.social.allow_10khits){
         return
     }
 
-    console.log('10khits Activated .....')
+    alert('10khits Activated .....')
 
     let link = ''
     let count = 0
@@ -19,15 +19,15 @@ module.exports = function (___) {
         if (link) {
             link = link.replace('surf::', '').replace('#___new_tab___' , '')
             console.log(link)
-            let win = new ___.electron.remote.BrowserWindow({
+            let win = new SOCIALBROWSER.electron.remote.BrowserWindow({
                 show: false,
                 width: 800,
                 height: 300,
                 webPreferences: {                   
                     enableRemoteModule: true,
-                    partition: ___.electron.remote.getCurrentWindow().webContents.session.name,
+                    partition: SOCIALBROWSER.electron.remote.getCurrentWindow().webContents.session.name,
                     webaudio: false,
-                    preload: ___.files_dir + "/js/context-menu.js",
+                    preload2: SOCIALBROWSER.files_dir + "/js/context-menu.js",
                 },
             });
 
@@ -38,10 +38,9 @@ module.exports = function (___) {
                 userAgent: navigator.userAgent
               })
 
-            win.loadURL(link)
 
             win.once('ready-to-show', () => {
-             //  win.showInactive()
+              // win.showInactive()
            })
 
             setTimeout(() => {
@@ -54,7 +53,7 @@ module.exports = function (___) {
                     fake_hit(link)
                 }
                
-            }, 1000 * 15);
+            }, 1000 * 20);
         }
     }
     document.addEventListener('DOMContentLoaded', () => {

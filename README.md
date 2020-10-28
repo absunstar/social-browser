@@ -60,4 +60,4 @@
 
 ### Download
 
-Download Now https://social-browser.com/downloads
+Download Now https://social-browser.com

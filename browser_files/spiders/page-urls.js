@@ -79,7 +79,7 @@ module.exports = function init(site, browser) {
                 experimentalFeatures: false,
                 webSecurity: false,
                 allowRunningInsecureContent: true,
-                plugins: false,
+                plugins: true,
             }
         })
 
@@ -91,7 +91,7 @@ module.exports = function init(site, browser) {
             e.request.allow();
         })
 
-        win.on('close', () => {
+        win.on('closed', () => {
             console.log('... URLS window closed ...')
         })
         win.once('ready-to-show', () => {

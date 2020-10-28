@@ -1,4 +1,4 @@
-module.exports = function (___) {
+module.exports = function (SOCIALBROWSER) {
     
    // console.log('facebook context menu loading ...')
 
@@ -19,11 +19,11 @@ module.exports = function (___) {
 
     addCss(`
             ._2s1x ._2s1y {
-            background-color: ${___.var.facebook.color};
+            background-color: ${SOCIALBROWSER.var.facebook.color};
             }
     `)
 
-    if (___.var.facebook.remove_ads) {
+    if (SOCIALBROWSER.var.facebook.remove_ads) {
         document.querySelectorAll('.pagelet , .pagelet-group.pagelet a[href*="/ad_"]').forEach(p => p.remove())
         setInterval(() => {
             document.querySelectorAll('.pagelet').forEach(p => p.remove())

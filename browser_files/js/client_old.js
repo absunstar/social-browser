@@ -193,18 +193,18 @@
     }
   }
 
-  ___.imagesDisplayed = true
-  ___.toggleImages = () => {
-    if (___.imagesDisplayed) {
+  SOCIALBROWSER.imagesDisplayed = true
+  SOCIALBROWSER.toggleImages = () => {
+    if (SOCIALBROWSER.imagesDisplayed) {
       ___("img").css("visibility", "hidden")
-      ___.imagesDisplayed = false
+      SOCIALBROWSER.imagesDisplayed = false
     } else {
       ___("img").css("visibility", "visible")
-      ___.imagesDisplayed = true
+      SOCIALBROWSER.imagesDisplayed = true
     }
   }
 
-  ___.removeAllIframes = ()=> {
+  SOCIALBROWSER.removeAllIframes = ()=> {
     document.querySelectorAll("iframe").forEach(iframe => {
       iframe.remove()
     })

@@ -1,20 +1,20 @@
-module.exports = function (___) {
+module.exports = function (SOCIALBROWSER) {
 
     if (!document.location.href.contains('youlikehits.com')) {
         return
     }
 
-    if (!___.var.blocking.social.allow_youlikehits) {
+    if (!SOCIALBROWSER.var.blocking.social.allow_youlikehits) {
         return
     }
 
     console.log('youlikehits Activated .....')
 
-    ___.var.blocking.block_empty_iframe = false
+    SOCIALBROWSER.var.blocking.block_empty_iframe = false
 
     if (document.location.href.contains('youtubenew2|soundcloud_views|youtubelikes')) {
 
-        ___.var.user_data_block = true
+        SOCIALBROWSER.var.user_data_block = true
 
         window.open = function (url, _name, _specs, _replace_in_history) {
 
@@ -43,12 +43,12 @@ module.exports = function (___) {
             if (url == "about:blank") {
                 return opener
             }
-            url = ___.handle_url(url)
+            url = SOCIALBROWSER.handle_url(url)
 
             console.log('youlikehits : ', url)
             alert('youlikehits : ' + url)
 
-            let win = new ___.electron.remote.BrowserWindow({
+            let win = new SOCIALBROWSER.electron.remote.BrowserWindow({
                 show: false,
                 alwaysOnTop: true,
                 width: _specs.width || 800,
@@ -57,20 +57,20 @@ module.exports = function (___) {
                 y: _specs.y || 200,
                 backgroundColor: '#ffffff',
                 frame: true,
-                icon: ___.path.join(___.files_dir, "images", "logo.ico"),
+                icon: SOCIALBROWSER.path.join(SOCIALBROWSER.files_dir, "images", "logo.ico"),
                 webPreferences: {
                     webaudio: false,
                     nativeWindowOpen: false,
                     nodeIntegration: false,
                     nodeIntegrationInWorker: false,
-                    session: ___.electron.remote.getCurrentWebContents().session,
+                    session: SOCIALBROWSER.electron.remote.getCurrentWebContents().session,
                     sandbox: false,
-                    preload: ___.files_dir + '/js/context-menu.js',
+                    preload: SOCIALBROWSER.files_dir + '/js/context-menu.js',
                     webSecurity: false,
                     guestInstanceId: 1,
-                    openerId: ___.electron.remote.getCurrentWebContents().id,
+                    openerId: SOCIALBROWSER.electron.remote.getCurrentWebContents().id,
                     allowRunningInsecureContent: true,
-                    plugins: false,
+                    plugins: true,
                 }
             })
 
@@ -206,7 +206,7 @@ module.exports = function (___) {
 
 
     if (document.location.href.contains('websites')) {
-        ___.var.user_data_block = true
+        SOCIALBROWSER.var.user_data_block = true
         setInterval(() => {
             document.querySelectorAll('iframe').forEach(f => {
                 if (f.id == "preview-frame") {
