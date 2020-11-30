@@ -100,7 +100,10 @@
               <a class="tab-link" id="safty_btn" onclick="site.showTabContent(event, '#safty_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
                 <i class="fa fa-lock"></i> Children Safty Mode
               </a>
-              <a class="tab-link" onclick="site.showTabContent(event, '#blocking_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-ban"></i> Privacy & Security </a>
+              <a class="tab-link" onclick="site.showTabContent(event, '#blocking_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-ban"></i> Options & Blocking </a>
+              <a class="tab-link" onclick="site.showTabContent(event, '#privacy_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-ban"></i> Privacy & scripts </a>
+             
+              
               <a class="tab-link" onclick="site.showTabContent(event, '#passwords_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-key"></i> Passwords </a>
 
               <a class="tab-link" onclick="site.showTabContent(event, '#youtube_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-youtube"></i> Youtube </a>
@@ -206,39 +209,15 @@
                   </fieldset>
 
                   <fieldset>
-                    <legend>Privacy</legend>
+                    <legend>Options</legend>
 
                     <br />
 
                     <i-checkbox class="row" label="Save User Data [ any text your write in any page]" ng-model="setting.blocking.privacy.save_user_data"></i-checkbox>
-                    <i-checkbox class="row" label="Set Window Alawys Active" ng-model="setting.blocking.privacy.set_window_active"></i-checkbox>
-                    <i-checkbox class="row" label="Block Media Devices [camera , mic , ...]" ng-model="setting.blocking.privacy.hide_media_devices"></i-checkbox>
-                    <br />
-                    <i-checkbox class="row" label="Hide CPU Count" ng-model="setting.blocking.privacy.hide_cpu"></i-checkbox>
-                    <i-checkbox class="row" label="Hide Memory Size" ng-model="setting.blocking.privacy.hide_memory"></i-checkbox>
-                    <i-checkbox class="row" label="Hide Screen Sizes" ng-model="setting.blocking.privacy.hide_screen"></i-checkbox>
-                    <i-checkbox class="row" label="Hide Touch Screen Information" ng-model="setting.blocking.privacy.hide_touch_screen"></i-checkbox>
-                    <i-checkbox class="row" label="Hide Graphic Card Details" ng-model="setting.blocking.privacy.hide_vega"></i-checkbox>
-                    <i-checkbox class="row" label="Hide Connection Information" ng-model="setting.blocking.privacy.hide_connection"></i-checkbox>
-                    <i-checkbox class="row" label="Hide Language Information" ng-model="setting.blocking.privacy.hide_lang"></i-checkbox>
-                    <i-checkbox class="row" label="Hide Plugins" ng-model="setting.blocking.privacy.hide_plugins"></i-checkbox>
-                    <i-checkbox class="row" label="Hide MimeTypes" ng-model="setting.blocking.privacy.hide_mimetypes"></i-checkbox>
-                    <i-checkbox class="row" label="hide browser permissions" ng-model="setting.blocking.privacy.hide_permissions"></i-checkbox>
-                    <i-checkbox class="row" label="hide Battery informations" ng-model="setting.blocking.privacy.hide_battery"></i-checkbox>
-                    <br />
-                    <i-checkbox class="row" label="Hide Google ID in other sites" ng-model="setting.blocking.privacy.hide_gid"></i-checkbox>
-                    <i-checkbox class="row" label="Block Cloud Flare Tracking" ng-model="setting.blocking.privacy.block_cloudflare"></i-checkbox>
                     <i-checkbox class="row" label="Send Don't Track Header" ng-model="setting.blocking.privacy.dnt"></i-checkbox>
                     <i-checkbox class="row" label="Show Bookmarks in Google Page" ng-model="setting.blocking.privacy.show_bookmarks"></i-checkbox>
                   </fieldset>
 
-                  <fieldset>
-                    <legend>Javascript</legend>
-
-                    <i-checkbox class="row" label="Block ( Eval functions)" ng-model="setting.blocking.javascript.block_eval"></i-checkbox>
-                    <i-checkbox class="row" label="Block ( Console functions)" ng-model="setting.blocking.javascript.block_console_output"> </i-checkbox>
-                    <i-checkbox class="row" label="Block ( window.open)" ng-model="setting.blocking.javascript.block_window_open"> </i-checkbox>
-                  </fieldset>
 
                   <fieldset>
                     <legend>Social Media</legend>
@@ -247,6 +226,49 @@
                     <i-checkbox class="row" label="Allow addmefast.com tools" ng-model="setting.blocking.social.allow_addmefast"></i-checkbox>
                     <i-checkbox class="row" label="Allow youlikehits.com tools" ng-model="setting.blocking.social.allow_youlikehits"></i-checkbox>
                   </fieldset>
+                </div>
+              </div>
+              <div id="privacy_tab" class="tab-content">
+                <div class="row">
+                  <fieldset>
+                    
+
+                  <fieldset>
+                    <legend>Finger Printing Protection [ Privacy ]</legend>
+
+                   
+                    <i-checkbox class="row" label="Set Window Alawys Active" ng-model="setting.blocking.privacy.set_window_active"></i-checkbox>
+                    <i-checkbox class="row" label="Block Media Devices [camera , mic , ...]" ng-model="setting.blocking.privacy.hide_media_devices"></i-checkbox>
+                    <br />
+                    <i-checkbox class="row" label="Hide Graphic Card Details" ng-model="setting.blocking.privacy.hide_vega"></i-checkbox>
+                    <i-checkbox class="row" label="Block RTC Connections" ng-model="setting.blocking.privacy.block_rtc"></i-checkbox>
+                    <i-checkbox class="row" label="Hide CPU Count" ng-model="setting.blocking.privacy.hide_cpu"></i-checkbox>
+                    <i-checkbox class="row" label="Hide Memory Size" ng-model="setting.blocking.privacy.hide_memory"></i-checkbox>
+                    <i-checkbox class="row" label="Hide Screen Sizes" ng-model="setting.blocking.privacy.hide_screen"></i-checkbox>
+                    <i-checkbox class="row" label="Hide Touch Screen Information" ng-model="setting.blocking.privacy.hide_touch_screen"></i-checkbox>
+                    <i-checkbox class="row" label="hide Battery informations" ng-model="setting.blocking.privacy.hide_battery"></i-checkbox>
+                    <i-checkbox class="row" label="Hide Connection Information" ng-model="setting.blocking.privacy.hide_connection"></i-checkbox>
+                    <i-checkbox class="row" label="Hide Language Information" ng-model="setting.blocking.privacy.hide_lang"></i-checkbox>
+                    <i-checkbox class="row" label="Hide Plugins" ng-model="setting.blocking.privacy.hide_plugins"></i-checkbox>
+                    <i-checkbox class="row" label="Hide MimeTypes" ng-model="setting.blocking.privacy.hide_mimetypes"></i-checkbox>
+                    <i-checkbox class="row" label="hide browser permissions" ng-model="setting.blocking.privacy.hide_permissions"></i-checkbox>
+
+                    <br />
+                    <i-checkbox class="row" label="Hide Google ID in other sites" ng-model="setting.blocking.privacy.hide_gid"></i-checkbox>
+                    <i-checkbox class="row" label="Block Cloud Flare Tracking" ng-model="setting.blocking.privacy.block_cloudflare"></i-checkbox>
+
+                  </fieldset>
+
+                  <fieldset>
+                    <legend>Javascript</legend>
+
+                    <i-checkbox class="row" label="Block ( Eval functions)" ng-model="setting.blocking.javascript.block_eval"></i-checkbox>
+                    <i-checkbox class="row" label="Block ( Console functions)" ng-model="setting.blocking.javascript.block_console_output"> </i-checkbox>
+                    <i-checkbox class="row" label="Block ( window.open)" ng-model="setting.blocking.javascript.block_window_open"> </i-checkbox>
+                    <i-checkbox class="row" label="Block ( window.postMessage)" ng-model="setting.blocking.javascript.block_window_post_message"> </i-checkbox>
+                  </fieldset>
+
+   
                 </div>
               </div>
               <div id="youtube_tab" class="tab-content">
@@ -386,7 +408,7 @@
                     <table class="table hover">
                       <tr>
                         <th>ID</th>
-                        <th>Name</th>
+                        <th>Name <input type="text" ng-model="session.display"></th>
                         <th>Actions</th>
                       </tr>
                       <tr ng-repeat="_se in setting.session_list | filter:session | orderBy : 'display' track by $index">
@@ -404,11 +426,11 @@
                 <table class="table hover">
                   <tr>
                     <th>Index</th>
-                    <th>Host <input ng-model="user_data_input_host" /></th>
-                    <th>User Name</th>
-                    <th>Password</th>
+                    <th>Host <input ng-model="site2.host" /></th>
+                    <th>User Name <input ng-model="site2.username" /></th>
+                    <th>Password <input ng-model="site2.password" /></th>
                   </tr>
-                  <tr ng-repeat="site in setting.user_data_input | filter : {host : user_data_input_host} | limitTo:500 track by $index">
+                  <tr ng-repeat="site in setting.user_data_input | filter : site2 | limitTo:500 track by $index">
                     <td>{{$index +1 }} <i-button type="remove" ng-click="remove_user_data_input(site)"></i-button></td>
                     <td>{{site.host}}</td>
                     <td>

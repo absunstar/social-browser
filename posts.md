@@ -13,3 +13,10 @@ Browser will block any sites contains danger content
 You can customize urls and words in easy way
 Download Now https://bit.ly/safty_browser
 
+------------------------------------------------------------------------
+
+أخيرا دلوقتى تتقدر تسجل دخول على الفيسبوك او اى موقع بأكثر من حساب فى نفس والوقت
+ده غير التحميل من كل المواقع بدون مشاهدة اى اعلانات
+ده غير اليوتيوب بدون اعلانات نهائيا
+متصفح أفضل من جوجل بكتير وبمميزات رهيبة
+حمل الان مجانا من الموقع الرسمى https://bit.ly/safty_browser

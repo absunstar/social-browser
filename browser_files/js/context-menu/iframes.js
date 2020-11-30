@@ -1,5 +1,10 @@
 module.exports = function (SOCIALBROWSER) {
 
+    if (document.location.href.like('*google*|*http://127.0.0.1*')) {
+        console.log(' [IFrame Blocking] OFF : ' + document.location.href);
+        return;
+      }
+
     if(document.location.href.like('*youtube.com*')){
         return
     }

@@ -1,5 +1,10 @@
 module.exports = function (SOCIALBROWSER) {
 
+    if (document.location.href.like('*google*|*http://127.0.0.1*')) {
+        console.log(' [DOM Blocking] OFF : ' + document.location.href);
+        return;
+      }
+
     function removeAdDoms() {
 
         let arr = SOCIALBROWSER.var.blocking.html_tags_selector_list

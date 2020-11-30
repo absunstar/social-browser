@@ -269,7 +269,7 @@ module.exports = function init_isite(browser) {
     let id = new Date().getTime()
 
     let print_options = {
-      silent: false,
+      silent: true,
       printBackground: false,
       printSelectionOnly: false,
       deviceName: null,
@@ -326,7 +326,33 @@ module.exports = function init_isite(browser) {
 
     browser.backAllViews()
 
-    browser.run([browser.dir + '/printing/index.js']);
+
+    // browser.run([browser.dir + '/printing/index.js']);
+    let w = browser.newWindow({
+      show: false,
+      title: 'Print Viewer',
+      icon: browser.dir + '/browser_files/images/logo.ico',
+      width: 850,
+      height: 720,
+      alwaysOnTop: false,
+      webPreferences: {
+        preload: browser.dir + '/printing/preload.js',
+        javascript: true,
+        enableRemoteModule: true,
+        contextIsolation: false,
+        nativeWindowOpen: false,
+        nodeIntegration: false,
+        nodeIntegrationInSubFrames: false,
+        nodeIntegrationInWorker: false,
+        experimentalFeatures: true,
+        webSecurity: false,
+        allowRunningInsecureContent: true,
+        plugins: true,
+      },
+    });
+
+    w.setMenuBarVisibility(false);
+    w.loadURL('http://127.0.0.1:60080/data-content/last');
 
     res.json({
       done: true
@@ -382,7 +408,7 @@ module.exports = function init_isite(browser) {
 
   site.post('/data-content/details', (req, res) => {
 
-    let content = browser.content_list[browser.content_list.length - 1]
+    let content = browser.content_list[browser.content_list.length - 1] || {}
     res.json({
       options: content.options
     })

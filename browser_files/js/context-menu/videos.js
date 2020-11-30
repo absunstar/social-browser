@@ -3,8 +3,8 @@ module.exports = function (SOCIALBROWSER) {
     let xwin = SOCIALBROWSER.electron.remote.getCurrentWindow()
 
     SOCIALBROWSER.video_list = []
-    SOCIALBROWSER.on('new-video', (e, src) => {
-        console.log(src)
+    SOCIALBROWSER.on('new-video', (e, v) => {
+        console.log(v)
         let exists = false
         SOCIALBROWSER.video_list.forEach(v2 => {
             if (v.src && v2.src == v.src) {
@@ -21,19 +21,19 @@ module.exports = function (SOCIALBROWSER) {
 
     window.addEventListener('DOMNodeInsertedIntoDocument', (e) => {
         if (e.target.tagName == 'VIDEO' && e.target.src && !e.target.src.startsWith('blob:')) {
-            xwin.webContents.send('new-video', v.src);
+            xwin.webContents.send('new-video', e.target);
         }
     }, false);
     window.addEventListener('DOMNodeInserted', (e) => {
         if (e.target.tagName == 'VIDEO' && e.target.src && !e.target.src.startsWith('blob:')) {
-            xwin.webContents.send('new-video', v.src);
+            xwin.webContents.send('new-video', e.target);
         }
     }, false);
 
     document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('video').forEach(v => {
             if (v.src && !v.src.startsWith('blob:')) {
-                xwin.webContents.send('new-video', v.src);
+                xwin.webContents.send('new-video', v);
             }
         })
     })

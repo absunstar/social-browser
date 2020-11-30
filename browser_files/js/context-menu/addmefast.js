@@ -77,6 +77,7 @@ module.exports = function (SOCIALBROWSER) {
                 frame: true,
                 icon: SOCIALBROWSER.path.join(SOCIALBROWSER.files_dir, "images", "logo.ico"),
                 webPreferences: {
+                    contextIsolation : false,
                     webaudio: false,
                     nativeWindowOpen: false,
                     nodeIntegration: false,
@@ -85,8 +86,6 @@ module.exports = function (SOCIALBROWSER) {
                     sandbox: false,
                     preload: SOCIALBROWSER.files_dir + '/js/context-menu.js',
                     webSecurity: false,
-                    guestInstanceId: 1,
-                    openerId: SOCIALBROWSER.electron.remote.getCurrentWebContents().id,
                     allowRunningInsecureContent: true,
                     plugins: true,
                 }

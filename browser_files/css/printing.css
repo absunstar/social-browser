@@ -11,8 +11,8 @@ body,
 html {
   background: #ffffff;
   font-size: 10pt;
-  width: 80mm;
-  font-family: "monospace", monospace;
+  min-width: 80mm;
+  font-family: 'monospace', monospace;
 }
 
 p.invoice-top-title {
@@ -35,6 +35,49 @@ div.invoice-code .name {
 div.invoice-code .value {
   display: inline-block;
   font-weight: bold;
+}
+
+div.text2 {
+  text-align: left;
+  font-size: 10pt;
+  margin: 5px;
+}
+div.text2 .value {
+  width: 20mm;
+  display: inline-block;
+}
+div.text2 .value2 {
+  display: inline-block;
+  font-weight: normal;
+}
+
+div.text2b {
+  text-align: left;
+  font-size: 10pt;
+  margin: 5px;
+}
+div.text2b .value {
+  width: 20mm;
+  display: inline-block;
+}
+div.text2b .value2 {
+  display: inline-block;
+  font-weight: bold;
+}
+
+div.invoice-total {
+  text-align: left;
+  font-size: 12pt;
+  margin: 5px;
+}
+div.invoice-total .name {
+  width: 20mm;
+  display: inline-block;
+}
+div.invoice-total .value {
+  display: inline-block;
+  font-weight: bold;
+  font-size: 16pt;
 }
 
 div.invoice-date {

@@ -79,13 +79,12 @@ module.exports = function init(site, browser) {
                 experimentalFeatures: false,
                 webSecurity: false,
                 allowRunningInsecureContent: true,
-                plugins: true,
+                plugins: false,
             }
         })
 
         search_list[search_list.length - 1].win_id = win.id
         win.webContents.audioMuted = true
-        win.loadURL(op.url)
 
         win.webContents.on('permissionrequest', function (e) {
             e.request.allow();
@@ -95,8 +94,12 @@ module.exports = function init(site, browser) {
             console.log('... URLS window closed ...')
         })
         win.once('ready-to-show', () => {
-             win.showInactive()
+           // win.showInactive()
         })
+
+        win.loadURL(op.url)
+
+
 
     }
 

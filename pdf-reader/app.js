@@ -43,7 +43,7 @@ module.exports = function init_isite(browser) {
                 preload: null,
                 enableRemoteModule: true,
                 plugins: true,
-                allowRunningInsecureContent: false,
+                allowRunningInsecureContent: true,
                 nodeIntegration: true,
                 nodeIntegrationInSubFrames: true,
                 nodeIntegrationInWorker: false,

@@ -49,7 +49,7 @@ app.on("ready", function () {
     win.setMenuBarVisibility(false)
     win.loadURL('http://127.0.0.1:60080/data-content/last')
 
-    win.on('close', () => {
+    win.on('closed', () => {
         process.exit()
     })
 

@@ -35,8 +35,6 @@ if (!gotTheLock) {
   let f = process.argv[process.argv.length - 1]; // LAST arg is file to run
   if (f.endsWith('.js')) {
     require(f);
-  } else if (f.endsWith('.pdf')) {
-    require('./pdf-reader/index.js');
   } else {
     app.quit();
   }
@@ -48,6 +46,9 @@ if (app.setUserTasks) {
   app.setUserTasks([]);
 }
 Menu.setApplicationMenu(null);
+
+app.setAppUserModelId(process.execPath);
+app.clearRecentDocuments()
 // app.disableHardwareAcceleration();
 // app.allowRendererProcessReuse = false; //deprecated
 // app.commandLine.appendSwitch('disable-site-isolation-trials')
@@ -80,6 +81,7 @@ if (browser.request_url && !browser.request_url.like('http*') && !browser.reques
 }
 
 app.on('ready', function () {
+  app.setAccessibilitySupportEnabled(true)
   let logo = new BrowserWindow({
     show: true,
     width: 300,
@@ -89,6 +91,9 @@ app.on('ready', function () {
     backgroundColor: '#2196F3',
     skipTaskbar: true,
     alwaysOnTop: true,
+    webPreferences: {
+      contextIsolation: false,
+    },
   });
   logo.setMenuBarVisibility(false);
   logo.loadURL(__dirname + '/browser_files/html/logo.html');
@@ -108,7 +113,7 @@ app.on('ready', function () {
       browser.newSOCIALBROWSER((w) => {
         browser.mainWindow = w;
 
-        w.on('close', function () {
+        w.on('closed', function () {
           w = null;
         });
 
@@ -397,7 +402,7 @@ app.on('second-instance', (event, commandLine, workingDirectory) => {
     u = browser.var.core.home_page;
   }
 
-  if (u.like('*.js') || u.like('*.pdf')) {
+  if (u.like('*.js')) {
     return;
   }
 

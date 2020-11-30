@@ -1,1 +1,266 @@
-{"allow_safty_mode":true,"block_ads":true,"block_empty_iframe":true,"remove_external_iframe":false,"block_html_tags":true,"html_tags_selector_list":[{"url":"*","ex_url":"","select":"[class='ad'],[class$='-ad'] ,[class*='_ad_'],[class=\"e3lanblock\"],#ofc9 ,.zPlayerRight,.zAfterPagination , .spot ,iframe[sandbox=\"allow-same-origin allow-scripts allow-popups\"]","remove":true,"hide":false,"empty":false,"$$hashKey":"object:5544"},{"url":"*","select":".exo_wrapper,#hd-rightColVideoPage .clearfix:first-child,.player-overlay,#sidebar,#k749,#player-ads,ytd-promoted-sparkles-web-renderer,.video-advert,#player-pop-layer","remove":true,"$$hashKey":"object:5545"}],"ad_list":[{"url":"*doubleclick.net*|*googleads.*|*pubads.*|*pagead2.*|*/pagead/*|*securepubads.*|*adsbygoogle.js|*analytics.js|*googlesyndication.com*|*googletagmanager.com*|*traffer.net*","$$hashKey":"object:5460"},{"url":"*adservice*|*adserver*|*google-analytics.com*|*advertisements.js*|*generate_204*|*crwdcntrl.net*|*whos.amung.us*|*riverhit.com*|*hadsecs.com*|*rukoval.com*","$$hashKey":"object:5461"},{"url":"*/ad/*|*_ads.js|*/ads/*|http://ads.*|https://ads.*|*ad_companion*|*/banners/*|*popads.net*|*-ad.net/*|*-ads.js*|*-ad.js*","$$hashKey":"object:5462"},{"url":"*mgid.com*|*yandex*watch.js|*advertisement.js|*pvclouds.com*.js|*js.foxpush.com*|*effectivemeasure.com*","$$hashKey":"object:5463"},{"url":"*addthis.com*|*adskeeper.co*|*brightonclick.com*|*gigaonclick.com*|*padsdel.com*|*cdn4ads*|/ad.js|*bestcontentproject.top*|*popsoffer.com*|*ppfrlfe.com*","$$hashKey":"object:5464"},{"url":"*adglare.net*|*clickaine.com*|*exosrv.com*|*clcknads.pro*|*contentabc.com*|*omapetor.xyz*|*n214adserv.com*|*adsco.re*","$$hashKey":"object:5465"},{"url":"*tsyndicate.com*|*adspyglass.com*|*realsrv.com*|*exoclick.com*|*hunt4k.com*|*amzcdn.info*|*poweredby.jads.co*|*bngpt.com*","$$hashKey":"object:5466"},{"url":"*inpagepush.com*|*inabsolor.com*|*viatepigan.com*|*dasimporary.club*|*graizoah.com*|*louchees.net*|*juicyads.com*|*tidint.pro*|*popcash.net*","$$hashKey":"object:5467"},{"url":"*abeforeign.club*|*matchintsv.club*|*l2wisd9g5d9u.com*|*providentsopport.site*|*aionfavoura.club*","$$hashKey":"object:5468"},{"url":"*https://www.google.com/js/bg*.js|*tour.eplay.com*|*adtng.com*|*jwpltx.com*","$$hashKey":"object:5469"},{"url":"*adblockchecker.js|*cdn.onesignal.com*|*traffichaus.com*|*notify.solutions*|*newrelic.com*|*eyefuneve.com*","$$hashKey":"object:5470"},{"url":"*cdn.engine.phn.doublepimp.com*|*services.disqus.com*|*storeacdn.com*|*histats.com*|*raupsica.net*","$$hashKey":"object:5471"},{"url":"*ueuodgnrhb.com*|*visariomedia.com*|*qfjherc.com*|*2cnjuh34jbpoint.com*|*d13k7prax1yi04.cloudfront.net*|*d38itq6vdv6gr9.cloudfront.net*|*d36zfztxfflmqo.cloudfront.net*","$$hashKey":"object:5473"},{"url":"*asewlfjqwlflkew.com*|*dlfvgndsdfsn.com*|*easy2cnjuh34jb.com*|*s0.2mdn.net*|*empflix.com*mew.js|*cdn.ftd.agency*","$$hashKey":"object:5474"}],"un_safe_list":[{"url":"*taxi69.com*|*beeg.com*|*hotmovs.com*|*milf*|*viptube.com*","$$hashKey":"object:5560"},{"url":"*xhamster*|*neswangy*|*xvideos*|*arbada.com*|*arabnek.com*|*arabxn.com*|*deviants.com*","$$hashKey":"object:5561"},{"url":"*lust*|*xvids*|*brazzers*|*lesbain*|*fuck*|*xnxx*|*xxx*|*sex*|*porn*|*adult*|*gangbang*|*incest*","$$hashKey":"object:5562"},{"url":"*سكس*|*جنس*","$$hashKey":"object:5563"},{"url":"*xcum.com*|*tnaflix.com*|*apetube.com*|*drtuber.com*|*xxsosalkino.ooo*","$$hashKey":"object:5564"},{"url":"*stileproject.com*|*nuvid.com*|*analdin.com*|*keezmovies.com*|*javfinder*","$$hashKey":"object:5565"},{"url":"*megatube.xxx*|*hclips.com*|*vjav.com*|*fuq.com*|*theync.com*","$$hashKey":"object:5566"},{"url":"*tube8.com*|*cliphunter.com*|*spankbang.com*|*bangbros.com*","$$hashKey":"object:5567"},{"url":"*thumbzilla.com*|*spankwire.com*|*xtube.com*|*redtube.com*","$$hashKey":"object:5568"},{"url":"*adam4adam.com*|*nifty.org*|*gayboystube.com*|*bongacams.com*|*bigstr.com*|*squirt.org*|*manhunt.net*|*kaotic.com*","$$hashKey":"object:5569"},{"url":"*imagefap.com*|*pichunter.com*|*clips4sale.com*|*voyeurweb.com*","$$hashKey":"object:5570"},{"url":"*streamate.com*|*jerkncum.com*|*flirt4free.com*|*pot-8.com*|*stripchat.com*|*livejasmin.com*","$$hashKey":"object:5571"},{"url":"*arabic18.com*|*pbwstatic.com*|*Tubegalore.com*|*GaymaleTube.com *","$$hashKey":"object:5572"},{"url":"*youjizz.com*|*xbabe.com*|*wankoz.com*|*slutload.com*","$$hashKey":"object:5573"},{"url":"*cdnbm.net*|*bravotube.net*|*dansmovies.com*|*pervclips.com*|*freudbox.com*","$$hashKey":"object:5574"},{"url":"*eroxia.com*|*fux.com*|*camsoda.com*|*definebabe.com*|*orgasm.com*|*freevidstream.com*","$$hashKey":"object:5575"},{"url":"*deviantclip.com*|*extremetube.com*|*tjoob.com*|*spankcdn.net*|*drtst.com*","$$hashKey":"object:5576"},{"url":"*taxi69.com*|*beeg.com*|*hotmovs.com*|*milf*","$$hashKey":"object:5560"}],"un_safe_words_list":[{"text":"sex|سكس|جنس|porn|erotic|lesbain|fuck|brazzers|milf|orgasm","$$hashKey":"object:5628"}],"popup":{"allow_external":false,"allow_internal":true,"white_list":[{"url":"*facebook.com*","$$hashKey":"object:5520"},{"url":"*google.com*","$$hashKey":"object:5521"},{"url":"*youtube.com*","$$hashKey":"object:5522"},{"url":"*microsoft.com*","$$hashKey":"object:5523"},{"url":"*linkedin.com*","$$hashKey":"object:5524"},{"url":"*127.0.0.1*","$$hashKey":"object:5525"}]},"youtube":{"skip_ads":true,"allow_safty_mode":true,"safty_mode":{"selector_list":["[href='http://www.youtube.com/t/community_guidelines']","[href='https://support.google.com/youtube/?p=age_restrictions&hl=en]"],"words_list":[{"text":"brazzers|porn|sex|fuck|lesbian|erotic|orgasm","$$hashKey":"object:5632"},{"text":"hot|love|dance|harem|kiss","$$hashKey":"object:5633"},{"text":"xxx|18\\+|\\+18","$$hashKey":"object:5634"},{"text":"سكس| نيك|رقص|جنس|للكبار|ممنوع|سحاق|سافل|اغراء","$$hashKey":"object:5635"},{"text":"ايتشى|ايتش|echii|[\\s]حب[\\s]","$$hashKey":"object:5636"},{"text":"هنتاى|هنتاي|hentia|hentai","$$hashKey":"object:5637"},{"text":"Romance|رومانسى|رومانسي|رومنسى|رومنسي","$$hashKey":"object:5638"}]}},"privacy":{"hide_cpu":true,"hide_memory":true,"hide_screen":true,"hide_touch_screen":true,"hide_vega":true,"hide_connection":true,"hide_lang":true,"hide_plugins":true,"hide_mimetypes":true,"hide_media_devices":true,"hide_permissions":true,"hide_battery":true,"window_active":true,"hide_ga":true,"set_window_active":true,"dnt":true,"show_bookmarks":true,"hide_gid":true,"save_user_data":true},"javascript":{"block_console_output":false,"block_window_open":true,"block_eval":false},"skip_ads":true,"social":{"allow_10khits":false,"allow_addmefast":false,"allow_youlikehits":false},"skip_video_ads":true}
+{
+    "allow_safty_mode": true,
+    "block_ads": true,
+    "block_empty_iframe": true,
+    "remove_external_iframe": false,
+    "block_html_tags": true,
+    "html_tags_selector_list": [
+        {
+            "url": "*",
+            "ex_url": "",
+            "select": "[class='ad'],[class$='-ad'] ,[class*='_ad_'],[class=\"e3lanblock\"],#ofc9 ,.zPlayerRight,.zAfterPagination , .spot ,iframe[sandbox=\"allow-same-origin allow-scripts allow-popups\"]",
+            "remove": true,
+            "hide": false,
+            "empty": false,
+            "$$hashKey": "object:5544"
+        },
+        {
+            "url": "*",
+            "select": ".exo_wrapper,#hd-rightColVideoPage .clearfix:first-child,.player-overlay,#sidebar,#k749,#player-ads,ytd-promoted-sparkles-web-renderer,.video-advert,#player-pop-layer",
+            "remove": true,
+            "$$hashKey": "object:5545"
+        }
+    ],
+    "ad_list": [
+        {
+            "url": "*doubleclick.net*|*googleads.*|*pubads.*|*pagead2.*|*/pagead/*|*securepubads.*|*adsbygoogle.js|*analytics.js|*googlesyndication.com*|*googletagmanager.com*|*traffer.net*|*analytics.twitter.com*",
+            "$$hashKey": "object:5460"
+        },
+        {
+            "url": "*adservice*|*adserver*|*google-analytics.com*|*advertisements.js*|*generate_204*|*crwdcntrl.net*|*whos.amung.us*|*riverhit.com*|*hadsecs.com*|*rukoval.com*",
+            "$$hashKey": "object:5461"
+        },
+        {
+            "url": "*/ad/*|*_ads.js|*/ads/*|http://ads.*|https://ads.*|*ad_companion*|*/banners/*|*popads.net*|*-ad.net/*|*-ads.js*|*-ad.js*",
+            "$$hashKey": "object:5462"
+        },
+        {
+            "url": "*mgid.com*|*yandex*watch.js|*advertisement.js|*pvclouds.com*.js|*js.foxpush.com*|*effectivemeasure.com*|*fdrgtt9edmej010.com*|*flagros2sii8fdbrh09.com*|*podsolnu9hi10.com*",
+            "$$hashKey": "object:5463"
+        },
+        {
+            "url": "*addthis.com*|*adskeeper.co*|*brightonclick.com*|*gigaonclick.com*|*padsdel.com*|*cdn4ads*|/ad.js|*bestcontentproject.top*|*popsoffer.com*|*ppfrlfe.com*|*awmserve.com*|*labeldollars.com*",
+            "$$hashKey": "object:5464"
+        },
+        {
+            "url": "*adglare.net*|*clickaine.com*|*exosrv.com*|*clcknads.pro*|*contentabc.com*|*omapetor.xyz*|*n214adserv.com*|*adsco.re*|*negyuk.com*|*gnorityari.club*",
+            "$$hashKey": "object:5465"
+        },
+        {
+            "url": "*tsyndicate.com*|*adspyglass.com*|*realsrv.com*|*exoclick.com*|*hunt4k.com*|*amzcdn.info*|*poweredby.jads.co*|*bngpt.com*",
+            "$$hashKey": "object:5466"
+        },
+        {
+            "url": "*inpagepush.com*|*inabsolor.com*|*viatepigan.com*|*dasimporary.club*|*graizoah.com*|*louchees.net*|*juicyads.com*|*tidint.pro*|*popcash.net*",
+            "$$hashKey": "object:5467"
+        },
+        {
+            "url": "*abeforeign.club*|*matchintsv.club*|*l2wisd9g5d9u.com*|*providentsopport.site*|*aionfavoura.club*",
+            "$$hashKey": "object:5468"
+        },
+        {
+            "url": "*https://www.google.com/js/bg*.js|*tour.eplay.com*|*adtng.com*|*jwpltx.com*",
+            "$$hashKey": "object:5469"
+        },
+        {
+            "url": "*adblockchecker.js|*cdn.onesignal.com*|*traffichaus.com*|*notify.solutions*|*newrelic.com*|*eyefuneve.com*",
+            "$$hashKey": "object:5470"
+        },
+        {
+            "url": "*cdn.engine.phn.doublepimp.com*|*services.disqus.com*|*storeacdn.com*|*histats.com*|*raupsica.net*",
+            "$$hashKey": "object:5471"
+        },
+        {
+            "url": "*ueuodgnrhb.com*|*visariomedia.com*|*qfjherc.com*|*2cnjuh34jbpoint.com*|*d13k7prax1yi04.cloudfront.net*|*d38itq6vdv6gr9.cloudfront.net*|*d36zfztxfflmqo.cloudfront.net*",
+            "$$hashKey": "object:5473"
+        },
+        {
+            "url": "*asewlfjqwlflkew.com*|*dlfvgndsdfsn.com*|*easy2cnjuh34jb.com*|*s0.2mdn.net*|*empflix.com*mew.js|*cdn.ftd.agency*",
+            "$$hashKey": "object:5474"
+        }
+    ],
+    "un_safe_list": [
+        {
+            "url": "*taxi69.com*|*beeg.com*|*hotmovs.com*|*milf*|*viptube.com*",
+            "$$hashKey": "object:5560"
+        },
+        {
+            "url": "*xhamster*|*neswangy*|*xvideos*|*arbada.com*|*arabnek.com*|*arabxn.com*|*deviants.com*",
+            "$$hashKey": "object:5561"
+        },
+        {
+            "url": "*lust*|*xvids*|*brazzers*|*lesbain*|*fuck*|*xnxx*|*xxx*|*sex*|*porn*|*adult*|*gangbang*|*incest*",
+            "$$hashKey": "object:5562"
+        },
+        {
+            "url": "*سكس*|*جنس*",
+            "$$hashKey": "object:5563"
+        },
+        {
+            "url": "*xcum.com*|*tnaflix.com*|*apetube.com*|*drtuber.com*|*xxsosalkino.ooo*",
+            "$$hashKey": "object:5564"
+        },
+        {
+            "url": "*stileproject.com*|*nuvid.com*|*analdin.com*|*keezmovies.com*|*javfinder*",
+            "$$hashKey": "object:5565"
+        },
+        {
+            "url": "*megatube.xxx*|*hclips.com*|*vjav.com*|*fuq.com*|*theync.com*",
+            "$$hashKey": "object:5566"
+        },
+        {
+            "url": "*tube8.com*|*cliphunter.com*|*spankbang.com*|*bangbros.com*",
+            "$$hashKey": "object:5567"
+        },
+        {
+            "url": "*thumbzilla.com*|*spankwire.com*|*xtube.com*|*redtube.com*",
+            "$$hashKey": "object:5568"
+        },
+        {
+            "url": "*adam4adam.com*|*nifty.org*|*gayboystube.com*|*bongacams.com*|*bigstr.com*|*squirt.org*|*manhunt.net*|*kaotic.com*",
+            "$$hashKey": "object:5569"
+        },
+        {
+            "url": "*imagefap.com*|*pichunter.com*|*clips4sale.com*|*voyeurweb.com*",
+            "$$hashKey": "object:5570"
+        },
+        {
+            "url": "*streamate.com*|*jerkncum.com*|*flirt4free.com*|*pot-8.com*|*stripchat.com*|*livejasmin.com*",
+            "$$hashKey": "object:5571"
+        },
+        {
+            "url": "*arabic18.com*|*pbwstatic.com*|*Tubegalore.com*|*GaymaleTube.com *",
+            "$$hashKey": "object:5572"
+        },
+        {
+            "url": "*youjizz.com*|*xbabe.com*|*wankoz.com*|*slutload.com*",
+            "$$hashKey": "object:5573"
+        },
+        {
+            "url": "*cdnbm.net*|*bravotube.net*|*dansmovies.com*|*pervclips.com*|*freudbox.com*",
+            "$$hashKey": "object:5574"
+        },
+        {
+            "url": "*eroxia.com*|*fux.com*|*camsoda.com*|*definebabe.com*|*orgasm.com*|*freevidstream.com*",
+            "$$hashKey": "object:5575"
+        },
+        {
+            "url": "*deviantclip.com*|*extremetube.com*|*tjoob.com*|*spankcdn.net*|*drtst.com*",
+            "$$hashKey": "object:5576"
+        },
+        {
+            "url": "*taxi69.com*|*beeg.com*|*hotmovs.com*|*milf*",
+            "$$hashKey": "object:5560"
+        }
+    ],
+    "un_safe_words_list": [
+        {
+            "text": "sex|سكس|جنس|porn|erotic|lesbain|fuck|brazzers|milf|orgasm",
+            "$$hashKey": "object:5628"
+        }
+    ],
+    "popup": {
+        "allow_external": false,
+        "allow_internal": true,
+        "white_list": [
+            {
+                "url": "*facebook.com*",
+                "$$hashKey": "object:5520"
+            },
+            {
+                "url": "*google.com*",
+                "$$hashKey": "object:5521"
+            },
+            {
+                "url": "*youtube.com*",
+                "$$hashKey": "object:5522"
+            },
+            {
+                "url": "*microsoft.com*",
+                "$$hashKey": "object:5523"
+            },
+            {
+                "url": "*linkedin.com*",
+                "$$hashKey": "object:5524"
+            },
+            {
+                "url": "*127.0.0.1*",
+                "$$hashKey": "object:5525"
+            }
+        ]
+    },
+    "youtube": {
+        "skip_ads": true,
+        "allow_safty_mode": true,
+        "safty_mode": {
+            "selector_list": [
+                "[href='http://www.youtube.com/t/community_guidelines']",
+                "[href='https://support.google.com/youtube/?p=age_restrictions&hl=en]"
+            ],
+            "words_list": [
+                {
+                    "text": "brazzers|porn|sex|fuck|lesbian|erotic|orgasm",
+                    "$$hashKey": "object:5632"
+                },
+                {
+                    "text": "hot|love|dance|harem|kiss",
+                    "$$hashKey": "object:5633"
+                },
+                {
+                    "text": "xxx|18\\+|\\+18",
+                    "$$hashKey": "object:5634"
+                },
+                {
+                    "text": "سكس| نيك|رقص|جنس|للكبار|ممنوع|سحاق|سافل|اغراء",
+                    "$$hashKey": "object:5635"
+                },
+                {
+                    "text": "ايتشى|ايتش|echii|[\\s]حب[\\s]",
+                    "$$hashKey": "object:5636"
+                },
+                {
+                    "text": "هنتاى|هنتاي|hentia|hentai",
+                    "$$hashKey": "object:5637"
+                },
+                {
+                    "text": "Romance|رومانسى|رومانسي|رومنسى|رومنسي",
+                    "$$hashKey": "object:5638"
+                }
+            ]
+        }
+    },
+    "privacy": {
+        "hide_cpu": true,
+        "hide_memory": true,
+        "hide_screen": true,
+        "hide_touch_screen": true,
+        "hide_vega": true,
+        "hide_connection": true,
+        "hide_lang": true,
+        "hide_plugins": true,
+        "hide_mimetypes": true,
+        "hide_media_devices": true,
+        "hide_permissions": true,
+        "hide_battery": true,
+        "window_active": true,
+        "hide_ga": true,
+        "set_window_active": true,
+        "dnt": true,
+        "show_bookmarks": true,
+        "hide_gid": true,
+        "save_user_data": true,
+        "block_cloudflare": true
+    },
+    "javascript": {
+        "block_console_output": false,
+        "block_window_open": true,
+        "block_eval": false
+    },
+    "skip_ads": true,
+    "social": {
+        "allow_10khits": false,
+        "allow_addmefast": false,
+        "allow_youlikehits": false
+    },
+    "skip_video_ads": true
+}

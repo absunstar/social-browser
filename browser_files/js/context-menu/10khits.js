@@ -23,7 +23,8 @@ module.exports = function (SOCIALBROWSER) {
                 show: false,
                 width: 800,
                 height: 300,
-                webPreferences: {                   
+                webPreferences: {        
+                    contextIsolation : false,           
                     enableRemoteModule: true,
                     partition: SOCIALBROWSER.electron.remote.getCurrentWindow().webContents.session.name,
                     webaudio: false,

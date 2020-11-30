@@ -45,7 +45,7 @@ app.on("ready", function () {
     // win.setMenuBarVisibility(false)
     win.loadURL(dir + '/updates/index.html')
 
-    win.on('close', () => {
+    win.on('closed', () => {
         process.exit()
     })
 

@@ -30,13 +30,14 @@ app.on('ready', () => {
         icon: icons[process.platform],
         alwaysOnTop: true,
         webPreferences: {
+            contextIsolation : false,
             preload: null,
             enableRemoteModule: true,
             plugins: true,
-            allowRunningInsecureContent: false,
+            allowRunningInsecureContent: true,
             nodeIntegration: true,
             nodeIntegrationInSubFrames: true,
-            nodeIntegrationInWorker: false,
+            nodeIntegrationInWorker: true,
             experimentalFeatures: false,
         },
         frame: false

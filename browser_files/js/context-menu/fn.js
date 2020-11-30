@@ -56,6 +56,7 @@ module.exports = function (SOCIALBROWSER) {
     };
   }
 
+  window.console.clear = function () {};
   if (SOCIALBROWSER.var.blocking.javascript.block_console_output) {
     window.console.log = function () {};
     window.console.error = function () {};
@@ -143,13 +144,22 @@ module.exports = function (SOCIALBROWSER) {
       });
   };
 
-  let setInterval0 = window.setInterval;
-  window.setInterval = function (fn, time) {
-    return setInterval0(fn, time);
+  window.setInterval0 = window.setInterval;
+  window.setInterval = function (...args) {
+    return window.setInterval0(...args);
   };
-  let setTimeout0 = window.setTimeout;
-  window.setTimeout = function (fn, time) {
-    return setTimeout0(fn, time);
+  window.setTimeout0 = window.setTimeout;
+  window.setTimeout = function (...args) {
+    return window.setTimeout0(...args);
+  };
+
+  window.postMessage0 = window.postMessage;
+  window.postMessage = function (...args) {
+   // console.log(' [ Post Message ] ',...args)
+    if (SOCIALBROWSER.var.blocking.javascript.block_window_post_message) {
+      console.warn('Block Post Message ',...args)
+    }
+    return window.postMessage0(...args);
   };
 
   window.print0 = window.print;
@@ -467,15 +477,15 @@ module.exports = function (SOCIALBROWSER) {
       backgroundColor: '#ffffff',
       frame: true,
       icon: SOCIALBROWSER.path.join(SOCIALBROWSER.files_dir, 'images', 'logo.ico'),
+      parent : SOCIALBROWSER.electron.remote.getCurrentWebContents(),
       webPreferences: {
+        contextIsolation: false,
         session: SOCIALBROWSER.electron.remote.getCurrentWebContents().session,
         sandbox: false,
         preload: SOCIALBROWSER.files_dir + '/js/context-menu.js',
         nativeWindowOpen: false,
-        webSecurity: false,
-        guestInstanceId: 1,
-        openerId: SOCIALBROWSER.electron.remote.getCurrentWebContents().id,
-        allowRunningInsecureContent: true,
+        webSecurity: true,
+        allowRunningInsecureContent: false,
         plugins: true,
       },
     });
@@ -485,8 +495,8 @@ module.exports = function (SOCIALBROWSER) {
       referrer: document.location.href,
     });
 
-    opener.postMessage = function (message, targetOrigin) {
-      return win.webContents.postMessage(message, targetOrigin);
+    opener.postMessage = function (...args) {
+      return win.webContents.postMessage(...args);
     };
     win.webContents.once('dom-ready', () => {
       opener.eval = function (code, userGesture = true) {

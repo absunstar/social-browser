@@ -1,8 +1,26 @@
 module.exports = function (SOCIALBROWSER) {
   // change readonly properties
-  if (document.location.href.contains('http://127.0.0.1')) {
+  // https://hidester.com/browser-fingerprint/
+
+  if (document.location.href.like('*google*|*http://127.0.0.1*')) {
+    console.log(' [Finger Printing] OFF : ' + document.location.href);
     return;
   }
+  // let end = false;
+  // SOCIALBROWSER.var.white_list.forEach((site) => {
+  //   if (site.url.length > 2 && document.location.href.like(site.url)) {
+  //     end = true;
+  //   }
+  // });
+  // if (end) {
+  //   console.log('finger printing protection not working in this white list sites  ' + document.location.href);
+  //   return;
+  // }
+
+  window.mozRTCPeerConnection = window.webkitRTCPeerConnection;
+
+  SOCIALBROWSER.__define(navigator, 'vendor', '');
+  SOCIALBROWSER.__define(navigator, 'oscpu', 'Windows NT 10.0; Win64; x64');
 
   if (SOCIALBROWSER.var.blocking.privacy.set_window_active) {
     // make window active for ever
@@ -14,6 +32,15 @@ module.exports = function (SOCIALBROWSER) {
       window.addEventListener0(type, listener, options);
     };
     document.hasFocus = () => true;
+  }
+
+  if (SOCIALBROWSER.var.blocking.privacy.block_rtc) {
+    window.mozRTCPeerConnection = null;
+    window.webkitRTCPeerConnection = null;
+    window.RTCPeerConnection = null;
+  }
+  if (SOCIALBROWSER.var.blocking.privacy.hide_media_devices) {
+    SOCIALBROWSER.__define(navigator, 'mediaDevices', null);
   }
 
   if (SOCIALBROWSER.var.blocking.privacy.hide_touch_screen) {
@@ -55,6 +82,7 @@ module.exports = function (SOCIALBROWSER) {
       '1280x768',
       '800x600',
     ][SOCIALBROWSER.__numberRange(0, 14)].split('x');
+    SOCIALBROWSER.__define(window, 'devicePixelRatio', 1);
     SOCIALBROWSER.__define(screen, 'width', scrren_size[0]);
     SOCIALBROWSER.__define(screen, 'height', scrren_size[1]);
     SOCIALBROWSER.__define(screen, 'availWidth', scrren_size[0]);
@@ -69,9 +97,7 @@ module.exports = function (SOCIALBROWSER) {
   if (SOCIALBROWSER.var.blocking.privacy.hide_connection) {
     SOCIALBROWSER.__define(navigator, 'connection', null);
   }
-  if (SOCIALBROWSER.var.blocking.privacy.hide_media_devices) {
-    SOCIALBROWSER.__define(navigator, 'mediaDevices', null);
-  }
+
   if (SOCIALBROWSER.var.blocking.privacy.hide_mimetypes) {
     SOCIALBROWSER.__define(navigator, 'mimeTypes', []);
   }
@@ -109,18 +135,6 @@ module.exports = function (SOCIALBROWSER) {
     SOCIALBROWSER.__define(navigator, 'doNotTrack', '1');
   } else {
     SOCIALBROWSER.__define(navigator, 'doNotTrack', '0');
-  }
-
-  // user agent
-  let user_agent_set = false;
-  SOCIALBROWSER.var.sites.forEach((site) => {
-    if (document.location.href.like(site.url)) {
-      SOCIALBROWSER.__define(navigator, 'userAgent', site.user_agent);
-      user_agent_set = true;
-    }
-  });
-  if (!user_agent_set) {
-    SOCIALBROWSER.__define(navigator, 'userAgent', SOCIALBROWSER.var.core.user_agent);
   }
 
   try {

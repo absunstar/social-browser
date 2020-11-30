@@ -25,7 +25,8 @@
     "init": "gulp",
     "reload": "gulp && electron-rebuild",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "update": "npm i -D electron@latest"
   },
   "build": {
     "appId": "com.social.browser",
@@ -110,11 +111,11 @@
   "dependencies": {
     "custom-electron-titlebar": "^3.2.4",
     "ibrowser": "^1.0.7",
-    "isite": "^1.14.29",
+    "isite": "^1.14.33",
     "jquery": "*"
   },
   "devDependencies": {
-    "electron": "^10.1.5",
+    "electron": "^11.0.2",
     "electron-builder": "^22.7.0",
     "gulp": "*"
   }
