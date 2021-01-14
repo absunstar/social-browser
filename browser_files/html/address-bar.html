@@ -54,7 +54,7 @@
     <script src="http://127.0.0.1:60080/js/an.min.js"></script>
 
     <script>
-      if (typeof module === "object") {
+      if (typeof module === 'object') {
         window.module = module;
         module = undefined;
       }
@@ -69,44 +69,44 @@
 
     <script>
       window.loadurl = function (url) {
-        $("#addressbar_id").focus();
-        $("#addressbar_id").select();
+        $('#addressbar_id').focus();
+        $('#addressbar_id').select();
 
         if (scope().url0 === url) {
           scope().loadUrls(null, () => {
             setTimeout(() => {
-              $("#addressbar_id").focus();
-              $("#addressbar_id").select();
+              $('#addressbar_id').focus();
+              $('#addressbar_id').select();
             }, 200);
           });
         } else {
           scope().url0 = url;
           scope().loadUrls(url, () => {
             setTimeout(() => {
-              $("#addressbar_id").focus();
-              $("#addressbar_id").select();
+              $('#addressbar_id').focus();
+              $('#addressbar_id').select();
             }, 200);
           });
         }
       };
 
       const { remote, nativeImage, ipcRenderer } = SOCIALBROWSER.electron;
-      var app = angular.module("myApp", []);
+      var app = angular.module('myApp', []);
       var scope = function () {
-        return angular.element(document.querySelector("body")).scope();
+        return angular.element(document.querySelector('body')).scope();
       };
 
-      SOCIALBROWSER.on("var.urls", (e, res) => {
-        console.log('here')
+      SOCIALBROWSER.on('var.urls', (e, res) => {
+        console.log('here');
         scope().url_list = res.data;
       });
 
-      app.controller("mainController", ($scope, $http, $timeout) => {
-        $scope.urls_sort_property = "-count";
+      app.controller('mainController', ($scope, $http, $timeout) => {
+        $scope.urls_sort_property = '-count';
         $scope.url_list = [];
         $scope.url_list2 = [];
         $scope.url_index = -1;
-        $scope.url0 = "";
+        $scope.url0 = '';
 
         $scope.loadUrls = function (url, callback) {
           callback = callback || function () {};
@@ -117,22 +117,22 @@
 
           $timeout(() => {
             if ($scope.url_list.length === 0) {
-              $scope.url_list = SOCIALBROWSER.callSync("get_var", { name: "urls" });
+              $scope.url_list = SOCIALBROWSER.var.urls || SOCIALBROWSER.callSync('get_var', { name: 'urls' });
             }
 
             $scope.url_list2 = [];
             $scope.url_index = -1;
 
             let sort = $scope.urls_sort_property;
-            if (sort === "-count") {
+            if (sort === '-count') {
               $scope.url_list.sort((a, b) => {
                 return b.count - a.count;
               });
-            } else if (sort === "-last_visit") {
+            } else if (sort === '-last_visit') {
               $scope.url_list.sort((a, b) => {
                 return b.last_visit - a.last_visit;
               });
-            } else if (sort === "url") {
+            } else if (sort === 'url') {
               $scope.url_list.sort((a, b) => {
                 return b.url > a.url;
               });
@@ -143,7 +143,7 @@
             for (let i = 0; i < $scope.url_list.length; i++) {
               let itm = $scope.url_list[i];
 
-              if ((itm.url && itm.url.like("*" + word + "*")) || (itm.title && itm.title.like("*" + word + "*"))) {
+              if ((itm.url && itm.url.like('*' + word + '*')) || (itm.title && itm.title.like('*' + word + '*'))) {
                 $scope.url_list2.push(itm);
               }
               if ($scope.url_list2.length > 100) {
@@ -172,7 +172,7 @@
           if ($scope.url_list2.length > index) {
             $scope.url_list2[index].selected = true;
             $scope.url = $scope.url_list2[index].url;
-            $(".url-list ul").scrollTop($(".url-list ul li")[index].offsetTop - $(".url-list ul").height() + 100);
+            $('.url-list ul').scrollTop($('.url-list ul li')[index].offsetTop - $('.url-list ul').height() + 100);
           }
         };
 
@@ -181,7 +181,7 @@
             e.preventDefault();
             e.stopPropagation();
             if (e.ctrlKey === true) {
-              $scope.url = $scope.url + ".com";
+              $scope.url = $scope.url + '.com';
               $scope.goUrl($scope.url);
             } else {
               $scope.goUrl($scope.url);
@@ -212,24 +212,25 @@
         };
 
         $scope.hi = function () {
-          alert("hi");
+          alert('hi');
         };
 
         $scope.goUrl = function (url) {
-          url = url || $scope.url || "";
-          if (url.indexOf("://") === -1) {
-            if (url.indexOf(".") !== -1) {
-              url = "http://" + url;
+          url = url || $scope.url || '';
+
+          if (url.indexOf('://') === -1) {
+            if (url.indexOf('.') !== -1) {
+              url = 'http://' + url;
             } else {
-              url = "https://google.com/search?q=" + url;
+              url = 'https://google.com/search?q=' + url;
             }
           }
 
-          SOCIALBROWSER.call("update-view", {
+          SOCIALBROWSER.call('update-view', {
             url: url,
           });
 
-          $scope.url = "";
+          $scope.url = '';
         };
 
         $scope.loadUrls();

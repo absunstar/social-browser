@@ -3,12 +3,12 @@ module.exports = function (SOCIALBROWSER) {
     if (!document.location.href.contains('addmefast.com')) {
         return
     }
-
+    SOCIALBROWSER.var.blocking.social = SOCIALBROWSER.var.blocking.social || {}
     if (!SOCIALBROWSER.var.blocking.social.allow_addmefast) {
         return
     }
 
-    alert('addmefast Activated .....')
+    console.log('addmefast Activated .....')
 
     SOCIALBROWSER.var.blocking.block_empty_iframe = false
 
@@ -44,8 +44,9 @@ module.exports = function (SOCIALBROWSER) {
             let opener = {
                 closed: false,
                 opener: window,
-                postMessage: () => {
-                    console.log('postMessage opener')
+                postMessage: (...args) => {
+                    console.log('postMessage opener' , ...args)
+                    
                 },
                 eval: () => {
                     console.log('eval opener')
@@ -64,6 +65,12 @@ module.exports = function (SOCIALBROWSER) {
             if (url == "about:blank") {
                 return opener
             }
+
+            // Must be call load url
+            // if (document.location.href.contains('youtube_views|soundcloud_views')){
+            //     return opener
+            // }
+
             url = SOCIALBROWSER.handle_url(url)
 
             let win = new SOCIALBROWSER.electron.remote.BrowserWindow({
@@ -107,8 +114,8 @@ module.exports = function (SOCIALBROWSER) {
 
             })
 
-            opener.postMessage = function (message, targetOrigin) {
-                return win.webContents.postMessage(message, targetOrigin)
+            opener.postMessage = function (...args) {
+                return win.webContents.postMessage(...args)
             }
             win.webContents.on('dom-ready', () => {
                 if (document.location.href.contains('youtube_likes')) {
@@ -192,7 +199,11 @@ module.exports = function (SOCIALBROWSER) {
 
                 let btn = document.querySelector('#human_check')
                 if (btn) {
-                    document.querySelector('title').innerText = "captcha"
+                    document.querySelector('title').innerText = "^_^"
+                    setTimeout(() => {
+                        document.querySelector('title').innerText = "): ^"
+                    }, 500);
+                    
                     captca_count++
                     if (captca_count > 10) {
                         document.location.reload()
@@ -238,9 +249,9 @@ module.exports = function (SOCIALBROWSER) {
 
 
                 } else {
-                    if (document.location.href.contains('youtube_views')) {
+                    if (document.querySelector('title') && document.location.href.contains('youtube_views')) {
                         document.querySelector('title').innerText = "AddMeFast.com - YouTube Views"
-                    } else if (document.location.href.contains('soundcloud_views')) {
+                    } else if (document.querySelector('title') && document.location.href.contains('soundcloud_views')) {
                         document.querySelector('title').innerText = "AddMeFast.com - SoundCloud Views"
                     }
 

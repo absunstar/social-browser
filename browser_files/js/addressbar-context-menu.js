@@ -63,13 +63,24 @@
     SOCIALBROWSER.call = function (channel, value) {
       return SOCIALBROWSER.electron.ipcRenderer.send(channel, value)
     }
+    SOCIALBROWSER.invoke = function (channel, value) {
+      return SOCIALBROWSER.electron.ipcRenderer.invoke(channel, value);
+    };
     SOCIALBROWSER.on = function (name, callback) {
       SOCIALBROWSER.electron.ipcRenderer.on(name, callback)
     }
-    SOCIALBROWSER.var = SOCIALBROWSER.callSync('get_var', {
-      url: document.location.href,
-      name: '*'
-    })
+
+    SOCIALBROWSER.invoke(
+      'get_var',
+      {
+        host: document.location.host,
+        url: document.location.href,
+        name: 'session_list,core',
+      }).then(result=> {
+        SOCIALBROWSER.var = result;
+      },
+    );
+  
     SOCIALBROWSER.files_dir = SOCIALBROWSER.callSync('get_browser', {
       name: 'files_dir'
     })

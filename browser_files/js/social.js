@@ -60,6 +60,9 @@ SOCIALBROWSER.callSync = function (channel, value) {
 SOCIALBROWSER.call = function (channel, value) {
   return SOCIALBROWSER.electron.ipcRenderer.send(channel, value);
 };
+SOCIALBROWSER.invoke = function (channel, value) {
+  return SOCIALBROWSER.electron.ipcRenderer.invoke(channel, value);
+};
 SOCIALBROWSER.on = function (name, callback) {
   SOCIALBROWSER.electron.ipcRenderer.on(name, callback);
 };
@@ -92,7 +95,10 @@ SOCIALBROWSER.on('var.bookmarks', (event, obj) => {
   console.log(obj);
   SOCIALBROWSER.var.bookmarks = obj.data;
 });
-
+SOCIALBROWSER.on('var.core', (event, obj) => {
+  console.log(obj);
+  SOCIALBROWSER.var.core = obj.data;
+});
 SOCIALBROWSER.nativeImage = function (_path) {
   try {
     if (!_path) {
@@ -790,6 +796,9 @@ socialTabsDom.addEventListener('tabAdd', ({ detail }) => {
       url: $id.attr('url'),
       partition: $id.attr('partition'),
       user_name: $id.attr('user_name'),
+      user_agent: $id.attr('user_agent'),
+      proxy: $id.attr('proxy') == 'undefined' ? null : $id.attr('proxy'), 
+      webaudio: $id.attr('webaudio') == 'false' ? false : true,
     });
 
     if (!$id.attr('url') || $id.attr('url').like('*newTab')) {
@@ -836,6 +845,9 @@ function render_new_tab(op) {
     title: op.title,
     partition: op.partition,
     user_name: op.user_name,
+    user_agent: op.user_agent,
+    proxy: op.proxy,
+    webaudio: op.webaudio,
     favicon: 'browser://images/loading-white.gif',
     active: op.active,
   });
@@ -1068,7 +1080,7 @@ function init_tab() {
 }
 
 window.addEventListener('resize', () => {
-  let url = $('#' + currentTabId).attr('url');
+  let url = $('#' + currentTabId).attr('url') || '';
   url = url.replace('https://', '').replace('http://', '');
   let w = document.querySelectorAll('.address-input')[0].clientWidth / 13;
   if (url.length > w) {
@@ -1081,9 +1093,18 @@ window.addEventListener('resize', () => {
 SOCIALBROWSER.currentWindow.maximize();
 SOCIALBROWSER.currentWindow.show();
 
-SOCIALBROWSER.var = SOCIALBROWSER.callSync('get_var', {
-  name: '*',
-});
+
+SOCIALBROWSER.invoke(
+  'get_var',
+  {
+    host: document.location.host,
+    url: document.location.href,
+    name: '*',
+  }).then(result=> {
+    SOCIALBROWSER.var = result;
+  },
+);
+
 SOCIALBROWSER.files_dir = SOCIALBROWSER.callSync('get_browser', {
   name: 'files_dir',
 });

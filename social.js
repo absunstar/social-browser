@@ -30,8 +30,8 @@ const electron = require('electron');
 
 const { app, Tray, nativeImage, Menu, ipcMain, globalShortcut, localShortcut, protocol, BrowserWindow } = electron;
 
-const gotTheLock = app.requestSingleInstanceLock();
-if (!gotTheLock) {
+const is_first_app = app.requestSingleInstanceLock();
+if (!is_first_app) {
   let f = process.argv[process.argv.length - 1]; // LAST arg is file to run
   if (f.endsWith('.js')) {
     require(f);
@@ -48,7 +48,7 @@ if (app.setUserTasks) {
 Menu.setApplicationMenu(null);
 
 app.setAppUserModelId(process.execPath);
-app.clearRecentDocuments()
+app.clearRecentDocuments();
 // app.disableHardwareAcceleration();
 // app.allowRendererProcessReuse = false; //deprecated
 // app.commandLine.appendSwitch('disable-site-isolation-trials')
@@ -71,7 +71,9 @@ browser.mainWindow = null;
 require(__dirname + '/site.js')(browser);
 require(__dirname + '/pdf-reader/app.js')(browser);
 
-browser.request_url = process.argv.length > 1 ? process.argv[1] : browser.var.core.home_page;
+console.log('process.argv', process.argv);
+
+browser.request_url = process.argv.length > 1 ? process.argv[process.argv.length - 1] : browser.var.core.home_page;
 if (browser.request_url == '.' || browser.request_url.like('*--squirrel*')) {
   browser.request_url = browser.var.core.home_page;
 }
@@ -79,12 +81,16 @@ if (browser.request_url == '.' || browser.request_url.like('*--squirrel*')) {
 if (browser.request_url && !browser.request_url.like('http*') && !browser.request_url.like('file*')) {
   browser.request_url = 'file://' + browser.request_url;
 }
+if (!browser.request_url) {
+  browser.request_url = browser.var.core.home_page;
+}
+console.log('browser.request_url', browser.request_url);
 
 app.on('ready', function () {
-  app.setAccessibilitySupportEnabled(true)
+  app.setAccessibilitySupportEnabled(true);
   let logo = new BrowserWindow({
     show: true,
-    width: 300,
+    width: 600,
     height: 300,
     title: 'logo',
     frame: false,
@@ -96,6 +102,7 @@ app.on('ready', function () {
     },
   });
   logo.setMenuBarVisibility(false);
+  logo.center();
   logo.loadURL(__dirname + '/browser_files/html/logo.html');
   setTimeout(() => {
     logo.hide();
@@ -392,9 +399,7 @@ app.on('will-finish-launching', () => {
 });
 
 app.on('second-instance', (event, commandLine, workingDirectory) => {
-  console.log('second-instance');
-
-  console.log(commandLine);
+  console.log('second-instance', commandLine);
 
   let u = commandLine && commandLine.length > 0 ? commandLine[commandLine.length - 1] : null;
 
@@ -404,10 +409,6 @@ app.on('second-instance', (event, commandLine, workingDirectory) => {
 
   if (u.like('*.js')) {
     return;
-  }
-
-  if (!u.endsWith('.html')) {
-    u = browser.var.core.home_page;
   }
 
   if (u && !u.like('http*') && !u.like('file*')) {

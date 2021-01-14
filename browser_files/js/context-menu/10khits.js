@@ -3,7 +3,7 @@ module.exports = function (SOCIALBROWSER) {
     if (!document.location.href.contains('https://www.10khits.com/dashboard/surf/sessions')) {
         return
     }
-
+    SOCIALBROWSER.var.blocking.social = SOCIALBROWSER.var.blocking.social || {}
     if(!SOCIALBROWSER.var.blocking.social.allow_10khits){
         return
     }

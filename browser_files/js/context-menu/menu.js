@@ -486,7 +486,7 @@ module.exports = function (SOCIALBROWSER) {
             click() {
               SOCIALBROWSER.call('render_message', {
                 name: 'open new tab',
-                referrer: doc.location.href,
+                referrer: document.location.href,
                 url: u,
               });
             },
@@ -502,8 +502,8 @@ module.exports = function (SOCIALBROWSER) {
               click() {
                 SOCIALBROWSER.call('render_message', {
                   name: 'new_trusted_window',
-                  url: o.url || doc.location.href,
-                  referrer: doc.location.href,
+                  url: o.url || document.location.href,
+                  referrer: document.location.href,
                   partition: partition,
                   show: true,
                 });
@@ -517,7 +517,7 @@ module.exports = function (SOCIALBROWSER) {
               SOCIALBROWSER.call('render_message', {
                 name: 'new_window',
                 url: u,
-                referrer: doc.location.href,
+                referrer: document.location.href,
                 partition: partition,
                 show: true,
               });
@@ -530,43 +530,10 @@ module.exports = function (SOCIALBROWSER) {
               SOCIALBROWSER.call('render_message', {
                 name: 'new_window',
                 url: u,
-                referrer: doc.location.href,
+                referrer: document.location.href,
                 partition: 'ghost' + new Date().getTime(),
                 show: true,
               });
-            },
-          });
-
-          arr.push({
-            label: ' in 5 new tab',
-            click() {
-              for (let index = 0; index < 5; index++) {
-                setTimeout(() => {
-                  SOCIALBROWSER.call('render_message', {
-                    name: 'open new tab',
-                    partition: partition,
-                    url: u,
-                    referrer: doc.location.href,
-                    show: true,
-                  });
-                }, 1000 * 2 * index);
-              }
-            },
-          });
-          arr.push({
-            label: ' in 5 new window',
-            click() {
-              for (let index = 0; index < 5; index++) {
-                setTimeout(() => {
-                  SOCIALBROWSER.call('render_message', {
-                    name: 'new_window',
-                    partition: partition,
-                    url: u,
-                    referrer: doc.location.href,
-                    show: true,
-                  });
-                }, 1000 * 2 * index);
-              }
             },
           });
 
@@ -576,7 +543,7 @@ module.exports = function (SOCIALBROWSER) {
               click() {
                 SOCIALBROWSER.call('render_message', {
                   name: 'open new tab',
-                  referrer: doc.location.href,
+                  referrer: document.location.href,
                   url: u,
                   partition: ss.name,
                   user_name: ss.display,
@@ -587,7 +554,7 @@ module.exports = function (SOCIALBROWSER) {
 
           menu.append(
             new $menuItem({
-              label: 'Open link in new tab',
+              label: 'Open link ',
               type: 'submenu',
               submenu: arr,
             }),
@@ -622,7 +589,7 @@ module.exports = function (SOCIALBROWSER) {
                 name: 'mini_youtube',
                 url: u,
                 partition: partition,
-                referrer: doc.location.href,
+                referrer: document.location.href,
               });
             },
           }),
@@ -635,7 +602,7 @@ module.exports = function (SOCIALBROWSER) {
                 name: 'new_window',
                 url: u.replace('youtube', 'youtubepp'),
                 partition: partition,
-                referrer: doc.location.href,
+                referrer: document.location.href,
               });
             },
           }),
@@ -667,7 +634,7 @@ module.exports = function (SOCIALBROWSER) {
             SOCIALBROWSER.call('render_message', {
               name: 'open new tab',
               url: url,
-              referrer: doc.location.href,
+              referrer: document.location.href,
             });
           },
         }),
@@ -683,7 +650,7 @@ module.exports = function (SOCIALBROWSER) {
               SOCIALBROWSER.call('render_message', {
                 name: 'open new tab',
                 url: url,
-                referrer: doc.location.href,
+                referrer: document.location.href,
                 partition: ss.name,
               });
             },
@@ -840,7 +807,7 @@ module.exports = function (SOCIALBROWSER) {
       click() {
         SOCIALBROWSER.call('render_message', {
           name: 'force reload',
-          origin: doc.location.origin || doc.location.href,
+          origin: document.location.origin || document.location.href,
           storages: ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage'],
         });
       },
@@ -851,7 +818,7 @@ module.exports = function (SOCIALBROWSER) {
       click() {
         SOCIALBROWSER.call('render_message', {
           name: 'force reload',
-          origin: doc.location.origin || doc.location.href,
+          origin: document.location.origin || document.location.href,
           storages: ['cookies'],
         });
       },
@@ -862,7 +829,7 @@ module.exports = function (SOCIALBROWSER) {
       click() {
         SOCIALBROWSER.call('render_message', {
           name: 'force reload',
-          origin: doc.location.origin || doc.location.href,
+          origin: document.location.origin || document.location.href,
           storages: ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage', 'cookies'],
         });
       },
@@ -979,7 +946,7 @@ module.exports = function (SOCIALBROWSER) {
               name: 'mini_iframe',
               partition: partition,
               url: f.src,
-              referrer: doc.location.href,
+              referrer: document.location.href,
             });
           },
         });
@@ -990,7 +957,7 @@ module.exports = function (SOCIALBROWSER) {
               name: 'new_window',
               partition: partition,
               url: f.src,
-              referrer: doc.location.href,
+              referrer: document.location.href,
             });
           },
         });
@@ -1052,7 +1019,7 @@ module.exports = function (SOCIALBROWSER) {
             alwaysOnTop: true,
             partition: partition,
             url: f.src,
-            referrer: doc.location.href,
+            referrer: document.location.href,
           });
         },
       });
@@ -1066,7 +1033,7 @@ module.exports = function (SOCIALBROWSER) {
               alwaysOnTop: true,
               partition: partition,
               url: f.src,
-              referrer: doc.location.href,
+              referrer: document.location.href,
             });
           },
         });
@@ -1105,7 +1072,7 @@ module.exports = function (SOCIALBROWSER) {
               alwaysOnTop: true,
               partition: partition,
               url: f.src,
-              referrer: doc.location.href,
+              referrer: document.location.href,
             });
           },
         });
@@ -1117,7 +1084,7 @@ module.exports = function (SOCIALBROWSER) {
               alwaysOnTop: true,
               partition: partition,
               url: f.src,
-              referrer: doc.location.href,
+              referrer: document.location.href,
             });
           },
         });
@@ -1217,7 +1184,7 @@ module.exports = function (SOCIALBROWSER) {
       });
     }
 
-    if (doc.location.href.like('*youtube.com/watch*v=*')) {
+    if (document.location.href.like('*youtube.com/watch*v=*')) {
       menu.append(
         new $menuItem({
           label: 'Open current video',
@@ -1225,8 +1192,8 @@ module.exports = function (SOCIALBROWSER) {
             SOCIALBROWSER.call('render_message', {
               name: 'mini_youtube',
               partition: partition,
-              url: doc.location.href,
-              referrer: doc.location.href,
+              url: document.location.href,
+              referrer: document.location.href,
             });
           },
         }),
@@ -1239,8 +1206,8 @@ module.exports = function (SOCIALBROWSER) {
             SOCIALBROWSER.call('render_message', {
               name: 'new_window',
               partition: partition,
-              referrer: doc.location.href,
-              url: doc.location.href.replace('youtube', 'youtubepp'),
+              referrer: document.location.href,
+              url: document.location.href.replace('youtube', 'youtubepp'),
             });
           },
         }),
@@ -1338,6 +1305,238 @@ module.exports = function (SOCIALBROWSER) {
     }
   }
 
+  function url_to_social(url, social_arr, title) {
+    social_arr.push({
+      label: ` Open ${title} in 5 new tab [Audio Muted]`,
+      click() {
+        for (let index = 0; index < 5; index++) {
+          setTimeout(() => {
+            SOCIALBROWSER.call('render_message', {
+              name: 'open new tab',
+              partition: partition,
+              url: url,
+              referrer: document.location.href,
+              webaudio: false,
+              show: true,
+            });
+          }, 1000 * 2 * index);
+        }
+      },
+    });
+    social_arr.push({
+      label: ` Open ${title} in Many Tabs [ All Profiles (${SOCIALBROWSER.var.session_list.length}) ] [Audio Muted]`,
+      click() {
+        for (let index = 0; index < SOCIALBROWSER.var.session_list.length; index++) {
+          setTimeout(() => {
+            SOCIALBROWSER.call('render_message', {
+              name: 'open new tab',
+              partition: SOCIALBROWSER.var.session_list[index].name,
+              user_name: SOCIALBROWSER.var.session_list[index].display,
+              url: url,
+              referrer: document.location.href,
+              webaudio: false,
+              show: true,
+            });
+          }, 1000 * index * 2);
+        }
+      },
+    });
+    social_arr.push({
+      label: ` Open ${title} in Many Tabs [ All Proxy (${SOCIALBROWSER.var.proxy_list.length}) ] [Audio Muted] + New Profiles `,
+      click() {
+        for (let index = 0; index < SOCIALBROWSER.var.proxy_list.length; index++) {
+          setTimeout(() => {
+            SOCIALBROWSER.call('render_message', {
+              name: 'open new tab',
+              partition: 'random_user_' + Math.random(),
+              user_name: 'random_user_' + SOCIALBROWSER.var.proxy_list[index].name,
+              proxy: SOCIALBROWSER.var.proxy_list[index].url,
+              url: url,
+              referrer: document.location.href,
+              webaudio: false,
+              show: true,
+            });
+          }, 1000 * index * 2);
+        }
+      },
+    });
+    social_arr.push({
+      label: ` Open ${title} in Many Tabs [ All User Agents (${SOCIALBROWSER.var.user_agent_list.length}) ] [Audio Muted]`,
+      click() {
+        for (let index = 0; index < SOCIALBROWSER.var.user_agent_list.length; index++) {
+          setTimeout(() => {
+            SOCIALBROWSER.call('render_message', {
+              name: 'open new tab',
+              partition: partition,
+              user_agent: SOCIALBROWSER.var.user_agent_list[index].url,
+              url: url,
+              referrer: document.location.href,
+              webaudio: false,
+              show: true,
+            });
+          }, 1000 * index * 2);
+        }
+      },
+    });
+    social_arr.push({
+      label: ` Open ${title} in Many Tabs [ All User Agents (${SOCIALBROWSER.var.user_agent_list.length}) ] [Audio Muted] + New Profiles `,
+      click() {
+        for (let index = 0; index < SOCIALBROWSER.var.user_agent_list.length; index++) {
+          setTimeout(() => {
+            SOCIALBROWSER.call('render_message', {
+              name: 'open new tab',
+              partition: 'random_user' + Math.random(),
+              user_name: 'random_user_' + SOCIALBROWSER.var.user_agent_list[index].name,
+              user_agent: SOCIALBROWSER.var.user_agent_list[index].url,
+              url: url,
+              referrer: document.location.href,
+              webaudio: false,
+              show: true,
+            });
+          }, 1000 * index * 2);
+        }
+      },
+    });
+    social_arr.push({
+      type: 'separator',
+    });
+    social_arr.push({
+      label: ` Open ${title} in 5 new window [Audio Muted]`,
+      click() {
+        for (let index = 0; index < 5; index++) {
+          setTimeout(() => {
+            SOCIALBROWSER.call('render_message', {
+              name: 'new_window',
+              partition: partition,
+              url: url,
+              referrer: document.location.href,
+              webaudio: false,
+              show: true,
+            });
+          }, 1000 * 2 * index);
+        }
+      },
+    });
+    social_arr.push({
+      label: ` Open ${title} in Many Windows [ All Profiles (${SOCIALBROWSER.var.session_list.length}) ] [Audio Muted]`,
+      click() {
+        for (let index = 0; index < SOCIALBROWSER.var.session_list.length; index++) {
+          setTimeout(() => {
+            SOCIALBROWSER.call('render_message', {
+              name: 'new_window',
+              partition: SOCIALBROWSER.var.session_list[index].name,
+              user_name: SOCIALBROWSER.var.session_list[index].display,
+              url: url,
+              referrer: document.location.href,
+              webaudio: false,
+              show: true,
+            });
+          }, 1000 * index * 2);
+        }
+      },
+    });
+    social_arr.push({
+      label: ` Open ${title} in Many Windows [ All User Agents (${SOCIALBROWSER.var.user_agent_list.length}) ] [Audio Muted]`,
+      click() {
+        for (let index = 0; index < SOCIALBROWSER.var.user_agent_list.length; index++) {
+          setTimeout(() => {
+            SOCIALBROWSER.call('render_message', {
+              name: 'new_window',
+              partition: partition,
+              user_agent: SOCIALBROWSER.var.user_agent_list[index].url,
+              url: url,
+              referrer: document.location.href,
+              webaudio: false,
+              show: true,
+            });
+          }, 1000 * index * 2);
+        }
+      },
+    });
+    social_arr.push({
+      label: ` Open ${title} in Many Windows [ All User Agents (${SOCIALBROWSER.var.user_agent_list.length}) ] [Audio Muted] + New Profiles `,
+      click() {
+        for (let index = 0; index < SOCIALBROWSER.var.user_agent_list.length; index++) {
+          setTimeout(() => {
+            SOCIALBROWSER.call('render_message', {
+              name: 'new_window',
+              partition: 'random_user' + Math.random(),
+              user_agent: SOCIALBROWSER.var.user_agent_list[index].url,
+              url: url,
+              referrer: document.location.href,
+              webaudio: false,
+              show: true,
+            });
+          }, 1000 * index * 2);
+        }
+      },
+    });
+
+    return social_arr;
+  }
+  function get_social_menu(node, menu, doc, social_arr) {
+    social_arr = social_arr || [];
+
+    if (!node) {
+      if (social_arr.length > 0) {
+        social_arr.push({
+          type: 'separator',
+        });
+      }
+      social_arr = url_to_social(document.location.href, social_arr, 'Current Page');
+      if (social_arr.length > 0) {
+        menu.append(
+          new $menuItem({
+            label: ' Social Tools ',
+            type: 'submenu',
+            submenu: social_arr,
+          }),
+        );
+
+        menu.append(
+          new $menuItem({
+            type: 'separator',
+          }),
+        );
+      }
+      return;
+    }
+
+    if (SOCIALBROWSER.var.blocking.social.allow_menu) {
+      if (SOCIALBROWSER.var.blocking.social.allow_alexa && social_arr.length === 0) {
+        social_arr.push({
+          label: ` ${document.location.host} ( Alexa Rank )`,
+          click() {
+            SOCIALBROWSER.call('render_message', {
+              name: 'new_window',
+              width: 500,
+              height: 500,
+              url: `https://www.alexa.com/minisiteinfo/${document.location.origin}?offset=5&version=alxg_20100607`,
+              referrer: document.location.href,
+              show: true,
+            });
+          },
+        });
+      }
+
+      if (node.nodeName === 'A' && node.getAttribute('href') && !node.getAttribute('href').like('*#*|*mailto*')) {
+        let u = node.getAttribute('href');
+        u = handle_url(u);
+
+        social_arr.push({
+          type: 'separator',
+        });
+        social_arr = url_to_social(u, social_arr, 'Link');
+
+        social_arr.push({
+          type: 'separator',
+        });
+        get_social_menu(null, menu, doc, social_arr);
+      } else if (node.nodeName !== 'A') {
+        get_social_menu(node.parentNode, menu, doc, social_arr);
+      }
+    }
+  }
   function createMenu(node, doc, xwin) {
     doc = doc || document;
 
@@ -1363,7 +1562,7 @@ module.exports = function (SOCIALBROWSER) {
     if (text.length > 0) {
       menu.append(
         new $menuItem({
-          label: 'Copy            ' + text.substring(0 , 30),
+          label: 'Copy            ' + text.substring(0, 30),
           click() {
             SOCIALBROWSER.call('render_message', {
               name: 'copy',
@@ -1375,7 +1574,7 @@ module.exports = function (SOCIALBROWSER) {
 
       menu.append(
         new $menuItem({
-          label: 'Translate      ' + text.substring(0 , 30),
+          label: 'Translate      ' + text.substring(0, 30),
           click() {
             SOCIALBROWSER.call('render_message', {
               name: 'new_window',
@@ -1388,11 +1587,11 @@ module.exports = function (SOCIALBROWSER) {
 
       menu.append(
         new $menuItem({
-          label: 'Search          '+ text.substring(0 , 30),
+          label: 'Search          ' + text.substring(0, 30),
           click() {
             SOCIALBROWSER.call('render_message', {
               name: 'open new tab',
-              referrer: doc.location.href,
+              referrer: document.location.href,
               url: 'https://www.google.com/search?q=' + encodeURIComponent(text),
             });
           },
@@ -1410,6 +1609,8 @@ module.exports = function (SOCIALBROWSER) {
     add_a_menu(node, menu, doc, xwin);
     add_img_menu(node, menu, doc, xwin);
 
+    get_social_menu(node, menu, doc, null);
+
     if (SOCIALBROWSER.var.open_list.length > 0) {
       SOCIALBROWSER.var.open_list.forEach((o) => {
         if (o.enabled) {
@@ -1421,8 +1622,8 @@ module.exports = function (SOCIALBROWSER) {
                 click() {
                   SOCIALBROWSER.call('render_message', {
                     name: 'new_trusted_window',
-                    url: o.url || doc.location.href,
-                    referrer: doc.location.href,
+                    url: o.url || document.location.href,
+                    referrer: document.location.href,
                     show: true,
                   });
                 },
@@ -1435,8 +1636,8 @@ module.exports = function (SOCIALBROWSER) {
                 SOCIALBROWSER.call('render_message', {
                   name: 'open new tab',
                   partition: partition,
-                  url: o.url || doc.location.href,
-                  referrer: doc.location.href,
+                  url: o.url || document.location.href,
+                  referrer: document.location.href,
                   show: true,
                 });
               },
@@ -1448,8 +1649,8 @@ module.exports = function (SOCIALBROWSER) {
                 SOCIALBROWSER.call('render_message', {
                   name: 'new_window',
                   partition: partition,
-                  url: o.url || doc.location.href,
-                  referrer: doc.location.href,
+                  url: o.url || document.location.href,
+                  referrer: document.location.href,
                   show: true,
                 });
               },
@@ -1460,8 +1661,8 @@ module.exports = function (SOCIALBROWSER) {
               click() {
                 SOCIALBROWSER.call('render_message', {
                   name: 'new_window',
-                  url: o.url || doc.location.href,
-                  referrer: doc.location.href,
+                  url: o.url || document.location.href,
+                  referrer: document.location.href,
                   partition: 'private_' + new Date().getTime(),
                   show: true,
                 });
@@ -1472,67 +1673,14 @@ module.exports = function (SOCIALBROWSER) {
               type: 'separator',
             });
 
-            arr.push({
-              label: ' in 5 New Tab',
-              click() {
-                for (let index = 0; index < 5; index++) {
-                  setTimeout(() => {
-                    SOCIALBROWSER.call('render_message', {
-                      name: 'open new tab',
-                      partition: partition,
-                      url: o.url || doc.location.href,
-                      referrer: doc.location.href,
-                      show: true,
-                    });
-                  }, 1000 * 2 * index);
-                }
-              },
-            });
-
-            arr.push({
-              label: ' in 5 New Window',
-              click() {
-                for (let index = 0; index < 5; index++) {
-                  setTimeout(() => {
-                    SOCIALBROWSER.call('render_message', {
-                      name: 'new_window',
-                      partition: partition,
-                      url: o.url || doc.location.href,
-                      referrer: doc.location.href,
-                      show: true,
-                    });
-                  }, 1000 * 2 * index);
-                }
-              },
-            });
-            arr.push({
-              label: ' in 5 New Private Window',
-              click() {
-                for (let index = 0; index < 5; index++) {
-                  setTimeout(() => {
-                    SOCIALBROWSER.call('render_message', {
-                      name: 'new_window',
-                      partition: 'private_' + new Date().getTime(),
-                      url: o.url || doc.location.href,
-                      referrer: doc.location.href,
-                      show: true,
-                    });
-                  }, 1000 * 2 * index);
-                }
-              },
-            });
-            arr.push({
-              type: 'separator',
-            });
-
             SOCIALBROWSER.var.session_list.forEach((ss) => {
               arr.push({
                 label: ' As (  ' + ss.display + '  ) ',
                 click() {
                   SOCIALBROWSER.call('render_message', {
                     name: 'open new tab',
-                    url: o.url || doc.location.href,
-                    referrer: doc.location.href,
+                    url: o.url || document.location.href,
+                    referrer: document.location.href,
                     partition: ss.name,
                     user_name: ss.display,
                   });
@@ -1555,8 +1703,8 @@ module.exports = function (SOCIALBROWSER) {
                   SOCIALBROWSER.call('render_message', {
                     name: 'open new tab',
                     partition: partition,
-                    url: o.url || doc.location.href,
-                    referrer: doc.location.href,
+                    url: o.url || document.location.href,
+                    referrer: document.location.href,
                     show: true,
                   });
                 },
@@ -1586,7 +1734,7 @@ module.exports = function (SOCIALBROWSER) {
             SOCIALBROWSER.call('render_message', {
               name: 'new_trusted_window',
               url: SOCIALBROWSER.var.vip.server_url + v.url,
-              referrer: doc.location.href,
+              referrer: document.location.href,
               show: true,
             });
           },
@@ -1630,7 +1778,7 @@ module.exports = function (SOCIALBROWSER) {
         click() {
           SOCIALBROWSER.call('render_message', {
             name: 'force reload',
-            origin: doc.location.origin || doc.location.href,
+            origin: document.location.origin || document.location.href,
             storages: ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage'],
           });
         },

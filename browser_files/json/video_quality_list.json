@@ -1,0 +1,26 @@
+[
+    {
+        "name" : "tiny",
+        "value" : "144"
+    },
+    {
+        "name" : "small",
+        "value" : "240"
+    },
+    {
+        "name" : "medium",
+        "value" : "360"
+    },
+    {
+        "name" : "large",
+        "value" : "480"
+    },
+    {
+        "name" : "hd720",
+        "value" : "720"
+    },
+    {
+        "name" : "hd1080",
+        "value" : "1080"
+    }
+]

@@ -6,14 +6,6 @@ var scope = function () {
   return angular.element(document.querySelector('body')).scope();
 };
 
-SOCIALBROWSER.on('var.session_list', (e, res) => {
-  scope().setting.session_list = res.data;
-});
-
-SOCIALBROWSER.on('var.core', (e, res) => {
-  scope().setting.core = res.data;
-});
-
 var app = app || angular.module('myApp', []);
 
 app.controller('mainController', ($scope, $http, $interval) => {
@@ -22,6 +14,18 @@ app.controller('mainController', ($scope, $http, $interval) => {
     core: {},
     session_list: [],
   };
+
+  SOCIALBROWSER.on('var.session_list', (e, res) => {
+    $scope.setting.session_list = [];
+    res.data.forEach((s) => {
+      $scope.setting.session_list.push(s);
+    });
+    $scope.$apply();
+  });
+
+  SOCIALBROWSER.on('var.core', (e, res) => {
+    $scope.setting.core = res.data;
+  });
 
   $scope.selectSession = function (_se) {
     $scope.setting.session_list.forEach((se, i) => {
@@ -61,15 +65,7 @@ app.controller('mainController', ($scope, $http, $interval) => {
   };
 
   $scope.loadSetting = function () {
-    $scope.setting.session_list = SOCIALBROWSER.callSync('get_var', {
-      url: document.location.href,
-      name: 'session_list',
-    });
-    $scope.setting.core = SOCIALBROWSER.callSync('get_var', {
-      url: document.location.href,
-      name: 'core',
-    });
-    console.log($scope.setting);
+    $scope.setting = SOCIALBROWSER.var;
   };
 
   $scope.saveSessions = function () {

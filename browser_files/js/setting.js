@@ -21,6 +21,10 @@ setTimeout(() => {
 }, 1000 * 2);
 
 app.controller('mainController', ($scope, $http, $timeout) => {
+  SOCIALBROWSER.on('setting.session_list', (e, info) => {
+    console.log('from scope', info);
+    $scope.setting.session_list = info.data;
+  });
   $scope.goBack = function () {
     SOCIALBROWSER.call('render_message', {
       name: 'go back',
@@ -285,6 +289,74 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     $scope.setting.session_list.forEach((se, i) => {
       if (se.display === _se.display && se.name === _se.name) {
         $scope.setting.session_list.splice(i, 1);
+      }
+    });
+  };
+
+  $scope.addZero = function(code , count){
+    let c = count - code.toString().length
+    for (let i = 0; i < c; i++) {
+      code = '0' + code.toString()
+    }
+    return code
+  }
+
+  $scope.generateSession = function () {
+    if ($scope.session.display.length && $scope.session.count) {
+      for (let index = 0; index < $scope.session.count; index++) {
+        let code = $scope.addZero(index , $scope.session.count.toString().length)
+        $scope.setting.session_list.push({
+          name: 'persist:' + new Date().getTime() + '_' + code,
+          display: $scope.session.display.replace('{count}' , code),
+          can_delete: true,
+        });
+      }
+      $scope.session = {};
+    }
+  };
+
+  $scope.addUserAgent = function () {
+    if ($scope.userAgent.name.length > 0) {
+      $scope.setting.user_agent_list.push($scope.userAgent);
+      $scope.userAgent = {};
+    }
+  };
+
+  $scope.removeUserAgent = function (_se) {
+    $scope.setting.user_agent_list.forEach((se, i) => {
+      if (se.name === _se.name && se.url === _se.url) {
+        $scope.setting.user_agent_list.splice(i, 1);
+      }
+    });
+  };
+
+  $scope.addProxy = function () {
+    if ($scope.proxy.name.length > 0) {
+      $scope.setting.proxy_list.push($scope.proxy);
+      $scope.proxy = {};
+    }
+  };
+
+  $scope.removeProxy = function (_se) {
+    $scope.setting.proxy_list.forEach((se, i) => {
+      if (se.name === _se.name && se.url === _se.url) {
+        $scope.setting.proxy_list.splice(i, 1);
+      }
+    });
+  };
+
+  
+  $scope.addPreload = function () {
+    if ($scope.preload && $scope.preload.path && $scope.preload.url) {
+      $scope.setting.preload_list.push($scope.preload);
+      $scope.preload = {};
+    }
+  };
+
+  $scope.removePreload = function (_se) {
+    $scope.setting.preload_list.forEach((se, i) => {
+      if (se.path === _se.path && se.url === _se.url) {
+        $scope.setting.preload_list.splice(i, 1);
       }
     });
   };

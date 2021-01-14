@@ -1,6 +1,13 @@
 module.exports = function (SOCIALBROWSER) {
 
-   
+  SOCIALBROWSER.var.white_list.forEach((site) => {
+    if (site.url.length > 2 && document.location.href.like(site.url)) {
+     SOCIALBROWSER.is_white_site = true
+    }
+  });
+
+
+
   require(SOCIALBROWSER.files_dir + '/js/context-menu/fn.js')(SOCIALBROWSER);
   require(SOCIALBROWSER.files_dir + '/js/context-menu/finger_print.js')(SOCIALBROWSER);
   require(SOCIALBROWSER.files_dir + '/js/context-menu/custom.js')(SOCIALBROWSER);
@@ -16,17 +23,17 @@ module.exports = function (SOCIALBROWSER) {
   require(SOCIALBROWSER.files_dir + '/js/context-menu/addmefast.js')(SOCIALBROWSER);
   require(SOCIALBROWSER.files_dir + '/js/context-menu/youlikehits.js')(SOCIALBROWSER);
   require(SOCIALBROWSER.files_dir + '/js/context-menu/menu.js')(SOCIALBROWSER);
+  require(SOCIALBROWSER.files_dir + '/js/scripts/linkatcom.js')(SOCIALBROWSER);
 
   SOCIALBROWSER.var.session_list.sort((a, b) => (a.display > b.display ? 1 : -1));
   SOCIALBROWSER.on('var.session_list', (e, res) => {
     SOCIALBROWSER.var.session_list = res.data;
     SOCIALBROWSER.var.session_list.sort((a, b) => (a.display > b.display ? 1 : -1));
   });
-  
-  document.addEventListener('DOMNodeInserted', function (event) {
-    // if (SOCIALBROWSER && !!window && !(!!window.jQuery)) {
-    //     window.jQuery = require(SOCIALBROWSER.files_dir + '/js/jquery.js');
-    // }
+
+  document.addEventListener('DOMNodeInserted', function (e) {
+   
+   
   });
 
   let $is_DOMContentLoaded = false;
@@ -35,6 +42,12 @@ module.exports = function (SOCIALBROWSER) {
       return;
     }
     $is_DOMContentLoaded = true;
+
+    if (SOCIALBROWSER && !!window && !(!!window.jQuery)) {
+      window.jQuery = require(SOCIALBROWSER.files_dir + '/js/jquery.js');
+  }
+
+
 
     const xxx__browser = document.createElement('div');
     xxx__browser.id = 'xxx__browser';
@@ -64,6 +77,9 @@ module.exports = function (SOCIALBROWSER) {
     });
   });
 
+  // SOCIALBROWSER.__define(navigator, 'vendor', '');
+  // SOCIALBROWSER.__define(navigator, 'oscpu', 'Windows NT 10.0; Win64; x64');
+
   // user agent
   let user_agent_set = false;
   SOCIALBROWSER.var.sites.forEach((site) => {
@@ -73,10 +89,17 @@ module.exports = function (SOCIALBROWSER) {
     }
   });
   if (!user_agent_set) {
-    SOCIALBROWSER.__define(navigator, 'userAgent', SOCIALBROWSER.var.core.user_agent);
+    SOCIALBROWSER.__define(navigator, 'userAgent', SOCIALBROWSER.currentWindow.webContents.getUserAgent() || SOCIALBROWSER.var.core.user_agent);
   }
 
-}
-
-
-
+  // load user preload list
+  SOCIALBROWSER.var.preload_list.forEach((p) => {
+    if (document.location.href.like(p.url)) {
+      try {
+        require(p.path.replace('{dir}', SOCIALBROWSER.dir))(SOCIALBROWSER);
+      } catch (error) {
+        console.error(error)
+      }
+    }
+  });
+};

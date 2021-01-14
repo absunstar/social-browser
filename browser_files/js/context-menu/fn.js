@@ -8,6 +8,7 @@ module.exports = function (SOCIALBROWSER) {
       return;
     }
     Object.defineProperty(o, p, {
+      
       get: function () {
         return v;
       },
@@ -16,6 +17,30 @@ module.exports = function (SOCIALBROWSER) {
       o.prototype[p] = v;
     }
   };
+
+  window.location0 = window.location.ancestorOrigins
+  // window.location = {
+  //   ancestorOrigins : window.location.ancestorOrigins,
+  //   host : window.location.host,
+  //   hostname : window.location.hostname,
+  //   origin : window.location.origin,
+  //   pathname : window.location.pathname,
+  //   port : window.location.port,
+  //   protocol : window.location.protocol,
+  //   search : window.location.search,
+  //   href : window.location.href
+  // }
+
+  // Object.defineProperty(window.location, 'href', {
+  //   configurable: true,
+  //   get() {
+  //     return 'mmmmmmmmmmmmmmmmmmm';
+  //   },
+  //   set(newValue) {
+  //     console.log(' [href] ', newValue);
+  //   },
+  // });
+
 
   SOCIALBROWSER.isValidURL = function (str) {
     var pattern = new RegExp(
@@ -155,9 +180,9 @@ module.exports = function (SOCIALBROWSER) {
 
   window.postMessage0 = window.postMessage;
   window.postMessage = function (...args) {
-   // console.log(' [ Post Message ] ',...args)
+    // console.log(' [ Post Message ] ',...args)
     if (SOCIALBROWSER.var.blocking.javascript.block_window_post_message) {
-      console.warn('Block Post Message ',...args)
+      console.warn('Block Post Message ', ...args);
     }
     return window.postMessage0(...args);
   };
@@ -386,7 +411,9 @@ module.exports = function (SOCIALBROWSER) {
   SOCIALBROWSER.on('user_downloads', (event, data) => {
     showDownloads(data.message, data.class);
   });
-
+  SOCIALBROWSER.on('show_message', (event, data) => {
+    alert(data.message);
+  });
   window.open = function (url, _name, _specs, _replace_in_history) {
     let opener = {
       closed: false,
@@ -410,7 +437,13 @@ module.exports = function (SOCIALBROWSER) {
         write: () => {
           console.log('document write opener');
         },
+        
       },
+      self: {
+        close: () => {
+          console.log('opener self close');
+        }
+      }
     };
 
     if (SOCIALBROWSER.var.blocking.javascript.block_window_open) {
@@ -477,7 +510,7 @@ module.exports = function (SOCIALBROWSER) {
       backgroundColor: '#ffffff',
       frame: true,
       icon: SOCIALBROWSER.path.join(SOCIALBROWSER.files_dir, 'images', 'logo.ico'),
-      parent : SOCIALBROWSER.electron.remote.getCurrentWebContents(),
+      parent: SOCIALBROWSER.electron.remote.getCurrentWebContents(),
       webPreferences: {
         contextIsolation: false,
         session: SOCIALBROWSER.electron.remote.getCurrentWebContents().session,

@@ -20,11 +20,13 @@ module.exports = function (SOCIALBROWSER) {
       a.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
+
         SOCIALBROWSER.call('render_message', {
           name: 'open new tab',
           referrer: document.location.href,
           url: a.href,
           partition: partition,
+          user_name : SOCIALBROWSER.var.session_list.filter(s => s.name == partition)[0].display
         });
       });
     }

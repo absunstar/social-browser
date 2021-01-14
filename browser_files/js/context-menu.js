@@ -6,9 +6,12 @@
       core: { id: '', user_agent: '' },
       sites: [],
       session_list: [],
-      blocking: { javascript: {}, privacy: {}, youtube: {} },
+      blocking: { javascript: {}, privacy: {}, youtube: {} , social :{}},
       facebook: {},
+      white_list : [],
+      black_list : [],
       open_list: [],
+      preload_list: [],
       context_menu: { dev_tools: true, inspect: true },
     },
   };
@@ -36,6 +39,9 @@
   SOCIALBROWSER.files_dir = SOCIALBROWSER.callSync('get_browser', {
     name: 'files_dir',
   });
+  SOCIALBROWSER.dir = SOCIALBROWSER.callSync('get_browser', {
+    name: 'dir',
+  });
 
   SOCIALBROWSER.nativeImage = function (_path) {
     try {
@@ -51,10 +57,11 @@
     }
   };
   SOCIALBROWSER.currentWindow = SOCIALBROWSER.electron.remote.getCurrentWindow();
+  SOCIALBROWSER.timeOffset = new Date().getTimezoneOffset()
   require(SOCIALBROWSER.files_dir + '/js/context-menu/init.js')(SOCIALBROWSER);
 
   let l_name =
-    'user_data,user_data_input,sites,youtube,facebook,javascript,context_menu,open_list,proxy_list,proxy,popup,core,login,vip,bookmarks,black_list,white_list,session_list,user_agent_list,blocking';
+    'user_data,user_data_input,sites,youtube,facebook,javascript,context_menu,open_list,preload_list,proxy_list,proxy,popup,core,login,vip,bookmarks,black_list,white_list,session_list,user_agent_list,blocking,video_quality_list';
   if (document.location.href.contains('127.0.0.1:60080')) {
     l_name = '*';
   }

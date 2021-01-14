@@ -2,36 +2,37 @@ module.exports = function (SOCIALBROWSER) {
   // change readonly properties
   // https://hidester.com/browser-fingerprint/
 
-  if (document.location.href.like('*google*|*http://127.0.0.1*')) {
+  if (document.location.href.like('*http://127.0.0.1*')) {
     console.log(' [Finger Printing] OFF : ' + document.location.href);
     return;
   }
-  // let end = false;
-  // SOCIALBROWSER.var.white_list.forEach((site) => {
-  //   if (site.url.length > 2 && document.location.href.like(site.url)) {
-  //     end = true;
-  //   }
-  // });
-  // if (end) {
-  //   console.log('finger printing protection not working in this white list sites  ' + document.location.href);
-  //   return;
-  // }
+ 
 
   window.mozRTCPeerConnection = window.webkitRTCPeerConnection;
 
-  SOCIALBROWSER.__define(navigator, 'vendor', '');
-  SOCIALBROWSER.__define(navigator, 'oscpu', 'Windows NT 10.0; Win64; x64');
-
   if (SOCIALBROWSER.var.blocking.privacy.set_window_active) {
     // make window active for ever
+    let events = '*mouseout*|pagehide*|*hashchange*|*popstate*|*state-change*|*visibilitychange*|*mozvisibilitychange*|*webkitvisibilitychange*|*msvisibilitychange*|*blur*'
     window.addEventListener0 = window.addEventListener;
     window.addEventListener = function (type, listener, options) {
-      if (type.like('*visibilitychange*|*blur*')) {
+      if (type.like(events)) {
         return;
       }
       window.addEventListener0(type, listener, options);
     };
-    document.hasFocus = () => true;
+    document.addEventListener0 = document.addEventListener;
+    document.addEventListener = function (type, listener, options) {
+      if (type.like(events)) {
+        return;
+      }
+      document.addEventListener0(type, listener, options);
+    };
+   document.hasFocus = () => true;
+    SOCIALBROWSER.__define(document, 'hidden ', false);
+    // SOCIALBROWSER.__define(document, 'hasFocus ', () => true);
+    setInterval(() => {
+      window.onpageshow = window.onpagehide = window.onfocus = window.onblur = document.onfocusin = document.onfocusout = null;
+    }, 1000);
   }
 
   if (SOCIALBROWSER.var.blocking.privacy.block_rtc) {

@@ -122,6 +122,9 @@
               <a class="tab-link" onclick="site.showTabContent(event, '#downloader_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-download"></i> Downloader </a>
 
               <a class="tab-link" onclick="site.showTabContent(event, '#users_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-users"></i> Users </a>
+              <a class="tab-link" onclick="site.showTabContent(event, '#user_agent_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-list"></i> User Agent List </a>
+              <a class="tab-link" onclick="site.showTabContent(event, '#proxy_list_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-list"></i> Proxy List </a>
+              <a class="tab-link" onclick="site.showTabContent(event, '#preload_list_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-list"></i> Preload Scripts List </a>
               <a class="tab-link" onclick="site.showTabContent(event, '#login_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-user"></i> Login </a>
             </div>
             <div class="tabs-content">
@@ -222,6 +225,8 @@
                   <fieldset>
                     <legend>Social Media</legend>
 
+                    <i-checkbox class="row" label="Allow Social Menu" ng-model="setting.blocking.social.allow_menu"></i-checkbox>
+                    <i-checkbox class="row" label="Allow Alexa Tools" ng-model="setting.blocking.social.allow_alexa"></i-checkbox>
                     <i-checkbox class="row" label="Allow 10khits.com tools" ng-model="setting.blocking.social.allow_10khits"></i-checkbox>
                     <i-checkbox class="row" label="Allow addmefast.com tools" ng-model="setting.blocking.social.allow_addmefast"></i-checkbox>
                     <i-checkbox class="row" label="Allow youlikehits.com tools" ng-model="setting.blocking.social.allow_youlikehits"></i-checkbox>
@@ -278,7 +283,7 @@
                     <div>
                       <i-checkbox class="row" label="Auto Skip Ads " ng-model="setting.blocking.youtube.skip_ads"> </i-checkbox>
                       <i-checkbox class="row" label="Safty Mode" ng-model="setting.blocking.youtube.allow_safty_mode"></i-checkbox>
-
+                      <i-list class="row" primary="name" display="value" ng-model="setting.blocking.youtube.quality" items="setting.video_quality_list" label="Video Quality"></i-list>
                       <div class="row">
                         <i-button label="Blocing Words" ng-show="setting.blocking.youtube.allow_safty_mode" type="btn bg-black white" ng-click="showYoutubeWordsModal()"></i-button>
                       </div>
@@ -392,11 +397,68 @@
                   <br />
 
                   <div class="row padding margin">
-                    <div class="col6">
+                    <div class="col5">
                       <fieldset>
                         <legend>New Profile</legend>
                         <i-control label="Name" ng-model="session.display"></i-control>
                         <i-button type="add" ng-click="addSession()" label="Add to profiles"></i-button>
+                      </fieldset>
+                    </div>
+                    <div class="col1"></div>
+                    <div class="col5">
+                      <fieldset>
+                        <legend>Generate Profiles</legend>
+                        <div class="row">
+                          <div class="col8"><i-control label="Name" ng-model="session.display"></i-control></div>
+                          <div class="col4"><i-control type="number" label="Count" ng-model="session.count"></i-control></div>
+                        </div>
+                          <div class="row">
+                            <label> example : user_{count}@yoursite.com</label>
+                          </div>
+                        <i-button type="add" ng-click="generateSession()" label="Start Generate"></i-button>
+                      </fieldset>
+                    </div>
+
+                  </div>
+
+                  <br />
+                  <br />
+                    <div class="row">
+                      <i-button type="" onclick="SOCIALBROWSER.call('check_sessions')" label="Checking Sessions"></i-button>
+                    </div>
+                  <div class="row">
+                    <table class="table hover">
+                      <tr>
+                        <th>ID</th>
+                        <th>Name <input type="text" ng-model="session.display"></th>
+                        <th>Actions</th>
+                      </tr>
+                      <tr ng-repeat="_se in setting.session_list | filter:session track by $index">
+                        <td>{{_se.name}}</td>
+                        <td><input class="block full-width" type="text" ng-model="_se.display" /></td>
+                        <td>
+                          <a  class="btn bg-red white" ng-click="removeSession(_se)"> <i class="fa fa-trash"></i> Remove </a>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div id="user_agent_tab" class="tab-content">
+                <div class="row">
+                 
+                      <h2>Manage User Agent [ Add , Edit , Delete]</h2>
+                    
+                  <br />
+
+                  <div class="row padding margin">
+                    <div class="col6">
+                      <fieldset>
+                        <legend>New User Agent</legend>
+                        <i-control label="Name" ng-model="userAgent.name"></i-control>
+                        <i-control label="URL" ng-model="userAgent.url"></i-control>
+                        <i-button type="add" ng-click="addUserAgent()" label="Add to List"></i-button>
                       </fieldset>
                     </div>
                   </div>
@@ -407,21 +469,110 @@
                   <div class="row">
                     <table class="table hover">
                       <tr>
-                        <th>ID</th>
-                        <th>Name <input type="text" ng-model="session.display"></th>
+                        <th>Index</th>
+                        <th>Name <input type="text" ng-model="userAgent.name"></th>
+                        <th>URL <input type="text" ng-model="userAgent.url"></th>
                         <th>Actions</th>
                       </tr>
-                      <tr ng-repeat="_se in setting.session_list | filter:session | orderBy : 'display' track by $index">
-                        <td>{{_se.name}}</td>
-                        <td><input class="block full-width" type="text" ng-model="_se.display" /></td>
+                      <tr ng-repeat="_se in setting.user_agent_list | filter:userAgent | orderBy : 'name' track by $index">
+                        <td>{{$index + 1}}</td>
+                        <td><input class="block full-width" type="text" ng-model="_se.name" /></td>
+                        <td><input class="block full-width" type="text" ng-model="_se.url" /></td>
                         <td>
-                          <a ng-show="_se.can_delete" class="btn bg-red white" ng-click="removeSession(_se)"> <i class="fa fa-trash"></i> Remove </a>
+                          <a  class="btn bg-red white" ng-click="removeUserAgent(_se)"> <i class="fa fa-trash"></i> Remove </a>
                         </td>
                       </tr>
                     </table>
                   </div>
                 </div>
               </div>
+
+
+              <div id="proxy_list_tab" class="tab-content">
+                <div class="row">
+                 
+                      <h2>Manage Proxy List [ Add , Edit , Delete]</h2>
+                    
+                  <br />
+
+                  <div class="row padding margin">
+                    <div class="col6">
+                      <fieldset>
+                        <legend>New Proxy</legend>
+                        <i-control label="Name" ng-model="proxy.name"></i-control>
+                        <i-control label="URL" ng-model="proxy.url"></i-control>
+                        <i-button type="add" ng-click="addProxy()" label="Add to List"></i-button>
+                      </fieldset>
+                    </div>
+                  </div>
+
+                  <br />
+                  <br />
+
+                  <div class="row">
+                    <table class="table hover">
+                      <tr>
+                        <th>Index</th>
+                        <th>Name <input type="text" ng-model="proxy.name"></th>
+                        <th>URL <input type="text" ng-model="proxy.url"></th>
+                        <th>Actions</th>
+                      </tr>
+                      <tr ng-repeat="_se in setting.proxy_list | filter:proxy | orderBy : 'name' track by $index">
+                        <td>{{$index + 1}}</td>
+                        <td><input class="block full-width" type="text" ng-model="_se.name" /></td>
+                        <td><input class="block full-width" type="text" ng-model="_se.url" /></td>
+                        <td>
+                          <a  class="btn bg-red white" ng-click="removeProxy(_se)"> <i class="fa fa-trash"></i> Remove </a>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div id="preload_list_tab" class="tab-content">
+                <div class="row">
+                 
+                      <h2>Manage Preload Scripts [ Add , Edit , Delete]</h2>
+                      <p class="red"> This scripts will run before any script in running site</p>
+                    
+                  <br />
+
+                  <div class="row padding margin">
+                    <div class="col6">
+                      <fieldset>
+                        <legend>New Script</legend>
+                        <i-control label="File Path" ng-model="preload.path"></i-control>
+                        <i-control label="Site URL" ng-model="preload.url"></i-control>
+                        <i-button type="add" ng-click="addPreload()" label="Add to List"></i-button>
+                      </fieldset>
+                    </div>
+                  </div>
+
+                  <br />
+                  <br />
+
+                  <div class="row">
+                    <table class="table hover">
+                      <tr>
+                        <th>Index</th>
+                        <th>File Path <input type="text" ng-model="preload.path"></th>
+                        <th>Site URL <input type="text" ng-model="preload.url"></th>
+                        <th>Actions</th>
+                      </tr>
+                      <tr ng-repeat="_se in setting.preload_list | filter:preload track by $index">
+                        <td>{{$index + 1}}</td>
+                        <td><input class="block full-width" type="text" ng-model="_se.path" /></td>
+                        <td><input class="block full-width" type="text" ng-model="_se.url" /></td>
+                        <td>
+                          <a  class="btn bg-red white" ng-click="removePreload(_se)"> <i class="fa fa-trash"></i> Remove </a>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
               <div id="passwords_tab" class="tab-content">
                 <table class="table hover">
                   <tr>
@@ -946,7 +1097,7 @@
             <h2>White List</h2>
           </div>
           <div class="modal-body">
-            <h2 class="padding margin center">This Sites Can Display [ Ads , popup , ... ]</h2>
+            <h2 class="padding margin center">These Sites Can Display [ Ads , popup , un safty content , iframes ]</h2>
             <div class="row padding">
               <div class="col6">
                 <a ng-click="addWhiteSite()" class="btn bg-green white"> Add New </a>

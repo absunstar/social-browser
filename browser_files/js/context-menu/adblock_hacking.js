@@ -1,5 +1,5 @@
 module.exports = function (SOCIALBROWSER) {
-  if (document.location.href.like('*google*|*http://127.0.0.1*')) {
+  if (SOCIALBROWSER.is_white_site == true || !SOCIALBROWSER.var.blocking.block_ads || document.location.href.like('*http://127.0.0.1*')) {
     console.log(' [AD Hacking] OFF : ' + document.location.href);
     return;
   }
@@ -8,7 +8,23 @@ module.exports = function (SOCIALBROWSER) {
     return functionToCheck && {}.toString.call(functionToCheck) === '[object Function]';
   }
 
+  window.addEventListener('load', function (e) {
+    window['fuckAdBlock'] = window['FuckAdBlock'] = {
+      _var : {event:{detected : [] , notDetected : [window]}}
+    }
+  });
+
+  document.addEventListener('DOMNodeInserted', function (e) {
+    if (e.target.tagName == 'SCRIPT' && e.target.innerHTML.like('*FuckAdBlock*')) {
+    }
+  });
+
   document.addEventListener('DOMContentLoaded', () => {
+    if (document.querySelector('body') && document.querySelector('body').innerHTML.like('*FuckAdBlock*')) {
+      delete window['fuckAdBlock'];
+      delete window['FuckAdBlock'];
+    }
+
     if (document.location.href.like('*streamtape.com*')) {
       let p = document.querySelector('.plyr-container');
       if (p) {
@@ -50,7 +66,8 @@ module.exports = function (SOCIALBROWSER) {
 
   function hack_script() {
     window.googleAd = true;
-   // window['FuckAdBlock'] = window['FuckAdBlock'] || {};
+
+    window['$tieE3'] = true;
     window['zfgformats'] = [];
     window.adbDetectorLoaded = 'loaded';
     window.cefQuery = function (options) {
@@ -67,10 +84,10 @@ module.exports = function (SOCIALBROWSER) {
     //     a[104] = ''
     //     a[105] = ''
     // }
+    setTimeout(() => {
+      hack_script();
+    }, 100);
   }
 
   hack_script();
-  setInterval(() => {
-    hack_script();
-  }, 1000);
 };

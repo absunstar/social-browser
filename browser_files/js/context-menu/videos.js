@@ -74,11 +74,10 @@ module.exports = function (SOCIALBROWSER) {
                     if (!trusted_ids.includes(v.id) && v.currentTime > 0 && !v.paused && !v.ended && v.readyState > 2) {
                         alert('<b> Auto Skiping Ads Video </b>  <small><i> Changing Form Setting </i></small>', 2000)
                         try {
-                            v.currentTime = parseFloat(v.duration)
                             document.querySelectorAll(skip_buttons).forEach(b => {
-                                console.log(b)
                                 b.click()
                             })
+                            v.currentTime = parseFloat(v.duration)
                         } catch (error) {
                             console.log(error)
                         }
@@ -87,11 +86,11 @@ module.exports = function (SOCIALBROWSER) {
             }
             setTimeout(() => {
                 skipAdsVideos()
-            }, 1000 * 3);
+            }, 1000 * 1);
         } else {
             setTimeout(() => {
                 skipAdsVideos()
-            }, 1000 * 3);
+            }, 1000 * 1);
         }
 
     }

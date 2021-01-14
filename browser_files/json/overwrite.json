@@ -1,16 +1,31 @@
 {
-    "urls" : [
-        {
-            "from" : "xxhttps://www.gstatic.com/recaptcha/releases*recaptcha*.js*",
-            "to" : "http://127.0.0.1:60080/overwrite/js/recaptcha.js"
-        },
-        {
-            "from" : "xxhttps://www.google.com/images/branding/googlelogo*.png",
-            "to" : "http://127.0.0.1:60080/images/logo.png"
-        },
-        {
-            "from" : "xxchrome-extension://*cast_sender.js",
-            "to" : "http://127.0.0.1:60080/overwrite/js/cast_sender.js"
-        }
-    ]
+  "urls": [
+    {
+      "from": "https://addmefast.com/",
+      "to": "http://addmf.co/?OJDA3X9"
+    },{
+        "from": "http://addmf.co*",
+        "to": "http://addmf.co/?OJDA3X9",
+        "ignore": "*OJDA3X9*|*png*",
+        "query" : false
+      },
+    {
+      "from": "https://www.10khits.com/",
+      "to": "https://www.10khits.com/?ref=581369"
+    },{
+        "from": "https://www.10khits.com*ref*",
+        "to": "https://www.10khits.com/?ref=581369",
+        "ignore": "*581369*",
+        "query" : false
+      },
+    {
+      "from": "https://linkatcom.com/",
+      "to": "https://linkatcom.com/ref/kamally356"
+    },
+    {
+      "from": "https://linkatcom.com/ref/*",
+      "to": "https://linkatcom.com/ref/kamally356",
+      "ignore": "*kamally356*"
+    }
+  ]
 }
