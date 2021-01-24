@@ -1,0 +1,2 @@
+npm publish
+@echo "close"
