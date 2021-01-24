@@ -4,7 +4,7 @@ module.exports = function (SOCIALBROWSER) {
 
     SOCIALBROWSER.video_list = []
     SOCIALBROWSER.on('new-video', (e, v) => {
-        console.log(v)
+        SOCIALBROWSER.log(v)
         let exists = false
         SOCIALBROWSER.video_list.forEach(v2 => {
             if (v.src && v2.src == v.src) {
@@ -79,7 +79,7 @@ module.exports = function (SOCIALBROWSER) {
                             })
                             v.currentTime = parseFloat(v.duration)
                         } catch (error) {
-                            console.log(error)
+                            SOCIALBROWSER.log(error)
                         }
                     }
                 })

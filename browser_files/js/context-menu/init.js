@@ -10,45 +10,49 @@ module.exports = function (SOCIALBROWSER) {
   }
 
   if (!String.prototype.test) {
-    Object.defineProperty(String.prototype, 'test', {
-      value: function (reg, flag = 'gium') {
-        try {
-          return new RegExp(reg, flag).test(this);
-        } catch (error) {
-          return false;
-        }
-      },
-    });
+    String.prototype.test = function (reg, flag = 'gium') {
+      try {
+        return new RegExp(reg, flag).test(this);
+      } catch (error) {
+        return false;
+      }
+    };
   }
 
   if (!String.prototype.like) {
-    Object.defineProperty(String.prototype, 'like', {
-      value: function (name) {
-        if (!name) {
-          return false;
-        }
-        name = name.split('*');
-        name.forEach((n, i) => {
-          name[i] = escape(n);
+    String.prototype.like = function (name) {
+      if (typeof name === 'number') {
+        name = name.toString();
+      } else if (typeof name !== 'string') {
+        return false;
+      }
+      let r = false;
+      name.split('|').forEach((n) => {
+        n = n.split('*');
+        n.forEach((w, i) => {
+          n[i] = escape(w);
         });
-        name = name.join('.*');
-        return this.test('^' + name + '$', 'gium');
-      },
-    });
+        n = n.join('.*');
+        if (this.test('^' + n + '$', 'gium')) {
+          r = true;
+        }
+      });
+      return r;
+    };
   }
 
   if (!String.prototype.contains) {
-    Object.defineProperty(String.prototype, 'contains', {
-      value: function (name) {
-        if (!name) {
-          return false;
-        }
-        return this.test('^.*' + escape(name) + '.*$', 'gium');
-      },
-    });
+    String.prototype.contains = function (name) {
+      let r = false;
+      if (!name) {
+        return r;
+      }
+      name.split('|').forEach((n) => {
+          if(n && this.test('^.*' + escape(n) + '.*$', 'gium')){
+            r = true
+          }
+      })
+      return r;
+    };
   }
-
-  Date.prototype.getTimezoneOffset = function () {
-    return 0;
-  };
 };

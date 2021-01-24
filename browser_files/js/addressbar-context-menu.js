@@ -12,42 +12,48 @@
       }
       
       if (!String.prototype.test) {
-        Object.defineProperty(String.prototype, "test", {
-          value: function (reg, flag = "gium") {
-            try {
-              return new RegExp(reg, flag).test(this);
-            } catch (error) {
-              return false;
-            }
-          },
-        });
+        String.prototype.test = function (reg, flag = 'gium') {
+          try {
+            return new RegExp(reg, flag).test(this);
+          } catch (error) {
+            return false;
+          }
+        };
       }
-      
+    
       if (!String.prototype.like) {
-        Object.defineProperty(String.prototype, "like", {
-          value: function (name) {
-            if (!name) {
-              return false;
-            }
-            name = name.split("*");
-            name.forEach((n, i) => {
-              name[i] = escape(n);
+        String.prototype.like = function (name) {
+          if (!name) {
+            return false;
+          }
+          let r = false;
+          name.split('|').forEach((n) => {
+            n = n.split('*');
+            n.forEach((w, i) => {
+              n[i] = escape(w);
             });
-            name = name.join(".*");
-            return this.test("^" + name + "$", "gium");
-          },
-        });
-      }
-      
-      if (!String.prototype.contains) {
-        Object.defineProperty(String.prototype, "contains", {
-          value: function (name) {
-            if (!name) {
-              return false;
+            n = n.join('.*');
+            if (this.test('^' + n + '$', 'gium')) {
+              r = true;
             }
-            return this.test("^.*" + escape(name) + ".*$", "gium");
-          },
-        });
+          });
+          return r;
+        };
+      }
+    
+      if (!String.prototype.contains) {
+        String.prototype.contains = function (name) {
+          let r = false;
+          if (!name) {
+            return r;
+          }
+          name.split('|').forEach((n) => {
+              if(n && this.test('^.*' + escape(n) + '.*$', 'gium')){
+                r = true
+              }
+          })
+          return r;
+        };
       }
 
     var SOCIALBROWSER = {}
@@ -78,6 +84,7 @@
         name: 'session_list,core',
       }).then(result=> {
         SOCIALBROWSER.var = result;
+        SOCIALBROWSER.var.session_list.sort((a, b) => (a.display > b.display ? 1 : -1));
       },
     );
   
@@ -201,7 +208,7 @@
             new MenuItem({
                 label: "inspect Element",
                 click() {
-                    SOCIALBROWSER.currentWindow.inspectElement(rightClickPosition.x, rightClickPosition.y)
+                    SOCIALBROWSER.currentWindow.webContents.inspectElement(rightClickPosition.x, rightClickPosition.y)
                 }
             })
         )
@@ -210,7 +217,7 @@
             new MenuItem({
                 label: "Developer Tools",
                 click() {
-                    SOCIALBROWSER.currentWindow.openDevTools({
+                    SOCIALBROWSER.currentWindow.webContents.openDevTools({
                         mode: 'undocked'
                     })
                 }

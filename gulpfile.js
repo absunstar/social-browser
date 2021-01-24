@@ -9,9 +9,9 @@ const gulp = require('gulp')
 
 
 
-function build() {
-   return gulp.src(['../ibrowser/*' , '../ibrowser/*/*.*'])
-    .pipe(gulp.dest('./node_modules/ibrowser'))
-}
+// function build() {
+//    return gulp.src(['../ibrowser/*' , '../ibrowser/*/*.*'])
+//     .pipe(gulp.dest('./node_modules/ibrowser'))
+// }
 
-gulp.task('default', build);
+// gulp.task('default', build);

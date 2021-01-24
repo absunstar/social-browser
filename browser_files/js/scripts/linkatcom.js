@@ -3,7 +3,7 @@ module.exports = function (SOCIALBROWSER) {
     return;
   }
 
-  console.log(' >>> linkatcom script activated ...');
+  SOCIALBROWSER.log(' >>> linkatcom script activated ...');
 
   document.addEventListener('DOMNodeInserted', function (e) {
     if (e.target.tagName == 'SCRIPT' && e.target.innerHTML.like('*app_vars*')) {
@@ -12,12 +12,12 @@ module.exports = function (SOCIALBROWSER) {
   });
   document.addEventListener('DOMContentLoaded', () => {
     if (document.querySelector('body').innerHTML.like('*app_vars*')) {
-      console.log('DOMContentLoaded')
-      console.log(window.app_vars)
+      SOCIALBROWSER.log('DOMContentLoaded')
+      SOCIALBROWSER.log(window.app_vars)
       window.app_vars['enable_captcha'] = 'yes';
       window.app_vars['force_disable_adblock'] = '0';
       window.app_vars['captcha_type'] = 'invisible-recaptcha';
-      console.log(window.app_vars)
+      SOCIALBROWSER.log(window.app_vars)
     }
   });
 

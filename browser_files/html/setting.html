@@ -10,7 +10,7 @@
     <title>Setting</title>
     <style>
       :root {
-        --fieldset-border: 1px solid #bbb;
+        --fieldset-border: 1px dashed #9e9e9e;
         --modal-color: #000000;
         --modal-background: #00000026;
         --font-family: 'Droid Arabic Kufi', monospace;
@@ -56,6 +56,17 @@
       .width-200 {
         width: 200px;
       }
+
+      i-checkbox .selector.selected {
+        background: #009688;
+        color: #fff;
+        text-shadow: 0 0 10px black;
+      }
+      i-checkbox .selector.un-selected {
+        background: #a8aba5;
+        border: none;
+        color: #fff;
+      }
     </style>
   </head>
 
@@ -97,13 +108,15 @@
             <div class="tabs-header">
               <a class="tab-link" onclick="site.showTabContent(event, '#basic_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-info-circle"></i> Basic </a>
 
+              <a class="tab-link" onclick="site.showTabContent(event, '#users_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-users"></i> Users </a>
               <a class="tab-link" id="safty_btn" onclick="site.showTabContent(event, '#safty_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
                 <i class="fa fa-lock"></i> Children Safty Mode
               </a>
-              <a class="tab-link" onclick="site.showTabContent(event, '#blocking_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-ban"></i> Options & Blocking </a>
-              <a class="tab-link" onclick="site.showTabContent(event, '#privacy_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-ban"></i> Privacy & scripts </a>
-             
-              
+              <a class="tab-link" onclick="site.showTabContent(event, '#blocking_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-code"></i> Blocking Engine</a>
+              <a class="tab-link" onclick="site.showTabContent(event, '#privacy_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-code"></i> Browser Finger Print </a>
+              <a class="tab-link" onclick="site.showTabContent(event, '#javascript_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-code"></i> Java Script </a>
+              <a class="tab-link" onclick="site.showTabContent(event, '#social_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-code"></i> Social Media </a>
+
               <a class="tab-link" onclick="site.showTabContent(event, '#passwords_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-key"></i> Passwords </a>
 
               <a class="tab-link" onclick="site.showTabContent(event, '#youtube_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-youtube"></i> Youtube </a>
@@ -121,7 +134,6 @@
               <a class="tab-link" onclick="site.showTabContent(event, '#menu_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-bars"></i> Context Menu </a>
               <a class="tab-link" onclick="site.showTabContent(event, '#downloader_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-download"></i> Downloader </a>
 
-              <a class="tab-link" onclick="site.showTabContent(event, '#users_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-users"></i> Users </a>
               <a class="tab-link" onclick="site.showTabContent(event, '#user_agent_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-list"></i> User Agent List </a>
               <a class="tab-link" onclick="site.showTabContent(event, '#proxy_list_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-list"></i> Proxy List </a>
               <a class="tab-link" onclick="site.showTabContent(event, '#preload_list_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-list"></i> Preload Scripts List </a>
@@ -176,8 +188,12 @@
                   <br />
                   <br />
                   <br />
-                  <i-button type="btn bg-black white" ng-click="showBlackListModal()" label="Black List Sites"></i-button>
-                  <i-button type="btn bg-white black" ng-click="showWhiteListModal()" label="White List Sites"></i-button>
+                  <i-checkbox class="row" label="Send Browser Token" ng-model="setting.blocking.privacy.browser_token"></i-checkbox>
+                  <br />
+                  <br />
+                  <br />
+                  <i-button type="btn bg-green white" ng-click="showBlackListModal()" label="Black List Sites"></i-button>
+                  <i-button type="btn bg-green white" ng-click="showWhiteListModal()" label="White List Sites"></i-button>
                 </div>
               </div>
               <div id="blocking_tab" class="tab-content">
@@ -186,11 +202,12 @@
                     <legend>Popup window</legend>
 
                     <br />
-                    <i-checkbox class="row" label="Allow External Popup" ng-model="setting.blocking.popup.allow_external"></i-checkbox>
-                    <i-checkbox class="row" label="Allow Internal Popup" ng-model="setting.blocking.popup.allow_internal"></i-checkbox>
-
                     <div class="row">
-                      <i-button label="Popup White List" type="btn bg-white black" ng-click="showPopupIgnoreURLsModal()"></i-button>
+                      <div class="col6">
+                        <i-checkbox class="row" label="Allow External Popup" ng-model="setting.blocking.popup.allow_external"></i-checkbox>
+                        <i-checkbox class="row" label="Allow Internal Popup" ng-model="setting.blocking.popup.allow_internal"></i-checkbox>
+                      </div>
+                      <div class="col6"><i-button label="Popup White List" type="btn bg-green white" ng-click="showPopupIgnoreURLsModal()"></i-button></div>
                     </div>
                   </fieldset>
 
@@ -198,16 +215,18 @@
                     <legend>Blocking</legend>
 
                     <br />
-
-                    <i-checkbox class="row" label="Auto Skip Video Ads " ng-model="setting.blocking.skip_video_ads"> </i-checkbox>
-                    <i-checkbox class="row" label="Remove External IFRAMES " ng-model="setting.blocking.remove_external_iframe"> </i-checkbox>
-                    <i-checkbox class="row" label="Remove Empty IFRAMES " ng-model="setting.blocking.block_empty_iframe"> </i-checkbox>
-                    <i-checkbox class="row" label="Block Ads " ng-model="setting.blocking.block_ads"></i-checkbox>
-                    <i-checkbox class="row" label="Block Doms " ng-model="setting.blocking.block_html_tags"></i-checkbox>
-
                     <div class="row">
-                      <i-button type="btn bg-black white" ng-click="showAdsModal()" label="Blocking Ads Links"></i-button>
-                      <i-button type="btn bg-black white" ng-click="showDomsModal()" label="Blocking Doms Selector"></i-button>
+                      <div class="col6">
+                        <i-checkbox class="row" label="Auto Skip Video Ads " ng-model="setting.blocking.skip_video_ads"> </i-checkbox>
+                        <i-checkbox class="row" label="Auto Remove External IFRAMES " ng-model="setting.blocking.remove_external_iframe"> </i-checkbox>
+                        <i-checkbox class="row" label="Auto Remove Empty IFRAMES " ng-model="setting.blocking.block_empty_iframe"> </i-checkbox>
+                        <i-checkbox class="row" label="Enable Block Ads " ng-model="setting.blocking.block_ads"></i-checkbox>
+                        <i-checkbox class="row" label="Enable Block HTML Tags " ng-model="setting.blocking.block_html_tags"></i-checkbox>
+                      </div>
+                      <div class="col6">
+                        <i-button type="btn bg-green white" ng-click="showAdsModal()" label="Blocking Ads Links"></i-button>
+                        <i-button type="btn bg-green white" ng-click="showDomsModal()" label="Blocking Doms Selector"></i-button>
+                      </div>
                     </div>
                   </fieldset>
 
@@ -220,50 +239,115 @@
                     <i-checkbox class="row" label="Send Don't Track Header" ng-model="setting.blocking.privacy.dnt"></i-checkbox>
                     <i-checkbox class="row" label="Show Bookmarks in Google Page" ng-model="setting.blocking.privacy.show_bookmarks"></i-checkbox>
                   </fieldset>
-
-
-                  <fieldset>
-                    <legend>Social Media</legend>
-
-                    <i-checkbox class="row" label="Allow Social Menu" ng-model="setting.blocking.social.allow_menu"></i-checkbox>
-                    <i-checkbox class="row" label="Allow Alexa Tools" ng-model="setting.blocking.social.allow_alexa"></i-checkbox>
-                    <i-checkbox class="row" label="Allow 10khits.com tools" ng-model="setting.blocking.social.allow_10khits"></i-checkbox>
-                    <i-checkbox class="row" label="Allow addmefast.com tools" ng-model="setting.blocking.social.allow_addmefast"></i-checkbox>
-                    <i-checkbox class="row" label="Allow youlikehits.com tools" ng-model="setting.blocking.social.allow_youlikehits"></i-checkbox>
-                  </fieldset>
                 </div>
               </div>
               <div id="privacy_tab" class="tab-content">
                 <div class="row">
                   <fieldset>
-                    
+                    <legend>
+                      <i-checkbox label="Enable Finger Printing Protection" ng-model="setting.blocking.privacy.enable_finger_protect"></i-checkbox>
+                    </legend>
+                    <div class="row" ng-show="setting.blocking.privacy.enable_finger_protect">
+                      <br />
+                      <br />
+                      <br />
 
-                  <fieldset>
-                    <legend>Finger Printing Protection [ Privacy ]</legend>
+                      <div class="row padding border">
+                        <div class="col6"><i-checkbox label="Mask CPU Count ( Custom )" ng-model="setting.blocking.privacy.hide_cpu"></i-checkbox></div>
+                        <div class="col6">
+                          <i-control type="number" ng-disabled="setting.blocking.privacy.hide_cpu !== true" ng-model="setting.blocking.privacy.cpu_count" label="CPU Count"></i-control>
+                        </div>
+                      </div>
 
-                   
-                    <i-checkbox class="row" label="Set Window Alawys Active" ng-model="setting.blocking.privacy.set_window_active"></i-checkbox>
-                    <i-checkbox class="row" label="Block Media Devices [camera , mic , ...]" ng-model="setting.blocking.privacy.hide_media_devices"></i-checkbox>
-                    <br />
-                    <i-checkbox class="row" label="Hide Graphic Card Details" ng-model="setting.blocking.privacy.hide_vega"></i-checkbox>
-                    <i-checkbox class="row" label="Block RTC Connections" ng-model="setting.blocking.privacy.block_rtc"></i-checkbox>
-                    <i-checkbox class="row" label="Hide CPU Count" ng-model="setting.blocking.privacy.hide_cpu"></i-checkbox>
-                    <i-checkbox class="row" label="Hide Memory Size" ng-model="setting.blocking.privacy.hide_memory"></i-checkbox>
-                    <i-checkbox class="row" label="Hide Screen Sizes" ng-model="setting.blocking.privacy.hide_screen"></i-checkbox>
-                    <i-checkbox class="row" label="Hide Touch Screen Information" ng-model="setting.blocking.privacy.hide_touch_screen"></i-checkbox>
-                    <i-checkbox class="row" label="hide Battery informations" ng-model="setting.blocking.privacy.hide_battery"></i-checkbox>
-                    <i-checkbox class="row" label="Hide Connection Information" ng-model="setting.blocking.privacy.hide_connection"></i-checkbox>
-                    <i-checkbox class="row" label="Hide Language Information" ng-model="setting.blocking.privacy.hide_lang"></i-checkbox>
-                    <i-checkbox class="row" label="Hide Plugins" ng-model="setting.blocking.privacy.hide_plugins"></i-checkbox>
-                    <i-checkbox class="row" label="Hide MimeTypes" ng-model="setting.blocking.privacy.hide_mimetypes"></i-checkbox>
-                    <i-checkbox class="row" label="hide browser permissions" ng-model="setting.blocking.privacy.hide_permissions"></i-checkbox>
+                      <div class="row padding border">
+                        <div class="col6"><i-checkbox label="Mask Memory Size ( Custom )" ng-model="setting.blocking.privacy.hide_memory"></i-checkbox></div>
+                        <div class="col6">
+                          <i-control type="number" ng-disabled="setting.blocking.privacy.hide_memory !== true" ng-model="setting.blocking.privacy.memory_count" label="Memory Count"></i-control>
+                        </div>
+                      </div>
 
-                    <br />
-                    <i-checkbox class="row" label="Hide Google ID in other sites" ng-model="setting.blocking.privacy.hide_gid"></i-checkbox>
-                    <i-checkbox class="row" label="Block Cloud Flare Tracking" ng-model="setting.blocking.privacy.block_cloudflare"></i-checkbox>
+                      <div class="row padding border">
+                        <div class="col6"><i-checkbox label="Mask Language Information ( Custom )" ng-model="setting.blocking.privacy.hide_lang"></i-checkbox></div>
+                        <div class="col6">
+                          <i-control ng-disabled="setting.blocking.privacy.hide_lang !== true" ng-model="setting.blocking.privacy.languages" label="Languages"></i-control>
+                        </div>
+                      </div>
 
+                      <div class="row padding border">
+                        <div class="col6"><i-checkbox label="Mask Date TimeZone ( Custom )" ng-model="setting.blocking.privacy.mask_date"></i-checkbox></div>
+                        <div class="col6">
+                          <i-control type="number" ng-disabled="setting.blocking.privacy.mask_date !== true" ng-model="setting.blocking.privacy.date_offset" label="Date Offset"></i-control>
+                        </div>
+                      </div>
+
+                      <div class="row padding border">
+                        <div class="col6"><i-checkbox label="Mask Screen Size ( Custom )" ng-model="setting.blocking.privacy.hide_screen"></i-checkbox></div>
+                        <div class="col6">
+                          <i-control type="number" ng-disabled="setting.blocking.privacy.hide_screen !== true" ng-model="setting.blocking.privacy.screen_width" label="Screen Width"></i-control>
+                          <i-control type="number" ng-disabled="setting.blocking.privacy.hide_screen !== true" ng-model="setting.blocking.privacy.screen_height" label="Screen Height"></i-control>
+                          <i-control
+                            type="number"
+                            ng-disabled="setting.blocking.privacy.hide_screen !== true"
+                            ng-model="setting.blocking.privacy.screen_availWidth"
+                            label="Screen availbal Width"
+                          ></i-control>
+                          <i-control
+                            type="number"
+                            ng-disabled="setting.blocking.privacy.hide_screen !== true"
+                            ng-model="setting.blocking.privacy.screen_availHeight"
+                            label="Screen availbal Height"
+                          ></i-control>
+                        </div>
+                      </div>
+
+                      <div class="row padding border">
+                        <div class="col6"><i-checkbox label="Mask Connection Information ( Custom )" ng-model="setting.blocking.privacy.hide_connection"></i-checkbox></div>
+                        <div class="col6">
+                          <i-control
+                            ng-disabled="setting.blocking.privacy.hide_connection !== true"
+                            ng-model="setting.blocking.privacy.connection.effectiveType"
+                            label="Network Provider Type"
+                          ></i-control>
+                          <i-control
+                            type="number"
+                            ng-disabled="setting.blocking.privacy.hide_connection !== true"
+                            ng-model="setting.blocking.privacy.connection.downlink"
+                            label="Download Speed (Mbit)"
+                          ></i-control>
+                          <i-control
+                            type="number"
+                            ng-disabled="setting.blocking.privacy.hide_connection !== true"
+                            ng-model="setting.blocking.privacy.connection.rtt"
+                            label="Ping (low is fast)"
+                          ></i-control>
+                          <i-control ng-disabled="setting.blocking.privacy.hide_connection !== true" ng-model="setting.blocking.privacy.connection.type" label="Network Source"></i-control>
+                        </div>
+                      </div>
+
+                      <i-checkbox class="col4" label="Set Window Alawys Active" ng-model="setting.blocking.privacy.set_window_active"></i-checkbox>
+                      <i-checkbox class="col4" label="Mask User Agent (profile + host)" ng-model="setting.blocking.privacy.mask_user_agent"></i-checkbox>
+
+                      <i-checkbox class="col4" label="Block Media Devices [camera , mic , ...]" ng-model="setting.blocking.privacy.hide_media_devices"></i-checkbox>
+                      <br />
+                      <i-checkbox class="col4" label="Hide Graphic Card Details" ng-model="setting.blocking.privacy.hide_vega"></i-checkbox>
+                      <i-checkbox class="col4" label="Block RTC Connections" ng-model="setting.blocking.privacy.block_rtc"></i-checkbox>
+
+                      <i-checkbox class="col4" label="Mask Battery informations (profile)" ng-model="setting.blocking.privacy.hide_battery"></i-checkbox>
+
+                      <i-checkbox class="col4" label="Hide Plugins" ng-model="setting.blocking.privacy.hide_plugins"></i-checkbox>
+                      <i-checkbox class="col4" label="Hide MimeTypes" ng-model="setting.blocking.privacy.hide_mimetypes"></i-checkbox>
+                      <i-checkbox class="col4" label="Random browser permissions" ng-model="setting.blocking.privacy.hide_permissions"></i-checkbox>
+
+                      <br />
+                      <i-checkbox class="col4" label="Block Google ID in other sites" ng-model="setting.blocking.privacy.hide_gid"></i-checkbox>
+                      <i-checkbox class="col4" label="Block Cloud Flare Tracking" ng-model="setting.blocking.privacy.block_cloudflare"></i-checkbox>
+                    </div>
                   </fieldset>
+                </div>
+              </div>
 
+              <div id="javascript_tab" class="tab-content">
+                <div class="row">
                   <fieldset>
                     <legend>Javascript</legend>
 
@@ -271,21 +355,58 @@
                     <i-checkbox class="row" label="Block ( Console functions)" ng-model="setting.blocking.javascript.block_console_output"> </i-checkbox>
                     <i-checkbox class="row" label="Block ( window.open)" ng-model="setting.blocking.javascript.block_window_open"> </i-checkbox>
                     <i-checkbox class="row" label="Block ( window.postMessage)" ng-model="setting.blocking.javascript.block_window_post_message"> </i-checkbox>
+                    <i-checkbox class="row" label="Auto Load ( jquery )" ng-model="setting.blocking.javascript.allow_jquery"> </i-checkbox>
+                    <div class="row border padding">
+                      <div class="col6"><i-checkbox class="row" label="Custom Local Storage" ng-model="setting.blocking.javascript.custom_local_storage"> </i-checkbox></div>
+                      <div class="col6"><i-checkbox class="row" label="Custom Session Storage" ng-model="setting.blocking.javascript.custom_session_storage"> </i-checkbox></div>
+                    </div>
                   </fieldset>
-
-   
                 </div>
               </div>
+
+              <div id="social_tab" class="tab-content">
+                <div class="row">
+                  <fieldset>
+                    <legend>Social Media</legend>
+
+                    <div class="row">
+                      <div class="col6"><i-checkbox class="row" label="Allow Social Menu" ng-model="setting.blocking.social.allow_menu"></i-checkbox></div>
+                      <div class="col6">
+                        
+                      </div>
+                    </div>
+
+                    <fieldset>
+                      <legend>Websites Integrations</legend>
+                      <i-checkbox class="row" label="Allow Alexa Integration" ng-model="setting.blocking.social.allow_alexa"></i-checkbox>
+                      <i-checkbox class="row" label="Allow 10khits.com tools" ng-model="setting.blocking.social.allow_10khits"></i-checkbox>
+                      <i-checkbox class="row" label="Allow addmefast.com tools" ng-model="setting.blocking.social.allow_addmefast"></i-checkbox>
+                      <i-checkbox class="row" label="Allow youlikehits.com tools" ng-model="setting.blocking.social.allow_youlikehits"></i-checkbox>
+                      <i-checkbox class="row" label="Allow Rankboostup.com Tools" ng-model="setting.blocking.social.allow_rankboostup"></i-checkbox>
+                      <i-checkbox class="row" label="Allow Wintub.com Tools" ng-model="setting.blocking.social.allow_wintub"></i-checkbox>
+                    </fieldset>
+                    
+                  </fieldset>
+                </div>
+              </div>
+
               <div id="youtube_tab" class="tab-content">
                 <div class="row">
                   <fieldset>
                     <legend>Youtube</legend>
                     <div>
-                      <i-checkbox class="row" label="Auto Skip Ads " ng-model="setting.blocking.youtube.skip_ads"> </i-checkbox>
-                      <i-checkbox class="row" label="Safty Mode" ng-model="setting.blocking.youtube.allow_safty_mode"></i-checkbox>
-                      <i-list class="row" primary="name" display="value" ng-model="setting.blocking.youtube.quality" items="setting.video_quality_list" label="Video Quality"></i-list>
                       <div class="row">
-                        <i-button label="Blocing Words" ng-show="setting.blocking.youtube.allow_safty_mode" type="btn bg-black white" ng-click="showYoutubeWordsModal()"></i-button>
+                        <div class="col6">
+                          <i-checkbox class="row" label="Auto Skip Ads " ng-model="setting.blocking.youtube.skip_ads"> </i-checkbox>
+                          <i-checkbox class="row" label="Safty Mode" ng-model="setting.blocking.youtube.allow_safty_mode"></i-checkbox>
+                        </div>
+                        <div class="col6">
+                          <i-list class="col4" primary="name" display="value" ng-model="setting.blocking.youtube.quality" items="setting.video_quality_list" label="Video Quality"></i-list>
+                        </div>
+                      </div>
+
+                      <div class="row">
+                        <i-button label="Blocking Words" ng-show="setting.blocking.youtube.allow_safty_mode" type="btn bg-green white" ng-click="showYoutubeWordsModal()"></i-button>
                       </div>
                     </div>
                   </fieldset>
@@ -312,10 +433,14 @@
 
                     <br />
 
-                    <i-checkbox class="row" label="Enable" ng-model="setting.blocking.allow_safty_mode"></i-checkbox>
                     <div class="row">
-                      <i-button label="Blocking Page URLs" type="btn bg-black white" ng-click="showUnsafeLinksModal()"></i-button>
-                      <i-button label="Blocking Page Contains Words " type="btn bg-black white" ng-click="showUnsafeWordsModal()"></i-button>
+                      <div class="col6"><i-checkbox class="row" label="Enable" ng-model="setting.blocking.allow_safty_mode"></i-checkbox></div>
+                      <div class="col6">
+                        <div class="row">
+                          <i-button label="Blocking Page URLs" type="btn bg-green white" ng-click="showUnsafeLinksModal()"></i-button>
+                          <i-button label="Blocking Page Contains Words " type="btn bg-green white" ng-click="showUnsafeWordsModal()"></i-button>
+                        </div>
+                      </div>
                     </div>
                   </fieldset>
                 </div>
@@ -347,7 +472,7 @@
                   <fieldset>
                     <legend>Fast Open Menu</legend>
 
-                    <i-button type="btn bg-black white" ng-click="showOpenListModal()" label="Manage List"></i-button>
+                    <i-button type="btn bg-green white" ng-click="showOpenListModal()" label="Manage List"></i-button>
                   </fieldset>
                 </div>
 
@@ -412,32 +537,34 @@
                           <div class="col8"><i-control label="Name" ng-model="session.display"></i-control></div>
                           <div class="col4"><i-control type="number" label="Count" ng-model="session.count"></i-control></div>
                         </div>
-                          <div class="row">
-                            <label> example : user_{count}@yoursite.com</label>
-                          </div>
+                        <div class="row">
+                          <label> example : user_{count}@yoursite.com</label>
+                        </div>
                         <i-button type="add" ng-click="generateSession()" label="Start Generate"></i-button>
                       </fieldset>
                     </div>
-
                   </div>
 
                   <br />
                   <br />
-                    <div class="row">
-                      <i-button type="" onclick="SOCIALBROWSER.call('check_sessions')" label="Checking Sessions"></i-button>
-                    </div>
+                  <div class="row">
+                    <i-button type="" onclick="SOCIALBROWSER.call('check_sessions')" label="Checking Sessions"></i-button>
+                  </div>
                   <div class="row">
                     <table class="table hover">
                       <tr>
+                        <th>Index</th>
                         <th>ID</th>
-                        <th>Name <input type="text" ng-model="session.display"></th>
+                        <th>Name <input type="text" ng-model="session.display" /></th>
                         <th>Actions</th>
                       </tr>
                       <tr ng-repeat="_se in setting.session_list | filter:session track by $index">
+                        <td>{{$index}}</td>
                         <td>{{_se.name}}</td>
                         <td><input class="block full-width" type="text" ng-model="_se.display" /></td>
                         <td>
-                          <a  class="btn bg-red white" ng-click="removeSession(_se)"> <i class="fa fa-trash"></i> Remove </a>
+                          <a class="btn" ng-click="showSession(_se)"> Options </a>
+                          <a class="btn bg-red white" ng-click="removeSession(_se)"> <i class="fa fa-trash"></i> Remove </a>
                         </td>
                       </tr>
                     </table>
@@ -445,11 +572,102 @@
                 </div>
               </div>
 
+              <div id="usersOptionsModal" class="modal small" fixed>
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <span class="close">&times;</span>
+                    <h2>User Options ({{currentSession.display}})</h2>
+                  </div>
+                  <div class="modal-body black">
+                    <form class="form">
+                      <i-control ng-model="currentSession.display" label="Name"></i-control>
+                      <br />
+                      <div class="row padding border">
+                        <i-list ng-search="search.$user_agent" primary="name" items="setting.user_agent_list" ng-model="currentSession.user_agent" label="Select User Agent"></i-list>
+                        <i-control ng-disabled="true" class="row" label="Custom User Agent" ng-model="currentSession.user_agent.url"></i-control>
+                      </div>
+
+                      <i-checkbox label="Enable Finger Printing Protection" ng-model="currentSession.privacy.enable_finger_protect"></i-checkbox>
+                      <br />
+                      <div ng-show="currentSession.privacy.enable_finger_protect" class="row padding border">
+                        <div class="col6"><i-checkbox label="Mask CPU ( Custom )" ng-model="currentSession.privacy.hide_cpu"></i-checkbox></div>
+                        <div class="col6">
+                          <i-control type="number" ng-disabled="currentSession.privacy.hide_cpu !== true" ng-model="currentSession.privacy.cpu_count" label="CPU Count"></i-control>
+                        </div>
+                      </div>
+
+                      <div ng-show="currentSession.privacy.enable_finger_protect" class="row padding border">
+                        <div class="col6"><i-checkbox label="Mask Memory ( Custom )" ng-model="currentSession.privacy.hide_memory"></i-checkbox></div>
+                        <div class="col6">
+                          <i-control type="number" ng-disabled="currentSession.privacy.hide_memory !== true" ng-model="currentSession.privacy.memory_count" label="Memory Count"></i-control>
+                        </div>
+                      </div>
+
+                      <div ng-show="currentSession.privacy.enable_finger_protect" class="row padding border">
+                        <div class="col6"><i-checkbox label="Mask Language Information ( Custom )" ng-model="currentSession.privacy.hide_lang"></i-checkbox></div>
+                        <div class="col6">
+                          <i-control ng-disabled="currentSession.privacy.hide_lang !== true" ng-model="currentSession.privacy.languages" label="Languages"></i-control>
+                        </div>
+                      </div>
+
+                      <div ng-show="currentSession.privacy.enable_finger_protect" class="row padding border">
+                        <div class="col6"><i-checkbox label="Mask Date TimeZone ( Custom )" ng-model="currentSession.privacy.mask_date"></i-checkbox></div>
+                        <div class="col6">
+                          <i-control type="number" ng-disabled="currentSession.privacy.mask_date !== true" ng-model="currentSession.privacy.date_offset" label="Date Offset"></i-control>
+                        </div>
+                      </div>
+
+                      <div ng-show="currentSession.privacy.enable_finger_protect" class="row padding border">
+                        <div class="col6"><i-checkbox label="Mask Screen Size ( Custom )" ng-model="currentSession.privacy.hide_screen"></i-checkbox></div>
+                        <div class="col6">
+                          <i-control type="number" ng-disabled="currentSession.privacy.hide_screen !== true" ng-model="currentSession.privacy.screen_width" label="Screen Width"></i-control>
+                          <i-control type="number" ng-disabled="currentSession.privacy.hide_screen !== true" ng-model="currentSession.privacy.screen_height" label="Screen Height"></i-control>
+                          <i-control
+                            type="number"
+                            ng-disabled="currentSession.privacy.hide_screen !== true"
+                            ng-model="currentSession.privacy.screen_availWidth"
+                            label="Screen availbal Width"
+                          ></i-control>
+                          <i-control
+                            type="number"
+                            ng-disabled="currentSession.privacy.hide_screen !== true"
+                            ng-model="currentSession.privacy.screen_availHeight"
+                            label="Screen availbal Height"
+                          ></i-control>
+                        </div>
+                      </div>
+
+                      <div ng-show="currentSession.privacy.enable_finger_protect" class="row padding border">
+                        <div class="col6"><i-checkbox label="Mask Connection Information ( Custom )" ng-model="currentSession.privacy.hide_connection"></i-checkbox></div>
+                        <div class="col6">
+                          <i-control ng-disabled="currentSession.privacy.hide_connection !== true" ng-model="currentSession.privacy.connection.effectiveType" label="Network Provider Type"></i-control>
+                          <i-control
+                            type="number"
+                            ng-disabled="currentSession.privacy.hide_connection !== true"
+                            ng-model="currentSession.privacy.connection.downlink"
+                            label="Download Speed (Mbit)"
+                          ></i-control>
+                          <i-control
+                            type="number"
+                            ng-disabled="currentSession.privacy.hide_connection !== true"
+                            ng-model="currentSession.privacy.connection.rtt"
+                            label="Ping (low is fast)"
+                          ></i-control>
+                          <i-control ng-disabled="currentSession.privacy.hide_connection !== true" ng-model="currentSession.privacy.connection.type" label="Network Source"></i-control>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="modal-footer center">
+                    <a class="btn" onclick="site.hideModal('#usersOptionsModal')"> <i class="fa fa-close" aria-hidden="true"></i> Close </a>
+                  </div>
+                </div>
+              </div>
+
               <div id="user_agent_tab" class="tab-content">
                 <div class="row">
-                 
-                      <h2>Manage User Agent [ Add , Edit , Delete]</h2>
-                    
+                  <h2>Manage User Agent [ Add , Edit , Delete]</h2>
+
                   <br />
 
                   <div class="row padding margin">
@@ -458,6 +676,9 @@
                         <legend>New User Agent</legend>
                         <i-control label="Name" ng-model="userAgent.name"></i-control>
                         <i-control label="URL" ng-model="userAgent.url"></i-control>
+                        <i-control label="vendor" ng-model="userAgent.vendor" placeholder="apple || "></i-control>
+                        <i-control label="oscpu" ng-model="userAgent.oscpu" placeholder="windows || macos || linux"></i-control>
+                        <i-control label="platform" ng-model="userAgent.platform" placeholder="windows || macos || iphone || linux || android"></i-control>
                         <i-button type="add" ng-click="addUserAgent()" label="Add to List"></i-button>
                       </fieldset>
                     </div>
@@ -470,16 +691,22 @@
                     <table class="table hover">
                       <tr>
                         <th>Index</th>
-                        <th>Name <input type="text" ng-model="userAgent.name"></th>
-                        <th>URL <input type="text" ng-model="userAgent.url"></th>
+                        <th>Name <input type="text" ng-model="userAgent.name" /></th>
+                        <th>URL <input type="text" ng-model="userAgent.url" /></th>
+                        <th>vendor <input type="text" ng-model="userAgent.vendor" /></th>
+                        <th>oscpu <input type="text" ng-model="userAgent.oscpu" /></th>
+                        <th>platform <input type="text" ng-model="userAgent.platform" /></th>
                         <th>Actions</th>
                       </tr>
                       <tr ng-repeat="_se in setting.user_agent_list | filter:userAgent | orderBy : 'name' track by $index">
                         <td>{{$index + 1}}</td>
                         <td><input class="block full-width" type="text" ng-model="_se.name" /></td>
                         <td><input class="block full-width" type="text" ng-model="_se.url" /></td>
+                        <td><input class="" type="text" ng-model="_se.vendor" /></td>
+                        <td><input class="" type="text" ng-model="_se.oscpu" /></td>
+                        <td><input class="" type="text" ng-model="_se.platform" /></td>
                         <td>
-                          <a  class="btn bg-red white" ng-click="removeUserAgent(_se)"> <i class="fa fa-trash"></i> Remove </a>
+                          <a class="btn bg-red white" ng-click="removeUserAgent(_se)"> <i class="fa fa-trash"></i> Remove </a>
                         </td>
                       </tr>
                     </table>
@@ -487,12 +714,10 @@
                 </div>
               </div>
 
-
               <div id="proxy_list_tab" class="tab-content">
                 <div class="row">
-                 
-                      <h2>Manage Proxy List [ Add , Edit , Delete]</h2>
-                    
+                  <h2>Manage Proxy List [ Add , Edit , Delete]</h2>
+
                   <br />
 
                   <div class="row padding margin">
@@ -513,8 +738,8 @@
                     <table class="table hover">
                       <tr>
                         <th>Index</th>
-                        <th>Name <input type="text" ng-model="proxy.name"></th>
-                        <th>URL <input type="text" ng-model="proxy.url"></th>
+                        <th>Name <input type="text" ng-model="proxy.name" /></th>
+                        <th>URL <input type="text" ng-model="proxy.url" /></th>
                         <th>Actions</th>
                       </tr>
                       <tr ng-repeat="_se in setting.proxy_list | filter:proxy | orderBy : 'name' track by $index">
@@ -522,7 +747,7 @@
                         <td><input class="block full-width" type="text" ng-model="_se.name" /></td>
                         <td><input class="block full-width" type="text" ng-model="_se.url" /></td>
                         <td>
-                          <a  class="btn bg-red white" ng-click="removeProxy(_se)"> <i class="fa fa-trash"></i> Remove </a>
+                          <a class="btn bg-red white" ng-click="removeProxy(_se)"> <i class="fa fa-trash"></i> Remove </a>
                         </td>
                       </tr>
                     </table>
@@ -532,10 +757,10 @@
 
               <div id="preload_list_tab" class="tab-content">
                 <div class="row">
-                 
-                      <h2>Manage Preload Scripts [ Add , Edit , Delete]</h2>
-                      <p class="red"> This scripts will run before any script in running site</p>
-                    
+                  <h2>Manage Preload Scripts [ Add , Edit , Delete]</h2>
+                  <p class="red">This scripts will run before any script in running site</p>
+                  <p class="">Script will work when match site url filter</p>
+
                   <br />
 
                   <div class="row padding margin">
@@ -543,7 +768,7 @@
                       <fieldset>
                         <legend>New Script</legend>
                         <i-control label="File Path" ng-model="preload.path"></i-control>
-                        <i-control label="Site URL" ng-model="preload.url"></i-control>
+                        <i-control label="Site URL [filter ex: *google.com*] " ng-model="preload.url"></i-control>
                         <i-button type="add" ng-click="addPreload()" label="Add to List"></i-button>
                       </fieldset>
                     </div>
@@ -556,8 +781,8 @@
                     <table class="table hover">
                       <tr>
                         <th>Index</th>
-                        <th>File Path <input type="text" ng-model="preload.path"></th>
-                        <th>Site URL <input type="text" ng-model="preload.url"></th>
+                        <th>File Path <input type="text" ng-model="preload.path" /></th>
+                        <th>Site URL <input type="text" ng-model="preload.url" /></th>
                         <th>Actions</th>
                       </tr>
                       <tr ng-repeat="_se in setting.preload_list | filter:preload track by $index">
@@ -565,7 +790,7 @@
                         <td><input class="block full-width" type="text" ng-model="_se.path" /></td>
                         <td><input class="block full-width" type="text" ng-model="_se.url" /></td>
                         <td>
-                          <a  class="btn bg-red white" ng-click="removePreload(_se)"> <i class="fa fa-trash"></i> Remove </a>
+                          <a class="btn bg-red white" ng-click="removePreload(_se)"> <i class="fa fa-trash"></i> Remove </a>
                         </td>
                       </tr>
                     </table>
@@ -680,104 +905,6 @@
         <a ng-show="knowPassword === true" class="btn" ng-click="saveSetting(true)"> <i class="fa fa-save" aria-hidden="true"></i> Save </a>
 
         <a ng-show="knowPassword === false" class="btn" ng-click="checkPassword()"> <i class="fa fa-save" aria-hidden="true"></i> Next </a>
-      </div>
-
-      <div id="profileModal" class="modal small" fixed>
-        <div class="modal-content">
-          <div class="modal-header">
-            <span class="close">&times;</span>
-            <h2>Select User Profile</h2>
-          </div>
-          <div class="modal-body black">
-            <form ng-show="knowPassword === false">
-              <div class="row">
-                <div class="control">
-                  <label> Write Password </label>
-                  <input type="password" ng-model="password" />
-                </div>
-              </div>
-              <a ng-show="knowPassword === false" class="btn bg-black white" ng-click="checkPassword()"> Next </a>
-            </form>
-
-            <form ng-show="knowPassword === true">
-              <div class="row padding" ng-hide="setting.full_version">
-                <h2>
-                  This is Free Version <span class="blue bold"> {{setting.version}} </span> , You Used <span class="red bold"> {{setting.days}} day </span> Of
-                  <span class="green bold"> 90 days </span>
-                </h2>
-                <hr />
-              </div>
-
-              <div class="row" ng-hide="setting.days > 90">
-                <div class="col3" ng-repeat="ss in setting.session_list | orderBy : 'display' track by $index">
-                  <div class="user-box" ng-click="newTab(ss)">
-                    <img ng-src="http://127.0.0.1:60080/images/user.png" />
-                    <p>{{ss.display}}</p>
-                  </div>
-                </div>
-              </div>
-            </form>
-          </div>
-          <div class="modal-footer center">
-            <a id="saveBtn" class="btn" ng-click="hideProfileModal()"> <i class="fa fa-close" aria-hidden="true"></i> Close </a>
-            <a ng-hide="setting.days > 90 || knowPassword === false" class="btn bg-orange" ng-click="showSessionsModal()">
-              <span class="bold black"> Manage Users Profiles </span>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <div id="sessionsModal" class="modal small" fixed>
-        <div class="modal-content">
-          <div class="modal-header">
-            <span class="close">&times;</span>
-            <h2>Users Profies</h2>
-          </div>
-          <div class="modal-body">
-            <ul>
-              <li>
-                <p>Add New Profile Profile</p>
-              </li>
-              <li>
-                <p>Edit or Delete Old Profile</p>
-              </li>
-              <li>
-                <p>Every Profile Has Own [ Cookies , Cache , Storage , Logins ]</p>
-              </li>
-            </ul>
-
-            <br />
-
-            <div class="row padding margin">
-              <div class="col6">
-                <label> Profile Name </label>
-                <input class="block" type="text" ng-model="session.display" />
-                <a ng-click="addSession()" class="btn bg-green white"> <i class="fa fa-plus"></i> Add to profiles </a>
-              </div>
-            </div>
-
-            <br />
-            <br />
-
-            <div class="row">
-              <div class="col6" ng-repeat="_se in setting.session_list | filter:session | orderBy : 'display' track by $index">
-                <div class="row">
-                  <div class="col4">
-                    <a ng-show="_se.can_delete" class="btn bg-red white" ng-click="removeSession(_se)"> <i class="fa fa-trash"></i> Remove </a>
-                  </div>
-
-                  <div class="col8">
-                    <input class="block" type="text" ng-model="_se.display" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="modal-footer center">
-            <a id="saveBtn" class="btn" ng-click="saveSessions()"> <i class="fa fa-save" aria-hidden="true"></i> Save Changes </a>
-          </div>
-        </div>
       </div>
 
       <div id="openListModal" class="modal small" fixed>
@@ -1133,7 +1260,7 @@
             <h2 class="padding margin center">This Sites Can't loaded</h2>
             <div class="row padding">
               <div class="col6">
-                <a ng-click="addBlackSite()" class="btn bg-black white"> Add New </a>
+                <a ng-click="addBlackSite()" class="btn bg-green white"> Add New </a>
               </div>
               <div class="col6">
                 <input class="block" type="text" ng-model="blackSite.url" />

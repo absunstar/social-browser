@@ -1,31 +1,45 @@
 {
   "urls": [
     {
-      "from": "https://addmefast.com/",
-      "to": "http://addmf.co/?OJDA3X9"
-    },{
-        "from": "http://addmf.co*",
-        "to": "http://addmf.co/?OJDA3X9",
-        "ignore": "*OJDA3X9*|*png*",
-        "query" : false
-      },
-    {
-      "from": "https://www.10khits.com/",
-      "to": "https://www.10khits.com/?ref=581369"
-    },{
-        "from": "https://www.10khits.com*ref*",
-        "to": "https://www.10khits.com/?ref=581369",
-        "ignore": "*581369*",
-        "query" : false
-      },
-    {
-      "from": "https://linkatcom.com/",
-      "to": "https://linkatcom.com/ref/kamally356"
+      "from": "https://m.do.co/c*|https://www.digitalocean.com/|https://try.digitalocean.com*",
+      "to": "https://m.do.co/c/f192b51fbbf7",
+      "ignore": "*f192b51fbbf7*",
+      "query": false
     },
     {
-      "from": "https://linkatcom.com/ref/*",
+      "from": "https://www.expressvpn.com/?gclid=*|https://www.expressvpn.com/",
+      "to": "https://www.expressrefer.com/refer-friend?referrer_id=41888111&utm_campaign=referrals&utm_medium=copy_link&utm_source=referral_dashboard",
+      "ignore": "*41888111*",
+      "query": false
+    },
+    {
+      "from": "https://addmefast.com/|https://addmefast.com*ref*|http://addmf.co*",
+      "to": "http://addmf.co/?OJDA3X9",
+      "ignore": "*OJDA3X9*|*referral*|*referals*",
+      "query": false
+    },
+    {
+      "from": "https://www.10khits.com/|https://www.10khits.com*ref*",
+      "to": "https://www.10khits.com/?ref=581369",
+      "ignore": "*581369*|*referal*|*referrals*"
+    },
+
+    {
+      "from": "https://linkatcom.com/|https://linkatcom.com/ref/*",
       "to": "https://linkatcom.com/ref/kamally356",
-      "ignore": "*kamally356*"
+      "ignore": "*kamally356*|*referal*"
+    },
+    {
+      "from": "http*wintub.com/|http*wintub.com/?r=*",
+      "to": "https://wintub.com/?r=4986083",
+      "ignore": "*4986083*"
     }
+    ,
+    {
+      "from": "https://rankboostup.com|https://rankboostup.com/|https://rankboostup.com*refid=*",
+      "to": "https://rankboostup.com/?refid=341684",
+      "ignore": "*341684*|*referrals*"
+    }
+
   ]
 }

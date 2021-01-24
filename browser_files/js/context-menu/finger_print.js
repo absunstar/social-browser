@@ -2,34 +2,47 @@ module.exports = function (SOCIALBROWSER) {
   // change readonly properties
   // https://hidester.com/browser-fingerprint/
 
+  /** site know your pc [screen , cpu , memory]
+   *  user agent per profile + host (unique)
+   *  cpu per profile
+   *  memory per profile
+   *  mimtype 0
+   *  plugins 0
+   *  screen size per profile
+   *  timezone per profile
+   *  battary info per profile
+   *  connection off
+   *  vega off
+   *  rtc off
+   *  language en
+   *  browser permissions random
+   */
+
   if (document.location.href.like('*http://127.0.0.1*')) {
-    console.log(' [Finger Printing] OFF : ' + document.location.href);
+    SOCIALBROWSER.log(' [Finger Printing] OFF : ' + document.location.href);
     return;
   }
- 
+
+  if (!(SOCIALBROWSER.var.blocking.privacy.enable_finger_protect || SOCIALBROWSER.session.privacy.enable_finger_protect)) {
+    SOCIALBROWSER.log(' [Finger Printing] OFF (setting)');
+    return;
+  }
+
+  if (SOCIALBROWSER.session.privacy.mask_date) {
+    Date.prototype.getTimezoneOffset = function () {
+      return SOCIALBROWSER.session.privacy.date_offset;
+    };
+  }
 
   window.mozRTCPeerConnection = window.webkitRTCPeerConnection;
 
   if (SOCIALBROWSER.var.blocking.privacy.set_window_active) {
-    // make window active for ever
-    let events = '*mouseout*|pagehide*|*hashchange*|*popstate*|*state-change*|*visibilitychange*|*mozvisibilitychange*|*webkitvisibilitychange*|*msvisibilitychange*|*blur*'
-    window.addEventListener0 = window.addEventListener;
-    window.addEventListener = function (type, listener, options) {
-      if (type.like(events)) {
-        return;
-      }
-      window.addEventListener0(type, listener, options);
-    };
-    document.addEventListener0 = document.addEventListener;
-    document.addEventListener = function (type, listener, options) {
-      if (type.like(events)) {
-        return;
-      }
-      document.addEventListener0(type, listener, options);
-    };
-   document.hasFocus = () => true;
+    SOCIALBROWSER.eventOff +=
+      'document(mouseout)|document(pagehide)|document(hashchange)|document(popstate)|document(state-change)|document(visibilitychange)|document(webkitvisibilitychange)|document(blur)';
+    SOCIALBROWSER.eventOff += 'window(mouseout)|window(pagehide)|window(hashchange)|window(popstate)|window(state-change)|window(visibilitychange)|window(webkitvisibilitychange)|window(blur)';
+
+    document.hasFocus = () => true;
     SOCIALBROWSER.__define(document, 'hidden ', false);
-    // SOCIALBROWSER.__define(document, 'hasFocus ', () => true);
     setInterval(() => {
       window.onpageshow = window.onpagehide = window.onfocus = window.onblur = document.onfocusin = document.onfocusout = null;
     }, 1000);
@@ -41,16 +54,20 @@ module.exports = function (SOCIALBROWSER) {
     window.RTCPeerConnection = null;
   }
   if (SOCIALBROWSER.var.blocking.privacy.hide_media_devices) {
-    SOCIALBROWSER.__define(navigator, 'mediaDevices', null);
-  }
-
-  if (SOCIALBROWSER.var.blocking.privacy.hide_touch_screen) {
-    let touch_screen = ['', true, false][SOCIALBROWSER.__numberRange(0, 2)];
-    if (touch_screen) {
-      SOCIALBROWSER.__define(window, 'ontouchstart', () => '');
-    } else {
-      delete window.ontouchstart;
-    }
+    SOCIALBROWSER.navigator.mediaDevices = navigator.mediaDevices;
+    SOCIALBROWSER.__define(navigator, 'mediaDevices', {
+      ondevicechange: null,
+      enumerateDevices: () => {
+        return new Promise((resolve, reject) => {
+          resolve([]);
+        });
+      },
+      getUserMedia: () => {
+        return new Promise((resolve, reject) => {
+          reject('access block');
+        });
+      },
+    });
   }
 
   if (SOCIALBROWSER.var.blocking.privacy.hide_vega) {
@@ -58,54 +75,79 @@ module.exports = function (SOCIALBROWSER) {
     SOCIALBROWSER.__define(WebGL2RenderingContext, 'getParameter', () => '');
   }
 
-  if (SOCIALBROWSER.var.blocking.privacy.hide_cpu) {
-    SOCIALBROWSER.__define(navigator, 'hardwareConcurrency', SOCIALBROWSER.__numberRange(1, 20));
+  if (SOCIALBROWSER.session.privacy.hide_cpu || SOCIALBROWSER.var.blocking.privacy.hide_cpu) {
+    SOCIALBROWSER.__define(navigator, 'hardwareConcurrency', SOCIALBROWSER.session.privacy.cpu_count);
   }
-  if (SOCIALBROWSER.var.blocking.privacy.hide_memory) {
-    SOCIALBROWSER.__define(navigator, 'deviceMemory', SOCIALBROWSER.__numberRange(4, 32));
-  }
-
-  if (SOCIALBROWSER.var.blocking.privacy.hide_screen) {
-    let scrren_size = [
-      '1024x768',
-      '1280x720',
-      '3240x2160',
-      '3000x2000',
-      '2880x1800',
-      '2736x1824',
-      '2560x1700',
-      '2160x1440',
-      '2436x1125',
-      '1920x1280',
-      '1920x1080',
-      '1366x768',
-      '1440x1080',
-      '1280x768',
-      '800x600',
-    ][SOCIALBROWSER.__numberRange(0, 14)].split('x');
-    SOCIALBROWSER.__define(window, 'devicePixelRatio', 1);
-    SOCIALBROWSER.__define(screen, 'width', scrren_size[0]);
-    SOCIALBROWSER.__define(screen, 'height', scrren_size[1]);
-    SOCIALBROWSER.__define(screen, 'availWidth', scrren_size[0]);
-    SOCIALBROWSER.__define(screen, 'availHeight', scrren_size[1]);
-    SOCIALBROWSER.__define(screen, 'pixelDepth', 24);
-    SOCIALBROWSER.__define(navigator, 'MaxTouchPoints', SOCIALBROWSER.__numberRange(2, 8));
-  }
-
-  if (SOCIALBROWSER.var.blocking.privacy.hide_lang) {
-    SOCIALBROWSER.__define(navigator, 'languages', ['en-US']);
-  }
-  if (SOCIALBROWSER.var.blocking.privacy.hide_connection) {
-    SOCIALBROWSER.__define(navigator, 'connection', null);
+  if (SOCIALBROWSER.session.privacy.hide_memory || SOCIALBROWSER.var.blocking.privacy.hide_memory) {
+    SOCIALBROWSER.__define(navigator, 'deviceMemory', SOCIALBROWSER.session.privacy.memory_count);
   }
 
   if (SOCIALBROWSER.var.blocking.privacy.hide_mimetypes) {
-    SOCIALBROWSER.__define(navigator, 'mimeTypes', []);
+    SOCIALBROWSER.navigator.mimeTypes = navigator.mimeTypes;
+    SOCIALBROWSER.__define(navigator, 'mimeTypes', {
+      // 0: { type: 'application/futuresplash', suffixes: 'spl', description: 'Shockwave Flash', enabledPlugin: { name: '' } },
+      // 1: { type: 'application/pdf', suffixes: 'pdf', description: '', enabledPlugin: { name: '' } },
+      // 2: { type: 'application/x-google-chrome-pdf', suffixes: 'pdf', description: 'Portable Document Format', enabledPlugin: { name: '' } },
+      // 3: { type: 'application/x-nacl', suffixes: '', description: 'Native Client Executable', enabledPlugin: { name: '' } },
+      // 4: { type: 'application/x-pnacl', suffixes: '', description: 'Portable Native Client Executable', enabledPlugin: { name: '' } },
+      // 5: { type: 'application/x-shockwave-flash', suffixes: 'swf', description: 'Shockwave Flash', enabledPlugin: { name: '' } },
+      length: 0,
+    });
   }
   if (SOCIALBROWSER.var.blocking.privacy.hide_plugins) {
-    SOCIALBROWSER.__define(navigator, 'plugins', { length: 0, refresh: () => {} });
+    SOCIALBROWSER.navigator.plugins = navigator.plugins;
+    SOCIALBROWSER.__define(navigator, 'plugins', {
+      // 0: {
+      //   0: { type: 'application/x-google-chrome-pdf', suffixes: 'pdf', description: 'Portable Document Format' },
+      //   name: 'Microsoft Edge PDF Plugin',
+      //   filename: 'internal-pdf-viewer',
+      //   description: 'Portable Document Format',
+      //   length: 1,
+      // },
+      // 2: {
+      //   0: { type: 'application/pdf', suffixes: 'pdf', description: '' },
+      //   name: 'Microsoft Edge PDF Viewer',
+      //   filename: 'mhjfbmdgcfjbbpaeojofohoefgiehjai',
+      //   description: '',
+      //   length: 1,
+      // },
+      // 3: {
+      //   0: { type: 'application/x-nacl', suffixes: '', description: 'Native Client Executable' },
+      //   2: { type: 'application/x-pnacl', suffixes: '', description: 'Portable Native Client Executable' },
+      //   name: 'Native Client',
+      //   filename: 'internal-nacl-plugin',
+      //   description: '',
+      //   length: 2,
+      // },
+      length: 0,
+      refresh: () => {},
+    });
   }
+
+  if (SOCIALBROWSER.session.privacy.hide_screen || SOCIALBROWSER.var.blocking.privacy.hide_screen) {
+    SOCIALBROWSER.__define(screen, 'width', SOCIALBROWSER.session.privacy.screen_width);
+    SOCIALBROWSER.__define(screen, 'height', SOCIALBROWSER.session.privacy.screen_height);
+    SOCIALBROWSER.__define(screen, 'availWidth', SOCIALBROWSER.session.privacy.screen_availWidth);
+    SOCIALBROWSER.__define(screen, 'availHeight', SOCIALBROWSER.session.privacy.screen_availHeight);
+  }
+
+  if (SOCIALBROWSER.session.privacy.hide_lang || SOCIALBROWSER.var.blocking.privacy.hide_lang) {
+    SOCIALBROWSER.__define(navigator, 'languages', SOCIALBROWSER.session.privacy.languages.split(','));
+    SOCIALBROWSER.__define(navigator, 'language', SOCIALBROWSER.session.privacy.languages.split(',')[0]);
+  }
+  if (SOCIALBROWSER.session.privacy.hide_connection || SOCIALBROWSER.var.blocking.privacy.hide_connection) {
+    SOCIALBROWSER.__define(navigator, 'connection', {
+      onchange: null,
+      effectiveType: SOCIALBROWSER.session.privacy.connection.effectiveType,
+      rtt: SOCIALBROWSER.session.privacy.connection.rtt,
+      downlink: SOCIALBROWSER.session.privacy.connection.downlink,
+      saveData: false,
+      type: SOCIALBROWSER.session.privacy.connection.type,
+    });
+  }
+
   if (SOCIALBROWSER.var.blocking.privacy.hide_permissions) {
+    SOCIALBROWSER.navigator.permissions = navigator.permissions;
     SOCIALBROWSER.__define(navigator, 'permissions', {
       query: (permission) => {
         return new Promise((ok, err) => {
@@ -120,10 +162,10 @@ module.exports = function (SOCIALBROWSER) {
     SOCIALBROWSER.__define(navigator, 'getBattery', () => {
       return new Promise((ok, err) => {
         ok({
-          charging: [null, true, false][SOCIALBROWSER.__numberRange(0, 2)],
-          chargingTime: 0,
+          charging: ['', null, true, false][SOCIALBROWSER.maxOf(SOCIALBROWSER.sessionId(), 3)],
+          chargingTime: SOCIALBROWSER.maxOf(SOCIALBROWSER.sessionId(), 100),
           dischargingTime: 0,
-          level: SOCIALBROWSER.__numberRange(0, 100) / 100,
+          level: SOCIALBROWSER.maxOf(SOCIALBROWSER.sessionId(), 100) / 100,
           onchargingchange: null,
           onchargingtimechange: null,
           ondischargingtimechange: null,
@@ -136,67 +178,5 @@ module.exports = function (SOCIALBROWSER) {
     SOCIALBROWSER.__define(navigator, 'doNotTrack', '1');
   } else {
     SOCIALBROWSER.__define(navigator, 'doNotTrack', '0');
-  }
-
-  try {
-    // localstorage
-    if (localStorage) {
-      window.localStorage0 = localStorage;
-      SOCIALBROWSER.__define(window, 'localStorage', {
-        setItem: function (key, value) {
-          return localStorage0.setItem(key, value);
-        },
-        getItem: function (key) {
-          let value = localStorage0.getItem(key);
-          return value;
-        },
-        get length() {
-          return localStorage0.length;
-        },
-        removeItem: function (key) {
-          return localStorage0.removeItem(key);
-        },
-        clear: function () {
-          return localStorage0.clear();
-        },
-        key: function (index) {
-          return localStorage0.key(index);
-        },
-      });
-    }
-  } catch (error) {
-    // console.log(error)
-  }
-
-  try {
-    // sessionStorage
-    if (sessionStorage) {
-      window.sessionStorage0 = sessionStorage;
-      let hack = {
-        setItem: function (key, value) {
-          return sessionStorage0.setItem(key, value);
-        },
-        getItem: function (key) {
-          let value = sessionStorage0.getItem(key);
-          return value;
-        },
-        get length() {
-          return sessionStorage0.length;
-        },
-        removeItem: function (key) {
-          return sessionStorage0.removeItem(key);
-        },
-        clear: function () {
-          return sessionStorage0.clear();
-        },
-        key: function (index) {
-          return sessionStorage0.key(index);
-        },
-      };
-
-      SOCIALBROWSER.__define(window, 'sessionStorage', hack);
-    }
-  } catch (error) {
-    //  console.log(error)
   }
 };

@@ -109,6 +109,15 @@ class SocialTabs {
       event.stopPropagation();
       this.addTab({});
     });
+
+    client.on('remove-tab', (node) => {
+      this.removeTab(node);
+    });
+    client.on('remove-tabs', (nodes) => {
+      nodes.forEach((node) => {
+        this.removeTab(node);
+      });
+    });
   }
 
   emit(eventName, data) {
@@ -225,14 +234,14 @@ class SocialTabs {
   addTab(tabProperties) {
     // console.log(tabProperties)
 
-  
     if (!tabProperties.partition || !tabProperties.user_name) {
       sendToMain({
-        name: 'open new tab',
+        name: '[open new tab]',
         url: tabProperties.url || defaultTapProperties.url,
-        proxy: tabProperties.proxy ,
+        proxy: tabProperties.proxy,
         source: 'session',
         active: tabProperties.active,
+        win_id: tabProperties.win_id,
       });
       return;
     }
@@ -243,7 +252,7 @@ class SocialTabs {
         return;
       }
     }
-    
+
     if (tabProperties.url.like('http://127.0.0.1:60080*')) {
       let exists = false;
 
@@ -260,6 +269,7 @@ class SocialTabs {
     }
 
     const tabEl = this.createNewTabEl();
+    
 
     tabEl.classList.add('social-tab-just-added');
     setTimeout(() => tabEl.classList.remove('social-tab-just-added'), 500);
@@ -297,6 +307,14 @@ class SocialTabs {
     this.layoutTabs();
     this.fixZIndexes();
     this.setupDraggabilly();
+
+    tabEl.addEventListener('mousedown', (e) => {
+      console.log('tab mousedown' , e)
+      if (e.which == 2) {
+        e.preventDefault();
+        this.removeTab(tabEl);
+      }
+    });
   }
 
   setCurrentTab(tabEl) {
@@ -318,7 +336,7 @@ class SocialTabs {
       } else if (tabEl.nextElementSibling) {
         this.setCurrentTab(tabEl.nextElementSibling);
       } else {
-        ExitSocialWindow();
+       // ExitSocialWindow();
         // this.addTab()
       }
     }
@@ -336,7 +354,7 @@ class SocialTabs {
 
     if (this.tabEls.length < 2) {
       // this.addTab()
-      ExitSocialWindow();
+      ExitSocialWindow(true);
     }
   }
 

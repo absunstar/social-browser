@@ -261,7 +261,7 @@ module.exports = function init_isite(browser) {
   site.get('/printers/all' , (req , res)=>{
     res.json({
       done : true,
-      list :  browser.mainWindow.webContents.getPrinters()
+      list :  browser.get_main_window().webContents.getPrinters()
     })
   })
   site.post(['/printing' , '/print'], (req, res) => {
@@ -344,7 +344,7 @@ module.exports = function init_isite(browser) {
         nodeIntegration: false,
         nodeIntegrationInSubFrames: false,
         nodeIntegrationInWorker: false,
-        experimentalFeatures: true,
+        experimentalFeatures: false,
         webSecurity: false,
         allowRunningInsecureContent: true,
         plugins: true,

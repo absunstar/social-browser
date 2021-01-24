@@ -12,7 +12,7 @@ module.exports = function (SOCIALBROWSER) {
       a.getAttribute('target') == '_blank' &&
       !isNG(a.href) &&
       !a.href.like('*youtube.com*') &&
-      !a.href.like('*#___new_tab___*|*#___new_window___*|*#___trusted_window___*') &&
+      !a.href.like('*#___new_tab___*|*#___new_popup___*|*#___trusted_window___*') &&
       !a.getAttribute('onclick') &&
       !a.getAttribute('xlink')
     ) {
@@ -21,13 +21,29 @@ module.exports = function (SOCIALBROWSER) {
         e.preventDefault();
         e.stopPropagation();
 
-        SOCIALBROWSER.call('render_message', {
-          name: 'open new tab',
-          referrer: document.location.href,
-          url: a.href,
-          partition: partition,
-          user_name : SOCIALBROWSER.var.session_list.filter(s => s.name == partition)[0].display
-        });
+        if(document.location.href.like("https://www.youtube.com/embed*")){
+          window.location.href =a.href
+          return
+          SOCIALBROWSER.call('render_message', {
+            name: 'new_popup',
+            referrer: document.location.href,
+            url: a.href,
+            partition: partition,
+            user_name : SOCIALBROWSER.var.session_list.filter(s => s.name == partition)[0].display,
+            win_id : SOCIALBROWSER.currentWindow.id
+          });
+        }else{
+          SOCIALBROWSER.call('render_message', {
+            name: '[open new tab]',
+            referrer: document.location.href,
+            url: a.href,
+            partition: partition,
+            user_name : SOCIALBROWSER.var.session_list.filter(s => s.name == partition)[0].display,
+            win_id : SOCIALBROWSER.currentWindow.id
+          });
+        }
+
+
       });
     }
   }

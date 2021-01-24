@@ -1,3 +1,5 @@
+const { notDeepEqual } = require('assert');
+
 function escape(s) {
   if (!s) {
     return '';
@@ -9,42 +11,48 @@ function escape(s) {
 }
 
 if (!String.prototype.test) {
-  Object.defineProperty(String.prototype, 'test', {
-    value: function (reg, flag = 'gium') {
-      try {
-        return new RegExp(reg, flag).test(this);
-      } catch (error) {
-        return false;
-      }
-    },
-  });
+  String.prototype.test = function (reg, flag = 'gium') {
+    try {
+      return new RegExp(reg, flag).test(this);
+    } catch (error) {
+      return false;
+    }
+  };
 }
 
 if (!String.prototype.like) {
-  Object.defineProperty(String.prototype, 'like', {
-    value: function (name) {
-      if (!name) {
-        return false;
-      }
-      name = name.split('*');
-      name.forEach((n, i) => {
-        name[i] = escape(n);
+  String.prototype.like = function (name) {
+    if (!name) {
+      return false;
+    }
+    let r = false;
+    name.split('|').forEach((n) => {
+      n = n.split('*');
+      n.forEach((w, i) => {
+        n[i] = escape(w);
       });
-      name = name.join('.*');
-      return this.test('^' + name + '$', 'gium');
-    },
-  });
+      n = n.join('.*');
+      if (this.test('^' + n + '$', 'gium')) {
+        r = true;
+      }
+    });
+    return r;
+  };
 }
 
 if (!String.prototype.contains) {
-  Object.defineProperty(String.prototype, 'contains', {
-    value: function (name) {
-      if (!name) {
-        return false;
+  String.prototype.contains = function (name) {
+    let r = false;
+    if (!name) {
+      return r;
+    }
+    name.split('|').forEach((n) => {
+      if (n && this.test('^.*' + escape(n) + '.*$', 'gium')) {
+        r = true;
       }
-      return this.test('^.*' + escape(name) + '.*$', 'gium');
-    },
-  });
+    });
+    return r;
+  };
 }
 
 var SOCIALBROWSER = {};
@@ -54,17 +62,21 @@ SOCIALBROWSER.url = require('url');
 SOCIALBROWSER.path = require('path');
 SOCIALBROWSER.md5 = require('md5');
 
-SOCIALBROWSER.callSync = function (channel, value) {
-  return SOCIALBROWSER.electron.ipcRenderer.sendSync(channel, value);
+SOCIALBROWSER.callSync = function (...args) {
+  // console.log('SOCIALBROWSER.callSync' , ...args)
+  return SOCIALBROWSER.electron.ipcRenderer.sendSync(...args);
 };
-SOCIALBROWSER.call = function (channel, value) {
-  return SOCIALBROWSER.electron.ipcRenderer.send(channel, value);
+SOCIALBROWSER.call = function (...args) {
+  // console.log('SOCIALBROWSER.call' , ...args)
+  return SOCIALBROWSER.electron.ipcRenderer.send(...args);
 };
-SOCIALBROWSER.invoke = function (channel, value) {
-  return SOCIALBROWSER.electron.ipcRenderer.invoke(channel, value);
+SOCIALBROWSER.invoke = function (...args) {
+  // console.log('SOCIALBROWSER.invoke' , ...args)
+  return SOCIALBROWSER.electron.ipcRenderer.invoke(...args);
 };
-SOCIALBROWSER.on = function (name, callback) {
-  SOCIALBROWSER.electron.ipcRenderer.on(name, callback);
+SOCIALBROWSER.on = function (...args) {
+  // console.log('SOCIALBROWSER.on' , ...args)
+  SOCIALBROWSER.electron.ipcRenderer.on(...args);
 };
 
 SOCIALBROWSER.currentWindow = SOCIALBROWSER.electron.remote.getCurrentWindow();
@@ -77,7 +89,7 @@ SOCIALBROWSER.on('user_downloads', (event, data) => {
 });
 
 const updateOnlineStatus = () => {
-  console.log('Internet Status ' + navigator.onLine);
+  // console.log('Internet Status ' + navigator.onLine);
   SOCIALBROWSER.call('online-status', navigator.onLine ? { status: true } : { status: false });
 };
 
@@ -92,11 +104,11 @@ function sendToMain(obj) {
 }
 
 SOCIALBROWSER.on('var.bookmarks', (event, obj) => {
-  console.log(obj);
+  // console.log(obj);
   SOCIALBROWSER.var.bookmarks = obj.data;
 });
 SOCIALBROWSER.on('var.core', (event, obj) => {
-  console.log(obj);
+  // console.log(obj);
   SOCIALBROWSER.var.core = obj.data;
 });
 SOCIALBROWSER.nativeImage = function (_path) {
@@ -219,14 +231,96 @@ function createMenu(node) {
     return null;
   }
 
-  add_input_menu(node, menu);
+  if (node.classList.contains('social-tab')) {
+    menu.append(
+      new MenuItem({
+        label: 'New tab',
+        click() {
+          sendToMain({ name: '[open new tab]', win_id: SOCIALBROWSER.currentWindow.id });
+        },
+      }),
+    );
+    menu.append(
+      new MenuItem({
+        label: 'Duplicate tab',
+        click() {
+          sendToMain({ name: '[open new tab]', duplicate: true, win_id: SOCIALBROWSER.currentWindow.id });
+        },
+      }),
+    );
+    menu.append(
+      new MenuItem({
+        label: 'Duplicate tab in New Window',
+        click() {
+          sendToMain({ name: '[open new window]', duplicate: true, win_id: SOCIALBROWSER.currentWindow.id });
+        },
+      }),
+    );
+    menu.append(
+      new MenuItem({
+        type: 'separator',
+      }),
+    );
+    menu.append(
+      new MenuItem({
+        label: 'New Ghost tab',
+        click() {
+          sendToMain({ name: '[open new ghost tab]', win_id: SOCIALBROWSER.currentWindow.id });
+        },
+      }),
+    );
+    menu.append(
+      new MenuItem({
+        label: 'Duplicate tab in Ghost tab',
+        click() {
+          sendToMain({ name: '[open new ghost tab]', duplicate: true, win_id: SOCIALBROWSER.currentWindow.id });
+        },
+      }),
+    );
+    menu.append(
+      new MenuItem({
+        type: 'separator',
+      }),
+    );
+    menu.append(
+      new MenuItem({
+        label: 'Close',
+        click() {
+          client.call('remove-tab', node);
+        },
+      }),
+    );
+    menu.append(
+      new MenuItem({
+        label: 'Close other tabs',
+        click() {
+          document.querySelectorAll('.social-tab').forEach((node2) => {
+            if (!node2.classList.contains('plus') && node.getAttribute('win_id') !== node2.getAttribute('win_id')) {
+              client.call('remove-tab', node2);
+            }
+          });
+        },
+      }),
+    );
+  }
 
-  if (true) {
+  // add_input_menu(node, menu);
+
+  if (SOCIALBROWSER.var.core.id.like('*test*')) {
+    menu.append(
+      new MenuItem({
+        type: 'separator',
+      }),
+    );
+
     menu.append(
       new MenuItem({
         label: 'inspect Element',
         click() {
-          SOCIALBROWSER.currentWindow.inspectElement(rightClickPosition.x, rightClickPosition.y);
+          SOCIALBROWSER.currentWindow.webContents.openDevTools({
+            mode: 'detach',
+          });
+          SOCIALBROWSER.currentWindow.webContents.inspectElement(rightClickPosition.x, rightClickPosition.y);
         },
       }),
     );
@@ -235,8 +329,8 @@ function createMenu(node) {
       new MenuItem({
         label: 'Developer Tools',
         click() {
-          SOCIALBROWSER.currentWindow.openDevTools({
-            mode: 'undocked',
+          SOCIALBROWSER.currentWindow.webContents.openDevTools({
+            mode: 'detach',
           });
         },
       }),
@@ -246,6 +340,7 @@ function createMenu(node) {
   return menu;
 }
 
+// Create Main Context Menu
 let rightClickPosition = null;
 document.addEventListener('contextmenu', (e) => {
   rightClickPosition = {
@@ -260,9 +355,7 @@ document.addEventListener('contextmenu', (e) => {
 
   let m = createMenu(node);
 
-  if (m && SOCIALBROWSER.var.core.id.like('*test*')) {
-    m.popup(SOCIALBROWSER.currentWindow);
-  }
+  m.popup(SOCIALBROWSER.currentWindow);
 });
 
 document.addEventListener(
@@ -355,7 +448,8 @@ document.addEventListener(
     } else if (e.keyCode == 78 /*n*/ || e.keyCode == 84 /*t*/) {
       if (e.ctrlKey == true) {
         SOCIALBROWSER.call('render_message', {
-          name: 'open new tab',
+          name: '[open new tab]',
+          win_id: SOCIALBROWSER.currentWindow.id,
         });
       }
     } else if (e.keyCode == 116 /*f5*/) {
@@ -378,12 +472,25 @@ document.addEventListener(
 
 function showSettingMenu() {
   let arr = [];
+
+  arr.push({
+    label: 'Show Setting',
+    click: () =>
+      sendToMain({
+        name: 'show setting',
+      }),
+  });
+  arr.push({
+    type: 'separator',
+  });
+
   arr.push({
     label: 'Open Social Browser Site',
     click: () =>
       sendToMain({
-        name: 'open new tab',
+        name: '[open new tab]',
         url: 'https://social-browser.com',
+        win_id: SOCIALBROWSER.currentWindow.id,
       }),
   });
   arr.push({
@@ -393,8 +500,9 @@ function showSettingMenu() {
     label: 'Downloads',
     click: () =>
       sendToMain({
-        name: 'open new tab',
+        name: '[open new tab]',
         url: 'http://127.0.0.1:60080/downloads',
+        win_id: SOCIALBROWSER.currentWindow.id,
       }),
   });
 
@@ -438,8 +546,9 @@ function showSettingMenu() {
     label: 'Bookmark manager',
     click: () =>
       sendToMain({
-        name: 'open new tab',
+        name: '[open new tab]',
         url: 'http://127.0.0.1:60080/setting?open=bookmarks',
+        win_id: SOCIALBROWSER.currentWindow.id,
       }),
   });
   bookmark_arr.push({
@@ -452,8 +561,9 @@ function showSettingMenu() {
       icon: SOCIALBROWSER.nativeImage(b.favicon),
       click: () =>
         sendToMain({
-          name: 'open new tab',
+          name: '[open new tab]',
           url: b.url,
+          win_id: SOCIALBROWSER.currentWindow.id,
         }),
     });
   });
@@ -469,8 +579,9 @@ function showSettingMenu() {
       click: () => {
         SOCIALBROWSER.var.bookmarks.forEach((b) => {
           sendToMain({
-            name: 'open new tab',
+            name: '[open new tab]',
             url: b.url,
+            win_id: SOCIALBROWSER.currentWindow.id,
           });
         });
       },
@@ -510,7 +621,7 @@ function showSettingMenu() {
     label: 'Zoom +',
     accelerator: 'CommandOrControl+numadd',
     click: (event) => {
-      console.log(event);
+      // console.log(event);
       sendToMain({
         name: 'zoom+',
       });
@@ -555,9 +666,11 @@ function showSettingMenu() {
         name: 'audio',
       }),
   });
+
   arr.push({
     type: 'separator',
   });
+
   arr.push({
     label: 'Developer Tools',
     accelerator: 'F12',
@@ -566,16 +679,16 @@ function showSettingMenu() {
         name: 'Developer Tools',
       }),
   });
-
   arr.push({
     type: 'separator',
   });
   arr.push({
-    label: 'Show Setting',
-    click: () =>
-      sendToMain({
-        name: 'show setting',
-      }),
+    label: 'Restart App',
+    click: () => SOCIALBROWSER.call('restart-app', {}),
+  });
+  arr.push({
+    label: 'Close App',
+    click: () => SOCIALBROWSER.call('close-app', {}),
   });
 
   const settingMenu = Menu.buildFromTemplate(arr);
@@ -610,8 +723,9 @@ function showBookmarksMenu() {
     label: 'Bookmark manager',
     click: () =>
       sendToMain({
-        name: 'open new tab',
+        name: '[open new tab]',
         url: 'http://127.0.0.1:60080/setting?open=bookmarks',
+        win_id: SOCIALBROWSER.currentWindow.id,
       }),
   });
   bookmark_arr.push({
@@ -624,8 +738,9 @@ function showBookmarksMenu() {
       icon: SOCIALBROWSER.nativeImage(b.favicon),
       click: () =>
         sendToMain({
-          name: 'open new tab',
+          name: '[open new tab]',
           url: b.url,
+          win_id: SOCIALBROWSER.currentWindow.id,
         }),
     });
   });
@@ -641,8 +756,9 @@ function showBookmarksMenu() {
       click: () => {
         SOCIALBROWSER.var.bookmarks.forEach((b) => {
           sendToMain({
-            name: 'open new tab',
+            name: '[open new tab]',
             url: b.url,
+            win_id: SOCIALBROWSER.currentWindow.id,
           });
         });
       },
@@ -653,21 +769,17 @@ function showBookmarksMenu() {
 
   bookmarksMenu.popup();
 }
-SOCIALBROWSER.on('user_info', (event, data) => {
-  showInfo(data.message, data);
+SOCIALBROWSER.on('[user-info]', (event, data) => {
+  // console.log(data.message, data);
 });
 
 SOCIALBROWSER.on('render_message', (event, data) => {
   renderMessage(data);
 });
 
-var tab_icon = 'browser://images/logo.png';
 var socialTabsDom = document.querySelector('.social-tabs');
-var socialStatusBar = document.querySelector('.social-status-bar');
 var socialTabs = new SocialTabs();
-var currentWebview = null;
 var currentTabId = null;
-var webviewList = [];
 var opendTabList = [];
 SOCIALBROWSER.$is_full_screen = false;
 
@@ -730,33 +842,6 @@ function showURL(u) {
   });
 }
 
-var socialStatusBarT = null;
-
-function showInfo(msg, options) {
-  if (SOCIALBROWSER.$is_full_screen) return;
-
-  options = Object.assign(
-    {
-      class: 'bg-white black',
-      timeout: 1000,
-    },
-    options,
-  );
-
-  msg = msg || '';
-  if (msg.length < 1) {
-    return;
-  }
-
-  clearTimeout(socialStatusBarT);
-  let l = msg.length > 140 ? 140 : msg.length;
-  msg = msg.substring(0, l);
-  socialStatusBar.innerHTML = `<div class="${options.class}">&ensp; ${msg} &emsp;</div>`;
-  socialStatusBarT = setTimeout(function () {
-    socialStatusBar.innerHTML = '';
-  }, options.timeout);
-}
-
 $('.social-close').click(() => {
   ExitSocialWindow();
 });
@@ -776,6 +861,7 @@ socialTabsDom.addEventListener('activeTabChange', ({ detail }) => {
     width: document.width,
     height: document.height,
     _id: currentTabId,
+    win_id: SOCIALBROWSER.currentWindow.id,
   });
 });
 
@@ -797,8 +883,9 @@ socialTabsDom.addEventListener('tabAdd', ({ detail }) => {
       partition: $id.attr('partition'),
       user_name: $id.attr('user_name'),
       user_agent: $id.attr('user_agent'),
-      proxy: $id.attr('proxy') == 'undefined' ? null : $id.attr('proxy'), 
+      proxy: $id.attr('proxy') == 'undefined' ? null : $id.attr('proxy'),
       webaudio: $id.attr('webaudio') == 'false' ? false : true,
+      win_id: SOCIALBROWSER.currentWindow.id,
     });
 
     if (!$id.attr('url') || $id.attr('url').like('*newTab')) {
@@ -820,6 +907,8 @@ socialTabsDom.addEventListener('tabRemove', ({ detail }) => {
 });
 
 function render_new_tab(op) {
+  console.log('render_new_tab', op);
+
   if (typeof op === 'string') {
     op = op.split('...').join('\\');
     op = {
@@ -839,7 +928,7 @@ function render_new_tab(op) {
     op,
   );
 
-  socialTabs.addTab({
+  let tab = {
     id: 'tab_' + new Date().getTime(),
     url: op.url,
     title: op.title,
@@ -850,7 +939,10 @@ function render_new_tab(op) {
     webaudio: op.webaudio,
     favicon: 'browser://images/loading-white.gif',
     active: op.active,
-  });
+    win_id: SOCIALBROWSER.currentWindow.id,
+  };
+  socialTabs.addTab(tab);
+  console.log(tab);
 }
 
 function renderMessage(cm) {
@@ -858,7 +950,7 @@ function renderMessage(cm) {
     return;
   }
 
-  if (cm.name == 'open new tab') {
+  if (cm.name == '[open new tab]') {
     render_new_tab(cm);
   } else if (cm.name == 'set-setting') {
     for (let k of Object.keys(cm.var)) {
@@ -876,21 +968,12 @@ function renderMessage(cm) {
     is_addressbar_busy = false;
   } else if (cm.name == 'close tab') {
     closeCurrentTab();
-  } else if (cm.name == 'reload') {
-    // let $window = SOCIALBROWSER.SOCIALBROWSER.electron.remote.getCurrentWindow()
-  } else if (cm.name == 'force reload') {
-    // SOCIALBROWSER.electron.remote.session.fromPartition(currentWebview.getAttribute('partition')).clearCache(function () {
-    //   currentWebview.reload(true)
-    // });
-    // SOCIALBROWSER.electron.remote.session.fromPartition(currentWebview.getAttribute('partition')).clearStorageData({
-    //   origin: cm.origin,
-    //   storages: '',
-    //   quotas : ''
-    // }, function () {
-    //   currentWebview.reload(true)
-    // })
   } else if (cm.name == 'body_clicked') {
     document.querySelector('body').click();
+  } else if (cm.name == 'update-win_id') {
+    if (cm.win_id) {
+      $('#' + cm.tab_id).attr('win_id', cm.win_id);
+    }
   } else if (cm.name == 'update-title') {
     if (cm.title) {
       $('#' + cm.tab_id + ' .social-tab-title p').text(cm.title);
@@ -995,7 +1078,7 @@ function renderMessage(cm) {
     playMiniYoutube(cm);
   } else if (cm.name == 'new_trusted_window') {
     playTrustedWindow(cm);
-  } else if (cm.name == 'new_window') {
+  } else if (cm.name == 'new_popup') {
     playWindow(cm);
   } else if (cm.name == 'mini_video') {
     playMiniVideo(cm);
@@ -1030,7 +1113,11 @@ function closeTab(id) {
   socialTabs.removeTab(socialTabsDom.querySelector('#' + id));
 }
 
-function ExitSocialWindow() {
+function ExitSocialWindow(noTabs = false) {
+  if (noTabs) {
+    SOCIALBROWSER.call('[browser-message]', { name: 'close', win_id: SOCIALBROWSER.currentWindow.id });
+    return;
+  }
   $('.address-input .http').css('display', 'none');
   $('.address-input .https').css('display', 'none');
   $('.address-input .file').css('display', 'none');
@@ -1049,7 +1136,7 @@ function ExitSocialWindow() {
   });
 
   setTimeout(() => {
-    SOCIALBROWSER.call('message', 'exit');
+    SOCIALBROWSER.call('[browser-message]', { name: 'close', win_id: SOCIALBROWSER.currentWindow.id });
   }, 250);
 }
 
@@ -1060,23 +1147,10 @@ function showDownloads() {
 }
 
 function init_tab() {
-  if (!SOCIALBROWSER.var || !SOCIALBROWSER.var.core.session) {
-    setTimeout(() => {
-      init_tab();
-    }, 250);
-    return;
-  }
-
-  let url = SOCIALBROWSER.callSync('get_browser', {
-    name: 'request_url',
+  let tab = SOCIALBROWSER.callSync('get_browser', {
+    name: 'new_tab_info',
   });
-  if (url) {
-    render_new_tab({
-      url: url,
-      partition: SOCIALBROWSER.var.core.session.name,
-      user_name: SOCIALBROWSER.var.core.session.display,
-    });
-  }
+  render_new_tab(tab);
 }
 
 window.addEventListener('resize', () => {
@@ -1090,23 +1164,24 @@ window.addEventListener('resize', () => {
   }
 });
 
+SOCIALBROWSER.on('show-tab-view', (info) => {
+  if (info.win_id == SOCIALBROWSER.currentWindow.id) {
+    $('#' + currentTabId).click();
+  }
+});
+
 SOCIALBROWSER.currentWindow.maximize();
 SOCIALBROWSER.currentWindow.show();
-
-
-SOCIALBROWSER.invoke(
-  'get_var',
-  {
-    host: document.location.host,
-    url: document.location.href,
-    name: '*',
-  }).then(result=> {
-    SOCIALBROWSER.var = result;
-  },
-);
 
 SOCIALBROWSER.files_dir = SOCIALBROWSER.callSync('get_browser', {
   name: 'files_dir',
 });
 
-init_tab();
+SOCIALBROWSER.invoke('get_var', {
+  host: document.location.host,
+  url: document.location.href,
+  name: '*',
+}).then((result) => {
+  SOCIALBROWSER.var = result;
+  init_tab();
+});

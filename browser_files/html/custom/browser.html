@@ -175,6 +175,28 @@
     bottom: 5px;
   }
 
+  #__warning_img {
+    display: none;
+    position: fixed;
+    left: 50px;
+    bottom: 50px;
+    z-index: 999999;
+  }
+  #__warning_img img {
+    width: 50px;
+  }
+
+  #__loading_img {
+    display: none;
+    position: fixed;
+    left: 50px;
+    bottom: 50px;
+    z-index: 999999;
+  }
+  #__loading_img img {
+    width: 50px;
+  }
+
   .__border {
     border: 2px solid red;
   }
@@ -217,6 +239,12 @@
 <div id="__blockDiv"></div>
 <div id="__bookmarkDiv"></div>
 <div id="__downloads"></div>
+<div id="__warning_img">
+  <img src="http://127.0.0.1:60080/images/warning.gif" alt="" />
+</div>
+<div id="__loading_img">
+  <img src="http://127.0.0.1:60080/images/loading.gif" alt="" />
+</div>
 <div id="__find">
   <input type="text" id="__find_input" />
   <a onclick="window.showFind()" class="btn"> Find </a>

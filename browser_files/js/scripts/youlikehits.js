@@ -7,7 +7,7 @@ module.exports = function (SOCIALBROWSER) {
     return;
   }
 
-  console.log('youlikehits Activated .....');
+  SOCIALBROWSER.log('youlikehits Activated .....');
 
   SOCIALBROWSER.var.blocking.block_empty_iframe = false;
 
@@ -15,22 +15,22 @@ module.exports = function (SOCIALBROWSER) {
     SOCIALBROWSER.var.user_data_block = true;
 
     window.open = function (url, _name, _specs, _replace_in_history) {
-      console.log('youlikehits : ', url);
+      SOCIALBROWSER.log('youlikehits : ', url);
 
       let opener = {
         closed: false,
         opener: window,
         postMessage: () => {
-          console.log('postMessage opener');
+          SOCIALBROWSER.log('postMessage opener');
         },
         eval: () => {
-          console.log('eval opener');
+          SOCIALBROWSER.log('eval opener');
         },
         close: () => {
-          console.log('close opener');
+          SOCIALBROWSER.log('close opener');
         },
         focus: () => {
-          console.log('focus opener');
+          SOCIALBROWSER.log('focus opener');
         },
       };
 
@@ -42,7 +42,7 @@ module.exports = function (SOCIALBROWSER) {
       }
       url = SOCIALBROWSER.handle_url(url);
 
-      console.log('youlikehits : ', url);
+      SOCIALBROWSER.log('youlikehits : ', url);
 
       let win = new SOCIALBROWSER.electron.remote.BrowserWindow({
         show: false,
@@ -90,7 +90,7 @@ module.exports = function (SOCIALBROWSER) {
                     document.querySelectorAll('video').forEach(v=> v.remove());
                     function like_video(){
                         let btn =  document.querySelectorAll('ytd-toggle-button-renderer.style-scope.ytd-menu-renderer.force-icon-button.style-text')[0]
-                        console.log(btn);
+                        SOCIALBROWSER.log(btn);
                         if(btn){
                             btn.click()
                             setTimeout(() => {
@@ -138,7 +138,7 @@ module.exports = function (SOCIALBROWSER) {
 
     setInterval(() => {
       window.counting = function (videoid, randtime, x) {
-        console.log('counting');
+        SOCIALBROWSER.log('counting');
         if (newWin.closed) {
           clearInterval(settimer);
           // cnum = 0;
@@ -181,7 +181,7 @@ module.exports = function (SOCIALBROWSER) {
         if (btn) {
           btn.click();
           btn.style.display = 'none';
-          console.log('view button clicked');
+          SOCIALBROWSER.log('view button clicked');
         }
         // window.cnum = 100
       }

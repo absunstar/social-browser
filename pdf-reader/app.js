@@ -30,7 +30,7 @@ module.exports = function init_isite(browser) {
         //         nodeIntegration: true,
         //         // nodeIntegrationInSubFrames: true,
         //         // nodeIntegrationInWorker: true,
-        //         // experimentalFeatures: true,
+        //         // experimentalFeatures: false,
         //     },
         //     frame: false
         // });
@@ -52,7 +52,7 @@ module.exports = function init_isite(browser) {
             frame: false
         })
         
-       // win.openDevTools()
+       // win.webContents.openDevTools()
 
         win.loadFile(__dirname + '/index.html');
 

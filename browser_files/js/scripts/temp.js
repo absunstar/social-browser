@@ -1,3 +1,3 @@
 module.exports = function (SOCIALBROWSER) {
-  console.log(' [ Message From temp.js ]');
+  SOCIALBROWSER.log(' [ Message From temp.js ]');
 };

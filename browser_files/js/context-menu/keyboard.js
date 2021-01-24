@@ -137,7 +137,8 @@ module.exports = function (SOCIALBROWSER) {
 
             if (e.ctrlKey == true) {
                 SOCIALBROWSER.call('render_message', {
-                    name: 'open new tab'
+                    name: '[open new tab]',
+                    win_id : SOCIALBROWSER.currentWindow.id
                 })
             }
         } else if (e.keyCode == 116 /*f5*/ ) {

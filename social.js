@@ -36,6 +36,7 @@ if (!is_first_app) {
   if (f.endsWith('.js')) {
     require(f);
   } else {
+    console.log('App Will Close & open in first instance');
     app.quit();
   }
   return;
@@ -49,6 +50,7 @@ Menu.setApplicationMenu(null);
 
 app.setAppUserModelId(process.execPath);
 app.clearRecentDocuments();
+app.commandLine.appendSwitch('--no-sandbox')
 // app.disableHardwareAcceleration();
 // app.allowRendererProcessReuse = false; //deprecated
 // app.commandLine.appendSwitch('disable-site-isolation-trials')
@@ -59,17 +61,14 @@ app.clearRecentDocuments();
 var package = require('./package.json');
 var md5 = require('md5');
 
-const browser = require('ibrowser')({
+const browser = require('./ibrowser')({
   is_main: true,
   md5: md5,
   electron: electron,
   package: package,
 });
 
-browser.mainWindow = null;
-
 require(__dirname + '/site.js')(browser);
-require(__dirname + '/pdf-reader/app.js')(browser);
 
 console.log('process.argv', process.argv);
 
@@ -86,9 +85,37 @@ if (!browser.request_url) {
 }
 console.log('browser.request_url', browser.request_url);
 
+function createNewMainWindow(op, callback) {
+  callback = callback || function () {};
+
+  setTimeout(() => {
+    browser.createNewSocialBrowserWindow((w) => {
+      callback(w);
+
+      w.on('closed', function () {
+        w = null;
+      });
+
+      w.once('ready-to-show', function () {
+        browser.logoWindow.hide();
+        if (op && op.show) {
+          w.show();
+        }
+        setTimeout(() => {
+          browser.logoWindow.hide();
+        }, 1000);
+      });
+    });
+  }, 0);
+}
+
 app.on('ready', function () {
+  browser.is_app_ready = true;
+
+  require(__dirname + '/pdf-reader/app.js')(browser);
+
   app.setAccessibilitySupportEnabled(true);
-  let logo = new BrowserWindow({
+  browser.logoWindow = new BrowserWindow({
     show: true,
     width: 600,
     height: 300,
@@ -101,11 +128,11 @@ app.on('ready', function () {
       contextIsolation: false,
     },
   });
-  logo.setMenuBarVisibility(false);
-  logo.center();
-  logo.loadURL(__dirname + '/browser_files/html/logo.html');
+  browser.logoWindow.setMenuBarVisibility(false);
+  browser.logoWindow.center();
+  browser.logoWindow.loadURL(__dirname + '/browser_files/html/logo.html');
   setTimeout(() => {
-    logo.hide();
+    browser.logoWindow.hide();
   }, 1000 * 30);
 
   app.setLoginItemSettings({
@@ -113,59 +140,55 @@ app.on('ready', function () {
     path: process.execPath,
   });
 
-  function setMainWindow(op, callback) {
-    callback = callback || function () {};
+  createNewMainWindow(
+    {
+      show: true,
+    },
+    (w) => {
 
-    setTimeout(() => {
-      browser.newSOCIALBROWSER((w) => {
-        browser.mainWindow = w;
-
-        w.on('closed', function () {
-          w = null;
-        });
-
-        w.once('ready-to-show', function () {
-          setTimeout(() => {
-            logo.hide();
-          }, 1000);
-        });
-
-        callback(w);
-
-        browser.addressbarWindow = browser.addressbarWindow || browser.newAddressbarWindow();
-        browser.userProfileWindow = browser.userProfileWindow || browser.newUserProfileWindow();
-      });
-    }, 0);
-  }
-
-  setMainWindow({
-    show: true,
-  });
+      browser.addressbarWindow = browser.addressbarWindow || browser.newAddressbarWindow();
+      browser.userProfileWindow = browser.userProfileWindow || browser.newUserProfileWindow();
+      
+      browser.new_tab_info = {
+        name: '[open new tab]',
+        url: browser.request_url,
+        active: true,
+        win_id: w.id,
+      };
+    },
+  );
 
   browser.on('download-url', function (event, url) {
     browser.tryDownload(url);
   });
 
+  browser.on('[browser-message]', function (event, data) {
+    if (data.name == 'close') {
+      console.log('close main window ' + data.win_id);
+      browser.get_main_window(data.win_id).close();
+    }
+  });
+
   browser.on('message', function (event, data) {
     if (data == 'exit') {
-      browser.mainWindow.hide();
+      browser.get_main_window().close();
     } else if (data == 'maxmize') {
-      if (browser.mainWindow.isMaximized()) {
-        browser.mainWindow.unmaximize();
+      if (browser.get_main_window().isMaximized()) {
+        browser.get_main_window().unmaximize();
       } else {
-        browser.mainWindow.maximize();
+        browser.get_main_window().maximize();
       }
     } else if (data == 'minmize') {
-      browser.mainWindow.minimize();
+      browser.get_main_window().minimize();
     } else if (data == 'preload') {
       console.log('preload!!');
     } else if (data == 'showDeveloperTools') {
-      browser.mainWindow.openDevTools({
+      browser.get_main_window().webContents.openDevTools({
         mode: 'undocked',
       });
     }
 
-    event.sender.send('message', 'ok');
+    // event.sender.send('message', 'ok');
   });
 
   // const iconPath = browser.files_dir + '/images/logo.png'
@@ -229,7 +252,6 @@ app.on('ready', function () {
     //     event.preventDefault()
     //     Object.assign(options, {
     //       modal: true,
-    //       parent:browser.mainWindow,
     //       width: 100,
     //       height: 100
     //     })
@@ -317,25 +339,16 @@ app.on('ready', function () {
       show: false,
     });
     //win.openDevTools()
-    win.on('close', function (e) {
-      e.preventDefault();
-      win.hide();
-    });
+    // win.on('close', function (e) {
+    //   e.preventDefault();
+    //   win.hide();
+    // });
   }, 1000 * 60 * 1);
 });
 
 app.on('will-finish-launching', () => {
   app.on('activate', () => {
-    if (browser.mainWindow === null) {
-      setMainWindow(
-        {
-          show: true,
-        },
-        () => {},
-      );
-    } else {
-      browser.mainWindow.show();
-    }
+    browser.get_main_window().show();
   });
 
   app.on('open-url', (event, path) => {
@@ -346,19 +359,10 @@ app.on('will-finish-launching', () => {
     }
 
     event.preventDefault();
-    if (browser.mainWindow === null) {
-      setMainWindow(
-        {
-          show: true,
-        },
-        () => {
-          browser.mainWindow.webContents.send('render_message', {
-            name: 'open new tab',
-            url: path,
-          });
-        },
-      );
-    }
+    browser.get_main_window().webContents.send('render_message', {
+      name: '[open new tab]',
+      url: path,
+    });
   });
 
   app.on('open-file', (event, path) => {
@@ -369,24 +373,10 @@ app.on('will-finish-launching', () => {
       path = 'file://' + path;
     }
 
-    if (browser.mainWindow === null) {
-      setMainWindow(
-        {
-          show: true,
-        },
-        () => {
-          browser.mainWindow.webContents.send('render_message', {
-            name: 'open new tab',
-            url: path,
-          });
-        },
-      );
-    } else {
-      browser.mainWindow.webContents.send('render_message', {
-        name: 'open new tab',
-        url: path,
-      });
-    }
+    browser.get_main_window().webContents.send('render_message', {
+      name: '[open new tab]',
+      url: path,
+    });
   });
 
   app.on('window-all-closed', () => {
@@ -415,28 +405,19 @@ app.on('second-instance', (event, commandLine, workingDirectory) => {
     u = 'file://' + u;
   }
 
-  if (browser.mainWindow && browser.mainWindow.webContents && !browser.mainWindow.webContents.isDestroyed()) {
-    browser.mainWindow.send('render_message', {
-      name: 'open new tab',
-      url: u,
-      active: true,
-    });
-    browser.mainWindow.maximize();
-    browser.mainWindow.show();
-  } else {
-    setMainWindow(
-      {
-        show: true,
-      },
-      (w) => {
-        browser.mainWindow.send('render_message', {
-          name: 'open new tab',
-          url: u,
-          active: true,
-        });
-        browser.mainWindow.maximize();
-        browser.mainWindow.show();
-      },
-    );
-  }
+  createNewMainWindow(
+    {
+      show: true,
+    },
+    (w) => {
+      browser.new_tab_info = {
+        name: '[open new tab]',
+        url: u,
+        active: true,
+        win_id: w.id,
+      };
+      w.maximize();
+      w.show();
+    },
+  );
 });

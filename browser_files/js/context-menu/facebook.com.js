@@ -1,6 +1,6 @@
 module.exports = function (SOCIALBROWSER) {
     
-   // console.log('facebook context menu loading ...')
+   // SOCIALBROWSER.log('facebook context menu loading ...')
 
     function addCss(css) {
 

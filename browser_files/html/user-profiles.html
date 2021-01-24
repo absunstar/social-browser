@@ -50,7 +50,7 @@
   </head>
   <body ng-controller="mainController">
     <div class="row">
-      <div class="row" ng-repeat="_se in setting.session_list  | filter:session | orderBy : 'display' track by $index">
+      <div class="row" ng-repeat="_se in setting.session_list  | filter:session  track by $index">
         <div class="user-box" ng-click="selectSession(_se)">
           <img ng-src="http://127.0.0.1:60080/images/user.png" />
           <p> <span class="bold blue"> ( {{$index + 1}} ) </span> {{_se.display}}</p>

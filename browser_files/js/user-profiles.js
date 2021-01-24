@@ -16,8 +16,11 @@ app.controller('mainController', ($scope, $http, $interval) => {
   };
 
   SOCIALBROWSER.on('var.session_list', (e, res) => {
+    console.log(res);
+    SOCIALBROWSER.var.session_list = res.data;
+    SOCIALBROWSER.var.session_list.sort((a, b) => (a.display > b.display ? 1 : -1));
     $scope.setting.session_list = [];
-    res.data.forEach((s) => {
+    SOCIALBROWSER.var.session_list.forEach((s) => {
       $scope.setting.session_list.push(s);
     });
     $scope.$apply();
@@ -33,7 +36,7 @@ app.controller('mainController', ($scope, $http, $interval) => {
         $scope.setting.core.session = se;
         $scope.saveSessions();
         SOCIALBROWSER.call('render_message', {
-          name: 'open new tab',
+          name: '[open new tab]',
           referrer: document.location.href,
           url: $scope.setting.core.default_page,
           partition: se.name,
@@ -65,7 +68,11 @@ app.controller('mainController', ($scope, $http, $interval) => {
   };
 
   $scope.loadSetting = function () {
-    $scope.setting = SOCIALBROWSER.var;
+    $scope.setting.session_list = [];
+    SOCIALBROWSER.var.session_list.forEach((s) => {
+      $scope.setting.session_list.push(Object.assign({}, s));
+    });
+    $scope.setting.core = SOCIALBROWSER.var.core;
   };
 
   $scope.saveSessions = function () {

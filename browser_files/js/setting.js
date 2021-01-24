@@ -265,6 +265,10 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     });
   };
 
+  $scope.showSession = function (_se) {
+    $scope.currentSession = _se;
+    site.showModal('#usersOptionsModal');
+  };
   $scope.showSessionsModal = function () {
     site.showModal('#sessionsModal');
   };
@@ -293,21 +297,21 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     });
   };
 
-  $scope.addZero = function(code , count){
-    let c = count - code.toString().length
+  $scope.addZero = function (code, count) {
+    let c = count - code.toString().length;
     for (let i = 0; i < c; i++) {
-      code = '0' + code.toString()
+      code = '0' + code.toString();
     }
-    return code
-  }
+    return code;
+  };
 
   $scope.generateSession = function () {
     if ($scope.session.display.length && $scope.session.count) {
       for (let index = 0; index < $scope.session.count; index++) {
-        let code = $scope.addZero(index , $scope.session.count.toString().length)
+        let code = $scope.addZero(index, $scope.session.count.toString().length);
         $scope.setting.session_list.push({
           name: 'persist:' + new Date().getTime() + '_' + code,
-          display: $scope.session.display.replace('{count}' , code),
+          display: $scope.session.display.replace('{count}', code),
           can_delete: true,
         });
       }
@@ -345,7 +349,6 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     });
   };
 
-  
   $scope.addPreload = function () {
     if ($scope.preload && $scope.preload.path && $scope.preload.url) {
       $scope.setting.preload_list.push($scope.preload);
@@ -368,6 +371,67 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     $scope.setting = SOCIALBROWSER.callSync('get_var', {
       url: document.location.href,
       name: '*',
+    });
+
+    if ($scope.setting.blocking.privacy.hide_lang !== true) {
+      $scope.setting.blocking.privacy.languages = SOCIALBROWSER.navigator.languages.toString();
+    }
+    if ($scope.setting.blocking.privacy.hide_cpu !== true) {
+      $scope.setting.blocking.privacy.cpu_count = SOCIALBROWSER.navigator.hardwareConcurrency;
+    }
+    if ($scope.setting.blocking.privacy.hide_memory !== true) {
+      $scope.setting.blocking.privacy.memory_count = SOCIALBROWSER.navigator.deviceMemory;
+    }
+
+    if ($scope.setting.blocking.privacy.mask_date !== true) {
+      $scope.setting.blocking.privacy.date_offset = [null, -300, -240, -180, -120, -60, 0, 60, 120, 180, 240, 300][SOCIALBROWSER.maxOf(SOCIALBROWSER.sessionId(), 11)];;
+    }
+
+    if ($scope.setting.blocking.privacy.hide_screen !== true) {
+      $scope.setting.blocking.privacy.screen_width = SOCIALBROWSER.screen.width;
+      $scope.setting.blocking.privacy.screen_height = SOCIALBROWSER.screen.height;
+      $scope.setting.blocking.privacy.screen_availWidth = SOCIALBROWSER.screen.availWidth;
+      $scope.setting.blocking.privacy.screen_availHeight = SOCIALBROWSER.screen.availHeight;
+    }
+
+    if ($scope.setting.blocking.privacy.hide_connection !== true) {
+      $scope.setting.blocking.privacy.connection = $scope.setting.blocking.privacy.connection || {};
+      $scope.setting.blocking.privacy.connection.effectiveType = SOCIALBROWSER.navigator.connection.effectiveType || '4g';
+      $scope.setting.blocking.privacy.connection.downlink = SOCIALBROWSER.navigator.connection.downlink || 1;
+      $scope.setting.blocking.privacy.connection.rtt = SOCIALBROWSER.navigator.connection.rtt || 100;
+      $scope.setting.blocking.privacy.connection.type = SOCIALBROWSER.navigator.connection.type || 'wifi';
+    }
+
+    $scope.setting.session_list.forEach((s , i) => {
+      s.privacy = s.privacy || {};
+      if (s.privacy.hide_connection !== true) {
+        s.privacy.connection = s.privacy.connection || {};
+        s.privacy.connection.effectiveType = $scope.setting.blocking.privacy.connection.effectiveType;
+        s.privacy.connection.downlink = $scope.setting.blocking.privacy.connection.downlink;
+        s.privacy.connection.rtt = $scope.setting.blocking.privacy.connection.rtt;
+        s.privacy.connection.type = $scope.setting.blocking.privacy.connection.type;
+      }
+      if (s.privacy.hide_memory !== true) {
+        s.privacy.memory_count = $scope.setting.blocking.privacy.memory_count;
+      }
+      if (s.privacy.hide_cpu !== true) {
+        s.privacy.cpu_count = $scope.setting.blocking.privacy.cpu_count;
+      }
+      if (s.privacy.hide_lang !== true) {
+        s.privacy.languages = $scope.setting.blocking.privacy.languages;
+      }
+      if (s.privacy.mask_date !== true) {
+        s.privacy.date_offset = [null, -300, -240, -180, -120, -60, 0, 60, 120, 180, 240, 300][SOCIALBROWSER.maxOf(i, 11)];
+      }
+      if (s.privacy.hide_screen !== true) {
+        s.privacy.screen_width = $scope.setting.blocking.privacy.screen_width;
+        s.privacy.screen_height = $scope.setting.blocking.privacy.screen_height;
+        s.privacy.screen_availWidth = $scope.setting.blocking.privacy.screen_availWidth;
+        s.privacy.screen_availHeight = $scope.setting.blocking.privacy.screen_availHeight;
+        s.privacy.screen_pixelDepth = $scope.setting.blocking.privacy.screen_pixelDepth;
+        s.privacy.screen_MaxTouchPoints = $scope.setting.blocking.privacy.screen_MaxTouchPoints;
+      }
+   
     });
 
     if ($scope.setting.core.password.length > 0) {
@@ -427,6 +491,38 @@ app.controller('mainController', ($scope, $http, $timeout) => {
   $scope.saveSetting = function (close) {
     $scope.busy = true;
     $scope.setting_busy = true;
+
+    $scope.setting.session_list.forEach((s , i) => {
+      s.privacy = s.privacy || {};
+      if (s.privacy.hide_connection !== true) {
+        s.privacy.connection = s.privacy.connection || {};
+        s.privacy.connection.effectiveType = $scope.setting.blocking.privacy.connection.effectiveType;
+        s.privacy.connection.downlink = $scope.setting.blocking.privacy.connection.downlink;
+        s.privacy.connection.rtt = $scope.setting.blocking.privacy.connection.rtt;
+        s.privacy.connection.type = $scope.setting.blocking.privacy.connection.type;
+      }
+      if (s.privacy.hide_memory !== true) {
+        s.privacy.memory_count = $scope.setting.blocking.privacy.memory_count;
+      }
+      if (s.privacy.hide_cpu !== true) {
+        s.privacy.cpu_count = $scope.setting.blocking.privacy.cpu_count;
+      }
+      if (s.privacy.hide_screen !== true) {
+        s.privacy.screen_width = $scope.setting.blocking.privacy.screen_width;
+        s.privacy.screen_height = $scope.setting.blocking.privacy.screen_height;
+        s.privacy.screen_availWidth = $scope.setting.blocking.privacy.screen_availWidth;
+        s.privacy.screen_availHeight = $scope.setting.blocking.privacy.screen_availHeight;
+        s.privacy.screen_pixelDepth = $scope.setting.blocking.privacy.screen_pixelDepth;
+        s.privacy.screen_MaxTouchPoints = $scope.setting.blocking.privacy.screen_MaxTouchPoints;
+      }
+      if (s.privacy.hide_lang !== true) {
+        s.privacy.languages = $scope.setting.blocking.privacy.languages;
+      }
+      if (s.privacy.mask_date !== true) {
+        s.privacy.date_offset = [-300, -240, -180, -120, -60, 0, 60, 120, 180, 240, 300][SOCIALBROWSER.maxOf(i, 10)];
+      }
+
+    });
 
     for (const key in $scope.setting) {
       if (key.indexOf('$') === -1) {

@@ -1,6 +1,6 @@
 module.exports = function (SOCIALBROWSER) {
   if (SOCIALBROWSER.is_white_site == true) {
-    console.log(' [IFrame Blocking] OFF : ' + document.location.href);
+    SOCIALBROWSER.log(' [IFrame Blocking] OFF : ' + document.location.href);
     return;
   }
 

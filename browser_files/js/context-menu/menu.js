@@ -54,11 +54,11 @@ module.exports = function (SOCIALBROWSER) {
     };
 
     if (options.start) {
-      // console.log('start')
+      // SOCIALBROWSER.log('start')
       recordedChunks = [];
       mediaRecorder.start();
       setTimeout(() => {
-        //  console.log('stop')
+        //  SOCIALBROWSER.log('stop')
         mediaRecorder.stop();
       }, 1000 * 10);
     }
@@ -92,7 +92,7 @@ module.exports = function (SOCIALBROWSER) {
       let videoElement = document.querySelector('#__video_element');
       videoElement.style.display = 'block';
 
-      // console.log(videoElement)
+      // SOCIALBROWSER.log(videoElement)
       const constraints = {
         audio: false,
         video: {
@@ -106,7 +106,7 @@ module.exports = function (SOCIALBROWSER) {
       // Create a Stream
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
 
-      // console.log(stream);
+      // SOCIALBROWSER.log(stream);
       // Preview the source in a video element
       videoElement.srcObject = stream;
       videoElement.play();
@@ -126,7 +126,7 @@ module.exports = function (SOCIALBROWSER) {
 
     // Captures all recorded chunks
     function handleDataAvailable(e) {
-      // console.log('video data available');
+      // SOCIALBROWSER.log('video data available');
       recordedChunks.push(e.data);
     }
 
@@ -146,7 +146,7 @@ module.exports = function (SOCIALBROWSER) {
       });
 
       if (filePath) {
-        writeFile(filePath, buffer, () => console.log('video saved successfully!'));
+        writeFile(filePath, buffer, () => SOCIALBROWSER.log('video saved successfully!'));
       }
     }
   }
@@ -460,7 +460,7 @@ module.exports = function (SOCIALBROWSER) {
       let page = window.location.pathname.split('/').pop();
       u = window.location.origin + window.location.pathname.replace(page, '') + u;
     }
-    return u.replace('#___new_tab___', '').replace('#___new_window__', '');
+    return u.replace('#___new_tab___', '').replace('#___new_popup__', '');
   }
 
   function add_a_menu(node, menu, doc, xwin) {
@@ -485,9 +485,10 @@ module.exports = function (SOCIALBROWSER) {
             label: 'Open link in new tab',
             click() {
               SOCIALBROWSER.call('render_message', {
-                name: 'open new tab',
+                name: '[open new tab]',
                 referrer: document.location.href,
                 url: u,
+                win_id: SOCIALBROWSER.currentWindow.id,
               });
             },
           }),
@@ -496,7 +497,7 @@ module.exports = function (SOCIALBROWSER) {
         if (SOCIALBROWSER.var.session_list.length > 1) {
           let arr = [];
 
-          if (SOCIALBROWSER.var.core.id.like('*master*')) {
+          if (SOCIALBROWSER.var.core.id.like('*test*')) {
             arr.push({
               label: ' in Trusted window',
               click() {
@@ -512,10 +513,10 @@ module.exports = function (SOCIALBROWSER) {
           }
 
           arr.push({
-            label: ' in New window',
+            label: ' in New Popup',
             click() {
               SOCIALBROWSER.call('render_message', {
-                name: 'new_window',
+                name: 'new_popup',
                 url: u,
                 referrer: document.location.href,
                 partition: partition,
@@ -525,10 +526,10 @@ module.exports = function (SOCIALBROWSER) {
           });
 
           arr.push({
-            label: ' in Ghost window',
+            label: ' in Ghost Popup',
             click() {
               SOCIALBROWSER.call('render_message', {
-                name: 'new_window',
+                name: 'new_popup',
                 url: u,
                 referrer: document.location.href,
                 partition: 'ghost' + new Date().getTime(),
@@ -537,16 +538,21 @@ module.exports = function (SOCIALBROWSER) {
             },
           });
 
-          SOCIALBROWSER.var.session_list.forEach((ss) => {
+          arr.push({
+            type: 'separator',
+          });
+
+          SOCIALBROWSER.var.session_list.forEach((ss, i) => {
             arr.push({
-              label: ' As (  ' + ss.display + '  ) ',
+              label: ` As ( ${i + 1} ) [ ${ss.display} ] `,
               click() {
                 SOCIALBROWSER.call('render_message', {
-                  name: 'open new tab',
+                  name: '[open new tab]',
                   referrer: document.location.href,
                   url: u,
                   partition: ss.name,
                   user_name: ss.display,
+                  win_id: SOCIALBROWSER.currentWindow.id,
                 });
               },
             });
@@ -599,7 +605,7 @@ module.exports = function (SOCIALBROWSER) {
             label: 'Download video ',
             click() {
               SOCIALBROWSER.call('render_message', {
-                name: 'new_window',
+                name: 'new_popup',
                 url: u.replace('youtube', 'youtubepp'),
                 partition: partition,
                 referrer: document.location.href,
@@ -632,9 +638,10 @@ module.exports = function (SOCIALBROWSER) {
           label: 'Open image in new tab',
           click() {
             SOCIALBROWSER.call('render_message', {
-              name: 'open new tab',
+              name: '[open new tab]',
               url: url,
               referrer: document.location.href,
+              win_id: SOCIALBROWSER.currentWindow.id,
             });
           },
         }),
@@ -648,10 +655,11 @@ module.exports = function (SOCIALBROWSER) {
             label: ss.display,
             click() {
               SOCIALBROWSER.call('render_message', {
-                name: 'open new tab',
+                name: '[open new tab]',
                 url: url,
                 referrer: document.location.href,
                 partition: ss.name,
+                win_id: SOCIALBROWSER.currentWindow.id,
               });
             },
           });
@@ -845,7 +853,7 @@ module.exports = function (SOCIALBROWSER) {
         SOCIALBROWSER.currentWindow.close();
       },
     });
-    if (SOCIALBROWSER.var.core.id.like('*master*')) {
+    if (SOCIALBROWSER.var.core.id.like('*test*')) {
       arr.push({
         label: 'Destroy window',
         click() {
@@ -951,10 +959,10 @@ module.exports = function (SOCIALBROWSER) {
           },
         });
         arr2.push({
-          label: 'Open in new window',
+          label: 'Open in new Popup',
           click() {
             SOCIALBROWSER.call('render_message', {
-              name: 'new_window',
+              name: 'new_popup',
               partition: partition,
               url: f.src,
               referrer: document.location.href,
@@ -1026,10 +1034,10 @@ module.exports = function (SOCIALBROWSER) {
 
       if (f.src.startsWith('http')) {
         arr3.push({
-          label: 'Open in new window',
+          label: 'Open in new Popup',
           click() {
             SOCIALBROWSER.call('render_message', {
-              name: 'new_window',
+              name: 'new_popup',
               alwaysOnTop: true,
               partition: partition,
               url: f.src,
@@ -1077,10 +1085,10 @@ module.exports = function (SOCIALBROWSER) {
           },
         });
         arr3.push({
-          label: 'Open in new window',
+          label: 'Open in new Popup',
           click() {
             SOCIALBROWSER.call('render_message', {
-              name: 'new_window',
+              name: 'new_popup',
               alwaysOnTop: true,
               partition: partition,
               url: f.src,
@@ -1204,7 +1212,7 @@ module.exports = function (SOCIALBROWSER) {
           label: 'Download current video',
           click() {
             SOCIALBROWSER.call('render_message', {
-              name: 'new_window',
+              name: 'new_popup',
               partition: partition,
               referrer: document.location.href,
               url: document.location.href.replace('youtube', 'youtubepp'),
@@ -1268,7 +1276,7 @@ module.exports = function (SOCIALBROWSER) {
           });
 
           if (list.length > 0) {
-            console.log(list);
+            SOCIALBROWSER.log(list);
             list.sort((a, b) => (a.https < b.https ? 1 : -1));
             SOCIALBROWSER.var.proxy_list = [];
           }
@@ -1312,12 +1320,13 @@ module.exports = function (SOCIALBROWSER) {
         for (let index = 0; index < 5; index++) {
           setTimeout(() => {
             SOCIALBROWSER.call('render_message', {
-              name: 'open new tab',
+              name: '[open new tab]',
               partition: partition,
               url: url,
               referrer: document.location.href,
               webaudio: false,
               show: true,
+              win_id: SOCIALBROWSER.currentWindow.id,
             });
           }, 1000 * 2 * index);
         }
@@ -1329,13 +1338,14 @@ module.exports = function (SOCIALBROWSER) {
         for (let index = 0; index < SOCIALBROWSER.var.session_list.length; index++) {
           setTimeout(() => {
             SOCIALBROWSER.call('render_message', {
-              name: 'open new tab',
+              name: '[open new tab]',
               partition: SOCIALBROWSER.var.session_list[index].name,
               user_name: SOCIALBROWSER.var.session_list[index].display,
               url: url,
               referrer: document.location.href,
               webaudio: false,
               show: true,
+              win_id: SOCIALBROWSER.currentWindow.id,
             });
           }, 1000 * index * 2);
         }
@@ -1346,15 +1356,18 @@ module.exports = function (SOCIALBROWSER) {
       click() {
         for (let index = 0; index < SOCIALBROWSER.var.proxy_list.length; index++) {
           setTimeout(() => {
+            let partition2 = 'random_user_' + Math.random();
+            SOCIALBROWSER.call('[handle-session]', partition2);
             SOCIALBROWSER.call('render_message', {
-              name: 'open new tab',
-              partition: 'random_user_' + Math.random(),
+              name: '[open new tab]',
+              partition: partition2,
               user_name: 'random_user_' + SOCIALBROWSER.var.proxy_list[index].name,
               proxy: SOCIALBROWSER.var.proxy_list[index].url,
               url: url,
               referrer: document.location.href,
               webaudio: false,
               show: true,
+              win_id: SOCIALBROWSER.currentWindow.id,
             });
           }, 1000 * index * 2);
         }
@@ -1366,13 +1379,14 @@ module.exports = function (SOCIALBROWSER) {
         for (let index = 0; index < SOCIALBROWSER.var.user_agent_list.length; index++) {
           setTimeout(() => {
             SOCIALBROWSER.call('render_message', {
-              name: 'open new tab',
+              name: '[open new tab]',
               partition: partition,
               user_agent: SOCIALBROWSER.var.user_agent_list[index].url,
               url: url,
               referrer: document.location.href,
               webaudio: false,
               show: true,
+              win_id: SOCIALBROWSER.currentWindow.id,
             });
           }, 1000 * index * 2);
         }
@@ -1383,15 +1397,19 @@ module.exports = function (SOCIALBROWSER) {
       click() {
         for (let index = 0; index < SOCIALBROWSER.var.user_agent_list.length; index++) {
           setTimeout(() => {
+            let partition2 = 'random_user_' + Math.random();
+            SOCIALBROWSER.call('[handle-session]', partition2);
+
             SOCIALBROWSER.call('render_message', {
-              name: 'open new tab',
-              partition: 'random_user' + Math.random(),
+              name: '[open new tab]',
+              partition: partition2,
               user_name: 'random_user_' + SOCIALBROWSER.var.user_agent_list[index].name,
               user_agent: SOCIALBROWSER.var.user_agent_list[index].url,
               url: url,
               referrer: document.location.href,
               webaudio: false,
               show: true,
+              win_id: SOCIALBROWSER.currentWindow.id,
             });
           }, 1000 * index * 2);
         }
@@ -1401,12 +1419,12 @@ module.exports = function (SOCIALBROWSER) {
       type: 'separator',
     });
     social_arr.push({
-      label: ` Open ${title} in 5 new window [Audio Muted]`,
+      label: ` Open ${title} in 5 new Popup [Audio Muted]`,
       click() {
         for (let index = 0; index < 5; index++) {
           setTimeout(() => {
             SOCIALBROWSER.call('render_message', {
-              name: 'new_window',
+              name: 'new_popup',
               partition: partition,
               url: url,
               referrer: document.location.href,
@@ -1418,12 +1436,12 @@ module.exports = function (SOCIALBROWSER) {
       },
     });
     social_arr.push({
-      label: ` Open ${title} in Many Windows [ All Profiles (${SOCIALBROWSER.var.session_list.length}) ] [Audio Muted]`,
+      label: ` Open ${title} in Many Popup [ All Profiles (${SOCIALBROWSER.var.session_list.length}) ] [Audio Muted]`,
       click() {
         for (let index = 0; index < SOCIALBROWSER.var.session_list.length; index++) {
           setTimeout(() => {
             SOCIALBROWSER.call('render_message', {
-              name: 'new_window',
+              name: 'new_popup',
               partition: SOCIALBROWSER.var.session_list[index].name,
               user_name: SOCIALBROWSER.var.session_list[index].display,
               url: url,
@@ -1436,12 +1454,12 @@ module.exports = function (SOCIALBROWSER) {
       },
     });
     social_arr.push({
-      label: ` Open ${title} in Many Windows [ All User Agents (${SOCIALBROWSER.var.user_agent_list.length}) ] [Audio Muted]`,
+      label: ` Open ${title} in Many Popup [ All User Agents (${SOCIALBROWSER.var.user_agent_list.length}) ] [Audio Muted]`,
       click() {
         for (let index = 0; index < SOCIALBROWSER.var.user_agent_list.length; index++) {
           setTimeout(() => {
             SOCIALBROWSER.call('render_message', {
-              name: 'new_window',
+              name: 'new_popup',
               partition: partition,
               user_agent: SOCIALBROWSER.var.user_agent_list[index].url,
               url: url,
@@ -1454,13 +1472,16 @@ module.exports = function (SOCIALBROWSER) {
       },
     });
     social_arr.push({
-      label: ` Open ${title} in Many Windows [ All User Agents (${SOCIALBROWSER.var.user_agent_list.length}) ] [Audio Muted] + New Profiles `,
+      label: ` Open ${title} in Many Popup [ All User Agents (${SOCIALBROWSER.var.user_agent_list.length}) ] [Audio Muted] + New Profiles `,
       click() {
         for (let index = 0; index < SOCIALBROWSER.var.user_agent_list.length; index++) {
+          let partition2 = 'random_user_' + Math.random();
+          SOCIALBROWSER.call('[handle-session]', partition2);
+
           setTimeout(() => {
             SOCIALBROWSER.call('render_message', {
-              name: 'new_window',
-              partition: 'random_user' + Math.random(),
+              name: 'new_popup',
+              partition: partition2,
               user_agent: SOCIALBROWSER.var.user_agent_list[index].url,
               url: url,
               referrer: document.location.href,
@@ -1508,7 +1529,7 @@ module.exports = function (SOCIALBROWSER) {
           label: ` ${document.location.host} ( Alexa Rank )`,
           click() {
             SOCIALBROWSER.call('render_message', {
-              name: 'new_window',
+              name: 'new_popup',
               width: 500,
               height: 500,
               url: `https://www.alexa.com/minisiteinfo/${document.location.origin}?offset=5&version=alxg_20100607`,
@@ -1577,7 +1598,7 @@ module.exports = function (SOCIALBROWSER) {
           label: 'Translate      ' + text.substring(0, 30),
           click() {
             SOCIALBROWSER.call('render_message', {
-              name: 'new_window',
+              name: 'new_popup',
               partition: partition,
               url: 'https://translate.google.com/?num=100&newwindow=1&um=1&ie=UTF-8&hl=en&client=tw-ob#auto/ar/' + encodeURIComponent(text),
             });
@@ -1590,9 +1611,10 @@ module.exports = function (SOCIALBROWSER) {
           label: 'Search          ' + text.substring(0, 30),
           click() {
             SOCIALBROWSER.call('render_message', {
-              name: 'open new tab',
+              name: '[open new tab]',
               referrer: document.location.href,
               url: 'https://www.google.com/search?q=' + encodeURIComponent(text),
+              win_id: SOCIALBROWSER.currentWindow.id,
             });
           },
         }),
@@ -1609,6 +1631,17 @@ module.exports = function (SOCIALBROWSER) {
     add_a_menu(node, menu, doc, xwin);
     add_img_menu(node, menu, doc, xwin);
 
+    SOCIALBROWSER.menu_list.forEach((m) => {
+      menu.append(
+        new $menuItem({
+          label: m.name,
+          click() {
+            m.click();
+          },
+        }),
+      );
+    });
+
     get_social_menu(node, menu, doc, null);
 
     if (SOCIALBROWSER.var.open_list.length > 0) {
@@ -1616,7 +1649,7 @@ module.exports = function (SOCIALBROWSER) {
         if (o.enabled) {
           if (o.multi) {
             let arr = [];
-            if (SOCIALBROWSER.var.core.id.like('*master*')) {
+            if (SOCIALBROWSER.var.core.id.like('*test*')) {
               arr.push({
                 label: ' in Trusted window',
                 click() {
@@ -1634,7 +1667,21 @@ module.exports = function (SOCIALBROWSER) {
               label: ' in New Tab',
               click() {
                 SOCIALBROWSER.call('render_message', {
-                  name: 'open new tab',
+                  name: '[open new tab]',
+                  partition: partition,
+                  url: o.url || document.location.href,
+                  referrer: document.location.href,
+                  show: true,
+                  win_id: SOCIALBROWSER.currentWindow.id,
+                });
+              },
+            });
+
+            arr.push({
+              label: ' in New Popup',
+              click() {
+                SOCIALBROWSER.call('render_message', {
+                  name: 'new_popup',
                   partition: partition,
                   url: o.url || document.location.href,
                   referrer: document.location.href,
@@ -1644,26 +1691,13 @@ module.exports = function (SOCIALBROWSER) {
             });
 
             arr.push({
-              label: ' in New window',
+              label: ' in New Ghost Popup',
               click() {
                 SOCIALBROWSER.call('render_message', {
-                  name: 'new_window',
-                  partition: partition,
+                  name: 'new_popup',
                   url: o.url || document.location.href,
                   referrer: document.location.href,
-                  show: true,
-                });
-              },
-            });
-
-            arr.push({
-              label: ' in New Private window',
-              click() {
-                SOCIALBROWSER.call('render_message', {
-                  name: 'new_window',
-                  url: o.url || document.location.href,
-                  referrer: document.location.href,
-                  partition: 'private_' + new Date().getTime(),
+                  partition: 'ghost_' + new Date().getTime(),
                   show: true,
                 });
               },
@@ -1673,16 +1707,17 @@ module.exports = function (SOCIALBROWSER) {
               type: 'separator',
             });
 
-            SOCIALBROWSER.var.session_list.forEach((ss) => {
+            SOCIALBROWSER.var.session_list.forEach((ss, i) => {
               arr.push({
-                label: ' As (  ' + ss.display + '  ) ',
+                label: ` As ( ${i + 1} ) [ ${ss.display} ] `,
                 click() {
                   SOCIALBROWSER.call('render_message', {
-                    name: 'open new tab',
+                    name: '[open new tab]',
                     url: o.url || document.location.href,
                     referrer: document.location.href,
                     partition: ss.name,
                     user_name: ss.display,
+                    win_id: SOCIALBROWSER.currentWindow.id,
                   });
                 },
               });
@@ -1701,11 +1736,12 @@ module.exports = function (SOCIALBROWSER) {
                 label: o.name,
                 click() {
                   SOCIALBROWSER.call('render_message', {
-                    name: 'open new tab',
+                    name: '[open new tab]',
                     partition: partition,
                     url: o.url || document.location.href,
                     referrer: document.location.href,
                     show: true,
+                    win_id: SOCIALBROWSER.currentWindow.id,
                   });
                 },
               }),
@@ -1793,12 +1829,12 @@ module.exports = function (SOCIALBROWSER) {
 
     if (SOCIALBROWSER.var.context_menu.proxy_options) {
       let arr = [];
-      if (SOCIALBROWSER.var.core.id.like('*master*')) {
+      if (SOCIALBROWSER.var.core.id.like('*test*')) {
         arr.push({
           label: 'My Server',
           click() {
             SOCIALBROWSER.call('render_message', {
-              name: 'new_window',
+              name: 'new_popup',
               url: document.location.href,
               user_agent: navigator.userAgent,
               proxy: '104.248.211.73:55555',
@@ -1815,7 +1851,7 @@ module.exports = function (SOCIALBROWSER) {
           label: p.name,
           click() {
             SOCIALBROWSER.call('render_message', {
-              name: 'new_window',
+              name: 'new_popup',
               url: document.location.href,
               proxy: p.url,
               partition: 'proxy' + new Date().getTime(),
@@ -1875,11 +1911,7 @@ module.exports = function (SOCIALBROWSER) {
         new $menuItem({
           label: 'Inspect Element',
           click() {
-            if (xwin.inspectElement) {
-              xwin.inspectElement(rightClickPosition.x, rightClickPosition.y);
-            } else if (xwin.webContents.inspectElement) {
-              xwin.webContents.inspectElement(rightClickPosition.x, rightClickPosition.y);
-            }
+            xwin.webContents.inspectElement(rightClickPosition.x, rightClickPosition.y);
           },
         }),
       );
@@ -1891,11 +1923,7 @@ module.exports = function (SOCIALBROWSER) {
           label: 'Developer Tools',
           accelerator: 'F12',
           click() {
-            if (xwin.openDevTools) {
-              xwin.openDevTools();
-            } else if (xwin.webContents.openDevTools) {
-              xwin.webContents.openDevTools();
-            }
+            xwin.webContents.openDevTools();
           },
         }),
       );
@@ -1909,7 +1937,7 @@ module.exports = function (SOCIALBROWSER) {
   }
 
   let contextMenuHandle = function (e) {
-    // console.log('window.oncontextmenu')
+    // SOCIALBROWSER.log('window.oncontextmenu')
     try {
       let factor = xwin.webContents.zoomFactor || 1;
       let x = Math.round(e.x * factor);

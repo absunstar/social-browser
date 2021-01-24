@@ -8,7 +8,7 @@ module.exports = function (SOCIALBROWSER) {
         return
     }
 
-    console.log('addmefast Activated .....')
+    SOCIALBROWSER.log('addmefast Activated .....')
 
     SOCIALBROWSER.var.blocking.block_empty_iframe = false
 
@@ -45,17 +45,17 @@ module.exports = function (SOCIALBROWSER) {
                 closed: false,
                 opener: window,
                 postMessage: (...args) => {
-                    console.log('postMessage opener' , ...args)
+                    SOCIALBROWSER.log('postMessage opener' , ...args)
                     
                 },
                 eval: () => {
-                    console.log('eval opener')
+                    SOCIALBROWSER.log('eval opener')
                 },
                 close: () => {
-                    console.log('close opener')
+                    SOCIALBROWSER.log('close opener')
                 },
                 focus: () => {
-                    console.log('focus opener')
+                    SOCIALBROWSER.log('focus opener')
                 }
             }
 
@@ -125,7 +125,7 @@ module.exports = function (SOCIALBROWSER) {
                     document.querySelectorAll('video').forEach(v=> v.remove());
                     function like_video(){
                         let btn =  document.querySelectorAll('ytd-toggle-button-renderer.style-scope.ytd-menu-renderer.force-icon-button.style-text')[0]
-                        console.log(btn);
+                        SOCIALBROWSER.log(btn);
                         if(btn){
                             btn.click()
                             setTimeout(() => {
@@ -193,12 +193,13 @@ module.exports = function (SOCIALBROWSER) {
                     if (btn) {
                         btn.click()
                         btn.style.display = 'none'
-                        console.log('view button clicked')
+                        SOCIALBROWSER.log('view button clicked')
                     }
                 }
 
                 let btn = document.querySelector('#human_check')
                 if (btn) {
+                    
                     document.querySelector('title').innerText = "^_^"
                     setTimeout(() => {
                         document.querySelector('title').innerText = "): ^"
@@ -209,7 +210,7 @@ module.exports = function (SOCIALBROWSER) {
                         document.location.reload()
                     }
 
-                    if (true) {
+                    if (false) {
                         img_handle = true
                         document.querySelectorAll('#human_check img').forEach(img => {
                             if (img.complete && img.naturalHeight !== 0 && !img.getAttribute('x-id')) {
@@ -218,8 +219,8 @@ module.exports = function (SOCIALBROWSER) {
                                 let img_data = SOCIALBROWSER.callSync('get_data', {
                                     id: id
                                 })
-                                console.log(id)
-                                console.log(img_data)
+                                SOCIALBROWSER.log(id)
+                                SOCIALBROWSER.log(img_data)
                                 if (img_data.id) {
                                     img.classList.add('__done')
                                     img.setAttribute('click_count', img_data.click_count)

@@ -1,12 +1,9 @@
 module.exports = function (SOCIALBROWSER) {
-
   SOCIALBROWSER.var.white_list.forEach((site) => {
     if (site.url.length > 2 && document.location.href.like(site.url)) {
-     SOCIALBROWSER.is_white_site = true
+      SOCIALBROWSER.is_white_site = true;
     }
   });
-
-
 
   require(SOCIALBROWSER.files_dir + '/js/context-menu/fn.js')(SOCIALBROWSER);
   require(SOCIALBROWSER.files_dir + '/js/context-menu/finger_print.js')(SOCIALBROWSER);
@@ -19,22 +16,48 @@ module.exports = function (SOCIALBROWSER) {
   require(SOCIALBROWSER.files_dir + '/js/context-menu/nodes.js')(SOCIALBROWSER);
   require(SOCIALBROWSER.files_dir + '/js/context-menu/videos.js')(SOCIALBROWSER);
   require(SOCIALBROWSER.files_dir + '/js/context-menu/youtube.js')(SOCIALBROWSER);
-  require(SOCIALBROWSER.files_dir + '/js/context-menu/10khits.js')(SOCIALBROWSER);
-  require(SOCIALBROWSER.files_dir + '/js/context-menu/addmefast.js')(SOCIALBROWSER);
-  require(SOCIALBROWSER.files_dir + '/js/context-menu/youlikehits.js')(SOCIALBROWSER);
   require(SOCIALBROWSER.files_dir + '/js/context-menu/menu.js')(SOCIALBROWSER);
-  require(SOCIALBROWSER.files_dir + '/js/scripts/linkatcom.js')(SOCIALBROWSER);
 
+  /** Load Custom Scripts */
+  require(SOCIALBROWSER.files_dir + '/js/scripts/global.js')(SOCIALBROWSER);
+  if (SOCIALBROWSER.var.blocking.social.allow_alexa) {
+    require(SOCIALBROWSER.files_dir + '/js/scripts/alexa.js')(SOCIALBROWSER);
+  }
+  if (SOCIALBROWSER.var.blocking.social.allow_10khits) {
+    require(SOCIALBROWSER.files_dir + '/js/scripts/10khits.js')(SOCIALBROWSER);
+  }
+  if (SOCIALBROWSER.var.blocking.social.allow_addmefast) {
+    require(SOCIALBROWSER.files_dir + '/js/scripts/addmefast.js')(SOCIALBROWSER);
+  }
+  if (SOCIALBROWSER.var.blocking.social.allow_youlikehits) {
+    require(SOCIALBROWSER.files_dir + '/js/scripts/youlikehits.js')(SOCIALBROWSER);
+  }
+  if (SOCIALBROWSER.var.blocking.social.allow_rankboostup) {
+    require(SOCIALBROWSER.files_dir + '/js/scripts/rankboostup.js')(SOCIALBROWSER);
+  }
+  if (SOCIALBROWSER.var.blocking.social.allow_wintub) {
+    require(SOCIALBROWSER.files_dir + '/js/scripts/wintub.js')(SOCIALBROWSER);
+  }
+
+  
+  if (SOCIALBROWSER.var.blocking.social.allow_linkatcom) {
+    require(SOCIALBROWSER.files_dir + '/js/scripts/linkatcom.js')(SOCIALBROWSER);
+  }
+  if (SOCIALBROWSER.var.blocking.social.allow_egybest) {
+    require(SOCIALBROWSER.files_dir + '/js/scripts/egybest.js')(SOCIALBROWSER);
+  }
+
+
+  // require(SOCIALBROWSER.files_dir + '/js/scripts/google.js')(SOCIALBROWSER);
+  
+  
   SOCIALBROWSER.var.session_list.sort((a, b) => (a.display > b.display ? 1 : -1));
   SOCIALBROWSER.on('var.session_list', (e, res) => {
     SOCIALBROWSER.var.session_list = res.data;
     SOCIALBROWSER.var.session_list.sort((a, b) => (a.display > b.display ? 1 : -1));
   });
 
-  document.addEventListener('DOMNodeInserted', function (e) {
-   
-   
-  });
+  document.addEventListener('DOMNodeInserted', function (e) {});
 
   let $is_DOMContentLoaded = false;
   document.addEventListener('DOMContentLoaded', () => {
@@ -42,12 +65,6 @@ module.exports = function (SOCIALBROWSER) {
       return;
     }
     $is_DOMContentLoaded = true;
-
-    if (SOCIALBROWSER && !!window && !(!!window.jQuery)) {
-      window.jQuery = require(SOCIALBROWSER.files_dir + '/js/jquery.js');
-  }
-
-
 
     const xxx__browser = document.createElement('div');
     xxx__browser.id = 'xxx__browser';
@@ -64,10 +81,15 @@ module.exports = function (SOCIALBROWSER) {
     if (SOCIALBROWSER.var.blocking.privacy.show_bookmarks && document.querySelector('title') && document.querySelector('title').text == 'Google') {
       window.__showBookmarks();
     }
+
+    // can download any lib
+    if (SOCIALBROWSER.var.blocking.javascript.allow_jquery && !window.jQuery) {
+      window.jQuery = require(SOCIALBROWSER.files_dir + '/js/jquery.js');
+    }
   });
 
   // window.addEventListener("message", (e) => {
-  //     console.log(e)
+  //     SOCIALBROWSER.log(e)
   // }, false);
 
   document.addEventListener('click', (e) => {
@@ -77,19 +99,39 @@ module.exports = function (SOCIALBROWSER) {
     });
   });
 
-  // SOCIALBROWSER.__define(navigator, 'vendor', '');
-  // SOCIALBROWSER.__define(navigator, 'oscpu', 'Windows NT 10.0; Win64; x64');
-
   // user agent
-  let user_agent_set = false;
+  let user_agent_url = null;
+
   SOCIALBROWSER.var.sites.forEach((site) => {
     if (document.location.href.like(site.url)) {
       SOCIALBROWSER.__define(navigator, 'userAgent', site.user_agent);
-      user_agent_set = true;
+      user_agent_url = site.user_agent;
     }
   });
-  if (!user_agent_set) {
-    SOCIALBROWSER.__define(navigator, 'userAgent', SOCIALBROWSER.currentWindow.webContents.getUserAgent() || SOCIALBROWSER.var.core.user_agent);
+
+  if (!user_agent_url) {
+    if (SOCIALBROWSER.session.user_agent) {
+      user_agent_url = SOCIALBROWSER.session.user_agent.url;
+    } else {
+      user_agent_url = SOCIALBROWSER.currentWindow.webContents.getUserAgent() || SOCIALBROWSER.var.core.user_agent;
+    }
+
+    if (SOCIALBROWSER.var.blocking.privacy.enable_finger_protect && SOCIALBROWSER.var.blocking.privacy.mask_user_agent) {
+      SOCIALBROWSER.__define(navigator, 'userAgent', user_agent_url.replace(') ', ') (' + SOCIALBROWSER.guid() + ') '));
+    }
+  }
+
+  let user_agent_info = SOCIALBROWSER.var.user_agent_list.find((u) => u.url == user_agent_url);
+  if (user_agent_info && SOCIALBROWSER.session.user_agent) {
+    if (SOCIALBROWSER.session.user_agent.vendor) {
+      SOCIALBROWSER.__define(navigator, 'vendor', SOCIALBROWSER.session.user_agent.vendor);
+    }
+    if (SOCIALBROWSER.session.user_agent.oscpu) {
+      SOCIALBROWSER.__define(navigator, 'oscpu', SOCIALBROWSER.session.user_agent.oscpu);
+    }
+    if (SOCIALBROWSER.session.user_agent.platform) {
+      SOCIALBROWSER.__define(navigator, 'platform', SOCIALBROWSER.session.user_agent.platform);
+    }
   }
 
   // load user preload list
@@ -98,8 +140,14 @@ module.exports = function (SOCIALBROWSER) {
       try {
         require(p.path.replace('{dir}', SOCIALBROWSER.dir))(SOCIALBROWSER);
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
     }
   });
+
+  // set random property to match chrome property count
+  // for (let index = 0; index < 14; index++) {
+  //   navigator['random_' + index] = false;
+  //   SOCIALBROWSER.__define(navigator, 'random_' + index, false, { enumerable: true });
+  // }
 };

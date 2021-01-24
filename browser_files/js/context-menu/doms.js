@@ -1,7 +1,7 @@
 module.exports = function (SOCIALBROWSER) {
 
     if (document.location.href.like('*http://127.0.0.1*')) {
-        console.log(' [DOM Blocking] OFF : ' + document.location.href);
+        SOCIALBROWSER.log(' [DOM Blocking] OFF : ' + document.location.href);
         return;
       }
 
@@ -13,8 +13,8 @@ module.exports = function (SOCIALBROWSER) {
         arr.forEach(sl => {
             if (window.location.href.like(sl.url) && !window.location.href.like(sl.ex_url || '')) {
                 document.querySelectorAll(sl.select).forEach(el => {
-                   // console.log('Remove Next DOM With Selector : ' + sl.select)
-                   // console.log(el)
+                   // SOCIALBROWSER.log('Remove Next DOM With Selector : ' + sl.select)
+                   // SOCIALBROWSER.log(el)
                     if (sl.remove) {
                         el.remove();
                     } else if (sl.hide) {

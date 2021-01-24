@@ -3,22 +3,23 @@ module.exports = function (SOCIALBROWSER) {
     SOCIALBROWSER.call('renderMessage', cm);
   };
 
-  SOCIALBROWSER.__define = function (o, p, v) {
+  SOCIALBROWSER.__define = function (o, p, v, op) {
+    op = op || {};
     if (typeof o == 'undefined') {
       return;
     }
     Object.defineProperty(o, p, {
-      
       get: function () {
         return v;
       },
+      enumerable: op.enumerable || false,
     });
     if (o.prototype) {
       o.prototype[p] = v;
     }
   };
 
-  window.location0 = window.location.ancestorOrigins
+  window.location0 = window.location.ancestorOrigins;
   // window.location = {
   //   ancestorOrigins : window.location.ancestorOrigins,
   //   host : window.location.host,
@@ -37,10 +38,9 @@ module.exports = function (SOCIALBROWSER) {
   //     return 'mmmmmmmmmmmmmmmmmmm';
   //   },
   //   set(newValue) {
-  //     console.log(' [href] ', newValue);
+  //     SOCIALBROWSER.log(' [href] ', newValue);
   //   },
   // });
-
 
   SOCIALBROWSER.isValidURL = function (str) {
     var pattern = new RegExp(
@@ -77,13 +77,14 @@ module.exports = function (SOCIALBROWSER) {
 
   if (SOCIALBROWSER.var.blocking.javascript.block_eval) {
     window.eval = function (code) {
-      console.log(code);
+      // SOCIALBROWSER.log(code);
     };
   }
 
   window.console.clear = function () {};
+
   if (SOCIALBROWSER.var.blocking.javascript.block_console_output) {
-    window.console.log = function () {};
+    window.SOCIALBROWSER.log = function () {};
     window.console.error = function () {};
     window.console.dir = function () {};
     window.console.dirxml = function () {};
@@ -108,19 +109,23 @@ module.exports = function (SOCIALBROWSER) {
     return null;
   };
 
-  SOCIALBROWSER.getAllSelectors = function () {
+  SOCIALBROWSER.getAllCssSelectors = function () {
     var ret = [];
-    for (var i = 0; i < document.styleSheets.length; i++) {
-      var rules = document.styleSheets[i].rules || document.styleSheets[i].cssRules;
-      for (var x in rules) {
-        if (typeof rules[x].selectorText == 'string') ret.push(rules[x].selectorText);
+    const styleSheets = Array.from(document.styleSheets).filter((styleSheet) => !styleSheet.href || styleSheet.href.startsWith(window.location.origin));
+    for (let style of styleSheets) {
+      if (style instanceof CSSStyleSheet && style.cssRules) {
+        for (var x in style.cssRules) {
+          if (typeof style.cssRules[x].selectorText == 'string') {
+            ret.push(style.cssRules[x].selectorText);
+          }
+        }
       }
     }
     return ret;
   };
 
-  SOCIALBROWSER.selectorExists = function (selector) {
-    var selectors = SOCIALBROWSER.getAllSelectors();
+  SOCIALBROWSER.isCssSelectorExists = function (selector) {
+    var selectors = SOCIALBROWSER.getAllCssSelectors();
     for (var i = 0; i < selectors.length; i++) {
       if (selectors[i] == selector) return true;
     }
@@ -132,7 +137,7 @@ module.exports = function (SOCIALBROWSER) {
     callback =
       callback ||
       function (trans) {
-        console.log(trans);
+        // SOCIALBROWSER.log(trans);
       };
     if (text.test(/^[a-zA-Z\-\u0590-\u05FF\0-9^@_:?;!\[\]~<>{}|\\]+$/)) {
       callback(text);
@@ -169,6 +174,44 @@ module.exports = function (SOCIALBROWSER) {
       });
   };
 
+  EventTarget.prototype.addEventListener0 = EventTarget.prototype.addEventListener;
+  EventTarget.prototype.removeEvent = function (type) {
+    delete this.listeners[type];
+  };
+  EventTarget.prototype.addEventListener = function (...args) {
+    let selector = '';
+
+    if (this instanceof Document) {
+      selector += 'document';
+    } else if (this instanceof Window) {
+      selector += 'window';
+    } else if (this instanceof Element) {
+      selector += this.tagName;
+    }
+
+    let type = args[0];
+    if (typeof type == 'string') {
+      selector += `${this.id ? '#' + this.id : ''}${this.className ? '.' + this.className : ''}(${type})`;
+      if (typeof type == 'string' && selector.like(SOCIALBROWSER.eventOff) && !selector.like(SOCIALBROWSER.eventOn)) {
+        // SOCIALBROWSER.log(`${selector} OFF`);
+        SOCIALBROWSER.events.push({
+          enabled: false,
+          selector: selector,
+          args: args,
+          fn: args.length > 1 ? (args[1] || '').toString() : '',
+        });
+        return;
+      }
+    }
+    SOCIALBROWSER.events.push({
+      enabled: true,
+      selector: selector,
+      args: args,
+      fn: args.length > 1 ? (args[1] || '').toString() : '',
+    });
+    this.addEventListener0(...args);
+  };
+
   window.setInterval0 = window.setInterval;
   window.setInterval = function (...args) {
     return window.setInterval0(...args);
@@ -178,14 +221,38 @@ module.exports = function (SOCIALBROWSER) {
     return window.setTimeout0(...args);
   };
 
+  window.addEventListener('message', (event) => {
+    // SOCIALBROWSER.log('New PostMessage Recived' , event)
+  });
+
   window.postMessage0 = window.postMessage;
   window.postMessage = function (...args) {
-    // console.log(' [ Post Message ] ',...args)
+    // SOCIALBROWSER.log(' [ Post Message ] ',...args)
     if (SOCIALBROWSER.var.blocking.javascript.block_window_post_message) {
-      console.warn('Block Post Message ', ...args);
+      // console.warn('Block Post Message ', ...args);
     }
+    args[1] = '*';
     return window.postMessage0(...args);
   };
+
+  SOCIALBROWSER.on('postMessage', (e, info) => {
+    if (SOCIALBROWSER.currentWindow.id == info.win_id) {
+      // SOCIALBROWSER.log('ask for postmessage' , ...info.args)
+      window.postMessage(...info.args);
+    }
+  });
+
+  if (SOCIALBROWSER.windows) {
+    window.opener = {
+      postMessage: (...args) => {
+        // SOCIALBROWSER.log('postMessage from opener', ...args);
+        SOCIALBROWSER.call('postMessage', {
+          win_id: SOCIALBROWSER.windows.parent,
+          args: args,
+        });
+      },
+    };
+  }
 
   window.print0 = window.print;
   window.print = function (options) {
@@ -223,10 +290,10 @@ module.exports = function (SOCIALBROWSER) {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
+        //  SOCIALBROWSER.log(data);
       })
       .catch((err) => {
-        console.log(err);
+        //  SOCIALBROWSER.log(err);
       });
   };
   window.get_printers = function () {
@@ -292,6 +359,18 @@ module.exports = function (SOCIALBROWSER) {
     }
   };
 
+  window.__showWarningImage = function () {
+    let div = document.querySelector('#__warning_img');
+    if (div) {
+      div.style.display = 'block';
+    }
+  };
+  window.__showLoadingImage = function () {
+    let div = document.querySelector('#__loading_img');
+    if (div) {
+      div.style.display = 'block';
+    }
+  };
   window.__blockPage = window.prompt = function (block, msg, close) {
     let div = document.querySelector('#__blockDiv');
     if (div && block) {
@@ -396,7 +475,7 @@ module.exports = function (SOCIALBROWSER) {
   };
   SOCIALBROWSER.on('found-in-page', (event, data) => {
     if (data.win_id == SOCIALBROWSER.currentWindow.id) {
-      console.log(data);
+      // SOCIALBROWSER.log(data);
     }
   });
 
@@ -415,46 +494,55 @@ module.exports = function (SOCIALBROWSER) {
     alert(data.message);
   });
   window.open = function (url, _name, _specs, _replace_in_history) {
-    let opener = {
+    let child_window = {
       closed: false,
-      opener: window,
-      postMessage: () => {
-        console.log('postMessage opener');
+      child_window: window,
+      innerHeight: 1028,
+      innerWidth: 720,
+      addEventListener: (name, callback) => {
+        // SOCIALBROWSER.log(`[ child_window addEventListener ${name}`);
+        if (name == 'load') {
+          if (callback) {
+            callback();
+          }
+        }
       },
-      eval: () => {
-        console.log('eval opener');
+      postMessage: function (...args) {
+        //  SOCIALBROWSER.log('postMessage child_window', args);
       },
-      close: () => {
-        console.log('close opener');
+      eval: function () {
+        // SOCIALBROWSER.log('eval child_window');
       },
-      focus: () => {
-        console.log('focus opener');
+      close: function () {
+        //  SOCIALBROWSER.log('close child_window');
+        this.closed = true;
       },
-      print: () => {
-        console.log('print opener');
+      focus: function () {
+        // SOCIALBROWSER.log('focus child_window');
+      },
+      blur: function () {
+        //  SOCIALBROWSER.log('focus child_window');
+      },
+      print: function () {
+        // SOCIALBROWSER.log('print child_window');
       },
       document: {
-        write: () => {
-          console.log('document write opener');
+        write: function () {
+          // SOCIALBROWSER.log('document write child_window');
         },
-        
       },
       self: {
-        close: () => {
-          console.log('opener self close');
-        }
-      }
+        close: function () {
+          // SOCIALBROWSER.log('child_window self close');
+        },
+      },
     };
 
-    if (SOCIALBROWSER.var.blocking.javascript.block_window_open) {
-      return opener;
-    }
-
     if (typeof url !== 'string') {
-      return opener;
+      return child_window;
     }
     if (url == 'about:blank') {
-      return opener;
+      return child_window;
     }
     url = SOCIALBROWSER.handle_url(url);
 
@@ -464,13 +552,13 @@ module.exports = function (SOCIALBROWSER) {
         url: url,
       });
 
-      return opener;
+      return child_window;
     }
+
+    let allow = false;
 
     let url_p = SOCIALBROWSER.url.parse(url);
     let url2_p = SOCIALBROWSER.url.parse(this.document.location.href);
-
-    let allow = false;
 
     if (url_p.host === url2_p.host && SOCIALBROWSER.var.blocking.popup.allow_internal) {
       allow = true;
@@ -485,76 +573,146 @@ module.exports = function (SOCIALBROWSER) {
     }
 
     if (!allow) {
-      // console.log('Block popup : ' + url)
-      return opener;
+      // SOCIALBROWSER.log('Block popup : ' + url)
+      return child_window;
+    }
+
+    if (SOCIALBROWSER.var.blocking.javascript.block_window_open) {
+      // SOCIALBROWSER.log('Block window.open ' + url);
+      return child_window;
     }
 
     if (!_specs) {
       SOCIALBROWSER.call('render_message', {
-        name: 'open new tab',
+        name: '[open new tab]',
         referrer: document.location.href,
         url: url,
         source: 'window.open',
+        win_id: SOCIALBROWSER.currentWindow.id,
       });
 
-      return null;
+      return child_window;
     }
 
     let win = new SOCIALBROWSER.electron.remote.BrowserWindow({
       show: true,
       alwaysOnTop: true,
-      width: _specs.width || 800,
-      height: _specs.height || 600,
-      x: _specs.x || 200,
-      y: _specs.y || 200,
+      skipTaskbar: false,
+      resizable: true,
+      width: _specs.width || 1280,
+      height: _specs.height || 720,
       backgroundColor: '#ffffff',
       frame: true,
+      fullscreenable: true,
+      title: 'New Window',
       icon: SOCIALBROWSER.path.join(SOCIALBROWSER.files_dir, 'images', 'logo.ico'),
-      parent: SOCIALBROWSER.electron.remote.getCurrentWebContents(),
-      webPreferences: {
-        contextIsolation: false,
-        session: SOCIALBROWSER.electron.remote.getCurrentWebContents().session,
-        sandbox: false,
-        preload: SOCIALBROWSER.files_dir + '/js/context-menu.js',
-        nativeWindowOpen: false,
-        webSecurity: true,
-        allowRunningInsecureContent: false,
-        plugins: true,
-      },
+      parent2: SOCIALBROWSER.currentWindow,
+      webPreferences: SOCIALBROWSER.currentWindow.webContents.getWebPreferences(),
     });
-
+    win.center();
     win.setMenuBarVisibility(false);
     win.loadURL(url, {
       referrer: document.location.href,
     });
 
-    opener.postMessage = function (...args) {
+    SOCIALBROWSER.call('[assign][window]', {
+      parent: SOCIALBROWSER.currentWindow.id,
+      child: win.id,
+    });
+
+    child_window.postMessage = function (...args) {
+      args[1] = '*';
       return win.webContents.postMessage(...args);
     };
+    win.on('close', () => {
+      win.destroy();
+    });
     win.webContents.once('dom-ready', () => {
-      opener.eval = function (code, userGesture = true) {
+      child_window.eval = function (code, userGesture = true) {
         code = `window.eval(${code})`;
         win.webContents
           .executeJavaScript(code, userGesture)
           .then((result) => {
-            console.log(result);
+            // SOCIALBROWSER.log(result);
           })
           .catch((err) => {
-            console.error(err);
+            // console.error(err);
           });
       };
     });
 
-    opener.close = function () {
+    child_window.close = function () {
       return win.close();
     };
-    // opener.document
+    // child_window.document
     win.on('close', (e) => {
-      opener.postMessage = () => {};
-      opener.eval = () => {};
-      opener.closed = true;
+      setTimeout(() => {
+        child_window.postMessage = () => {};
+        child_window.eval = () => {};
+        child_window.closed = true;
+      }, 1000 * 5);
     });
 
-    return opener;
+    return child_window;
   };
+
+  try {
+    if (SOCIALBROWSER.var.blocking.javascript.custom_local_storage && localStorage) {
+      window.localStorage0 = localStorage;
+      SOCIALBROWSER.__define(window, 'localStorage', {
+        setItem: function (key, value) {
+          return localStorage0.setItem(key, value);
+        },
+        getItem: function (key) {
+          let value = localStorage0.getItem(key);
+          return value;
+        },
+        get length() {
+          return localStorage0.length;
+        },
+        removeItem: function (key) {
+          return localStorage0.removeItem(key);
+        },
+        clear: function () {
+          return localStorage0.clear();
+        },
+        key: function (index) {
+          return localStorage0.key(index);
+        },
+      });
+    }
+  } catch (error) {
+    // SOCIALBROWSER.log(error)
+  }
+
+  try {
+    if (SOCIALBROWSER.var.blocking.javascript.custom_session_storage && sessionStorage) {
+      window.sessionStorage0 = sessionStorage;
+      let hack = {
+        setItem: function (key, value) {
+          return sessionStorage0.setItem(key, value);
+        },
+        getItem: function (key) {
+          let value = sessionStorage0.getItem(key);
+          return value;
+        },
+        get length() {
+          return sessionStorage0.length;
+        },
+        removeItem: function (key) {
+          return sessionStorage0.removeItem(key);
+        },
+        clear: function () {
+          return sessionStorage0.clear();
+        },
+        key: function (index) {
+          return sessionStorage0.key(index);
+        },
+      };
+
+      SOCIALBROWSER.__define(window, 'sessionStorage', hack);
+    }
+  } catch (error) {
+    // SOCIALBROWSER.log(error)
+  }
 };

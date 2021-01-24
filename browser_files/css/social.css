@@ -133,20 +133,6 @@ button {
   background-color: #fff;
 }
 
-.social-status-bar {
-  position: fixed;
-  bottom: 0px;
-  left: 0px;
-  width: auto;
-  color: #fff;
-  padding: 0px;
-  margin: 0px;
-  background-color: #282828;
-  font-size: 12px;
-  word-wrap: normal;
-  opacity: 0.9;
-  border-radius: 2px;
-}
 
 .ui.search > .results {
   width: 40em;

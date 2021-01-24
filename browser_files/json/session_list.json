@@ -1,25 +1,25 @@
 [
     
     {
-        "name": "persist:user_1",
+        "name": "persist:{random}",
         "display": "User 1",
         "can_delete": false
     },
     {
-        "name": "persist:user_2",
+        "name": "persist:{random}",
         "display": "User 2",
         "can_delete": false
     },    {
-        "name": "persist:user_3",
+        "name": "persist:{random}",
         "display": "User 3",
         "can_delete": false
     },    {
-        "name": "persist:user_4",
+        "name": "persist:{random}",
         "display": "User 4",
         "can_delete": false
     },
     {
-        "name": "private",
+        "name": "{random}",
         "display": "Private Mode",
         "can_delete": false
     }

@@ -1,6 +1,6 @@
 module.exports = function (SOCIALBROWSER) {
   if (SOCIALBROWSER.is_white_site == true || !SOCIALBROWSER.var.blocking.block_ads || document.location.href.like('*http://127.0.0.1*')) {
-    console.log(' [AD Hacking] OFF : ' + document.location.href);
+    SOCIALBROWSER.log(' [AD Hacking] OFF : ' + document.location.href);
     return;
   }
 
@@ -10,8 +10,8 @@ module.exports = function (SOCIALBROWSER) {
 
   window.addEventListener('load', function (e) {
     window['fuckAdBlock'] = window['FuckAdBlock'] = {
-      _var : {event:{detected : [] , notDetected : [window]}}
-    }
+      _var: { event: { detected: [], notDetected: [window] } },
+    };
   });
 
   document.addEventListener('DOMNodeInserted', function (e) {
@@ -70,12 +70,16 @@ module.exports = function (SOCIALBROWSER) {
     window['$tieE3'] = true;
     window['zfgformats'] = [];
     window.adbDetectorLoaded = 'loaded';
+    window.adsNotBlocked = true;
+    window._AdBlock_init = {};
+    window._AdBlock = () => {};
+
     window.cefQuery = function (options) {
-      console.log(options);
+      SOCIALBROWSER.log(options);
       return 5000;
     };
     window.NativeAd = (options) => {
-      console.log(options);
+      SOCIALBROWSER.log(options);
     };
     window.ExoVideoSlider = {
       init: () => {},
