@@ -23,8 +23,7 @@
     "postinstall": "electron-builder install-app-deps",
     "start": "electron .",
     "start2": "gulp && electron .",
-    "init": "gulp",
-    "reload": "gulp && electron-rebuild",
+    "reload": "electron-rebuild",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "update": "npm i -D electron@latest"
