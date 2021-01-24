@@ -61,7 +61,7 @@ app.commandLine.appendSwitch('--no-sandbox')
 var package = require('./package.json');
 var md5 = require('md5');
 
-const browser = require('./ibrowser')({
+const browser = require('./browser-core')({
   is_main: true,
   md5: md5,
   electron: electron,
