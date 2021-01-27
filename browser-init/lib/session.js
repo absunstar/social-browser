@@ -13,7 +13,7 @@ module.exports = function (browser) {
     //   function (error) {
     //     if (error) {
     //       console.error("Failed to register http browser protocol")
-    //       console.log(error)
+    //       browser.log(error)
     //     }
     //   }
     // )
@@ -39,7 +39,7 @@ module.exports = function (browser) {
           info.new_url = data.to;
           data.rediect_from = info.url;
 
-          console.log(`\n Auto overwrite redirect from \n   ${info.url} \n to \n   ${info.new_url} \n`);
+          browser.log(`\n Auto overwrite redirect from \n   ${info.url} \n to \n   ${info.new_url} \n`);
           data.time = new Date().getTime();
           if (data.query !== false) {
             let q = url.split('?')[1];
@@ -77,14 +77,14 @@ module.exports = function (browser) {
         let ss = s1.name == null ? browser.session.defaultSession : browser.session.fromPartition(s1.name);
 
         // if (browser.var.internet_speed.type == 'custom') {
-        //   console.log('enableNetworkEmulation custom ' + s1.name)
+        //   browser.log('enableNetworkEmulation custom ' + s1.name)
         //   ss.enableNetworkEmulation({
         //     latency: browser.var.internet_speed.latency,
         //     downloadThroughput: browser.var.internet_speed.download / 8 * 1024,
         //     uploadThroughput: browser.var.internet_speed.upload / 8 * 1024
         //   })
         // } else if (browser.var.internet_speed.type == 'offline') {
-        //   console.log('enableNetworkEmulation offline ' + s1.name)
+        //   browser.log('enableNetworkEmulation offline ' + s1.name)
         //   ss.enableNetworkEmulation({
         //     offline: true,
         //     latency: 0,
@@ -92,7 +92,7 @@ module.exports = function (browser) {
         //     uploadThroughput: -1
         //   })
         // } else {
-        //   console.log('disableNetworkEmulation ' + s1.name)
+        //   browser.log('disableNetworkEmulation ' + s1.name)
         //   ss.disableNetworkEmulation()
         // }
 
@@ -106,9 +106,9 @@ module.exports = function (browser) {
 
         // C:\Users\TestUser\AppData\Local\Google\Chrome\User Data\Default\Extensions
         // ss.loadExtension(browser.path.join(browser.dir, 'extensions' , 'idm')).then(x=>{
-        //  // console.log(x)
+        //  // browser.log(x)
         // }).catch(e=>{
-        //  // console.log(e)
+        //  // browser.log(e)
         // })
 
         if (browser.var.proxy.enabled && browser.var.proxy.url) {
@@ -169,7 +169,7 @@ module.exports = function (browser) {
             let source_url = details['referrer'] || details['host'] || url;
             source_url = source_url.toLowerCase();
 
-            // console.log('source url ' , source_url)
+            // browser.log('source url ' , source_url)
 
             if (url.like('localhost*')) {
               callback({
@@ -218,7 +218,7 @@ module.exports = function (browser) {
               browser.var.black_list.forEach((s) => {
                 if (url.like(s.url)) {
                   end = true;
-                  //  console.log(`\n Block black_list :  ${s.url} \n`);
+                  //  browser.log(`\n Block black_list :  ${s.url} \n`);
                 }
               });
 
@@ -235,7 +235,7 @@ module.exports = function (browser) {
               browser.var.blocking.un_safe_list.forEach((s) => {
                 if (url.like(s.url)) {
                   end = true;
-                  // console.log(`\n Block un_safe_list : ${s.url} \n ${url} \n`);
+                  // browser.log(`\n Block un_safe_list : ${s.url} \n ${url} \n`);
                 }
               });
 
@@ -252,7 +252,7 @@ module.exports = function (browser) {
               browser.var.blocking.ad_list.forEach((l) => {
                 if (url.like(l.url)) {
                   end = true;
-                  //console.log(`\n Block Ads : ${l.url} \n ${url} \n`);
+                  //browser.log(`\n Block Ads : ${l.url} \n ${url} \n`);
                 }
               });
 
@@ -272,13 +272,7 @@ module.exports = function (browser) {
           });
 
           ss.webRequest.onBeforeSendHeaders(filter, function (details, callback) {
-            // if(details.url.like('*google.com*')){
-            //   callback({
-            //     cancel: false,
-            //     requestHeaders: details.requestHeaders,
-            //   });
-            //   return
-            // }
+
 
             let user = browser.var.session_list.find((s) => s.name == s1.name);
             let user_agent = null;
@@ -289,7 +283,7 @@ module.exports = function (browser) {
             let exit = false;
 
             let url = details.url.toLowerCase();
-            // console.log(details);
+            // browser.log(details);
             let source_url = details['referrer'] || details['Referer'] || details['Host'] || details['host'] || url;
             if (source_url) {
               source_url = source_url.toLowerCase();
@@ -305,28 +299,34 @@ module.exports = function (browser) {
               details.requestHeaders['User-Agent'] = details.requestHeaders['User-Agent'].replace(') ', ') (' + browser.md5(code) + ') ');
             }
 
+            // set site custom user agent
             browser.var.sites.forEach((site) => {
               if (url.like(site.url)) {
                 details.requestHeaders['User-Agent'] = site.user_agent;
               }
             });
 
+            // Must For Login Problem ^_^
+            if(details.url.like('*google.com*|*youtube.com*')){
+              callback({
+                cancel: false,
+                requestHeaders: details.requestHeaders,
+              });
+              return
+            }
 
             // custom header request
             browser.custom_request_header_list.forEach((r) => {
               if (url.like(r.url)) {
-                if(r.action){
-                  r.action()
-                }
-                r.value_list.forEach(v=>{
-                  delete details.requestHeaders[v.name]
-                  delete details.requestHeaders[v.name.toLowerCase()]
+                r.value_list.forEach((v) => {
+                  delete details.requestHeaders[v.name];
+                  delete details.requestHeaders[v.name.toLowerCase()];
                   details.requestHeaders[v.name] = v.value;
-                })
-                r.delete_list.forEach(key=>{
-                  delete details.requestHeaders[key]
-                  delete details.requestHeaders[key.toLowerCase()]
-                })
+                });
+                r.delete_list.forEach((key) => {
+                  delete details.requestHeaders[key];
+                  delete details.requestHeaders[key.toLowerCase()];
+                });
               }
             });
 
@@ -337,14 +337,15 @@ module.exports = function (browser) {
             //details.requestHeaders['Referrer-Policy'] = 'no-referrer';
 
             // try edit cookies before send [tracking cookies]
-            // console.log(details.requestHeaders['Cookie'])
+            // browser.log(details.requestHeaders['Cookie'])
 
-            let cookie_obj = details.requestHeaders['Cookie'] ? browser.cookieParse(details.requestHeaders['Cookie']) : {};
-            if (browser.var.blocking.privacy.browser_token) {
+            let cookie_obj = details.requestHeaders['Cookie'] ? browser.cookieParse(details.requestHeaders['Cookie']) : null;
+
+            if (cookie_obj && browser.var.blocking.privacy.browser_token) {
               cookie_obj['_gab'] = 'GA1.2.' + d + 'sb.' + d;
             }
 
-            if (browser.var.blocking.privacy.enable_finger_protect && browser.var.blocking.privacy.block_cloudflare) {
+            if (cookie_obj && browser.var.blocking.privacy.enable_finger_protect && browser.var.blocking.privacy.block_cloudflare) {
               if (cookie_obj['_cflb']) {
                 cookie_obj['_cflb'] = 'cf.' + cookie_obj['_ga'];
               }
@@ -362,7 +363,7 @@ module.exports = function (browser) {
               }
             }
 
-            if (!url.like('*google.com*|*youtube.com*')) {
+            if (cookie_obj && !url.like('*google.com*|*youtube.com*')) {
               if (browser.var.blocking.privacy.enable_finger_protect && browser.var.blocking.privacy.hide_gid) {
                 if (cookie_obj['_gid']) {
                   cookie_obj['_gid'] = cookie_obj['_gab'];
@@ -370,10 +371,13 @@ module.exports = function (browser) {
               }
             }
 
-            let cookie_string = browser.cookieStringify(cookie_obj);
-            details.requestHeaders['Cookie'] = cookie_string;
+            if(cookie_obj){
+              let cookie_string = browser.cookieStringify(cookie_obj);
+              details.requestHeaders['Cookie'] = cookie_string;
+            }
+           
 
-            if (url.like('browser*') || url.like('http://127.0.0.1*') || url.like('https://127.0.0.1*')) {
+            if (url.like('browser*') || url.like('*127.0.0.1*')) {
               exit = true;
               callback({
                 cancel: false,
@@ -392,6 +396,24 @@ module.exports = function (browser) {
           });
 
           ss.webRequest.onHeadersReceived(filter, function (details, callback) {
+            let is_white = false;
+            browser.var.white_list.forEach((w) => {
+              if (details.url.like(w.url)) {
+                is_white = true;
+              }
+            });
+
+            if (is_white) {
+              callback({
+                cancel: false,
+                responseHeaders: {
+                  ...details.responseHeaders,
+                },
+                statusLine: details.statusLine,
+              });
+              return;
+            }
+
             // if(details.url.like('*google.com*')){
             //   callback({
             //     cancel: false,
@@ -435,7 +457,9 @@ module.exports = function (browser) {
             details.responseHeaders['Access-Control-Allow-Headers'.toLowerCase()] =
               a_Headers || 'Authorization ,Access-Control-Allow-Headers, Access-Control-Request-Method, Access-Control-Request-Headers,Origin, X-Requested-With, Content-Type, Accept';
 
-            details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = a_orgin ? [a_orgin[0]] : ['*'];
+            if (a_orgin) {
+              details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = [a_orgin[0]];
+            }
             // details.responseHeaders['Cross-Origin-Resource-Policy'.toLowerCase()] = 'cross-origin';
 
             browser.var.overwrite.urls.forEach((data) => {
@@ -464,18 +488,18 @@ module.exports = function (browser) {
             // Enum of 'media', 'geolocation', 'notifications', 'midiSysex', 'pointerLock', 'fullscreen', 'openExternal'.
 
             if (webContents.getURL().like('*127.0.0.1*')) {
-              // console.log(` \n  << permission asked and Allow :   ${permission} , from  ${webContents.getURL()} \n `);
+              // browser.log(` \n  << permission asked and Allow :   ${permission} , from  ${webContents.getURL()} \n `);
 
               callback(true);
               return;
             } else {
               if (permission === 'fullscreen' || permission === 'openExternal') {
-                // console.log(` \n  << permission asked and Allow :   ${permission} , from  ${webContents.getURL()} \n `);
+                // browser.log(` \n  << permission asked and Allow :   ${permission} , from  ${webContents.getURL()} \n `);
                 callback(true);
                 return;
               }
 
-              // console.log(` \n  << permission asked and Blocked :   ${permission} , from  ${webContents.getURL()} \n `);
+              // browser.log(` \n  << permission asked and Blocked :   ${permission} , from  ${webContents.getURL()} \n `);
               callback(false);
               return;
             }
@@ -484,19 +508,19 @@ module.exports = function (browser) {
             // Enum of 'media', 'geolocation', 'notifications', 'midiSysex', 'pointerLock', 'fullscreen', 'openExternal'.
 
             if (webContents.getURL().like('*127.0.0.1*')) {
-              // console.log(` \n  << permission asked and Allow :   ${permission} , from  ${webContents.getURL()} \n `);
+              // browser.log(` \n  << permission asked and Allow :   ${permission} , from  ${webContents.getURL()} \n `);
               return true;
             } else {
               if (permission === 'fullscreen' || permission === 'openExternal') {
-                // console.log(` \n  << permission asked and Allow :   ${permission} , from  ${webContents.getURL()} \n `);
+                // browser.log(` \n  << permission asked and Allow :   ${permission} , from  ${webContents.getURL()} \n `);
                 return true;
               }
-              //  console.log(`\n << setPermissionCheckHandler deny :  ${permission} , from  ${webContents.getURL()} \n `);
+              //  browser.log(`\n << setPermissionCheckHandler deny :  ${permission} , from  ${webContents.getURL()} \n `);
               return false;
             }
           });
           ss.on('will-download', (event, item, webContents) => {
-            //  console.log(' [ session will-download ] ');
+            //  browser.log(' [ session will-download ] ');
 
             if (browser.last_download_url !== item.getURL()) {
               browser.last_download_url = item.getURL();
@@ -536,7 +560,7 @@ module.exports = function (browser) {
 
             browser.last_download_url = null;
 
-            // console.log(' [ Bulit in will-download :::::::::: ] ');
+            // browser.log(' [ Bulit in will-download :::::::::: ] ');
             browser.views.forEach((v) => {
               let win = BrowserWindow.fromId(v.id);
               if (win) {
@@ -561,7 +585,7 @@ module.exports = function (browser) {
 
             ipcMain.on('remove-item', (e, info) => {
               if (item.id === info.id) {
-                //console.log('cancel download::' + info.url);
+                //browser.log('cancel download::' + info.url);
                 item.cancel();
               }
             });
@@ -690,7 +714,7 @@ module.exports = function (browser) {
                     message: `Saved URL \n ${_url} \n To \n ${_path} `,
                   })
                   .then((result) => {
-                    // console.log(result);
+                    // browser.log(result);
                     browser.shell.beep();
                     if (result.response == 1) {
                       browser.shell.showItemInFolder(_path);
@@ -729,7 +753,7 @@ module.exports = function (browser) {
         return;
       }
 
-      //  console.log('browser.handleSession : ' + name + '\n');
+      //  browser.log('browser.handleSession : ' + name + '\n');
       let ss = browser.session.fromPartition(name);
       ss.allowNTLMCredentialsForDomains('*');
       ss.userAgent = browser.var.core.user_agent;
@@ -764,7 +788,6 @@ module.exports = function (browser) {
           cancel: false,
           requestHeaders: details.requestHeaders,
         });
-
       });
 
       ss.webRequest.onHeadersReceived(filter, function (details, callback) {
@@ -814,18 +837,18 @@ module.exports = function (browser) {
         // Enum of 'media', 'geolocation', 'notifications', 'midiSysex', 'pointerLock', 'fullscreen', 'openExternal'.
 
         if (webContents.getURL().like('*127.0.0.1*')) {
-          // console.log(` \n  << permission asked and Allow :   ${permission} , from  ${webContents.getURL()} \n `);
+          // browser.log(` \n  << permission asked and Allow :   ${permission} , from  ${webContents.getURL()} \n `);
 
           callback(true);
           return;
         } else {
           if (permission === 'fullscreen' || permission === 'openExternal') {
-            //  console.log(` \n  << permission asked and Allow :   ${permission} , from  ${webContents.getURL()} \n `);
+            //  browser.log(` \n  << permission asked and Allow :   ${permission} , from  ${webContents.getURL()} \n `);
             callback(true);
             return;
           }
 
-          // console.log(` \n  << permission asked and Blocked :   ${permission} , from  ${webContents.getURL()} \n `);
+          // browser.log(` \n  << permission asked and Blocked :   ${permission} , from  ${webContents.getURL()} \n `);
           callback(false);
           return;
         }
@@ -834,14 +857,14 @@ module.exports = function (browser) {
         // Enum of 'media', 'geolocation', 'notifications', 'midiSysex', 'pointerLock', 'fullscreen', 'openExternal'.
 
         if (webContents.getURL().like('*127.0.0.1*')) {
-          //  console.log(` \n  << permission asked and Allow :   ${permission} , from  ${webContents.getURL()} \n `);
+          //  browser.log(` \n  << permission asked and Allow :   ${permission} , from  ${webContents.getURL()} \n `);
           return true;
         } else {
           if (permission === 'fullscreen' || permission === 'openExternal') {
-            //   console.log(` \n  << permission asked and Allow :   ${permission} , from  ${webContents.getURL()} \n `);
+            //   browser.log(` \n  << permission asked and Allow :   ${permission} , from  ${webContents.getURL()} \n `);
             return true;
           }
-          // console.log(`\n << setPermissionCheckHandler deny :  ${permission} , from  ${webContents.getURL()} \n `);
+          // browser.log(`\n << setPermissionCheckHandler deny :  ${permission} , from  ${webContents.getURL()} \n `);
           return false;
         }
       });

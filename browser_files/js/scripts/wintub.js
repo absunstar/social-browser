@@ -1,4 +1,7 @@
 module.exports = function (SOCIALBROWSER) {
+  if (!SOCIALBROWSER.var.blocking.social.allow_wintub) {
+    return;
+  }
   if (!document.location.href.like('*wintub.com*')) {
     return;
   }

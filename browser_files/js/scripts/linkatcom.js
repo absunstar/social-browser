@@ -1,4 +1,7 @@
 module.exports = function (SOCIALBROWSER) {
+  if (!SOCIALBROWSER.var.blocking.social.allow_linkatcom) {
+    return;
+  }
   if (!document.location.href.like('*linkatcom.com*')) {
     return;
   }
@@ -12,17 +15,16 @@ module.exports = function (SOCIALBROWSER) {
   });
   document.addEventListener('DOMContentLoaded', () => {
     if (document.querySelector('body').innerHTML.like('*app_vars*')) {
-      SOCIALBROWSER.log('DOMContentLoaded')
-      SOCIALBROWSER.log(window.app_vars)
+      SOCIALBROWSER.log('DOMContentLoaded');
+      SOCIALBROWSER.log(window.app_vars);
       window.app_vars['enable_captcha'] = 'yes';
       window.app_vars['force_disable_adblock'] = '0';
       window.app_vars['captcha_type'] = 'invisible-recaptcha';
-      SOCIALBROWSER.log(window.app_vars)
+      SOCIALBROWSER.log(window.app_vars);
     }
   });
 
   window.addEventListener('load', () => {
-    
     return;
     setInterval(() => {
       let form = document.querySelector('form.go-link');

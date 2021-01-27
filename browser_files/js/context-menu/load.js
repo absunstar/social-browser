@@ -5,59 +5,57 @@ module.exports = function (SOCIALBROWSER) {
     }
   });
 
+
+
+
   require(SOCIALBROWSER.files_dir + '/js/context-menu/fn.js')(SOCIALBROWSER);
   require(SOCIALBROWSER.files_dir + '/js/context-menu/finger_print.js')(SOCIALBROWSER);
   require(SOCIALBROWSER.files_dir + '/js/context-menu/custom.js')(SOCIALBROWSER);
+
+  
   require(SOCIALBROWSER.files_dir + '/js/context-menu/adblock_hacking.js')(SOCIALBROWSER);
+
   require(SOCIALBROWSER.files_dir + '/js/context-menu/user_input.js')(SOCIALBROWSER);
   require(SOCIALBROWSER.files_dir + '/js/context-menu/user_data.js')(SOCIALBROWSER);
   require(SOCIALBROWSER.files_dir + '/js/context-menu/keyboard.js')(SOCIALBROWSER);
+  
   require(SOCIALBROWSER.files_dir + '/js/context-menu/doms.js')(SOCIALBROWSER);
+
   require(SOCIALBROWSER.files_dir + '/js/context-menu/nodes.js')(SOCIALBROWSER);
+ 
   require(SOCIALBROWSER.files_dir + '/js/context-menu/videos.js')(SOCIALBROWSER);
   require(SOCIALBROWSER.files_dir + '/js/context-menu/youtube.js')(SOCIALBROWSER);
   require(SOCIALBROWSER.files_dir + '/js/context-menu/menu.js')(SOCIALBROWSER);
 
+
   /** Load Custom Scripts */
   require(SOCIALBROWSER.files_dir + '/js/scripts/global.js')(SOCIALBROWSER);
-  if (SOCIALBROWSER.var.blocking.social.allow_alexa) {
-    require(SOCIALBROWSER.files_dir + '/js/scripts/alexa.js')(SOCIALBROWSER);
-  }
-  if (SOCIALBROWSER.var.blocking.social.allow_10khits) {
-    require(SOCIALBROWSER.files_dir + '/js/scripts/10khits.js')(SOCIALBROWSER);
-  }
-  if (SOCIALBROWSER.var.blocking.social.allow_addmefast) {
-    require(SOCIALBROWSER.files_dir + '/js/scripts/addmefast.js')(SOCIALBROWSER);
-  }
-  if (SOCIALBROWSER.var.blocking.social.allow_youlikehits) {
-    require(SOCIALBROWSER.files_dir + '/js/scripts/youlikehits.js')(SOCIALBROWSER);
-  }
-  if (SOCIALBROWSER.var.blocking.social.allow_rankboostup) {
-    require(SOCIALBROWSER.files_dir + '/js/scripts/rankboostup.js')(SOCIALBROWSER);
-  }
-  if (SOCIALBROWSER.var.blocking.social.allow_wintub) {
-    require(SOCIALBROWSER.files_dir + '/js/scripts/wintub.js')(SOCIALBROWSER);
-  }
-
+  require(SOCIALBROWSER.files_dir + '/js/scripts/alexa.js')(SOCIALBROWSER);
+  require(SOCIALBROWSER.files_dir + '/js/scripts/10khits.js')(SOCIALBROWSER);
+  require(SOCIALBROWSER.files_dir + '/js/scripts/addmefast.js')(SOCIALBROWSER);
+  require(SOCIALBROWSER.files_dir + '/js/scripts/youlikehits.js')(SOCIALBROWSER);
+  require(SOCIALBROWSER.files_dir + '/js/scripts/rankboostup.js')(SOCIALBROWSER);
+  require(SOCIALBROWSER.files_dir + '/js/scripts/wintub.js')(SOCIALBROWSER);
+  require(SOCIALBROWSER.files_dir + '/js/scripts/linkatcom.js')(SOCIALBROWSER);
+  require(SOCIALBROWSER.files_dir + '/js/scripts/egybest.js')(SOCIALBROWSER);
   
-  if (SOCIALBROWSER.var.blocking.social.allow_linkatcom) {
-    require(SOCIALBROWSER.files_dir + '/js/scripts/linkatcom.js')(SOCIALBROWSER);
-  }
-  if (SOCIALBROWSER.var.blocking.social.allow_egybest) {
-    require(SOCIALBROWSER.files_dir + '/js/scripts/egybest.js')(SOCIALBROWSER);
-  }
-
 
   // require(SOCIALBROWSER.files_dir + '/js/scripts/google.js')(SOCIALBROWSER);
-  
-  
+
   SOCIALBROWSER.var.session_list.sort((a, b) => (a.display > b.display ? 1 : -1));
   SOCIALBROWSER.on('var.session_list', (e, res) => {
     SOCIALBROWSER.var.session_list = res.data;
     SOCIALBROWSER.var.session_list.sort((a, b) => (a.display > b.display ? 1 : -1));
   });
 
-  document.addEventListener('DOMNodeInserted', function (e) {});
+
+
+  document.addEventListener('DOMNodeInserted', function (e) {
+      // can download any lib
+  if (SOCIALBROWSER.var.blocking.javascript.allow_jquery && !window.jQuery) {
+    window.$ = window.jQuery = require(SOCIALBROWSER.files_dir + '/js/jquery.js');
+  }
+  });
 
   let $is_DOMContentLoaded = false;
   document.addEventListener('DOMContentLoaded', () => {
@@ -80,11 +78,6 @@ module.exports = function (SOCIALBROWSER) {
 
     if (SOCIALBROWSER.var.blocking.privacy.show_bookmarks && document.querySelector('title') && document.querySelector('title').text == 'Google') {
       window.__showBookmarks();
-    }
-
-    // can download any lib
-    if (SOCIALBROWSER.var.blocking.javascript.allow_jquery && !window.jQuery) {
-      window.jQuery = require(SOCIALBROWSER.files_dir + '/js/jquery.js');
     }
   });
 

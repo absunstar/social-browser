@@ -34,7 +34,9 @@ module.exports = function init(browser) {
 
       if (browser.window_list) {
         browser.window_list.forEach((view) => {
-          view.window.send(channel, value);
+          if(view.window){
+            view.window.send(channel, value);
+          }
         });
       }
     };

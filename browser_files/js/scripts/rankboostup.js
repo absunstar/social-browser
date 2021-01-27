@@ -1,15 +1,15 @@
 module.exports = function (SOCIALBROWSER) {
+  if (!SOCIALBROWSER.var.blocking.social.allow_rankboostup) {
+    return;
+  }
   if (!document.location.href.like('*rankboostup*')) {
     return;
   }
 
   SOCIALBROWSER.log(' >>> rankboostup script activated ...');
 
-
-
   // var csrftoken = getCookie('csrftoken');
   window.addEventListener('load', () => {
-
     SOCIALBROWSER.remoteSession = SOCIALBROWSER.electron.remote.session.fromPartition(SOCIALBROWSER.partition);
     SOCIALBROWSER.remoteSession.cookies.get({ url: document.location.origin }).then((cookies) => {
       cookies.forEach((co) => {
@@ -34,7 +34,6 @@ module.exports = function (SOCIALBROWSER) {
       var jqxhr = $.post(
         'https://rankboostup.com/dashboard/exchange-session/browser/',
         function (jsonObj) {
-          console.log('post is here');
           if (jsonObj['sites'] == undefined || jsonObj['sites'].length <= 0) {
             setTimeout(() => {
               SOCIALBROWSER.startCollectPoints();
@@ -43,7 +42,7 @@ module.exports = function (SOCIALBROWSER) {
           }
           currentPayload = jsonObj['sites'][0];
           alert(`Point Collected , Earn ${currentPayload['timer']} Seconds`);
-          document.querySelector('title').innerHTML = `Earn ${currentPayload['timer']} Seconds`
+          document.querySelector('title').innerHTML = `Earn ${currentPayload['timer']} Seconds`;
           setTimeout(() => {
             SOCIALBROWSER.startCollectPoints();
           }, 1000 * (currentPayload['timer'] + 3));
@@ -57,7 +56,7 @@ module.exports = function (SOCIALBROWSER) {
         clearInterval(rr);
 
         alert(' Ready For Collected Points ');
-        document.querySelector('title').innerHTML = `Ready For Collected Points`
+        document.querySelector('title').innerHTML = `Ready For Collected Points`;
 
         SOCIALBROWSER.menu_list.push({
           name: 'Start Collect Point',
@@ -72,7 +71,7 @@ module.exports = function (SOCIALBROWSER) {
         });
       } else {
         alert(' Waiting Site Integration ');
-        document.querySelector('title').innerHTML = `Waiting Site Integration`
+        document.querySelector('title').innerHTML = `Waiting Site Integration`;
       }
     }, 500);
   });

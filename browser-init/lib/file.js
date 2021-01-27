@@ -11,7 +11,7 @@ module.exports = function (browser) {
         return true;
       }
     } catch (error) {
-      console.log(error.message);
+      browser.log(error.message);
       return false;
     }
   };
@@ -35,14 +35,24 @@ module.exports = function (browser) {
         {
           encoding: encode || 'utf8',
         },
-        () => {
-          browser.deleteFile(path, () => {
-            fs.rename(path2, path, () => {
-              browser.deleteFile(path2, () => {
-                console.log('writeFile : ', path);
+        (err) => {
+          if (!err) {
+            browser.deleteFile(path, () => {
+              fs.rename(path2, path, (err) => {
+                if(!err){
+                  browser.log('writeFile : ', path);
+                }else{
+                  browser.log(err)
+                }
+                
+                // browser.deleteFile(path2, () => {
+                //   browser.log('writeFile : ', path);
+                // });
               });
             });
-          });
+          }else{
+            browser.log(err)
+          }
         },
       );
     });
@@ -64,9 +74,13 @@ module.exports = function (browser) {
     fs.stat(path, (err, stats) => {
       if (!err && stats.isFile()) {
         fs.unlink(path, (err) => {
-          callback(path);
+          if (!err) {
+            callback(path);
+          }else{
+            browser.log(err)
+          }
         });
-      } else {
+      }else{
         callback(path);
       }
     });

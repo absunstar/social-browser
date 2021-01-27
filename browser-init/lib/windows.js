@@ -3,6 +3,20 @@ module.exports = function init(browser) {
   const { BrowserWindow, nativeImage, dialog, BrowserWindowProxy, ipcMain } = electron;
 
   browser.window_list = [];
+  browser.getWindow = function (id) {
+    return browser.window_list.find((w) => w.id == id);
+  };
+  browser.addWindow = function (win) {
+    win.setting = win.setting || [];
+    return browser.window_list.push(win);
+  };
+  browser.removeWindow = function (id) {
+    browser.window_list.forEach((v, i) => {
+      if (v.id == id) {
+        browser.window_list.splice(i, 1);
+      }
+    });
+  };
   browser.main_window_list = [];
   browser.active_main_window = null;
 
@@ -44,7 +58,7 @@ module.exports = function init(browser) {
     }
 
     let view = browser.getView();
-    console.log('[browser.defaultNewWindowEvent]', view.id);
+    browser.log('[browser.defaultNewWindowEvent]', view.id);
 
     let real_url = url || event.url || '';
 
@@ -73,7 +87,7 @@ module.exports = function init(browser) {
 
     let url_p = browser.url.parse(event.options.url);
 
-    console.log('call new url from new window ', event.options.url);
+    browser.log('call new url from new window ', event.options.url);
 
     if (event.options.url.like('*#___new_tab___*')) {
       browser.call('render_message', {
@@ -140,7 +154,7 @@ module.exports = function init(browser) {
           user_name: view.user_name,
         });
       } else {
-        //console.log('Block Popup : ' + url)
+        //browser.log('Block Popup : ' + url)
       }
       // event.newGuest = browser.newWindow(event.options)
     }
@@ -211,7 +225,6 @@ module.exports = function init(browser) {
         webSecurity: true,
         allowRunningInsecureContent: false,
         plugins: true,
-        icon: browser.icons[process.platform],
       },
     });
 
@@ -230,9 +243,9 @@ module.exports = function init(browser) {
     }
     win.setMenuBarVisibility(false);
 
-    // console.log('View options' , options)
+    // browser.log('View options' , options)
     if (options.proxy) {
-      // console.log('.........................Proxy Setting ..........................')
+      // browser.log('.........................Proxy Setting ..........................')
       win.webContents.session.setProxy({
         proxyRules: options.proxy,
         proxyBypassRules: '127.0.0.1',
@@ -252,7 +265,7 @@ module.exports = function init(browser) {
 
     options.win_id = win.id;
 
-    browser.window_list.push({
+    browser.addWindow({
       id: options.win_id,
       window: win,
       is_youtube: false,
@@ -262,11 +275,7 @@ module.exports = function init(browser) {
     win.on('closed', function () {
       let view = browser.getView(options.win_id);
       browser.get_main_window().webContents.executeJavaScript("closeTab('" + view._id + "');");
-      browser.window_list.forEach((v, i) => {
-        if (v.id == options.win_id) {
-          browser.window_list.splice(i, 1);
-        }
-      });
+      browser.removeWindow(options.win_id);
     });
 
     win.on('focus', function () {
@@ -284,7 +293,7 @@ module.exports = function init(browser) {
     });
 
     win.on('enter-full-screen', (e) => {
-      console.log('enter-full-screen');
+      browser.log('enter-full-screen');
       let view = browser.getView(win.id);
       view.full_screen = true;
       browser.handleViewPosition(win);
@@ -297,7 +306,7 @@ module.exports = function init(browser) {
     });
 
     win.on('leave-full-screen', (e) => {
-      console.log('leave-full-screen');
+      browser.log('leave-full-screen');
       win.setAlwaysOnTop(false);
       let view = browser.getView(win.id);
       view.full_screen = false;
@@ -307,7 +316,7 @@ module.exports = function init(browser) {
     });
 
     win.on('enter-html-full-screen', (e) => {
-      console.log('enter-html-full-screen');
+      browser.log('enter-html-full-screen');
       let view = browser.getView(win.id);
       view.html_full_screen = true;
       browser.handleViewPosition(win);
@@ -319,7 +328,7 @@ module.exports = function init(browser) {
       }
     });
     win.on('leave-html-full-screen', (e) => {
-      console.log('leave-html-full-screen');
+      browser.log('leave-html-full-screen');
       win.setAlwaysOnTop(false);
       let view = browser.getView(win.id);
       view.html_full_screen = false;
@@ -344,7 +353,7 @@ module.exports = function init(browser) {
     // contents.findInPage(text, options);
     // contents.stopFindInPage('clearSelection');
     contents.on('found-in-page', (event, result) => {
-      console.log(result);
+      browser.log(result);
       browser.call('found-in-page', {
         win_id: win.id,
         result: result,
@@ -396,7 +405,7 @@ module.exports = function init(browser) {
             window_icon_path2,
             null,
             (info) => {
-              console.log(info);
+              browser.log(info);
               window_icon_path = window_icon_path2;
               browser.views.forEach((view) => {
                 if (view.id == win.id) {
@@ -552,7 +561,7 @@ module.exports = function init(browser) {
     });
 
     contents.on('crashed', (e) => {
-      console.log('window Crashed');
+      browser.log('window Crashed');
       setTimeout(() => {
         win.loadURL(options.url || browser.var.core.default_page || 'http://127.0.0.1:60080/newTab');
       }, 1000);
@@ -561,7 +570,7 @@ module.exports = function init(browser) {
     contents.on('will-navigate', (e, url) => {
       // when user click on link _blank
       contents.stopFindInPage('clearSelection');
-      console.log('will-navigate :: ' + url);
+      browser.log('will-navigate :: ' + url);
       if (url.like('*#___new_tab___*')) {
         e.preventDefault();
         url = url.replace('#___new_tab___', '');
@@ -575,7 +584,6 @@ module.exports = function init(browser) {
     });
 
     contents.on('will-redirect', (e, url) => {
-
       browser.var.overwrite.urls.forEach((data) => {
         if (url.like(data.from)) {
           if (data.time && new Date().getTime() - data.time < 3000) {
@@ -590,27 +598,27 @@ module.exports = function init(browser) {
         }
       });
 
-      console.log('will-redirect', url);
+      browser.log('will-redirect', url);
     });
 
     contents.on('did-redirect-navigation', (e) => {
-      //console.log('did-redirect-navigation')
+      //browser.log('did-redirect-navigation')
     });
 
     contents.on('did-navigate', (e) => {
-      //console.log('did-navigate')
+      //browser.log('did-navigate')
     });
 
     contents.on('did-frame-navigate', (e) => {
-      //console.log('did-frame-navigate')
+      //browser.log('did-frame-navigate')
     });
 
     contents.on('did-navigate-in-page', (e) => {
-      //console.log('did-navigate-in-page')
+      //browser.log('did-navigate-in-page')
     });
 
     contents.on('did-get-redirect-request', (e) => {
-      console.log('did-get-redirect-request');
+      browser.log('did-get-redirect-request');
       if (e.isMainFrame) {
         win.loadURL(e.newURL);
       }
@@ -664,7 +672,6 @@ module.exports = function init(browser) {
         webSecurity: false,
         allowRunningInsecureContent: true,
         plugins: true,
-        icon: browser.icons[process.platform],
       },
     });
 
@@ -720,7 +727,7 @@ module.exports = function init(browser) {
 
   browser.userProfileWindow = null;
   browser.newUserProfileWindow = function () {
-    console.log('browser.newUserProfileWindow');
+    browser.log('browser.newUserProfileWindow');
     if (browser.userProfileWindow) {
       return browser.userProfileWindow;
     }
@@ -750,7 +757,6 @@ module.exports = function init(browser) {
         webSecurity: false,
         allowRunningInsecureContent: true,
         plugins: true,
-        icon: browser.icons[process.platform],
       },
     });
 
@@ -796,7 +802,7 @@ module.exports = function init(browser) {
   };
 
   browser.newWindow = function (options) {
-    // console.log('newWindow()', options)
+    // browser.log('newWindow()', options)
 
     browser.get_main_window().setAlwaysOnTop(false);
 
@@ -804,7 +810,7 @@ module.exports = function init(browser) {
     options.webPreferences = options.webPreferences || {};
 
     options.width = options.width || 1280;
-    options.height = options.height || 720;
+    options.height = options.height || 768;
 
     options.x = options.x || 200;
     options.y = options.y || 200;
@@ -847,13 +853,13 @@ module.exports = function init(browser) {
       win.webContents.audioMuted = true;
     }
     win.setMenuBarVisibility(false);
-    if (options.title !== 'Youtube') {
+    if (options.x == 200 && options.y == 200) {
       win.center();
     }
 
     options.win_id = win.id;
 
-    browser.window_list.push({
+    browser.addWindow({
       id: options.win_id,
       window: win,
       is_youtube: options.title == 'Youtube' ? true : false,
@@ -872,11 +878,7 @@ module.exports = function init(browser) {
     });
 
     win.on('closed', (e) => {
-      browser.window_list.forEach((v, i) => {
-        if (v.id == options.win_id) {
-          browser.window_list.splice(i, 1);
-        }
-      });
+      browser.removeWindow(options.win_id);
     });
 
     if (options.max) {
@@ -884,7 +886,7 @@ module.exports = function init(browser) {
     }
 
     if (options.proxy) {
-      console.log('Proxy Setting');
+      browser.log('Proxy Setting');
       win.webContents.session.setProxy({
         proxyRules: options.proxy,
         proxyBypassRules: '127.0.0.1',
@@ -931,7 +933,7 @@ module.exports = function init(browser) {
   };
 
   browser.newYoutubeWindow = function (options) {
-    console.log('newYoutubeWindow()');
+    browser.log('newYoutubeWindow()');
 
     browser.get_main_window().setAlwaysOnTop(false);
     options = options || {};
@@ -989,7 +991,7 @@ module.exports = function init(browser) {
   };
 
   browser.newIframeWindow = function (options) {
-    console.log('newIframeWindow()');
+    browser.log('newIframeWindow()');
     browser.get_main_window().setAlwaysOnTop(false);
     options = options || {};
 
@@ -1012,7 +1014,7 @@ module.exports = function init(browser) {
   };
 
   browser.newVideoWindow = function (options) {
-    console.log('newVideoWindow()');
+    browser.log('newVideoWindow()');
     browser.get_main_window().setAlwaysOnTop(false);
     options = options || {};
 
@@ -1024,7 +1026,8 @@ module.exports = function init(browser) {
 
     options.width = 420;
     options.height = 280;
-    (options.x = width - 430), (options.y = height - 310);
+    options.x = width - 430;
+    options.y = height - 310;
     options.alwaysOnTop = true;
     options.disableEvents = true;
     options.backgroundColor = '#030303';
@@ -1045,9 +1048,9 @@ module.exports = function init(browser) {
     browser.get_main_window().setAlwaysOnTop(false);
 
     let win = new BrowserWindow({
-      show: false,
-      width: op.width || 1200,
-      height: op.height || 800,
+      show: op.show,
+      width: op.width || 1360,
+      height: op.height || 768,
       title: op.title || 'TRUESTED WINDOW ',
       icon: browser.icons[process.platform],
       webPreferences: {
@@ -1055,7 +1058,7 @@ module.exports = function init(browser) {
         enableRemoteModule: true,
         preload: op.preload || browser.files_dir + '/js/context-menu.js',
         webaudio: typeof op.webaudio == 'undefined' ? false : op.webaudio,
-        partition: op.partition || 'trusted',
+        partition: op.partition || 'Ghost_' + new Date().getTime() + Math.random(),
         sandbox: false,
         webSecurity: false,
         allowRunningInsecureContent: true,
@@ -1071,10 +1074,11 @@ module.exports = function init(browser) {
     win.setMenuBarVisibility(false);
     win.once('ready-to-show', function () {
       if (op.show) {
+        win.hide();
         win.show();
       }
     });
-    browser.window_list.push({
+    browser.addWindow({
       id: win.id,
       window: win,
       is_youtube: false,
@@ -1083,11 +1087,7 @@ module.exports = function init(browser) {
     });
 
     win.on('closed', function () {
-      browser.window_list.forEach((v, i) => {
-        if (v.id == op.win_id) {
-          browser.window_list.splice(i, 1);
-        }
-      });
+      browser.removeWindow(op.win_id);
     });
 
     win.loadURL(op.url);
@@ -1129,7 +1129,7 @@ module.exports = function init(browser) {
       icon: browser.icons[process.platform],
     });
 
-    console.log(' [ New Social Browser Window Created ] ' + newWindow.id);
+    browser.log(' [ New Social Browser Window Created ] ' + newWindow.id);
 
     browser.main_window_list.push({
       id: newWindow.id,
@@ -1155,17 +1155,17 @@ module.exports = function init(browser) {
       browser.active_main_window = newWindow;
       browser.showCurrentView(true, newWindow.id);
       browser.call('show-tab-view', { win_id: newWindow.id });
-      console.log('focus');
+      browser.log('focus');
     });
     newWindow.on('show', function () {
       browser.active_main_window = newWindow;
       browser.showCurrentView(true, newWindow.id);
-      console.log('show');
+      browser.log('show');
     });
     newWindow.on('hide', function () {
       browser.hideAddressbar();
       browser.showCurrentView(false, newWindow.id);
-      console.log('hide');
+      browser.log('hide');
     });
 
     newWindow.on('maximize', function () {
@@ -1175,20 +1175,20 @@ module.exports = function init(browser) {
         browser.handleViewPosition(win);
       });
       browser.showCurrentView(true, newWindow.id);
-      console.log('maximize');
+      browser.log('maximize');
     });
 
     newWindow.on('unmaximize', function () {
       browser.showCurrentView(true, newWindow.id);
-      console.log('unmaximize');
+      browser.log('unmaximize');
     });
     newWindow.on('minimize', function () {
       browser.showCurrentView(false, newWindow.id);
-      console.log('minimize');
+      browser.log('minimize');
     });
     newWindow.on('restore', function () {
       browser.showCurrentView(true, newWindow.id);
-      console.log('restore');
+      browser.log('restore');
     });
 
     newWindow.on('resize', function () {
@@ -1198,7 +1198,7 @@ module.exports = function init(browser) {
         browser.handleViewPosition(win);
       });
       browser.showCurrentView(true, newWindow.id);
-      console.log('resize');
+      browser.log('resize');
     });
 
     newWindow.on('move', function () {
@@ -1208,7 +1208,7 @@ module.exports = function init(browser) {
         browser.handleViewPosition(win);
       });
       browser.showCurrentView(true, newWindow.id);
-      console.log('move');
+      browser.log('move');
     });
 
     // newWindow.once('ready-to-show', function () {

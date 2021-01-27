@@ -282,6 +282,49 @@ function createMenu(node) {
         type: 'separator',
       }),
     );
+
+    menu.append(
+      new MenuItem({
+        label: 'New Popup',
+        click() {
+          sendToMain({ name: '[open new popup]', win_id: SOCIALBROWSER.currentWindow.id });
+        },
+      }),
+    );
+    menu.append(
+      new MenuItem({
+        label: 'Duplicate tab in Popup',
+        click() {
+          sendToMain({ name: '[open new popup]', duplicate: true, win_id: SOCIALBROWSER.currentWindow.id });
+        },
+      }),
+    );
+    menu.append(
+      new MenuItem({
+        type: 'separator',
+      }),
+    );
+    menu.append(
+      new MenuItem({
+        label: 'New Ghost Popup',
+        click() {
+          sendToMain({ name: '[open new ghost popup]', win_id: SOCIALBROWSER.currentWindow.id });
+        },
+      }),
+    );
+    menu.append(
+      new MenuItem({
+        label: 'Duplicate tab in Ghost Popup',
+        click() {
+          sendToMain({ name: '[open new ghost popup]', duplicate: true, win_id: SOCIALBROWSER.currentWindow.id });
+        },
+      }),
+    );
+    menu.append(
+      new MenuItem({
+        type: 'separator',
+      }),
+    );
     menu.append(
       new MenuItem({
         label: 'Close',

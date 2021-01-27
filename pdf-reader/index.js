@@ -1,4 +1,4 @@
-console.log('pdf reader init ...')
+browser.log('pdf reader init ...')
 
 const {
     BrowserWindow,

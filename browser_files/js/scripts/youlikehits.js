@@ -1,4 +1,8 @@
 module.exports = function (SOCIALBROWSER) {
+  if (!SOCIALBROWSER.var.blocking.social.allow_youlikehits) {
+    return;
+  }
+
   if (!document.location.href.contains('youlikehits.com')) {
     return;
   }
@@ -7,7 +11,7 @@ module.exports = function (SOCIALBROWSER) {
     return;
   }
 
-  SOCIALBROWSER.log('youlikehits Activated .....');
+  SOCIALBROWSER.log(' >>> youlikehits Activated');
 
   SOCIALBROWSER.var.blocking.block_empty_iframe = false;
 
@@ -53,7 +57,6 @@ module.exports = function (SOCIALBROWSER) {
         y: _specs.y || 200,
         backgroundColor: '#ffffff',
         frame: true,
-        icon: SOCIALBROWSER.path.join(SOCIALBROWSER.files_dir, 'images', 'logo.ico'),
         webPreferences: {
           contextIsolation: false,
           webaudio: false,
@@ -181,7 +184,6 @@ module.exports = function (SOCIALBROWSER) {
         if (btn) {
           btn.click();
           btn.style.display = 'none';
-          SOCIALBROWSER.log('view button clicked');
         }
         // window.cnum = 100
       }

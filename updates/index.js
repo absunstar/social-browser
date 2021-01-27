@@ -22,7 +22,7 @@ app.on("ready", function () {
     let win = new BrowserWindow({
         show: false,
         title: 'Updates',
-        icon: dir +  '/browser_files/images/logo.ico',
+        icon: browser.icons[process.platform],
         width : 850,
         height : 720,
         alwaysOnTop: false,

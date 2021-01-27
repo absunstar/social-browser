@@ -1,9 +1,9 @@
 module.exports = function (SOCIALBROWSER) {
-  if (!document.location.href.toLowerCase().like('https://www.youtube*')) {
+  if (!document.location.href.toLowerCase().like('*youtube.com*')) {
     return;
   }
 
-  SOCIALBROWSER.log('youtube context menu loading ...');
+  SOCIALBROWSER.log(' >>> Youtube Activated ...');
   // https://developers.google.com/youtube/iframe_api_reference?csw=1
 
   SOCIALBROWSER.video_player = null;
@@ -28,11 +28,11 @@ module.exports = function (SOCIALBROWSER) {
     return SOCIALBROWSER.video_player;
   }
   SOCIALBROWSER.setPlaybackQuality_count = 0;
+  SOCIALBROWSER.setPlaybackQuality_url = null;
   SOCIALBROWSER.setPlaybackQuality_done = false;
   SOCIALBROWSER.setPlaybackQuality = function () {
-    if (SOCIALBROWSER.setPlaybackQuality_done) {
-      return;
-    }
+    SOCIALBROWSER.log(new Date().getTime() + ' call setPlaybackQuality() : ' + document.location.href);
+
     get_player();
     if (!SOCIALBROWSER.video_player) {
       SOCIALBROWSER.setPlaybackQuality_count++;
@@ -67,20 +67,25 @@ module.exports = function (SOCIALBROWSER) {
 
       if (end) {
         SOCIALBROWSER.setPlaybackQuality_done = true;
+        SOCIALBROWSER.setPlaybackQuality_url = document.location.href;
         return;
       }
       if (SOCIALBROWSER.video_player.getPlaybackQuality() != SOCIALBROWSER.var.blocking.youtube.quality.name) {
         setTimeout(() => {
-          SOCIALBROWSER.log('call setPlaybackQuality() 1');
           SOCIALBROWSER.setPlaybackQuality();
         }, 500);
+        return;
+      } else {
+        SOCIALBROWSER.setPlaybackQuality_done = true;
       }
     } else {
       if (SOCIALBROWSER.video_player.getPlaybackQuality() != SOCIALBROWSER.var.blocking.youtube.quality.name) {
         setTimeout(() => {
-          SOCIALBROWSER.log('call setPlaybackQuality() 2');
           SOCIALBROWSER.setPlaybackQuality();
         }, 500);
+        return;
+      } else {
+        SOCIALBROWSER.setPlaybackQuality_done = true;
       }
     }
   };
@@ -97,15 +102,17 @@ module.exports = function (SOCIALBROWSER) {
   }
 
   function check_if_current_video_un_safe() {
+    SOCIALBROWSER.log('check_if_current_video_un_safe');
+
     document.querySelectorAll('video').forEach((v) => {
       if (v && v.currentTime > 0 && !v.paused && !v.ended && v.readyState > 2) {
         v.classList.remove('__block_eye');
       }
     });
 
-    if (!SOCIALBROWSER.var.blocking.youtube.allow_safty_mode || !document.location.href.toLowerCase().like('*youtube.com*watch*')) {
+    if (SOCIALBROWSER.setPlaybackQuality_done && document.location.href == SOCIALBROWSER.setPlaybackQuality_url) {
+    } else {
       SOCIALBROWSER.setPlaybackQuality();
-      return;
     }
 
     SOCIALBROWSER.var.blocking.youtube.safty_mode.words_list = SOCIALBROWSER.var.blocking.youtube.safty_mode.words_list || [];
@@ -216,7 +223,9 @@ module.exports = function (SOCIALBROWSER) {
   }
 
   if (SOCIALBROWSER.var.blocking.youtube.allow_safty_mode && document.location.href.toLowerCase().like('*youtube.com*')) {
-    check_if_current_video_un_safe();
+    if (document.location.href.like('*watch*|*embed*')) {
+      check_if_current_video_un_safe();
+    }
 
     window.addEventListener(
       'DOMNodeInsertedIntoDocument',
@@ -256,7 +265,9 @@ module.exports = function (SOCIALBROWSER) {
             v.classList.remove('__block_eye');
           });
         }
-        check_if_current_video_un_safe();
+        if (document.location.href.like('*watch*|*embed*')) {
+          check_if_current_video_un_safe();
+        }
       },
       false,
     );
@@ -268,6 +279,8 @@ module.exports = function (SOCIALBROWSER) {
       }
     }
 
-    check_if_current_video_un_safe();
+    if (document.location.href.like('*watch*|*embed*')) {
+      check_if_current_video_un_safe();
+    }
   });
 };

@@ -3,10 +3,10 @@ module.exports = function init(browser) {
     var child = browser.child_process.execFile;
     var executablePath = app_path;
     var parameters = args;
-    console.log(executablePath + '   ' + parameters);
+    browser.log(executablePath + '   ' + parameters);
     child(executablePath, parameters, function (err, data) {
       if (err) {
-        console.log(err);
+        browser.log(err);
       }
     });
   };
@@ -37,7 +37,7 @@ module.exports = function init(browser) {
     try {
       return decodeURIComponent(value);
     } catch (error) {
-      // console.log(error)
+      // browser.log(error)
       return value;
     }
   };
@@ -45,7 +45,7 @@ module.exports = function init(browser) {
     try {
       return encodeURIComponent(value);
     } catch (error) {
-      // console.log(error)
+      // browser.log(error)
       return value;
     }
   };
@@ -87,7 +87,7 @@ module.exports = function init(browser) {
         });
       });
     } catch (e) {
-      console.log(e);
+      browser.log(e);
     }
     return addresses;
   };

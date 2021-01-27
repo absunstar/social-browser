@@ -1,6 +1,8 @@
 (function () {
   'use strict';
 
+  
+
   var SOCIALBROWSER = {
     var: {
       core: { id: '', user_agent: '' },
@@ -40,9 +42,10 @@
     events: [],
     eventOff: '',
     eventOn: '',
+    onEventOFF : [],
     jqueryOff: '',
     jqueryOn: '',
-    developerMode: true,
+    developerMode: false,
     log: function (...args) {
       if (this.developerMode) {
         console.log(...args);
@@ -141,6 +144,7 @@
       SOCIALBROWSER.files_dir = result.files_dir;
       SOCIALBROWSER.dir = result.dir;
       SOCIALBROWSER.windows = result.windows;
+      SOCIALBROWSER.windowSetting = result.windowSetting,
       SOCIALBROWSER.session = result.session ? Object.assign(SOCIALBROWSER.session , result.session) : SOCIALBROWSER.session;
       require(SOCIALBROWSER.files_dir + '/js/context-menu/init.js')(SOCIALBROWSER);
       require(SOCIALBROWSER.files_dir + '/js/context-menu/load.js')(SOCIALBROWSER);

@@ -532,7 +532,7 @@ module.exports = function (SOCIALBROWSER) {
                 name: 'new_popup',
                 url: u,
                 referrer: document.location.href,
-                partition: 'ghost' + new Date().getTime(),
+                partition: 'Ghost_' + new Date().getTime() + Math.random(),
                 show: true,
               });
             },
@@ -815,6 +815,7 @@ module.exports = function (SOCIALBROWSER) {
       click() {
         SOCIALBROWSER.call('render_message', {
           name: 'force reload',
+          win_id : SOCIALBROWSER.currentWindow.id,
           origin: document.location.origin || document.location.href,
           storages: ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage'],
         });
@@ -826,6 +827,7 @@ module.exports = function (SOCIALBROWSER) {
       click() {
         SOCIALBROWSER.call('render_message', {
           name: 'force reload',
+          win_id : SOCIALBROWSER.currentWindow.id,
           origin: document.location.origin || document.location.href,
           storages: ['cookies'],
         });
@@ -837,6 +839,7 @@ module.exports = function (SOCIALBROWSER) {
       click() {
         SOCIALBROWSER.call('render_message', {
           name: 'force reload',
+          win_id : SOCIALBROWSER.currentWindow.id,
           origin: document.location.origin || document.location.href,
           storages: ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage', 'cookies'],
         });
@@ -1016,7 +1019,7 @@ module.exports = function (SOCIALBROWSER) {
         });
     });
     videos.forEach((f, i) => {
-      if (i > 10) {
+      if (!f || !f.src || i > 10) {
         return;
       }
       arr3.push({
@@ -1697,7 +1700,7 @@ module.exports = function (SOCIALBROWSER) {
                   name: 'new_popup',
                   url: o.url || document.location.href,
                   referrer: document.location.href,
-                  partition: 'ghost_' + new Date().getTime(),
+                  partition: 'Ghost_' + new Date().getTime() + Math.random(),
                   show: true,
                 });
               },
@@ -1814,6 +1817,7 @@ module.exports = function (SOCIALBROWSER) {
         click() {
           SOCIALBROWSER.call('render_message', {
             name: 'force reload',
+            win_id : SOCIALBROWSER.currentWindow.id,
             origin: document.location.origin || document.location.href,
             storages: ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage'],
           });

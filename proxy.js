@@ -1,9 +1,9 @@
 module.exports = function init(browser){
 
 
-console.log(' !!!  ')
-console.log(' !!! Proxy Server Started .. ')
-console.log(' !!!  ')
+browser.log(' !!!  ')
+browser.log(' !!! Proxy Server Started .. ')
+browser.log(' !!!  ')
 
 const net = require('net')
 
@@ -41,12 +41,12 @@ site.all('*', (req, res) => {
 //     })
 
     // if(block){
-    //     console.log('Blocked :: ' + req.url)
+    //     browser.log('Blocked :: ' + req.url)
     //     res.end(404)
     //     return
     // }
 
-    console.log('Proxy HTTP :: ' + req.url)
+    browser.log('Proxy HTTP :: ' + req.url)
 
     // if (list.filter(u => u == req.url).length > 0) {
     //     res.end()

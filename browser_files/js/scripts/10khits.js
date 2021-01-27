@@ -1,4 +1,8 @@
 module.exports = function (SOCIALBROWSER) {
+
+  if (!SOCIALBROWSER.var.blocking.social.allow_10khits) {
+    return;
+  }
   if (!document.location.href.contains('https://www.10khits.com/dashboard/surf/sessions')) {
     return;
   }
@@ -7,7 +11,8 @@ module.exports = function (SOCIALBROWSER) {
     return;
   }
 
-  alert('10khits Activated .....');
+  SOCIALBROWSER.log(' >>> 10khits Activated');
+  alert(' >>> 10khits Activated');
 
   let link = '';
   let count = 0;
@@ -22,7 +27,7 @@ module.exports = function (SOCIALBROWSER) {
       let win = new SOCIALBROWSER.electron.remote.BrowserWindow({
         show: false,
         width: 800,
-        height: 300,
+        height: 300,        
         webPreferences: {
           contextIsolation: false,
           enableRemoteModule: true,

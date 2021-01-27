@@ -5,28 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Mini Video</title>
-   
+
     <style>
       video {
-        position: absolute;
-        left: 1%;
-        top: 1%;
-        height: 98%;
-        width: 98%;
-        border: none;
-        object-fit: fill;
+        position: fixed !important;
+        top: 1% !important;
+        left: 1% !important;
+        width: 98% !important;
+        height: 98% !important;
       }
     </style>
   </head>
 
   <body>
-    <video  class="video-js"  data-setup="{}" preload="auto" autobuffer x-webkit-airplay="allow" webkit-playsinline controls autoplay>
-    </video>
+    <video class="video-js" data-setup="{}" preload="auto" autobuffer x-webkit-airplay="allow" webkit-playsinline controls autoplay></video>
 
     <script>
-      let url = document.location.href.split("?url=")[1];
-      document.querySelector("video").src = url;
+      let url = document.location.href.split('?url=')[1];
+      document.querySelector('video').src = url;
     </script>
-   
   </body>
 </html>

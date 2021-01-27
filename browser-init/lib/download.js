@@ -5,7 +5,7 @@ module.exports = function (browser) {
     const mt = require('mt-downloader');
 
     let mt_list = [];
-    console.log('mt-downloader downloadFile ::' + file_url);
+    browser.log('mt-downloader downloadFile ::' + file_url);
     onProgress = onProgress || function () {};
     done = done || function () {};
     onProgress(-1, -1, file_url);
@@ -63,14 +63,14 @@ module.exports = function (browser) {
             });
 
             if (done) {
-              console.log('completing ...................');
+              browser.log('completing ...................');
               mt.FinalizeDownload({
                 fd$: mt_object.mtd.fd$,
                 meta$: Observable.of(mt_object.mtd.meta),
               });
             }
 
-            // console.log(mt.Completion(mt_object.info.meta))
+            // browser.log(mt.Completion(mt_object.info.meta))
           }
         });
       }
@@ -95,7 +95,7 @@ module.exports = function (browser) {
 
   browser.tryDownload = function (url) {
     // browser.tryDownloadURL(url)
-    console.log('tryDownload ::' + url);
+    browser.log('tryDownload ::' + url);
     browser.get_main_window().webContents.downloadURL(url.replace('#___new_tab___', '').replace('#___new_popup__', '').replace('#___trusted_window___', '')); // download from session will-download
   };
 
@@ -249,7 +249,7 @@ module.exports = function (browser) {
         });
       })
       .catch((err) => {
-        console.log(err);
+        browser.log(err);
       });
   };
 };

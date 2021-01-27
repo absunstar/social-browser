@@ -10,7 +10,7 @@ module.exports = function (SOCIALBROWSER) {
 
   window.addEventListener('load', function (e) {
     window['fuckAdBlock'] = window['FuckAdBlock'] = {
-      _var: { event: { detected: [], notDetected: [window] } },
+      _var: { event: {notDetected: [window] } },
     };
   });
 
@@ -73,6 +73,7 @@ module.exports = function (SOCIALBROWSER) {
     window.adsNotBlocked = true;
     window._AdBlock_init = {};
     window._AdBlock = () => {};
+    window.adblock = false;
 
     window.cefQuery = function (options) {
       SOCIALBROWSER.log(options);

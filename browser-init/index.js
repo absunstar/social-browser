@@ -56,10 +56,15 @@ if (!String.prototype.contains) {
 const browser = {};
 
 module.exports = function (op) {
-  console.log('\n ( Create New IBrowser Module ) \n');
+
+  browser.log = function(...args){
+    // console.log(...args)
+   }
+   
+  browser.log('\n ( Create New IBrowser Module ) \n');
 
   if (browser.ready) {
-    // console.log('IBrowser Ready Back ...')
+    // browser.log('IBrowser Ready Back ...')
     return browser;
   } else {
     browser.ready = true;
@@ -72,14 +77,16 @@ module.exports = function (op) {
     is_render: false,
   };
 
+
+
   if (browser.op.message) {
-    console.log(browser.op.message);
+    browser.log(browser.op.message);
   }
 
   if (browser.op.is_render) {
-    // console.log('ibrowser From Render Process')
+    // browser.log('ibrowser From Render Process')
   } else {
-    console.log('ibrowser From Main Process');
+    browser.log('ibrowser From Main Process');
   }
 
   browser.require = function (name) {
@@ -104,12 +111,12 @@ module.exports = function (op) {
   };
 
   browser.spawn = function (program, file) {
-    console.log(`child process started ...`);
-    console.log(file);
+    browser.log(`child process started ...`);
+    browser.log(file);
 
     let child_process = browser.child_process.spawn(program, file);
     child_process.stdout.on('data', function (data) {
-      console.log(data.toString());
+      browser.log(data.toString());
     });
 
     child_process.stderr.on('data', (data) => {
@@ -117,12 +124,12 @@ module.exports = function (op) {
     });
 
     child_process.on('close', (code) => {
-      console.log(`child process exited with code ${code}`);
-      console.log(file);
+      browser.log(`child process exited with code ${code}`);
+      browser.log(file);
     });
 
     child_process.on('message', (msg) => {
-      console.log(msg);
+      browser.log(msg);
     });
 
     return child_process;
@@ -184,7 +191,7 @@ module.exports = function (op) {
     let default_path = browser.path.join(browser.dir, 'browser_files', 'json', name + '.json');
 
     if (browser.op.is_main && (browser.force_update || !browser.fs.existsSync(path))) {
-      console.log(`\n Updating var ${name} \n `);
+      browser.log(`\n Updating var ${name} \n `);
       let handle = false;
       
       if (browser.fs.existsSync(path)) {
@@ -464,7 +471,7 @@ module.exports = function (op) {
               }
             });
             if (!exists) {
-              d.name = d.name.replace('{random}' , 'random_' + Math.random())
+              d.name = d.name.replace('{random}' , 'default_' + new Date().getTime() + Math.random())
               data.push(d);
             }
           });
@@ -478,7 +485,7 @@ module.exports = function (op) {
         }
       } else if (name == 'blocking') {
         if (handle) {
-          console.log('updateing blocking.json');
+          browser.log('updateing blocking.json');
           let default_data = browser.parseJson(browser.readFileSync(default_path)) || [];
           let data = browser.parseJson(browser.readFileSync(path)) || [];
 
@@ -647,14 +654,14 @@ module.exports = function (op) {
         return;
       }
 
-      console.log(browser.to_dateX() + '  set_var() :: ' + name);
+      browser.log(browser.to_dateX() + '  set_var() :: ' + name);
 
       if (data) {
         browser.var[name] = data;
         if (name == 'core') {
           if (browser.var.core.user_agent) {
             browser.electron.app.userAgentFallback = browser.var.core.user_agent;
-            console.log('userAgentFallback', browser.electron.app.userAgentFallback);
+            browser.log('userAgentFallback', browser.electron.app.userAgentFallback);
           }
         }
         browser.call('var.' + name, {
@@ -670,10 +677,10 @@ module.exports = function (op) {
         let content = JSON.stringify(data);
         browser.writeFile(path, content);
       } else {
-        console.log('set_var Error : no data');
+        browser.log('set_var Error : no data');
       }
     } catch (error) {
-      console.log(error);
+      browser.log(error);
     }
   };
 

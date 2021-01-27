@@ -19,7 +19,14 @@ module.exports = function (SOCIALBROWSER) {
     }
   };
 
-  window.location0 = window.location.ancestorOrigins;
+  SOCIALBROWSER.copy = function (text) {
+    SOCIALBROWSER.call('render_message', {
+      name: 'copy',
+      text: text,
+    });
+  };
+
+  // window.location0 = window.location.ancestorOrigins;
   // window.location = {
   //   ancestorOrigins : window.location.ancestorOrigins,
   //   host : window.location.host,
@@ -193,7 +200,7 @@ module.exports = function (SOCIALBROWSER) {
     if (typeof type == 'string') {
       selector += `${this.id ? '#' + this.id : ''}${this.className ? '.' + this.className : ''}(${type})`;
       if (typeof type == 'string' && selector.like(SOCIALBROWSER.eventOff) && !selector.like(SOCIALBROWSER.eventOn)) {
-        // SOCIALBROWSER.log(`${selector} OFF`);
+         SOCIALBROWSER.log(`${selector} OFF`);
         SOCIALBROWSER.events.push({
           enabled: false,
           selector: selector,
@@ -528,6 +535,12 @@ module.exports = function (SOCIALBROWSER) {
       },
       document: {
         write: function () {
+          // SOCIALBROWSER.log('document write child_window');
+        },
+        open: function () {
+          // SOCIALBROWSER.log('document write child_window');
+        },
+        close: function () {
           // SOCIALBROWSER.log('document write child_window');
         },
       },

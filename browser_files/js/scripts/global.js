@@ -1,6 +1,14 @@
 module.exports = function (SOCIALBROWSER) {
   SOCIALBROWSER.log(' >>> Global script activated ...');
 
+  if(SOCIALBROWSER.windowSetting){
+    SOCIALBROWSER.windowSetting.forEach(s => {
+      if(s.name == 'eventOff'){
+        SOCIALBROWSER.eventOff += '|' + s.eventOff;
+      }
+    });
+  }
+
   SOCIALBROWSER.call('add-request-header', {
     id: 'youtube_1',
     url: '*youtu.be*|*www.youtube.com*',

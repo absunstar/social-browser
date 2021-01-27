@@ -49,19 +49,38 @@ module.exports = function (browser) {
   };
 
   if (ipcMain) {
+    ipcMain.on('window-setting', (e, info) => {
+      let win = browser.getWindow(info.win_id);
+      if (win) {
+        win.setting.push(info);
+      } else {
+        browser.addWindow({
+          id: info.win_id,
+          setting: [info],
+        });
+      }
+    });
+
     ipcMain.on('add-request-header', (e, info) => {
-      let exists = false
+      let exists = false;
       browser.custom_request_header_list.forEach((r, i) => {
         if (r.id == info.id) {
-          exists = true
+          exists = true;
         }
       });
-      if(!exists){
-        info.value_list = info.value_list || []
-        info.delete_list = info.delete_list || []
+      if (!exists) {
+        info.value_list = info.value_list || [];
+        info.delete_list = info.delete_list || [];
         browser.custom_request_header_list.push(info);
       }
-      
+    });
+
+    ipcMain.on('remove-request-header', (e, info) => {
+      browser.custom_request_header_list.forEach((r, i) => {
+        if (r.id == info.id) {
+          browser.custom_request_header_list.splice(i, 1);
+        }
+      });
     });
 
     ipcMain.on('restart-app', (e, info) => {
@@ -132,6 +151,7 @@ module.exports = function (browser) {
         var: get_var(info),
         files_dir: browser.files_dir,
         dir: browser.dir,
+        windowSetting: browser.getWindow(info.win_id) ? browser.getWindow(info.win_id).setting : [],
         windows: browser.assignWindows.find((w) => w.child == info.win_id),
         session: browser.var.session_list.find((s) => s.name == info.partition),
       };
@@ -143,10 +163,10 @@ module.exports = function (browser) {
 
     ipcMain.on('online-status', (event, info) => {
       browser.online = info.status;
-      console.log('Internet Status ' + browser.online);
+      browser.log('Internet Status ' + browser.online);
     });
     ipcMain.on('get_var', (event, info) => {
-      console.log('get_var', info);
+      browser.log('get_var', info);
 
       if (info.name == '*') {
         event.returnValue = browser.var;
@@ -216,7 +236,7 @@ module.exports = function (browser) {
     });
 
     ipcMain.on('render_message', (event, info) => {
-      // console.log('render_message', info);
+      // browser.log('render_message', info);
       if (info.name == '[open new tab]') {
         info.win_id = info.win_id || browser.getView().id;
         if (info.source == 'session') {
@@ -229,16 +249,40 @@ module.exports = function (browser) {
         if (info.duplicate) {
           info.url = browser.getView().window.webContents.getURL();
         }
+      } else if (info.name == '[open new popup]') {
+        info.win_id = info.win_id || browser.getView().id;
+        let view = browser.getView(info.win_id);
+        info.partition = info.partition || view.partition;
+        info.user_name = info.user_name || view.user_name;
+
+        if (info.duplicate) {
+          info.url = view.window.webContents.getURL();
+        } else {
+          info.url = browser.var.core.default_page;
+        }
+        info.name = 'new_popup';
       } else if (info.name == '[open new ghost tab]') {
         let view = browser.getView();
         info.win_id = info.win_id || view.id;
 
-        info.user_name = info.partition = 'Ghost_' + Math.random();
+        info.user_name = info.partition = 'Ghost_' + new Date().getTime() + Math.random();
 
         if (info.duplicate) {
           info.url = view.window.webContents.getURL();
         }
         info.name = '[open new tab]';
+      } else if (info.name == '[open new ghost popup]') {
+        let view = browser.getView();
+        info.win_id = info.win_id || view.id;
+
+        info.user_name = info.partition = 'Ghost_' + new Date().getTime() + Math.random();
+
+        if (info.duplicate) {
+          info.url = view.window.webContents.getURL();
+        } else {
+          info.url = browser.var.core.default_page;
+        }
+        info.name = 'new_popup';
       } else if (info.name == '[open new window]') {
         let view = browser.getView(info.win_id);
         info.win_id = view.id;
@@ -378,7 +422,7 @@ module.exports = function (browser) {
                         }
                       });
                   } else {
-                    console.log(error);
+                    browser.log(error);
                   }
                 });
               });
@@ -426,7 +470,7 @@ module.exports = function (browser) {
             w.setMenuBarVisibility(false);
             w.loadURL('http://127.0.0.1:60080/data-content/last');
           } catch (error) {
-            console.log(error);
+            browser.log(error);
           }
         }
       } else if (info.name == 'get_pdf') {
@@ -443,7 +487,7 @@ module.exports = function (browser) {
           //     pageSize: 'A4'
           // }, info.options || {})
 
-          console.log(info);
+          browser.log(info);
 
           win.webContents
             .printToPDF(info.options)
@@ -460,7 +504,7 @@ module.exports = function (browser) {
               browser.run([browser.dir + '/printing/index.js']);
             })
             .catch((error) => {
-              console.log(error);
+              browser.log(error);
             });
           return;
           let id = new Date().getTime();
@@ -496,17 +540,17 @@ module.exports = function (browser) {
                   id: id,
                   data: data,
                 });
-                console.log('pdf-ready');
+                browser.log('pdf-ready');
                 win2.send('pdf-ready', {
                   win_id: win2.id,
                   url: 'http://127.0.0.1:60080/pdf/' + id,
                 });
                 // let base64data = data.toString('base64')
-                //console.log('Image converted to base 64 is:\n\n' + base64data);
+                //browser.log('Image converted to base 64 is:\n\n' + base64data);
                 // browser.newWindow({url : 'data:application/pdf;base64,' + base64data }).openDevTools()
               })
               .catch((error) => {
-                console.log(error);
+                browser.log(error);
               });
           });
         }
@@ -683,12 +727,12 @@ module.exports = function (browser) {
       } else if (info.name == 'show profiles') {
         browser.showUserProfile();
       } else if (info.name == 'go back') {
-        let view = browser.getView()
+        let view = browser.getView();
         if (view && view.window.webContents.canGoBack()) {
           view.window.webContents.goBack();
         }
       } else if (info.name == 'go forward') {
-        let view = browser.getView()
+        let view = browser.getView();
         if (view && view.window.webContents.canGoForward()) {
           view.window.webContents.goForward();
         }
@@ -865,7 +909,7 @@ module.exports = function (browser) {
 
     ipcMain.on('update-view', (e, info) => {
       if (!info) {
-        console.log('Error update-view No Info Exists');
+        browser.log('Error update-view No Info Exists');
         return;
       }
 
@@ -900,7 +944,7 @@ module.exports = function (browser) {
         let win = BrowserWindow.fromId(browser.getView().id);
         win.webContents.stop();
 
-        console.log('Will Load URL : ', info.url);
+        browser.log('Will Load URL : ', info.url);
 
         win.loadURL(info.url);
         e.returnValue = win;
@@ -993,7 +1037,7 @@ module.exports = function (browser) {
     });
 
     ipcMain.on('check_sessions', (e, info) => {
-      console.log('check_sessions', browser.Partitions_data_dir);
+      browser.log('check_sessions', browser.Partitions_data_dir);
       browser.fs.readdirSync(browser.Partitions_data_dir).forEach((file) => {
         let s = { name: 'persist:' + file, display: file };
         let exists = false;
@@ -1004,7 +1048,7 @@ module.exports = function (browser) {
         });
         if (!exists) {
           browser.var.session_list.push(s);
-          console.log(s);
+          browser.log(s);
         }
       });
       browser.call('setting.session_list', { data: browser.var.session_list });

@@ -371,9 +371,7 @@
 
                     <div class="row">
                       <div class="col6"><i-checkbox class="row" label="Allow Social Menu" ng-model="setting.blocking.social.allow_menu"></i-checkbox></div>
-                      <div class="col6">
-                        
-                      </div>
+                      <div class="col6"></div>
                     </div>
 
                     <fieldset>
@@ -385,7 +383,6 @@
                       <i-checkbox class="row" label="Allow Rankboostup.com Tools" ng-model="setting.blocking.social.allow_rankboostup"></i-checkbox>
                       <i-checkbox class="row" label="Allow Wintub.com Tools" ng-model="setting.blocking.social.allow_wintub"></i-checkbox>
                     </fieldset>
-                    
                   </fieldset>
                 </div>
               </div>
@@ -764,14 +761,17 @@
                   <br />
 
                   <div class="row padding margin">
-                    <div class="col6">
-                      <fieldset>
-                        <legend>New Script</legend>
-                        <i-control label="File Path" ng-model="preload.path"></i-control>
-                        <i-control label="Site URL [filter ex: *google.com*] " ng-model="preload.url"></i-control>
-                        <i-button type="add" ng-click="addPreload()" label="Add to List"></i-button>
-                      </fieldset>
-                    </div>
+                    <fieldset>
+                      <legend>New Script</legend>
+
+                      <div class="row">
+                        <div class="col8"><i-control label="File Path" ng-model="preload.path"></i-control></div>
+                        <div class="col4"><i-file ng-model="preload.path" label="Select File"> </i-file></div>
+                      </div>
+
+                      <i-control label="Site URL [filter ex: *google.com*] " ng-model="preload.url"></i-control>
+                      <i-button type="add" ng-click="addPreload()" label="Add to List"></i-button>
+                    </fieldset>
                   </div>
 
                   <br />

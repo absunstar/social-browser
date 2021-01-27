@@ -1,10 +1,9 @@
 module.exports = function (SOCIALBROWSER) {
 
-    let xwin = SOCIALBROWSER.electron.remote.getCurrentWindow()
-
+    SOCIALBROWSER.log(' >>> Video script activated ...')
+    
     SOCIALBROWSER.video_list = []
-    SOCIALBROWSER.on('new-video', (e, v) => {
-        SOCIALBROWSER.log(v)
+    SOCIALBROWSER.on('new-video-exists', (e, v) => {
         let exists = false
         SOCIALBROWSER.video_list.forEach(v2 => {
             if (v.src && v2.src == v.src) {
@@ -14,26 +13,32 @@ module.exports = function (SOCIALBROWSER) {
         if (v.src && !exists) {
 
             SOCIALBROWSER.video_list.push({
-                src: v.src
+                url: v.src
             })
         }
     })
 
     window.addEventListener('DOMNodeInsertedIntoDocument', (e) => {
         if (e.target.tagName == 'VIDEO' && e.target.src && !e.target.src.startsWith('blob:')) {
-            xwin.webContents.send('new-video', e.target);
+            SOCIALBROWSER.currentWindow.webContents.send('new-video-exists', {
+                src : e.target.src
+            });
         }
     }, false);
     window.addEventListener('DOMNodeInserted', (e) => {
         if (e.target.tagName == 'VIDEO' && e.target.src && !e.target.src.startsWith('blob:')) {
-            xwin.webContents.send('new-video', e.target);
+            SOCIALBROWSER.currentWindow.webContents.send('new-video-exists', {
+                src : e.target.src
+            });
         }
     }, false);
 
-    document.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('load', () => {
         document.querySelectorAll('video').forEach(v => {
-            if (v.src && !v.src.startsWith('blob:')) {
-                xwin.webContents.send('new-video', v);
+            if (v && v.src && !v.src.startsWith('blob:')) {
+                SOCIALBROWSER.currentWindow.webContents.send('new-video-exists', {
+                    src : v.src
+                });
             }
         })
     })
@@ -54,14 +59,17 @@ module.exports = function (SOCIALBROWSER) {
     let ads_src_list = '*cdn.cloudfrale.com*'
 
     function skipAdsVideos() {
+        SOCIALBROWSER.log('skipAdsVideos()')
         let ads = false
         let videos = document.querySelectorAll('video')
         if (videos.length > 0) {
+
             document.querySelectorAll('*').forEach(el => {
                 if (el.className && typeof el.className == "string" && !el.className.like(trusted_classes) && color_list.includes(getComputedStyle(el)['backgroundColor'])) {
                     ads = true
                 }
             })
+            
             if (!ads) {
                 videos.forEach(v => {
                     if (v.src.like(ads_src_list)) {
@@ -90,7 +98,7 @@ module.exports = function (SOCIALBROWSER) {
         } else {
             setTimeout(() => {
                 skipAdsVideos()
-            }, 1000 * 1);
+            }, 1000 * 3);
         }
 
     }

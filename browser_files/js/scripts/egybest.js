@@ -1,11 +1,15 @@
 module.exports = function (SOCIALBROWSER) {
+  if (!SOCIALBROWSER.var.blocking.social.allow_egybest) {
+    return;
+  }
+
   if (!document.location.href.like('*peta.egybest.pw*')) {
     return;
   }
 
   SOCIALBROWSER.log(' >>> egybest script activated ...');
 
-  SOCIALBROWSER.var.blocking.javascript.block_window_open = false
+  SOCIALBROWSER.var.blocking.javascript.block_window_open = false;
 
   // SOCIALBROWSER.eventOff += '|*click*';
   // SOCIALBROWSER.eventOn += '|*vidplay*';

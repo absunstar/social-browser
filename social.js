@@ -1,6 +1,6 @@
 ['SIGTERM', 'SIGHUP', 'SIGINT', 'SIGBREAK'].forEach((signal) => {
   process.on(signal, () => {
-    console.log('Request signal :: ' + signal);
+    browser.log('Request signal :: ' + signal);
     app.quit();
     process.exit(1);
   });
@@ -36,7 +36,7 @@ if (!is_first_app) {
   if (f.endsWith('.js')) {
     require(f);
   } else {
-    console.log('App Will Close & open in first instance');
+    console.warn('App Will Close & open in first instance');
     app.quit();
   }
   return;
@@ -70,7 +70,7 @@ const browser = require('./browser-init')({
 
 require(__dirname + '/site.js')(browser);
 
-console.log('process.argv', process.argv);
+browser.log('process.argv', process.argv);
 
 browser.request_url = process.argv.length > 1 ? process.argv[process.argv.length - 1] : browser.var.core.home_page;
 if (browser.request_url == '.' || browser.request_url.like('*--squirrel*')) {
@@ -83,7 +83,7 @@ if (browser.request_url && !browser.request_url.like('http*') && !browser.reques
 if (!browser.request_url) {
   browser.request_url = browser.var.core.home_page;
 }
-console.log('browser.request_url', browser.request_url);
+browser.log('browser.request_url', browser.request_url);
 
 function createNewMainWindow(op, callback) {
   callback = callback || function () {};
@@ -124,6 +124,7 @@ app.on('ready', function () {
     backgroundColor: '#2196F3',
     skipTaskbar: true,
     alwaysOnTop: true,
+    icon: browser.icons[process.platform],
     webPreferences: {
       contextIsolation: false,
     },
@@ -164,7 +165,7 @@ app.on('ready', function () {
 
   browser.on('[browser-message]', function (event, data) {
     if (data.name == 'close') {
-      console.log('close main window ' + data.win_id);
+      browser.log('close main window ' + data.win_id);
       browser.get_main_window(data.win_id).close();
     }
   });
@@ -181,7 +182,7 @@ app.on('ready', function () {
     } else if (data == 'minmize') {
       browser.get_main_window().minimize();
     } else if (data == 'preload') {
-      console.log('preload!!');
+      browser.log('preload!!');
     } else if (data == 'showDeveloperTools') {
       browser.get_main_window().webContents.openDevTools({
         mode: 'undocked',
@@ -199,7 +200,7 @@ app.on('ready', function () {
 
   globalShortcut.unregisterAll();
   // globalShortcut.register('CommandOrControl+X', () => {
-  //   console.log('CommandOrControl+X is pressed')
+  //   browser.log('CommandOrControl+X is pressed')
   // })
 
   setInterval(() => {
@@ -236,17 +237,17 @@ app.on('ready', function () {
   });
 
   app.on('network-connected', () => {
-    console.log('network-connected');
+    browser.log('network-connected');
   });
 
   app.on('network-disconnected', () => {
-    console.log('network-disconnected');
+    browser.log('network-disconnected');
   });
 
   app.on('web-contents-created', (event, contents) => {
     // contents.on('new-window', (event, url, frameName, disposition, options, additionalFeatures) => {
-    //   console.log('new-window')
-    //   console.log(options)
+    //   browser.log('new-window')
+    //   browser.log(options)
     //   if (frameName === 'modal') {
     //     // open window as modal
     //     event.preventDefault()
@@ -262,7 +263,7 @@ app.on('ready', function () {
     // })
 
     contents.on('will-attach-webview', (event, webPreferences, params) => {
-      console.log('will-attach-webview');
+      browser.log('will-attach-webview');
       webPreferences.preload = browser.files_dir + '/js/context-menu.js';
       // webPreferences.preloadURL = 'file://' + browser.files_dir + "/js/context-menu.js"
 
@@ -286,7 +287,7 @@ app.on('ready', function () {
   });
 
   app.on('browser-window-created', (e, win) => {
-    // console.log( ' before : ' + win.webContents.browserWindowOptions.webPreferences.preload)
+    // browser.log( ' before : ' + win.webContents.browserWindowOptions.webPreferences.preload)
     // if(win.webContents.browserWindowOptions.webPreferences.preload){
     //   if(win.webContents.browserWindowOptions.webPreferences.preload.like('*js/context-menu*')){
     //    win.webContents.browserWindowOptions.webPreferences.preload =  browser.path.join(browser.files_dir , "js" , "window-context-menu.js")
@@ -294,7 +295,7 @@ app.on('ready', function () {
     // }else{
     //   win.webContents.browserWindowOptions.webPreferences.preload =  browser.path.join(browser.files_dir , "js" , "window-context-menu.js")
     // }
-    // console.log( ' after : ' + win.webContents.browserWindowOptions.webPreferences.preload)
+    // browser.log( ' after : ' + win.webContents.browserWindowOptions.webPreferences.preload)
     // win.webContents.browserWindowOptions.webPreferences.preload = browser.files_dir + "/js/social-context-menu.js"
     // win.webContents.on("new-window", (e, url) => {
     //   e.preventDefault()
@@ -313,7 +314,7 @@ app.on('ready', function () {
   });
 
   app.on('crashed', (event, session) => {
-    console.log('app crashed');
+    browser.log('app crashed');
     // app.relaunch({
     //   args: process.argv.slice(1).concat(['--relaunch'])
     // })
@@ -321,7 +322,7 @@ app.on('ready', function () {
   });
 
   app.on('gpu-process-crashed', (event, session) => {
-    console.log('app gpu-process-crashed');
+    browser.log('app gpu-process-crashed');
     // app.relaunch({
     //   args: process.argv.slice(1).concat(['--relaunch'])
     // })
@@ -352,7 +353,7 @@ app.on('will-finish-launching', () => {
   });
 
   app.on('open-url', (event, path) => {
-    console.log('open-url', path);
+    browser.log('open-url', path);
 
     if (path && !path.like('http*') && !path.like('file*')) {
       path = 'file://' + path;
@@ -367,7 +368,7 @@ app.on('will-finish-launching', () => {
 
   app.on('open-file', (event, path) => {
     event.preventDefault();
-    console.log('open-file', path);
+    browser.log('open-file', path);
 
     if (path && !path.like('http*') && !path.like('file*')) {
       path = 'file://' + path;
@@ -389,7 +390,7 @@ app.on('will-finish-launching', () => {
 });
 
 app.on('second-instance', (event, commandLine, workingDirectory) => {
-  console.log('second-instance', commandLine);
+  browser.log('second-instance', commandLine);
 
   let u = commandLine && commandLine.length > 0 ? commandLine[commandLine.length - 1] : null;
 
