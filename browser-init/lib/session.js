@@ -224,7 +224,8 @@ module.exports = function (browser) {
 
               if (end) {
                 callback({
-                  cancel: true,
+                  cancel: false,
+                  redirectURL: `http://127.0.0.1:60080/block-site?url=${url}&msg=Site in Black List From Setting`,
                 });
 
                 return;
@@ -241,7 +242,8 @@ module.exports = function (browser) {
 
               if (end) {
                 callback({
-                  cancel: true,
+                  cancel: false,
+                  redirectURL: `http://127.0.0.1:60080/block-site?url=${url}&msg=Not Safe Site From Setting`,
                 });
 
                 return;
@@ -272,8 +274,6 @@ module.exports = function (browser) {
           });
 
           ss.webRequest.onBeforeSendHeaders(filter, function (details, callback) {
-
-
             let user = browser.var.session_list.find((s) => s.name == s1.name);
             let user_agent = null;
             if (user && user.user_agent) {
@@ -307,12 +307,12 @@ module.exports = function (browser) {
             });
 
             // Must For Login Problem ^_^
-            if(details.url.like('*google.com*|*youtube.com*')){
+            if (details.url.like('*google.com*|*youtube.com*')) {
               callback({
                 cancel: false,
                 requestHeaders: details.requestHeaders,
               });
-              return
+              return;
             }
 
             // custom header request
@@ -371,11 +371,10 @@ module.exports = function (browser) {
               }
             }
 
-            if(cookie_obj){
+            if (cookie_obj) {
               let cookie_string = browser.cookieStringify(cookie_obj);
               details.requestHeaders['Cookie'] = cookie_string;
             }
-           
 
             if (url.like('browser*') || url.like('*127.0.0.1*')) {
               exit = true;
@@ -485,38 +484,29 @@ module.exports = function (browser) {
           ss.webRequest.onErrorOccurred(filter, function (details) {});
 
           ss.setPermissionRequestHandler((webContents, permission, callback) => {
-            // Enum of 'media', 'geolocation', 'notifications', 'midiSysex', 'pointerLock', 'fullscreen', 'openExternal'.
-
-            if (webContents.getURL().like('*127.0.0.1*')) {
-              // browser.log(` \n  << permission asked and Allow :   ${permission} , from  ${webContents.getURL()} \n `);
-
-              callback(true);
-              return;
-            } else {
-              if (permission === 'fullscreen' || permission === 'openExternal') {
-                // browser.log(` \n  << permission asked and Allow :   ${permission} , from  ${webContents.getURL()} \n `);
-                callback(true);
-                return;
-              }
-
-              // browser.log(` \n  << permission asked and Blocked :   ${permission} , from  ${webContents.getURL()} \n `);
+            // https://www.electronjs.org/docs/api/session
+            if (!browser.var.blocking.permissions) {
               callback(false);
               return;
             }
+            if (webContents.getURL().like('http://127.0.0.1*|https://127.0.0.1*')) {
+              callback(true);
+            } else {
+              let allow = browser.var.blocking.permissions['allow_' + permission.replace('-', '_')] || false;
+              browser.log(` \n  <<< setPermissionRequestHandler ${permission} ( ${allow} )  ${webContents.getURL()} \n `);
+              callback(allow);
+            }
           });
           ss.setPermissionCheckHandler((webContents, permission) => {
-            // Enum of 'media', 'geolocation', 'notifications', 'midiSysex', 'pointerLock', 'fullscreen', 'openExternal'.
-
-            if (webContents.getURL().like('*127.0.0.1*')) {
-              // browser.log(` \n  << permission asked and Allow :   ${permission} , from  ${webContents.getURL()} \n `);
+            if (!browser.var.blocking.permissions) {
+              return false;
+            }
+            if (webContents.getURL().like('http://127.0.0.1*|https://127.0.0.1*')) {
               return true;
             } else {
-              if (permission === 'fullscreen' || permission === 'openExternal') {
-                // browser.log(` \n  << permission asked and Allow :   ${permission} , from  ${webContents.getURL()} \n `);
-                return true;
-              }
-              //  browser.log(`\n << setPermissionCheckHandler deny :  ${permission} , from  ${webContents.getURL()} \n `);
-              return false;
+              let allow = browser.var.blocking.permissions['allow_' + permission.replace('-', '_')] || false;
+              browser.log(` \n  <<< setPermissionCheckHandler ${permission} ( ${allow} )  ${webContents.getURL()} \n `);
+              return allow;
             }
           });
           ss.on('will-download', (event, item, webContents) => {
@@ -834,38 +824,29 @@ module.exports = function (browser) {
       });
 
       ss.setPermissionRequestHandler((webContents, permission, callback) => {
-        // Enum of 'media', 'geolocation', 'notifications', 'midiSysex', 'pointerLock', 'fullscreen', 'openExternal'.
-
-        if (webContents.getURL().like('*127.0.0.1*')) {
-          // browser.log(` \n  << permission asked and Allow :   ${permission} , from  ${webContents.getURL()} \n `);
-
-          callback(true);
-          return;
-        } else {
-          if (permission === 'fullscreen' || permission === 'openExternal') {
-            //  browser.log(` \n  << permission asked and Allow :   ${permission} , from  ${webContents.getURL()} \n `);
-            callback(true);
-            return;
-          }
-
-          // browser.log(` \n  << permission asked and Blocked :   ${permission} , from  ${webContents.getURL()} \n `);
+        // https://www.electronjs.org/docs/api/session
+        if (!browser.var.blocking.permissions) {
           callback(false);
           return;
         }
+        if (webContents.getURL().like('http://127.0.0.1*|https://127.0.0.1*')) {
+          callback(true);
+        } else {
+          let allow = browser.var.blocking.permissions['allow_' + permission.replace('-', '_')] || false;
+          browser.log(` \n  <<< setPermissionRequestHandler ${permission} ( ${allow} )  ${webContents.getURL()} \n `);
+          callback(allow);
+        }
       });
       ss.setPermissionCheckHandler((webContents, permission) => {
-        // Enum of 'media', 'geolocation', 'notifications', 'midiSysex', 'pointerLock', 'fullscreen', 'openExternal'.
-
-        if (webContents.getURL().like('*127.0.0.1*')) {
-          //  browser.log(` \n  << permission asked and Allow :   ${permission} , from  ${webContents.getURL()} \n `);
+        if (!browser.var.blocking.permissions) {
+          return false;
+        }
+        if (webContents.getURL().like('http://127.0.0.1*|https://127.0.0.1*')) {
           return true;
         } else {
-          if (permission === 'fullscreen' || permission === 'openExternal') {
-            //   browser.log(` \n  << permission asked and Allow :   ${permission} , from  ${webContents.getURL()} \n `);
-            return true;
-          }
-          // browser.log(`\n << setPermissionCheckHandler deny :  ${permission} , from  ${webContents.getURL()} \n `);
-          return false;
+          let allow = browser.var.blocking.permissions['allow_' + permission.replace('-', '_')] || false;
+          browser.log(` \n  <<< setPermissionCheckHandler ${permission} ( ${allow} )  ${webContents.getURL()} \n `);
+          return allow;
         }
       });
     };

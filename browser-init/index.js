@@ -58,7 +58,7 @@ const browser = {};
 module.exports = function (op) {
 
   browser.log = function(...args){
-    // console.log(...args)
+   //  console.log(...args)
    }
    
   browser.log('\n ( Create New IBrowser Module ) \n');
@@ -492,6 +492,7 @@ module.exports = function (op) {
           data.javascript = default_data.javascript;
           data.privacy =  default_data.privacy;
           data.youtube = default_data.youtube;
+          data.permissions = default_data.permissions;
 
 
           if (typeof data.allow_safty_mode == 'undefined') {

@@ -60,12 +60,12 @@
       i-checkbox .selector.selected {
         background: #009688;
         color: #fff;
-        text-shadow: 0 0 10px black;
+        box-shadow: 0 0 10px 1px #ffeb3b;
       }
       i-checkbox .selector.un-selected {
-        background: #a8aba5;
+        background: #6f6a6a;
         border: none;
-        color: #fff;
+        color: #ddd;
       }
     </style>
   </head>
@@ -109,15 +109,15 @@
               <a class="tab-link" onclick="site.showTabContent(event, '#basic_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-info-circle"></i> Basic </a>
 
               <a class="tab-link" onclick="site.showTabContent(event, '#users_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-users"></i> Users </a>
+              <a class="tab-link" onclick="site.showTabContent(event, '#passwords_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-key"></i> Passwords </a>
+
               <a class="tab-link" id="safty_btn" onclick="site.showTabContent(event, '#safty_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
                 <i class="fa fa-lock"></i> Children Safty Mode
               </a>
-              <a class="tab-link" onclick="site.showTabContent(event, '#blocking_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-code"></i> Blocking Engine</a>
+              <a class="tab-link" onclick="site.showTabContent(event, '#blocking_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-ban"></i> Blocking Engine</a>
               <a class="tab-link" onclick="site.showTabContent(event, '#privacy_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-code"></i> Browser Finger Print </a>
               <a class="tab-link" onclick="site.showTabContent(event, '#javascript_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-code"></i> Java Script </a>
               <a class="tab-link" onclick="site.showTabContent(event, '#social_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-code"></i> Social Media </a>
-
-              <a class="tab-link" onclick="site.showTabContent(event, '#passwords_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-key"></i> Passwords </a>
 
               <a class="tab-link" onclick="site.showTabContent(event, '#youtube_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-youtube"></i> Youtube </a>
               <a class="tab-link" onclick="site.showTabContent(event, '#facebook_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-facebook"></i> Facebook </a>
@@ -192,8 +192,8 @@
                   <br />
                   <br />
                   <br />
-                  <i-button type="btn bg-green white" ng-click="showBlackListModal()" label="Black List Sites"></i-button>
-                  <i-button type="btn bg-green white" ng-click="showWhiteListModal()" label="White List Sites"></i-button>
+                  <i-button type="btn  bg-yellow blue bold" ng-click="showBlackListModal()" label="Black List Sites"></i-button>
+                  <i-button type="btn  bg-yellow blue bold" ng-click="showWhiteListModal()" label="White List Sites"></i-button>
                 </div>
               </div>
               <div id="blocking_tab" class="tab-content">
@@ -207,7 +207,7 @@
                         <i-checkbox class="row" label="Allow External Popup" ng-model="setting.blocking.popup.allow_external"></i-checkbox>
                         <i-checkbox class="row" label="Allow Internal Popup" ng-model="setting.blocking.popup.allow_internal"></i-checkbox>
                       </div>
-                      <div class="col6"><i-button label="Popup White List" type="btn bg-green white" ng-click="showPopupIgnoreURLsModal()"></i-button></div>
+                      <div class="col6"><i-button label="Popup White List" type="btn  bg-yellow blue bold" ng-click="showPopupIgnoreURLsModal()"></i-button></div>
                     </div>
                   </fieldset>
 
@@ -224,10 +224,43 @@
                         <i-checkbox class="row" label="Enable Block HTML Tags " ng-model="setting.blocking.block_html_tags"></i-checkbox>
                       </div>
                       <div class="col6">
-                        <i-button type="btn bg-green white" ng-click="showAdsModal()" label="Blocking Ads Links"></i-button>
-                        <i-button type="btn bg-green white" ng-click="showDomsModal()" label="Blocking Doms Selector"></i-button>
+                        <i-button type="btn  bg-yellow blue bold" ng-click="showAdsModal()" label="Blocking Ads Links"></i-button>
+                        <i-button type="btn  bg-yellow blue bold" ng-click="showDomsModal()" label="Blocking Doms Selector"></i-button>
                       </div>
                     </div>
+                  </fieldset>
+
+                  <fieldset>
+                    <legend>Browser Permissions</legend>
+
+                    <br />
+
+                    <i-checkbox class="row" label="Allow fullscreen ( Request for the app to enter fullscreen mode ) " ng-model="setting.blocking.permissions.allow_fullscreen"></i-checkbox>
+                    <i-checkbox class="row" label="Allow clipboard-read ( Request access to read from the clipboard )" ng-model="setting.blocking.permissions.allow_clipboard_read"></i-checkbox>
+                    <i-checkbox class="row" label="Allow openExternal ( Request to open links in external applications ) " ng-model="setting.blocking.permissions.allow_openExternal"></i-checkbox>
+                    <i-checkbox class="row" label="Allow geolocation ( Request access to user's current location ) " ng-model="setting.blocking.permissions.allow_geolocation"></i-checkbox>
+                    <i-checkbox
+                      class="row"
+                      label="Allow notifications ( Request notification creation and the ability to display them in the user's system tray ) "
+                      ng-model="setting.blocking.permissions.allow_notifications"
+                    ></i-checkbox>
+                    <i-checkbox
+                      class="row"
+                      label="Allow Media ( Request access to media devices such as camera, microphone and speakers ) "
+                      ng-model="setting.blocking.permissions.allow_media"
+                    ></i-checkbox>
+                    <i-checkbox class="row" label="Allow midi ( Request MIDI access in the webmidi API ) " ng-model="setting.blocking.permissions.allow_midi"></i-checkbox>
+                    <i-checkbox
+                      class="row"
+                      label="Allow midiSysex ( Request the use of system exclusive messages in the webmidi API )"
+                      ng-model="setting.blocking.permissions.allow_midiSysex"
+                    ></i-checkbox>
+                    <i-checkbox class="row" label="Allow mediaKeySystem ( Request access to DRM protected content ) " ng-model="setting.blocking.permissions.allow_mediaKeySystem"></i-checkbox>
+                    <i-checkbox
+                      class="row"
+                      label="Allow pointerLock ( Request to directly interpret mouse movements as an input method ) "
+                      ng-model="setting.blocking.permissions.allow_pointerLock"
+                    ></i-checkbox>
                   </fieldset>
 
                   <fieldset>
@@ -336,7 +369,6 @@
 
                       <i-checkbox class="col4" label="Hide Plugins" ng-model="setting.blocking.privacy.hide_plugins"></i-checkbox>
                       <i-checkbox class="col4" label="Hide MimeTypes" ng-model="setting.blocking.privacy.hide_mimetypes"></i-checkbox>
-                      <i-checkbox class="col4" label="Random browser permissions" ng-model="setting.blocking.privacy.hide_permissions"></i-checkbox>
 
                       <br />
                       <i-checkbox class="col4" label="Block Google ID in other sites" ng-model="setting.blocking.privacy.hide_gid"></i-checkbox>
@@ -403,7 +435,7 @@
                       </div>
 
                       <div class="row">
-                        <i-button label="Blocking Words" ng-show="setting.blocking.youtube.allow_safty_mode" type="btn bg-green white" ng-click="showYoutubeWordsModal()"></i-button>
+                        <i-button label="Blocking Words" ng-show="setting.blocking.youtube.allow_safty_mode" type="btn  bg-yellow blue bold" ng-click="showYoutubeWordsModal()"></i-button>
                       </div>
                     </div>
                   </fieldset>
@@ -434,8 +466,8 @@
                       <div class="col6"><i-checkbox class="row" label="Enable" ng-model="setting.blocking.allow_safty_mode"></i-checkbox></div>
                       <div class="col6">
                         <div class="row">
-                          <i-button label="Blocking Page URLs" type="btn bg-green white" ng-click="showUnsafeLinksModal()"></i-button>
-                          <i-button label="Blocking Page Contains Words " type="btn bg-green white" ng-click="showUnsafeWordsModal()"></i-button>
+                          <i-button label="Blocking Page URLs" type="btn  bg-yellow blue bold" ng-click="showUnsafeLinksModal()"></i-button>
+                          <i-button label="Blocking Page Contains Words " type="btn  bg-yellow blue bold" ng-click="showUnsafeWordsModal()"></i-button>
                         </div>
                       </div>
                     </div>
@@ -469,7 +501,7 @@
                   <fieldset>
                     <legend>Fast Open Menu</legend>
 
-                    <i-button type="btn bg-green white" ng-click="showOpenListModal()" label="Manage List"></i-button>
+                    <i-button type="btn  bg-yellow blue bold" ng-click="showOpenListModal()" label="Manage List"></i-button>
                   </fieldset>
                 </div>
 
@@ -849,7 +881,7 @@
                     <th>Data</th>
                   </tr>
                   <tr ng-repeat="site in setting.user_data  | filter : {host : user_data_host} | limitTo:200 track by $index">
-                    <td>{{$index +1 }} <i-button type="remove default" ng-click="remove_user_data(site)"></i-button></td>
+                    <td class="center">{{$index +1 }} <i-button type="remove " ng-click="remove_user_data(site)"></i-button></td>
                     <td>{{site.host}}</td>
                     <td>
                       <p ng-repeat="d in site.data track by $index">{{d.value}}</p>
@@ -1063,7 +1095,7 @@
                   </div>
 
                   <div class="row center">
-                    <a ng-click="addDom()" class="btn bg-green white"> Add New </a>
+                    <a ng-click="addDom()" class="btn bg-yellow blue bold"> Add New </a>
                   </div>
                 </form>
               </div>
@@ -1227,7 +1259,7 @@
             <h2 class="padding margin center">These Sites Can Display [ Ads , popup , un safty content , iframes ]</h2>
             <div class="row padding">
               <div class="col6">
-                <a ng-click="addWhiteSite()" class="btn bg-green white"> Add New </a>
+                <a ng-click="addWhiteSite()" class="btn bg-yellow blue bold"> Add New </a>
               </div>
               <div class="col6">
                 <input class="block" type="text" ng-model="whiteSite.url" />
@@ -1260,7 +1292,7 @@
             <h2 class="padding margin center">This Sites Can't loaded</h2>
             <div class="row padding">
               <div class="col6">
-                <a ng-click="addBlackSite()" class="btn bg-green white"> Add New </a>
+                <a ng-click="addBlackSite()" class="btn bg-yellow blue bold"> Add New </a>
               </div>
               <div class="col6">
                 <input class="block" type="text" ng-model="blackSite.url" />

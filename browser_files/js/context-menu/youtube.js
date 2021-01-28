@@ -102,6 +102,9 @@ module.exports = function (SOCIALBROWSER) {
   }
 
   function check_if_current_video_un_safe() {
+    if (!SOCIALBROWSER.var.blocking.youtube.allow_safty_mode) {
+      return;
+    }
     SOCIALBROWSER.log('check_if_current_video_un_safe');
 
     document.querySelectorAll('video').forEach((v) => {

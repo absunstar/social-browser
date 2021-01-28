@@ -58,6 +58,11 @@ module.exports = function init_isite(browser) {
     path: __dirname + '/browser_files/html/setting.html',
     parser: 'html css js'
   })
+  site.get({
+    name: '/block-site',
+    path: __dirname + '/browser_files/html/block-site.html',
+    parser: 'html css js'
+  })
 
   site.get({
     name: '/iframe',

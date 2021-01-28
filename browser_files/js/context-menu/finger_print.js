@@ -146,18 +146,19 @@ module.exports = function (SOCIALBROWSER) {
     });
   }
 
-  if (SOCIALBROWSER.var.blocking.privacy.hide_permissions) {
-    SOCIALBROWSER.navigator.permissions = navigator.permissions;
-    SOCIALBROWSER.__define(navigator, 'permissions', {
-      query: (permission) => {
-        return new Promise((ok, err) => {
-          ok({
-            state: ['', 'granted', 'prompt', 'denied', ''][SOCIALBROWSER.__numberRange(0, 4)],
-          });
-        });
-      },
-    });
-  }
+  // if (SOCIALBROWSER.var.blocking.privacy.hide_permissions) {
+  //   SOCIALBROWSER.navigator.permissions = navigator.permissions;
+  //   SOCIALBROWSER.__define(navigator, 'permissions', {
+  //     query: (permission) => {
+  //       return new Promise((ok, err) => {
+  //         ok({
+  //           state: ['', 'granted', 'prompt', 'denied', ''][SOCIALBROWSER.__numberRange(0, 4)],
+  //         });
+  //       });
+  //     },
+  //   });
+  // }
+
   if (SOCIALBROWSER.var.blocking.privacy.hide_battery) {
     SOCIALBROWSER.__define(navigator, 'getBattery', () => {
       return new Promise((ok, err) => {
