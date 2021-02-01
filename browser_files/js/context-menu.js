@@ -44,7 +44,7 @@
     onEventOFF: [],
     jqueryOff: '',
     jqueryOn: '',
-    developerMode: true,
+    developerMode: false,
     log: function (...args) {
       if (this.developerMode) {
         console.log(...args);

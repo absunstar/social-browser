@@ -57,7 +57,7 @@ const browser = {};
 
 module.exports = function (op) {
   browser.log = function (...args) {
-    console.log(...args);
+   // console.log(...args);
   };
 
   browser.log('\n ( Create New IBrowser Module ) \n');
