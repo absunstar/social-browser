@@ -188,7 +188,7 @@
                   <br />
                   <br />
                   <br />
-                  <i-checkbox class="row" label="Send Browser Token" ng-model="setting.blocking.privacy.browser_token"></i-checkbox>
+                  <i-checkbox class="row" label="Send Browser ID" ng-model="setting.blocking.privacy.send_browser_id"></i-checkbox>
                   <br />
                   <br />
                   <br />
@@ -409,11 +409,22 @@
                     <fieldset>
                       <legend>Websites Integrations</legend>
                       <i-checkbox class="row" label="Allow Alexa Integration" ng-model="setting.blocking.social.allow_alexa"></i-checkbox>
-                      <i-checkbox class="row" label="Allow 10khits.com tools" ng-model="setting.blocking.social.allow_10khits"></i-checkbox>
-                      <i-checkbox class="row" label="Allow addmefast.com tools" ng-model="setting.blocking.social.allow_addmefast"></i-checkbox>
-                      <i-checkbox class="row" label="Allow youlikehits.com tools" ng-model="setting.blocking.social.allow_youlikehits"></i-checkbox>
-                      <i-checkbox class="row" label="Allow Rankboostup.com Tools" ng-model="setting.blocking.social.allow_rankboostup"></i-checkbox>
-                      <i-checkbox class="row" label="Allow Wintub.com Tools" ng-model="setting.blocking.social.allow_wintub"></i-checkbox>
+                      <i-checkbox class="row" label="Allow Exe.io Integration" ng-model="setting.blocking.social.allow_exeio"></i-checkbox>
+                    </fieldset>
+
+                    <fieldset>
+                      <legend>Traffic Exchange Websites Integrations</legend>
+                      <i-checkbox class="row" label="Allow 10khits.com Integration" ng-model="setting.blocking.social.allow_10khits"></i-checkbox>
+                      <i-checkbox class="row" label="Allow Htleap.com Integration" ng-model="setting.blocking.social.allow_hitleap"></i-checkbox>
+                      <i-checkbox class="row" label="Allow Addmefast.com Integration" ng-model="setting.blocking.social.allow_addmefast"></i-checkbox>
+                      <i-checkbox class="row" label="Allow Youlikehits.com Integration" ng-model="setting.blocking.social.allow_youlikehits"></i-checkbox>
+                      <i-checkbox class="row" label="Allow Rankboostup.com Integration" ng-model="setting.blocking.social.allow_rankboostup"></i-checkbox>
+                    </fieldset>
+
+                    <fieldset>
+                      <legend>Scam Websites Integrations</legend>
+                      <i-checkbox class="row" label="Allow Wintub.com Integration" ng-model="setting.blocking.social.allow_wintub"></i-checkbox>
+                      <i-checkbox class="row" label="Allow Watchhours.com Integration" ng-model="setting.blocking.social.allow_watchhours"></i-checkbox>
                     </fieldset>
                   </fieldset>
                 </div>

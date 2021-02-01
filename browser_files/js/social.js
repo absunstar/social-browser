@@ -832,17 +832,6 @@ socialTabs.init(socialTabsDom, {
   maxWidth: 270,
 });
 
-var user_data_info = [];
-
-setInterval(() => {
-  if (user_data_info.length > 0) {
-    client.postData({
-      url: 'browser://api/new_user_data_input',
-      data: user_data_info,
-    });
-  }
-}, 1000 * 5);
-
 let $addressbar = $('.address-input .url');
 
 function showAddressBar() {
@@ -932,11 +921,7 @@ socialTabsDom.addEventListener('tabAdd', ({ detail }) => {
     });
 
     if (!$id.attr('url') || $id.attr('url').like('*newTab')) {
-      /*setTimeout(() => {
-        sendToMain({
-          name: 'show addressbar'
-        })
-      }, 250);*/
+
     }
   }
 });
@@ -950,7 +935,7 @@ socialTabsDom.addEventListener('tabRemove', ({ detail }) => {
 });
 
 function render_new_tab(op) {
-  console.log('render_new_tab', op);
+  // console.log('render_new_tab', op);
 
   if (typeof op === 'string') {
     op = op.split('...').join('\\');
@@ -985,7 +970,7 @@ function render_new_tab(op) {
     win_id: SOCIALBROWSER.currentWindow.id,
   };
   socialTabs.addTab(tab);
-  console.log(tab);
+ // console.log(tab);
 }
 
 function renderMessage(cm) {
@@ -1216,15 +1201,29 @@ SOCIALBROWSER.on('show-tab-view', (info) => {
 SOCIALBROWSER.currentWindow.maximize();
 SOCIALBROWSER.currentWindow.show();
 
-SOCIALBROWSER.files_dir = SOCIALBROWSER.callSync('get_browser', {
-  name: 'files_dir',
-});
+// SOCIALBROWSER.files_dir = SOCIALBROWSER.callSync('get_browser', {
+//   name: 'files_dir',
+// });
 
-SOCIALBROWSER.invoke('get_var', {
+// SOCIALBROWSER.invoke('get_var', {
+//   host: document.location.host,
+//   url: document.location.href,
+//   name: '*',
+// }).then((result) => {
+//   SOCIALBROWSER.var = result;
+//   init_tab();
+// });
+
+
+SOCIALBROWSER.invoke('[browser][data]', {
   host: document.location.host,
   url: document.location.href,
   name: '*',
+  win_id: SOCIALBROWSER.currentWindow.id,
+  partition: SOCIALBROWSER.partition,
 }).then((result) => {
-  SOCIALBROWSER.var = result;
+  SOCIALBROWSER.var = result.var;
+  SOCIALBROWSER.files_dir = result.files_dir;
+  SOCIALBROWSER.dir = result.dir;
   init_tab();
 });

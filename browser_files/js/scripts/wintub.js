@@ -11,6 +11,9 @@ module.exports = function (SOCIALBROWSER) {
   SOCIALBROWSER.var.blocking.block_empty_iframe = true;
 
   document.addEventListener('DOMContentLoaded', () => {
+
+    window.__showBotImage();
+    
     if (document.getElementById('skipdiv')) {
       window['counter'] = 35;
       window['playit'] = true;

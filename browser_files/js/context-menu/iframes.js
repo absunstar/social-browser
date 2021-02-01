@@ -1,12 +1,11 @@
 module.exports = function (SOCIALBROWSER) {
-  if (SOCIALBROWSER.is_white_site == true) {
+  if (SOCIALBROWSER.is_white_site == true || document.location.href.like('*youtube.com*')) {
     SOCIALBROWSER.log(' [IFrame Blocking] OFF : ' + document.location.href);
     return;
   }
 
-  if (document.location.href.like('*youtube.com*')) {
-    return;
-  }
+
+  SOCIALBROWSER.log(' >>> IFrame Activated');
 
   document.addEventListener('DOMNodeInserted', function (e) {
     if (SOCIALBROWSER.var.blocking.block_empty_iframe && e.target.tagName == 'IFRAME' && (!e.target.src || e.target.src == 'about:blank')) {

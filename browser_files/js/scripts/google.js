@@ -1,4 +1,7 @@
 module.exports = function (SOCIALBROWSER) {
+
+  return
+  
   if (!document.location.href.like('*google*')) {
     return;
   }

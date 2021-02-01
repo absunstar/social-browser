@@ -1,8 +1,14 @@
 module.exports = function (SOCIALBROWSER) {
-  if (SOCIALBROWSER.is_white_site == true) {
+  if (SOCIALBROWSER.is_white_site == true || document.location.href.like('*youtube.com*') || SOCIALBROWSER.is_white_site) {
     SOCIALBROWSER.log(' [Safty] OFF : ' + document.location.href);
     return;
   }
+
+  if (!SOCIALBROWSER.var.blocking.allow_safty_mode) {
+    return;
+  }
+
+  SOCIALBROWSER.log(' >>> Safty Activated');
 
   let translated = false;
   let translated_text = '';
@@ -24,20 +30,7 @@ module.exports = function (SOCIALBROWSER) {
     if (check_unsafe_words_busy) {
       return;
     }
-    if (document.location.href.like('*youtube.com*')) {
-      return;
-    }
-    let exit = false;
 
-    SOCIALBROWSER.var.white_list.forEach((u) => {
-      if (document.location.href.like(u.url)) {
-        exit = true;
-      }
-    });
-
-    if (exit) {
-      return;
-    }
 
     SOCIALBROWSER.var.blocking.un_safe_words_list = SOCIALBROWSER.var.blocking.un_safe_words_list || [];
     if (SOCIALBROWSER.var.blocking.un_safe_words_list.length === 0) {
@@ -75,7 +68,5 @@ module.exports = function (SOCIALBROWSER) {
     }, 1000 * 5);
   }
 
-  if (SOCIALBROWSER.var.blocking.allow_safty_mode) {
-    check_unsafe_words();
-  }
+  check_unsafe_words();
 };

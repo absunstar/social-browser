@@ -4,6 +4,7 @@ module.exports = function (SOCIALBROWSER) {
     
     SOCIALBROWSER.video_list = []
     SOCIALBROWSER.on('new-video-exists', (e, v) => {
+        SOCIALBROWSER.log('new-video-exists')
         let exists = false
         SOCIALBROWSER.video_list.forEach(v2 => {
             if (v.src && v2.src == v.src) {

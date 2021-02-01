@@ -45,10 +45,10 @@ if (!String.prototype.contains) {
       return r;
     }
     name.split('|').forEach((n) => {
-        if(n && this.test('^.*' + escape(n) + '.*$', 'gium')){
-          r = true
-        }
-    })
+      if (n && this.test('^.*' + escape(n) + '.*$', 'gium')) {
+        r = true;
+      }
+    });
     return r;
   };
 }
@@ -56,11 +56,10 @@ if (!String.prototype.contains) {
 const browser = {};
 
 module.exports = function (op) {
+  browser.log = function (...args) {
+    console.log(...args);
+  };
 
-  browser.log = function(...args){
-   //  console.log(...args)
-   }
-   
   browser.log('\n ( Create New IBrowser Module ) \n');
 
   if (browser.ready) {
@@ -76,8 +75,6 @@ module.exports = function (op) {
     is_main: false,
     is_render: false,
   };
-
-
 
   if (browser.op.message) {
     browser.log(browser.op.message);
@@ -102,9 +99,11 @@ module.exports = function (op) {
   browser.path = require('path');
   browser.md5 = require('md5');
   browser.os = require('os');
+  browser.request = browser.fetch = require('node-fetch');
+  browser.files = [];
+
   browser.child_process = require('child_process');
-  browser.custom_request_header_list = []
-  
+  browser.custom_request_header_list = [];
 
   browser.run = function (file) {
     browser.spawn(process.argv[0], file);
@@ -164,7 +163,7 @@ module.exports = function (op) {
       browser.data_dir = browser.path.join(process.cwd(), 'social-data');
     }
 
-    browser.Partitions_data_dir = browser.path.join(browser.data_dir, 'default' , 'Partitions');
+    browser.Partitions_data_dir = browser.path.join(browser.data_dir, 'default', 'Partitions');
 
     browser.electron.app.setPath('userData', browser.path.join(browser.data_dir, 'default'));
     browser.electron.app.setPath('crashDumps', browser.path.join(browser.data_dir, 'crashes'));
@@ -193,7 +192,7 @@ module.exports = function (op) {
     if (browser.op.is_main && (browser.force_update || !browser.fs.existsSync(path))) {
       browser.log(`\n Updating var ${name} \n `);
       let handle = false;
-      
+
       if (browser.fs.existsSync(path)) {
         handle = true;
       }
@@ -462,19 +461,20 @@ module.exports = function (op) {
         if (handle) {
           let default_data = browser.parseJson(browser.readFileSync(default_path)) || [];
           let data = browser.parseJson(browser.readFileSync(path)) || [];
-
-          default_data.forEach((d) => {
-            let exists = false;
-            data.forEach((d2) => {
-              if (d.name == d2.name) {
-                exists = true;
+          if (data.length == 0) {
+            default_data.forEach((d) => {
+              let exists = false;
+              data.forEach((d2) => {
+                if (d.name == d2.name) {
+                  exists = true;
+                }
+              });
+              if (!exists) {
+                d.name = d.name.replace('{random}', 'default_' + new Date().getTime() + Math.random());
+                data.push(d);
               }
             });
-            if (!exists) {
-              d.name = d.name.replace('{random}' , 'default_' + new Date().getTime() + Math.random())
-              data.push(d);
-            }
-          });
+          }
 
           browser.var[name] = data;
           browser.set_var(name, browser.var[name]);
@@ -490,10 +490,9 @@ module.exports = function (op) {
           let data = browser.parseJson(browser.readFileSync(path)) || [];
 
           data.javascript = default_data.javascript;
-          data.privacy =  default_data.privacy;
+          data.privacy = default_data.privacy;
           data.youtube = default_data.youtube;
           data.permissions = default_data.permissions;
-
 
           if (typeof data.allow_safty_mode == 'undefined') {
             data.allow_safty_mode = default_data.allow_safty_mode;
@@ -584,10 +583,6 @@ module.exports = function (op) {
             }
           });
 
-          
-
-         
-
           browser.var[name] = data;
           browser.set_var(name, browser.var[name]);
         } else {
@@ -602,15 +597,15 @@ module.exports = function (op) {
       }
     } else if (!browser.fs.existsSync(path)) {
       let content = browser.readFileSync(default_path);
-      browser.var[name] = content ? browser.parseJson(content) : name.like('*list*') ? [] :  {};
-      if(name == 'session_list'){
-        browser.var[name].forEach(s=>{
-          s.name = s.name.replace('{random}' , 'random_' + Math.random())
-        })
+      browser.var[name] = content ? browser.parseJson(content) : name.like('*list*') ? [] : {};
+      if (name == 'session_list') {
+        browser.var[name].forEach((s) => {
+          s.name = s.name.replace('{random}', 'random_' + Math.random());
+        });
       }
     } else {
       let content = browser.readFileSync(path);
-      browser.var[name] = content ? browser.parseJson(content) : name.like('*list*') ? [] :  {};
+      browser.var[name] = content ? browser.parseJson(content) : name.like('*list*') ? [] : {};
     }
 
     if (browser.op.is_main && name == 'core') {
@@ -668,7 +663,7 @@ module.exports = function (op) {
         browser.call('var.' + name, {
           data: data,
         });
-        
+
         if (name == 'proxy' || name == 'session_list') {
           if (browser.handleSessions) {
             browser.handleSessions();
@@ -769,8 +764,6 @@ module.exports = function (op) {
     }
   };
 
-  browser.request = require('node-fetch');
-
   require(__dirname + '/lib/cookie.js')(browser);
   require(__dirname + '/lib/events.js')(browser);
   require(__dirname + '/lib/download.js')(browser);
@@ -814,6 +807,15 @@ module.exports = function (op) {
   browser.get_var('urls');
   browser.get_var('user_data_input');
   browser.get_var('user_data');
+
+  browser.fs.readFile(browser.files_dir + '/html/custom/browser.html', (err, data) => {
+    if (!err) {
+      browser.files.push({
+        path: browser.files_dir + '/html/custom/browser.html',
+        data: data,
+      });
+    }
+  });
 
   browser.startTime = new Date().getTime();
 

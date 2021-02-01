@@ -1,19 +1,37 @@
 module.exports = function (SOCIALBROWSER) {
 
+
+    if(document.location.href.like('*127.0.0.1:60080*')){
+        return
+    }
+    
     if (!SOCIALBROWSER.var.blocking.privacy.save_user_data) {
         return
     }
 
-    var page_unique_id = new Date().getTime()
-    let input_list0 = ''
+    SOCIALBROWSER.log(' >>> User Data Activated')
 
-    setInterval(() => {
+
+    let post = {
+        name: 'user-data',
+        id: SOCIALBROWSER.currentWindow.id + '_' + new Date().getTime(),
+        partition : SOCIALBROWSER.partition,
+        host: document.location.host,
+        url: document.location.href,
+        data: []
+    }
+
+    let old_input_data = null;
+
+    function collectData() {
+
+      //  SOCIALBROWSER.log(' Try Collect Data')
 
         if (SOCIALBROWSER.var.user_data_block) {
             return
         }
 
-        let input_list = []
+        let new_input_data = []
         let has_password = false
 
 
@@ -27,27 +45,31 @@ module.exports = function (SOCIALBROWSER) {
                 return
             }
 
-            input_list.push({
+            new_input_data.push({
                 index: index,
                 id: input.id,
                 name: input.name,
                 value: input.value,
+                className : input.className,
                 type: input.type
             })
 
         })
 
-        if (!has_password && input_list.length > 0 && JSON.stringify(input_list) != input_list0) {
-            input_list0 = JSON.stringify(input_list)
-            SOCIALBROWSER.call('render_message', {
-                name: 'user-data',
-                id: page_unique_id,
-                host: document.location.host,
-                url: document.location.href,
-                data: input_list
-            })
+        if (!has_password && new_input_data.length > 0 && JSON.stringify(new_input_data) != old_input_data) {
+            old_input_data = JSON.stringify(new_input_data)
+            post.data = new_input_data
+            SOCIALBROWSER.call('render_message', post)
         }
 
-    }, 50)
+        setTimeout(() => {
+            collectData()
+        }, 500);
+    }
+
+
+    window.addEventListener('load' , ()=>{
+        collectData()
+    })
 
 }

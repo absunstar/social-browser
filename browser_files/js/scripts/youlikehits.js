@@ -15,6 +15,10 @@ module.exports = function (SOCIALBROWSER) {
 
   SOCIALBROWSER.var.blocking.block_empty_iframe = false;
 
+  window.addEventListener('load', () => {
+    window.__showBotImage();
+  });
+
   if (document.location.href.contains('youtubenew2|soundcloud_views|youtubelikes')) {
     SOCIALBROWSER.var.user_data_block = true;
 

@@ -15,6 +15,9 @@ module.exports = function (SOCIALBROWSER) {
   SOCIALBROWSER.var.blocking.block_empty_iframe = false;
 
   window.addEventListener('load', () => {
+
+    window.__showBotImage();
+    
     if (document.location.href.contains('youtube_likes')) {
       let like_interval = setInterval(() => {
         let like_btn = document.querySelector('a.single_like_button');

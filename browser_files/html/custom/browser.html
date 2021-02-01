@@ -197,6 +197,19 @@
     width: 50px;
   }
 
+  #__bot_img {
+    display: none;
+    position: fixed;
+    left: 50px;
+    bottom: 50px;
+    z-index: 999999;
+  }
+  #__bot_img img {
+    border: 5px solid green;
+    width: 150px;
+    border-radius: 10px;
+  }
+
   .__border {
     border: 2px solid red;
   }
@@ -244,6 +257,9 @@
 </div>
 <div id="__loading_img">
   <img src="http://127.0.0.1:60080/images/loading.gif" alt="" />
+</div>
+<div id="__bot_img">
+  <img src="http://127.0.0.1:60080/images/bot.gif" alt="" />
 </div>
 <div id="__find">
   <input type="text" id="__find_input" />

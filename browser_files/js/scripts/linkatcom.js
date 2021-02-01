@@ -8,6 +8,8 @@ module.exports = function (SOCIALBROWSER) {
 
   SOCIALBROWSER.log(' >>> linkatcom script activated ...');
 
+  window.__showBotImage();
+  
   document.addEventListener('DOMNodeInserted', function (e) {
     if (e.target.tagName == 'SCRIPT' && e.target.innerHTML.like('*app_vars*')) {
       SOCIALBROWSER.app_vars = true;

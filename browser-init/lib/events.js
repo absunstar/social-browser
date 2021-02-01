@@ -49,7 +49,60 @@ module.exports = function (browser) {
   };
 
   if (ipcMain) {
+    ipcMain.on('[fetch][json]', (e, options) => {
+      browser
+        .fetch(options.url, {
+          method: options.method || 'get',
+          headers: options.headers || { 'Content-Type': 'application/json' },
+          body: options.body,
+        })
+        .then((res) => res.json())
+        .then((data) => {
+          e.reply('[fetch][json][data]', {
+            options : options,
+            data : data
+          });
+          e.returnValue = data;
+        });
+    });
+
+    ipcMain.on('[translate]', (e, info) => {
+      browser.log('[translate]');
+      info.text = encodeURIComponent(info.text);
+      browser
+        .fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=en&dt=t&dt=bd&dj=1&q=${info.text}`, {
+          method: 'get',
+          headers: { 'Content-Type': 'application/json' },
+        })
+        .then((res) => res.json())
+        .then((data) => {
+          e.reply('[translate][data]', data);
+        })
+        .catch((err) => {
+          browser.log(err);
+        });
+    });
+
+    ipcMain.on('[get][file]', (e, info) => {
+      browser.log('[get][file]');
+      if ((file = browser.files.find((f) => f.path == info.path))) {
+        console.log('From Cache ...................................');
+        e.reply('[get][file][data]', file.data);
+      } else {
+        browser.fs.readFile(info.path, (err, data) => {
+          if (!err) {
+            browser.files.push({
+              path: info.path,
+              data: data,
+            });
+            e.reply('[get][file][data]', data);
+          }
+        });
+      }
+    });
+
     ipcMain.on('window-setting', (e, info) => {
+      browser.log('window-setting');
       let win = browser.getWindow(info.win_id);
       if (win) {
         win.setting.push(info);
@@ -62,6 +115,7 @@ module.exports = function (browser) {
     });
 
     ipcMain.on('add-request-header', (e, info) => {
+      browser.log('add-request-header');
       let exists = false;
       browser.custom_request_header_list.forEach((r, i) => {
         if (r.id == info.id) {
@@ -76,6 +130,7 @@ module.exports = function (browser) {
     });
 
     ipcMain.on('remove-request-header', (e, info) => {
+      browser.log('remove-request-header');
       browser.custom_request_header_list.forEach((r, i) => {
         if (r.id == info.id) {
           browser.custom_request_header_list.splice(i, 1);
@@ -100,15 +155,18 @@ module.exports = function (browser) {
     });
 
     ipcMain.on('postMessage', (e, info) => {
+      browser.log('postMessage');
       browser.call('postMessage', info);
     });
     ipcMain.on('[assign][window]', (e, info) => {
+      browser.log('[assign][window]');
       browser.assignWindows.push({
         parent: info.parent,
         child: info.child,
       });
     });
     ipcMain.on('[get][assign][window]', (e, info) => {
+      browser.log('[get][assign][window]');
       let w = null;
       browser.assignWindows.forEach((a) => {
         if (a.child == info.child) {
@@ -143,14 +201,18 @@ module.exports = function (browser) {
     }
 
     ipcMain.handle('get_var', async (event, info) => {
+      browser.log('get_var');
       return get_var(info);
     });
 
     ipcMain.handle('[browser][data]', async (event, info) => {
+      browser.log('[browser][data]');
       return {
         var: get_var(info),
         files_dir: browser.files_dir,
         dir: browser.dir,
+        custom_request_header_list: browser.custom_request_header_list,
+        injectHTML: browser.files[0].data,
         windowSetting: browser.getWindow(info.win_id) ? browser.getWindow(info.win_id).setting : [],
         windows: browser.assignWindows.find((w) => w.child == info.win_id),
         session: browser.var.session_list.find((s) => s.name == info.partition),
@@ -158,6 +220,7 @@ module.exports = function (browser) {
     });
 
     ipcMain.on('show_message', (e, info) => {
+      browser.log('show_message');
       browser.call('show_message', info);
     });
 
@@ -191,18 +254,22 @@ module.exports = function (browser) {
       }
     });
     ipcMain.on('set_var', (event, info) => {
+      browser.log('set_var');
       browser.set_var(info.name, info.data);
       event.returnValue = browser.var[info.name];
     });
     ipcMain.on('get_browser', (event, info) => {
+      browser.log('get_browser');
       event.returnValue = browser[info.name];
     });
     ipcMain.on('set_browser', (event, info) => {
+      browser.log('set_browser');
       browser[info.name] = info.data;
       event.returnValue = browser[info.name];
     });
 
     ipcMain.on('get_data', (event, info) => {
+      browser.log('get_data');
       let exists = false;
       browser.var.data_list.forEach((d) => {
         if (exists) {
@@ -218,6 +285,7 @@ module.exports = function (browser) {
       }
     });
     ipcMain.on('set_data', (event, info) => {
+      browser.log('set_data');
       let exists = false;
       browser.var.data_list.forEach((d, i) => {
         if (exists) {
@@ -236,7 +304,8 @@ module.exports = function (browser) {
     });
 
     ipcMain.on('render_message', (event, info) => {
-      // browser.log('render_message', info);
+      browser.log('render_message : ' + info.name);
+
       if (info.name == '[open new tab]') {
         info.win_id = info.win_id || browser.getView().id;
         if (info.source == 'session') {
@@ -804,6 +873,7 @@ module.exports = function (browser) {
     });
 
     ipcMain.on('new-view', (e, info) => {
+      browser.log('new-view : ');
       info.url = info.url || browser.var.core.default_page;
       if (info.url.endsWith('.sb')) {
         info.url = 'https://www.google.com/search?q=' + info.url.replace('.sb', '');
@@ -869,7 +939,8 @@ module.exports = function (browser) {
     });
 
     ipcMain.on('show-view', (e, info) => {
-      if (browser.addressbarWindow) {
+      browser.log('show-view : ');
+      if (browser.addressbarWindow && !browser.addressbarWindow.isDestroyed()) {
         browser.addressbarWindow.hide();
       }
 
@@ -908,6 +979,7 @@ module.exports = function (browser) {
     });
 
     ipcMain.on('update-view', (e, info) => {
+      browser.log('update-view');
       if (!info) {
         browser.log('Error update-view No Info Exists');
         return;
@@ -963,6 +1035,7 @@ module.exports = function (browser) {
     });
 
     ipcMain.on('close-view', (e, info) => {
+      browser.log('close-view');
       if (browser.addressbarWindow) {
         browser.addressbarWindow.hide();
       }
@@ -980,6 +1053,7 @@ module.exports = function (browser) {
     });
 
     ipcMain.on('new-window', (e, info) => {
+      browser.log('new-window');
       info.partition = info.partition || browser.getView().partition;
       info.user_name = info.user_name || browser.getView().user_name;
       let win = browser.newWindow(info);
@@ -988,6 +1062,7 @@ module.exports = function (browser) {
     });
 
     ipcMain.on('new-trusted-window', (e, info) => {
+      browser.log('new-trusted-window');
       info.partition = info.partition || browser.getView().partition;
       info.user_name = info.user_name || browser.getView().user_name;
       let win = browser.newTrustedWindow(info);
@@ -996,6 +1071,7 @@ module.exports = function (browser) {
     });
 
     ipcMain.on('new-youtube-window', (e, info) => {
+      browser.log('new-youtube-window');
       info.partition = info.partition || browser.getView().partition;
       info.user_name = info.user_name || browser.getView().user_name;
       let win = browser.newYoutubeWindow(info);
@@ -1004,6 +1080,7 @@ module.exports = function (browser) {
     });
 
     ipcMain.on('new-iframe-window', (e, info) => {
+      browser.log('new-iframe-window');
       info.partition = info.partition || browser.getView().partition;
       info.user_name = info.user_name || browser.getView().user_name;
       let win = browser.newIframeWindow(info);
@@ -1012,6 +1089,7 @@ module.exports = function (browser) {
     });
 
     ipcMain.on('redownload-item', (e, info) => {
+      browser.log('redownload-item');
       browser.var.download_list.forEach((dd, i) => {
         if (dd.id === info.id) {
           browser.var.download_list.splice(i, 1);
@@ -1021,6 +1099,7 @@ module.exports = function (browser) {
     });
 
     ipcMain.on('remove-item', (e, info) => {
+      browser.log('remove-item');
       browser.var.download_list.forEach((dd, i) => {
         if (dd.id === info.id) {
           browser.var.download_list.splice(i, 1);
@@ -1029,6 +1108,7 @@ module.exports = function (browser) {
     });
 
     ipcMain.on('new-video-window', (e, info) => {
+      browser.log('new-video-window');
       info.partition = info.partition || browser.getView().partition;
       info.user_name = info.user_name || browser.getView().user_name;
       let win = browser.newVideoWindow(info);

@@ -341,8 +341,8 @@ module.exports = function (browser) {
 
             let cookie_obj = details.requestHeaders['Cookie'] ? browser.cookieParse(details.requestHeaders['Cookie']) : null;
 
-            if (cookie_obj && browser.var.blocking.privacy.browser_token) {
-              cookie_obj['_gab'] = 'GA1.2.' + d + 'sb.' + d;
+            if (cookie_obj && browser.var.blocking.privacy.send_browser_id) {
+              cookie_obj['_gab'] = 'GA1.2.' + d + 'sb.' + browser.var.core.id;
             }
 
             if (cookie_obj && browser.var.blocking.privacy.enable_finger_protect && browser.var.blocking.privacy.block_cloudflare) {
@@ -366,7 +366,7 @@ module.exports = function (browser) {
             if (cookie_obj && !url.like('*google.com*|*youtube.com*')) {
               if (browser.var.blocking.privacy.enable_finger_protect && browser.var.blocking.privacy.hide_gid) {
                 if (cookie_obj['_gid']) {
-                  cookie_obj['_gid'] = cookie_obj['_gab'];
+                 delete cookie_obj['_gid'];
                 }
               }
             }

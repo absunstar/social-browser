@@ -10,7 +10,7 @@ module.exports = function (SOCIALBROWSER) {
 
   window.addEventListener('load', function (e) {
     window['fuckAdBlock'] = window['FuckAdBlock'] = {
-      _var: { event: {notDetected: [window] } },
+      _var: { event: { notDetected: [window] } },
     };
   });
 
@@ -20,6 +20,7 @@ module.exports = function (SOCIALBROWSER) {
   });
 
   document.addEventListener('DOMContentLoaded', () => {
+
     if (document.querySelector('body') && document.querySelector('body').innerHTML.like('*FuckAdBlock*')) {
       delete window['fuckAdBlock'];
       delete window['FuckAdBlock'];
@@ -75,10 +76,6 @@ module.exports = function (SOCIALBROWSER) {
     window._AdBlock = () => {};
     window.adblock = false;
 
-    window.cefQuery = function (options) {
-      SOCIALBROWSER.log(options);
-      return 5000;
-    };
     window.NativeAd = (options) => {
       SOCIALBROWSER.log(options);
     };

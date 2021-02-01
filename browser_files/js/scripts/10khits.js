@@ -17,7 +17,7 @@ module.exports = function (SOCIALBROWSER) {
   let link = '';
   let count = 0;
   function fake_hit(link) {
-    window.__showLoadingImage();
+    window.__showBotImage();
     count++;
     alert(`Fake Hit number ${count}`);
     document.querySelector('title').innerText = 'Fake Hit  ' + count;

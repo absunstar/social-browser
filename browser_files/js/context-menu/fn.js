@@ -144,7 +144,7 @@ module.exports = function (SOCIALBROWSER) {
     callback =
       callback ||
       function (trans) {
-        // SOCIALBROWSER.log(trans);
+        SOCIALBROWSER.log(trans);
       };
     if (text.test(/^[a-zA-Z\-\u0590-\u05FF\0-9^@_:?;!\[\]~<>{}|\\]+$/)) {
       callback(text);
@@ -161,24 +161,19 @@ module.exports = function (SOCIALBROWSER) {
       return;
     }
     translate_busy = true;
-    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=en&dt=t&dt=bd&dj=1&q=${text}`)
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        translate_busy = false;
-        translated_text = '';
-        if (data && data.sentences && data.sentences.length > 0) {
-          data.sentences.forEach((t) => {
-            translated_text += t.trans;
-          });
-          callback(translated_text || text);
-        }
-      })
-      .catch((err) => {
-        translate_busy = false;
-        callback(text);
-      });
+
+    SOCIALBROWSER.on('[translate][data]', (e, data) => {
+      translate_busy = false;
+      translated_text = '';
+      if (data && data.sentences && data.sentences.length > 0) {
+        data.sentences.forEach((t) => {
+          translated_text += t.trans;
+        });
+        callback(translated_text || text);
+      }
+    });
+
+    SOCIALBROWSER.call('[translate]', { text: text });
   };
 
   EventTarget.prototype.addEventListener0 = EventTarget.prototype.addEventListener;
@@ -200,7 +195,7 @@ module.exports = function (SOCIALBROWSER) {
     if (typeof type == 'string') {
       selector += `${this.id ? '#' + this.id : ''}${this.className ? '.' + this.className : ''}(${type})`;
       if (typeof type == 'string' && selector.like(SOCIALBROWSER.eventOff) && !selector.like(SOCIALBROWSER.eventOn)) {
-         SOCIALBROWSER.log(`${selector} OFF`);
+        SOCIALBROWSER.log(`${selector} OFF`);
         SOCIALBROWSER.events.push({
           enabled: false,
           selector: selector,
@@ -218,15 +213,16 @@ module.exports = function (SOCIALBROWSER) {
     });
     this.addEventListener0(...args);
   };
-
-  window.setInterval0 = window.setInterval;
-  window.setInterval = function (...args) {
-    return window.setInterval0(...args);
-  };
-  window.setTimeout0 = window.setTimeout;
-  window.setTimeout = function (...args) {
-    return window.setTimeout0(...args);
-  };
+  
+ 
+  // window.setInterval0 = window.setInterval;
+  // window.setInterval = function (...args) {
+  //   return window.setInterval0(...args);
+  // };
+  // window.setTimeout0 = window.setTimeout;
+  // window.setTimeout = function (...args) {
+  //   return window.setTimeout0(...args);
+  // };
 
   window.addEventListener('message', (event) => {
     // SOCIALBROWSER.log('New PostMessage Recived' , event)
@@ -335,9 +331,19 @@ module.exports = function (SOCIALBROWSER) {
     return window.__md5(window.__img_to_base64(selector));
   };
 
+  SOCIALBROWSER.injectDefault = function () {
+    if (document.body && !document.querySelector('#xxx__browser')) {
+      let xxx__browser = document.createElement('div');
+      xxx__browser.id = 'xxx__browser';
+      xxx__browser.innerHTML = Buffer.from(SOCIALBROWSER.injectHTML).toString();
+      document.body.appendChild(xxx__browser);
+    }
+  };
+
   let alert_idle = null;
   window.alert = window.prompt = function (msg, time) {
     if (msg && msg.trim()) {
+      SOCIALBROWSER.injectDefault();
       let div = document.querySelector('#__alertBox');
       if (div) {
         clearTimeout(alert_idle);
@@ -352,6 +358,7 @@ module.exports = function (SOCIALBROWSER) {
   };
 
   window.__showBookmarks = function () {
+    SOCIALBROWSER.injectDefault();
     let div = document.querySelector('#__bookmarkDiv');
     if (div) {
       SOCIALBROWSER.var.bookmarks.forEach((b) => {
@@ -367,18 +374,21 @@ module.exports = function (SOCIALBROWSER) {
   };
 
   window.__showWarningImage = function () {
+    SOCIALBROWSER.injectDefault();
     let div = document.querySelector('#__warning_img');
     if (div) {
       div.style.display = 'block';
     }
   };
-  window.__showLoadingImage = function () {
-    let div = document.querySelector('#__loading_img');
+  window.__showBotImage = function () {
+    SOCIALBROWSER.injectDefault();
+    let div = document.querySelector('#__bot_img');
     if (div) {
       div.style.display = 'block';
     }
   };
   window.__blockPage = window.prompt = function (block, msg, close) {
+    SOCIALBROWSER.injectDefault();
     let div = document.querySelector('#__blockDiv');
     if (div && block) {
       div.style.display = 'block';
@@ -396,6 +406,7 @@ module.exports = function (SOCIALBROWSER) {
   var showinfoTimeout = null;
   window.showInfo = function (msg, time) {
     clearTimeout(showinfoTimeout);
+    SOCIALBROWSER.injectDefault();
     let div = document.querySelector('#__targetUrl');
     if (msg && msg.trim()) {
       let length = window.innerWidth / 8;
@@ -420,6 +431,7 @@ module.exports = function (SOCIALBROWSER) {
 
   let __downloads = document.querySelector('#__downloads');
   window.showDownloads = function (msg, css) {
+    SOCIALBROWSER.injectDefault();
     if (!__downloads) {
       __downloads = document.querySelector('#__downloads');
       __downloads.addEventListener('click', () => {
@@ -447,6 +459,7 @@ module.exports = function (SOCIALBROWSER) {
   let find_input = null;
   let find_interval = null;
   window.showFind = function (from_key) {
+    SOCIALBROWSER.injectDefault();
     if (!__find) {
       __find = document.querySelector('#__find');
     }

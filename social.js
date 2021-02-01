@@ -51,7 +51,7 @@ Menu.setApplicationMenu(null);
 app.setAppUserModelId(process.execPath);
 app.clearRecentDocuments();
 app.commandLine.appendSwitch('--no-sandbox')
-// app.disableHardwareAcceleration();
+// app.disableHardwareAcceleration(); // for app speed
 // app.allowRendererProcessReuse = false; //deprecated
 // app.commandLine.appendSwitch('disable-site-isolation-trials')
 // app.showEmojiPanel()

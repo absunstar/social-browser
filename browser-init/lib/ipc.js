@@ -12,29 +12,29 @@ module.exports = function init(browser) {
       browser.electron.ipcMain.on(name, callback);
     };
     browser.call = function (channel, value) {
-
       if (!browser.is_app_ready) {
         return null;
       }
-      if(channel == 'render_message' && value.name == "[open new tab]"){
+      if (channel == 'render_message' && value.name == '[open new tab]') {
         browser.get_main_window().send(channel, value);
-      }else{
+      } else {
         browser.main_window_list.forEach((w) => {
-          w.window.send(channel, value);
+          if (w.window && !w.window.isDestroyed()) {
+            w.window.send(channel, value);
+          }
         });
       }
-     
 
-      if (browser.addressbarWindow) {
+      if (browser.addressbarWindow && !browser.addressbarWindow.isDestroyed()) {
         browser.addressbarWindow.send(channel, value);
       }
-      if (browser.userProfileWindow) {
+      if (browser.userProfileWindow && !browser.userProfileWindow.isDestroyed()) {
         browser.userProfileWindow.send(channel, value);
       }
 
       if (browser.window_list) {
         browser.window_list.forEach((view) => {
-          if(view.window){
+          if (view.window && !view.window.isDestroyed()) {
             view.window.send(channel, value);
           }
         });

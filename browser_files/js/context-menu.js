@@ -1,8 +1,6 @@
 (function () {
   'use strict';
 
-  
-
   var SOCIALBROWSER = {
     var: {
       core: { id: '', user_agent: '' },
@@ -35,17 +33,18 @@
       { name: 'wimax', value: 'wimax' },
       { name: 'cellular', value: 'cellular' },
     ],
-    session : {
-      privacy : {languages : 'en' , connection : {}}
+    session: {
+      privacy: { languages: 'en', connection: {} },
     },
-    menu_list : [],
+    custom_request_header_list: [],
+    menu_list: [],
     events: [],
     eventOff: '',
     eventOn: '',
-    onEventOFF : [],
+    onEventOFF: [],
     jqueryOff: '',
     jqueryOn: '',
-    developerMode: false,
+    developerMode: true,
     log: function (...args) {
       if (this.developerMode) {
         console.log(...args);
@@ -61,16 +60,30 @@
   SOCIALBROWSER.md5 = require('md5');
 
   SOCIALBROWSER.callSync = function (channel, value) {
+    SOCIALBROWSER.log('SOCIALBROWSER.callSync : ' + channel);
     return SOCIALBROWSER.electron.ipcRenderer.sendSync(channel, value);
   };
   SOCIALBROWSER.call = function (channel, value) {
+    SOCIALBROWSER.log('SOCIALBROWSER.call : ' + channel);
     return SOCIALBROWSER.electron.ipcRenderer.send(channel, value);
   };
   SOCIALBROWSER.invoke = function (channel, value) {
+    SOCIALBROWSER.log('SOCIALBROWSER.invoke : ' + channel);
     return SOCIALBROWSER.electron.ipcRenderer.invoke(channel, value);
   };
   SOCIALBROWSER.on = function (name, callback) {
     return SOCIALBROWSER.electron.ipcRenderer.on(name, callback);
+  };
+
+  SOCIALBROWSER.fetchJson = function (options, callback) {
+    callback = callback || function () {};
+    options.id = new Date().getTime() + Math.random()
+    SOCIALBROWSER.on('[fetch][json][data]', (e, res) => {
+      if(res.options.id == options.id){
+        callback(res.data);
+      }
+    });
+    SOCIALBROWSER.call('[fetch][json]', options);
   };
 
   SOCIALBROWSER.nativeImage = function (_path) {
@@ -143,9 +156,10 @@
       SOCIALBROWSER.var = result.var;
       SOCIALBROWSER.files_dir = result.files_dir;
       SOCIALBROWSER.dir = result.dir;
+      (SOCIALBROWSER.custom_request_header_list = result.custom_request_header_list), (SOCIALBROWSER.injectHTML = result.injectHTML);
       SOCIALBROWSER.windows = result.windows;
-      SOCIALBROWSER.windowSetting = result.windowSetting,
-      SOCIALBROWSER.session = result.session ? Object.assign(SOCIALBROWSER.session , result.session) : SOCIALBROWSER.session;
+      (SOCIALBROWSER.windowSetting = result.windowSetting), (SOCIALBROWSER.session = result.session ? Object.assign(SOCIALBROWSER.session, result.session) : SOCIALBROWSER.session);
+
       require(SOCIALBROWSER.files_dir + '/js/context-menu/init.js')(SOCIALBROWSER);
       require(SOCIALBROWSER.files_dir + '/js/context-menu/load.js')(SOCIALBROWSER);
     });

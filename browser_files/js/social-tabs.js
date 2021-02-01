@@ -309,7 +309,7 @@ class SocialTabs {
     this.setupDraggabilly();
 
     tabEl.addEventListener('mousedown', (e) => {
-      console.log('tab mousedown' , e)
+     // console.log('tab mousedown' , e)
       if (e.which == 2) {
         e.preventDefault();
         this.removeTab(tabEl);

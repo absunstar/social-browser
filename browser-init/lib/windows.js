@@ -700,7 +700,9 @@ module.exports = function init(browser) {
   browser.showAddressbar = function (options) {
     options = options || {};
 
-    browser.addressbarWindow = browser.addressbarWindow || browser.newAddressbarWindow();
+    if (!browser.addressbarWindow || browser.addressbarWindow.isDestroyed()) {
+      browser.addressbarWindow = browser.newAddressbarWindow();
+    }
     if (!options.url) {
       let win = BrowserWindow.fromId(browser.getView().id);
       if (win) {
@@ -908,8 +910,20 @@ module.exports = function init(browser) {
     });
 
     win.webContents.on('unresponsive', async () => {
-      win.webContents.forcefullyCrashRenderer();
-      win.webContents.reload();
+      const options = {
+        type: 'info',
+        title: 'Window unresponsive',
+        message: 'This Window has been suspended',
+        buttons: ['Reload', 'Close'],
+      };
+      browser.dialog.showMessageBox(options, function (index) {
+        if (index === 0) {
+          win.webContents.forcefullyCrashRenderer();
+          win.webContents.reload();
+        } else {
+          win.close();
+        }
+      });
     });
 
     win.webContents.on('crashed', (e) => {

@@ -1,34 +1,35 @@
 module.exports = function (SOCIALBROWSER) {
-    
-   // SOCIALBROWSER.log('facebook context menu loading ...')
 
-    function addCss(css) {
+  if (!SOCIALBROWSER.var.facebook.enabled || !document.location.href.toLowerCase().like('https://www.facebook.com*')) {
+    return;
+  }
 
-        head = document.head || document.getElementsByTagName('head')[0],
-            style = document.createElement('style');
+     SOCIALBROWSER.log(' >>> Facebook Activated')
 
-        head.appendChild(style);
 
-        style.type = 'text/css';
-        if (style.styleSheet) {
-            style.styleSheet.cssText = css;
-        } else {
-            style.appendChild(document.createTextNode(css));
-        }
+  function addCss(css) {
+    (head = document.head || document.getElementsByTagName('head')[0]), (style = document.createElement('style'));
+
+    head.appendChild(style);
+
+    style.type = 'text/css';
+    if (style.styleSheet) {
+      style.styleSheet.cssText = css;
+    } else {
+      style.appendChild(document.createTextNode(css));
     }
+  }
 
-    addCss(`
+  addCss(`
             ._2s1x ._2s1y {
             background-color: ${SOCIALBROWSER.var.facebook.color};
             }
-    `)
+    `);
 
-    if (SOCIALBROWSER.var.facebook.remove_ads) {
-        document.querySelectorAll('.pagelet , .pagelet-group.pagelet a[href*="/ad_"]').forEach(p => p.remove())
-        setInterval(() => {
-            document.querySelectorAll('.pagelet').forEach(p => p.remove())
-        }, 1000 * 5);
-    }
-
-
-}
+  if (SOCIALBROWSER.var.facebook.remove_ads) {
+    document.querySelectorAll('.pagelet , .pagelet-group.pagelet a[href*="/ad_"]').forEach((p) => p.remove());
+    setInterval(() => {
+      document.querySelectorAll('.pagelet').forEach((p) => p.remove());
+    }, 1000 * 5);
+  }
+};

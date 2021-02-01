@@ -1,4 +1,5 @@
 module.exports = function (SOCIALBROWSER) {
+  SOCIALBROWSER.log(' >>> Nodes Script Activated');
   let xwin = SOCIALBROWSER.electron.remote.getCurrentWindow();
   let partition = xwin.webContents.getWebPreferences().partition;
 
@@ -9,6 +10,7 @@ module.exports = function (SOCIALBROWSER) {
   function a_handle(a) {
     if (
       a.tagName == 'A' &&
+      a.href &&
       a.getAttribute('target') == '_blank' &&
       !isNG(a.href) &&
       !a.href.like('*youtube.com*') &&
@@ -21,29 +23,18 @@ module.exports = function (SOCIALBROWSER) {
         e.preventDefault();
         e.stopPropagation();
 
-        if(document.location.href.like("https://www.youtube.com/embed*")){
-          window.location.href =a.href
-          return
-          SOCIALBROWSER.call('render_message', {
-            name: 'new_popup',
-            referrer: document.location.href,
-            url: a.href,
-            partition: partition,
-            user_name : SOCIALBROWSER.var.session_list.filter(s => s.name == partition)[0].display,
-            win_id : SOCIALBROWSER.currentWindow.id
-          });
-        }else{
+        if (document.location.href.like('https://www.youtube.com/embed*')) {
+          window.location.href = a.href;
+        } else {
           SOCIALBROWSER.call('render_message', {
             name: '[open new tab]',
             referrer: document.location.href,
             url: a.href,
             partition: partition,
-            user_name : SOCIALBROWSER.var.session_list.filter(s => s.name == partition)[0].display,
-            win_id : SOCIALBROWSER.currentWindow.id
+            user_name: SOCIALBROWSER.var.session_list.filter((s) => s.name == partition)[0].display,
+            win_id: SOCIALBROWSER.currentWindow.id,
           });
         }
-
-
       });
     }
   }

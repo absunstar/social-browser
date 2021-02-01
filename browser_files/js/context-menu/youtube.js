@@ -31,7 +31,7 @@ module.exports = function (SOCIALBROWSER) {
   SOCIALBROWSER.setPlaybackQuality_url = null;
   SOCIALBROWSER.setPlaybackQuality_done = false;
   SOCIALBROWSER.setPlaybackQuality = function () {
-    SOCIALBROWSER.log(new Date().getTime() + ' call setPlaybackQuality() : ' + document.location.href);
+    SOCIALBROWSER.log(' call setPlaybackQuality() : ' + document.location.href);
 
     get_player();
     if (!SOCIALBROWSER.video_player) {

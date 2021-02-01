@@ -109,7 +109,7 @@
     "mask_date": false,
     "enable_finger_protect": true,
     "browser_code": true,
-    "browser_token": false,
+    "send_browser_id": false,
     "connection": { "effectiveType": "4g", "downlink": 2, "rtt": 399, "type": "wifi" },
     "memory_count": 4,
     "cpu_count": 6,
