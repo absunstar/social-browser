@@ -2,7 +2,7 @@ module.exports = function (SOCIALBROWSER) {
   if (!SOCIALBROWSER.var.blocking.social.allow_linkatcom) {
     return;
   }
-  if (!document.location.href.like('*linkatcom.com*')) {
+  if (!document.location.host.like('*linkatcom.com*')) {
     return;
   }
 

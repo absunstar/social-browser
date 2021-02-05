@@ -1,10 +1,10 @@
 module.exports = function (SOCIALBROWSER) {
-  if (SOCIALBROWSER.is_white_site == true || document.location.href.like('*youtube.com*') || SOCIALBROWSER.is_white_site) {
-    SOCIALBROWSER.log(' [Safty] OFF : ' + document.location.href);
+  if (!SOCIALBROWSER.var.blocking.allow_safty_mode) {
     return;
   }
 
-  if (!SOCIALBROWSER.var.blocking.allow_safty_mode) {
+  if (SOCIALBROWSER.is_white_site || document.location.href.like('*youtube.com*')) {
+    SOCIALBROWSER.log(' [Safty] OFF : ' + document.location.href);
     return;
   }
 
@@ -30,7 +30,6 @@ module.exports = function (SOCIALBROWSER) {
     if (check_unsafe_words_busy) {
       return;
     }
-
 
     SOCIALBROWSER.var.blocking.un_safe_words_list = SOCIALBROWSER.var.blocking.un_safe_words_list || [];
     if (SOCIALBROWSER.var.blocking.un_safe_words_list.length === 0) {
@@ -68,5 +67,8 @@ module.exports = function (SOCIALBROWSER) {
     }, 1000 * 5);
   }
 
-  check_unsafe_words();
+  // before css , image , iframes loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    check_unsafe_words();
+  });
 };

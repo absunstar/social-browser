@@ -12,7 +12,7 @@ module.exports = function init(browser) {
   };
   browser.removeWindow = function (id) {
     browser.window_list.forEach((v, i) => {
-      if (v.id == id) {
+      if (id && v.id && v.id == id) {
         browser.window_list.splice(i, 1);
       }
     });
@@ -289,6 +289,11 @@ module.exports = function init(browser) {
     });
 
     win.on('blur', function () {
+      if(browser.getView().id == win.id){
+        browser.currentViewBlur = true
+        console.log('Current View blur');
+      }
+      
       browser.get_main_window().setAlwaysOnTop(false);
     });
 
@@ -1163,13 +1168,20 @@ module.exports = function init(browser) {
     // newWindow.maximize()
 
     newWindow.on('blur', function () {
-      // browser.showCurrentView(false);
+      console.log('Main Window blur');
     });
     newWindow.on('focus', function () {
+      if(newWindow.isFocused()){
+        console.log('isFocused()')
+      }
       browser.active_main_window = newWindow;
+
       browser.showCurrentView(true, newWindow.id);
       browser.call('show-tab-view', { win_id: newWindow.id });
-      browser.log('focus');
+
+      browser.log('Main Window Focusd ... ');
+
+      browser.currentViewBlur = false
     });
     newWindow.on('show', function () {
       browser.active_main_window = newWindow;

@@ -2,7 +2,7 @@ module.exports = function (SOCIALBROWSER) {
   if (!SOCIALBROWSER.var.blocking.social.allow_rankboostup) {
     return;
   }
-  if (!document.location.href.like('*rankboostup*')) {
+  if (!document.location.host.like('*rankboostup*')) {
     return;
   }
 

@@ -3,7 +3,7 @@ module.exports = function (SOCIALBROWSER) {
     return;
   }
 
-  if (!document.location.href.contains('youlikehits.com')) {
+  if (!document.location.host.contains('youlikehits.com')) {
     return;
   }
   SOCIALBROWSER.var.blocking.social = SOCIALBROWSER.var.blocking.social || {};

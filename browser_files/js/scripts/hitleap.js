@@ -4,7 +4,7 @@ module.exports = function (SOCIALBROWSER) {
     return;
   }
 
-  if (!document.location.href.like('*hitleap.com*')) {
+  if (!document.location.host.like('*hitleap.com*')) {
     return;
   }
 

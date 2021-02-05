@@ -27,12 +27,17 @@ module.exports = function (SOCIALBROWSER) {
 
     return SOCIALBROWSER.video_player;
   }
+
   SOCIALBROWSER.setPlaybackQuality_count = 0;
   SOCIALBROWSER.setPlaybackQuality_url = null;
   SOCIALBROWSER.setPlaybackQuality_done = false;
+
   SOCIALBROWSER.setPlaybackQuality = function () {
     SOCIALBROWSER.log(' call setPlaybackQuality() : ' + document.location.href);
 
+    if (SOCIALBROWSER.setPlaybackQuality_done && SOCIALBROWSER.setPlaybackQuality_url == document.location.href) {
+      return;
+    }
     get_player();
     if (!SOCIALBROWSER.video_player) {
       SOCIALBROWSER.setPlaybackQuality_count++;
@@ -50,7 +55,7 @@ module.exports = function (SOCIALBROWSER) {
       document.querySelector('.ytp-button.ytp-settings-button').click();
       let q_list = document.querySelectorAll('.ytp-panel .ytp-menuitem');
       q_list.forEach((q) => {
-        if (q.innerText.like('*Quality*|*جود*')) {
+        if (true || q.innerText.like('*Quality*|*جود*')) {
           q.click();
           let qq = document.querySelectorAll('.ytp-panel.ytp-quality-menu .ytp-menuitem');
           if (qq && qq.length > 0) {
@@ -112,11 +117,6 @@ module.exports = function (SOCIALBROWSER) {
         v.classList.remove('__block_eye');
       }
     });
-
-    if (SOCIALBROWSER.setPlaybackQuality_done && document.location.href == SOCIALBROWSER.setPlaybackQuality_url) {
-    } else {
-      SOCIALBROWSER.setPlaybackQuality();
-    }
 
     SOCIALBROWSER.var.blocking.youtube.safty_mode.words_list = SOCIALBROWSER.var.blocking.youtube.safty_mode.words_list || [];
     SOCIALBROWSER.var.blocking.youtube.safty_mode.selector_list = SOCIALBROWSER.var.blocking.youtube.safty_mode.selector_list || [];
@@ -251,6 +251,30 @@ module.exports = function (SOCIALBROWSER) {
   }
 
   window.addEventListener('load', () => {
+    SOCIALBROWSER.setPlaybackQuality();
+
+    if (document.location.href.like('https://www.youtube.com/watch*')) {
+      let sss = setInterval(() => {
+        if (!document.location.href.like('https://www.youtube.com/watch*')) {
+          clearInterval(sss);
+          return;
+        }
+        document.querySelectorAll('a.yt-simple-endpoint.style-scope.yt-button-renderer').forEach((d, i) => {
+          if (i == 0) {
+            d.click();
+          }
+        });
+        document.querySelectorAll('iron-overlay-backdrop').forEach((d) => d.remove());
+        document.querySelectorAll('#dialog').forEach((d) => d.remove());
+      }, 1000 * 15);
+    }
+
+    setTimeout(() => {
+      if (!SOCIALBROWSER.session_id && SOCIALBROWSER.video_player) {
+        SOCIALBROWSER.video_player.playVideo();
+      }
+    }, 1000 * 10);
+
     setInterval(() => {
       document.querySelectorAll('.ytp-popup.ytp-generic-popup').forEach((p) => {
         p.remove();

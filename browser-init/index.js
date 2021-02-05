@@ -57,7 +57,7 @@ const browser = {};
 
 module.exports = function (op) {
   browser.log = function (...args) {
-   // console.log(...args);
+    console.log(...args);
   };
 
   browser.log('\n ( Create New IBrowser Module ) \n');
@@ -90,10 +90,9 @@ module.exports = function (op) {
     require(name)(browser);
   };
 
-  if (!browser.electron) {
-    browser.electron = browser.op.electron || require('electron');
-  }
-
+  browser.electron = browser.electron || browser.op.electron || require('electron');
+  browser.app = browser.app || browser.op.app || browser.electron.app;
+  
   browser.url = require('url');
   browser.fs = require('fs');
   browser.path = require('path');
@@ -463,6 +462,7 @@ module.exports = function (op) {
           let data = browser.parseJson(browser.readFileSync(path)) || [];
           if (data.length == 0) {
             default_data.forEach((d) => {
+              d.name = d.name.replace('{random}', 'default_' + new Date().getTime() + Math.random());
               let exists = false;
               data.forEach((d2) => {
                 if (d.name == d2.name) {
@@ -470,7 +470,6 @@ module.exports = function (op) {
                 }
               });
               if (!exists) {
-                d.name = d.name.replace('{random}', 'default_' + new Date().getTime() + Math.random());
                 data.push(d);
               }
             });

@@ -51,6 +51,11 @@
       "to": "https://rankboostup.com/?refid=341684",
       "ignore": "*341684*|*referrals*",
       "query": false
+    },{
+      "from": "https://traficads.com|https://traficads.com/|https://traficads.com*refid=*",
+      "to": "https://traficads.com/?ref=11393",
+      "ignore": "*11393*|*referrals*",
+      "query": false
     },
     {
       "from": "https://watchhours.com|https://watchhours.com/|https://watchhours.com*ref=*",

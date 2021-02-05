@@ -996,8 +996,6 @@ function renderMessage(cm) {
     is_addressbar_busy = false;
   } else if (cm.name == 'close tab') {
     closeCurrentTab();
-  } else if (cm.name == 'body_clicked') {
-    document.querySelector('body').click();
   } else if (cm.name == 'update-win_id') {
     if (cm.win_id) {
       $('#' + cm.tab_id).attr('win_id', cm.win_id);

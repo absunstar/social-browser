@@ -3,13 +3,11 @@ module.exports = function (SOCIALBROWSER) {
   if (!SOCIALBROWSER.var.blocking.social.allow_10khits) {
     return;
   }
+  
   if (!document.location.href.contains('https://www.10khits.com/dashboard/surf/sessions')) {
     return;
   }
-  SOCIALBROWSER.var.blocking.social = SOCIALBROWSER.var.blocking.social || {};
-  if (!SOCIALBROWSER.var.blocking.social.allow_10khits) {
-    return;
-  }
+
 
   SOCIALBROWSER.log(' >>> 10khits Activated');
   alert(' >>> 10khits Activated');

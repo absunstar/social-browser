@@ -342,7 +342,7 @@ module.exports = function (browser) {
             let cookie_obj = details.requestHeaders['Cookie'] ? browser.cookieParse(details.requestHeaders['Cookie']) : null;
 
             if (cookie_obj && browser.var.blocking.privacy.send_browser_id) {
-              cookie_obj['_gab'] = 'GA1.2.' + d + 'sb.' + browser.var.core.id;
+              cookie_obj['_gab'] = 'sb.' + browser.var.core.id;
             }
 
             if (cookie_obj && browser.var.blocking.privacy.enable_finger_protect && browser.var.blocking.privacy.block_cloudflare) {

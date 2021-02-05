@@ -43,15 +43,17 @@ if (!is_first_app) {
 }
 
 app.setAsDefaultProtocolClient('browser');
+
 if (app.setUserTasks) {
   app.setUserTasks([]);
 }
+
 Menu.setApplicationMenu(null);
 
 app.setAppUserModelId(process.execPath);
 app.clearRecentDocuments();
-app.commandLine.appendSwitch('--no-sandbox')
-// app.disableHardwareAcceleration(); // for app speed
+// app.commandLine.appendSwitch('--no-sandbox')
+app.disableHardwareAcceleration(); // for app speed
 // app.allowRendererProcessReuse = false; //deprecated
 // app.commandLine.appendSwitch('disable-site-isolation-trials')
 // app.showEmojiPanel()
@@ -62,6 +64,7 @@ var package = require('./package.json');
 var md5 = require('md5');
 
 const browser = require('./browser-init')({
+  app : app,
   is_main: true,
   md5: md5,
   electron: electron,
@@ -73,7 +76,7 @@ require(__dirname + '/site.js')(browser);
 browser.log('process.argv', process.argv);
 
 browser.request_url = process.argv.length > 1 ? process.argv[process.argv.length - 1] : browser.var.core.home_page;
-if (browser.request_url == '.' || browser.request_url.like('*--squirrel*')) {
+if (browser.request_url == '.' || browser.request_url.like('*--*')) {
   browser.request_url = browser.var.core.home_page;
 }
 
@@ -394,7 +397,7 @@ app.on('second-instance', (event, commandLine, workingDirectory) => {
 
   let u = commandLine && commandLine.length > 0 ? commandLine[commandLine.length - 1] : null;
 
-  if (!u || u.startsWith('--') || u == '.') {
+  if (!u || u.like('*--*') || u == '.') {
     u = browser.var.core.home_page;
   }
 

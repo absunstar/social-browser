@@ -59,8 +59,8 @@ module.exports = function (browser) {
         .then((res) => res.json())
         .then((data) => {
           e.reply('[fetch][json][data]', {
-            options : options,
-            data : data
+            options: options,
+            data: data,
           });
           e.returnValue = data;
         });
@@ -101,10 +101,11 @@ module.exports = function (browser) {
       }
     });
 
-    ipcMain.on('window-setting', (e, info) => {
-      browser.log('window-setting');
+    ipcMain.on('[set][window][setting]', (e, info) => {
+      browser.log('[set][window][setting]');
       let win = browser.getWindow(info.win_id);
       if (win) {
+        win.setting = win.setting || [];
         win.setting.push(info);
       } else {
         browser.addWindow({
@@ -112,6 +113,24 @@ module.exports = function (browser) {
           setting: [info],
         });
       }
+    });
+
+    ipcMain.on('[get][window][setting]', (e, info) => {
+      browser.log('[get][window][setting]');
+      let win = browser.getWindow(info.win_id);
+      if (win) {
+        e.returnValue = win.setting;
+        e.reply('[get][window][setting][data]', win.setting);
+      } else {
+        e.returnValue = [];
+        e.reply('[get][window][setting][data]', []);
+      }
+    });
+
+    ipcMain.on('[get][windows]', (e, info) => {
+      browser.log('[get][windows]');
+      e.returnValue =  browser.window_list.map(w => w.setting);
+      e.reply('[get][windows][data]', browser.window_list.map(w => w.setting));
     });
 
     ipcMain.on('add-request-header', (e, info) => {
@@ -139,19 +158,24 @@ module.exports = function (browser) {
     });
 
     ipcMain.on('restart-app', (e, info) => {
-      process.on('exit', function () {
-        require('child_process').spawn(process.argv.shift(), process.argv, {
-          cwd: process.cwd(),
-          detached: true,
-          stdio: 'inherit',
-        });
-      });
-      setTimeout(() => {
-        process.exit(0);
-      }, 1000);
+      // process.on('exit', function () {
+      //   require('child_process').spawn(process.argv.shift(), process.argv, {
+      //     cwd: process.cwd(),
+      //     detached: true,
+      //     stdio: 'inherit',
+      //   });
+      // });
+      // setTimeout(() => {
+      //   process.exit(0);
+      // }, 1000);
+
+      browser.app.relaunch({ args: process.argv.slice(1).concat(['--relaunch']) })
+      browser.app.exit(0)
+
     });
     ipcMain.on('close-app', (e, info) => {
-      process.exit(0);
+      browser.app.exit(0)
+      // process.exit(0);
     });
 
     ipcMain.on('postMessage', (e, info) => {
@@ -805,12 +829,12 @@ module.exports = function (browser) {
         if (view && view.window.webContents.canGoForward()) {
           view.window.webContents.goForward();
         }
-      } else if (info.name == 'body_clicked') {
-        if (browser.views.filter((v) => v.id == info.win_id).length > 0) {
-          browser.hideAddressbar();
-        } else {
-          info.name = '';
+      } else if (info.name == 'window_clicked') {
+        if(browser.currentViewBlur == true){
+          browser.get_main_window(info.win_id).show();
+          browser.currentViewBlur = false
         }
+       
       } else if (info.name == 'copy') {
         browser.clipboard.writeText(info.text.replace('#___new_tab___', '').replace('#___new_popup__', ''));
       } else if (info.name == 'user-input') {

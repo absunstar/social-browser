@@ -82,9 +82,10 @@ module.exports = function (SOCIALBROWSER) {
     return Math.floor(Math.random() * (max - min) + min);
   };
 
+  SOCIALBROWSER.eval = window.eval;
   if (SOCIALBROWSER.var.blocking.javascript.block_eval) {
     window.eval = function (code) {
-      // SOCIALBROWSER.log(code);
+       SOCIALBROWSER.log(code);
     };
   }
 
@@ -213,8 +214,7 @@ module.exports = function (SOCIALBROWSER) {
     });
     this.addEventListener0(...args);
   };
-  
- 
+
   // window.setInterval0 = window.setInterval;
   // window.setInterval = function (...args) {
   //   return window.setInterval0(...args);
@@ -682,63 +682,65 @@ module.exports = function (SOCIALBROWSER) {
     return child_window;
   };
 
+  SOCIALBROWSER.localStorage = window.localStorage
+  SOCIALBROWSER.sessionStorage = window.sessionStorage
+
   try {
     if (SOCIALBROWSER.var.blocking.javascript.custom_local_storage && localStorage) {
-      window.localStorage0 = localStorage;
       SOCIALBROWSER.__define(window, 'localStorage', {
         setItem: function (key, value) {
-          return localStorage0.setItem(key, value);
+          return SOCIALBROWSER.localStorage.setItem(key, value);
         },
         getItem: function (key) {
-          let value = localStorage0.getItem(key);
+          let value = SOCIALBROWSER.localStorage.getItem(key);
           return value;
         },
         get length() {
-          return localStorage0.length;
+          return SOCIALBROWSER.localStorage.length;
         },
         removeItem: function (key) {
-          return localStorage0.removeItem(key);
+          return SOCIALBROWSER.localStorage.removeItem(key);
         },
         clear: function () {
-          return localStorage0.clear();
+          return SOCIALBROWSER.localStorage.clear();
         },
         key: function (index) {
-          return localStorage0.key(index);
+          return SOCIALBROWSER.localStorage.key(index);
         },
       });
     }
   } catch (error) {
-    // SOCIALBROWSER.log(error)
+     SOCIALBROWSER.log(error)
   }
 
   try {
     if (SOCIALBROWSER.var.blocking.javascript.custom_session_storage && sessionStorage) {
-      window.sessionStorage0 = sessionStorage;
+
       let hack = {
         setItem: function (key, value) {
-          return sessionStorage0.setItem(key, value);
+          return SOCIALBROWSER.sessionStorage.setItem(key, value);
         },
         getItem: function (key) {
-          let value = sessionStorage0.getItem(key);
+          let value = SOCIALBROWSER.sessionStorage.getItem(key);
           return value;
         },
         get length() {
-          return sessionStorage0.length;
+          return SOCIALBROWSER.sessionStorage.length;
         },
         removeItem: function (key) {
-          return sessionStorage0.removeItem(key);
+          return SOCIALBROWSER.sessionStorage.removeItem(key);
         },
         clear: function () {
-          return sessionStorage0.clear();
+          return SOCIALBROWSER.sessionStorage.clear();
         },
         key: function (index) {
-          return sessionStorage0.key(index);
+          return SOCIALBROWSER.sessionStorage.key(index);
         },
       };
 
       SOCIALBROWSER.__define(window, 'sessionStorage', hack);
     }
   } catch (error) {
-    // SOCIALBROWSER.log(error)
+     SOCIALBROWSER.log(error)
   }
 };

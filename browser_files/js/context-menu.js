@@ -44,13 +44,15 @@
     onEventOFF: [],
     jqueryOff: '',
     jqueryOn: '',
-    developerMode: false,
+    developerMode: true,
     log: function (...args) {
       if (this.developerMode) {
         console.log(...args);
       }
     },
   };
+
+  SOCIALBROWSER.log(' >>> >>> >>> SocialBrowser Preload : ' + document.location.href)
 
   SOCIALBROWSER.electron = require('electron');
 
@@ -77,9 +79,9 @@
 
   SOCIALBROWSER.fetchJson = function (options, callback) {
     callback = callback || function () {};
-    options.id = new Date().getTime() + Math.random()
+    options.id = new Date().getTime() + Math.random();
     SOCIALBROWSER.on('[fetch][json][data]', (e, res) => {
-      if(res.options.id == options.id){
+      if (res.options.id == options.id) {
         callback(res.data);
       }
     });
@@ -153,6 +155,7 @@
       win_id: SOCIALBROWSER.currentWindow.id,
       partition: SOCIALBROWSER.partition,
     }).then((result) => {
+      SOCIALBROWSER.is_main_data = true;
       SOCIALBROWSER.var = result.var;
       SOCIALBROWSER.files_dir = result.files_dir;
       SOCIALBROWSER.dir = result.dir;

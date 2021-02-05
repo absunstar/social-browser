@@ -2,7 +2,7 @@ module.exports = function (SOCIALBROWSER) {
   if (!SOCIALBROWSER.var.blocking.social.allow_addmefast) {
     return;
   }
-  if (!document.location.href.contains('addmefast.com')) {
+  if (!document.location.host.contains('addmefast.com')) {
     return;
   }
   SOCIALBROWSER.var.blocking.social = SOCIALBROWSER.var.blocking.social || {};

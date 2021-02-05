@@ -4,7 +4,7 @@ module.exports = function (SOCIALBROWSER) {
     return;
   }
 
-  if (!document.location.href.like('*peta.egybest.pw*')) {
+  if (!document.location.host.like('*peta.egybest.pw*')) {
     return;
   }
 
