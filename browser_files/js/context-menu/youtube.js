@@ -96,7 +96,7 @@ module.exports = function (SOCIALBROWSER) {
   };
 
   function pause_current_youtube_video() {
-    SOCIALBROWSER.call('render_message', { name: 'mute-audio', win_id: SOCIALBROWSER.currentWindow.id });
+    SOCIALBROWSER.call('[send-render-message]', { name: 'mute-audio', win_id: SOCIALBROWSER.currentWindow.id });
     document.querySelectorAll('video').forEach((v) => {
       if (v && v.currentTime > 0 && !v.paused && !v.ended && v.readyState > 2) {
         v.pause();

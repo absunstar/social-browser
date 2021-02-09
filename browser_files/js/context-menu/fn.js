@@ -20,7 +20,7 @@ module.exports = function (SOCIALBROWSER) {
   };
 
   SOCIALBROWSER.copy = function (text) {
-    SOCIALBROWSER.call('render_message', {
+    SOCIALBROWSER.call('[send-render-message]', {
       name: 'copy',
       text: text,
     });
@@ -228,19 +228,44 @@ module.exports = function (SOCIALBROWSER) {
     // SOCIALBROWSER.log('New PostMessage Recived' , event)
   });
 
+
+  SOCIALBROWSER.Worker = window.Worker;
+  window.Worker = function (...args) {
+    if (SOCIALBROWSER.var.blocking.javascript.block_window_worker) {
+      SOCIALBROWSER.log('Worker Blocked' , ...args)
+      return {
+        onmessage : ()=>{},
+        onerror : ()=>{},
+        postMessage : ()=>{}
+      }
+    }
+    return new SOCIALBROWSER.Worker(...args);
+  };
+  SOCIALBROWSER.SharedWorker = window.SharedWorker;
+    window.SharedWorker = function (...args) {
+    if (SOCIALBROWSER.var.blocking.javascript.block_window_worker) {
+      SOCIALBROWSER.log('SharedWorker Blocked' , ...args)
+      return {
+        onmessage : ()=>{},
+        onerror : ()=>{},
+        postMessage : ()=>{}
+      }
+    }
+    return new SOCIALBROWSER.SharedWorker(...args);
+  };
+
   window.postMessage0 = window.postMessage;
   window.postMessage = function (...args) {
-    // SOCIALBROWSER.log(' [ Post Message ] ',...args)
     if (SOCIALBROWSER.var.blocking.javascript.block_window_post_message) {
-      // console.warn('Block Post Message ', ...args);
+      SOCIALBROWSER.log('Block Post Message ', ...args);
+      return
     }
     args[1] = '*';
-    return window.postMessage0(...args);
+    window.postMessage0(...args);
   };
 
   SOCIALBROWSER.on('postMessage', (e, info) => {
     if (SOCIALBROWSER.currentWindow.id == info.win_id) {
-      // SOCIALBROWSER.log('ask for postmessage' , ...info.args)
       window.postMessage(...info.args);
     }
   });
@@ -259,7 +284,7 @@ module.exports = function (SOCIALBROWSER) {
 
   window.print0 = window.print;
   window.print = function (options) {
-    // SOCIALBROWSER.call('render_message', {
+    // SOCIALBROWSER.call('[send-render-message]', {
     //   name: 'get_pdf',
     //   options: options || {},
     //   win_id: SOCIALBROWSER.currentWindow.id,
@@ -499,7 +524,7 @@ module.exports = function (SOCIALBROWSER) {
     }
   });
 
-  SOCIALBROWSER.on('render_message', (event, data) => {
+  SOCIALBROWSER.on('[send-render-message]', (event, data) => {
     if (data.name == 'update-target-url') {
       showInfo(data.url);
     } else if (data.name == 'show-info') {
@@ -514,6 +539,9 @@ module.exports = function (SOCIALBROWSER) {
     alert(data.message);
   });
   window.open = function (url, _name, _specs, _replace_in_history) {
+    if(url.like('javascript:*')){
+      return
+    }
     let child_window = {
       closed: false,
       child_window: window,
@@ -609,7 +637,7 @@ module.exports = function (SOCIALBROWSER) {
     }
 
     if (!_specs) {
-      SOCIALBROWSER.call('render_message', {
+      SOCIALBROWSER.call('[send-render-message]', {
         name: '[open new tab]',
         referrer: document.location.href,
         url: url,

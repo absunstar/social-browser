@@ -35,7 +35,7 @@ app.controller('mainController', ($scope, $http, $interval) => {
       if (se.name === _se.name) {
         $scope.setting.core.session = se;
         $scope.saveSessions();
-        SOCIALBROWSER.call('render_message', {
+        SOCIALBROWSER.call('[send-render-message]', {
           name: '[open new tab]',
           referrer: document.location.href,
           url: $scope.setting.core.default_page,
@@ -80,11 +80,11 @@ app.controller('mainController', ($scope, $http, $interval) => {
   };
 
   $scope.saveSetting = function (close) {
-    SOCIALBROWSER.call('set_var', {
+    SOCIALBROWSER.call('[update-browser-var]', {
       name: 'core',
       data: $scope.setting.core,
     });
-    SOCIALBROWSER.call('set_var', {
+    SOCIALBROWSER.call('[update-browser-var]', {
       name: 'session_list',
       data: $scope.setting.session_list,
     });

@@ -3,17 +3,30 @@ module.exports = function init(browser) {
   const { BrowserWindow, nativeImage, dialog, BrowserWindowProxy, ipcMain } = electron;
 
   browser.window_list = [];
-  browser.getWindow = function (id) {
-    return browser.window_list.find((w) => w.id == id);
+  browser.getWindow = function (win) {
+    return browser.window_list.find((w) => (w.id == win.id));
   };
   browser.addWindow = function (win) {
     win.setting = win.setting || [];
+    win.options = win.options || [];
     return browser.window_list.push(win);
   };
   browser.removeWindow = function (id) {
     browser.window_list.forEach((v, i) => {
       if (id && v.id && v.id == id) {
         browser.window_list.splice(i, 1);
+      }
+    });
+  };
+  browser.closeWindow = function (options) {
+    console.log('browser.closeWindow', options);
+    browser.window_list.forEach((v, i) => {
+      if (options && v.options && options.tab_id && v.options.tab_id === options.tab_id) {
+        browser.window_list.splice(i, 1);
+        if (v.child) {
+          v.child.kill();
+          console.log('Child Kill ' + v.id);
+        }
       }
     });
   };
@@ -90,7 +103,7 @@ module.exports = function init(browser) {
     browser.log('call new url from new window ', event.options.url);
 
     if (event.options.url.like('*#___new_tab___*')) {
-      browser.call('render_message', {
+      browser.call('[send-render-message]', {
         name: '[open new tab]',
         url: event.options.url.replace('#___new_tab___', '').replace('#___new_popup__', '').replace('#___trusted_window___', ''),
         partition: view.partition,
@@ -100,7 +113,7 @@ module.exports = function init(browser) {
     }
 
     if (event.options.url.like('*#___trusted_window___*')) {
-      browser.call('render_message', {
+      browser.call('[send-render-message]', {
         name: 'new_trusted_window',
         url: event.options.url.replace('#___new_tab___', '').replace('#___new_popup__', '').replace('#___trusted_window___', ''),
         show: true,
@@ -111,7 +124,7 @@ module.exports = function init(browser) {
     }
 
     if (event.options.url.like('*#___new_popup___*')) {
-      browser.call('render_message', {
+      browser.call('[send-render-message]', {
         name: 'new_popup',
         url: event.options.url.replace('#___new_tab___', '').replace('#___new_popup__', '').replace('#___trusted_window___', ''),
         show: true,
@@ -126,14 +139,14 @@ module.exports = function init(browser) {
     let url2_p = browser.url.parse(view.window.getURL());
 
     if (url_p.host.contains(url2_p.host) && browser.var.blocking.popup.allow_internal) {
-      browser.call('render_message', {
+      browser.call('[send-render-message]', {
         name: '[open new tab]',
         url: url.replace('#___new_tab___', '').replace('#___new_popup__', '').replace('#___trusted_window___', ''),
         partition: view.partition,
         user_name: view.user_name,
       });
     } else if (!url_p.host.contains(url2_p.host) && browser.var.blocking.popup.allow_external) {
-      browser.call('render_message', {
+      browser.call('[send-render-message]', {
         name: '[open new tab]',
         url: url.replace('#___new_tab___', '').replace('#___new_popup__', '').replace('#___trusted_window___', ''),
         partition: view.partition,
@@ -147,7 +160,7 @@ module.exports = function init(browser) {
         }
       });
       if (allow) {
-        browser.call('render_message', {
+        browser.call('[send-render-message]', {
           name: '[open new tab]',
           url: url.replace('#___new_tab___', '').replace('#___new_popup__', '').replace('#___trusted_window___', ''),
           partition: view.partition,
@@ -187,10 +200,25 @@ module.exports = function init(browser) {
   };
 
   browser.newView = function (options) {
-    let tab_id = options._id;
-    let tab_icon = 'browser://images/logo.png';
+    options.windowType = 'view window';
+    browser.options = options;
+    let child = browser.run([browser.dir + '/child/index.js']);
+    child.on('close', (code) => {
+      browser.get_main_window(options.main_window_id).webContents.executeJavaScript("closeTab('" + options.tab_id + "');");
+      browser.removeWindow(child.pid);
+    });
+    browser.addWindow({
+      id: child.pid,
+      child: child,
+      type: 'child',
+      options: options,
+    });
+
+    return;
+    let tab_id = options.tab_id;
+    let tab_icon = 'http://127.0.0.1:60080/images/logo.png';
     let window_icon_path = null;
-    let loading_icon = 'browser://images/loading-white.gif';
+    let loading_icon = 'http://127.0.0.1:60080/images/loading-white.gif';
 
     options.webPreferences = options.webPreferences || {};
 
@@ -268,13 +296,14 @@ module.exports = function init(browser) {
     browser.addWindow({
       id: options.win_id,
       window: win,
+      is_view: true,
       is_youtube: false,
       partition: options.partition,
     });
 
     win.on('closed', function () {
       let view = browser.getView(options.win_id);
-      browser.get_main_window().webContents.executeJavaScript("closeTab('" + view._id + "');");
+      browser.get_main_window().webContents.executeJavaScript("closeTab('" + view.tab_id + "');");
       browser.removeWindow(options.win_id);
     });
 
@@ -289,11 +318,11 @@ module.exports = function init(browser) {
     });
 
     win.on('blur', function () {
-      if(browser.getView().id == win.id){
-        browser.currentViewBlur = true
+      if (browser.getView().id == win.id) {
+        browser.currentViewBlur = true;
         console.log('Current View blur');
       }
-      
+
       browser.get_main_window().setAlwaysOnTop(false);
     });
 
@@ -367,7 +396,7 @@ module.exports = function init(browser) {
 
     contents.on('update-target-url', (e, url) => {
       url = url.replace('#___new_tab___', '').replace('#___new_popup___', '');
-      contents.send('render_message', {
+      contents.send('[send-render-message]', {
         name: 'update-target-url',
         url: decodeURI(url),
       });
@@ -379,19 +408,19 @@ module.exports = function init(browser) {
         browser.get_main_window().setTitle(contents.getTitle());
       }
 
-      browser.get_main_window().webContents.send('render_message', {
+      browser.get_main_window().webContents.send('[send-render-message]', {
         name: 'update-title',
         title: contents.getTitle(),
         tab_id: tab_id,
       });
 
-      browser.get_main_window().webContents.send('render_message', {
+      browser.get_main_window().webContents.send('[send-render-message]', {
         name: 'update-url',
         tab_id: tab_id,
         url: decodeURI(win.getURL()),
       });
 
-      browser.get_main_window().webContents.send('render_message', {
+      browser.get_main_window().webContents.send('[send-render-message]', {
         name: 'update-buttons',
         tab_id: tab_id,
         forward: contents.canGoForward(),
@@ -418,7 +447,7 @@ module.exports = function init(browser) {
                 }
               });
 
-              browser.get_main_window().webContents.send('render_message', {
+              browser.get_main_window().webContents.send('[send-render-message]', {
                 name: 'update-favicon',
                 icon: window_icon_path
                   ? nativeImage
@@ -448,7 +477,7 @@ module.exports = function init(browser) {
             }
           });
 
-          browser.get_main_window().webContents.send('render_message', {
+          browser.get_main_window().webContents.send('[send-render-message]', {
             name: 'update-favicon',
             icon: window_icon_path
               ? nativeImage
@@ -471,13 +500,13 @@ module.exports = function init(browser) {
     });
 
     contents.on('did-start-loading', (e, url) => {
-      // browser.get_main_window().webContents.send('render_message', {
+      // browser.get_main_window().webContents.send('[send-render-message]', {
       //   name: 'update-url',
       //   tab_id: tab_id,
       //   url: decodeURI(win.getURL())
       // })
 
-      browser.get_main_window().webContents.send('render_message', {
+      browser.get_main_window().webContents.send('[send-render-message]', {
         name: 'show-loading',
         icon: loading_icon,
         tab_id: tab_id,
@@ -485,7 +514,7 @@ module.exports = function init(browser) {
     });
 
     contents.on('did-stop-loading', (e) => {
-      browser.get_main_window().webContents.send('render_message', {
+      browser.get_main_window().webContents.send('[send-render-message]', {
         name: 'show-loading',
         icon: window_icon_path
           ? nativeImage
@@ -501,7 +530,7 @@ module.exports = function init(browser) {
     });
 
     contents.on('did-finish-load', (e) => {
-      browser.get_main_window().webContents.send('render_message', {
+      browser.get_main_window().webContents.send('[send-render-message]', {
         name: 'show-loading',
         icon: window_icon_path
           ? nativeImage
@@ -514,7 +543,7 @@ module.exports = function init(browser) {
           : '',
         tab_id: tab_id,
       });
-      browser.get_main_window().webContents.send('render_message', {
+      browser.get_main_window().webContents.send('[send-render-message]', {
         name: 'update-buttons',
         tab_id: tab_id,
         forward: contents.canGoForward(),
@@ -523,7 +552,7 @@ module.exports = function init(browser) {
     });
 
     contents.on('did-fail-load', (e) => {
-      browser.get_main_window().webContents.send('render_message', {
+      browser.get_main_window().webContents.send('[send-render-message]', {
         name: 'show-loading',
         icon: window_icon_path
           ? nativeImage
@@ -546,12 +575,12 @@ module.exports = function init(browser) {
         logo: window_icon_path,
       });
 
-      browser.get_main_window().webContents.send('render_message', {
+      browser.get_main_window().webContents.send('[send-render-message]', {
         name: 'update-url',
         url: decodeURI(win.getURL()),
         tab_id: tab_id,
       });
-      browser.get_main_window().webContents.send('render_message', {
+      browser.get_main_window().webContents.send('[send-render-message]', {
         name: 'update-buttons',
         tab_id: tab_id,
         forward: contents.canGoForward(),
@@ -580,7 +609,7 @@ module.exports = function init(browser) {
         e.preventDefault();
         url = url.replace('#___new_tab___', '');
         win.loadURL(url);
-        browser.get_main_window().webContents.send('render_message', {
+        browser.get_main_window().webContents.send('[send-render-message]', {
           name: 'update-url',
           tab_id: tab_id,
           url: decodeURI(url),
@@ -1115,16 +1144,17 @@ module.exports = function init(browser) {
   };
 
   browser.showCurrentView = function (show = true) {
-    if (browser.getView() && browser.getView().window && !browser.getView().window.isDestroyed()) {
-      if (show) {
-        browser.getView().window.show();
-      } else {
-        browser.getView().window.hide();
-      }
-    }
+    // if (browser.getView() && browser.getView().window && !browser.getView().window.isDestroyed()) {
+    //   if (show) {
+    //     browser.getView().window.show();
+    //   } else {
+    //     browser.getView().window.hide();
+    //   }
+    // }
   };
 
   browser.createNewSocialBrowserWindow = function (callback) {
+    return;
     callback = callback || function () {};
 
     const { width, height } = electron.screen.getPrimaryDisplay().workAreaSize;
@@ -1133,7 +1163,10 @@ module.exports = function init(browser) {
       show: false,
       width: 1024,
       height: 768,
+      alwaysOnTop: false,
       title: 'New Social Browser',
+      focusable: true,
+      skipTaskbar: false,
       webPreferences: {
         contextIsolation: false,
         enableRemoteModule: true,
@@ -1168,73 +1201,100 @@ module.exports = function init(browser) {
     // newWindow.maximize()
 
     newWindow.on('blur', function () {
-      console.log('Main Window blur');
+      // console.log('Main Window blur');
     });
+
+    newWindow.$focusTime = new Date().getTime();
     newWindow.on('focus', function () {
-      if(newWindow.isFocused()){
-        console.log('isFocused()')
-      }
-      browser.active_main_window = newWindow;
-
-      browser.showCurrentView(true, newWindow.id);
-      browser.call('show-tab-view', { win_id: newWindow.id });
-
-      browser.log('Main Window Focusd ... ');
-
-      browser.currentViewBlur = false
+      // let t = new Date().getTime() - newWindow.$focusTime;
+      // if (t > 100 && t < 200) {
+      //   console.log(t)
+      //   newWindow.minimize();
+      //   return;
+      // }
+      // newWindow.$focusTime = new Date().getTime();
+      // browser.active_main_window = newWindow;
+      // browser.showCurrentView(true, newWindow.id);
+      // browser.call('show-tab-view', { win_id: newWindow.id });
+      // browser.log('Main Window Focusd ... ');
+      // browser.currentViewBlur = false;
     });
     newWindow.on('show', function () {
-      browser.active_main_window = newWindow;
-      browser.showCurrentView(true, newWindow.id);
-      browser.log('show');
+      browser.window_list.forEach((w) => {
+        if (w.options.main_window_id == newWindow.id) {
+          w.is_current_view_time = new Date().getTime();
+          w.options.hide = false;
+        }
+      });
+      // browser.active_main_window = newWindow;
+      // browser.showCurrentView(true, newWindow.id);
+      // browser.log('show');
     });
     newWindow.on('hide', function () {
-      browser.hideAddressbar();
-      browser.showCurrentView(false, newWindow.id);
-      browser.log('hide');
+      browser.window_list.forEach((w) => {
+        if (w.options.main_window_id == newWindow.id) {
+          w.options.hide = true;
+        }
+      });
+      // browser.hideAddressbar();
+      // browser.showCurrentView(false, newWindow.id);
+      // browser.log('hide');
     });
 
     newWindow.on('maximize', function () {
-      browser.hideAddressbar();
-      browser.views.forEach((v) => {
-        let win = BrowserWindow.fromId(v.id);
-        browser.handleViewPosition(win);
-      });
-      browser.showCurrentView(true, newWindow.id);
-      browser.log('maximize');
+      // browser.hideAddressbar();
+      // browser.views.forEach((v) => {
+      //   let win = BrowserWindow.fromId(v.id);
+      //   browser.handleViewPosition(win);
+      // });
+      // browser.showCurrentView(true, newWindow.id);
+      // browser.log('maximize');
     });
 
     newWindow.on('unmaximize', function () {
-      browser.showCurrentView(true, newWindow.id);
-      browser.log('unmaximize');
+      // browser.showCurrentView(true, newWindow.id);
+      // browser.log('unmaximize');
     });
     newWindow.on('minimize', function () {
-      browser.showCurrentView(false, newWindow.id);
-      browser.log('minimize');
+      browser.window_list.forEach((w) => {
+        console.log(w.options);
+        if (w.options.main_window_id == newWindow.id) {
+          w.options.hide = true;
+        }
+      });
+      // browser.showCurrentView(false, newWindow.id);
+      // browser.log('minimize');
     });
     newWindow.on('restore', function () {
-      browser.showCurrentView(true, newWindow.id);
-      browser.log('restore');
+      browser.window_list.forEach((w) => {
+        if (w.options.main_window_id == newWindow.id) {
+          w.is_current_view_time = new Date().getTime();
+          w.options.hide = false;
+        }
+      });
+      // browser.showCurrentView(true, newWindow.id);
+      // browser.log('restore');
     });
 
     newWindow.on('resize', function () {
-      browser.hideAddressbar();
-      browser.views.forEach((v) => {
-        let win = BrowserWindow.fromId(v.id);
-        browser.handleViewPosition(win);
-      });
-      browser.showCurrentView(true, newWindow.id);
-      browser.log('resize');
+      // browser.hideAddressbar();
+      // browser.views.forEach((v) => {
+      //   let win = BrowserWindow.fromId(v.id);
+      //   browser.handleViewPosition(win);
+      // });
+      // browser.showCurrentView(true, newWindow.id);
+      // browser.log('resize');
     });
 
     newWindow.on('move', function () {
-      browser.hideAddressbar();
-      browser.views.forEach((v) => {
-        let win = BrowserWindow.fromId(v.id);
-        browser.handleViewPosition(win);
-      });
-      browser.showCurrentView(true, newWindow.id);
-      browser.log('move');
+      // newWindow.$focusTime = new Date().getTime();
+      // browser.hideAddressbar();
+      // browser.views.forEach((v) => {
+      //   let win = BrowserWindow.fromId(v.id);
+      //   browser.handleViewPosition(win);
+      // });
+      // browser.showCurrentView(true, newWindow.id);
+      // browser.log('move');
     });
 
     // newWindow.once('ready-to-show', function () {

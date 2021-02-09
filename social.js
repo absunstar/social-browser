@@ -1,4 +1,6 @@
-['SIGTERM', 'SIGHUP', 'SIGINT', 'SIGBREAK'].forEach((signal) => {
+console.log('Run App >>>>>>>>>>>>>>>>>>>>>> ');
+
+[('SIGTERM', 'SIGHUP', 'SIGINT', 'SIGBREAK')].forEach((signal) => {
   process.on(signal, () => {
     browser.log('Request signal :: ' + signal);
     app.quit();
@@ -34,6 +36,7 @@ const is_first_app = app.requestSingleInstanceLock();
 if (!is_first_app) {
   let f = process.argv[process.argv.length - 1]; // LAST arg is file to run
   if (f.endsWith('.js')) {
+    console.log('Run JS File And Return App >>>>>>>>>>>>>>>>>>>>>> ');
     require(f);
   } else {
     console.warn('App Will Close & open in first instance');
@@ -64,7 +67,7 @@ var package = require('./package.json');
 var md5 = require('md5');
 
 const browser = require('./browser-init')({
-  app : app,
+  app: app,
   is_main: true,
   md5: md5,
   electron: electron,
@@ -72,21 +75,22 @@ const browser = require('./browser-init')({
 });
 
 require(__dirname + '/site.js')(browser);
+require(__dirname + '/ws.js')(browser);
 
 browser.log('process.argv', process.argv);
 
-browser.request_url = process.argv.length > 1 ? process.argv[process.argv.length - 1] : browser.var.core.home_page;
-if (browser.request_url == '.' || browser.request_url.like('*--*')) {
-  browser.request_url = browser.var.core.home_page;
+browser.appRequestUrl = process.argv.length > 1 ? process.argv[process.argv.length - 1] : browser.var.core.home_page;
+if (browser.appRequestUrl == '.' || browser.appRequestUrl.like('*--*')) {
+  browser.appRequestUrl = browser.var.core.home_page;
 }
 
-if (browser.request_url && !browser.request_url.like('http*') && !browser.request_url.like('file*')) {
-  browser.request_url = 'file://' + browser.request_url;
+if (browser.appRequestUrl && !browser.appRequestUrl.like('http*') && !browser.appRequestUrl.like('file*')) {
+  browser.appRequestUrl = 'file://' + browser.appRequestUrl;
 }
-if (!browser.request_url) {
-  browser.request_url = browser.var.core.home_page;
+if (!browser.appRequestUrl) {
+  browser.appRequestUrl = browser.var.core.home_page;
 }
-browser.log('browser.request_url', browser.request_url);
+browser.log('browser.appRequestUrl', browser.appRequestUrl);
 
 function createNewMainWindow(op, callback) {
   callback = callback || function () {};
@@ -137,30 +141,47 @@ app.on('ready', function () {
   browser.logoWindow.loadURL(__dirname + '/browser_files/html/logo.html');
   setTimeout(() => {
     browser.logoWindow.hide();
-  }, 1000 * 30);
+  }, 1000 * 10);
 
   app.setLoginItemSettings({
     openAtLogin: true,
     path: process.execPath,
   });
 
-  createNewMainWindow(
-    {
-      show: true,
+  let child = browser.run([browser.dir + '/child/index.js']);
+  child.on('close', (code) => {
+    browser.removeWindow(child.pid);
+  });
+  browser.addWindow({
+    id: child.pid,
+    child: child,
+    type: 'child',
+    options: {
+      url: browser.url.format({
+        pathname: browser.path.join(browser.files_dir, 'html', 'social.html'),
+        protocol: 'file:',
+        slashes: true,
+      }),
+      is_main_window: true,
     },
-    (w) => {
+  });
 
-      browser.addressbarWindow = browser.addressbarWindow || browser.newAddressbarWindow();
-      browser.userProfileWindow = browser.userProfileWindow || browser.newUserProfileWindow();
-      
-      browser.new_tab_info = {
-        name: '[open new tab]',
-        url: browser.request_url,
-        active: true,
-        win_id: w.id,
-      };
-    },
-  );
+  // createNewMainWindow(
+  //   {
+  //     show: true,
+  //   },
+  //   (w) => {
+  //     browser.addressbarWindow = browser.addressbarWindow || browser.newAddressbarWindow();
+  //     browser.userProfileWindow = browser.userProfileWindow || browser.newUserProfileWindow();
+
+  //     browser.newTabdata = {
+  //       name: '[open new tab]',
+  //       url: browser.appRequestUrl,
+  //       active: true,
+  //       main_window_id: w.id,
+  //     };
+  //   },
+  // );
 
   browser.on('download-url', function (event, url) {
     browser.tryDownload(url);
@@ -337,11 +358,11 @@ app.on('ready', function () {
   setTimeout(() => {
     require('./proxy')(browser);
 
-    let win = browser.newTrustedWindow({
-      url: browser.dir + '/updates/index.html',
-      title: 'updating',
-      show: false,
-    });
+    // let win = browser.newTrustedWindow({
+    //   url: browser.dir + '/updates/index.html',
+    //   title: 'updating',
+    //   show: false,
+    // });
     //win.openDevTools()
     // win.on('close', function (e) {
     //   e.preventDefault();
@@ -363,7 +384,7 @@ app.on('will-finish-launching', () => {
     }
 
     event.preventDefault();
-    browser.get_main_window().webContents.send('render_message', {
+    browser.get_main_window().webContents.send('[send-render-message]', {
       name: '[open new tab]',
       url: path,
     });
@@ -377,7 +398,7 @@ app.on('will-finish-launching', () => {
       path = 'file://' + path;
     }
 
-    browser.get_main_window().webContents.send('render_message', {
+    browser.get_main_window().webContents.send('[send-render-message]', {
       name: '[open new tab]',
       url: path,
     });
@@ -414,11 +435,11 @@ app.on('second-instance', (event, commandLine, workingDirectory) => {
       show: true,
     },
     (w) => {
-      browser.new_tab_info = {
+      browser.newTabdata = {
         name: '[open new tab]',
         url: u,
         active: true,
-        win_id: w.id,
+        main_window_id: w.id,
       };
       w.maximize();
       w.show();

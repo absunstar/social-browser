@@ -129,8 +129,11 @@ module.exports = function (browser) {
 
     ipcMain.on('[get][windows]', (e, info) => {
       browser.log('[get][windows]');
-      e.returnValue =  browser.window_list.map(w => w.setting);
-      e.reply('[get][windows][data]', browser.window_list.map(w => w.setting));
+      e.returnValue = browser.window_list.map((w) => w.setting);
+      e.reply(
+        '[get][windows][data]',
+        browser.window_list.map((w) => w.setting),
+      );
     });
 
     ipcMain.on('add-request-header', (e, info) => {
@@ -169,12 +172,11 @@ module.exports = function (browser) {
       //   process.exit(0);
       // }, 1000);
 
-      browser.app.relaunch({ args: process.argv.slice(1).concat(['--relaunch']) })
-      browser.app.exit(0)
-
+      browser.app.relaunch({ args: process.argv.slice(1).concat(['--relaunch']) });
+      browser.app.exit(0);
     });
     ipcMain.on('close-app', (e, info) => {
-      browser.app.exit(0)
+      browser.app.exit(0);
       // process.exit(0);
     });
 
@@ -200,7 +202,8 @@ module.exports = function (browser) {
       e.returnValue = w;
     });
 
-    function get_var(info) {
+    browser.get_dynamic_var = function (info) {
+      info.name = info.name || '*';
       if (info.name == '*') {
         return browser.var;
       } else {
@@ -222,22 +225,24 @@ module.exports = function (browser) {
         });
         return arr.length == 1 ? obj[info.name] : obj;
       }
-    }
+    };
 
     ipcMain.handle('get_var', async (event, info) => {
       browser.log('get_var');
-      return get_var(info);
+      return browser.get_dynamic_var(info);
     });
 
     ipcMain.handle('[browser][data]', async (event, info) => {
-      browser.log('[browser][data]');
+      browser.log('\n[browser][data]\n');
+      let w = browser.getWindow(info.win_id);
       return {
-        var: get_var(info),
+        var: browser.get_dynamic_var(info),
         files_dir: browser.files_dir,
         dir: browser.dir,
         custom_request_header_list: browser.custom_request_header_list,
         injectHTML: browser.files[0].data,
-        windowSetting: browser.getWindow(info.win_id) ? browser.getWindow(info.win_id).setting : [],
+        windowSetting: w ? w.setting : [],
+        is_view: w ? w.is_view || false : false,
         windows: browser.assignWindows.find((w) => w.child == info.win_id),
         session: browser.var.session_list.find((s) => s.name == info.partition),
       };
@@ -277,8 +282,8 @@ module.exports = function (browser) {
         event.returnValue = arr.length == 1 ? obj[info.name] : obj;
       }
     });
-    ipcMain.on('set_var', (event, info) => {
-      browser.log('set_var');
+    ipcMain.on('[update-browser-var]', (event, info) => {
+      browser.log('[update-browser-var]');
       browser.set_var(info.name, info.data);
       event.returnValue = browser.var[info.name];
     });
@@ -327,8 +332,8 @@ module.exports = function (browser) {
       event.returnValue = info;
     });
 
-    ipcMain.on('render_message', (event, info) => {
-      browser.log('render_message : ' + info.name);
+    ipcMain.on('[send-render-message]', (event, info) => {
+      browser.log('[send-render-message] : ' + info.name);
 
       if (info.name == '[open new tab]') {
         info.win_id = info.win_id || browser.getView().id;
@@ -391,13 +396,13 @@ module.exports = function (browser) {
         }
 
         browser.createNewSocialBrowserWindow((w) => {
-          browser.new_tab_info = {
+          browser.newTabdata = {
             name: '[open new tab]',
             url: info.url,
             partition: info.partition,
             user_name: info.user_name,
             active: true,
-            win_id: w.id,
+            main_window_id: w.id,
           };
 
           w.show();
@@ -454,7 +459,7 @@ module.exports = function (browser) {
             browser.set_var('bookmarks', browser.var.bookmarks);
           }
         });
-      } else if (info.name == 'set_var') {
+      } else if (info.name == '[update-browser-var]') {
         browser.set_var(info.key, info.value);
       } else if (info.name == 'facebook-share-link') {
         info.partition = info.partition || browser.getView().partition;
@@ -675,9 +680,9 @@ module.exports = function (browser) {
         let win = BrowserWindow.fromId(info.win_id);
         if (win) {
           win.webContents.setAudioMuted(!win.webContents.audioMuted);
-          browser.get_main_window(info.win_id).webContents.send('render_message', {
+          browser.get_main_window(info.win_id).webContents.send('[send-render-message]', {
             name: 'update-audio',
-            tab_id: browser.getView(info.win_id)._id,
+            tab_id: browser.getView(info.win_id).tab_id,
             muted: win.webContents.audioMuted,
           });
         }
@@ -686,9 +691,9 @@ module.exports = function (browser) {
         let win = BrowserWindow.fromId(info.win_id);
         if (win) {
           win.webContents.setAudioMuted(true);
-          browser.get_main_window(info.win_id).webContents.send('render_message', {
+          browser.get_main_window(info.win_id).webContents.send('[send-render-message]', {
             name: 'update-audio',
-            tab_id: browser.getView(info.win_id)._id,
+            tab_id: browser.getView(info.win_id).tab_id,
             muted: win.webContents.audioMuted,
           });
         }
@@ -830,11 +835,10 @@ module.exports = function (browser) {
           view.window.webContents.goForward();
         }
       } else if (info.name == 'window_clicked') {
-        if(browser.currentViewBlur == true){
+        if (browser.currentViewBlur == true) {
           browser.get_main_window(info.win_id).show();
-          browser.currentViewBlur = false
+          browser.currentViewBlur = false;
         }
-       
       } else if (info.name == 'copy') {
         browser.clipboard.writeText(info.text.replace('#___new_tab___', '').replace('#___new_popup__', ''));
       } else if (info.name == 'user-input') {
@@ -893,104 +897,100 @@ module.exports = function (browser) {
       } else {
       }
 
-      browser.get_main_window(info.win_id).webContents.send('render_message', info);
+      browser.get_main_window(info.win_id).webContents.send('[send-render-message]', info);
     });
 
-    ipcMain.on('new-view', (e, info) => {
-      browser.log('new-view : ');
-      info.url = info.url || browser.var.core.default_page;
-      if (info.url.endsWith('.sb')) {
-        info.url = 'https://www.google.com/search?q=' + info.url.replace('.sb', '');
-      }
+    ipcMain.on('[create-new-view]', (e, options) => {
+      // browser.log('[create-new-view] : ');
 
-      if (browser.addressbarWindow) {
-        browser.addressbarWindow.hide();
-      }
+      // options.url = options.url || browser.var.core.default_page;
+      // options.is_view = true;
+      // browser.options = options;
+      // let child = browser.run([browser.dir + '/child/index.js']);
+      // child.on('close', (code) => {
+      //   browser.get_main_window(options.main_window_id).webContents.executeJavaScript("closeTab('" + options.tab_id + "');");
+      //   browser.removeWindow(child.pid);
+      // });
 
-      if (typeof info.partition == 'undefined' || info.partition == 'undefined') {
-        browser.views.forEach((v) => {
-          if (v.id == browser.getView().id) {
-            info.partition = v.partition;
-            info.user_name = v.user_name;
-          }
-        });
-      }
-      let win = browser.newView(info);
-      let new_view = {
-        _id: info._id,
-        id: win.id,
-        window: win,
-        partition: info.partition,
-        user_name: info.user_name,
-        user_agent: info.user_agent,
-        zoom: 1,
-        main_window_id: info.win_id,
-      };
-      browser.views.push(new_view);
-      if (true || browser.views.length == 0) {
-        browser.current_view_list[new_view.main_window_id || 0] = new_view;
-        browser.get_main_window(new_view.main_window_id).webContents.send('render_message', {
-          name: 'update-win_id',
-          tab_id: new_view._id,
-          win_id: new_view.window.id,
-        });
-        browser.get_main_window(new_view.main_window_id).webContents.send('render_message', {
-          name: 'update-url',
-          tab_id: new_view._id,
-          url: decodeURI(info.url),
-          title: decodeURI(info.url),
-        });
-        browser.get_main_window(new_view.main_window_id).webContents.send('render_message', {
-          name: 'update-title',
-          title: decodeURI(info.url),
-          tab_id: new_view._id,
-        });
-        browser.get_main_window(new_view.main_window_id).webContents.send('render_message', {
-          name: 'update-audio',
-          tab_id: new_view._id,
-          muted: new_view.window.webContents.audioMuted,
-        });
-        browser.get_main_window(new_view.main_window_id).webContents.send('render_message', {
-          name: 'update-buttons',
-          tab_id: new_view._id,
-          forward: new_view.window.webContents.canGoForward(),
-          back: new_view.window.webContents.canGoBack(),
-        });
-      }
+      // browser.clientList.push({
+      //   source: 'child',
+      //   id: child.pid,
+      //   child: child,
+      //   options: options,
+      // });
 
-      e.returnValue = win;
-      return win;
+      // browser.newView(info);
+
+      // browser.get_main_window(info.main_window_id).webContents.send('[send-render-message]', {
+      //   name: 'update-win_id',
+      //   tab_id: info.tab_id,
+      // });
+
+      // browser.get_main_window(info.main_window_id).webContents.send('[send-render-message]', {
+      //   name: 'update-url',
+      //   tab_id: info.tab_id,
+      //   url: decodeURI(info.url),
+      //   title: decodeURI(info.url),
+      // });
+      // browser.get_main_window(info.main_window_id).webContents.send('[send-render-message]', {
+      //   name: 'update-title',
+      //   title: decodeURI(info.url),
+      //   tab_id: info.tab_id,
+      // });
+      // browser.get_main_window(info.main_window_id).webContents.send('[send-render-message]', {
+      //   name: 'update-audio',
+      //   tab_id: info.tab_id,
+      //   muted: new_view.window.webContents.audioMuted,
+      // });
+      // browser.get_main_window(new_view.main_window_id).webContents.send('[send-render-message]', {
+      //   name: 'update-buttons',
+      //   tab_id: new_view.tab_id,
+      //   forward: new_view.window.webContents.canGoForward(),
+      //   back: new_view.window.webContents.canGoBack(),
+      // });
     });
 
-    ipcMain.on('show-view', (e, info) => {
+    ipcMain.on('[show-view]', (e, info) => {
       browser.log('show-view : ');
+
+      browser.window_list.forEach((w) => {
+        if (w.options && w.options.tab_id == info.tab_id) {
+          w.options.is_current_view = true;
+          w.options.is_current_view_time = new Date().getTime();
+        } else {
+          w.options.is_current_view = false;
+        }
+      });
+
+      return;
+
       if (browser.addressbarWindow && !browser.addressbarWindow.isDestroyed()) {
         browser.addressbarWindow.hide();
       }
 
       browser.views.forEach((v) => {
         let win = BrowserWindow.fromId(v.id);
-        if (win && v._id == info._id) {
+        if (win && v.tab_id == info.tab_id) {
           browser.handleViewPosition(win);
           win.show();
           browser.current_view_list[info.win_id || 0] = browser.getView(win.id);
-          browser.get_main_window(info.win_id).webContents.send('render_message', {
+          browser.get_main_window(info.win_id).webContents.send('[send-render-message]', {
             name: 'update-user_name',
             user_name: v.user_name,
           });
-          browser.get_main_window(info.win_id).webContents.send('render_message', {
+          browser.get_main_window(info.win_id).webContents.send('[send-render-message]', {
             name: 'update-url',
-            tab_id: browser.getView()._id,
+            tab_id: browser.getView().tab_id,
             url: decodeURI(win.getURL()),
           });
-          browser.get_main_window(info.win_id).webContents.send('render_message', {
+          browser.get_main_window(info.win_id).webContents.send('[send-render-message]', {
             name: 'update-audio',
-            tab_id: browser.getView()._id,
+            tab_id: browser.getView().tab_id,
             muted: win.webContents.audioMuted,
           });
-          browser.get_main_window(info.win_id).webContents.send('render_message', {
+          browser.get_main_window(info.win_id).webContents.send('[send-render-message]', {
             name: 'update-buttons',
-            tab_id: browser.getView()._id,
+            tab_id: browser.getView().tab_id,
             forward: win.webContents.canGoForward(),
             back: win.webContents.canGoBack(),
           });
@@ -1002,7 +1002,7 @@ module.exports = function (browser) {
       browser.hideOthersViews();
     });
 
-    ipcMain.on('update-view', (e, info) => {
+    ipcMain.on('xxxupdate-view', (e, info) => {
       browser.log('update-view');
       if (!info) {
         browser.log('Error update-view No Info Exists');
@@ -1025,18 +1025,18 @@ module.exports = function (browser) {
         browser.addressbarWindow.hide();
       }
 
-      browser.get_main_window().webContents.send('render_message', {
+      browser.get_main_window().webContents.send('[send-render-message]', {
         name: 'update-url',
         url: decodeURI(info.url),
-        tab_id: info._id || browser.getView()._id,
+        tab_id: info.tab_id || browser.getView().tab_id,
       });
-      browser.get_main_window().webContents.send('render_message', {
+      browser.get_main_window().webContents.send('[send-render-message]', {
         name: 'update-title',
         title: decodeURI(info.url),
-        tab_id: info._id || browser.getView()._id,
+        tab_id: info.tab_id || browser.getView().tab_id,
       });
 
-      if (!info._id) {
+      if (!info.tab_id) {
         let win = BrowserWindow.fromId(browser.getView().id);
         win.webContents.stop();
 
@@ -1049,7 +1049,7 @@ module.exports = function (browser) {
 
       browser.views.forEach((v) => {
         let win = BrowserWindow.fromId(v.id);
-        if (win && v._id == info._id) {
+        if (win && v.tab_id == info.tab_id) {
           win.webContents.stop();
           win.loadURL(info.url);
           e.returnValue = win;
@@ -1059,21 +1059,7 @@ module.exports = function (browser) {
     });
 
     ipcMain.on('close-view', (e, info) => {
-      browser.log('close-view');
-      if (browser.addressbarWindow) {
-        browser.addressbarWindow.hide();
-      }
-
-      browser.views.forEach((v) => {
-        if (v._id == info._id) {
-          let win = BrowserWindow.fromId(v.id);
-          if (win) {
-            e.returnValue = win;
-            win.destroy();
-            return;
-          }
-        }
-      });
+      browser.closeWindow(info);
     });
 
     ipcMain.on('new-window', (e, info) => {

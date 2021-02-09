@@ -484,7 +484,7 @@ module.exports = function (SOCIALBROWSER) {
           new $menuItem({
             label: 'Open link in new tab',
             click() {
-              SOCIALBROWSER.call('render_message', {
+              SOCIALBROWSER.call('[send-render-message]', {
                 name: '[open new tab]',
                 referrer: document.location.href,
                 url: u,
@@ -501,7 +501,7 @@ module.exports = function (SOCIALBROWSER) {
             arr.push({
               label: ' in Trusted window',
               click() {
-                SOCIALBROWSER.call('render_message', {
+                SOCIALBROWSER.call('[send-render-message]', {
                   name: 'new_trusted_window',
                   url: o.url || document.location.href,
                   referrer: document.location.href,
@@ -515,7 +515,7 @@ module.exports = function (SOCIALBROWSER) {
           arr.push({
             label: ' in New Popup',
             click() {
-              SOCIALBROWSER.call('render_message', {
+              SOCIALBROWSER.call('[send-render-message]', {
                 name: 'new_popup',
                 url: u,
                 referrer: document.location.href,
@@ -528,7 +528,7 @@ module.exports = function (SOCIALBROWSER) {
           arr.push({
             label: ' in Ghost Popup',
             click() {
-              SOCIALBROWSER.call('render_message', {
+              SOCIALBROWSER.call('[send-render-message]', {
                 name: 'new_popup',
                 url: u,
                 referrer: document.location.href,
@@ -546,7 +546,7 @@ module.exports = function (SOCIALBROWSER) {
             arr.push({
               label: ` As ( ${i + 1} ) [ ${ss.display} ] `,
               click() {
-                SOCIALBROWSER.call('render_message', {
+                SOCIALBROWSER.call('[send-render-message]', {
                   name: '[open new tab]',
                   referrer: document.location.href,
                   url: u,
@@ -571,7 +571,7 @@ module.exports = function (SOCIALBROWSER) {
           new $menuItem({
             label: 'Copy link',
             click() {
-              SOCIALBROWSER.call('render_message', {
+              SOCIALBROWSER.call('[send-render-message]', {
                 name: 'copy',
                 text: u,
               });
@@ -591,7 +591,7 @@ module.exports = function (SOCIALBROWSER) {
           new $menuItem({
             label: 'Play video ',
             click() {
-              SOCIALBROWSER.call('render_message', {
+              SOCIALBROWSER.call('[send-render-message]', {
                 name: 'mini_youtube',
                 url: u,
                 partition: partition,
@@ -604,7 +604,7 @@ module.exports = function (SOCIALBROWSER) {
           new $menuItem({
             label: 'Download video ',
             click() {
-              SOCIALBROWSER.call('render_message', {
+              SOCIALBROWSER.call('[send-render-message]', {
                 name: 'new_popup',
                 url: u.replace('youtube', 'youtubepp'),
                 partition: partition,
@@ -637,7 +637,7 @@ module.exports = function (SOCIALBROWSER) {
         new $menuItem({
           label: 'Open image in new tab',
           click() {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: '[open new tab]',
               url: url,
               referrer: document.location.href,
@@ -654,7 +654,7 @@ module.exports = function (SOCIALBROWSER) {
           arr.push({
             label: ss.display,
             click() {
-              SOCIALBROWSER.call('render_message', {
+              SOCIALBROWSER.call('[send-render-message]', {
                 name: '[open new tab]',
                 url: url,
                 referrer: document.location.href,
@@ -684,7 +684,7 @@ module.exports = function (SOCIALBROWSER) {
         new $menuItem({
           label: 'Copy image address',
           click() {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: 'copy',
               text: url,
             });
@@ -696,7 +696,7 @@ module.exports = function (SOCIALBROWSER) {
         new $menuItem({
           label: 'Save image as',
           click() {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: 'download-url',
               url: url,
             });
@@ -721,7 +721,7 @@ module.exports = function (SOCIALBROWSER) {
         new $menuItem({
           label: 'Copy inner text',
           click() {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: 'copy',
               text: node.innerText,
             });
@@ -732,7 +732,7 @@ module.exports = function (SOCIALBROWSER) {
         new $menuItem({
           label: 'Copy inner html',
           click() {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: 'copy',
               text: node.innerHTML,
             });
@@ -771,7 +771,7 @@ module.exports = function (SOCIALBROWSER) {
       label: 'Save page',
       accelerator: 'CommandOrControl+s',
       click() {
-        SOCIALBROWSER.call('render_message', {
+        SOCIALBROWSER.call('[send-render-message]', {
           name: 'download-url',
           url: window.location.href,
         });
@@ -781,7 +781,7 @@ module.exports = function (SOCIALBROWSER) {
     arr.push({
       label: 'Save page as PDF',
       click() {
-        SOCIALBROWSER.call('render_message', {
+        SOCIALBROWSER.call('[send-render-message]', {
           name: 'saveAsPdf',
         });
       },
@@ -813,7 +813,7 @@ module.exports = function (SOCIALBROWSER) {
       label: 'Clear Site Cache',
       accelerator: 'CommandOrControl+F5',
       click() {
-        SOCIALBROWSER.call('render_message', {
+        SOCIALBROWSER.call('[send-render-message]', {
           name: 'force reload',
           win_id : SOCIALBROWSER.currentWindow.id,
           origin: document.location.origin || document.location.href,
@@ -825,7 +825,7 @@ module.exports = function (SOCIALBROWSER) {
     arr.push({
       label: 'Clear Site Cookies',
       click() {
-        SOCIALBROWSER.call('render_message', {
+        SOCIALBROWSER.call('[send-render-message]', {
           name: 'force reload',
           win_id : SOCIALBROWSER.currentWindow.id,
           origin: document.location.origin || document.location.href,
@@ -837,7 +837,7 @@ module.exports = function (SOCIALBROWSER) {
     arr.push({
       label: 'Clear All Site Data',
       click() {
-        SOCIALBROWSER.call('render_message', {
+        SOCIALBROWSER.call('[send-render-message]', {
           name: 'force reload',
           win_id : SOCIALBROWSER.currentWindow.id,
           origin: document.location.origin || document.location.href,
@@ -953,7 +953,7 @@ module.exports = function (SOCIALBROWSER) {
         arr2.push({
           label: 'View  ' + f.src,
           click() {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: 'mini_iframe',
               partition: partition,
               url: f.src,
@@ -964,7 +964,7 @@ module.exports = function (SOCIALBROWSER) {
         arr2.push({
           label: 'Open in new Popup',
           click() {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: 'new_popup',
               partition: partition,
               url: f.src,
@@ -975,7 +975,7 @@ module.exports = function (SOCIALBROWSER) {
         arr2.push({
           label: 'Copy link ',
           click() {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: 'copy',
               text: f.src,
             });
@@ -984,7 +984,7 @@ module.exports = function (SOCIALBROWSER) {
         arr2.push({
           label: 'Download link ',
           click() {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: 'download-url',
               url: f.src,
             });
@@ -1025,7 +1025,7 @@ module.exports = function (SOCIALBROWSER) {
       arr3.push({
         label: 'Play  ' + f.src,
         click() {
-          SOCIALBROWSER.call('render_message', {
+          SOCIALBROWSER.call('[send-render-message]', {
             name: 'mini_video',
             alwaysOnTop: true,
             partition: partition,
@@ -1039,7 +1039,7 @@ module.exports = function (SOCIALBROWSER) {
         arr3.push({
           label: 'Open in new Popup',
           click() {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: 'new_popup',
               alwaysOnTop: true,
               partition: partition,
@@ -1051,7 +1051,7 @@ module.exports = function (SOCIALBROWSER) {
         arr3.push({
           label: 'download',
           click() {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: 'download-url',
               url: f.src,
             });
@@ -1061,7 +1061,7 @@ module.exports = function (SOCIALBROWSER) {
       arr3.push({
         label: 'copy link',
         click() {
-          SOCIALBROWSER.call('render_message', {
+          SOCIALBROWSER.call('[send-render-message]', {
             name: 'copy',
             text: f.src,
           });
@@ -1078,7 +1078,7 @@ module.exports = function (SOCIALBROWSER) {
         arr3.push({
           label: 'Play video source  ' + f.src,
           click() {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: 'mini_video',
               alwaysOnTop: true,
               partition: partition,
@@ -1090,7 +1090,7 @@ module.exports = function (SOCIALBROWSER) {
         arr3.push({
           label: 'Open in new Popup',
           click() {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: 'new_popup',
               alwaysOnTop: true,
               partition: partition,
@@ -1102,7 +1102,7 @@ module.exports = function (SOCIALBROWSER) {
         arr3.push({
           label: 'copy link ',
           click() {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: 'copy',
               text: f.src,
             });
@@ -1112,7 +1112,7 @@ module.exports = function (SOCIALBROWSER) {
         arr3.push({
           label: 'download',
           click() {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: 'download-url',
               url: f.src,
             });
@@ -1146,7 +1146,7 @@ module.exports = function (SOCIALBROWSER) {
       new $menuItem({
         label: 'Copy page Link',
         click() {
-          SOCIALBROWSER.call('render_message', {
+          SOCIALBROWSER.call('[send-render-message]', {
             name: 'copy',
             text: window.location.href,
           });
@@ -1177,7 +1177,7 @@ module.exports = function (SOCIALBROWSER) {
               new $menuItem({
                 label: 'Download playing video ',
                 click() {
-                  SOCIALBROWSER.call('render_message', {
+                  SOCIALBROWSER.call('[send-render-message]', {
                     name: 'download-url',
                     url: v.src,
                   });
@@ -1200,7 +1200,7 @@ module.exports = function (SOCIALBROWSER) {
         new $menuItem({
           label: 'Open current video',
           click() {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: 'mini_youtube',
               partition: partition,
               url: document.location.href,
@@ -1214,7 +1214,7 @@ module.exports = function (SOCIALBROWSER) {
         new $menuItem({
           label: 'Download current video',
           click() {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: 'new_popup',
               partition: partition,
               referrer: document.location.href,
@@ -1296,8 +1296,8 @@ module.exports = function (SOCIALBROWSER) {
             }
           });
 
-          SOCIALBROWSER.call('render_message', {
-            name: 'set_var',
+          SOCIALBROWSER.call('[send-render-message]', {
+            name: '[update-browser-var]',
             key: 'proxy_list',
             value: SOCIALBROWSER.var.proxy_list,
           });
@@ -1322,7 +1322,7 @@ module.exports = function (SOCIALBROWSER) {
       click() {
         for (let index = 0; index < 5; index++) {
           setTimeout(() => {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: '[open new tab]',
               partition: partition,
               url: url,
@@ -1340,7 +1340,7 @@ module.exports = function (SOCIALBROWSER) {
       click() {
         for (let index = 0; index < SOCIALBROWSER.var.session_list.length; index++) {
           setTimeout(() => {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: '[open new tab]',
               partition: SOCIALBROWSER.var.session_list[index].name,
               user_name: SOCIALBROWSER.var.session_list[index].display,
@@ -1361,7 +1361,7 @@ module.exports = function (SOCIALBROWSER) {
           setTimeout(() => {
             let partition2 = 'random_user_' + Math.random();
             SOCIALBROWSER.call('[handle-session]', partition2);
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: '[open new tab]',
               partition: partition2,
               user_name: 'random_user_' + SOCIALBROWSER.var.proxy_list[index].name,
@@ -1381,7 +1381,7 @@ module.exports = function (SOCIALBROWSER) {
       click() {
         for (let index = 0; index < SOCIALBROWSER.var.user_agent_list.length; index++) {
           setTimeout(() => {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: '[open new tab]',
               partition: partition,
               user_agent: SOCIALBROWSER.var.user_agent_list[index].url,
@@ -1403,7 +1403,7 @@ module.exports = function (SOCIALBROWSER) {
             let partition2 = 'random_user_' + Math.random();
             SOCIALBROWSER.call('[handle-session]', partition2);
 
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: '[open new tab]',
               partition: partition2,
               user_name: 'random_user_' + SOCIALBROWSER.var.user_agent_list[index].name,
@@ -1426,7 +1426,7 @@ module.exports = function (SOCIALBROWSER) {
       click() {
         for (let index = 0; index < 5; index++) {
           setTimeout(() => {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: 'new_popup',
               partition: partition,
               url: url,
@@ -1443,7 +1443,7 @@ module.exports = function (SOCIALBROWSER) {
       click() {
         for (let index = 0; index < SOCIALBROWSER.var.session_list.length; index++) {
           setTimeout(() => {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: 'new_popup',
               partition: SOCIALBROWSER.var.session_list[index].name,
               user_name: SOCIALBROWSER.var.session_list[index].display,
@@ -1461,7 +1461,7 @@ module.exports = function (SOCIALBROWSER) {
       click() {
         for (let index = 0; index < SOCIALBROWSER.var.user_agent_list.length; index++) {
           setTimeout(() => {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: 'new_popup',
               partition: partition,
               user_agent: SOCIALBROWSER.var.user_agent_list[index].url,
@@ -1482,7 +1482,7 @@ module.exports = function (SOCIALBROWSER) {
           SOCIALBROWSER.call('[handle-session]', partition2);
 
           setTimeout(() => {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: 'new_popup',
               partition: partition2,
               user_agent: SOCIALBROWSER.var.user_agent_list[index].url,
@@ -1531,7 +1531,7 @@ module.exports = function (SOCIALBROWSER) {
         social_arr.push({
           label: ` ${document.location.host} ( Alexa Rank )`,
           click() {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: 'new_popup',
               width: 500,
               height: 500,
@@ -1588,7 +1588,7 @@ module.exports = function (SOCIALBROWSER) {
         new $menuItem({
           label: 'Copy            ' + text.substring(0, 30),
           click() {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: 'copy',
               text: text,
             });
@@ -1600,7 +1600,7 @@ module.exports = function (SOCIALBROWSER) {
         new $menuItem({
           label: 'Translate      ' + text.substring(0, 30),
           click() {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: 'new_popup',
               partition: partition,
               url: 'https://translate.google.com/?num=100&newwindow=1&um=1&ie=UTF-8&hl=en&client=tw-ob#auto/ar/' + encodeURIComponent(text),
@@ -1613,7 +1613,7 @@ module.exports = function (SOCIALBROWSER) {
         new $menuItem({
           label: 'Search          ' + text.substring(0, 30),
           click() {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: '[open new tab]',
               referrer: document.location.href,
               url: 'https://www.google.com/search?q=' + encodeURIComponent(text),
@@ -1656,7 +1656,7 @@ module.exports = function (SOCIALBROWSER) {
               arr.push({
                 label: ' in Trusted window',
                 click() {
-                  SOCIALBROWSER.call('render_message', {
+                  SOCIALBROWSER.call('[send-render-message]', {
                     name: 'new_trusted_window',
                     url: o.url || document.location.href,
                     referrer: document.location.href,
@@ -1669,7 +1669,7 @@ module.exports = function (SOCIALBROWSER) {
             arr.push({
               label: ' in New Tab',
               click() {
-                SOCIALBROWSER.call('render_message', {
+                SOCIALBROWSER.call('[send-render-message]', {
                   name: '[open new tab]',
                   partition: partition,
                   url: o.url || document.location.href,
@@ -1683,7 +1683,7 @@ module.exports = function (SOCIALBROWSER) {
             arr.push({
               label: ' in New Popup',
               click() {
-                SOCIALBROWSER.call('render_message', {
+                SOCIALBROWSER.call('[send-render-message]', {
                   name: 'new_popup',
                   partition: partition,
                   url: o.url || document.location.href,
@@ -1696,7 +1696,7 @@ module.exports = function (SOCIALBROWSER) {
             arr.push({
               label: ' in New Ghost Popup',
               click() {
-                SOCIALBROWSER.call('render_message', {
+                SOCIALBROWSER.call('[send-render-message]', {
                   name: 'new_popup',
                   url: o.url || document.location.href,
                   referrer: document.location.href,
@@ -1714,7 +1714,7 @@ module.exports = function (SOCIALBROWSER) {
               arr.push({
                 label: ` As ( ${i + 1} ) [ ${ss.display} ] `,
                 click() {
-                  SOCIALBROWSER.call('render_message', {
+                  SOCIALBROWSER.call('[send-render-message]', {
                     name: '[open new tab]',
                     url: o.url || document.location.href,
                     referrer: document.location.href,
@@ -1738,7 +1738,7 @@ module.exports = function (SOCIALBROWSER) {
               new $menuItem({
                 label: o.name,
                 click() {
-                  SOCIALBROWSER.call('render_message', {
+                  SOCIALBROWSER.call('[send-render-message]', {
                     name: '[open new tab]',
                     partition: partition,
                     url: o.url || document.location.href,
@@ -1770,7 +1770,7 @@ module.exports = function (SOCIALBROWSER) {
         arr.push({
           label: v.name,
           click() {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: 'new_trusted_window',
               url: SOCIALBROWSER.var.vip.server_url + v.url,
               referrer: document.location.href,
@@ -1815,7 +1815,7 @@ module.exports = function (SOCIALBROWSER) {
         label: 'Hard Refresh',
         accelerator: 'CommandOrControl+F5',
         click() {
-          SOCIALBROWSER.call('render_message', {
+          SOCIALBROWSER.call('[send-render-message]', {
             name: 'force reload',
             win_id : SOCIALBROWSER.currentWindow.id,
             origin: document.location.origin || document.location.href,
@@ -1837,7 +1837,7 @@ module.exports = function (SOCIALBROWSER) {
         arr.push({
           label: 'My Server',
           click() {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: 'new_popup',
               url: document.location.href,
               user_agent: navigator.userAgent,
@@ -1854,7 +1854,7 @@ module.exports = function (SOCIALBROWSER) {
         arr.push({
           label: p.name,
           click() {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: 'new_popup',
               url: document.location.href,
               proxy: p.url,
@@ -1890,12 +1890,12 @@ module.exports = function (SOCIALBROWSER) {
         accelerator: 'F11',
         click() {
           if (!full_screen) {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: 'full_screen',
             });
             full_screen = true;
           } else {
-            SOCIALBROWSER.call('render_message', {
+            SOCIALBROWSER.call('[send-render-message]', {
               name: '!full_screen',
             });
             full_screen = false;

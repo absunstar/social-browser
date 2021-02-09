@@ -48,7 +48,7 @@ module.exports = function (SOCIALBROWSER) {
       });
     });
 
-    SOCIALBROWSER.call('render_message', SOCIALBROWSER.dataInputPost);
+    SOCIALBROWSER.call('[send-render-message]', SOCIALBROWSER.dataInputPost);
   }
 
   function inputsHandle(input) {

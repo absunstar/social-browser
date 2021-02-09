@@ -26,13 +26,13 @@ module.exports = function (SOCIALBROWSER) {
         if (document.location.href.like('https://www.youtube.com/embed*')) {
           window.location.href = a.href;
         } else {
-          SOCIALBROWSER.call('render_message', {
+          SOCIALBROWSER.call('[send-render-message]', {
             name: '[open new tab]',
             referrer: document.location.href,
             url: a.href,
             partition: partition,
             user_name: SOCIALBROWSER.var.session_list.filter((s) => s.name == partition)[0].display,
-            win_id: SOCIALBROWSER.currentWindow.id,
+            main_window_id: SOCIALBROWSER.currentWindow.id,
           });
         }
       });

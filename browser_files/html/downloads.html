@@ -69,7 +69,7 @@
             }
 
             $scope.copyLink = function (item) {
-                SOCIALBROWSER.call('render_message', {name : 'copy' , text : item.url})
+                SOCIALBROWSER.call('[send-render-message]', {name : 'copy' , text : item.url})
             }
 
             $scope.remove = function (item) {

@@ -79,6 +79,11 @@ module.exports = function (SOCIALBROWSER) {
     window.NativeAd = (options) => {
       SOCIALBROWSER.log(options);
     };
+    window.ExoLoader = window.ExoLoader || {
+      addZone : ()=>{},
+      serve : ()=>{}
+    }
+    window.TsInPagePush = ()=>{}
     window.ExoVideoSlider = {
       init: () => {},
     };

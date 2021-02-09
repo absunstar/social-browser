@@ -92,7 +92,7 @@ module.exports = function (op) {
 
   browser.electron = browser.electron || browser.op.electron || require('electron');
   browser.app = browser.app || browser.op.app || browser.electron.app;
-  
+
   browser.url = require('url');
   browser.fs = require('fs');
   browser.path = require('path');
@@ -105,14 +105,36 @@ module.exports = function (op) {
   browser.custom_request_header_list = [];
 
   browser.run = function (file) {
-    browser.spawn(process.argv[0], file);
+   return browser.spawn(process.argv[0], file);
   };
 
   browser.spawn = function (program, file) {
-    browser.log(`child process started ...`);
-    browser.log(file);
 
     let child_process = browser.child_process.spawn(program, file);
+    child_process.stdout.on('data', function (data) {
+      browser.log(data.toString());
+    });
+
+    child_process.stderr.on('data', (data) => {
+      console.error(data.toString());
+    });
+
+    child_process.on('close', (code) => {
+      browser.log(`child process exited with code ${code}`);
+    });
+
+    child_process.on('message', (msg) => {
+      browser.log(msg);
+    });
+
+    return child_process;
+  };
+
+  browser.fork = function (file) {
+
+    let child_process = browser.child_process.fork(file, [], {
+      stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
+    });
     child_process.stdout.on('data', function (data) {
       browser.log(data.toString());
     });
@@ -167,10 +189,10 @@ module.exports = function (op) {
     browser.electron.app.setPath('userData', browser.path.join(browser.data_dir, 'default'));
     browser.electron.app.setPath('crashDumps', browser.path.join(browser.data_dir, 'crashes'));
 
-    browser.electron.crashReporter.start({
-      compress: true,
-      submitURL: 'https://your-domain.com/url-to-submit',
-    });
+    // browser.electron.crashReporter.start({
+    //   compress: true,
+    //   submitURL: 'https://your-domain.com/url-to-submit',
+    // });
 
     browser.mkdirSync(browser.data_dir);
     browser.mkdirSync(browser.path.join(browser.data_dir, 'default'));

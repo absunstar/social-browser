@@ -44,15 +44,13 @@
     onEventOFF: [],
     jqueryOff: '',
     jqueryOn: '',
-    developerMode: true,
+    developerMode: false,
     log: function (...args) {
       if (this.developerMode) {
         console.log(...args);
       }
     },
   };
-
-  SOCIALBROWSER.log(' >>> >>> >>> SocialBrowser Preload : ' + document.location.href)
 
   SOCIALBROWSER.electron = require('electron');
 
@@ -62,15 +60,15 @@
   SOCIALBROWSER.md5 = require('md5');
 
   SOCIALBROWSER.callSync = function (channel, value) {
-    SOCIALBROWSER.log('SOCIALBROWSER.callSync : ' + channel);
+    value.options = SOCIALBROWSER.options;
     return SOCIALBROWSER.electron.ipcRenderer.sendSync(channel, value);
   };
   SOCIALBROWSER.call = function (channel, value) {
-    SOCIALBROWSER.log('SOCIALBROWSER.call : ' + channel);
+    value.options = SOCIALBROWSER.options;
     return SOCIALBROWSER.electron.ipcRenderer.send(channel, value);
   };
   SOCIALBROWSER.invoke = function (channel, value) {
-    SOCIALBROWSER.log('SOCIALBROWSER.invoke : ' + channel);
+    value.options = SOCIALBROWSER.options;
     return SOCIALBROWSER.electron.ipcRenderer.invoke(channel, value);
   };
   SOCIALBROWSER.on = function (name, callback) {
@@ -141,12 +139,20 @@
     return num;
   };
 
+  SOCIALBROWSER.isIframe = function () {
+    return !process.isMainFrame;
+    try {
+      return window.self !== window.top;
+    } catch (e) {
+      return true;
+    }
+  };
+
   let l_name =
     'user_data,user_data_input,sites,youtube,facebook,javascript,context_menu,open_list,preload_list,proxy_list,proxy,popup,core,login,vip,bookmarks,black_list,white_list,session_list,user_agent_list,blocking,video_quality_list';
   if (document.location.href.indexOf('127.0.0.1:60080') !== -1) {
     l_name = '*';
   }
-
   if (document.location.origin && document.location.origin != 'null') {
     SOCIALBROWSER.invoke('[browser][data]', {
       host: document.location.host,
@@ -156,26 +162,22 @@
       partition: SOCIALBROWSER.partition,
     }).then((result) => {
       SOCIALBROWSER.is_main_data = true;
+      SOCIALBROWSER.child_id = result.child_id;
+      SOCIALBROWSER.child_index = result.child_index;
+      SOCIALBROWSER.options = result.options;
       SOCIALBROWSER.var = result.var;
       SOCIALBROWSER.files_dir = result.files_dir;
       SOCIALBROWSER.dir = result.dir;
-      (SOCIALBROWSER.custom_request_header_list = result.custom_request_header_list), (SOCIALBROWSER.injectHTML = result.injectHTML);
+      SOCIALBROWSER.custom_request_header_list = result.custom_request_header_list;
+      SOCIALBROWSER.injectHTML = result.injectHTML;
       SOCIALBROWSER.windows = result.windows;
-      (SOCIALBROWSER.windowSetting = result.windowSetting), (SOCIALBROWSER.session = result.session ? Object.assign(SOCIALBROWSER.session, result.session) : SOCIALBROWSER.session);
+      SOCIALBROWSER.windowSetting = result.windowSetting;
+      SOCIALBROWSER.windowType = result.windowType;
+      SOCIALBROWSER.session = result.session ? Object.assign(SOCIALBROWSER.session, result.session) : SOCIALBROWSER.session;
 
       require(SOCIALBROWSER.files_dir + '/js/context-menu/init.js')(SOCIALBROWSER);
       require(SOCIALBROWSER.files_dir + '/js/context-menu/load.js')(SOCIALBROWSER);
     });
-  } else {
-    return;
-    SOCIALBROWSER.files_dir = SOCIALBROWSER.callSync('get_browser', {
-      name: 'files_dir',
-    });
-    SOCIALBROWSER.dir = SOCIALBROWSER.callSync('get_browser', {
-      name: 'dir',
-    });
-    require(SOCIALBROWSER.files_dir + '/js/context-menu/init.js')(SOCIALBROWSER);
-    require(SOCIALBROWSER.files_dir + '/js/context-menu/load.js')(SOCIALBROWSER);
   }
 
   window.SOCIALBROWSER = SOCIALBROWSER;

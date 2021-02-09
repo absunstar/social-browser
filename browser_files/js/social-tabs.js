@@ -48,7 +48,6 @@ const plusTemplate = `
 `;
 let defaultTapProperties = {
   id: '',
-  webview_id: '',
   url: 'http://127.0.0.1:60080/newTab',
   title: 'New Tab',
   favicon: 'http://127.0.0.1:60080/images/loading-white.gif',
@@ -58,7 +57,7 @@ function getDefaultTapProperties() {
   if (SOCIALBROWSER.var.core.default_page) {
     defaultTapProperties.url = SOCIALBROWSER.var.core.default_page;
     if (SOCIALBROWSER.var.core.default_page == 'http://127.0.0.1:60080/newTab') {
-      defaultTapProperties.favicon = 'browser://images/logo.png';
+      defaultTapProperties.favicon = 'http://127.0.0.1:60080/images/logo.png';
     }
   }
 
@@ -138,13 +137,16 @@ class SocialTabs {
 
     //  this.el.addEventListener('dblclick', event => this.addTab())
 
-    this.el.addEventListener('click', ({ target }) => {
-      if (target.classList.contains('social-tab')) {
-        this.setCurrentTab(target);
-      } else if (target.classList.contains('social-tab-close')) {
-        this.removeTab(target.parentNode);
-      } else if (target.classList.contains('social-tab-title') || target.classList.contains('social-tab-favicon')) {
-        this.setCurrentTab(target.parentNode);
+    this.el.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      if (e.target.classList.contains('social-tab')) {
+        this.setCurrentTab(e.target);
+      } else if (e.target.classList.contains('social-tab-close')) {
+        this.removeTab(e.target.parentNode);
+      } else if (e.target.classList.contains('social-tab-title') || e.target.classList.contains('social-tab-favicon')) {
+        this.setCurrentTab(e.target.parentNode);
       }
     });
   }
@@ -242,6 +244,7 @@ class SocialTabs {
         source: 'session',
         active: tabProperties.active,
         win_id: tabProperties.win_id,
+        main_window_id: tabProperties.main_window_id,
       });
       return;
     }
@@ -278,7 +281,6 @@ class SocialTabs {
       getDefaultTapProperties(),
       {
         id: 'tab_' + new Date().getTime(),
-        webview_id: 'web_view_' + new Date().getTime(),
       },
       tabProperties,
     );
@@ -360,7 +362,6 @@ class SocialTabs {
 
   updateTab(tabEl, tabProperties) {
     tabEl.setAttribute('id', tabProperties.id);
-    tabEl.setAttribute('webview_id', tabProperties.webview_id);
     tabEl.setAttribute('url', tabProperties.url);
     tabEl.setAttribute('user_agent', tabProperties.user_agent);
     tabEl.setAttribute('partition', tabProperties.partition);

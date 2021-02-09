@@ -1,5 +1,3 @@
-const { notDeepEqual } = require('assert');
-
 function escape(s) {
   if (!s) {
     return '';
@@ -57,25 +55,20 @@ if (!String.prototype.contains) {
 
 var SOCIALBROWSER = {};
 SOCIALBROWSER.electron = require('electron');
-SOCIALBROWSER.fs = require('fs');
-SOCIALBROWSER.url = require('url');
-SOCIALBROWSER.path = require('path');
-SOCIALBROWSER.md5 = require('md5');
 
 SOCIALBROWSER.callSync = function (...args) {
-  // console.log('SOCIALBROWSER.callSync' , ...args)
+  args[1].tab_id = args[1].tab_id = currentTabId;
   return SOCIALBROWSER.electron.ipcRenderer.sendSync(...args);
 };
 SOCIALBROWSER.call = function (...args) {
-  // console.log('SOCIALBROWSER.call' , ...args)
+  args[1].tab_id = args[1].tab_id = currentTabId;
   return SOCIALBROWSER.electron.ipcRenderer.send(...args);
 };
 SOCIALBROWSER.invoke = function (...args) {
-  // console.log('SOCIALBROWSER.invoke' , ...args)
+  args[1].tab_id = args[1].tab_id = currentTabId;
   return SOCIALBROWSER.electron.ipcRenderer.invoke(...args);
 };
 SOCIALBROWSER.on = function (...args) {
-  // console.log('SOCIALBROWSER.on' , ...args)
   SOCIALBROWSER.electron.ipcRenderer.on(...args);
 };
 
@@ -100,7 +93,8 @@ const { remote, nativeImage } = SOCIALBROWSER.electron;
 const { Menu, MenuItem } = remote;
 
 function sendToMain(obj) {
-  SOCIALBROWSER.call('render_message', obj);
+  obj.tab_id = currentTabId;
+  SOCIALBROWSER.call('[send-render-message]', obj);
 }
 
 SOCIALBROWSER.on('var.bookmarks', (event, obj) => {
@@ -236,7 +230,7 @@ function createMenu(node) {
       new MenuItem({
         label: 'New tab',
         click() {
-          sendToMain({ name: '[open new tab]', win_id: SOCIALBROWSER.currentWindow.id });
+          sendToMain({ name: '[open new tab]', main_window_id: SOCIALBROWSER.currentWindow.id });
         },
       }),
     );
@@ -244,7 +238,7 @@ function createMenu(node) {
       new MenuItem({
         label: 'Duplicate tab',
         click() {
-          sendToMain({ name: '[open new tab]', duplicate: true, win_id: SOCIALBROWSER.currentWindow.id });
+          sendToMain({ name: '[open new tab]', duplicate: true, main_window_id: SOCIALBROWSER.currentWindow.id });
         },
       }),
     );
@@ -252,7 +246,7 @@ function createMenu(node) {
       new MenuItem({
         label: 'Duplicate tab in New Window',
         click() {
-          sendToMain({ name: '[open new window]', duplicate: true, win_id: SOCIALBROWSER.currentWindow.id });
+          sendToMain({ name: '[open new window]', duplicate: true, main_window_id: SOCIALBROWSER.currentWindow.id });
         },
       }),
     );
@@ -265,7 +259,7 @@ function createMenu(node) {
       new MenuItem({
         label: 'New Ghost tab',
         click() {
-          sendToMain({ name: '[open new ghost tab]', win_id: SOCIALBROWSER.currentWindow.id });
+          sendToMain({ name: '[open new ghost tab]', main_window_id: SOCIALBROWSER.currentWindow.id });
         },
       }),
     );
@@ -273,7 +267,7 @@ function createMenu(node) {
       new MenuItem({
         label: 'Duplicate tab in Ghost tab',
         click() {
-          sendToMain({ name: '[open new ghost tab]', duplicate: true, win_id: SOCIALBROWSER.currentWindow.id });
+          sendToMain({ name: '[open new ghost tab]', duplicate: true, main_window_id: SOCIALBROWSER.currentWindow.id });
         },
       }),
     );
@@ -287,7 +281,7 @@ function createMenu(node) {
       new MenuItem({
         label: 'New Popup',
         click() {
-          sendToMain({ name: '[open new popup]', win_id: SOCIALBROWSER.currentWindow.id });
+          sendToMain({ name: '[open new popup]', main_window_id: SOCIALBROWSER.currentWindow.id });
         },
       }),
     );
@@ -295,7 +289,7 @@ function createMenu(node) {
       new MenuItem({
         label: 'Duplicate tab in Popup',
         click() {
-          sendToMain({ name: '[open new popup]', duplicate: true, win_id: SOCIALBROWSER.currentWindow.id });
+          sendToMain({ name: '[open new popup]', duplicate: true, main_window_id: SOCIALBROWSER.currentWindow.id });
         },
       }),
     );
@@ -308,7 +302,7 @@ function createMenu(node) {
       new MenuItem({
         label: 'New Ghost Popup',
         click() {
-          sendToMain({ name: '[open new ghost popup]', win_id: SOCIALBROWSER.currentWindow.id });
+          sendToMain({ name: '[open new ghost popup]', main_window_id: SOCIALBROWSER.currentWindow.id });
         },
       }),
     );
@@ -316,7 +310,7 @@ function createMenu(node) {
       new MenuItem({
         label: 'Duplicate tab in Ghost Popup',
         click() {
-          sendToMain({ name: '[open new ghost popup]', duplicate: true, win_id: SOCIALBROWSER.currentWindow.id });
+          sendToMain({ name: '[open new ghost popup]', duplicate: true, main_window_id: SOCIALBROWSER.currentWindow.id });
         },
       }),
     );
@@ -408,101 +402,101 @@ document.addEventListener(
     //e.stopPropagation();
 
     if (e.keyCode == 123 /*f12*/) {
-      SOCIALBROWSER.call('render_message', {
+      SOCIALBROWSER.call('[send-render-message]', {
         name: 'DeveloperTools',
       });
     } else if (e.keyCode == 122 /*f11*/) {
       if (!full_screen) {
-        SOCIALBROWSER.call('render_message', {
+        SOCIALBROWSER.call('[send-render-message]', {
           name: 'full_screen',
         });
         full_screen = true;
       } else {
-        SOCIALBROWSER.call('render_message', {
+        SOCIALBROWSER.call('[send-render-message]', {
           name: '!full_screen',
         });
         full_screen = false;
       }
     } else if (e.keyCode == 121 /*f10*/) {
-      SOCIALBROWSER.call('render_message', {
+      SOCIALBROWSER.call('[send-render-message]', {
         name: 'service worker',
       });
     } else if (e.keyCode == 117 /*f6*/) {
-      SOCIALBROWSER.call('render_message', {
+      SOCIALBROWSER.call('[send-render-message]', {
         name: 'show addressbar',
       });
     } else if (e.keyCode == 70 /*f*/) {
       if (e.ctrlKey == true) {
-        SOCIALBROWSER.call('render_message', {
+        SOCIALBROWSER.call('[send-render-message]', {
           name: 'show in-page-find',
         });
       }
     } else if (e.keyCode == 115 /*f4*/) {
       if (e.ctrlKey == true) {
-        SOCIALBROWSER.call('render_message', {
+        SOCIALBROWSER.call('[send-render-message]', {
           name: 'close tab',
         });
       }
     } else if (e.keyCode == 107 /*+*/) {
       if (e.ctrlKey == true) {
-        SOCIALBROWSER.call('render_message', {
+        SOCIALBROWSER.call('[send-render-message]', {
           name: 'zoom+',
         });
       }
     } else if (e.keyCode == 109 /*-*/) {
       if (e.ctrlKey == true) {
-        SOCIALBROWSER.call('render_message', {
+        SOCIALBROWSER.call('[send-render-message]', {
           name: 'zoom-',
         });
       }
     } else if (e.keyCode == 48 /*0*/) {
       if (e.ctrlKey == true) {
-        SOCIALBROWSER.call('render_message', {
+        SOCIALBROWSER.call('[send-render-message]', {
           name: 'zoom',
         });
       }
     } else if (e.keyCode == 49 /*1*/) {
       if (e.ctrlKey == true) {
-        SOCIALBROWSER.call('render_message', {
+        SOCIALBROWSER.call('[send-render-message]', {
           name: 'audio',
         });
       }
     } else if (e.keyCode == 74 /*j*/) {
       if (e.ctrlKey == true) {
-        SOCIALBROWSER.call('render_message', {
+        SOCIALBROWSER.call('[send-render-message]', {
           name: 'downloads',
         });
       }
     } else if (e.keyCode == 83 /*s*/) {
       if (e.ctrlKey == true) {
-        SOCIALBROWSER.call('render_message', {
+        SOCIALBROWSER.call('[send-render-message]', {
           name: 'download-url',
           url: window.location.href,
         });
       }
     } else if (e.keyCode == 69 /*escape*/) {
-      SOCIALBROWSER.call('render_message', {
+      SOCIALBROWSER.call('[send-render-message]', {
         name: 'edit-page',
       });
     } else if (e.keyCode == 27 /*escape*/) {
-      SOCIALBROWSER.call('render_message', {
+      SOCIALBROWSER.call('[send-render-message]', {
         name: 'escape',
       });
     } else if (e.keyCode == 78 /*n*/ || e.keyCode == 84 /*t*/) {
       if (e.ctrlKey == true) {
-        SOCIALBROWSER.call('render_message', {
+        SOCIALBROWSER.call('[send-render-message]', {
           name: '[open new tab]',
-          win_id: SOCIALBROWSER.currentWindow.id,
+          main_window_id: SOCIALBROWSER.currentWindow.id,
         });
       }
     } else if (e.keyCode == 116 /*f5*/) {
       if (e.ctrlKey === true) {
-        SOCIALBROWSER.call('render_message', {
+        SOCIALBROWSER.call('[send-render-message]', {
           name: 'force reload',
           origin: document.location.origin || document.location.href,
         });
       } else {
-        SOCIALBROWSER.call('render_message', {
+        SOCIALBROWSER.call('[send-render-message]', {
           name: 'reload',
         });
       }
@@ -533,7 +527,7 @@ function showSettingMenu() {
       sendToMain({
         name: '[open new tab]',
         url: 'https://social-browser.com',
-        win_id: SOCIALBROWSER.currentWindow.id,
+        main_window_id: SOCIALBROWSER.currentWindow.id,
       }),
   });
   arr.push({
@@ -545,7 +539,7 @@ function showSettingMenu() {
       sendToMain({
         name: '[open new tab]',
         url: 'http://127.0.0.1:60080/downloads',
-        win_id: SOCIALBROWSER.currentWindow.id,
+        main_window_id: SOCIALBROWSER.currentWindow.id,
       }),
   });
 
@@ -591,7 +585,7 @@ function showSettingMenu() {
       sendToMain({
         name: '[open new tab]',
         url: 'http://127.0.0.1:60080/setting?open=bookmarks',
-        win_id: SOCIALBROWSER.currentWindow.id,
+        main_window_id: SOCIALBROWSER.currentWindow.id,
       }),
   });
   bookmark_arr.push({
@@ -606,7 +600,7 @@ function showSettingMenu() {
         sendToMain({
           name: '[open new tab]',
           url: b.url,
-          win_id: SOCIALBROWSER.currentWindow.id,
+          main_window_id: SOCIALBROWSER.currentWindow.id,
         }),
     });
   });
@@ -624,7 +618,7 @@ function showSettingMenu() {
           sendToMain({
             name: '[open new tab]',
             url: b.url,
-            win_id: SOCIALBROWSER.currentWindow.id,
+            main_window_id: SOCIALBROWSER.currentWindow.id,
           });
         });
       },
@@ -768,7 +762,7 @@ function showBookmarksMenu() {
       sendToMain({
         name: '[open new tab]',
         url: 'http://127.0.0.1:60080/setting?open=bookmarks',
-        win_id: SOCIALBROWSER.currentWindow.id,
+        main_window_id: SOCIALBROWSER.currentWindow.id,
       }),
   });
   bookmark_arr.push({
@@ -783,7 +777,7 @@ function showBookmarksMenu() {
         sendToMain({
           name: '[open new tab]',
           url: b.url,
-          win_id: SOCIALBROWSER.currentWindow.id,
+          main_window_id: SOCIALBROWSER.currentWindow.id,
         }),
     });
   });
@@ -801,7 +795,7 @@ function showBookmarksMenu() {
           sendToMain({
             name: '[open new tab]',
             url: b.url,
-            win_id: SOCIALBROWSER.currentWindow.id,
+            main_window_id: SOCIALBROWSER.currentWindow.id,
           });
         });
       },
@@ -816,7 +810,7 @@ SOCIALBROWSER.on('[user-info]', (event, data) => {
   // console.log(data.message, data);
 });
 
-SOCIALBROWSER.on('render_message', (event, data) => {
+SOCIALBROWSER.on('[send-render-message]', (event, data) => {
   renderMessage(data);
 });
 
@@ -868,7 +862,7 @@ function handleURL(u) {
 
 function showURL(u) {
   u = u || $('#' + currentTabId).attr('url');
-  SOCIALBROWSER.call('render_message', {
+  SOCIALBROWSER.call('[send-render-message]', {
     name: 'show addressbar',
     url: u,
   });
@@ -878,23 +872,125 @@ $('.social-close').click(() => {
   ExitSocialWindow();
 });
 $('.social-maxmize').click(() => {
-  SOCIALBROWSER.call('message', 'maxmize');
+  SOCIALBROWSER.call('[browser-message]', { name: 'maxmize' });
 });
 $('.social-minmize').click(() => {
-  SOCIALBROWSER.call('message', 'minmize');
+  SOCIALBROWSER.call('[browser-message]', { name: 'minmize' });
 });
 
 socialTabsDom.addEventListener('activeTabChange', ({ detail }) => {
   currentTabId = detail.tabEl.id;
 
-  SOCIALBROWSER.call('show-view', {
+  SOCIALBROWSER.call('[show-view]', {
     x: 0,
     y: 0,
     width: document.width,
     height: document.height,
-    _id: currentTabId,
-    win_id: SOCIALBROWSER.currentWindow.id,
+    tab_id: currentTabId,
+    main_window_id: SOCIALBROWSER.currentWindow.id,
   });
+
+  $('#user_name').html($('#' + currentTabId).attr('user_name'));
+
+  if (!$('#' + currentTabId).attr('forward')) {
+    $('.go-forward i').css('color', '#9E9E9E');
+  } else {
+    $('.go-forward i').css('color', '#4caf50');
+  }
+  if (!$('#' + currentTabId).attr('back')) {
+    $('.go-back i').css('color', '#9E9E9E');
+  } else {
+    $('.go-back i').css('color', '#4caf50');
+  }
+
+  if ($('#' + currentTabId).attr('webaudio') == 'true') {
+    $('.Page-audio i').css('color', '#4caf50');
+  } else {
+    $('.Page-audio i').css('color', '#f44336');
+  }
+
+  if ($('#' + currentTabId).attr('url')) {
+    $('.address-input .http').css('display', 'none');
+    $('.address-input .https').css('display', 'none');
+    $('.address-input .file').css('display', 'none');
+    $('.address-input .ftp').css('display', 'none');
+    $('.address-input .browser').css('display', 'none');
+
+    $('.address-input .https').html('');
+    $('.address-input .http').html('');
+    $('.address-input .file').html('');
+    $('.address-input .ftp').html('');
+    $('.address-input .browser').html('');
+
+    if (
+      $('#' + currentTabId)
+        .attr('url')
+        .like('http://127.0.0.1:60080*')
+    ) {
+      $('.address-input .protocol').html('');
+      $('.address-input .url').html('');
+    } else {
+      let protocol = '';
+      let url = '';
+      if (
+        $('#' + currentTabId)
+          .attr('url')
+          .like('https*')
+      ) {
+        protocol = 'HTTPS';
+        $('.address-input .https').html(protocol);
+        $('.address-input .https').css('display', 'inline-block');
+      } else if (
+        $('#' + currentTabId)
+          .attr('url')
+          .like('http*')
+      ) {
+        protocol = 'http';
+        $('.address-input .http').html(protocol);
+        $('.address-input .http').css('display', 'inline-block');
+      } else if (
+        $('#' + currentTabId)
+          .attr('url')
+          .like('ftp*')
+      ) {
+        protocol = 'ftp';
+        $('.address-input .ftp').html(protocol);
+        $('.address-input .ftp').css('display', 'inline-block');
+      } else if (
+        $('#' + currentTabId)
+          .attr('url')
+          .like('file*')
+      ) {
+        protocol = 'file';
+        $('.address-input .file').html(protocol);
+        $('.address-input .file').css('display', 'inline-block');
+      } else if (
+        $('#' + currentTabId)
+          .attr('url')
+          .like('browser*')
+      ) {
+        protocol = 'browser';
+        $('.address-input .browser').html(protocol);
+        $('.address-input .browser').css('display', 'inline-block');
+      }
+
+      if (protocol) {
+        url = $('#' + currentTabId)
+          .attr('url')
+          .replace(protocol + '://', '');
+      } else {
+        url = $('#' + currentTabId).attr('url');
+      }
+
+      $('.address-input .protocol').html(protocol);
+      let w = document.querySelectorAll('.address-input')[0].clientWidth / 13;
+      if (url.length > w) {
+        $('.address-input .url').html(url.substring(0, w) + ' ...');
+      } else {
+        $('.address-input .url').html(url);
+      }
+    }
+  }
 });
 
 socialTabsDom.addEventListener('tabAdd', ({ detail }) => {
@@ -905,23 +1001,22 @@ socialTabsDom.addEventListener('tabAdd', ({ detail }) => {
     });
 
     const $id = $('#' + currentTabId);
-    SOCIALBROWSER.call('new-view', {
+    SOCIALBROWSER.call('[create-new-view]', {
       x: window.screenLeft,
       y: window.screenTop + 70,
       width: document.width,
       height: document.height,
-      _id: currentTabId,
+      tab_id: currentTabId,
       url: $id.attr('url'),
       partition: $id.attr('partition'),
       user_name: $id.attr('user_name'),
       user_agent: $id.attr('user_agent'),
       proxy: $id.attr('proxy') == 'undefined' ? null : $id.attr('proxy'),
       webaudio: $id.attr('webaudio') == 'false' ? false : true,
-      win_id: SOCIALBROWSER.currentWindow.id,
+      main_window_id: SOCIALBROWSER.currentWindow.id,
     });
 
     if (!$id.attr('url') || $id.attr('url').like('*newTab')) {
-
     }
   }
 });
@@ -929,13 +1024,13 @@ socialTabsDom.addEventListener('tabAdd', ({ detail }) => {
 socialTabsDom.addEventListener('tabRemove', ({ detail }) => {
   currentTabId = detail.id;
 
-  SOCIALBROWSER.call('close-view', {
-    _id: detail.id,
+  SOCIALBROWSER.call('[close-view]', {
+    tab_id: detail.id,
   });
 });
 
 function render_new_tab(op) {
-  // console.log('render_new_tab', op);
+  console.log('render_new_tab', op);
 
   if (typeof op === 'string') {
     op = op.split('...').join('\\');
@@ -965,12 +1060,12 @@ function render_new_tab(op) {
     user_agent: op.user_agent,
     proxy: op.proxy,
     webaudio: op.webaudio,
-    favicon: 'browser://images/loading-white.gif',
+    favicon: 'http://127.0.0.1:60080/images/loading-white.gif',
     active: op.active,
-    win_id: SOCIALBROWSER.currentWindow.id,
+    main_window_id: SOCIALBROWSER.currentWindow.id,
   };
   socialTabs.addTab(tab);
- // console.log(tab);
+  // console.log(tab);
 }
 
 function renderMessage(cm) {
@@ -980,6 +1075,8 @@ function renderMessage(cm) {
 
   if (cm.name == '[open new tab]') {
     render_new_tab(cm);
+  } else if (cm.name == '[remove-tab]') {
+    socialTabs.removeTab(socialTabs.removeTab(socialTabsDom.querySelector('#' + cm.tab_id)));
   } else if (cm.name == 'set-setting') {
     for (let k of Object.keys(cm.var)) {
       SOCIALBROWSER.var[k] = cm.var[k];
@@ -996,11 +1093,40 @@ function renderMessage(cm) {
     is_addressbar_busy = false;
   } else if (cm.name == 'close tab') {
     closeCurrentTab();
-  } else if (cm.name == 'update-win_id') {
+  } else if (cm.name == '[update-tab-properties]') {
+    console.log(cm);
+    if (cm.tab_id && cm.url) {
+      $('#' + cm.tab_id).attr('url', cm.url);
+    }
+    if (cm.tab_id && cm.icon) {
+      $('#' + cm.tab_id + ' .social-tab-favicon').css('background-image', 'url(' + cm.icon + ')');
+    }
+    if (cm.user_name) {
+      $('#' + cm.tab_id).attr('user_name', cm.user_name);
+      $('#user_name').html(cm.user_name);
+    }
+
     if (cm.win_id) {
       $('#' + cm.tab_id).attr('win_id', cm.win_id);
     }
-  } else if (cm.name == 'update-title') {
+
+    if (cm.child_id) {
+      $('#' + cm.tab_id).attr('child_id', cm.child_id);
+    }
+    if (cm.main_window_id) {
+      $('#' + cm.tab_id).attr('main_window_id', cm.main_window_id);
+    }
+
+    if (cm.forward) {
+      $('#' + cm.tab_id).attr('forward', cm.forward);
+    }
+    if (cm.back) {
+      $('#' + cm.tab_id).attr('back', cm.back);
+    }
+    if (cm.webaudio) {
+      $('#' + cm.tab_id).attr('webaudio', cm.webaudio);
+    }
+
     if (cm.title) {
       $('#' + cm.tab_id + ' .social-tab-title p').text(cm.title);
       $('#' + cm.tab_id).attr('title', cm.title);
@@ -1010,29 +1136,25 @@ function renderMessage(cm) {
         document.querySelector('#' + cm.tab_id + ' .social-tab-title p').style.direction = 'rtl';
       }
     }
-  } else if (cm.name == 'update-audio') {
-    if (!cm.muted) {
-      $('.Page-audio i').css('color', '#4caf50');
-    } else {
-      $('.Page-audio i').css('color', '#f44336');
-    }
-  } else if (cm.name == 'update-buttons') {
-    if (!cm.forward) {
-      $('.go-forward i').css('color', '#9E9E9E');
-    } else {
-      $('.go-forward i').css('color', '#4caf50');
-    }
-    if (!cm.back) {
-      $('.go-back i').css('color', '#9E9E9E');
-    } else {
-      $('.go-back i').css('color', '#4caf50');
-    }
-  } else if (cm.name == 'update-url') {
-    if (cm.tab_id && cm.url) {
-      $('#' + cm.tab_id).attr('url', cm.url);
-    }
 
     if (cm.tab_id && cm.tab_id == currentTabId && cm.url) {
+      if (!cm.forward) {
+        $('.go-forward i').css('color', '#9E9E9E');
+      } else {
+        $('.go-forward i').css('color', '#4caf50');
+      }
+      if (!cm.back) {
+        $('.go-back i').css('color', '#9E9E9E');
+      } else {
+        $('.go-back i').css('color', '#4caf50');
+      }
+
+      if (cm.webaudio) {
+        $('.Page-audio i').css('color', '#4caf50');
+      } else {
+        $('.Page-audio i').css('color', '#f44336');
+      }
+
       $('.address-input .http').css('display', 'none');
       $('.address-input .https').css('display', 'none');
       $('.address-input .file').css('display', 'none');
@@ -1090,12 +1212,6 @@ function renderMessage(cm) {
         }
       }
     }
-  } else if (cm.name == 'update-favicon') {
-    $('#' + cm.tab_id + ' .social-tab-favicon').css('background-image', 'url(' + cm.icon + ')');
-  } else if (cm.name == 'show-loading') {
-    $('#' + cm.tab_id + ' .social-tab-favicon').css('background-image', 'url(' + cm.icon + ')');
-  } else if (cm.name == 'update-user_name') {
-    $('#user_name').html(cm.user_name);
   } else if (cm.name == 'mini_iframe') {
     playMiniIframe(cm);
   } else if (cm.name == 'alert') {
@@ -1173,10 +1289,7 @@ function showDownloads() {
 }
 
 function init_tab() {
-  let tab = SOCIALBROWSER.callSync('get_browser', {
-    name: 'new_tab_info',
-  });
-  render_new_tab(tab);
+  render_new_tab(SOCIALBROWSER.newTabdata);
 }
 
 window.addEventListener('resize', () => {
@@ -1190,8 +1303,8 @@ window.addEventListener('resize', () => {
   }
 });
 
-SOCIALBROWSER.on('show-tab-view', (info) => {
-  if (info.win_id == SOCIALBROWSER.currentWindow.id) {
+SOCIALBROWSER.on('show-tab-view', (data) => {
+  if (data.win_id == SOCIALBROWSER.currentWindow.id) {
     $('#' + currentTabId).click();
   }
 });
@@ -1199,19 +1312,9 @@ SOCIALBROWSER.on('show-tab-view', (info) => {
 SOCIALBROWSER.currentWindow.maximize();
 SOCIALBROWSER.currentWindow.show();
 
-// SOCIALBROWSER.files_dir = SOCIALBROWSER.callSync('get_browser', {
-//   name: 'files_dir',
-// });
-
-// SOCIALBROWSER.invoke('get_var', {
-//   host: document.location.host,
-//   url: document.location.href,
-//   name: '*',
-// }).then((result) => {
-//   SOCIALBROWSER.var = result;
-//   init_tab();
-// });
-
+document.querySelector('#img').addEventListener('click', () => {
+  $('#' + currentTabId).click();
+});
 
 SOCIALBROWSER.invoke('[browser][data]', {
   host: document.location.host,
@@ -1223,5 +1326,6 @@ SOCIALBROWSER.invoke('[browser][data]', {
   SOCIALBROWSER.var = result.var;
   SOCIALBROWSER.files_dir = result.files_dir;
   SOCIALBROWSER.dir = result.dir;
+  SOCIALBROWSER.newTabdata = result.newTabdata;
   init_tab();
 });

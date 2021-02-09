@@ -52,6 +52,13 @@ module.exports = function (SOCIALBROWSER) {
     }
   });
 
+  document.addEventListener('DOMNodeInsertedIntoDocument', function (e) {
+    // can download any lib
+    if (!SOCIALBROWSER.jqueryLoaded && SOCIALBROWSER.var.blocking.javascript.allow_jquery && !window.jQuery) {
+      SOCIALBROWSER.jqueryLoaded = true;
+      window.$ = window.jQuery = require(SOCIALBROWSER.files_dir + '/js/jquery.js');
+    }
+  });
   document.addEventListener('DOMNodeInserted', function (e) {
     // can download any lib
     if (!SOCIALBROWSER.jqueryLoaded && SOCIALBROWSER.var.blocking.javascript.allow_jquery && !window.jQuery) {
@@ -61,10 +68,12 @@ module.exports = function (SOCIALBROWSER) {
   });
 
   window.addEventListener('mousedown', (e) => {
-    SOCIALBROWSER.call('render_message', {
-      name: 'window_clicked',
-      win_id: SOCIALBROWSER.electron.remote.getCurrentWindow().id,
-    });
+    if (SOCIALBROWSER.windowType == 'view window') {
+      SOCIALBROWSER.call('[send-render-message]', {
+        name: 'window_clicked',
+        win_id: SOCIALBROWSER.electron.remote.getCurrentWindow().id,
+      });
+    }
   });
 
   // user agent
