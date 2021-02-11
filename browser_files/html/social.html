@@ -71,12 +71,12 @@
           <i class="fa fa-refresh"></i>
         </a>
         <div class="address-input pointer" onclick="showURL()">
-          <div class="https"></div>
-          <div class="http"></div>
-          <div class="ftp"></div>
-          <div class="file"></div>
-          <div class="browser"></div>
-          <p class="url"></p>
+          <div class="https protocol"></div>
+          <div class="http protocol"></div>
+          <div class="ftp protocol"></div>
+          <div class="file protocol"></div>
+          <div class="browser protocol"></div>
+          <input class="url" oninput="" onkeydown="goURL(event)" />
         </div>
 
         <a title="Bookmarks" class="bookmarks" onclick="showBookmarksMenu();">
@@ -114,6 +114,7 @@
     </div>
 
     <img id="img" src="http://127.0.0.1:60080/images/background.png" alt="" />
+
 
     <script src="http://127.0.0.1:60080/js/an.min.js"></script>
 

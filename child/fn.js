@@ -116,6 +116,47 @@ module.exports = function (child) {
     return out;
   };
 
+  child.get_overwrite_info = function (url) {
+    let info = {
+      url: url,
+      overwrite: false,
+      new_url: url,
+    };
+
+    child.coreData.var.overwrite.urls.forEach((data) => {
+      if (info.overwrite) {
+        return;
+      }
+      if (info.url.like(data.from)) {
+        if (data.time && new Date().getTime() - data.time < 3000) {
+          return;
+        }
+        if (data.ignore && info.url.like(data.ignore)) {
+          return;
+        }
+
+        info.new_url = data.to;
+        data.rediect_from = info.url;
+
+        child.log(`\n Auto overwrite redirect from \n   ${info.url} \n to \n   ${info.new_url} \n`);
+        data.time = new Date().getTime();
+        if (data.query !== false) {
+          let q = url.split('?')[1];
+          if (q) {
+            q = '?' + q;
+          } else {
+            q = '';
+          }
+          info.new_url = data.to + q;
+        }
+
+        info.overwrite = true;
+        return;
+      }
+    });
+    return info;
+  };
+
   child.updateTab = function (setting) {
     if (setting.windowType !== 'view window') {
       return;

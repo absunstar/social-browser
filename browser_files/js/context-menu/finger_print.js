@@ -34,8 +34,6 @@ module.exports = function (SOCIALBROWSER) {
     };
   }
 
-  window.mozRTCPeerConnection = window.webkitRTCPeerConnection;
-
   if (SOCIALBROWSER.var.blocking.privacy.set_window_active) {
     SOCIALBROWSER.eventOff +=
       'document(mouseout)|document(pagehide)|document(hashchange)|document(popstate)|document(state-change)|document(visibilitychange)|document(webkitvisibilitychange)|document(blur)';
@@ -49,7 +47,6 @@ module.exports = function (SOCIALBROWSER) {
   }
 
   if (SOCIALBROWSER.var.blocking.privacy.block_rtc) {
-    window.mozRTCPeerConnection = null;
     window.webkitRTCPeerConnection = null;
     window.RTCPeerConnection = null;
   }

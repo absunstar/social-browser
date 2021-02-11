@@ -36,6 +36,7 @@ browser.clipboard = browser.electron.clipboard;
 browser.remote = browser.electron.remote;
 browser.shell = browser.electron.shell;
 browser.dialog = browser.electron.dialog;
+browser.child_index = 0;
 
 browser.dir = process.resourcesPath + '/app.asar';
 if (!browser.fs.existsSync(browser.dir)) {
@@ -50,7 +51,8 @@ browser.Partitions_data_dir = browser.path.join(browser.data_dir, 'default', 'Pa
 require(browser.path.join(browser.dir, '/parent/parent.js'))(browser);
 
 browser.createChild = function (options) {
-  let index = browser.clientList.length;
+  let index = browser.child_index;
+  browser.child_index++;
   browser.clientList[index] = {
     source: 'child',
     index: index,
@@ -71,17 +73,23 @@ browser.createChild = function (options) {
 
   child.on('close', (code, signal) => {
     browser.log(`child ${child.pid} close with code ${code} and signal ${signal}`);
+
+    if (!browser.clientList[index] || !browser.clientList[index].options || !browser.clientList[index].options.tab_id) {
+      return;
+    }
+    let tab_id = browser.clientList[index].options.tab_id;
+    browser.clientList.splice(index, 1);
+
     browser.clientList.forEach((client, i) => {
       if (client.windowType === 'main window') {
         client.ws.send(
           JSON.stringify({
             type: '[remove-tab]',
-            tab_id: browser.clientList[index].options.tab_id,
+            tab_id: tab_id,
           }),
         );
       }
     });
-    browser.clientList.splice(index, 1);
   });
 
   child.on('error', (err) => {

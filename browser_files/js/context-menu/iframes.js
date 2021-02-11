@@ -7,23 +7,24 @@ module.exports = function (SOCIALBROWSER) {
   SOCIALBROWSER.log(' >>> IFrame Activated');
 
   function iframesHandle(e) {
+    console.log('iframesHandle')
     if (SOCIALBROWSER.var.blocking.block_empty_iframe && e.target.tagName == 'IFRAME' && (!e.target.src || e.target.src == 'about:blank')) {
       e.target.remove();
     } else if (SOCIALBROWSER.var.blocking.remove_external_iframe && e.target.tagName == 'IFRAME' && !e.target.src.like(document.location.protocol + '//' + document.location.hostname + '*')) {
       e.target.remove();
     } else if (e.target.tagName == 'IFRAME') {
-      if (e.target.hasAttribute('sandbox')) {
-        e.target.removeAttribute('sandbox');
-        e.target.parentNode.replaceChild(e.target.cloneNode(true), e.target);
-      }
+      // if (e.target.hasAttribute('sandbox')) {
+      //   e.target.removeAttribute('sandbox');
+      //   e.target.parentNode.replaceChild(e.target.cloneNode(true), e.target);
+      // }
     }
   }
 
   document.addEventListener('DOMNodeInserted', function (e) {
-    iframesHandle(e);
+    // iframesHandle(e);
   });
 
   document.addEventListener('DOMNodeInsertedIntoDocument', function (e) {
-    iframesHandle(e);
+   // iframesHandle(e);
   });
 };

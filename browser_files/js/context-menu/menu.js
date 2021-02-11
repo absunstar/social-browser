@@ -571,10 +571,7 @@ module.exports = function (SOCIALBROWSER) {
           new $menuItem({
             label: 'Copy link',
             click() {
-              SOCIALBROWSER.call('[send-render-message]', {
-                name: 'copy',
-                text: u,
-              });
+              SOCIALBROWSER.electron.clipboard.writeText(u)
             },
           }),
         );
@@ -684,10 +681,7 @@ module.exports = function (SOCIALBROWSER) {
         new $menuItem({
           label: 'Copy image address',
           click() {
-            SOCIALBROWSER.call('[send-render-message]', {
-              name: 'copy',
-              text: url,
-            });
+            SOCIALBROWSER.electron.clipboard.writeText(url)
           },
         }),
       );
@@ -721,10 +715,7 @@ module.exports = function (SOCIALBROWSER) {
         new $menuItem({
           label: 'Copy inner text',
           click() {
-            SOCIALBROWSER.call('[send-render-message]', {
-              name: 'copy',
-              text: node.innerText,
-            });
+            SOCIALBROWSER.electron.clipboard.writeText(node.innerText)
           },
         }),
       );
@@ -732,10 +723,7 @@ module.exports = function (SOCIALBROWSER) {
         new $menuItem({
           label: 'Copy inner html',
           click() {
-            SOCIALBROWSER.call('[send-render-message]', {
-              name: 'copy',
-              text: node.innerHTML,
-            });
+            SOCIALBROWSER.electron.clipboard.writeText(node.innerText)
           },
         }),
       );
@@ -815,7 +803,7 @@ module.exports = function (SOCIALBROWSER) {
       click() {
         SOCIALBROWSER.call('[send-render-message]', {
           name: 'force reload',
-          win_id : SOCIALBROWSER.currentWindow.id,
+          win_id: SOCIALBROWSER.currentWindow.id,
           origin: document.location.origin || document.location.href,
           storages: ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage'],
         });
@@ -827,7 +815,7 @@ module.exports = function (SOCIALBROWSER) {
       click() {
         SOCIALBROWSER.call('[send-render-message]', {
           name: 'force reload',
-          win_id : SOCIALBROWSER.currentWindow.id,
+          win_id: SOCIALBROWSER.currentWindow.id,
           origin: document.location.origin || document.location.href,
           storages: ['cookies'],
         });
@@ -839,7 +827,7 @@ module.exports = function (SOCIALBROWSER) {
       click() {
         SOCIALBROWSER.call('[send-render-message]', {
           name: 'force reload',
-          win_id : SOCIALBROWSER.currentWindow.id,
+          win_id: SOCIALBROWSER.currentWindow.id,
           origin: document.location.origin || document.location.href,
           storages: ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage', 'cookies'],
         });
@@ -975,10 +963,7 @@ module.exports = function (SOCIALBROWSER) {
         arr2.push({
           label: 'Copy link ',
           click() {
-            SOCIALBROWSER.call('[send-render-message]', {
-              name: 'copy',
-              text: f.src,
-            });
+            SOCIALBROWSER.electron.clipboard.writeText(f.src)
           },
         });
         arr2.push({
@@ -1061,10 +1046,7 @@ module.exports = function (SOCIALBROWSER) {
       arr3.push({
         label: 'copy link',
         click() {
-          SOCIALBROWSER.call('[send-render-message]', {
-            name: 'copy',
-            text: f.src,
-          });
+          SOCIALBROWSER.electron.clipboard.writeText(f.src)
         },
       });
 
@@ -1102,10 +1084,7 @@ module.exports = function (SOCIALBROWSER) {
         arr3.push({
           label: 'copy link ',
           click() {
-            SOCIALBROWSER.call('[send-render-message]', {
-              name: 'copy',
-              text: f.src,
-            });
+            SOCIALBROWSER.electron.clipboard.writeText(f.src)
           },
         });
 
@@ -1146,10 +1125,7 @@ module.exports = function (SOCIALBROWSER) {
       new $menuItem({
         label: 'Copy page Link',
         click() {
-          SOCIALBROWSER.call('[send-render-message]', {
-            name: 'copy',
-            text: window.location.href,
-          });
+          SOCIALBROWSER.electron.clipboard.writeText(window.location.href)
         },
       }),
     );
@@ -1588,10 +1564,7 @@ module.exports = function (SOCIALBROWSER) {
         new $menuItem({
           label: 'Copy            ' + text.substring(0, 30),
           click() {
-            SOCIALBROWSER.call('[send-render-message]', {
-              name: 'copy',
-              text: text,
-            });
+            SOCIALBROWSER.electron.clipboard.writeText(text)
           },
         }),
       );
@@ -1817,7 +1790,7 @@ module.exports = function (SOCIALBROWSER) {
         click() {
           SOCIALBROWSER.call('[send-render-message]', {
             name: 'force reload',
-            win_id : SOCIALBROWSER.currentWindow.id,
+            win_id: SOCIALBROWSER.currentWindow.id,
             origin: document.location.origin || document.location.href,
             storages: ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage'],
           });
@@ -1940,7 +1913,7 @@ module.exports = function (SOCIALBROWSER) {
     return menu;
   }
 
-  let contextMenuHandle = function (e) {
+  let contextMenuHandle = function (e, params) {
     // SOCIALBROWSER.log('window.oncontextmenu')
     try {
       let factor = xwin.webContents.zoomFactor || 1;
@@ -1964,6 +1937,7 @@ module.exports = function (SOCIALBROWSER) {
       let m = createMenu(node, document, xwin);
 
       if (m) {
+
         m.popup({
           window: xwin,
         });
@@ -1987,6 +1961,5 @@ module.exports = function (SOCIALBROWSER) {
       }
     });
   };
-
-  window.___activate_context_menu();
+   window.___activate_context_menu();
 };

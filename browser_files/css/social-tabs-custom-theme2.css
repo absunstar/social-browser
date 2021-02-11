@@ -184,11 +184,14 @@
 }
 
 .address-input .url {
-  display: inline;
-  padding: 5px;
+  display: inline-block;
   vertical-align: sub;
-  margin: 5px;
-
+  width: 90%;
+  padding: 0px;
+  margin: 0px;
+}
+.address-input .url:focus {
+  color: blue;
 }
 
 .address-input .browser {

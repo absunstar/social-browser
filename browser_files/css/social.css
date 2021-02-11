@@ -222,6 +222,12 @@ button {
   transform: translate3d(229px, 0, 0);
 }
 
+@media only screen and (max-width: 1300px) {
+  .address-input .url {
+    width: 80% !important;
+  }
+}
+
 @media only screen and (max-width: 1100px) {
   .brand {
     display: none;
@@ -249,11 +255,14 @@ button {
     display: none;
   }
   .address-input {
-    width: 40% !important;
+    width: 70% !important;
+  }
+  .address-input .url {
+    width: 80% !important;
   }
 }
 
-@media only screen and (max-width: 450px) {
+@media only screen and (max-width: 650px) {
   #user_name {
     display: none;
   }
@@ -267,12 +276,24 @@ button {
     display: none;
   }
   .address-input {
-    width: 30% !important;
+    width: 75% !important;
   }
 }
 
-@media only screen and (max-width: 345px) {
-  .reload , .address-input {
-    display: none;
+@media only screen and (max-width: 450px) {
+  .address-input .protocol {
+    display: none !important;
+  }
+  .address-input {
+    width: 60% !important;
+  }
+}
+
+@media only screen and (max-width: 360px) {
+  #setting , .social-tabs-content , .reload{
+    display: none !important;
+  }
+  .address-input .url {
+    width: 95% !important;
   }
 }

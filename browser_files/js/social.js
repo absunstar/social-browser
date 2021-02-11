@@ -1,3 +1,4 @@
+
 function escape(s) {
   if (!s) {
     return '';
@@ -52,6 +53,11 @@ if (!String.prototype.contains) {
     return r;
   };
 }
+
+var socialTabsDom = document.querySelector('.social-tabs');
+var socialTabs = new SocialTabs();
+var currentTabId = null;
+var opendTabList = [];
 
 var SOCIALBROWSER = {};
 SOCIALBROWSER.electron = require('electron');
@@ -118,6 +124,23 @@ SOCIALBROWSER.nativeImage = function (_path) {
     return null;
   }
 };
+
+function goURL(e) {
+  if (e.keyCode == 13) {
+    url = $addressbar.val();
+    if (url.indexOf('://') === -1) {
+      if (url.indexOf('.') !== -1) {
+        url = 'http://' + url;
+      } else {
+        url = 'https://google.com/search?q=' + url;
+      }
+    }
+
+    SOCIALBROWSER.call('[update-view-url]', {
+      url: url,
+    });
+  }
+}
 
 function add_input_menu(node, menu) {
   if (!node) return;
@@ -474,7 +497,7 @@ document.addEventListener(
           url: window.location.href,
         });
       }
-    } else if (e.keyCode == 69 /*escape*/) {
+    } else if (e.keyCode == 69 && e.ctrlKey == true /*E*/ ) {
       SOCIALBROWSER.call('[send-render-message]', {
         name: 'edit-page',
       });
@@ -814,11 +837,7 @@ SOCIALBROWSER.on('[send-render-message]', (event, data) => {
   renderMessage(data);
 });
 
-var socialTabsDom = document.querySelector('.social-tabs');
-var socialTabs = new SocialTabs();
-var currentTabId = null;
-var opendTabList = [];
-SOCIALBROWSER.$is_full_screen = false;
+
 
 socialTabs.init(socialTabsDom, {
   tabOverlapDistance: 14,
@@ -827,6 +846,17 @@ socialTabs.init(socialTabsDom, {
 });
 
 let $addressbar = $('.address-input .url');
+$addressbar.focus(() => {
+  if ($addressbar.val().like('*...*') || !$addressbar.val().like('http*')) {
+    $addressbar.val($('#' + currentTabId).attr('url'));
+  }
+});
+
+function setURL(value) {
+  if (!$addressbar.is(':focus')) {
+    $addressbar.val(value.replace('http://' , '').replace('https://' , ''));
+  }
+}
 
 function showAddressBar() {
   $('.social-address-bar').show();
@@ -928,7 +958,7 @@ socialTabsDom.addEventListener('activeTabChange', ({ detail }) => {
         .like('http://127.0.0.1:60080*')
     ) {
       $('.address-input .protocol').html('');
-      $('.address-input .url').html('');
+      setURL('');
     } else {
       let protocol = '';
       let url = '';
@@ -985,9 +1015,9 @@ socialTabsDom.addEventListener('activeTabChange', ({ detail }) => {
       $('.address-input .protocol').html(protocol);
       let w = document.querySelectorAll('.address-input')[0].clientWidth / 13;
       if (url.length > w) {
-        $('.address-input .url').html(url.substring(0, w) + ' ...');
+        setURL(url.substring(0, w) + ' ...');
       } else {
-        $('.address-input .url').html(url);
+        setURL(url);
       }
     }
   }
@@ -1103,7 +1133,6 @@ function renderMessage(cm) {
     }
     if (cm.user_name) {
       $('#' + cm.tab_id).attr('user_name', cm.user_name);
-      $('#user_name').html(cm.user_name);
     }
 
     if (cm.win_id) {
@@ -1169,7 +1198,7 @@ function renderMessage(cm) {
 
       if (cm.url.like('http://127.0.0.1:60080*')) {
         $('.address-input .protocol').html('');
-        $('.address-input .url').html('');
+        setURL('');
       } else {
         let protocol = '';
         let url = '';
@@ -1206,9 +1235,9 @@ function renderMessage(cm) {
         $('.address-input .protocol').html(protocol);
         let w = document.querySelectorAll('.address-input')[0].clientWidth / 13;
         if (url.length > w) {
-          $('.address-input .url').html(url.substring(0, w) + ' ...');
+          setURL(url.substring(0, w) + ' ...');
         } else {
-          $('.address-input .url').html(url);
+          setURL(url);
         }
       }
     }
@@ -1271,7 +1300,7 @@ function ExitSocialWindow(noTabs = false) {
   $('.address-input .file').html('');
   $('.address-input .ftp').html('');
   $('.address-input .browser').html('');
-  $('.address-input .url').html('');
+  setURL('');
 
   opendTabList.forEach((t, i) => {
     closeTab(t.id);
@@ -1294,12 +1323,11 @@ function init_tab() {
 
 window.addEventListener('resize', () => {
   let url = $('#' + currentTabId).attr('url') || '';
-  url = url.replace('https://', '').replace('http://', '');
   let w = document.querySelectorAll('.address-input')[0].clientWidth / 13;
   if (url.length > w) {
-    $('.address-input .url').html(url.substring(0, w) + ' ...');
+    setURL(url.substring(0, w) + ' ...');
   } else {
-    $('.address-input .url').html(url);
+    setURL(url);
   }
 });
 
@@ -1327,5 +1355,6 @@ SOCIALBROWSER.invoke('[browser][data]', {
   SOCIALBROWSER.files_dir = result.files_dir;
   SOCIALBROWSER.dir = result.dir;
   SOCIALBROWSER.newTabdata = result.newTabdata;
+ // window.$ = window.jQuery = require(SOCIALBROWSER.files_dir + '/js/jquery.js');
   init_tab();
 });

@@ -1,36 +1,26 @@
 module.exports = function init(browser) {
   browser.WebSocket = require('ws');
   browser._ws_ = new browser.WebSocket.Server({
-    port: 60081,
+    noServer: true,
+  });
+
+  browser.site.servers.forEach((server) => {
+    server.on('upgrade', function upgrade(request, socket, head) {
+      const pathname = browser.url.parse(request.url).pathname;
+
+      if (pathname === '/ws') {
+        browser._ws_.handleUpgrade(request, socket, head, function done(ws) {
+          browser._ws_.emit('connection', ws, request);
+        });
+      } else {
+        socket.destroy();
+      }
+    });
   });
 
   browser.clientList = [];
 
-  //   setInterval(() => {
-  //     let mainWindow = browser.get_main_window();
-  //     let screen = browser.electron.screen.getPrimaryDisplay();
-  //     childList.forEach((client) => {
-  //       if (client.ws.readyState === browser.WebSocket.OPEN) {
-  //         client.ws.send(
-  //           JSON.stringify({
-  //             type: '[send-window-status]',
-  //             pid: client.id,
-  //             mainWindow: mainWindow
-  //               ? {
-  //                   bounds: mainWindow.getBounds(),
-  //                   isMaximized: mainWindow.isMaximized(),
-  //                 }
-  //               : null,
-  //             screen: {
-  //               bounds: screen.bounds,
-  //             },
-  //           }),
-  //         );
-  //       }
-  //     });
-  //   }, 100);
-
-  browser._ws_.on('connection', (ws) => {
+  browser._ws_.on('connection', (ws , req) => {
     /** send connected message to client so client can request any data */
     ws.send(
       JSON.stringify({
@@ -96,13 +86,20 @@ module.exports = function init(browser) {
               }
             });
             break;
-            case '[close-view]':
-              browser.clientList.forEach((client) => {
-                if (client.index != message.index && client.ws && client.ws.readyState === browser.WebSocket.OPEN && message.options.tab_id === client.options.tab_id) {
-                  client.ws.send(JSON.stringify(message));
-                }
-              });
-              break;
+          case '[close-view]':
+            browser.clientList.forEach((client) => {
+              if (client.index != message.index && client.ws && client.ws.readyState === browser.WebSocket.OPEN && message.options.tab_id === client.options.tab_id) {
+                client.ws.send(JSON.stringify(message));
+              }
+            });
+            break;
+          case '[update-view-url]':
+            browser.clientList.forEach((client) => {
+              if (client.index != message.index && client.ws && client.ws.readyState === browser.WebSocket.OPEN && message.options.tab_id === client.options.tab_id) {
+                client.ws.send(JSON.stringify(message));
+              }
+            });
+            break;
           case '[send-window-status]':
             browser.lastWindowStatus = message;
             browser.clientList.forEach((client) => {
@@ -111,16 +108,20 @@ module.exports = function init(browser) {
               }
             });
             break;
-            case '[request-window-status]':
-              browser.clientList.forEach((client) => {
-                if (client.windowType !== 'main window' && client.ws && client.ws.readyState === browser.WebSocket.OPEN) {
-                  client.ws.send(JSON.stringify(browser.lastWindowStatus));
-                }
-              });
-              break;
+          case '[request-window-status]':
+            browser.clientList.forEach((client) => {
+              if (client.windowType !== 'main window' && client.ws && client.ws.readyState === browser.WebSocket.OPEN) {
+                client.ws.send(JSON.stringify(browser.lastWindowStatus));
+              }
+            });
+            break;
           case '[update-browser-var]':
             browser.set_var(message.options.name, message.options.data);
-
+            browser.clientList.forEach((client) => {
+              if (client.index !== message.index && client.ws && client.ws.readyState === browser.WebSocket.OPEN) {
+                client.ws.send(JSON.stringify(message));
+              }
+            });
             break;
           case '[update-tab-properties]':
             browser.clientList.forEach((client) => {

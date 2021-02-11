@@ -18,7 +18,10 @@ module.exports = function (SOCIALBROWSER) {
   SOCIALBROWSER.startURL = 'https://hitleap.com/traffic-exchange/start';
 
   if (document.location.href.like('https://hitleap.com/traffic-exchange')) {
-    document.location.href = SOCIALBROWSER.startURL;
+    alert('Waiting 10s ... For Redirect - Check IP Status ')
+    setTimeout(() => {
+      document.location.href = SOCIALBROWSER.startURL;
+    }, 1000 * 10);
     return;
   }
 
@@ -31,6 +34,8 @@ module.exports = function (SOCIALBROWSER) {
 
   
   SOCIALBROWSER.getSites = function () {
+    alert(`Waiting ...`);
+
     let myHeaders = {
       'User-Agent': '',
       'Viewer-Username': SOCIALBROWSER.hitleap_username,
@@ -80,6 +85,7 @@ module.exports = function (SOCIALBROWSER) {
   };
 
   SOCIALBROWSER.NextSites = function (body) {
+    alert(`Waiting ...`);
     let myHeaders = {
       'User-Agent': '',
       'Viewer-Username': SOCIALBROWSER.hitleap_username,

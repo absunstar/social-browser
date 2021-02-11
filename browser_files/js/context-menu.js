@@ -1,6 +1,6 @@
 (function () {
   'use strict';
-
+  
   var SOCIALBROWSER = {
     var: {
       core: { id: '', user_agent: '' },
@@ -44,7 +44,7 @@
     onEventOFF: [],
     jqueryOff: '',
     jqueryOn: '',
-    developerMode: false,
+    developerMode: true,
     log: function (...args) {
       if (this.developerMode) {
         console.log(...args);
@@ -105,17 +105,7 @@
   SOCIALBROWSER.timeOffset = new Date().getTimezoneOffset();
 
   SOCIALBROWSER.guid = function () {
-    return SOCIALBROWSER.md5(
-      document.location.hostname +
-        SOCIALBROWSER.session.name +
-        SOCIALBROWSER.session.display +
-        SOCIALBROWSER.session.privacy.cpu_count +
-        SOCIALBROWSER.session.privacy.memory_count +
-        SOCIALBROWSER.session.privacy.languages +
-        SOCIALBROWSER.session.privacy.connection.effectiveType +
-        SOCIALBROWSER.session.privacy.connection.rtt +
-        SOCIALBROWSER.session.privacy.connection.downlink,
-    );
+    return SOCIALBROWSER.md5(SOCIALBROWSER.session.name + document.location.hostname + SOCIALBROWSER.var.core.id);
   };
 
   SOCIALBROWSER.session_id = 0;
@@ -154,6 +144,7 @@
     l_name = '*';
   }
   if (document.location.origin && document.location.origin != 'null') {
+    SOCIALBROWSER.log(' ||| Origin ' + document.location.origin)
     SOCIALBROWSER.invoke('[browser][data]', {
       host: document.location.host,
       url: document.location.href,
@@ -177,6 +168,13 @@
 
       require(SOCIALBROWSER.files_dir + '/js/context-menu/init.js')(SOCIALBROWSER);
       require(SOCIALBROWSER.files_dir + '/js/context-menu/load.js')(SOCIALBROWSER);
+
+      SOCIALBROWSER.on('[update-browser-var]', (e, res) => {
+        SOCIALBROWSER.var[res.options.name] = res.options.data;
+        if (res.options.name == 'session_list') {
+          SOCIALBROWSER.var.session_list.sort((a, b) => (a.display > b.display ? 1 : -1));
+        }
+      });
     });
   }
 

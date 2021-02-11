@@ -11,12 +11,15 @@ module.exports = function (child) {
       height: setting.height || 720,
       x: setting.x || 0,
       y: setting.y || 0,
+      minWidth: 280,
+      minHeight: 200,
       fullscreenable: true,
       title: setting.title || 'New Tab',
       backgroundColor: setting.backgroundColor || '#ffffff',
       frame: setting.windowType.like('*youtube*'),
       icon: child.coreData.icon,
       webPreferences: {
+        spellcheck: false,
         sandbox: false,
         webaudio: typeof setting.webaudio == 'undefined' ? true : setting.webaudio,
         enableRemoteModule: true,
@@ -29,14 +32,14 @@ module.exports = function (child) {
         nodeIntegrationInSubFrames: true,
         nodeIntegrationInWorker: setting.windowType === 'main window',
         experimentalFeatures: setting.windowType === 'main window',
-        webSecurity: true,
-        allowRunningInsecureContent: false,
+        webSecurity: setting.windowType !== 'main window',
+        allowRunningInsecureContent: setting.windowType === 'main window',
         plugins: true,
       },
     });
 
     if (!child.window) {
-      child.window = win 
+      child.window = win;
     }
     child.windowList.push({
       window: win,
@@ -152,7 +155,7 @@ module.exports = function (child) {
     });
 
     win.on('closed', () => {
-    //  process.exit();
+      //  process.exit();
     });
 
     win.on('app-command', (e, cmd) => {
@@ -163,6 +166,63 @@ module.exports = function (child) {
       } else if (cmd === 'browser-forward' && win.webContents.canGoForward()) {
         win.webContents.goForward();
       }
+    });
+    win.on('enter-full-screen', (e) => {
+      child.handleWindowBounds();
+      setTimeout(() => {
+        win.setAlwaysOnTop(true);
+        win.show();
+      }, 100);
+    });
+    win.on('leave-full-screen', (e) => {
+      child.handleWindowBounds();
+      win.setAlwaysOnTop(false);
+      win.show();
+    });
+    win.on('enter-html-full-screen', (e) => {
+      child.handleWindowBounds();
+      setTimeout(() => {
+        win.setAlwaysOnTop(true);
+        win.show();
+      }, 100);
+    });
+    win.on('leave-html-full-screen', (e) => {
+      child.handleWindowBounds();
+      win.setAlwaysOnTop(false);
+      win.show();
+    });
+
+    win.webContents.on('context-menu', (event, params) => {
+      const menu = new child.electron.Menu();
+
+      // Add each spelling suggestion
+      for (const suggestion of params.dictionarySuggestions) {
+        event.preventDefault();
+        menu.append(
+          new MenuItem({
+            label: suggestion,
+            click: () => win.webContents.replaceMisspelling(suggestion),
+          }),
+        );
+      }
+
+      // Allow users to add the misspelled word to the dictionary
+      if (params.misspelledWord) {
+        menu.append(
+          new MenuItem({
+            label: 'Add to dictionary',
+            click: () => win.webContents.session.addWordToSpellCheckerDictionary(params.misspelledWord),
+          }),
+        );
+      }
+
+      menu.popup();
+    });
+
+    win.webContents.on('before-input-event', (event, input) => {
+      // For example, only enable application menu keyboard shortcuts when
+      // Ctrl/Cmd are down.
+      win.webContents.setIgnoreMenuShortcuts(!input.control && !input.meta);
     });
 
     win.webContents.on('page-title-updated', (e) => {
@@ -184,7 +244,7 @@ module.exports = function (child) {
       setting.icon = setting.favicon;
       child.updateTab(setting);
     });
-    win.webContents.on('did-finish-load', (e,) => {
+    win.webContents.on('did-finish-load', (e) => {
       setting.icon = setting.favicon;
       child.updateTab(setting);
     });
@@ -229,17 +289,13 @@ module.exports = function (child) {
       win.webContents.reload();
     });
 
-    win.webContents.on('did-get-redirect-request', (e) => {
-      if (e.isMainFrame) {
-        win.loadURL(e.newURL);
-      }
-    });
 
     win.webContents.on('will-navigate', (e, url) => {
       // when user click on link _blank
     });
 
     win.webContents.on('will-redirect', (e, url) => {
+      let ok = false;
       child.coreData.var.overwrite.urls.forEach((data) => {
         if (url.like(data.from)) {
           if (data.time && new Date().getTime() - data.time < 3000) {
@@ -249,25 +305,32 @@ module.exports = function (child) {
           if (data.ignore && url.like(data.ignore)) {
             return;
           }
+          ok = true;
           e.preventDefault();
           win.loadURL(data.to);
         }
       });
+      // if (!ok) {
+      //   win.loadURL(url);
+      // }
     });
 
     win.webContents.on('new-window', function (event, url, frameName, disposition, options, additionalFeatures, referrer, postBody) {
       event.preventDefault();
 
+      let real_url = url || event.url || '';
+
+      console.log('new-window Event call ' + real_url);
+
       const loadOptions = {
         httpReferrer: referrer,
       };
+
       if (postBody != null) {
         const { data, contentType, boundary } = postBody;
         loadOptions.postData = postBody.data;
         loadOptions.extraHeaders = `content-type: ${contentType}; boundary=${boundary}`;
       }
-
-      let real_url = url || event.url || '';
 
       if (real_url.like('https://www.youtube.com/watch*')) {
         real_url = 'https://www.youtube.com/embed/' + real_url.split('=')[1].split('&')[0];
@@ -303,26 +366,20 @@ module.exports = function (child) {
         return;
       }
 
-      event.options = event.options || {
-        url: url,
-      };
-
-      let url_p = child.url.parse(event.options.url);
-
-      if (event.options.url.like('*#___new_tab___*')) {
-        child.sendMessage('[send-render-message]', {
-          name: '[open new tab]',
-          url: event.options.url.replace('#___new_tab___', '').replace('#___new_popup__', '').replace('#___trusted_window___', ''),
+      if (real_url.like('*#___new_tab___*')) {
+        child.sendMessage({
+          type: '[open new tab]',
+          url: real_url.replace('#___new_tab___', '').replace('#___new_popup__', '').replace('#___trusted_window___', ''),
           partition: setting.partition,
           user_name: setting.user_name,
         });
         return;
       }
 
-      if (event.options.url.like('*#___trusted_window___*')) {
-        child.sendMessage('[send-render-message]', {
+      if (real_url.like('*#___trusted_window___*')) {
+        child.sendMessage({
           name: 'new_trusted_window',
-          url: event.options.url.replace('#___new_tab___', '').replace('#___new_popup__', '').replace('#___trusted_window___', ''),
+          url: real_url.replace('#___new_tab___', '').replace('#___new_popup__', '').replace('#___trusted_window___', ''),
           show: true,
           partition: setting.partition,
           user_name: setting.user_name,
@@ -330,45 +387,54 @@ module.exports = function (child) {
         return;
       }
 
-      if (event.options.url.like('*#___new_popup___*')) {
-        child.sendMessage('[send-render-message]', {
-          name: 'new_popup',
-          url: event.options.url.replace('#___new_tab___', '').replace('#___new_popup__', '').replace('#___trusted_window___', ''),
-          show: true,
-          alwaysOnTop: true,
+      if (real_url.like('*#___new_popup___*')) {
+        child.createNewWindow({
+          windowType: 'popup',
+          title: 'New Popup',
+          width: 800,
+          height: 600,
+          backgroundColor: '#ffffff',
+          center: true,
+          url: event.options.url,
           partition: setting.partition,
           user_name: setting.user_name,
         });
         return;
       }
 
-      let url2_p = browser.url.parse(view.window.getURL());
+      let url_parser = child.url.parse(real_url);
+      let current_url_parser = child.url.parse(win.getURL());
 
-      if (url_p.host.contains(url2_p.host) && browser.var.blocking.popup.allow_internal) {
-        child.sendMessage('[send-render-message]', {
-          name: '[open new tab]',
-          url: url.replace('#___new_tab___', '').replace('#___new_popup__', '').replace('#___trusted_window___', ''),
-          partition: setting.partition,
-          user_name: setting.user_name,
+      if (url_parser.host.contains(current_url_parser.host) && child.coreData.var.blocking.popup.allow_internal) {
+        console.log('call internal url ' + real_url);
+        child.sendMessage({
+          type: '[send-render-message]',
+          data: {
+            name: '[open new tab]',
+            url: real_url.replace('#___new_tab___', '').replace('#___new_popup__', '').replace('#___trusted_window___', ''),
+            partition: setting.partition,
+            user_name: setting.user_name,
+            options : child.coreData.options
+          },
         });
-      } else if (!url_p.host.contains(url2_p.host) && browser.var.blocking.popup.allow_external) {
-        child.sendMessage('[send-render-message]', {
-          name: '[open new tab]',
-          url: url.replace('#___new_tab___', '').replace('#___new_popup__', '').replace('#___trusted_window___', ''),
+      } else if (!url_parser.host.contains(current_url_parser.host) && child.coreData.var.blocking.popup.allow_external) {
+        child.sendMessage({
+          type: '[open new tab]',
+          url: real_url.replace('#___new_tab___', '').replace('#___new_popup__', '').replace('#___trusted_window___', ''),
           partition: setting.partition,
           user_name: setting.user_name,
         });
       } else {
         let allow = false;
-        browser.var.blocking.popup.white_list.forEach((d) => {
-          if (url_p.host.like(d.url) || url2_p.host.like(d.url)) {
+        child.coreData.var.blocking.popup.white_list.forEach((d) => {
+          if (url_parser.host.like(d.url) || current_url_parser.host.like(d.url)) {
             allow = true;
           }
         });
         if (allow) {
-          child.sendMessage('[send-render-message]', {
-            name: '[open new tab]',
-            url: url.replace('#___new_tab___', '').replace('#___new_popup__', '').replace('#___trusted_window___', ''),
+          child.sendMessage({
+            type: '[open new tab]',
+            url: real_url.replace('#___new_tab___', '').replace('#___new_popup__', '').replace('#___trusted_window___', ''),
             partition: setting.partition,
             user_name: setting.user_name,
           });

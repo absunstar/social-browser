@@ -32,6 +32,7 @@ var child = {
   dir: process.argv[2].replace('--dir=', ''),
   electron: require('electron'),
   fetch: require('node-fetch'),
+  url: require('url'),
   path: require('path'),
   fs: require('fs'),
   md5: require('md5'),
@@ -50,22 +51,31 @@ var child = {
   },
 };
 
-const { app, BrowserWindow } = child.electron;
+const { app, BrowserWindow, globalShortcut } = child.electron;
 
 require(child.path.join(child.dir, 'child', 'fn'))(child);
 require(child.path.join(child.dir, 'child', 'windows'))(child);
 require(child.path.join(child.dir, 'child', 'ipc'))(child);
 require(child.path.join(child.dir, 'child', 'session'))(child);
 
-app.disableHardwareAcceleration(); // for app speed
+// app.disableHardwareAcceleration(); // for app speed
 app.clearRecentDocuments();
 
 if (app.setUserTasks) {
   app.setUserTasks([]);
 }
 
+app.clearRecentDocuments();
+app.commandLine.appendSwitch('--no-sandbox');
+app.disableHardwareAcceleration();
+
 app.on('ready', function () {
-  app.setAccessibilitySupportEnabled(true);
+  globalShortcut.unregisterAll();
+  app.setAccessibilitySupportEnabled(false);
+
+  app.on('session-created', (session) => {
+    console.log(`session-created`);
+  });
 
   app.on('certificate-error', (event, webContents, url, error, certificate, callback) => {
     event.preventDefault();
@@ -77,8 +87,8 @@ app.on('ready', function () {
     app.exit(0);
   });
 
-  app.on('gpu-process-crashed', (event, session) => {
-    console.log('child gpu-process-crashed');
+  app.on('render-process-gone', (event, session) => {
+    console.log('child render-process-gone');
     app.exit(0);
   });
 
@@ -95,19 +105,102 @@ app.on('ready', function () {
     }
   });
 
+  app.on('login', (event, webContents, details, authInfo, callback) => {
+    console.log(`child ${child.id} request login`);
+    event.preventDefault();
+    callback('username', 'secret');
+  });
+
+  child.sendToWindow = function (...args) {
+    if (child.window && !child.window.isDestroyed()) {
+      child.window.webContents.send(...args);
+    }
+  };
+
+  child.sendToWindows = function (...args) {
+    child.windowList.forEach((win) => {
+      if (win.window && !win.window.isDestroyed()) {
+        win.window.webContents.send(...args);
+      }
+    });
+  };
+
+  child.handleWindowBounds = function () {
+    if (child.coreData.options.windowType === 'main window') {
+      return;
+    }
+
+    let mainWindow = child.coreData.options.mainWindow;
+    let screen = child.coreData.options.screen;
+
+    if (mainWindow.hide) {
+      if (!child.is_hide) {
+        child.getWindow().hide();
+        child.is_hide = true;
+      }
+    }
+
+    if (child.getWindow().isFullScreen()) {
+      let width = screen.bounds.width;
+      let height = screen.bounds.height;
+      child.getWindow().setBounds({
+        x: 0,
+        y: 0,
+        width: width,
+        height: height,
+      });
+      return;
+    } else {
+      let new_bounds = {
+        x: mainWindow.isMaximized ? mainWindow.bounds.x + 8 : mainWindow.bounds.x,
+        y: mainWindow.isMaximized ? mainWindow.bounds.y + 78 : mainWindow.bounds.y + 70,
+        width: mainWindow.isMaximized ? mainWindow.bounds.width - 15 : mainWindow.bounds.width - 2,
+        height: mainWindow.isMaximized ? mainWindow.bounds.height - 84 : mainWindow.bounds.height - 72,
+      };
+      let old_bounds = child.getWindow().getBounds();
+      if (old_bounds.width != new_bounds.width || old_bounds.height != new_bounds.height || old_bounds.y != new_bounds.y || old_bounds.x != new_bounds.x) {
+        child.getWindow().setBounds(new_bounds);
+      }
+    }
+    if (mainWindow.hide) {
+      if (!child.is_hide) {
+        child.getWindow().hide();
+        child.is_hide = true;
+      }
+    } else {
+      if (child.coreData.is_current_view) {
+        child.is_hide = false;
+        child.getWindow().show();
+        child.getWindow().setAlwaysOnTop(true);
+        child.getWindow().setAlwaysOnTop(false);
+      }
+    }
+  };
+
   function connect() {
-    child._ws_ = new child.WebSocket('ws://127.0.0.1:60081');
+    child._ws_ = new child.WebSocket('ws://127.0.0.1:60080/ws');
     child.sendMessage = function (message) {
       message.index = child.index;
       message.id = child.id;
       message.pid = child.id;
       child._ws_.send(JSON.stringify(message));
     };
-    child._ws_.on('open', function open() {});
+    child._ws_.on('open', function () {});
+    child._ws_.on('ping', function () {});
+    child._ws_.on('close', function (e) {
+      console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
+      setTimeout(function () {
+        connect();
+      }, 1000);
+    });
+    child._ws_.on('error', function (err) {
+      console.error('Socket encountered error: ', err.message);
+      child._ws_.close();
+    });
 
-    child._ws_.onmessage = function (event) {
+    child._ws_.on('message', function (event) {
       try {
-        let message = JSON.parse(event.data);
+        let message = JSON.parse(event.data || event);
         if (message.type == 'connected') {
           child.sendMessage({
             type: '[attach-child]',
@@ -117,10 +210,13 @@ app.on('ready', function () {
           child.electron.app.setPath('userData', child.path.join(child.coreData.data_dir, 'default'));
           child.sessionConfig();
           child.createNewWindow();
-        } else if (message.type == '[send-render-message]' && child.getWindow()) {
-          child.getWindow().webContents.send('[send-render-message]', message.data);
-        } else if (message.type == '[call-window-action]' && child.getWindow()) {
-          if (message.data.name == 'reload') {
+        } else if (message.type == '[send-render-message]') {
+          child.sendToWindow('[send-render-message]', message.data);
+        } else if (message.type == '[update-browser-var]') {
+          child.coreData.var[message.options.name] = message.options.data;
+          child.sendToWindows('[update-browser-var]', message);
+        } else if (message.type == '[call-window-action]') {
+          if (message.data.name == 'reload' && child.getWindow()) {
             child.getWindow().reload();
           } else if (message.data.name == 'force reload' && child.getWindow()) {
             let info = message.data;
@@ -175,7 +271,7 @@ app.on('ready', function () {
             child.getWindow().webContents.openDevTools();
           } else if (message.data.name == 'audio' && child.getWindow()) {
             child.getWindow().webContents.setAudioMuted(!child.getWindow().webContents.audioMuted);
-            child.updateTab();
+            child.updateTab(child.coreData.options);
           } else if (message.data.name == 'copy') {
             child.electron.clipboard.writeText(message.data.text.replace('#___new_tab___', '').replace('#___new_popup__', ''));
           } else if (message.data.name == 'full_screen' && child.getWindow()) {
@@ -188,6 +284,14 @@ app.on('ready', function () {
             child.getWindow().webContents.zoomFactor += 0.2;
           } else if (message.data.name == 'zoom-' && child.getWindow()) {
             child.getWindow().webContents.zoomFactor -= 0.2;
+          } else if (message.data.name == 'go back' && child.getWindow()) {
+            if (child.getWindow().webContents.canGoBack()) {
+              child.getWindow().webContents.goBack();
+            }
+          } else if (message.data.name == 'go forward' && child.getWindow()) {
+            if (child.getWindow().webContents.canGoForward()) {
+              child.getWindow().webContents.goForward();
+            }
           } else if (message.data.name == 'edit-page' && child.getWindow()) {
             child.getWindow().webContents.executeJavaScript(
               `
@@ -206,7 +310,7 @@ app.on('ready', function () {
             );
           }
         } else if (message.type == '[update-tab-properties]' && child.getWindow()) {
-          child.getWindow().webContents.send('[send-render-message]', message.data);
+          child.sendToWindow('[send-render-message]', message.data);
         } else if (message.type == '[show-view]' && child.getWindow()) {
           if (child.coreData.options.windowType === 'main window') {
             return;
@@ -232,76 +336,20 @@ app.on('ready', function () {
           }
         } else if (message.type == '[close-view]' && child.getWindow()) {
           child.getWindow().close();
+        } else if (message.type == '[update-view-url]' && child.getWindow()) {
+          child.getWindow().loadURL(message.options.url);
         } else if (message.type == '[remove-tab]' && child.getWindow()) {
-          child.getWindow().webContents.send('[send-render-message]', {name : '[remove-tab]' , tab_id : message.tab_id});
+          child.sendToWindow('[send-render-message]', { name: '[remove-tab]', tab_id: message.tab_id });
         } else if (message.type == '[send-window-status]' && child.getWindow()) {
-          if (child.coreData.options.windowType === 'main window') {
-            return;
-          }
           child.coreData.options.screen = message.screen;
           child.coreData.options.mainWindow = message.mainWindow;
-
-          let bounds = message.mainWindow.bounds;
-          let screen = message.screen;
-
-          if (message.mainWindow.hide) {
-            if (!child.is_hide) {
-              child.getWindow().hide();
-              child.is_hide = true;
-            }
-          }
-
-          if (child.getWindow().isFullScreen()) {
-            let width = screen.bounds.width;
-            let height = screen.bounds.height;
-            child.getWindow().setBounds({
-              x: 0,
-              y: 0,
-              width: width,
-              height: height,
-            });
-          } else {
-            let new_bounds = {
-              x: message.mainWindow.isMaximized ? bounds.x + 8 : bounds.x,
-              y: message.mainWindow.isMaximized ? bounds.y + 78 : bounds.y + 70,
-              width: message.mainWindow.isMaximized ? bounds.width - 15 : bounds.width - 2,
-              height: message.mainWindow.isMaximized ? bounds.height - 84 : bounds.height - 72,
-            };
-            let old_bounds = child.getWindow().getBounds();
-            if (old_bounds.width != new_bounds.width || old_bounds.height != new_bounds.height || old_bounds.y != new_bounds.y || old_bounds.x != new_bounds.x) {
-              child.getWindow().setBounds(new_bounds);
-            }
-          }
-          if (message.mainWindow.hide) {
-            if (!child.is_hide) {
-              child.getWindow().hide();
-              child.is_hide = true;
-            }
-          } else {
-            if (child.coreData.is_current_view) {
-              child.is_hide = false;
-              child.getWindow().show();
-              child.getWindow().setAlwaysOnTop(true);
-              child.getWindow().setAlwaysOnTop(false);
-            }
-          }
+          child.handleWindowBounds();
         }
       } catch (error) {
-        console.log('onmessage', error);
+        console.log('onmessage Error', error);
+        console.log(event)
       }
-    };
-
-    child._ws_.onclose = function (e) {
-      console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
-      setTimeout(function () {
-        connect();
-      }, 1000);
-    };
-
-    child._ws_.onerror = function (err) {
-      console.error('Socket encountered error: ', err.message, 'Closing socket');
-      ws.close();
-    };
+    });
   }
 
   connect();

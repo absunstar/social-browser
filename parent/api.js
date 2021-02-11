@@ -1,6 +1,6 @@
 module.exports = function init(browser) {
   const site = require('isite')({
-    port: [60000, 60080],
+    port: [60080 , 60000],
     name: 'Social Browser API',
     dir: browser.files_dir + '',
     stdin: false,

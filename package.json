@@ -110,7 +110,7 @@
   },
   "dependencies": {
     "custom-electron-titlebar": "^3.2.4",
-    "isite": "^1.14.42",
+    "isite": "^1.14.44",
     "ws": "^7.4.3"
   },
   "devDependencies": {

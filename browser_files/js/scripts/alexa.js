@@ -1,4 +1,9 @@
 module.exports = function (SOCIALBROWSER) {
+
+  if (!SOCIALBROWSER.var.blocking.social.allow_alexa) {
+    return;
+  }
+
   SOCIALBROWSER.log(' >>> Alexa script activated ...');
 
   if (SOCIALBROWSER.var.blocking.social.allow_alexa) {

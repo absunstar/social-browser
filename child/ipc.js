@@ -17,6 +17,40 @@ module.exports = function init(child) {
     }
   };
 
+  child.electron.ipcMain.on('[fetch][json]', (e, options) => {
+    child
+      .fetch(options.url, {
+        method: options.method || 'get',
+        headers: options.headers || { 'Content-Type': 'application/json' },
+        body: options.body,
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        e.reply('[fetch][json][data]', {
+          options: options,
+          data: data,
+        });
+        e.returnValue = data;
+      });
+  });
+
+  child.electron.ipcMain.on('[translate]', (e, info) => {
+    info.text = encodeURIComponent(info.text);
+    child
+      .fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=en&dt=t&dt=bd&dj=1&q=${info.text}`, {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json' },
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        e.reply('[translate][data]', data);
+      })
+      .catch((err) => {
+        browser.log(err);
+      });
+  });
+
+
   child.electron.ipcMain.handle('[browser][data]', async (event, data) => {
     return {
       child_id: child.id,
@@ -56,6 +90,13 @@ module.exports = function init(child) {
   child.electron.ipcMain.on('[close-view]', (e, options) => {
     child.sendMessage({
       type: '[close-view]',
+      options: options,
+    });
+  });
+
+  child.electron.ipcMain.on('[update-view-url]', (e, options) => {
+    child.sendMessage({
+      type: '[update-view-url]',
       options: options,
     });
   });

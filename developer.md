@@ -1,3 +1,6 @@
+## SSL
+openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 1000 -nodes
+
 ps -o pid,user,%mem,command ax | sort -b -k3 -r
 
 git config credential.helper store

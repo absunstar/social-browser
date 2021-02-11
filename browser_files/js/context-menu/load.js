@@ -6,10 +6,6 @@ module.exports = function (SOCIALBROWSER) {
   });
 
   SOCIALBROWSER.var.session_list.sort((a, b) => (a.display > b.display ? 1 : -1));
-  SOCIALBROWSER.on('var.session_list', (e, res) => {
-    SOCIALBROWSER.var.session_list = res.data;
-    SOCIALBROWSER.var.session_list.sort((a, b) => (a.display > b.display ? 1 : -1));
-  });
 
   require(SOCIALBROWSER.files_dir + '/js/context-menu/fn.js')(SOCIALBROWSER);
   require(SOCIALBROWSER.files_dir + '/js/context-menu/finger_print.js')(SOCIALBROWSER);
@@ -80,34 +76,49 @@ module.exports = function (SOCIALBROWSER) {
   let user_agent_url = null;
 
   SOCIALBROWSER.var.sites.forEach((site) => {
-    if (document.location.href.like(site.url)) {
+    if (document.location.href.like(site.url) && site.user_agent) {
       SOCIALBROWSER.__define(navigator, 'userAgent', site.user_agent);
       user_agent_url = site.user_agent;
     }
   });
 
   if (!user_agent_url) {
+
     if (SOCIALBROWSER.session.user_agent) {
       user_agent_url = SOCIALBROWSER.session.user_agent.url;
     } else {
       user_agent_url = SOCIALBROWSER.currentWindow.webContents.getUserAgent() || SOCIALBROWSER.var.core.user_agent;
     }
 
+    if(user_agent_url == "undefined"){
+      user_agent_url = SOCIALBROWSER.var.core.user_agent
+    }
     if (SOCIALBROWSER.var.blocking.privacy.enable_finger_protect && SOCIALBROWSER.var.blocking.privacy.mask_user_agent) {
       SOCIALBROWSER.__define(navigator, 'userAgent', user_agent_url.replace(') ', ') (' + SOCIALBROWSER.guid() + ') '));
+    } else {
+      SOCIALBROWSER.__define(navigator, 'userAgent', user_agent_url);
     }
+
   }
 
   let user_agent_info = SOCIALBROWSER.var.user_agent_list.find((u) => u.url == user_agent_url);
-  if (user_agent_info && SOCIALBROWSER.session.user_agent) {
-    if (SOCIALBROWSER.session.user_agent.vendor) {
-      SOCIALBROWSER.__define(navigator, 'vendor', SOCIALBROWSER.session.user_agent.vendor);
+  if (user_agent_info) {
+    if (user_agent_info.vendor) {
+      SOCIALBROWSER.__define(navigator, 'vendor', user_agent_info.vendor);
+      if(user_agent_info.vendor.like('*google*')){
+        SOCIALBROWSER.__define(window, 'chrome', {
+          app : {},
+          runtime : {},
+          csi : ()=>{},
+          loadTimes : ()=>{},
+        });
+      }
     }
-    if (SOCIALBROWSER.session.user_agent.oscpu) {
-      SOCIALBROWSER.__define(navigator, 'oscpu', SOCIALBROWSER.session.user_agent.oscpu);
+    if (user_agent_info.oscpu) {
+      SOCIALBROWSER.__define(navigator, 'oscpu', user_agent_info.oscpu);
     }
-    if (SOCIALBROWSER.session.user_agent.platform) {
-      SOCIALBROWSER.__define(navigator, 'platform', SOCIALBROWSER.session.user_agent.platform);
+    if (user_agent_info.platform) {
+      SOCIALBROWSER.__define(navigator, 'platform', user_agent_info.platform);
     }
   }
 };
