@@ -49,7 +49,7 @@ const plusTemplate = `
 let defaultTapProperties = {
   id: '',
   url: 'http://127.0.0.1:60080/newTab',
-  title: 'New Tab',
+  title: null,
   favicon: 'http://127.0.0.1:60080/images/loading-white.gif',
 };
 
@@ -368,7 +368,7 @@ class SocialTabs {
     tabEl.setAttribute('user_name', tabProperties.user_name);
     tabEl.setAttribute('proxy', tabProperties.proxy);
     tabEl.setAttribute('webaudio', tabProperties.webaudio);
-    tabEl.querySelector('.social-tab-title p').innerText = tabProperties.title;
+    tabEl.querySelector('.social-tab-title p').innerText = tabProperties.title || tabProperties.url;
     tabEl.querySelector('.social-tab-favicon').style.backgroundImage = `url('${tabProperties.favicon}')`;
   }
 

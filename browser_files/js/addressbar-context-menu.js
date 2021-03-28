@@ -92,12 +92,12 @@
       name: 'files_dir'
     })
     
-    SOCIALBROWSER.currentWindow = SOCIALBROWSER.electron.remote.getCurrentWindow()
+    SOCIALBROWSER.currentWindow = SOCIALBROWSER.remote.getCurrentWindow()
 
     const {
         Menu,
         MenuItem
-    } = SOCIALBROWSER.electron.remote
+    } = SOCIALBROWSER.remote
 
 
     function goURL(){

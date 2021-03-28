@@ -25,7 +25,7 @@
     </div>
     <div id='close'>&times;</div>
     <script>
-        const remote = require('electron').remote
+        const remote = require('@electron/remote');
         document.getElementById('close').addEventListener('click', event => {
             let window = remote.getCurrentWindow()
             window.close()

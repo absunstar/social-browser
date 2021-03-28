@@ -17,38 +17,52 @@
     <link rel="stylesheet" href="http://127.0.0.1:60080/css/social-tabs-custom-theme2.css" />
     <style>
       .btn {
-        background: var(--social-current-tab-fill);
-        min-width: 200px;
         font-size: 16px;
+        border-radius: 5px;
+        background: #2196f3;
+        color: #ffffff;
+        width: 80%;
+        display: inline-block;
+      }
+      .address-input {
+        width: 95% !important;
+      }
+      .float-right{
+        float: right;
       }
     </style>
   </head>
 
   <body ng-controller="mainController">
     <div class="address-input">
-      <input id="addressbar_id" ng-change="loadUrls(url)" ng-keydown="addressbarKeydown($event)" ng-model="url" type="text" />
+      <input id="addressbar_id" onclick="SOCIALBROWSER.currentWindow.show()" ng-change="loadUrls(url)" ng-keydown="addressbarKeydown($event)" ng-model="url" type="text" />
     </div>
 
     <div class="url-list">
       <ul>
-        <li ng-click="goUrl(u.url);$event.stopPropagation()" ng-class="{'selected' : u.selected}" href="{{u.url}}" ng-repeat="u in url_list2  track by $index">
+        <li ng-click="goUrl(u.url);$event.stopPropagation()" ng-class="{'selected' : u.selected}" href="{{u.url}}" ng-repeat="u in url_list2 track by $index">
           <a ng-click="goUrl(u.url);$event.stopPropagation()">
-            <img ng-src="{{u.logo}}" onerror="this.src='http://127.0.0.1:60080/images/no.png'" />
+            <img ng-src="{{u.logo2 || u.logo || u.favicon}}" onerror="this.src='http://127.0.0.1:60080/images/no.jpg'" />
             <span class="bold green" ng-click="goUrl(u.url);$event.stopPropagation()"> ( {{u.count}} ) </span>
-            <span class="blue" ng-click="goUrl(u.url);$event.stopPropagation()"> {{u.url | limitTo:70}} </span>
-
-            <b class="black" ng-click="goUrl(u.url);$event.stopPropagation()"> {{u.title | limitTo:70}} </b>
+            <span class="  blue" ng-click="goUrl(u.url);$event.stopPropagation()"> {{u.url | limitTo:70}} </span>
+            <span class="black float-right" ng-click="goUrl(u.url);$event.stopPropagation()"> {{u.title | limitTo:70}} </span>
           </a>
         </li>
       </ul>
       <br />
-      <div class="row" ng-show="url_list.length > 0">
-        <span class="btn" onclick="event.preventDefault();event.stopPropagation();" ng-click="urls_sort_property = '-count';loadUrls(url)"> Order By Visit Count </span>
+    </div>
 
-        <span class="btn" onclick="event.preventDefault();event.stopPropagation();" ng-click="urls_sort_property = '-last_visit' ;loadUrls(url) "> Order By Last Visit </span>
+    <div class="url-list-actions center" ng-show="url_list.length > 0">
+      <span class="btn" onclick="event.preventDefault();event.stopPropagation();" ng-click="loadUrls(url , 'count')">By Count </span>
 
-        <span class="btn" onclick="event.preventDefault();event.stopPropagation();" ng-click="urls_sort_property = 'url';loadUrls(url) "> Order By URL </span>
-      </div>
+      <span class="btn" onclick="event.preventDefault();event.stopPropagation();" ng-click="loadUrls(url, 'date') ">By Date </span>
+
+      <span class="btn" onclick="event.preventDefault();event.stopPropagation();" ng-click="loadUrls(url, 'url') ">By URL </span>
+      <br />
+      <br />
+      <br />
+      <br />
+      <span class="btn" onclick="event.preventDefault();event.stopPropagation();" ng-click="loadUrls(url, 'bookmark') "> Show Bookmarks </span>
     </div>
 
     <script src="http://127.0.0.1:60080/js/an.min.js"></script>
@@ -68,85 +82,96 @@
     </script>
 
     <script>
-      window.loadurl = function (url) {
-        $('#addressbar_id').focus();
-        $('#addressbar_id').select();
+      // if (SOCIALBROWSER.var.core.id.like('*test*')) {
+      //   SOCIALBROWSER.menu_list.push({
+      //     label: 'inspect Element',
+      //     click() {
+      //       SOCIALBROWSER.currentWindow.webContents.openDevTools({
+      //         mode: 'detach',
+      //       });
+      //       SOCIALBROWSER.currentWindow.webContents.inspectElement(SOCIALBROWSER.rightClickPosition.x, SOCIALBROWSER.rightClickPosition.y);
+      //     },
+      //   });
 
-        if (scope().url0 === url) {
-          scope().loadUrls(null, () => {
-            setTimeout(() => {
-              $('#addressbar_id').focus();
-              $('#addressbar_id').select();
-            }, 200);
-          });
-        } else {
-          scope().url0 = url;
-          scope().loadUrls(url, () => {
-            setTimeout(() => {
-              $('#addressbar_id').focus();
-              $('#addressbar_id').select();
-            }, 200);
-          });
-        }
-      };
+      //   SOCIALBROWSER.menu_list.push({
+      //     label: '[show-window-dev-tools]',
+      //     click() {
+      //       SOCIALBROWSER.currentWindow.webContents.openDevTools({
+      //         mode: 'detach',
+      //       });
+      //     },
+      //   });
+      // }
 
-      const { remote, nativeImage, ipcRenderer } = SOCIALBROWSER.electron;
       var app = angular.module('myApp', []);
+
       var scope = function () {
         return angular.element(document.querySelector('body')).scope();
       };
 
-      SOCIALBROWSER.on('var.urls', (e, res) => {
-        console.log('here');
-        scope().url_list = res.data;
+      SOCIALBROWSER.on('set-text-url', (e, data) => {
+        scope().url = data.url;
+        scope().tab_id = data.tab_id;
+        scope().loadUrls(scope().url, 'count');
+
+        setTimeout(() => {
+          $('#addressbar_id').select();
+          $('#addressbar_id').focus();
+        }, 500);
       });
 
       app.controller('mainController', ($scope, $http, $timeout) => {
-        $scope.urls_sort_property = '-count';
         $scope.url_list = [];
         $scope.url_list2 = [];
         $scope.url_index = -1;
         $scope.url0 = '';
+        $scope.sort = 'count';
 
-        $scope.loadUrls = function (url, callback) {
-          callback = callback || function () {};
-
+        $scope.loadUrls = function (url, sort) {
           if (url) {
             $scope.url = url;
           }
 
-          $timeout(() => {
-            if ($scope.url_list.length === 0) {
-              $scope.url_list = SOCIALBROWSER.var.urls || SOCIALBROWSER.callSync('get_var', { name: 'urls' });
-            }
+          $scope.url_list = SOCIALBROWSER.var.urls || [];
 
-            $scope.url_list2 = [];
-            $scope.url_index = -1;
+          $scope.url_list2 = [];
+          $scope.url_index = -1;
+          $scope.sort = sort || $scope.sort;
 
-            let sort = $scope.urls_sort_property;
-            if (sort === '-count') {
-              $scope.url_list.sort((a, b) => {
-                return b.count - a.count;
-              });
-            } else if (sort === '-last_visit') {
-              $scope.url_list.sort((a, b) => {
-                return b.last_visit - a.last_visit;
-              });
-            } else if (sort === 'url') {
-              $scope.url_list.sort((a, b) => {
-                return b.url > a.url;
-              });
-            }
+          if ($scope.sort === 'count') {
+            $scope.url_list.sort((a, b) => {
+              return b.count - a.count;
+            });
+          } else if ($scope.sort === 'date') {
+            $scope.url_list.sort((a, b) => {
+              return b.last_visit - a.last_visit;
+            });
+          } else if ($scope.sort === 'url') {
+            $scope.url_list.sort((a, b) => {
+              if (a.url < b.url) {
+                return -1;
+              } else if (a.url > b.url) {
+                return 1;
+              } else {
+                return 0;
+              }
+            });
+          }
 
-            let word = $scope.url;
+          let word = $scope.url;
 
+          if ($scope.sort === 'bookmark') {
+            SOCIALBROWSER.var.bookmarks.forEach((b) => {
+              $scope.url_list2.push(b);
+            });
+          } else {
             for (let i = 0; i < $scope.url_list.length; i++) {
               let itm = $scope.url_list[i];
 
               if ((itm.url && itm.url.like('*' + word + '*')) || (itm.title && itm.title.like('*' + word + '*'))) {
                 $scope.url_list2.push(itm);
               }
-              if ($scope.url_list2.length > 100) {
+              if ($scope.url_list2.length > 500) {
                 break;
               }
             }
@@ -156,9 +181,9 @@
                 url: word,
               });
             }
+          }
 
-            callback();
-          }, 200);
+          $scope.$applyAsync();
         };
 
         $scope.clearUrlSelection = function () {
@@ -207,14 +232,6 @@
           }
         };
 
-        $scope.bodyKeydown = function (e) {
-          $scope.show_urls = false;
-        };
-
-        $scope.hi = function () {
-          alert('hi');
-        };
-
         $scope.goUrl = function (url) {
           url = url || $scope.url || '';
 
@@ -225,12 +242,12 @@
               url = 'https://google.com/search?q=' + url;
             }
           }
-
-          SOCIALBROWSER.call('update-view', {
-            url: url,
+          $scope.url = url;
+          SOCIALBROWSER.call('[update-view-url]', {
+            url: $scope.url,
+            tab_id: $scope.tab_id,
           });
-
-          $scope.url = '';
+          SOCIALBROWSER.currentWindow.hide();
         };
 
         $scope.loadUrls();

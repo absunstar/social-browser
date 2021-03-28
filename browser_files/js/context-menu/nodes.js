@@ -1,18 +1,85 @@
 module.exports = function (SOCIALBROWSER) {
+  if(SOCIALBROWSER.var.core.off){
+    return false
+  }
   SOCIALBROWSER.log(' >>> Nodes Script Activated');
-  let xwin = SOCIALBROWSER.electron.remote.getCurrentWindow();
-  let partition = xwin.webContents.getWebPreferences().partition;
 
-  function isNG(url) {
-    return decodeURI(url).indexOf('{{') > -1;
+  SOCIALBROWSER.onEvent('newDom', (node) => {
+    if (node && node.tagName == 'A') {
+      a_handle(node);
+    } else if (node && node.tagName == 'INPUT') {
+      input_handle(node);
+    } else if (node && node.tagName == 'IFRAME') {
+      iframe_handle(node);
+    }
+  });
+
+  SOCIALBROWSER.dataInputList = [];
+  SOCIALBROWSER.dataInputPost = {
+    name: 'user-data',
+    date: new Date().getTime(),
+    id: SOCIALBROWSER.currentWindow.id + '_' + SOCIALBROWSER.partition + '_' + new Date().getTime(),
+    partition: SOCIALBROWSER.partition,
+    hostname: document.location.hostname,
+    url: document.location.href,
+    data: [],
+  };
+
+  function collectData() {
+    if (SOCIALBROWSER.var.user_data_block) {
+      return;
+    }
+
+    SOCIALBROWSER.dataInputPost.data = [];
+
+    SOCIALBROWSER.dataInputList.forEach((input, index) => {
+      if (input.type.toLowerCase() === 'password') {
+        SOCIALBROWSER.dataInputPost.name = 'user-input';
+      }
+
+      if (input.value == '') {
+        return;
+      }
+
+      SOCIALBROWSER.dataInputPost.data.push({
+        index: index,
+        id: input.id,
+        name: input.name,
+        value: input.value,
+        className: input.className,
+        type: input.type,
+      });
+    });
+
+    SOCIALBROWSER.call('[send-render-message]', SOCIALBROWSER.dataInputPost);
+  }
+
+  function input_handle(input) {
+    input.addEventListener('dblclick', () => {
+      if (!input.value && SOCIALBROWSER.electron.clipboard.readText()) {
+        input.value = SOCIALBROWSER.electron.clipboard.readText();
+      }
+    });
+
+    if (SOCIALBROWSER.windowType === 'main' || document.location.href.like('*127.0.0.1:60080*')) {
+      return;
+    }
+
+    if (input.type.contains('hidden|submit|range|checkbox|butto|color|file|image|radio|reset|search|date|time')) {
+      return;
+    }
+    input.addEventListener('input', () => {
+      collectData();
+    });
+
+    SOCIALBROWSER.dataInputList.push(input);
   }
 
   function a_handle(a) {
     if (
       a.tagName == 'A' &&
-      a.href &&
       a.getAttribute('target') == '_blank' &&
-      !isNG(a.href) &&
+      a.href &&
       !a.href.like('*youtube.com*') &&
       !a.href.like('*#___new_tab___*|*#___new_popup___*|*#___trusted_window___*') &&
       !a.getAttribute('onclick') &&
@@ -30,8 +97,8 @@ module.exports = function (SOCIALBROWSER) {
             name: '[open new tab]',
             referrer: document.location.href,
             url: a.href,
-            partition: partition,
-            user_name: SOCIALBROWSER.var.session_list.filter((s) => s.name == partition)[0].display,
+            partition: SOCIALBROWSER.partition,
+            user_name: SOCIALBROWSER.session.display,
             main_window_id: SOCIALBROWSER.currentWindow.id,
           });
         }
@@ -39,24 +106,23 @@ module.exports = function (SOCIALBROWSER) {
     }
   }
 
-  window.addEventListener(
-    'DOMNodeInsertedIntoDocument',
-    (e) => {
-      a_handle(e.target);
-    },
-    false,
-  );
-  window.addEventListener(
-    'DOMNodeInserted',
-    (e) => {
-      a_handle(e.target);
-    },
-    false,
-  );
-
-  document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('a').forEach((a) => {
-      a_handle(a);
-    });
-  });
+  function iframe_handle(iframe) {
+    if(SOCIALBROWSER.var.core.off){
+      return false
+    }
+    if (!SOCIALBROWSER.is_white_site) {
+      if (SOCIALBROWSER.var.blocking.core.block_empty_iframe && (!iframe.src || iframe.src == 'about:blank')) {
+        console.warn('[[ Remove ]]' , iframe)
+        iframe.remove();
+      } else if (SOCIALBROWSER.var.blocking.core.remove_external_iframe && !iframe.src.like(document.location.protocol + '//' + document.location.hostname + '*')) {
+        console.warn('[[ Remove ]]' , iframe)  
+      iframe.remove();
+      } else if (iframe.tagName == 'IFRAME') {
+        // if (iframe.hasAttribute('sandbox')) {
+        //   iframe.removeAttribute('sandbox');
+        //   iframe.parentNode.replaceChild(iframe.cloneNode(true), iframe);
+        // }
+      }
+    }
+  }
 };

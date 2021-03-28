@@ -1,24 +1,24 @@
-module.exports = function (browser) {
-  const fs = browser.fs;
+module.exports = function (parent) {
+  const fs = parent.fs;
 
 
 
-  browser.mkdirSync = function (dirname) {
+  parent.mkdirSync = function (dirname) {
     try {
       if (fs.existsSync(dirname)) {
         return true;
       }
-      if (browser.mkdirSync(browser.path.dirname(dirname))) {
+      if (parent.mkdirSync(parent.path.dirname(dirname))) {
         fs.mkdirSync(dirname);
         return true;
       }
     } catch (error) {
-      browser.log(error.message);
+      parent.log(error.message);
       return false;
     }
   };
 
-  browser.readFileSync = function (path, encode) {
+  parent.readFileSync = function (path, encode) {
     let path2 = path + '_tmp';
     if (fs.existsSync(path)) {
       return fs.readFileSync(path).toString(encode || 'utf8');
@@ -28,9 +28,9 @@ module.exports = function (browser) {
     return '';
   };
 
-  browser.writeFile = function (path, data, encode) {
+  parent.writeFile = function (path, data, encode) {
     let path2 = path + '_tmp';
-    browser.deleteFile(path2, () => {
+    parent.deleteFile(path2, () => {
       fs.writeFile(
         path2,
         data,
@@ -39,28 +39,28 @@ module.exports = function (browser) {
         },
         (err) => {
           if (!err) {
-            browser.deleteFile(path, () => {
+            parent.deleteFile(path, () => {
               fs.rename(path2, path, (err) => {
                 if(!err){
-                  browser.log('writeFile : ', path);
+                  parent.log('writeFile : ', path);
                 }else{
-                  browser.log(err)
+                  parent.log(err)
                 }
                 
-                // browser.deleteFile(path2, () => {
-                //   browser.log('writeFile : ', path);
+                // parent.deleteFile(path2, () => {
+                //   parent.log('writeFile : ', path);
                 // });
               });
             });
           }else{
-            browser.log(err)
+            parent.log(err)
           }
         },
       );
     });
   };
 
-  browser.deleteFileSync = function (path) {
+  parent.deleteFileSync = function (path) {
     try {
       if (fs.existsSync(path)) {
         return fs.unlinkSync(path);
@@ -72,14 +72,14 @@ module.exports = function (browser) {
     return null;
   };
 
-  browser.deleteFile = function (path, callback) {
+  parent.deleteFile = function (path, callback) {
     fs.stat(path, (err, stats) => {
       if (!err && stats.isFile()) {
         fs.unlink(path, (err) => {
           if (!err) {
             callback(path);
           }else{
-            browser.log(err)
+            parent.log(err)
           }
         });
       }else{
@@ -88,7 +88,7 @@ module.exports = function (browser) {
     });
   };
 
-  browser.parseJson = function (content) {
+  parent.parseJson = function (content) {
     try {
       if (content && typeof content === 'string') {
         return JSON.parse(content);
@@ -100,19 +100,19 @@ module.exports = function (browser) {
     }
   };
 
-  browser.js = function (name) {
-    return browser.readFileSync(browser.files_dir + '/js/' + name + '.js');
+  parent.js = function (name) {
+    return parent.readFileSync(parent.files_dir + '/js/' + name + '.js');
   };
-  browser.css = function (name) {
-    return browser.readFileSync(browser.files_dir + '/css/' + name + '.css');
+  parent.css = function (name) {
+    return parent.readFileSync(parent.files_dir + '/css/' + name + '.css');
   };
-  browser.html = function (name) {
-    return browser.readFileSync(browser.files_dir + '/html/' + name + '.html');
+  parent.html = function (name) {
+    return parent.readFileSync(parent.files_dir + '/html/' + name + '.html');
   };
-  browser.json = function (name) {
-    return browser.readFileSync(browser.files_dir + '/json/' + name + '.json');
+  parent.json = function (name) {
+    return parent.readFileSync(parent.files_dir + '/json/' + name + '.json');
   };
-  browser.xml = function (name) {
-    return browser.readFileSync(browser.files_dir + '/xml/' + name + '.xml');
+  parent.xml = function (name) {
+    return parent.readFileSync(parent.files_dir + '/xml/' + name + '.xml');
   };
 };

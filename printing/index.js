@@ -7,6 +7,8 @@ const {
 } = electron
 const fs = require('fs')
 
+require('@electron/remote/main').initialize();
+
 console.log('new Child wait app ready')
 
 app.on("ready", function () {
@@ -26,7 +28,6 @@ app.on("ready", function () {
     let win = new BrowserWindow({
         show: false,
         title: 'Print Viewer',
-        icon: browser.icons[process.platform],
         width : 850,
         height : 720,
         alwaysOnTop: false,

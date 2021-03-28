@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat Test</title>
+    <link rel="stylesheet" href="http://127.0.0.1:60080/x-css/site.css" />
+    <link rel="stylesheet" href="http://127.0.0.1:60080/x-css/theme_paper.css" />
+    <style>
+      .localVideo {
+        width: 100%;
+        height: 100%;
+        border: 3px solid #000;
+      }
+      .remoteVideo {
+        width: 100%;
+        height: 100%;
+        border: 3px solid red;
+      }
+    </style>
+  </head>
+  <body ng-controller="mainController">
+    <div class="row center">
+      <div class="col6">
+        <video autoplay muted class="localVideo"></video>
+      </div>
+      <div class="col6">
+        <video autoplay class="remoteVideo"></video>
+      </div>
+    </div>
+    <i-button onclick="recordingManager.getUserMedia()" label="getUserMedia"></i-button>
+    <i-button onclick="recordingManager.sendStreamToServer()" label="sendStreamToServer"></i-button>
+    <i-button onclick="recordingManager.startAudio()" label="Start Audio"></i-button>
+
+    <script src="http://127.0.0.1:60080/x-js/all.js"></script>
+    <script src="http://127.0.0.1:60080/x-js/directive.min.js"></script>
+
+    <script>
+      var app = app || angular.module('myApp', []);
+      app.controller('mainController', ($scope, $http, $timeout) => {});
+
+      function connect() {
+        var chatManager = {};
+        chatManager.ws = new WebSocket('ws://127.0.0.1:60080/x-chat');
+        chatManager.ws.binaryType = 'arraybuffer';
+        chatManager.sendMessage = function (msg, parse) {
+          if (parse === false) {
+            chatManager.ws.send(msg);
+          } else {
+            chatManager.ws.send(JSON.stringify(msg));
+          }
+        };
+        chatManager.ws.onopen = function () {
+          chatManager.sendMessage({
+            type: '[request-join]',
+            userName: new Date().getTime(),
+          });
+        };
+        chatManager.ws.onmessage = function (evt) {
+          let message = evt.data;
+
+          if (message instanceof ArrayBuffer) {
+            recordingManager.processSpeakerData(message);
+          } else {
+            message = JSON.parse(message);
+            if (message.type === '[request-stream]') {
+              recordingManager.onRequestStream(message);
+            } else if (message.type === 'offer') {
+              recordingManager.onOffer(message);
+            } else if (message.type === 'answer') {
+              recordingManager.onAnswer(message);
+            } else if (message.type === 'candidate') {
+              recordingManager.onCandidate(message);
+            }
+          }
+        };
+        chatManager.ws.onclose = function () {
+          console.log('Connection is closed...');
+        };
+      }
+    </script>
+
+    <script>
+      var recordingManager = {
+        constraints: {
+          audio: false,
+          video: true,
+        },
+        audioConstraints: {
+          audio: true,
+          video: false,
+        },
+        localVideo: document.querySelector('.localVideo'),
+        remoteVideo: document.querySelector('.remoteVideo'),
+        stream: null,
+        bufferSize: 4096,
+        isRecoding: false,
+        trackNumber: 0,
+        dataList: [],
+        onStream: () => {},
+        localConnection: null,
+        remoteConnection: null,
+        localChannel: null,
+        remoteChannel: null,
+      };
+
+      recordingManager.getUserMedia = function () {
+        navigator.mediaDevices
+          .getUserMedia(recordingManager.constraints)
+          .then(function (stream) {
+            recordingManager.onStream(stream);
+          })
+          .catch(function (err) {
+            console.error(err);
+          });
+      };
+
+      recordingManager.onStream = (stream) => {
+        recordingManager.stream = stream;
+        recordingManager.localVideo.srcObject = stream;
+        recordingManager.initConnection(stream);
+        connect();
+      };
+
+      recordingManager.initConnection = function (stream) {
+        recordingManager.onRequestStream = function (message) {
+          recordingManager.localConnection = new RTCPeerConnection();
+          stream.getTracks().forEach((track) => recordingManager.localConnection.addTrack(track, stream));
+          recordingManager.localConnection.onicecandidate = ({ candidate }) => {
+            candidate && chatManager.sendMessage({ type: 'candidate', ref: message, candidate: candidate });
+          };
+          recordingManager.localConnection.ontrack = ({ streams: [stream] }) => {
+            recordingManager.remoteVideo.srcObject = stream;
+          };
+
+          recordingManager.localChannel = recordingManager.localConnection.createDataChannel('chat_channel');
+          recordingManager.localChannel.onmessage = (event) => console.log(`Receive: ${event.data}`);
+          recordingManager.localChannel.onopen = (event) => console.log(`Channel Changed: ${event.type}`);
+          recordingManager.localChannel.onclose = (event) => console.log(`Channel Changed: ${event.type}`);
+
+          recordingManager.localConnection
+            .createOffer()
+            .then((offer) => localConnection.setLocalDescription(offer))
+            .then(() => {
+              chatManager.sendMessage({ type: 'offer', ref: message, description: localConnection.localDescription });
+            });
+        };
+        recordingManager.onOffer = function (message) {
+          recordingManager.remoteConnection = new RTCPeerConnection();
+          stream.getTracks().forEach((track) => recordingManager.remoteConnection.addTrack(track, stream));
+          recordingManager.remoteConnection.onicecandidate = ({ candidate }) => {
+            candidate && chatManager.sendMessage({ type: 'candidate', ref: message, candidate: candidate });
+          };
+          recordingManager.remoteConnection.ontrack = ({ streams: [stream] }) => {
+            recordingManager.remoteVideo.srcObject = stream;
+          };
+          recordingManager.remoteConnection.ondatachannel = ({ channel }) => {
+            recordingManager.remoteChannel = channel;
+            recordingManager.remoteChannel.onmessage = (event) => console.log(`Receive: ${event.data}`);
+            recordingManager.remoteChannel.onopen = (event) => console.log(`Channel Changed: ${event.type}`);
+            recordingManager.remoteChannel.onclose = (event) => console.log(`Channel Changed: ${event.type}`);
+          };
+
+          recordingManager.remoteConnection
+            .setRemoteDescription(message.description)
+            .then(() => remoteConnection.createAnswer())
+            .then((answer) => remoteConnection.setLocalDescription(answer))
+            .then(() => {
+              chatManager.sendMessage({ type: 'answer', ref: message, description: remoteConnection.localDescription });
+            });
+        };
+
+        recordingManager.onAnswer = function (message) {
+          recordingManager.localConnection.setRemoteDescription(message.description);
+        };
+
+        recordingManager.onCandidate = function (message) {
+          const conn = recordingManager.localConnection || recordingManager.remoteConnection;
+          conn.addIceCandidate(new RTCIceCandidate(message.candidate));
+        };
+
+        // // Map the 'message-button' click
+        // sendButton.addEventListener('click', () => {
+        //   // GET message from input
+        //   const message = messageInput.value;
+        //   // Clean input
+        //   messageInput.value = '';
+        //   // Log Message Like Sended
+        //   logMessage(`Send: ${message}`);
+
+        //   // GET the channel (can be local or remote)
+        //   const channel = localChannel || remoteChannel;
+        //   // Send message. The other client will receive this message in 'onmessage' function from channel
+        //   channel.send(message);
+        // });
+      };
+
+      recordingManager.sendStreamToServer = function (track, stream) {
+        let remoteVideo = document.querySelector('.remoteVideo');
+        if (remoteVideo) {
+          remoteVideo.srcObject = stream;
+        } else {
+          console.log('no remoteVideo');
+        }
+      };
+
+      recordingManager.startAudio = function () {
+        console.log('startAudio');
+        navigator.mediaDevices
+          .getUserMedia(recordingManager.audioConstraints)
+          .then(function (stream) {
+            recordingManager.isRecoding = true;
+            recordingManager.audioContext = new AudioContext();
+            recordingManager.microphone = recordingManager.audioContext.createMediaStreamSource(stream);
+            recordingManager.config = { bufferLen: recordingManager.bufferSize, numChannels: 1, mimeType: 'audio/wav' };
+            recordingManager.recorder = (recordingManager.audioContext.createScriptProcessor || recordingManager.audioContext.createJavaScriptNode).call(
+              recordingManager.audioContext,
+              recordingManager.config.bufferLen,
+              recordingManager.config.numChannels,
+              recordingManager.config.numChannels,
+            );
+            recordingManager.microphone.connect(recordingManager.recorder);
+            recordingManager.recorder.connect(recordingManager.audioContext.destination); //this should not be necessary
+            recordingManager.recorder.onaudioprocess = recordingManager.onAudioProcess;
+          })
+          .catch(function (err) {
+            console.error(err);
+          });
+      };
+
+      recordingManager.stopAudio = function () {
+        if (!recordingManager.isRecoding) {
+          return;
+        }
+        console.log('stop');
+        recordingManager.isRecoding = false;
+        recordingManager.audioContext.close();
+      };
+
+      recordingManager.onAudioProcess = function (e) {
+        if (!recordingManager.isRecoding) {
+          return;
+        }
+        console.log('onAudioProcess');
+        recordingManager.connectSpeaker();
+        let data = e.inputBuffer.getChannelData(0);
+        chatManager.sendMessage(recordingManager.handleAudioData(data), false);
+        recordingManager.dataList.push(data);
+      };
+
+      recordingManager.handleAudioData = function (data) {
+        console.log('handleAudioData');
+        let l = 4096;
+        let i16 = new Int16Array(4118);
+        while (l--) {
+          i16[l + 22] = Math.min(1, data[l]) * 0x7fff;
+        }
+        i16[21] = 0x0000;
+        i16[20] = 0x2000;
+        i16[19] = 0x6174;
+        i16[18] = 0x6164;
+        i16[17] = 0x0010;
+        i16[16] = 0x0002;
+        i16[15] = 0x0001;
+        i16[14] = 0x5888;
+        i16[13] = 0x0000;
+        i16[12] = 0xac44;
+        i16[11] = 0x0001;
+        i16[10] = 0x0001;
+        i16[9] = 0x0000;
+        i16[8] = 0x0010;
+        i16[7] = 0x2074;
+        i16[6] = 0x6d66;
+        i16[5] = 0x4556;
+        i16[4] = 0x4157;
+        i16[3] = 0x0000;
+        i16[2] = 0x2024;
+        i16[1] = 0x4646;
+        i16[0] = 0x4952;
+        return i16.buffer;
+      };
+
+      recordingManager.connectSpeaker = function () {
+        if (recordingManager.speakerConnected) {
+          return;
+        }
+        console.log('connectSpeaker');
+        recordingManager.speakerConnected = true;
+        recordingManager.trackNumber = 0;
+        recordingManager.speakerAudioContext = new AudioContext();
+      };
+
+      recordingManager.disconnectSpeaker = function () {
+        if (!recordingManager.speakerConnected) {
+          return;
+        }
+        recordingManager.speakerConnected = false;
+        console.log('disconnectSpeaker');
+        recordingManager.trackNumber = 0;
+        recordingManager.speakerAudioContext.close();
+      };
+
+      recordingManager.processSpeakerData = function (data) {
+        recordingManager.connectSpeaker();
+
+        console.log('processSpeakerData ' + new Date().getTime());
+        if (recordingManager.trackNumber == 0) {
+          recordingManager.trackTime = recordingManager.speakerAudioContext.currentTime;
+        }
+        recordingManager.speakerAudioContext.decodeAudioData(
+          data,
+          function (buffer) {
+            recordingManager.trackNumber++;
+            let playTime = recordingManager.trackTime; // + recordingManager.trackNumber * 0.0928798;
+            recordingManager.playBlob(buffer, playTime);
+          },
+          function (e) {
+            console.log('Error with decoding audio data' + e.err);
+          },
+        );
+      };
+
+      recordingManager.playBlob = function (buffer, playTime) {
+        console.log('playBlob' + new Date().getTime());
+        let source = recordingManager.speakerAudioContext.createBufferSource(); //Create a new BufferSource
+        source.buffer = buffer; // Put the sample content into the buffer
+        source.connect(recordingManager.speakerAudioContext.destination); // Also Connect the source to the audio output
+        source.start(playTime); // Set the starting time of the sample to the scheduled play time
+      };
+
+      recordingManager.getUserMedia();
+    </script>
+  </body>
+</html>

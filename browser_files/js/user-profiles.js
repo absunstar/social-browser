@@ -15,19 +15,17 @@ app.controller('mainController', ($scope, $http, $interval) => {
     session_list: [],
   };
 
-  SOCIALBROWSER.on('var.session_list', (e, res) => {
-    console.log(res);
-    SOCIALBROWSER.var.session_list = res.data;
-    SOCIALBROWSER.var.session_list.sort((a, b) => (a.display > b.display ? 1 : -1));
-    $scope.setting.session_list = [];
-    SOCIALBROWSER.var.session_list.forEach((s) => {
-      $scope.setting.session_list.push(s);
-    });
-    $scope.$apply();
-  });
+  SOCIALBROWSER.callEvent('updated', (name) => {
+    if (name == 'session_list') {
+      $scope.setting.session_list = [];
+      SOCIALBROWSER.var.session_list.forEach((s) => {
+        $scope.setting.session_list.push(s);
+      });
+    } else if (name == 'core') {
+      $scope.setting.core = SOCIALBROWSER.var.core;
+    }
 
-  SOCIALBROWSER.on('var.core', (e, res) => {
-    $scope.setting.core = res.data;
+    $scope.$applyAsync();
   });
 
   $scope.selectSession = function (_se) {
@@ -42,6 +40,7 @@ app.controller('mainController', ($scope, $http, $interval) => {
           partition: se.name,
           user_name: se.display,
         });
+        SOCIALBROWSER.currentWindow.hide();
       }
     });
   };

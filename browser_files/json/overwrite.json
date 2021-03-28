@@ -13,8 +13,13 @@
       "query": false
     },
     {
-      "from": "https://addmefast.com/|https://addmefast.com*ref*|http://addmf.co*",
+      "from": "https://addmefast.com/|https://addmefast.com/?ref=*|http://addmf.co*",
       "to": "http://addmf.co/?OJDA3X9",
+      "ignore": "*OJDA3X9*|*referral*|*referals*",
+      "query": false
+    },  {
+      "from": "https://youlikehits.com/|https://www.youlikehits.com/?x=*|http://ylkhts.cc/?id=*",
+      "to": "http://ylkhts.cc/?id=2773499",
       "ignore": "*OJDA3X9*|*referral*|*referals*",
       "query": false
     },
@@ -58,9 +63,9 @@
       "query": false
     },
     {
-      "from": "https://watchhours.com|https://watchhours.com/|https://watchhours.com*ref=*",
-      "to": "https://watchhours.com/?ref=13742",
-      "ignore": "*13742*|*referrals*",
+      "from": "*watchhours.com|*watchhours.com/|*watchhours.com*ref=*",
+      "to": "https://watchhours.com/?ref=19750",
+      "ignore": "*19750*|*referrals*",
       "query": false
     },
     {

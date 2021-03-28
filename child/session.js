@@ -1,12 +1,38 @@
 module.exports = function (child) {
   const { app, session, dialog, ipcMain, protocol, BrowserWindow } = child.electron;
 
+  child.session_name_list = [];
+
   child.handleSession = function (name) {
-    if (!name) {
+    if (!name || child.session_name_list.some((s) => s == name)) {
       return;
     }
-    child.log(`Child ${child.id} Handle Session ${name}`);
-    let ss = name === '0' ? child.electron.session.defaultSession : child.electron.session.fromPartition(name);
+
+    child.session_name_list.push(name);
+
+    let ss = name === '_' ? child.electron.session.defaultSession : child.electron.session.fromPartition(name);
+
+    // let ex_date = Date.now() + 1000 * 60 * 60 * 24 * 30;
+    // if (child.coreData.cookies && child.coreData.cookies.length > 0) {
+    //   child.coreData.cookies.forEach((co) => {
+    //     let scheme = co.secure ? 'https' : 'http';
+    //     let host = co.domain[0] === '.' ? co.domain.substr(1) : co.domain;
+    //     co.url = scheme + '://' + host;
+    //     co.expirationDate = ex_date;
+    //     ss.cookies
+    //       .set(co)
+    //       .then()
+    //       .catch((err) => {
+    //         console.log(err);
+    //         console.log(co);
+    //       });
+    //   });
+    // }
+
+    // setInterval(() => {
+    //   ss.flushStorageData()
+    //   child.log(` Session flushStorageData ${name}`);
+    // }, 1000 * 15);
 
     ss.setSpellCheckerLanguages(['en-US']);
 
@@ -24,19 +50,32 @@ module.exports = function (child) {
 
     ss.allowNTLMCredentialsForDomains('*');
     ss.userAgent = child.coreData.var.core.user_agent;
-
+    ss.setUserAgent(child.coreData.var.core.user_agent);
     ss.protocol.registerHttpProtocol('browser', (request, callback) => {
       let url = request.url.substr(10);
       url = `http://127.0.0.1:60080/${url}`;
       request.url = url;
       callback(request);
     });
+    // ss.protocol.registerHttpProtocol('chrome-error', (request, callback) => {
+    //   let url = request.url.substr(10);
+    //   url = `http://127.0.0.1:60080/error?url=${url}`;
+    //   request.url = url;
+    //   callback(request);
+    //   console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
+    // });
 
     const filter = {
       urls: ['*://*/*'],
     };
 
     ss.webRequest.onBeforeRequest(filter, function (details, callback) {
+      if (child.coreData.var.core.off) {
+        callback({
+          cancel: false,
+        });
+        return;
+      }
       let url = details.url.toLowerCase();
       let source_url = details['referrer'] || details['host'] || url;
       source_url = source_url.toLowerCase();
@@ -122,7 +161,7 @@ module.exports = function (child) {
         }
       }
 
-      if (child.coreData.var.blocking.block_ads) {
+      if (child.coreData.var.blocking.core.block_ads) {
         child.coreData.var.blocking.ad_list.forEach((l) => {
           if (url.like(l.url)) {
             end = true;
@@ -146,9 +185,18 @@ module.exports = function (child) {
     });
 
     ss.webRequest.onBeforeSendHeaders(filter, function (details, callback) {
+      if (child.coreData.var.core.off) {
+        details.requestHeaders['User-Agent'] = child.coreData.var.core.user_agent;
+        callback({
+          cancel: false,
+          requestHeaders: details.requestHeaders,
+        });
+        return;
+      }
+
       let user = child.coreData.var.session_list.find((s) => s.name == name);
       let user_agent = null;
-      if (user && user.user_agent) {
+      if (user && user.user_agent && user.user_agent.url) {
         user_agent = user.user_agent.url;
       }
 
@@ -165,8 +213,8 @@ module.exports = function (child) {
       details.requestHeaders = details.requestHeaders || {};
 
       details.requestHeaders['User-Agent'] = user_agent || details.requestHeaders['User-Agent'] || child.coreData.var.core.user_agent;
-      if(details.requestHeaders['User-Agent'] == "undefined" ){
-        details.requestHeaders['User-Agent'] = child.coreData.var.core.user_agent
+      if (details.requestHeaders['User-Agent'] == 'undefined') {
+        details.requestHeaders['User-Agent'] = child.coreData.var.core.user_agent;
       }
 
       if (child.coreData.var.blocking.privacy.enable_finger_protect && child.coreData.var.blocking.privacy.mask_user_agent) {
@@ -176,17 +224,12 @@ module.exports = function (child) {
         details.requestHeaders['User-Agent'] = details.requestHeaders['User-Agent'].replace(') ', ') (' + child.md5(code) + ') ');
       }
 
-     
-
       // set site custom user agent
       child.coreData.var.sites.forEach((site) => {
         if (url.like(site.url) && site.user_agent) {
           details.requestHeaders['User-Agent'] = site.user_agent;
         }
       });
-
-      
-
 
       // Must For Login Problem ^_^
       if (details.url.like('*google.com*|*youtube.com*')) {
@@ -198,13 +241,15 @@ module.exports = function (child) {
       }
 
       // custom header request
-      child.coreData.custom_request_header_list.forEach((r) => {
+      child.coreData.var.custom_request_header_list.forEach((r) => {
         if (url.like(r.url)) {
+          r.value_list = r.value_list || [];
           r.value_list.forEach((v) => {
             delete details.requestHeaders[v.name];
             delete details.requestHeaders[v.name.toLowerCase()];
             details.requestHeaders[v.name] = v.value;
           });
+          r.delete_list = r.delete_list || [];
           r.delete_list.forEach((key) => {
             delete details.requestHeaders[key];
             delete details.requestHeaders[key.toLowerCase()];
@@ -277,6 +322,17 @@ module.exports = function (child) {
     });
 
     ss.webRequest.onHeadersReceived(filter, function (details, callback) {
+      if (child.coreData.var.core.off) {
+        callback({
+          cancel: false,
+          responseHeaders: {
+            ...details.responseHeaders,
+          },
+          statusLine: details.statusLine,
+        });
+        return;
+      }
+
       let is_white = false;
       child.coreData.var.white_list.forEach((w) => {
         if (details.url.like(w.url)) {
@@ -314,7 +370,7 @@ module.exports = function (child) {
         'Access-Control-Allow-Headers',
         'Access-Control-Allow-Origin',
         'Access-Control-Expose-Headers',
-        //'X-Frame-Options',
+        child.coreData.var.blocking.privacy.remove_x_frame_options ? 'X-Frame-Options' : '',
       ].forEach((p) => {
         delete details.responseHeaders[p];
         delete details.responseHeaders[p.toLowerCase()];
@@ -365,7 +421,7 @@ module.exports = function (child) {
         callback(true);
       } else {
         let allow = child.coreData.var.blocking.permissions['allow_' + permission.replace('-', '_')] || false;
-        child.log(` \n  <<< setPermissionRequestHandler ${permission} ( ${allow} )  ${webContents.getURL()} \n `);
+        // child.log(` \n  <<< setPermissionRequestHandler ${permission} ( ${allow} )  ${webContents.getURL()} \n `);
         callback(allow);
       }
     });
@@ -377,234 +433,20 @@ module.exports = function (child) {
         return true;
       } else {
         let allow = child.coreData.var.blocking.permissions['allow_' + permission.replace('-', '_')] || false;
-        child.log(` \n  <<< setPermissionCheckHandler ${permission} ( ${allow} )  ${webContents.getURL()} \n `);
+        // child.log(` \n  <<< setPermissionCheckHandler ${permission} ( ${allow} )  ${webContents.getURL()} \n `);
         return allow;
       }
     });
     ss.on('will-download', (event, item, webContents) => {
-      //  child.log(' [ session will-download ] ');
-
-      if (child.coreData.last_download_url !== item.getURL()) {
-        child.coreData.last_download_url = item.getURL();
-        if (child.coreData.var.downloader.enabled && !item.getURL().like('*127.0.0.1*') && !item.getURL().like('blob*')) {
-          if (child.coreData.site.isFileExistsSync(child.coreData.var.downloader.app)) {
-            event.preventDefault();
-
-            let dl = {
-              date: new Date(),
-              total: item.getTotalBytes(),
-              received: item.getReceivedBytes(),
-              name: item.getFilename().replace('#___new_tab___', '').replace('#___new_popup__', '').replace('#___trusted_window___', ''),
-              path: item.getSavePath(),
-              url: item.getURL().replace('#___new_tab___', '').replace('#___new_popup__', '').replace('#___trusted_window___', ''),
-              id: item.id,
-              canResume: item.canResume(),
-              type: item.getMimeType(),
-              status: 'starting',
-            };
-
-            child.coreData.var.download_list = child.coreData.var.download_list || [];
-            child.coreData.var.download_list.push(dl);
-            child.coreData.set_var('download_list', child.coreData.var.download_list);
-
-            let params = child.coreData.var.downloader.params.split(' ');
-
-            for (const i in params) {
-              params[i] = params[i].replace('$url', decodeURIComponent(dl.url)).replace('$file_name', dl.name);
-            }
-
-            child.coreData.exe(child.coreData.var.downloader.app, params);
-
-            return;
-          }
-        }
-      }
-
-      child.coreData.last_download_url = null;
-
-      // child.log(' [ Bulit in will-download :::::::::: ] ');
-      child.coreData.views.forEach((v) => {
-        let win = BrowserWindow.fromId(v.id);
-        if (win) {
-          win.setAlwaysOnTop(false);
-        }
-      });
-
-      item.id = child.coreData.guid();
-
-      ipcMain.on('pause-item', (e, info) => {
-        if (item.id === info.id) {
-          item.pause();
-
-          child.coreData.var.download_list.forEach((dd) => {
-            if (dd.id === item.id) {
-              dd.status = 'paused';
-              dd.path = item.getSavePath();
-            }
-          });
-        }
-      });
-
-      ipcMain.on('remove-item', (e, info) => {
-        if (item.id === info.id) {
-          //child.log('cancel download::' + info.url);
-          item.cancel();
-        }
-      });
-
-      ipcMain.on('resume-item', (e, info) => {
-        if (item.id === info.id) {
-          if (item.canResume()) {
-            item.resume();
-
-            child.coreData.var.download_list.forEach((dd) => {
-              if (dd.id === item.id) {
-                dd.status = 'downloading';
-                dd.path = item.getSavePath();
-              }
-            });
-          }
-        }
-      });
-
-      let url = item.getURL();
-      let filename = item.getFilename();
-
-      let dl = {
-        date: new Date(),
-        total: item.getTotalBytes(),
-        received: item.getReceivedBytes(),
-        name: item.getFilename(),
-        path: item.getSavePath(),
-        url: item.getURL().replace('#___new_tab___', '').replace('#___new_popup__', '').replace('#___trusted_window___', ''),
-        id: item.id,
-        canResume: item.canResume(),
-        type: item.getMimeType(),
-        status: 'starting',
-      };
-
-      child.coreData.var.download_list.push(dl);
-
-      item.on('updated', (event, state) => {
-        if (!item.getSavePath()) {
-          return;
-        }
-
-        if (state === 'interrupted') {
-          child.coreData.var.download_list.forEach((dd) => {
-            if (dd.id === item.id) {
-              child.coreData.call('user_downloads', {
-                message: ' (interrupted )' + ` ${item.getFilename()} `,
-                class: 'bg-red white',
-              });
-              dd.status = 'error';
-              dd.canResume = item.canResume();
-              dd.type = item.getMimeType();
-              dd.path = item.getSavePath();
-              dd.name = item.getFilename();
-            }
-          });
-        } else if (state === 'progressing') {
-          if (item.isPaused()) {
-            child.coreData.var.download_list.forEach((dd) => {
-              if (dd.id === item.id) {
-                dd.status = 'paused';
-                child.coreData.call('user_downloads', {
-                  progress: (item.getReceivedBytes() / item.getTotalBytes()).toFixed(2),
-                  message: ' Paused  ' + ` ${item.getFilename()} ( ${(item.getReceivedBytes() / 1000000).toFixed(2)} MB / ${(item.getTotalBytes() / 1000000).toFixed(2)} MB )`,
-                  class: 'bg-orange black',
-                });
-                dd.type = item.getMimeType();
-                dd.path = item.getSavePath();
-                dd.name = item.getFilename();
-                dd.canResume = item.canResume();
-              }
-            });
-          } else {
-            child.coreData.var.download_list.forEach((dd) => {
-              if (dd.id === item.id) {
-                child.coreData.call('user_downloads', {
-                  progress: (item.getReceivedBytes() / item.getTotalBytes()).toFixed(2),
-                  message: `  ( ${(item.getReceivedBytes() / 1000000).toFixed(2)} MB / ${(item.getTotalBytes() / 1000000).toFixed(2)} MB )  ${item.getFilename()}`,
-                  class: 'bg-blue white',
-                });
-                dd.type = item.getMimeType();
-                dd.path = item.getSavePath();
-                dd.name = item.getFilename();
-                dd.canResume = item.canResume();
-                dd.total = item.getTotalBytes();
-                dd.received = item.getReceivedBytes();
-                dd.status = 'downloading';
-              }
-            });
-          }
-        }
-      });
-
-      item.once('done', (event, state) => {
-        if (!item.getSavePath()) {
-          return;
-        }
-        if (state === 'completed') {
-          child.coreData.call('user_downloads', {
-            progress: 0,
-            message: ' ( 100% ) ' + ` ${item.getFilename()} `,
-            class: 'bg-green white',
-          });
-
-          child.coreData.var.download_list.forEach((dd) => {
-            if (dd.id === item.id) {
-              dd.name = item.getFilename();
-              dd.type = item.getMimeType();
-              dd.total = item.getTotalBytes();
-              dd.canResume = item.canResume();
-              dd.received = item.getReceivedBytes();
-              dd.status = 'completed';
-              dd.path = item.getSavePath();
-            }
-          });
-
-          child.coreData.set_var('download_list', child.coreData.var.download_list);
-          let _path = item.getSavePath();
-          let _url = item.getURL().replace('#___new_tab___', '').replace('#___new_popup__', '').replace('#___trusted_window___', '');
-          child.coreData.backAllViews();
-          child.coreData.dialog
-            .showMessageBox({
-              title: 'Download Complete',
-              type: 'info',
-              buttons: ['Open File', 'Open Folder', 'Close'],
-              message: `Saved URL \n ${_url} \n To \n ${_path} `,
-            })
-            .then((result) => {
-              // child.log(result);
-              child.coreData.shell.beep();
-              if (result.response == 1) {
-                child.coreData.shell.showItemInFolder(_path);
-              }
-              if (result.response == 0) {
-                child.coreData.shell.openItem(_path);
-              }
-            });
-        } else {
-          child.coreData.var.download_list.forEach((dd) => {
-            if (dd.id === item.id) {
-              child.coreData.call('user_downloads', {
-                message: ' ( Error ) ' + ` ${item.getFilename()} ==> ${state} `,
-                class: 'bg-red white',
-              });
-              dd.name = item.getFilename();
-              dd.type = item.getMimeType();
-              dd.total = item.getTotalBytes();
-              dd.canResume = item.canResume();
-              dd.received = item.getReceivedBytes();
-              dd.status = state;
-              dd.path = item.getSavePath();
-            }
-          });
-          child.coreData.set_var('download_list', child.coreData.var.download_list);
-        }
+      event.preventDefault();
+      child.sendMessage({
+        type: '[download-link]',
+        partition: name,
+        url: item.getURL(),
       });
     });
+    child.log(`Handle Session ${name} ( done ) `);
+    return ss;
   };
 
   child.on('[handle-session]', (e, name) => {
@@ -612,7 +454,7 @@ module.exports = function (child) {
   });
 
   child.sessionConfig = () => {
-    child.handleSession('0');
     child.handleSession(child.coreData.options.partition);
+    child.handleSession('_');
   };
 };

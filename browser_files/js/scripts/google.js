@@ -1,4 +1,7 @@
 module.exports = function (SOCIALBROWSER) {
+  if(SOCIALBROWSER.var.core.off){
+    return false
+  }
   // before css , image , iframes loaded
   document.addEventListener('DOMContentLoaded', () => {
     if (SOCIALBROWSER.var.blocking.privacy.show_bookmarks && document.querySelector('title') && document.querySelector('title').text == 'Google') {

@@ -1,5 +1,5 @@
 module.exports = function (SOCIALBROWSER) {
-  if (!document.location.href.toLowerCase().like('*youtube.com*')) {
+  if (SOCIALBROWSER.var.core.off || !document.location.href.like('*youtube.com*')) {
     return;
   }
 
@@ -28,7 +28,6 @@ module.exports = function (SOCIALBROWSER) {
     return SOCIALBROWSER.video_player;
   }
 
-  SOCIALBROWSER.setPlaybackQuality_count = 0;
   SOCIALBROWSER.setPlaybackQuality_url = null;
   SOCIALBROWSER.setPlaybackQuality_done = false;
 
@@ -38,37 +37,54 @@ module.exports = function (SOCIALBROWSER) {
     if (SOCIALBROWSER.setPlaybackQuality_done && SOCIALBROWSER.setPlaybackQuality_url == document.location.href) {
       return;
     }
+
     get_player();
+
     if (!SOCIALBROWSER.video_player) {
-      SOCIALBROWSER.setPlaybackQuality_count++;
-      if (SOCIALBROWSER.setPlaybackQuality_count > 10) {
-        return;
-      }
-      setTimeout(() => {
-        SOCIALBROWSER.setPlaybackQuality();
-      }, 500);
       return;
     }
+
     let end = false;
     SOCIALBROWSER.var.blocking.youtube.quality = SOCIALBROWSER.var.blocking.youtube.quality || SOCIALBROWSER.var.video_quality_list[0];
     if (SOCIALBROWSER.video_player && SOCIALBROWSER.video_player.getPlayerState() == 1 && SOCIALBROWSER.video_player.getPlaybackQuality() != SOCIALBROWSER.var.blocking.youtube.quality.name) {
-      document.querySelector('.ytp-button.ytp-settings-button').click();
-      let q_list = document.querySelectorAll('.ytp-panel .ytp-menuitem');
-      q_list.forEach((q) => {
-        if (true || q.innerText.like('*Quality*|*جود*')) {
-          q.click();
-          let qq = document.querySelectorAll('.ytp-panel.ytp-quality-menu .ytp-menuitem');
-          if (qq && qq.length > 0) {
-            end = true;
-          }
-          qq.forEach((q2) => {
-            if (q2.innerText.like(`*${SOCIALBROWSER.var.blocking.youtube.quality.value}*`)) {
-              q2.click();
+      let setting_btn = document.querySelector('.ytp-button.ytp-settings-button');
+      if (setting_btn) {
+        setting_btn.click();
+        let q_list = document.querySelectorAll('.ytp-panel .ytp-menuitem');
+        q_list.forEach((q, i) => {
+          if (q.innerText.like('*Quality*|*جود*')) {
+            q.click();
+            let qq = document.querySelectorAll('.ytp-panel.ytp-quality-menu .ytp-menuitem');
+            if (qq && qq.length > 0) {
+              end = true;
             }
-          });
-          q.click();
+            qq.forEach((q2) => {
+              if (q2.innerText.like(`*${SOCIALBROWSER.var.blocking.youtube.quality.value}*`)) {
+                q2.click();
+              }
+            });
+            q.click();
+          }
+          if (!end && i === q_list.length - 1) {
+            q.click();
+            let qq = document.querySelectorAll('.ytp-panel.ytp-quality-menu .ytp-menuitem');
+            if (qq && qq.length > 0) {
+              end = true;
+            }
+            qq.forEach((q2) => {
+              if (q2.innerText.like(`*${SOCIALBROWSER.var.blocking.youtube.quality.value}*`)) {
+                q2.click();
+              }
+            });
+            q.click();
+          }
+        });
+      } else {
+        let setting_btn = document.querySelector('.icon-button.player-settings-icon');
+        if (setting_btn) {
+          setting_btn.click();
         }
-      });
+      }
 
       if (end) {
         SOCIALBROWSER.setPlaybackQuality_done = true;
@@ -76,18 +92,12 @@ module.exports = function (SOCIALBROWSER) {
         return;
       }
       if (SOCIALBROWSER.video_player.getPlaybackQuality() != SOCIALBROWSER.var.blocking.youtube.quality.name) {
-        setTimeout(() => {
-          SOCIALBROWSER.setPlaybackQuality();
-        }, 500);
         return;
       } else {
         SOCIALBROWSER.setPlaybackQuality_done = true;
       }
     } else {
       if (SOCIALBROWSER.video_player.getPlaybackQuality() != SOCIALBROWSER.var.blocking.youtube.quality.name) {
-        setTimeout(() => {
-          SOCIALBROWSER.setPlaybackQuality();
-        }, 500);
         return;
       } else {
         SOCIALBROWSER.setPlaybackQuality_done = true;
@@ -107,9 +117,10 @@ module.exports = function (SOCIALBROWSER) {
   }
 
   function check_if_current_video_un_safe() {
-    if (!SOCIALBROWSER.var.blocking.youtube.allow_safty_mode) {
+    if (!SOCIALBROWSER.var.blocking.youtube.allow_safty_mode || !document.location.href.like('*watch*|*embed*')) {
       return;
     }
+
     SOCIALBROWSER.log('check_if_current_video_un_safe');
 
     document.querySelectorAll('video').forEach((v) => {
@@ -151,8 +162,14 @@ module.exports = function (SOCIALBROWSER) {
     }
   }
 
-  function skipYoutubeVideoAds() {
-    let classes = '.video-masthead-v2,#watch7-sidebar-ads,#masthead-ad ,ytd-compact-promoted-video-renderer,ytd-action-companion-ad-renderer,ytd-popup-container';
+  function skipYoutubeAds() {
+    SOCIALBROWSER.log('skipYoutubeAds()');
+
+    let classes = '.ytd-video-masthead-ad-v3-renderer'; //'#action-companion-click-target,.video-masthead-v2,#watch7-sidebar-ads,#masthead-ad,ytd-compact-promoted-video-renderer,ytd-action-companion-ad-renderer,ytd-popup-container,.ytp-popup.ytp-generic-popup';
+    document.querySelectorAll(classes).forEach((node) => {
+      node.remove();
+    });
+    
     let a = document.querySelector('.video-ads');
     if (a) {
       a.remove();
@@ -162,6 +179,8 @@ module.exports = function (SOCIALBROWSER) {
     if (a2) {
       a2.remove();
     }
+
+  
 
     // if (document.querySelector('.ad-interrupting .ytp-play-progress.ytp-swatch-background-color')) {
     //     let v = document.querySelector('video')
@@ -177,12 +196,11 @@ module.exports = function (SOCIALBROWSER) {
     // }
 
     setTimeout(() => {
-      skipYoutubeVideoAds();
+      skipYoutubeAds();
     }, 1000 * 3);
   }
 
   function block_links(el) {
-    window.__showWarningImage();
     el.removeAttribute('href');
     el.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -190,7 +208,7 @@ module.exports = function (SOCIALBROWSER) {
       alert(`Blocked video [ Children safty mode]`);
     });
 
-    el.querySelectorAll('*').forEach((a) => {
+    el.querySelectorAll('a,img').forEach((a) => {
       a.removeAttribute('href');
       if (a.tagName == 'IMG') {
         a.classList.add('__block_eye');
@@ -207,51 +225,44 @@ module.exports = function (SOCIALBROWSER) {
     });
   }
 
-  let target_list = 'ytd-video-renderer,ytd-grid-video-renderer,ytd-channel-renderer,ytd-playlist-renderer,ytd-compact-video-renderer';
-
   function check_target(el) {
-    setTimeout(() => {
-      let txt = el.innerText;
-      if (txt) {
-        SOCIALBROWSER.var.blocking.youtube.safty_mode.words_list.forEach((w) => {
-          if (txt.like(w.text)) {
-            let p = SOCIALBROWSER.upTo(el, target_list);
-            if (p) {
-              block_links(p);
-            }
-          }
-        });
-      }
-    }, 100);
+    SOCIALBROWSER.log('check_target');
+    let done = false;
+    let txt = el.innerText.replace(/\r|\n|\t|\s+/gi, ' ');
+    if (txt) {
+      SOCIALBROWSER.var.blocking.youtube.safty_mode.words_list.forEach((w) => {
+        if (done) {
+          return;
+        }
+        if (txt.like(w.text)) {
+          SOCIALBROWSER.log(txt + ' like ' + w.text);
+          done = true;
+          el.remove();
+        }
+      });
+    }
   }
 
-  if (SOCIALBROWSER.var.blocking.youtube.allow_safty_mode && document.location.href.toLowerCase().like('*youtube.com*')) {
-    if (document.location.href.like('*watch*|*embed*')) {
-      check_if_current_video_un_safe();
+  SOCIALBROWSER.onLoad(() => {
+    setInterval(() => {
+      SOCIALBROWSER.setPlaybackQuality();
+    }, 1000);
+
+    if (SOCIALBROWSER.var.blocking.youtube.allow_safty_mode) {
+      setInterval(() => {
+        check_if_current_video_un_safe();
+        document.querySelectorAll('YTD-GRID-VIDEO-RENDERER,YTD-RICH-ITEM-RENDERER,YTD-VIDEO-RENDERER,YTD-COMPACT-VIDEO-RENDERER,YTD-PLAYLIST-RENDERER').forEach((node) => {
+          check_target(node);
+        });
+      }, 1000);
     }
 
-    window.addEventListener(
-      'DOMNodeInsertedIntoDocument',
-      (e) => {
-        check_target(e.target);
-      },
-      false,
-    );
-    window.addEventListener(
-      'DOMNodeInserted',
-      (e) => {
-        check_target(e.target);
-      },
-      false,
-    );
-  }
-
-  if (SOCIALBROWSER.var.blocking.youtube.skip_ads && document.location.href.toLowerCase().like('*youtube.com*')) {
-    skipYoutubeVideoAds();
-  }
-
-  window.addEventListener('load', () => {
-    SOCIALBROWSER.setPlaybackQuality();
+    if (!SOCIALBROWSER.skipYoutubeAdsRunning) {
+      SOCIALBROWSER.skipYoutubeAdsRunning = true;
+      if (SOCIALBROWSER.var.blocking.youtube.skip_ads) {
+        skipYoutubeAds();
+      }
+    }
 
     if (document.location.href.like('https://www.youtube.com/watch*')) {
       let sss = setInterval(() => {
@@ -270,16 +281,10 @@ module.exports = function (SOCIALBROWSER) {
     }
 
     setTimeout(() => {
-      if (!SOCIALBROWSER.session_id && SOCIALBROWSER.video_player) {
+      if (!SOCIALBROWSER.session_id && !SOCIALBROWSER.PlayVideoOff && SOCIALBROWSER.video_player) {
         SOCIALBROWSER.video_player.playVideo();
       }
     }, 1000 * 10);
-
-    setInterval(() => {
-      document.querySelectorAll('.ytp-popup.ytp-generic-popup').forEach((p) => {
-        p.remove();
-      });
-    }, 1000 * 5);
 
     let titleEl = window.document.querySelector('title');
 
@@ -292,9 +297,6 @@ module.exports = function (SOCIALBROWSER) {
             v.classList.remove('__block_eye');
           });
         }
-        if (document.location.href.like('*watch*|*embed*')) {
-          check_if_current_video_un_safe();
-        }
       },
       false,
     );
@@ -305,9 +307,11 @@ module.exports = function (SOCIALBROWSER) {
         SOCIALBROWSER.currentWindow.setTitle(titleEl.innerText);
       }
     }
-
-    if (document.location.href.like('*watch*|*embed*')) {
-      check_if_current_video_un_safe();
-    }
   });
+
+  // SOCIALBROWSER.onEvent('newDom', (node) => {
+  //   if (node && node.tagName === 'VIDEO') {
+  //     SOCIALBROWSER.setPlaybackQuality();
+  //   }
+  // });
 };

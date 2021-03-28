@@ -1,5 +1,5 @@
 module.exports = function (SOCIALBROWSER) {
-  if (!SOCIALBROWSER.var.blocking.social.allow_exeio) {
+  if (SOCIALBROWSER.var.core.off || !SOCIALBROWSER.var.blocking.social.allow_exeio) {
     return;
   }
 
@@ -58,7 +58,7 @@ module.exports = function (SOCIALBROWSER) {
 
   SOCIALBROWSER.log(' >>> exe.io Script Activated');
 
-  SOCIALBROWSER.var.blocking.block_empty_iframe = true;
+  SOCIALBROWSER.var.blocking.core.block_empty_iframe = true;
 
   document.addEventListener('DOMContentLoaded', () => {
 

@@ -4,14 +4,13 @@ module.exports = function (SOCIALBROWSER) {
   //   return;
   // }
 
-  if (!document.location.host.like('*traficads.com*')) {
+  if (SOCIALBROWSER.var.core.off || !document.location.host.like('*traficads.com*')) {
     return;
   }
 
   SOCIALBROWSER.log(' >>> traficads script activated ...');
 
-  SOCIALBROWSER.var.blocking.block_empty_iframe = false;
-  SOCIALBROWSER.var.blocking.javascript.block_window_open = false;
+  SOCIALBROWSER.var.blocking.core.block_empty_iframe = false;
   
   SOCIALBROWSER.subscribeToId = function (id, callback) {
     $.ajax({

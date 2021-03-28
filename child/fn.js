@@ -62,12 +62,12 @@ module.exports = function (child) {
       let arr = info.name.split(',');
       let obj = {};
       arr.forEach((k) => {
-        if ((k == 'user_data' || k == 'user_data_input') && info.host) {
+        if ((k == 'user_data' || k == 'user_data_input') && info.hostname) {
           obj[k] = [];
           child.coreData.var[k].forEach((dd) => {
-            dd.host = dd.host || '';
+            dd.hostname = dd.hostname || dd.host || '';
             dd.url = dd.url || '';
-            if (dd.host == info.host) {
+            if (dd.hostname.contains(info.hostname) || info.hostname.contains(dd.hostname)) {
               obj[k].push(dd);
             }
           });
@@ -122,7 +122,6 @@ module.exports = function (child) {
       overwrite: false,
       new_url: url,
     };
-
     child.coreData.var.overwrite.urls.forEach((data) => {
       if (info.overwrite) {
         return;
@@ -158,16 +157,21 @@ module.exports = function (child) {
   };
 
   child.updateTab = function (setting) {
-    if (setting.windowType !== 'view window') {
+
+    if (setting.windowType !== 'view') {
+      return;
+    }
+    let win = child.getWindow();
+    if (!win) {
       return;
     }
     setting.name = '[update-tab-properties]';
     setting.child_id = child.id;
-    setting.url = child.getWindow().getURL();
-    setting.title = child.getWindow().webContents.getTitle();
-    setting.forward = child.getWindow().webContents.canGoForward();
-    setting.back = child.getWindow().webContents.canGoBack();
-    setting.webaudio = !child.getWindow().webContents.audioMuted;
+    setting.url = win.getURL();
+    setting.title = win.webContents.getTitle();
+    setting.forward = win.webContents.canGoForward();
+    setting.back = win.webContents.canGoBack();
+    setting.webaudio = !win.webContents.audioMuted;
 
     child.sendMessage({
       type: '[update-tab-properties]',

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,social=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <title>Social Browser</title>
+    <meta name="description" content="Social Browser" />
+
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/layout.css" />
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/modal.css" />
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/form.css" />
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/color.css" />
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/effect.css" />
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/table.css" />
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/theme.css" />
+
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/social.css" />
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/social-tabs.css" />
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/font-awesome.css" />
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/fonts.css" />
+
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/social-tabs-custom-theme2.css" />
+
+    <style>
+      html,
+      body {
+        background: #ffffff;
+      }
+      #img {
+        top: 70px;
+        left: 0px;
+        right: 0px;
+        height: 100%;
+        bottom: 0px;
+        position: fixed;
+        width: 100%;
+        opacity: 0.1;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="social-tabs">
+      <div title="Close Browser" class="social-close">
+        <i class="fa fa-close"></i>
+      </div>
+      <div title="Maximize Browser" class="social-maxmize">
+        <i class="fa fa-window-maximize"></i>
+      </div>
+      <div title="minimize Browser" class="social-minmize">
+        <i class="fa fa-window-minimize"></i>
+      </div>
+
+      <div onclick="sendToMain({name : 'show profiles'})" id="user_name"></div>
+
+      <div class="social-tabs-content"></div>
+
+      <div class="social-tabs-bottom-bar"></div>
+    </div>
+
+    <div class="row social-address-bar2">
+      <div id="window_actions">
+        <a title="Go Back Page" class="go-back" onclick="sendToMain({name : '[window-go-back]' , action : true})">
+          <i class="fa fa-arrow-left"></i>
+        </a>
+        <a title="Go Forward Page" class="go-forward" onclick="sendToMain({name : '[window-go-forward]', action : true})">
+          <i class="fa fa-arrow-right"></i>
+        </a>
+        <a class="reload" title="Reload All Page Files" onclick="sendToMain({name : '[winow-reload]', action : true})">
+          <i class="fa fa-refresh"></i>
+        </a>
+        <div class="address-input pointer">
+          <div class="https protocol"></div>
+          <div class="http protocol"></div>
+          <div class="ftp protocol"></div>
+          <div class="file protocol"></div>
+          <div class="browser protocol"></div>
+          <p class="url" onclick="sendToMain({name : 'show addressbar' , url : this.getAttribute('title')})"></p>
+        </div>
+
+        <a title="Bookmarks" class="bookmarks" onclick="showBookmarksMenu();">
+          <i class="fa fa-star"></i>
+        </a>
+
+        <a title="Mute Page Audio" class="Page-audio" onclick="sendToMain({name : '[toggle-window-audio]', action : true})">
+          <i class="fa fa-volume-up"></i>
+        </a>
+
+        <a class="xzoom" title="Zoom Out" onclick="sendToMain({name : '[winow-zoom-]', action : true})">
+          <i class="fa fa-search-minus"></i>
+        </a>
+        <a class="xzoom" title="Zoom Out" onclick="sendToMain({name : '[winow-zoom]', action : true})">
+          <i class="fa fa-search"></i>
+        </a>
+        <a class="xzoom" title="Zoom In" onclick="sendToMain({name : '[winow-zoom+]', action : true})">
+          <i class="fa fa-search-plus"></i>
+        </a>
+
+        <a class="hidden" title="Edit Page" onclick="sendToMain({name : '[edit-window]', action : true})">
+          <i class="fa fa-edit"></i>
+        </a>
+
+        <a class="hidden" title="Downloads" onclick="showDownloads()">
+          <i class="fa fa-download"></i>
+        </a>
+        <a class="developer-tools" title="Developer Tools" onclick="sendToMain({name : '[show-window-dev-tools]', action : true})">
+          <i class="fa fa-bug"></i>
+        </a>
+        <a title="Show Setting" id="setting" onclick="showSettingMenu();">
+          <i class="fa fa-bars"></i>
+        </a>
+      </div>
+    </div>
+
+    <div id="img"></div>
+
+    <script src="http://127.0.0.1:60080/js/an.min.js"></script>
+
+    <script>
+      if (typeof module === 'object') {
+        window.module = module;
+        module = undefined;
+      }
+      function showMessage(msg) {
+        SOCIALBROWSER.call('show_message', { message: msg });
+      }
+    </script>
+
+    <script src="http://127.0.0.1:60080/js/client.js"></script>
+    <script src="http://127.0.0.1:60080/js/jquery.js"></script>
+
+    <script src="http://127.0.0.1:60080/js/draggabilly.js"></script>
+    <script src="http://127.0.0.1:60080/js/social-tabs.js"></script>
+    <script src="http://127.0.0.1:60080/js/social.js"></script>
+
+    <script>
+      if (window.module) module = window.module;
+    </script>
+  </body>
+</html>

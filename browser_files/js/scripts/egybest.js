@@ -1,6 +1,6 @@
 module.exports = function (SOCIALBROWSER) {
 
-  if (!SOCIALBROWSER.var.blocking.social.allow_egybest) {
+  if (SOCIALBROWSER.var.core.off || !SOCIALBROWSER.var.blocking.social.allow_egybest) {
     return;
   }
 
@@ -9,8 +9,6 @@ module.exports = function (SOCIALBROWSER) {
   }
 
   SOCIALBROWSER.log(' >>> egybest script activated ...');
-
-  SOCIALBROWSER.var.blocking.javascript.block_window_open = false;
 
   // SOCIALBROWSER.eventOff += '|*click*';
   // SOCIALBROWSER.eventOn += '|*vidplay*';

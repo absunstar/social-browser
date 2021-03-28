@@ -27,13 +27,18 @@ app.controller('mainController', ($scope, $http, $timeout) => {
   });
   $scope.goBack = function () {
     SOCIALBROWSER.call('[send-render-message]', {
-      name: 'go back',
+      name: '[window-go-back]',
     });
   };
   $scope.goForward = function () {
     SOCIALBROWSER.call('[send-render-message]', {
-      name: 'go forward',
+      name: '[window-go-forward]',
     });
+  };
+
+  SOCIALBROWSER.onVarUpdated = function (name, data) {
+    $scope.setting[name] = data;
+    $scope.$applyAsync();
   };
 
   $scope.url = '';
@@ -364,21 +369,33 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     });
   };
 
+  $scope.addExtension = function () {
+    SOCIALBROWSER.call('[import-extension]');
+  };
+  $scope.enableExtension = function (_ex) {
+    SOCIALBROWSER.call('[enable-extension]', { id: _ex.id });
+  };
+  $scope.disableExtension = function (_ex) {
+    SOCIALBROWSER.call('[disable-extension]', { id: _ex.id });
+  };
+  $scope.removeExtension = function (_ex) {
+    SOCIALBROWSER.call('[remove-extension]', { id: _ex.id });
+    $scope.disableExtension(_ex);
+  };
+
   $scope.loadSetting = function () {
     $scope.busy = true;
     $scope.setting_busy = true;
-
     SOCIALBROWSER.invoke('[browser][data]', {
-      host: document.location.host,
+      hostname: document.location.hostname,
       url: document.location.href,
       name: '*',
       win_id: SOCIALBROWSER.currentWindow.id,
       partition: SOCIALBROWSER.partition,
-    }).then((result) => {
-        SOCIALBROWSER.var = result.var;
-
-        $scope.setting = SOCIALBROWSER.var;
-        this.$applyAsync();
+    })
+      .then((result) => {
+        $scope.setting = result.var;
+        $scope.$applyAsync();
 
         if ($scope.setting.blocking.privacy.hide_lang !== true) {
           $scope.setting.blocking.privacy.languages = SOCIALBROWSER.navigator.languages.toString();
@@ -389,18 +406,18 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         if ($scope.setting.blocking.privacy.hide_memory !== true) {
           $scope.setting.blocking.privacy.memory_count = SOCIALBROWSER.navigator.deviceMemory;
         }
-    
+
         if ($scope.setting.blocking.privacy.mask_date !== true) {
           $scope.setting.blocking.privacy.date_offset = [null, -300, -240, -180, -120, -60, 0, 60, 120, 180, 240, 300][SOCIALBROWSER.maxOf(SOCIALBROWSER.sessionId(), 11)];
         }
-    
+
         if ($scope.setting.blocking.privacy.hide_screen !== true) {
           $scope.setting.blocking.privacy.screen_width = SOCIALBROWSER.screen.width;
           $scope.setting.blocking.privacy.screen_height = SOCIALBROWSER.screen.height;
           $scope.setting.blocking.privacy.screen_availWidth = SOCIALBROWSER.screen.availWidth;
           $scope.setting.blocking.privacy.screen_availHeight = SOCIALBROWSER.screen.availHeight;
         }
-    
+
         if ($scope.setting.blocking.privacy.hide_connection !== true) {
           $scope.setting.blocking.privacy.connection = $scope.setting.blocking.privacy.connection || {};
           $scope.setting.blocking.privacy.connection.effectiveType = SOCIALBROWSER.navigator.connection.effectiveType || '4g';
@@ -408,7 +425,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
           $scope.setting.blocking.privacy.connection.rtt = SOCIALBROWSER.navigator.connection.rtt || 100;
           $scope.setting.blocking.privacy.connection.type = SOCIALBROWSER.navigator.connection.type || 'wifi';
         }
-    
+
         $scope.setting.session_list.forEach((s, i) => {
           s.privacy = s.privacy || {};
           if (s.privacy.hide_connection !== true) {
@@ -439,14 +456,14 @@ app.controller('mainController', ($scope, $http, $timeout) => {
             s.privacy.screen_MaxTouchPoints = $scope.setting.blocking.privacy.screen_MaxTouchPoints;
           }
         });
-    
+
         if ($scope.setting.core.password.length > 0) {
           $scope.knowPassword = false;
           $scope.password = '';
         } else {
           $scope.knowPassword = true;
         }
-    
+
         $scope.setting.user_data_input.forEach((site) => {
           if (!site.password) {
             site.data.forEach((d, i) => {
@@ -456,7 +473,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
               }
             });
           }
-    
+
           if (!site.username) {
             site.data.forEach((d, i) => {
               if (d.name == 'username') {
@@ -478,15 +495,13 @@ app.controller('mainController', ($scope, $http, $timeout) => {
             }
           }
         });
-    
+
         $scope.busy = false;
         $scope.setting_busy = false;
       })
       .catch((err) => {
         console.log(err);
       });
-
-   
   };
 
   $scope.clearUserData = function () {
@@ -742,7 +757,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
       });
     } else if (url) {
       $scope.setting.urls.forEach((s, i) => {
-        if (s.url.indexOf(url) !== -1) {
+        if (s.url.contains(url)) {
           $scope.setting.urls.splice(i, 1);
         }
       });
@@ -750,12 +765,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
   };
 
   $scope.copy = function (text) {
-    SOCIALBROWSER.call('[send-render-message]', {
-      name: 'copy',
-      text: text,
-    });
-    alert('Password Copied : ' + text);
+    SOCIALBROWSER.electron.clipboard.writeText(text);
   };
-
   $scope.loadSetting();
 });

@@ -1,4 +1,5 @@
 const electron = require('electron');
+const remote = require('@electron/remote');
 
 window.print = function (options) {
   console.log('window.print');
@@ -57,18 +58,17 @@ window.addEventListener('load', () => {
   };
 
   get_details((info) => {
-    
     if (info.options && info.options.show) {
-      electron.remote.getCurrentWindow().show();
+      remote.getCurrentWindow().show();
     }
 
     if (info.options.width) {
-      electron.remote.getCurrentWindow().setSize(info.options.width, 720);
+      remote.getCurrentWindow().setSize(info.options.width, 720);
     }
 
     if (info.options && info.options.silent) {
-      electron.remote.getCurrentWindow().webContents.print(info.options, () => {
-        electron.remote.getCurrentWindow().close();
+      remote.getCurrentWindow().webContents.print(info.options, () => {
+        remote.getCurrentWindow().close();
       });
     }
   });

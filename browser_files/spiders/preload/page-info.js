@@ -1,5 +1,5 @@
-const { ipcRenderer, remote } = require('electron');
-
+const { ipcRenderer } = require('electron');
+const remote = require('@electron/remote');
 function get_dom(selector) {
   return document.querySelector(selector) || {};
 }

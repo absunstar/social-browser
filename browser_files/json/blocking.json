@@ -1,14 +1,10 @@
 {
-  "safty_mode": false,
-  "ads": true,
-  "ex_iframe": false,
-  "doms": false,
-  "dom_selectors": [
-    { "url": "*", "ex_url": "*openload.co*", "select": "[class='ad'],[class$='-ad']", "remove": true, "hide": false, "empty": false },
-    { "url": "*mexashare.com*", "ex_url": "*openload.co*", "select": "#k749", "remove": false, "hide": true, "empty": false },
-    { "ex_url": "*openload.co*", "url": "*", "hide": false, "select": "[class*='_ad_']", "remove": true },
-    { "select": ".video-masthead-v2,#watch7-sidebar-ads,#masthead-ad", "url": "*www.youtube.com*", "remove": true }
-  ],
+  "allow_safty_mode": false,
+  "block_ads": true,
+  "block_empty_iframe": false,
+  "remove_external_iframe": true,
+  "block_html_tags": false,
+  "skip_video_ads": true,
   "ad_links": [
     { "url": "*doubleclick.net*" },
     { "url": "*securepubads.*" },
@@ -81,16 +77,15 @@
     { "url": "*vjav.com*" },
     { "url": "*megatube.xxx*" }
   ],
-  "un_safe_words": [{ "text": "sex" }, { "text": "سكس" }, { "text": "hot" }, { "text": "جنس" }, { "text": "porn" }, { "text": "erotic" }],
-  "javascript": { "block_console_output": false, "block_window_open": true, "block_eval": false, "allow_jquery": false },
+  "javascript": { "block_console_output": false, "block_window_open": false, "block_eval": false, "allow_jquery": false },
   "privacy": {
-    "hide_cpu": false,
-    "hide_memory": false,
-    "hide_screen": false,
+    "hide_cpu": true,
+    "hide_memory": true,
+    "hide_screen": true,
     "hide_touch_screen": false,
     "hide_vega": true,
-    "hide_connection": false,
-    "hide_lang": false,
+    "hide_connection": true,
+    "hide_lang": true,
     "hide_plugins": true,
     "hide_mimetypes": true,
     "hide_media_devices": true,
@@ -99,33 +94,28 @@
     "window_active": true,
     "hide_ga": true,
     "set_window_active": true,
-    "dnt": false,
+    "dnt": true,
     "show_bookmarks": false,
     "hide_gid": false,
     "save_user_data": true,
     "block_cloudflare": false,
     "block_rtc": true,
     "mask_user_agent": true,
-    "mask_date": false,
+    "mask_date": true,
     "enable_finger_protect": true,
     "browser_code": true,
-    "send_browser_id": false,
-    "connection": { "effectiveType": "4g", "downlink": 2, "rtt": 399, "type": "wifi" },
-    "memory_count": 4,
-    "cpu_count": 6,
-    "languages": "en-US",
-    "screen_width": 1366,
-    "screen_height": 768,
-    "screen_availWidth": 1366,
-    "screen_availHeight": 767,
-    "date_offset": -240
+    "send_browser_id": true,
+    "connection": { "effectiveType": "4g", "downlink": 1, "rtt": 400, "type": "wifi" },
+    "memory_count": 10,
+    "cpu_count": 10,
+    "languages": "en",
+    "screen_width": 1280,
+    "screen_height": 720,
+    "screen_availWidth": 1280,
+    "screen_availHeight": 720,
+    "date_offset": 0,
+    "remove_x_frame_options": false
   },
-  "allow_safty_mode": true,
-  "block_ads": true,
-  "block_empty_iframe": false,
-  "remove_external_iframe": false,
-  "block_html_tags": false,
-  "skip_video_ads": false,
   "html_tags_selector_list": [
     {
       "url": "*",
@@ -157,7 +147,7 @@
       "$$hashKey": "object:5462"
     },
     {
-      "url": "*mgid.com*|*yandex*watch.js|*advertisement.js|*pvclouds.com*.js|*js.foxpush.com*|*effectivemeasure.com*|*fdrgtt9edmej010.com*|*flagros2sii8fdbrh09.com*|*podsolnu9hi10.com*",
+      "url": "*mgid.com*|*yandex*watch.js|*advertisement.js|*pvclouds.com*.js|*js.foxpush.com*|*effectivemeasure.com*|*fdrgtt9edmej010.com*|*flagros2sii8fdbrh09.com*|*podsolnu9hi10.com*|*ptwmstc.com*",
       "$$hashKey": "object:5463"
     },
     {
@@ -173,15 +163,21 @@
       "$$hashKey": "object:5466"
     },
     { "url": "*inpagepush.com*|*inabsolor.com*|*viatepigan.com*|*dasimporary.club*|*graizoah.com*|*louchees.net*|*juicyads.com*|*tidint.pro*|*popcash.net*|*sailif.com*", "$$hashKey": "object:5467" },
-    { "url": "*abeforeign.club*|*matchintsv.club*|*l2wisd9g5d9u.com*|*providentsopport.site*|*aionfavoura.club*|*displayvertising.com*", "$$hashKey": "object:5468" },
-    { "url": "*https://www.google.com/js/bg*.js|*tour.eplay.com*|*adtng.com*|*jwpltx.com*", "$$hashKey": "object:5469" },
+    { "url": "*abeforeign.club*|*matchintsv.club*|*l2wisd9g5d9u.com*|*providentsopport.site*|*aionfavoura.club*|*displayvertising.com*|*easyads29*", "$$hashKey": "object:5468" },
+    { "url": "*https://www.google.com/js/bg*.js|*tour.eplay.com*|*adtng.com*|*jwpltx.com*|*revengemeantjackpot.com*", "$$hashKey": "object:5469" },
     { "url": "*adblockchecker.js|*cdn.onesignal.com*|*traffichaus.com*|*notify.solutions*|*newrelic.com*|*eyefuneve.com*", "$$hashKey": "object:5470" },
     { "url": "*cdn.engine.phn.doublepimp.com*|*services.disqus.com*|*storeacdn.com*|*histats.com*|*raupsica.net*", "$$hashKey": "object:5471" },
     {
       "url": "*ueuodgnrhb.com*|*visariomedia.com*|*qfjherc.com*|*2cnjuh34jbpoint.com*|*d13k7prax1yi04.cloudfront.net*|*d38itq6vdv6gr9.cloudfront.net*|*d36zfztxfflmqo.cloudfront.net*",
       "$$hashKey": "object:5473"
     },
-    { "url": "*asewlfjqwlflkew.com*|*dlfvgndsdfsn.com*|*easy2cnjuh34jb.com*|*s0.2mdn.net*|*empflix.com*mew.js|*cdn.ftd.agency*", "$$hashKey": "object:5474" }
+    { "url": "*asewlfjqwlflkew.com*|*dlfvgndsdfsn.com*|*easy2cnjuh34jb.com*|*s0.2mdn.net*|*empflix.com*mew.js|*cdn.ftd.agency*", "$$hashKey": "object:5474" },
+    { "url": "*m2track.co*" },
+    {
+      "url": "*mgid.com*|*yandex*watch.js|*advertisement.js|*pvclouds.com*.js|*js.foxpush.com*|*effectivemeasure.com*|*fdrgtt9edmej010.com*|*flagros2sii8fdbrh09.com*|*podsolnu9hi10.com*",
+      "$$hashKey": "object:5463"
+    },
+    { "url": "*https://www.google.com/js/bg*.js|*tour.eplay.com*|*adtng.com*|*jwpltx.com*", "$$hashKey": "object:5469" }
   ],
   "un_safe_list": [
     { "url": "*taxi69.com*|*beeg.com*|*hotmovs.com*|*milf*|*viptube.com*", "$$hashKey": "object:5560" },
@@ -220,7 +216,7 @@
     "safty_mode": {
       "selector_list": ["[href='http://www.youtube.com/t/community_guidelines']", "[href='https://support.google.com/youtube/?p=age_restrictions&hl=en]"],
       "words_list": [
-        { "text": "hot*|*love*|*dance*|*harem*|*kiss|*brazzers*|*porn*|*sex*|*fuck*|*lesbian*|*erotic*|*orgasm*", "$$hashKey": "object:5632" },
+        { "text": "*dance*|*harem*|*kiss|*brazzers*|*porn*|*sex*|*fuck*|*lesbian*|*erotic*|*orgasm*", "$$hashKey": "object:5632" },
         {
           "text": "*xxx*|*18+*|*+18*|*ايتشى*|*ايتش*|*echii*|*[\\s]حب[\\s]*|*هنتاى*|*هنتاي*|*hentia*|*hentai*|*Romance*|*رومانسى*|*رومانسي*|*رومنسى*|*رومنسي*|*سكس*|*نيك*|*رقص*|*جنس*|*للكبار*|*ممنوع*|*سحاق*|*سافل*|*اغراء*",
           "$$hashKey": "object:5635"
@@ -228,9 +224,20 @@
       ]
     },
     "skip_ads": true,
-    "allow_safty_mode": true,
-    "quality": { "name": "medium", "value": "360", "$$hashKey": "object:4089", "$display": "360 " }
+    "allow_safty_mode": false,
+    "quality": { "name": "medium", "value": "360", "$$hashKey": "object:4250", "$display": "360 " }
   },
-  "social": { "allow_10khits": false, "allow_addmefast": false, "allow_youlikehits": false, "allow_menu": false, "allow_alexa": false, "allow_rankboostup": false },
-  "permissions": { "aalow_geolocation": true, "allow_geolocation": false, "allow_fullscreen": true, "allow_openExternal": true, "allow_clipboard_read": true }
+  "social": {
+    "allow_10khits": false,
+    "allow_addmefast": false,
+    "allow_youlikehits": false,
+    "allow_menu": true,
+    "allow_alexa": false,
+    "allow_rankboostup": true,
+    "allow_watchhours": true,
+    "allow_exeio": false,
+    "allow_hitleap": true
+  },
+  "permissions": { "aalow_geolocation": true, "allow_geolocation": false, "allow_fullscreen": true, "allow_openExternal": true, "allow_clipboard_read": true },
+  "core": { "remove_external_iframe": false, "block_empty_iframe": false, "block_ads": true, "block_html_tags": false, "skip_video_ads": true }
 }

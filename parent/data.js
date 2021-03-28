@@ -1,563 +1,509 @@
-module.exports = function init(browser) {
+module.exports = function init(parent) {
+  parent.mkdirSync(parent.data_dir);
+  parent.mkdirSync(parent.path.join(parent.data_dir, 'default'));
+  parent.mkdirSync(parent.path.join(parent.data_dir, 'crashes'));
+  parent.mkdirSync(parent.path.join(parent.data_dir, 'json'));
+  parent.mkdirSync(parent.path.join(parent.data_dir, 'logs'));
+  parent.mkdirSync(parent.path.join(parent.data_dir, 'favicons'));
+  parent.mkdirSync(parent.path.join(parent.data_dir, 'pdf'));
 
-    browser.mkdirSync(browser.data_dir);
-    browser.mkdirSync(browser.path.join(browser.data_dir, 'default'));
-    browser.mkdirSync(browser.path.join(browser.data_dir, 'crashes'));
-    browser.mkdirSync(browser.path.join(browser.data_dir, 'json'));
-    browser.mkdirSync(browser.path.join(browser.data_dir, 'logs'));
-    browser.mkdirSync(browser.path.join(browser.data_dir, 'favicons'));
-    browser.mkdirSync(browser.path.join(browser.data_dir, 'pdf'));
+  parent.icons = [];
+  parent.icons['darwin'] = parent.path.join(parent.files_dir, 'images', 'logo.icns');
+  parent.icons['linux'] = parent.path.join(parent.files_dir, 'images', 'logo.png');
+  parent.icons['win32'] = parent.path.join(parent.files_dir, 'images', 'logo.ico');
 
-    browser.icons = [];
-    browser.icons['darwin'] = browser.path.join(browser.files_dir, 'images', 'logo.icns');
-    browser.icons['linux'] = browser.path.join(browser.files_dir, 'images', 'logo.png');
-    browser.icons['win32'] = browser.path.join(browser.files_dir, 'images', 'logo.ico');
+  parent.versionUpdating = false;
+  parent.get_var = function (name) {
+    let path = parent.path.join(parent.data_dir, 'json', name + '.json');
+    let default_path = parent.path.join(parent.dir, 'browser_files', 'json', name + '.json');
+    let currentContent = null;
+    let default_content = null;
+    let noContent = false;
 
-    
-    browser.force_update = false;
-    browser.get_var = function (name) {
-      let path = browser.path.join(browser.data_dir, 'json', name + '.json');
-      let default_path = browser.path.join(browser.dir, 'browser_files', 'json', name + '.json');
-  
-      if ((browser.force_update || !browser.fs.existsSync(path))) {
-        browser.log(`\n Updating var ${name} \n `);
-        let handle = false;
-  
-        if (browser.fs.existsSync(path)) {
-          handle = true;
-        }
-  
+    if (parent.fs.existsSync(path)) {
+      currentContent = parent.readFileSync(path);
+      currentContent = currentContent ? parent.parseJson(currentContent) : name.like('*list*') ? [] : { status: 'path not exists & no currentContent' };
+    } else {
+      default_content = name.like('*list*') ? [] : { status: 'path not exists & no currentContent' };
+      noContent = true;
+    }
+
+    if (parent.fs.existsSync(default_path)) {
+      default_content = parent.readFileSync(default_path);
+      default_content = default_content ? parent.parseJson(default_content) : name.like('*list*') ? [] : { status: 'path not exists & no currentContent' };
+      parent.var0[name] = default_content;
+    } else {
+      default_content = name.like('*list*') ? [] : { status: 'path not exists & no currentContent' };
+    }
+
+    if (parent.versionUpdating) {
+      let handle = !noContent;
+      if (handle) {
         if (name == 'user_data_input') {
-          if (handle) {
-            let default_data = browser.parseJson(browser.readFileSync(default_path)) || [];
-            let data = browser.parseJson(browser.readFileSync(path)) || [];
-  
-            default_data.forEach((d) => {
-              let exists = false;
-              data.forEach((d2) => {
-                if (d.id == d2.id) {
-                  d2 = d;
-                  exists = true;
-                }
-              });
-              if (!exists) {
-                data.push(d);
+          default_content.forEach((d) => {
+            let exists = false;
+            currentContent.forEach((d2) => {
+              if (d.id == d2.id) {
+                d2 = d;
+                exists = true;
               }
             });
-            browser.var[name] = data;
-            browser.set_var(name, browser.var[name]);
-          } else {
-            let content = browser.readFileSync(default_path);
-            browser.var[name] = content ? browser.parseJson(content) : {};
-            browser.set_var(name, browser.var[name]);
-          }
-        } else if (name == 'user_data') {
-          if (handle) {
-            let default_data = browser.parseJson(browser.readFileSync(default_path)) || [];
-            let data = browser.parseJson(browser.readFileSync(path)) || [];
-  
-            default_data.forEach((d) => {
-              let exists = false;
-              data.forEach((d2) => {
-                if (d.id == d2.id) {
-                  d2 = d;
-                  exists = true;
-                }
-              });
-              if (!exists) {
-                data.push(d);
-              }
-            });
-            browser.var[name] = data;
-            browser.set_var(name, browser.var[name]);
-          } else {
-            let content = browser.readFileSync(default_path);
-            browser.var[name] = content ? browser.parseJson(content) : {};
-            browser.set_var(name, browser.var[name]);
-          }
-        } else if (name == 'urls') {
-          if (handle) {
-            let default_data = browser.parseJson(browser.readFileSync(default_path)) || [];
-            let data = browser.parseJson(browser.readFileSync(path)) || [];
-  
-            default_data.forEach((d) => {
-              let exists = false;
-              data.forEach((d2) => {
-                if (d.url == d2.url) {
-                  d2 = d;
-                  exists = true;
-                }
-              });
-              if (!exists) {
-                data.push(d);
-              }
-            });
-            browser.var[name] = data;
-            browser.set_var(name, browser.var[name]);
-          } else {
-            let content = browser.readFileSync(default_path);
-            browser.var[name] = content ? browser.parseJson(content) : {};
-            browser.set_var(name, browser.var[name]);
-          }
-        } else if (name == 'download_list') {
-          if (handle) {
-            let default_data = browser.parseJson(browser.readFileSync(default_path)) || [];
-            let data = browser.parseJson(browser.readFileSync(path)) || [];
-  
-            default_data.forEach((d) => {
-              let exists = false;
-              data.forEach((d2) => {
-                if (d.url == d2.url) {
-                  d2 = d;
-                  exists = true;
-                }
-              });
-              if (!exists) {
-                data.push(d);
-              }
-            });
-            browser.var[name] = data;
-            browser.set_var(name, browser.var[name]);
-          } else {
-            let content = browser.readFileSync(default_path);
-            browser.var[name] = content ? browser.parseJson(content) : {};
-            browser.set_var(name, browser.var[name]);
-          }
-        } else if (name == 'black_list') {
-          if (handle) {
-            let default_data = browser.parseJson(browser.readFileSync(default_path)) || [];
-            let data = browser.parseJson(browser.readFileSync(path)) || [];
-  
-            default_data.forEach((d) => {
-              let exists = false;
-              data.forEach((d2) => {
-                if (d.url == d2.url) {
-                  d2 = d;
-                  exists = true;
-                }
-              });
-              if (!exists) {
-                data.push(d);
-              }
-            });
-            browser.var[name] = data;
-            browser.set_var(name, browser.var[name]);
-          } else {
-            let content = browser.readFileSync(default_path);
-            browser.var[name] = content ? browser.parseJson(content) : {};
-            browser.set_var(name, browser.var[name]);
-          }
-        } else if (name == 'white_list') {
-          if (handle) {
-            let default_data = browser.parseJson(browser.readFileSync(default_path)) || [];
-            let data = browser.parseJson(browser.readFileSync(path)) || [];
-  
-            default_data.forEach((d) => {
-              let exists = false;
-              data.forEach((d2) => {
-                if (d.url == d2.url) {
-                  d2 = d;
-                  exists = true;
-                }
-              });
-              if (!exists) {
-                data.push(d);
-              }
-            });
-            browser.var[name] = data;
-            browser.set_var(name, browser.var[name]);
-          } else {
-            let content = browser.readFileSync(default_path);
-            browser.var[name] = content ? browser.parseJson(content) : {};
-            browser.set_var(name, browser.var[name]);
-          }
-        } else if (name == 'proxy_list') {
-          if (handle) {
-            let default_data = browser.parseJson(browser.readFileSync(default_path)) || [];
-            let data = browser.parseJson(browser.readFileSync(path)) || [];
-  
-            default_data.forEach((d) => {
-              let exists = false;
-              data.forEach((d2) => {
-                if (d.url == d2.url) {
-                  d2 = d;
-                  exists = true;
-                }
-              });
-              if (!exists) {
-                data.push(d);
-              }
-            });
-            browser.var[name] = data;
-            browser.set_var(name, browser.var[name]);
-          } else {
-            let content = browser.readFileSync(default_path);
-            browser.var[name] = content ? browser.parseJson(content) : {};
-            browser.set_var(name, browser.var[name]);
-          }
-        } else if (name == 'bookmarks') {
-          if (handle) {
-            let default_data = browser.parseJson(browser.readFileSync(default_path)) || [];
-            let data = browser.parseJson(browser.readFileSync(path)) || [];
-  
-            default_data.forEach((d) => {
-              let exists = false;
-              data.forEach((d2) => {
-                if (d.url == d2.url) {
-                  exists = true;
-                }
-              });
-              if (!exists) {
-                data.push(d);
-              }
-            });
-            browser.var[name] = data;
-            browser.set_var(name, browser.var[name]);
-          } else {
-            let content = browser.readFileSync(default_path);
-            browser.var[name] = content ? browser.parseJson(content) : {};
-            browser.set_var(name, browser.var[name]);
-          }
-        } else if (name == 'login') {
-          if (handle) {
-            let content = browser.readFileSync(path);
-            browser.var[name] = content ? browser.parseJson(content) : {};
-          } else {
-            let content = browser.readFileSync(default_path);
-            browser.var[name] = content ? browser.parseJson(content) : {};
-            browser.set_var(name, browser.var[name]);
-          }
-        } else if (name == 'open_list') {
-          if (handle) {
-            let default_data = browser.parseJson(browser.readFileSync(default_path)) || [];
-            let data = browser.parseJson(browser.readFileSync(path)) || [];
-  
-            default_data.forEach((d) => {
-              let exists = false;
-              data.forEach((d2) => {
-                if (d.url == d2.url) {
-                  d2 = d;
-                  exists = true;
-                }
-              });
-              if (!exists) {
-                data.push(d);
-              }
-            });
-            browser.var[name] = data;
-            browser.set_var(name, browser.var[name]);
-          } else {
-            let content = browser.readFileSync(default_path);
-            browser.var[name] = content ? browser.parseJson(content) : {};
-            browser.set_var(name, browser.var[name]);
-          }
-        } else if (name == 'youtube') {
-          if (handle) {
-            let default_data = browser.parseJson(browser.readFileSync(default_path)) || [];
-            let data = browser.parseJson(browser.readFileSync(path)) || [];
-  
-            default_data.blocking.selector.forEach((d) => {
-              let exists = false;
-              data.blocking.selector.forEach((d2) => {
-                if (d == d2) {
-                  exists = true;
-                }
-              });
-              if (!exists) {
-                data.blocking.selector.push(d);
-              }
-            });
-  
-            default_data.blocking.words.forEach((d) => {
-              let exists = false;
-              data.blocking.words.forEach((d2) => {
-                if (d.text == d2.text) {
-                  exists = true;
-                }
-              });
-              if (!exists) {
-                data.blocking.words.push(d);
-              }
-            });
-  
-            browser.var[name] = data;
-            browser.set_var(name, browser.var[name]);
-          } else {
-            let content = browser.readFileSync(default_path);
-            browser.var[name] = content ? browser.parseJson(content) : {};
-            browser.set_var(name, browser.var[name]);
-          }
-        } else if (name == 'session_list') {
-          if (handle) {
-            let default_data = browser.parseJson(browser.readFileSync(default_path)) || [];
-            let data = browser.parseJson(browser.readFileSync(path)) || [];
-            if (data.length == 0) {
-              default_data.forEach((d) => {
-                d.name = d.name.replace('{random}', 'default_' + new Date().getTime() + Math.random());
-                let exists = false;
-                data.forEach((d2) => {
-                  if (d.name == d2.name) {
-                    exists = true;
-                  }
-                });
-                if (!exists) {
-                  data.push(d);
-                }
-              });
+
+            if (!exists) {
+              currentContent.push(d);
             }
-  
-            browser.var[name] = data;
-            browser.set_var(name, browser.var[name]);
-          } else {
-            let content = browser.readFileSync(default_path);
-            browser.var[name] = content ? browser.parseJson(content) : {};
-            browser.set_var(name, browser.var[name]);
-          }
-        } else if (name == 'blocking') {
-          if (handle) {
-            browser.log('updateing blocking.json');
-            let default_data = browser.parseJson(browser.readFileSync(default_path)) || [];
-            let data = browser.parseJson(browser.readFileSync(path)) || [];
-  
-            data.javascript = default_data.javascript;
-            data.privacy = default_data.privacy;
-            data.youtube = default_data.youtube;
-            data.permissions = default_data.permissions;
-  
-            if (typeof data.allow_safty_mode == 'undefined') {
-              data.allow_safty_mode = default_data.allow_safty_mode;
-            }
-            if (typeof data.block_ads == 'undefined') {
-              data.block_ads = default_data.block_ads;
-            }
-            if (typeof data.block_empty_iframe == 'undefined') {
-              data.block_empty_iframe = default_data.block_empty_iframe;
-            }
-            if (typeof data.remove_external_iframe == 'undefined') {
-              data.remove_external_iframe = default_data.remove_external_iframe;
-            }
-            if (typeof data.block_html_tags == 'undefined') {
-              data.block_html_tags = default_data.block_html_tags;
-            }
-            if (typeof data.skip_video_ads == 'undefined') {
-              data.skip_video_ads = default_data.skip_video_ads;
-            }
-  
-            // selectros will remove when allow dom
-            data.html_tags_selector_list = data.html_tags_selector_list || [];
-            default_data.html_tags_selector_list.forEach((d) => {
-              let exists = false;
-              data.html_tags_selector_list.forEach((d2) => {
-                if (d.url == d2.url && d.ex_url == d2.ex_url && d.select == d2.select) {
-                  exists = true;
-                }
-              });
-              if (!exists) {
-                data.html_tags_selector_list.push(d);
-              }
-            });
-  
-            data.ad_list = data.ad_list || [];
-            default_data.ad_list.forEach((d) => {
-              let exists = false;
-              data.ad_list.forEach((d2) => {
-                if (d.url == d2.url) {
-                  exists = true;
-                }
-              });
-              if (!exists) {
-                data.ad_list.push(d);
-              }
-            });
-  
-            data.un_safe_list = data.un_safe_list || [];
-            default_data.un_safe_list.forEach((d) => {
-              let exists = false;
-              data.un_safe_list.forEach((d2) => {
-                if (d.url == d2.url) {
-                  exists = true;
-                }
-              });
-              if (!exists) {
-                data.un_safe_list.push(d);
-              }
-            });
-  
-            data.un_safe_words_list = data.un_safe_words_list || [];
-            default_data.un_safe_words_list.forEach((d) => {
-              let exists = false;
-              data.un_safe_words_list.forEach((d2) => {
-                if (d.text == d2.text) {
-                  exists = true;
-                }
-              });
-              if (!exists) {
-                data.un_safe_words_list.push(d);
-              }
-            });
-  
-            data.popup = data.popup || {};
-            data.popup.white_list = data.popup.white_list || [];
-            data.popup.allow_external = default_data.popup.allow_external;
-            data.popup.allow_internal = default_data.popup.allow_internal;
-  
-            default_data.popup.white_list.forEach((d) => {
-              let exists = false;
-              data.popup.white_list.forEach((d2) => {
-                if (d.url == d2.url) {
-                  exists = true;
-                }
-              });
-              if (!exists) {
-                data.popup.white_list.push(d);
-              }
-            });
-  
-            browser.var[name] = data;
-            browser.set_var(name, browser.var[name]);
-          } else {
-            let content = browser.readFileSync(default_path);
-            browser.var[name] = content ? browser.parseJson(content) : {};
-            browser.set_var(name, browser.var[name]);
-          }
-        } else {
-          let content = browser.readFileSync(default_path);
-          browser.var[name] = content ? browser.parseJson(content) : {};
-          browser.set_var(name, browser.var[name]);
-        }
-      } else if (!browser.fs.existsSync(path)) {
-        let content = browser.readFileSync(default_path);
-        browser.var[name] = content ? browser.parseJson(content) : name.like('*list*') ? [] : {};
-        if (name == 'session_list') {
-          browser.var[name].forEach((s) => {
-            s.name = s.name.replace('{random}', 'random_' + Math.random());
           });
+          parent.var[name] = currentContent;
+          parent.set_var(name, parent.var[name]);
+        } else if (name == 'user_data') {
+          default_content.forEach((d) => {
+            let exists = false;
+            currentContent.forEach((d2) => {
+              if (d.id == d2.id) {
+                d2 = d;
+                exists = true;
+              }
+            });
+            if (!exists) {
+              currentContent.push(d);
+            }
+          });
+          parent.var[name] = currentContent;
+          parent.set_var(name, parent.var[name]);
+        } else if (name == 'urls') {
+          default_content.forEach((d) => {
+            let exists = false;
+            currentContent.forEach((d2) => {
+              if (d.url === d2.url) {
+                d2 = d;
+                exists = true;
+              }
+            });
+            if (!exists) {
+              currentContent.push(d);
+            }
+          });
+          parent.var[name] = currentContent;
+          parent.set_var(name, parent.var[name]);
+        } else if (name == 'download_list') {
+          default_content.forEach((d) => {
+            let exists = false;
+            currentContent.forEach((d2) => {
+              if (d.url == d2.url) {
+                d2 = d;
+                exists = true;
+              }
+            });
+            if (!exists) {
+              currentContent.push(d);
+            }
+          });
+          parent.var[name] = currentContent;
+          parent.set_var(name, parent.var[name]);
+        } else if (name == 'black_list') {
+          default_content.forEach((d) => {
+            let exists = false;
+            currentContent.forEach((d2) => {
+              if (d.url == d2.url) {
+                d2 = d;
+                exists = true;
+              }
+            });
+            if (!exists) {
+              currentContent.push(d);
+            }
+          });
+          parent.var[name] = currentContent;
+          parent.set_var(name, parent.var[name]);
+        } else if (name == 'white_list') {
+          default_content.forEach((d) => {
+            let exists = false;
+            currentContent.forEach((d2) => {
+              if (d.url == d2.url) {
+                d2 = d;
+                exists = true;
+              }
+            });
+            if (!exists) {
+              currentContent.push(d);
+            }
+          });
+          parent.var[name] = currentContent;
+          parent.set_var(name, parent.var[name]);
+        } else if (name == 'proxy_list') {
+          default_content.forEach((d) => {
+            let exists = false;
+            currentContent.forEach((d2) => {
+              if (d.url == d2.url) {
+                d2 = d;
+                exists = true;
+              }
+            });
+            if (!exists) {
+              currentContent.push(d);
+            }
+          });
+          parent.var[name] = currentContent;
+          parent.set_var(name, parent.var[name]);
+        } else if (name == 'bookmarks') {
+          default_content.forEach((d) => {
+            let exists = false;
+            currentContent.forEach((d2) => {
+              if (d.url == d2.url) {
+                exists = true;
+              }
+            });
+            if (!exists) {
+              currentContent.push(d);
+            }
+          });
+          parent.var[name] = currentContent;
+          parent.set_var(name, parent.var[name]);
+        } else if (name == 'open_list') {
+          default_content.forEach((d) => {
+            let exists = false;
+            currentContent.forEach((d2) => {
+              if (d.url == d2.url) {
+                d2 = d;
+                exists = true;
+              }
+            });
+            if (!exists) {
+              currentContent.push(d);
+            }
+          });
+          parent.var[name] = currentContent;
+          parent.set_var(name, parent.var[name]);
+        } else if (name == 'session_list') {
+          if (currentContent.length == 0) {
+            default_content.forEach((d) => {
+              d.name = d.name.replace('{random}', 'default_' + new Date().getTime() + Math.random());
+              let exists = false;
+              currentContent.forEach((d2) => {
+                if (d.name == d2.name) {
+                  exists = true;
+                }
+              });
+              if (!exists) {
+                currentContent.push(d);
+              }
+            });
+          }
+
+          parent.var[name] = currentContent;
+          parent.set_var(name, parent.var[name]);
+        } else if (name == 'extension_list') {
+          if (currentContent.length == 0) {
+            default_content.forEach((d) => {
+              let exists = false;
+              currentContent.forEach((d2) => {
+                if (d.id == d2.id) {
+                  exists = true;
+                }
+              });
+              if (!exists) {
+                currentContent.push(d);
+              }
+            });
+          }
+
+          parent.var[name] = currentContent;
+          parent.set_var(name, parent.var[name]);
+        } else if (name == 'blocking') {
+          currentContent.core = default_content.core || {};
+          currentContent.javascript = default_content.javascript;
+          currentContent.privacy = default_content.privacy;
+          currentContent.youtube = default_content.youtube;
+          currentContent.permissions = default_content.permissions;
+          currentContent.popup = currentContent.popup || {};
+          currentContent.popup.white_list = currentContent.popup.white_list || [];
+          currentContent.popup.allow_external = default_content.popup.allow_external;
+          currentContent.popup.allow_internal = default_content.popup.allow_internal;
+
+          // selectros will remove when allow dom
+          currentContent.html_tags_selector_list = currentContent.html_tags_selector_list || [];
+          default_content.html_tags_selector_list.forEach((d) => {
+            let exists = false;
+            currentContent.html_tags_selector_list.forEach((d2) => {
+              if (d.url == d2.url && d.ex_url == d2.ex_url && d.select == d2.select) {
+                exists = true;
+              }
+            });
+            if (!exists) {
+              currentContent.html_tags_selector_list.push(d);
+            }
+          });
+
+          currentContent.ad_list = currentContent.ad_list || [];
+          default_content.ad_list.forEach((d) => {
+            let exists = false;
+            currentContent.ad_list.forEach((d2) => {
+              if (d.url == d2.url) {
+                exists = true;
+              }
+            });
+            if (!exists) {
+              currentContent.ad_list.push(d);
+            }
+          });
+
+          currentContent.un_safe_list = currentContent.un_safe_list || [];
+          default_content.un_safe_list.forEach((d) => {
+            let exists = false;
+            currentContent.un_safe_list.forEach((d2) => {
+              if (d.url == d2.url) {
+                exists = true;
+              }
+            });
+            if (!exists) {
+              currentContent.un_safe_list.push(d);
+            }
+          });
+
+          currentContent.un_safe_words_list = currentContent.un_safe_words_list || [];
+          default_content.un_safe_words_list.forEach((d) => {
+            let exists = false;
+            currentContent.un_safe_words_list.forEach((d2) => {
+              if (d.text == d2.text) {
+                exists = true;
+              }
+            });
+            if (!exists) {
+              currentContent.un_safe_words_list.push(d);
+            }
+          });
+
+          default_content.popup.white_list.forEach((d) => {
+            let exists = false;
+            currentContent.popup.white_list.forEach((d2) => {
+              if (d.url == d2.url) {
+                exists = true;
+              }
+            });
+            if (!exists) {
+              currentContent.popup.white_list.push(d);
+            }
+          });
+
+          parent.var[name] = currentContent;
+          parent.set_var(name, parent.var[name]);
+        } else {
+          parent.var[name] = currentContent;
+          parent.set_var(name, parent.var[name]);
         }
       } else {
-        let content = browser.readFileSync(path);
-        browser.var[name] = content ? browser.parseJson(content) : name.like('*list*') ? [] : {};
+        parent.var[name] = currentContent;
+        parent.set_var(name, parent.var[name]);
       }
-  
-      if (name == 'core') {
-        let default_core = browser.parseJson(browser.readFileSync(browser.path.join(browser.dir, 'browser_files', 'json', name + '.json')));
-        if (default_core && browser.var.core.version !== default_core.version) {
-          browser.force_update = true;
-          browser.var.core.version = default_core.version;
-          browser.set_var('core', browser.var.core);
-        }
-  
-        if (!browser.var.core.id) {
-          browser.var.id = process.platform + '_' + browser.package.version + '_' + browser.md5(new Date().getTime() + '_' + Math.random());
-          browser.var.core.id = browser.var.id;
-          browser.var.core.started_date = Date.now();
-          browser.set_var('core', browser.var.core);
-        } else {
-          browser.var.id = browser.var.core.id;
-        }
-  
-        if (!browser.var.core.user_agent && process.platform === 'win32') {
-          browser.var.core.user_agent = browser.var.core.windows_user_agent;
-          browser.set_var('core', browser.var.core);
-        } else if (!browser.var.core.user_agent) {
-          browser.var.core.user_agent = browser.var.core.linux_user_agent;
-          browser.set_var('core', browser.var.core);
-        }
-        if (browser.var.core.user_agent) {
-          browser.electron.app.userAgentFallback = browser.var.core.user_agent;
-        }
+    } else if (noContent) {
+      parent.var[name] = default_content;
+
+      if (name == 'session_list') {
+        parent.var[name].forEach((s) => {
+          s.name = s.name.replace('{random}', 'random_' + Math.random());
+        });
       }
-  
-      if (name == 'session_list' && browser.var.core.session == null) {
-        browser.var.core.session = browser.var.session_list[0];
-      }
-  
-      return browser.var[name];
-    };
-  
-    browser.set_var = function (name, data) {
-      try {
-        if (name.indexOf('$') == 0) {
-          return;
-        }
-  
-        browser.log(browser.to_dateX() + '  set_var() :: ' + name);
-  
-        if (data) {
-          browser.var[name] = data;
-          if (name == 'core') {
-            if (browser.var.core.user_agent) {
-              browser.electron.app.userAgentFallback = browser.var.core.user_agent;
-              browser.log('userAgentFallback', browser.electron.app.userAgentFallback);
-            }
-          }
-          browser.call('var.' + name, {
-            data: data,
-          });
-  
-          if (name == 'proxy' || name == 'session_list') {
-            if (browser.handleSessions) {
-              browser.handleSessions();
-            }
-          }
-          let path = browser.path.join(browser.data_dir, 'json', name + '.json');
-          let content = JSON.stringify(data);
-          browser.writeFile(path, content);
-        } else {
-          browser.log('set_var Error : no data');
-        }
-      } catch (error) {
-        browser.log(error);
-      }
-    };
-  
-    browser.var['package'] = require(browser.dir + '/package.json');
-  
-    
-  browser.get_var('core');
-
-  browser.get_var('session_list');
-
-  browser.get_var('proxy');
-  browser.get_var('proxy_list');
-  browser.get_var('preload_list');
-
-  browser.get_var('white_list');
-  browser.get_var('black_list');
-
-  browser.get_var('open_list');
-  browser.get_var('context_menu');
-
-  browser.get_var('downloader');
-  browser.get_var('facebook');
-  browser.get_var('twitter');
-
-  browser.get_var('internet_speed');
-  browser.get_var('login');
-  browser.get_var('user_agent_list');
-  browser.get_var('bookmarks');
-  browser.get_var('video_quality_list');
-
-  browser.get_var('vip');
-  browser.get_var('sites');
-
-  browser.get_var('blocking');
-  browser.get_var('overwrite');
-  browser.get_var('data_list');
-
-  browser.get_var('download_list');
-  browser.get_var('user_data_input');
-  browser.get_var('user_data');
-  browser.get_var('urls');
-  browser.get_var('user_data_input');
-  browser.get_var('user_data');
-
-  browser.fs.readFile(browser.files_dir + '/html/custom/browser.html', (err, data) => {
-    if (!err) {
-      browser.files.push({
-        path: browser.files_dir + '/html/custom/browser.html',
-        data: data,
-      });
+    } else {
+      parent.var[name] = currentContent;
     }
+
+    if (name == 'core') {
+      if (parent.var.core.version !== default_content.version) {
+        parent.versionUpdating = true;
+        parent.var.core.version = default_content.version;
+        parent.set_var('core', parent.var.core);
+      }
+
+      if (!parent.var.core.id) {
+        parent.var.id = process.platform + '_' + parent.package.version + '_' + parent.md5(new Date().getTime() + '_' + Math.random());
+        parent.var.core.id = parent.var.id;
+        parent.var.core.started_date = Date.now();
+        parent.set_var('core', parent.var.core);
+      } else {
+        parent.var.id = parent.var.core.id;
+      }
+
+      if (!parent.var.core.user_agent && process.platform === 'win32') {
+        parent.var.core.user_agent = parent.var.core.windows_user_agent;
+        parent.set_var('core', parent.var.core);
+      } else if (!parent.var.core.user_agent) {
+        parent.var.core.user_agent = parent.var.core.linux_user_agent;
+        parent.set_var('core', parent.var.core);
+      }
+
+      if (parent.var.core.user_agent) {
+        parent.electron.app.userAgentFallback = parent.var.core.user_agent;
+      }
+    }
+
+    if (name == 'session_list' && parent.var.core.session == null) {
+      parent.var.core.session = parent.var.session_list[0];
+    }
+
+    return parent.var[name];
+  };
+
+  parent.set_var = function (name, currentContent, ignore) {
+    try {
+      if (name.indexOf('$') == 0) {
+        return;
+      }
+
+      if (currentContent) {
+        currentContent = parent.handleObject(currentContent);
+        parent.log(parent.to_dateX() + '  set_var() :: ' + name);
+
+        parent.var[name] = currentContent;
+        if (!ignore) {
+          save_var_quee.push(name);
+        }
+      } else {
+        parent.log('set_var Error : no currentContent');
+      }
+    } catch (error) {
+      parent.log(error);
+    }
+  };
+
+  let save_var_quee = [];
+  parent.save_var = function (name) {
+    if (save_var_quee.includes(name)) {
+      return;
+    }
+    try {
+      let path = parent.path.join(parent.data_dir, 'json', name + '.json');
+      let currentContent = JSON.stringify(parent.var[name]);
+      parent.writeFile(path, currentContent);
+    } catch (error) {
+      parent.log(error);
+    }
+  };
+
+  setInterval(() => {
+    if (save_var_quee.length > 0) {
+      parent.save_var(save_var_quee.shift());
+    }
+  }, 1000 * 5);
+
+  parent.addURL = function (nitm) {
+    if (!nitm.url) {
+      return;
+    }
+
+    let exists = false;
+    let index = null;
+
+    parent.var.urls.forEach((itm, i) => {
+      if (itm.url === nitm.url) {
+        exists = true;
+        index = i;
+        if (!nitm.ignoreCounted) {
+          itm.count++;
+        } else {
+          itm.busy = false;
+        }
+
+        itm.title = nitm.title || itm.title;
+        itm.logo = nitm.logo || itm.logo;
+        itm.last_visit = new Date().getTime();
+      }
+    });
+
+    if (!exists) {
+      parent.var.urls.push({
+        url: nitm.url,
+        logo: nitm.logo,
+        logo2: nitm.logo,
+        title: nitm.title || nitm.url,
+        count: 1,
+        first_visit: new Date().getTime(),
+        last_visit: new Date().getTime(),
+      });
+      index = parent.var.urls.length;
+    }
+
+    parent.var.urls.sort((a, b) => {
+      return b.count - a.count;
+    });
+
+    parent.set_var('urls', parent.var.urls, true);
+
+    if (!parent.var.urls[index].busy && parent.var.urls[index].logo && (!parent.var.urls[index].logo2 || !parent.api.isFileExistsSync(parent.var.urls[index].logo2))) {
+      parent.var.urls[index].busy = true;
+      let path = parent.path.join(parent.data_dir, 'favicons', parent.md5(parent.var.urls[index].logo) + '.' + parent.var.urls[index].logo.split('?')[0].split('.').pop());
+      if (parent.api.isFileExistsSync(path)) {
+        parent.var.urls[index].logo2 = path;
+        parent.set_var('urls', parent.var.urls);
+      } else {
+        parent.download({ url: parent.var.urls[index].logo, path: path }, (options) => {
+          parent.var.urls[index].logo2 = path;
+          parent.set_var('urls', parent.var.urls);
+        });
+      }
+    }
+  };
+
+  parent.var['package'] = require(parent.dir + '/package.json');
+
+  parent.get_var('core');
+  parent.get_var('privacy');
+  parent.get_var('overwrite');
+
+  parent.get_var('session_list');
+
+  parent.get_var('proxy');
+  parent.get_var('proxy_list');
+
+  parent.get_var('white_list');
+  parent.get_var('black_list');
+
+  parent.get_var('open_list');
+  parent.get_var('context_menu');
+
+  parent.get_var('downloader');
+  parent.get_var('facebook');
+  parent.get_var('twitter');
+
+  parent.get_var('internet_speed');
+  parent.get_var('login');
+  parent.get_var('user_agent_list');
+  parent.get_var('bookmarks');
+  parent.get_var('video_quality_list');
+
+  parent.get_var('vip');
+  parent.get_var('sites');
+
+  parent.get_var('blocking');
+
+  parent.get_var('data_list');
+
+  parent.get_var('download_list');
+  parent.get_var('user_data_input');
+  parent.get_var('user_data');
+  parent.get_var('urls');
+  parent.get_var('user_data_input');
+  parent.get_var('user_data');
+
+  parent.get_var('extension_list');
+  parent.get_var('custom_request_header_list');
+
+  parent.files.push({
+    path: parent.path.join(parent.files_dir, 'html', 'custom', 'browser.html'),
+    data: parent.readFileSync(parent.path.join(parent.files_dir, 'html', 'custom', 'browser.html')),
   });
 
-}
+  parent.var.scripts_files = [];
+  parent.var.core.icon = parent.path.join(parent.files_dir, 'images', 'logo.ico');
+  parent.fs.readdir(parent.files_dir + '/js/scripts', (err, files) => {
+    if (!err) {
+      files.forEach((file) => {
+        parent.var.scripts_files.push({
+          path: parent.files_dir + '/js/scripts/' + file,
+          name: file,
+        });
+      });
+    } else {
+      console.log(err);
+    }
+  });
+};

@@ -20,14 +20,14 @@ app.on("ready", function () {
     }
 
     let win = new BrowserWindow({
-        show: false,
+        show: true,
         title: 'Updates',
-        icon: browser.icons[process.platform],
         width : 850,
         height : 720,
         alwaysOnTop: false,
         webPreferences: {
             preload : dir + '/updates/preload.js',
+            preload: setting.preload || child.coreData.files_dir + '/js/context-menu.js',
             javascript: true,
             enableRemoteModule: true,
             contextIsolation: false,

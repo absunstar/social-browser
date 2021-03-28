@@ -1,5 +1,5 @@
 module.exports = function (SOCIALBROWSER) {
-  if (!SOCIALBROWSER.var.blocking.allow_safty_mode) {
+  if (SOCIALBROWSER.var.core.off || !SOCIALBROWSER.var.blocking.allow_safty_mode || document.location.href.like('http://localhost*|https://localhost*|http://127.0.0.1*|https://127.0.0.1*|browser://*')) {
     return;
   }
 

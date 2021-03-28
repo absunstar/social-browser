@@ -25,20 +25,40 @@ body {
 
 
 .url-list {
+    position: fixed;
+    max-height: 450px;
     background-color: #fff;
     color: #292929;
-    position: fixed;
     top: 40px;
-    right: 3px;
-    left: 3px;
+    right: 20%;
+    left: 0;
     bottom: 3px;
     z-index: 99999;
     padding-bottom: 10px;
-    box-shadow: 1px 1px 2px 1px var(--social-background-color);
+    border: 1px solid var(--social-background-color);
+    border-bottom: none;
+    border-left: none;
+    border-right: none;
+    width: 80%;
+}
+.url-list-actions {
+    position: fixed;
+    max-height: 450px;
+    background-color: #fff;
+    top: 40px;
+    right: 0;
+    bottom: 0;
+    z-index: 99999;
+    padding-bottom: 10px;
+    border: 1px solid var(--social-background-color);
+    border-bottom: none;
+    border-right: none;
+    border-left: none;
+    width: 20%;
 }
 
 .url-list ul {
-    max-height: 350px;
+    max-height: 450px;
     overflow-y: auto;
     background-color: #fff;
     color: #292929;
@@ -49,6 +69,7 @@ body {
 
 .url-list ul li {
     padding: 5px;
+    border-bottom: 1px solid #f2f2f2;
 }
 
 .url-list ul li img {
@@ -58,10 +79,39 @@ body {
 
 .url-list ul li:hover,
 .url-list ul li.selected {
-    background-color: #ddd;
+    background-color: #cae8ff;
     cursor: pointer;
 }
 
 .btn{
     font-size: 12px;
 }
+
+/* Force Simple Scrollbars */
+
+body ::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 10px;
+  }
+  
+  body ::-webkit-scrollbar-track {
+    background: #2196f357;
+    border-radius: 0px;
+  }
+  
+  body ::-webkit-scrollbar-thumb {
+    cursor: pointer;
+    border-radius: 5px;
+    background: #2196f3;
+    -webkit-transition: color 0.2s ease;
+    transition: color 0.2s ease;
+  }
+  
+  body ::-webkit-scrollbar-thumb:window-inactive {
+    background: rgba(0, 0, 255, 0.15);
+  }
+  
+  body ::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 255, 0.8);
+  }
+  

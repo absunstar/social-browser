@@ -1,4 +1,5 @@
 module.exports = function (SOCIALBROWSER) {
+
   SOCIALBROWSER.log(' >>> Global script activated ...');
 
   if (SOCIALBROWSER.windowSetting) {
@@ -28,7 +29,7 @@ module.exports = function (SOCIALBROWSER) {
     });
   }
 
-  if (!SOCIALBROWSER.custom_request_header_list.find((r) => r.id == 'youtube_1')) {
+  if (!SOCIALBROWSER.var.custom_request_header_list.find((r) => r.id == 'youtube_1')) {
     SOCIALBROWSER.call('add-request-header', {
       id: 'youtube_1',
       url: '*youtu.be*|*www.youtube.com*',
@@ -45,7 +46,7 @@ module.exports = function (SOCIALBROWSER) {
     });
   }
 
-  if (!SOCIALBROWSER.custom_request_header_list.find((r) => r.id == 'embed_1')) {
+  if (!SOCIALBROWSER.var.custom_request_header_list.find((r) => r.id == 'embed_1')) {
     SOCIALBROWSER.call('add-request-header', {
       id: 'embed_1',
       url: '*embed*',

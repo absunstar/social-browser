@@ -49,11 +49,20 @@
     <title>Document</title>
   </head>
   <body ng-controller="mainController">
+    <div class="row padding margin">
+      <fieldset>
+        <legend>Search in Profiles</legend>
+        <div class="row">
+          <input class="block" type="text" ng-model="session.display" />
+        </div>
+      </fieldset>
+    </div>
+
     <div class="row">
       <div class="row" ng-repeat="_se in setting.session_list  | filter:session  track by $index">
         <div class="user-box" ng-click="selectSession(_se)">
           <img ng-src="http://127.0.0.1:60080/images/user.png" />
-          <p> <span class="bold blue"> ( {{$index + 1}} ) </span> {{_se.display}}</p>
+          <p><span class="bold blue"> ( {{$index + 1}} ) </span> {{_se.display}}</p>
         </div>
       </div>
     </div>
@@ -72,7 +81,7 @@
     <script src="http://127.0.0.1:60080/x-js/angular.js"></script>
 
     <script>
-      if (typeof module === "object") {
+      if (typeof module === 'object') {
         window.module = module;
         module = undefined;
       }

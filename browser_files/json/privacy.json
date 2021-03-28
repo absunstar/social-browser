@@ -1,0 +1,22 @@
+{
+  "browserEnginList": [
+    {
+      "name": "Chrome"
+    },
+    {
+      "name": "Firefox"
+    },
+    {
+      "name": "Edge"
+    },
+    {
+      "name": "Opera"
+    },
+    {
+      "name": "Tor"
+    },
+    {
+      "name": "Safari"
+    }
+  ]
+}

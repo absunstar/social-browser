@@ -18,7 +18,7 @@ module.exports = function (SOCIALBROWSER) {
    *  browser permissions random
    */
 
-  if (document.location.href.like('*http://127.0.0.1*')) {
+  if (SOCIALBROWSER.var.core.off || SOCIALBROWSER.windowType === 'main' || document.location.href.like('http://localhost*|https://localhost*|http://127.0.0.1*|https://127.0.0.1*|browser://*')) {
     SOCIALBROWSER.log(' [Finger Printing] OFF : ' + document.location.href);
     return;
   }
@@ -28,9 +28,38 @@ module.exports = function (SOCIALBROWSER) {
     return;
   }
 
+  SOCIALBROWSER.log(' [Finger Printing] ON');
+
+  if (SOCIALBROWSER.session.privacy.block_canvas) {
+    document.createElement0 = document.createElement;
+    document.createElement = function (name) {
+      if (name == 'canvas') {
+        return null;
+      }
+      return document.createElement0(name);
+    };
+  }
   if (SOCIALBROWSER.session.privacy.mask_date) {
     Date.prototype.getTimezoneOffset = function () {
       return SOCIALBROWSER.session.privacy.date_offset;
+    };
+    Date.prototype.toString0 = Date.prototype.toString;
+    Date.prototype.toString = function () {
+      return this.toString0()
+        .replace('GMT+0200', 'GMT' + SOCIALBROWSER.session.privacy.date_offset)
+        .replace(/\((.*)\)/, ` ( ${SOCIALBROWSER.session.privacy.date_offset} )`);
+    };
+
+    window.Intl.DateTimeFormat.prototype.resolvedOptions = function () {
+      return {
+        calendar: 'gregory',
+        day: 'numeric',
+        locale: navigator.language,
+        month: 'numeric',
+        numberingSystem: 'latn',
+        timeZone: SOCIALBROWSER.session.privacy.date_offset.toString(),
+        year: 'numeric',
+      };
     };
   }
 
