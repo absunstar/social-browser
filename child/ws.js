@@ -10,13 +10,13 @@ module.exports = function (child) {
     child._ws_.on('open', function () {});
     child._ws_.on('ping', function () {});
     child._ws_.on('close', function (e) {
-      console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
+      console.log('Socket is closed. Reconnect will be attempted in 1 second.', e);
       setTimeout(function () {
         connect();
       }, 1000);
     });
     child._ws_.on('error', function (err) {
-      console.error('Socket encountered error: ', err.message);
+      console.error('Socket encountered error: ', err);
       child._ws_.close();
     });
 
@@ -29,17 +29,18 @@ module.exports = function (child) {
           });
         } else if (message.type == '[browser-core-data]') {
           child.coreData = message;
-          child.cookies = message.cookies || child.cookies || {};
+          child.cookies = child.cookies || {};
           child.electron.app.userAgentFallback = child.coreData.var.core.user_agent;
           child.electron.app.setPath('userData', child.path.join(child.coreData.data_dir, 'default'));
           child.sessionConfig();
           child.createNewWindow(Object.assign({}, child.coreData.options));
+        } else if (message.type == '[browser-cookies]') {
+          child.cookies[message.name] = message.value;
         } else if (message.type == '[send-render-message]') {
           child.sendToWindow('[send-render-message]', message.data);
         } else if (message.type == '$download_item') {
           child.sendToWindow('$download_item', message.data);
         } else if (message.type == '[cookie-changed]') {
-
           if (typeof child.cookies[message.partition] === 'undefined') {
             child.cookies[message.partition] = [];
           }
@@ -70,7 +71,6 @@ module.exports = function (child) {
               }
             });
           }
-
         } else if (message.type == '[to-all]') {
           if (message.name === 'hide-addressbar') {
             if (child.addressbarWindow && !child.addressbarWindow.isDestroyed()) {

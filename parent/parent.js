@@ -153,6 +153,9 @@ module.exports = function init(parent) {
   require(parent.path.join(parent.dir, 'parent', 'ws.js'))(parent);
   require(parent.path.join(parent.dir, 'parent', 'chat.js'))(parent);
   // require(parent.path.join(parent.dir, 'parent', 'host.js'))(parent);
+  //  require(parent.path.join(parent.dir, 'spiders', 'page-urls.js'))(parent);
+  //  require(parent.path.join(parent.dir, 'spiders', 'page-info.js'))(parent);
+  //  require(parent.path.join(parent.dir, 'spiders', 'page-content.js'))(parent);
 
 
   if (process.platform == 'win32') {

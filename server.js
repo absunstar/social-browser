@@ -100,6 +100,9 @@ browser.Partitions_data_dir = browser.path.join(browser.data_dir, 'default', 'Pa
 browser.electron.app.setPath('userData', browser.path.join(browser.data_dir, 'default'));
 require(browser.path.join(browser.dir, '/parent/parent.js'))(browser);
 
+
+require('@electron/remote/main').initialize()
+
 browser.createChildProcess({
   url: browser.url.format({
     pathname: browser.path.join(browser.files_dir, 'html', 'main-window.html'),

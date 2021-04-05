@@ -348,15 +348,15 @@ module.exports = function init(child) {
           u.data = data.data;
           child.sendMessage({
             type: '[update-browser-var][user_data][update]',
-            data: child.coreData.var.user_data,
+            data: data,
           });
         }
       });
       if (!exists) {
         child.coreData.var.user_data.push(data);
         child.sendMessage({
-          type: '[update-browser-var][user_data][update]',
-          data: child.coreData.var.user_data_input,
+          type: '[update-browser-var][user_data][add]',
+          data: data,
         });
       }
     } else if (data.name == 'user_data_input') {
@@ -368,7 +368,7 @@ module.exports = function init(child) {
           u.data = data.data;
           child.sendMessage({
             type: '[update-browser-var][user_data_input][update]',
-            data: child.coreData.var.user_data_input,
+            data: data,
           });
         }
       });
@@ -376,7 +376,7 @@ module.exports = function init(child) {
         child.coreData.var.user_data_input.push(data);
         child.sendMessage({
           type: '[update-browser-var][user_data_input][add]',
-          data: child.coreData.var.user_data_input,
+          data: data,
         });
       }
       

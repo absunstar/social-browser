@@ -43,11 +43,10 @@ module.exports = function init(parent) {
             if (!child) {
               return;
             }
-            child.is_attached = true;
+
             child.ws = ws;
             let m = JSON.stringify({
               type: '[browser-core-data]',
-              cookies: parent.cookies,
               data_dir: parent.data_dir,
               options: child.options,
               mainWindow: parent.lastWindowStatus ? parent.lastWindowStatus.mainWindow : null,
@@ -70,6 +69,13 @@ module.exports = function init(parent) {
               information: parent.information,
             });
             ws.send(m);
+
+            if (typeof child.is_attached === 'undefined') {
+              for (const key in parent.cookies) {
+                ws.send(JSON.stringify({ type: '[browser-cookies]', name: key, value: parent.cookies[key] }));
+              }
+            }
+            child.is_attached = true;
 
             break;
           case '[un-attach-child]':

@@ -39,8 +39,6 @@ module.exports = function (SOCIALBROWSER) {
     which: 13,
   });
 
- 
-
   function isContentEditable(node) {
     if (node && node.contentEditable == 'true') {
       return true;
@@ -61,6 +59,9 @@ module.exports = function (SOCIALBROWSER) {
         let arr1 = [];
         let arr2 = [];
         SOCIALBROWSER.var.user_data_input.forEach((dd) => {
+          if (!dd.data) {
+            return;
+          }
           dd.data.forEach((d) => {
             if (node.id && node.id == d.id) {
               let exists = false;
@@ -168,6 +169,9 @@ module.exports = function (SOCIALBROWSER) {
 
         if (arr1.length === 0) {
           SOCIALBROWSER.var.user_data.forEach((dd) => {
+            if (!dd.data) {
+              return;
+            }
             dd.data.forEach((d) => {
               if (arr1.some((a) => a.label.trim() == d.value.trim())) {
                 return;
@@ -389,7 +393,7 @@ module.exports = function (SOCIALBROWSER) {
                 referrer: document.location.href,
                 url: u,
                 partition: SOCIALBROWSER.partition,
-                user_name : SOCIALBROWSER.session.display,
+                user_name: SOCIALBROWSER.session.display,
                 win_id: SOCIALBROWSER.currentWindow.id,
               });
             },
@@ -420,7 +424,7 @@ module.exports = function (SOCIALBROWSER) {
                 url: u,
                 referrer: document.location.href,
                 partition: SOCIALBROWSER.partition,
-                user_name : SOCIALBROWSER.session.display,
+                user_name: SOCIALBROWSER.session.display,
                 show: true,
               });
             },

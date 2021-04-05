@@ -157,7 +157,6 @@ module.exports = function (child) {
   };
 
   child.updateTab = function (setting) {
-
     if (setting.windowType !== 'view') {
       return;
     }
