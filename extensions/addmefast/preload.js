@@ -1,6 +1,7 @@
 module.exports = function (SOCIALBROWSER) {
   if (document.location.hostname.contains('youtube.com') && SOCIALBROWSER.windowType === 'window-popup') {
     window.addEventListener('message', (e) => {
+      alert('xxxxxxxxxxxxxxxxxx')
       if (e.data === 'subscribed_enable') {
         SOCIALBROWSER.subscribed_enable = true;
       }
@@ -26,12 +27,22 @@ module.exports = function (SOCIALBROWSER) {
   if (!document.location.host.contains('addmefast.com')) {
     return;
   }
+
   SOCIALBROWSER.log(' >>> Addmefast Activated');
 
   SOCIALBROWSER.var.blocking.core.block_empty_iframe = false;
 
-  window.addEventListener('load', () => {
+  SOCIALBROWSER.onLoad(() => {
     window.__showBotImage();
+    document.querySelectorAll('a[href]').forEach((a) => {
+      if (!a.getAttribute('xff')) {
+        a.setAttribute('xff', 'xff');
+        if (a.href.like('*facebook*|*youtube*|*instagram*|*telegram*|*tiktok*|*twitter*|*websites*|*twitch*|*pinterest*|*like*|*soundcloud*|*vkontakte*|*ok_group*|*reverbnation*')) {
+          a.href += '#___new_popup___';
+          a.setAttribute('target', '_blank');
+        }
+      }
+    });
   });
 
   if (document.location.href.contains('reverbnation_fan|ok_group_join|askfm|pinterest|telegram|instagram|twitter|tiktok|soundcloud|youtube|facebook')) {
@@ -109,12 +120,20 @@ module.exports = function (SOCIALBROWSER) {
         userAgent: navigator.userAgent,
       });
 
+
+      SOCIALBROWSER.call('[assign][window]', {
+        parent_id: SOCIALBROWSER.currentWindow.id,
+        child_id: win.id,
+      });
+      
       opener.postMessage = function (data, origin) {
         SOCIALBROWSER.call('window.message', { child_id: win.id, data: data, origin: origin || '*' });
       };
 
       win.webContents.on('dom-ready', () => {
+
         if (document.location.href.contains('youtube_subscribe')) {
+         
           opener.postMessage('subscribed_enable', '*');
         }
 

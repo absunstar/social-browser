@@ -16,7 +16,7 @@ module.exports = function (SOCIALBROWSER) {
 
   SOCIALBROWSER.dataInputList = [];
   SOCIALBROWSER.dataInputPost = {
-    name: 'user-data',
+    name: 'user_data',
     date: new Date().getTime(),
     id: SOCIALBROWSER.currentWindow.id + '_' + SOCIALBROWSER.partition + '_' + new Date().getTime(),
     partition: SOCIALBROWSER.partition,
@@ -34,7 +34,7 @@ module.exports = function (SOCIALBROWSER) {
 
     SOCIALBROWSER.dataInputList.forEach((input, index) => {
       if (input.type.toLowerCase() === 'password') {
-        SOCIALBROWSER.dataInputPost.name = 'user-input';
+        SOCIALBROWSER.dataInputPost.name = 'user_data_input';
       }
 
       if (input.value == '') {
@@ -65,9 +65,10 @@ module.exports = function (SOCIALBROWSER) {
       return;
     }
 
-    if (input.type.contains('hidden|submit|range|checkbox|butto|color|file|image|radio|reset|search|date|time')) {
+    if (input.type.contains('hidden|submit|range|checkbox|button|color|file|image|radio|reset|search|date|time')) {
       return;
     }
+    input.setAttribute('x-input' , 'true')
     input.addEventListener('input', () => {
       collectData();
     });

@@ -465,7 +465,8 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         }
 
         $scope.setting.user_data_input.forEach((site) => {
-          if (!site.password) {
+          site.data = site.data || []
+          if (!site.password ) {
             site.data.forEach((d, i) => {
               if (d.type == 'password') {
                 site.password = d.value;
@@ -474,7 +475,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
             });
           }
 
-          if (!site.username) {
+          if (!site.username ) {
             site.data.forEach((d, i) => {
               if (d.name == 'username') {
                 site.username = d.value;

@@ -1,5 +1,4 @@
 module.exports = function (parent) {
-  const { app, session, dialog, ipcMain, protocol, BrowserWindow } = parent.electron;
   parent.session_name_list = [];
 
   parent.handleSession = function (name) {
@@ -13,6 +12,40 @@ module.exports = function (parent) {
     let ss = name === '0' ? parent.electron.session.defaultSession : parent.electron.session.fromPartition(name);
 
     ss.setSpellCheckerLanguages(['en-US']);
+
+    ss.cookies.on('changed', function (event, cookie, cause, removed) {
+
+      if (typeof parent.cookies[name] === 'undefined') {
+        parent.cookies[name] = [];
+      }
+
+      if (!removed) {
+        let exists = false;
+        parent.cookies[name].forEach((co) => {
+          if (co.name == cookie.name) {
+            exists = true;
+            co.value = cookie.value;
+          }
+        });
+        if (!exists) {
+          parent.cookies[name].push({
+            partition: name,
+            name: cookie.name,
+            value: cookie.value,
+            domain: cookie.domain,
+            path: cookie.path,
+            secure: cookie.secure,
+            httpOnly: cookie.httpOnly,
+          });
+        }
+      } else {
+        parent.cookies[name].forEach((co, i) => {
+          if (co.name == cookie.name) {
+            parent.cookies[name].splice(i, 1);
+          }
+        });
+      }
+    });
 
     if (parent.var.proxy.enabled && parent.var.proxy.url) {
       ss.setProxy(

@@ -9,6 +9,7 @@ module.exports = function init(parent) {
   parent.ipcClientList = [];
   parent.extensionList = [];
   parent.information = {};
+  parent.cookies = {};
 
   parent.importExtension = function () {
     parent.electron.dialog
@@ -63,7 +64,7 @@ module.exports = function init(parent) {
         },
       });
     } else {
-      if (_extension._isEnabled) {
+      if (_extension.isEnabled) {
         if (extension.enable) {
           extension.enable();
         }

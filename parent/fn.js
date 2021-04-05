@@ -54,8 +54,8 @@ module.exports = function init(parent) {
     };
   }
 
-  parent.run = function (file) {
-    return parent.child_process.spawn(process.argv[0], file);
+  parent.run = function (file , options) {
+    return parent.child_process.spawn(process.argv[0], file , options);
   };
 
   parent.exe = function (app_path, args) {

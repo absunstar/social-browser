@@ -261,6 +261,10 @@
   };
 
   SOCIALBROWSER.on('[update-browser-var]', (e, res) => {
+    if (res.options.name.contains('user_data')) {
+      return;
+    }
+
     SOCIALBROWSER.var[res.options.name] = res.options.data;
     if (SOCIALBROWSER.onVarUpdated) {
       SOCIALBROWSER.onVarUpdated(res.options.name, res.options.data);

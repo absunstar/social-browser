@@ -59,7 +59,7 @@
     </div>
 
     <div class="row">
-      <div class="row" ng-repeat="_se in setting.session_list  | filter:session  track by $index">
+      <div class="row" ng-repeat="_se in setting.session_list | filter:session track by $index ">
         <div class="user-box" ng-click="selectSession(_se)">
           <img ng-src="http://127.0.0.1:60080/images/user.png" />
           <p><span class="bold blue"> ( {{$index + 1}} ) </span> {{_se.display}}</p>
@@ -78,24 +78,7 @@
       </fieldset>
     </div>
 
-    <script src="http://127.0.0.1:60080/x-js/angular.js"></script>
-
-    <script>
-      if (typeof module === 'object') {
-        window.module = module;
-        module = undefined;
-      }
-    </script>
-
-    <script src="http://127.0.0.1:60080/x-js/jquery.js"></script>
-
-    <script>
-      if (window.module) module = window.module;
-    </script>
-
-    <script src="http://127.0.0.1:60080/x-js/site.js"></script>
-
+    <script src="http://127.0.0.1:60080/x-js/all.js"></script>
     <script src="http://127.0.0.1:60080/js/user-profiles.js"></script>
-    <script src="http://127.0.0.1:60080/x-js/directive.js"></script>
   </body>
 </html>

@@ -9,7 +9,7 @@ module.exports = function (child) {
     }
 
     child.session_name_list.push(name);
-
+    child.cookies[name] = []
     let ss = name === '_' ? child.electron.session.defaultSession : child.electron.session.fromPartition(name);
 
     // let ex_date = Date.now() + 1000 * 60 * 60 * 24 * 30;
@@ -35,6 +35,18 @@ module.exports = function (child) {
     // }, 1000 * 15);
 
     ss.setSpellCheckerLanguages(['en-US']);
+
+    setTimeout(() => {
+      ss.cookies.on('changed', function (event, cookie, cause, removed) {
+        child.sendMessage({
+          type: '[cookie-changed]',
+          partition: name,
+          cookie: cookie,
+          removed: removed,
+          cause: cause,
+        });
+      });
+    }, 1000 * 3);
 
     if (child.coreData.var.proxy.enabled && child.coreData.var.proxy.url) {
       ss.setProxy(
@@ -299,6 +311,13 @@ module.exports = function (child) {
       }
 
       if (cookie_obj) {
+        if (child.cookies[name]) {
+          child.cookies[name].forEach((co) => {
+            if (details.url.contains(co.domain)) {
+              cookie_obj[co.name] = co.value;
+            }
+          });
+        }
         let cookie_string = child.cookieStringify(cookie_obj);
         details.requestHeaders['Cookie'] = cookie_string;
       }

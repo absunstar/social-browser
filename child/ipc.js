@@ -62,8 +62,9 @@ module.exports = function init(child) {
           data: data,
         });
         e.returnValue = data;
-      }).catch(err=>{
-        child.log('[fetch][json]' , err)
+      })
+      .catch((err) => {
+        child.log('[fetch][json]', err);
       });
   });
 
@@ -79,12 +80,11 @@ module.exports = function init(child) {
         e.reply('[translate][data]', data);
       })
       .catch((err) => {
-        child.log('[translate]' , err);
+        child.log('[translate]', err);
       });
   });
 
   child.electron.ipcMain.handle('[browser][data]', async (event, data) => {
-
     return {
       child_id: child.id,
       child_index: child.index,
@@ -119,7 +119,6 @@ module.exports = function init(child) {
       session: child.coreData.var.session_list.find((s) => s.name == data.partition),
     };
   });
-
 
   child.electron.ipcMain.on('[create-new-view]', (event, options) => {
     options.url = options.url || child.coreData.var.core.default_page;
@@ -340,44 +339,47 @@ module.exports = function init(child) {
     } else if (data.name == '[toggle-window-audio]') {
       let win = child.electron.BrowserWindow.fromId(data.win_id);
       win.webContents.setAudioMuted(!win.webContents.audioMuted);
-    } else if (data.name == 'user-data') {
+    } else if (data.name == 'user_data') {
       child.coreData.var.user_data = child.coreData.var.user_data || [];
       let exists = false;
       child.coreData.var.user_data.forEach((u) => {
         if (u.id === data.id) {
           exists = true;
           u.data = data.data;
+          child.sendMessage({
+            type: '[update-browser-var][user_data][update]',
+            data: child.coreData.var.user_data,
+          });
         }
       });
       if (!exists) {
         child.coreData.var.user_data.push(data);
+        child.sendMessage({
+          type: '[update-browser-var][user_data][update]',
+          data: child.coreData.var.user_data_input,
+        });
       }
-      child.sendMessage({
-        type: '[update-browser-var]',
-        options: {
-          name: 'user-data',
-          data: child.coreData.var.user_data,
-        },
-      });
-    } else if (data.name == 'user-input') {
+    } else if (data.name == 'user_data_input') {
       child.coreData.var.user_data_input = child.coreData.var.user_data_input || [];
       let exists = false;
       child.coreData.var.user_data_input.forEach((u) => {
         if (u.id === data.id) {
           exists = true;
           u.data = data.data;
+          child.sendMessage({
+            type: '[update-browser-var][user_data_input][update]',
+            data: child.coreData.var.user_data_input,
+          });
         }
       });
       if (!exists) {
         child.coreData.var.user_data_input.push(data);
-      }
-      child.sendMessage({
-        type: '[update-browser-var]',
-        options: {
-          name: 'user-input',
+        child.sendMessage({
+          type: '[update-browser-var][user_data_input][add]',
           data: child.coreData.var.user_data_input,
-        },
-      });
+        });
+      }
+      
     } else if (data.name == 'show addressbar') {
       if (child.addressbarWindow && child.window && !child.window.isDestroyed() && !child.addressbarWindow.isDestroyed()) {
         child.addressbarWindow.send('set-text-url', data);
@@ -475,7 +477,7 @@ module.exports = function init(child) {
     } else if (data.name == '[download-link]') {
       child.sendMessage({
         type: '[download-link]',
-        partition : data.partition || data.options.partition || child.coreData.partition,
+        partition: data.partition || data.options.partition || child.coreData.partition,
         url: data.url,
       });
     }

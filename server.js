@@ -28,6 +28,9 @@ process.on('warning', (warning) => {
 if (process.argv[process.argv.length - 1].endsWith('child.js')) {
   require(__dirname + '/child/child.js');
   return;
+} else if (process.argv[process.argv.length - 1].endsWith('.js')) {
+  require(process.argv[process.argv.length - 1]);
+  return;
 }
 
 console.log('  ( New Parent Created ) ');
@@ -42,7 +45,7 @@ var browser = {
   child_process: require('child_process'),
   WebSocket: require('ws'),
   package: require('./package.json'),
-  xlsx : require('xlsx'),
+  xlsx: require('xlsx'),
   id: process.pid,
   windowList: [],
   files: [],
@@ -162,17 +165,18 @@ browser.electron.app.on('ready', function () {
     browser.log('network-disconnected');
   });
 
-  browser.var.cookies = browser.var.cookies || [];
-  browser.var.session_list.forEach((s1) => {
-    let ss = browser.handleSession(s1.name) || browser.electron.session.fromPartition(s1.name);
-    ss.cookies.get({}).then((cookies) => {
-      browser.var.cookies.push({
-        name: s1.name,
-        display: s1.display,
-        cookies: cookies,
-      });
-    });
-  });
+  // browser.var.cookies = browser.var.cookies || [];
+  // browser.var.session_list.forEach((s1) => {
+  //   let ss = browser.handleSession(s1.name) || browser.electron.session.fromPartition(s1.name);
+  //   ss.cookies.get({}).then((cookies) => {
+  //     browser.var.cookies.push({
+  //       name: s1.name,
+  //       display: s1.display,
+  //       cookies: cookies,
+  //     });
+  //   });
+  // });
+
 });
 browser.electron.app.on('second-instance', (event, commandLine, workingDirectory) => {
   browser.log('second-instance', commandLine);
@@ -184,6 +188,7 @@ browser.electron.app.on('second-instance', (event, commandLine, workingDirectory
   }
 
   if (url.like('*.js')) {
+    require(url);
     return;
   }
 

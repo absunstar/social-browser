@@ -406,6 +406,7 @@ module.exports = function init(parent) {
         itm.title = nitm.title || itm.title;
         itm.logo = nitm.logo || itm.logo;
         itm.last_visit = new Date().getTime();
+        
       }
     });
 
@@ -481,8 +482,7 @@ module.exports = function init(parent) {
   parent.get_var('user_data_input');
   parent.get_var('user_data');
   parent.get_var('urls');
-  parent.get_var('user_data_input');
-  parent.get_var('user_data');
+
 
   parent.get_var('extension_list');
   parent.get_var('custom_request_header_list');

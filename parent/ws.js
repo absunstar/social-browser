@@ -2,6 +2,7 @@ module.exports = function init(parent) {
   parent.WebSocket = require('ws');
   parent._ws_ = new parent.WebSocket.Server({
     noServer: true,
+    maxPayload: 128 * 1024 * 1024, // 128 MB
   });
 
   parent.api.servers.forEach((server) => {
@@ -44,32 +45,31 @@ module.exports = function init(parent) {
             }
             child.is_attached = true;
             child.ws = ws;
-
-            ws.send(
-              JSON.stringify({
-                type: '[browser-core-data]',
-                data_dir: parent.data_dir,
-                options: child.options,
-                mainWindow: parent.lastWindowStatus ? parent.lastWindowStatus.mainWindow : null,
-                appRequestUrl: parent.appRequestUrl,
-                newTabData: parent.newTabData || {
-                  name: '[open new tab]',
-                  url: parent.var.core.home_page,
-                  partition: parent.var.core.session.partition,
-                  user_name: parent.var.core.session.user_name,
-                  active: true,
-                  main_window_id: child.id,
-                },
-                var: parent.var,
-                icon: parent.icons[process.platform],
-                files_dir: parent.files_dir,
-                dir: parent.dir,
-                injectHTML: parent.files[0].data,
-                windowSetting: child.setting || [],
-                windowType: child.windowType,
-                information: parent.information,
-              }),
-            );
+            let m = JSON.stringify({
+              type: '[browser-core-data]',
+              cookies: parent.cookies,
+              data_dir: parent.data_dir,
+              options: child.options,
+              mainWindow: parent.lastWindowStatus ? parent.lastWindowStatus.mainWindow : null,
+              appRequestUrl: parent.appRequestUrl,
+              newTabData: parent.newTabData || {
+                name: '[open new tab]',
+                url: parent.var.core.home_page,
+                partition: parent.var.core.session.partition,
+                user_name: parent.var.core.session.user_name,
+                active: true,
+                main_window_id: child.id,
+              },
+              var: parent.var,
+              icon: parent.icons[process.platform],
+              files_dir: parent.files_dir,
+              dir: parent.dir,
+              injectHTML: parent.files[0].data,
+              windowSetting: child.setting || [],
+              windowType: child.windowType,
+              information: parent.information,
+            });
+            ws.send(m);
 
             break;
           case '[un-attach-child]':
@@ -141,6 +141,26 @@ module.exports = function init(parent) {
               }
             });
             break;
+          case '[update-browser-var][user_data_input][add]':
+            parent.var.user_data_input.push(message.data);
+            parent.set_var('user_data_input', parent.var.user_data_input);
+            break;
+          case '[update-browser-var][user_data_input][update]':
+            parent.var.user_data_input.forEach((u) => {
+              if (u.id === message.data.id) {
+                u.data = message.data.data;
+              }
+            });
+            parent.set_var('user_data_input', parent.var.user_data_input);
+            break;
+          case '[update-browser-var][user_data][update]':
+            parent.var.user_data.forEach((u) => {
+              if (u.id === message.data.id) {
+                u.data = message.data.data;
+              }
+            });
+            parent.set_var('user_data', parent.var.user_data);
+            break;
           case '[update-tab-properties]':
             parent.clientList.forEach((client) => {
               if (client.windowType == 'main' && client.ws && client.ws.readyState === parent.WebSocket.OPEN) {
@@ -177,10 +197,44 @@ module.exports = function init(parent) {
             });
             break;
           case '[download-link]':
-            console.log(message);
             parent.handleSession(message.partition);
             let ss = parent.electron.session.fromPartition(message.partition);
             ss.downloadURL(message.url);
+
+            break;
+          case '[cookie-changed]':
+            parent.clientList.forEach((client) => {
+              if (client.ws && client.ws.readyState === parent.WebSocket.OPEN) {
+                client.ws.send(JSON.stringify(message));
+              }
+            });
+
+            if (!message.removed) {
+              let exists = false;
+              parent.cookies[message.partition].forEach((co) => {
+                if (co.name == message.cookie.name) {
+                  exists = true;
+                  co.value = message.cookie.value;
+                }
+              });
+              if (!exists) {
+                parent.cookies[message.partition].push({
+                  partition: message.partition,
+                  name: message.cookie.name,
+                  value: message.cookie.value,
+                  domain: message.cookie.domain,
+                  path: message.cookie.path,
+                  secure: message.cookie.secure,
+                  httpOnly: message.cookie.httpOnly,
+                });
+              }
+            } else {
+              parent.cookies[message.partition].forEach((co, i) => {
+                if (co.name == message.cookie.name) {
+                  parent.cookies[message.partition].splice(i, 1);
+                }
+              });
+            }
 
             break;
           case '[add-window-url]':

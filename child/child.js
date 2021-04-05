@@ -43,6 +43,7 @@ var child = {
   log: (...args) => {
     console.log(...args);
   },
+  cookies : {},
   startTime: new Date().getTime(),
   getWindow: () => {
     if (child.window && !child.window.isDestroyed()) {
@@ -71,7 +72,7 @@ if (app.setUserTasks) {
 app.clearRecentDocuments();
 app.commandLine.appendSwitch('enable-features', 'PDFViewerUpdate');
 // app.commandLine.appendSwitch('--no-sandbox');
-// app.disableHardwareAcceleration();
+ app.disableHardwareAcceleration();
 // child.allow_widevinecdm(app)
 
 app.on('ready', function () {

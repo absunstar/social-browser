@@ -29,6 +29,7 @@ module.exports = function (child) {
           });
         } else if (message.type == '[browser-core-data]') {
           child.coreData = message;
+          child.cookies = message.cookies || child.cookies || {};
           child.electron.app.userAgentFallback = child.coreData.var.core.user_agent;
           child.electron.app.setPath('userData', child.path.join(child.coreData.data_dir, 'default'));
           child.sessionConfig();
@@ -37,6 +38,39 @@ module.exports = function (child) {
           child.sendToWindow('[send-render-message]', message.data);
         } else if (message.type == '$download_item') {
           child.sendToWindow('$download_item', message.data);
+        } else if (message.type == '[cookie-changed]') {
+
+          if (typeof child.cookies[message.partition] === 'undefined') {
+            child.cookies[message.partition] = [];
+          }
+
+          if (!message.removed) {
+            let exists = false;
+            child.cookies[message.partition].forEach((co) => {
+              if (co.name == message.cookie.name) {
+                exists = true;
+                co.value = message.cookie.value;
+              }
+            });
+            if (!exists) {
+              child.cookies[message.partition].push({
+                partition: message.partition,
+                name: message.cookie.name,
+                value: message.cookie.value,
+                domain: message.cookie.domain,
+                path: message.cookie.path,
+                secure: message.cookie.secure,
+                httpOnly: message.cookie.httpOnly,
+              });
+            }
+          } else {
+            child.cookies[message.partition].forEach((co, i) => {
+              if (co.name == message.cookie.name) {
+                child.cookies[message.partition].splice(i, 1);
+              }
+            });
+          }
+
         } else if (message.type == '[to-all]') {
           if (message.name === 'hide-addressbar') {
             if (child.addressbarWindow && !child.addressbarWindow.isDestroyed()) {
@@ -175,7 +209,6 @@ module.exports = function (child) {
         } else if (message.type == '[update-tab-properties]' && child.getWindow()) {
           child.sendToWindow('[send-render-message]', message.data);
         } else if (message.type == '[window-clicked]') {
-
           if (child.mainWindow && !child.mainWindow.isDestroyed()) {
             child.mainWindow.show();
           }

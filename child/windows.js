@@ -199,7 +199,7 @@ module.exports = function (child) {
             partition: 'profiles',
             preload: child.coreData.files_dir + '/js/context-menu.js',
             nativeWindowOpen: false,
-            nodeIntegration: true,
+            nodeIntegration: false,
             experimentalFeatures: false,
             webSecurity: false,
             allowRunningInsecureContent: true,

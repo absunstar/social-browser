@@ -8,20 +8,20 @@ var scope = function () {
 
 var app = app || angular.module('myApp', []);
 
-app.controller('mainController', ($scope, $http, $interval) => {
+app.controller('mainController', ($scope, $http, $interval, $timeout) => {
   $scope.session = {};
   $scope.setting = {
     core: {},
     session_list: [],
   };
 
-  SOCIALBROWSER.callEvent('updated', (name) => {
-    if (name == 'session_list') {
+  SOCIALBROWSER.onEvent('updated', (p) => {
+    if (p.name == 'session_list') {
       $scope.setting.session_list = [];
       SOCIALBROWSER.var.session_list.forEach((s) => {
-        $scope.setting.session_list.push(s);
+        $scope.setting.session_list.push(Object.assign({}, s));
       });
-    } else if (name == 'core') {
+    } else if (p.name == 'core') {
       $scope.setting.core = SOCIALBROWSER.var.core;
     }
 

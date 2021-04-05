@@ -250,7 +250,12 @@ module.exports = function init(parent) {
   parent.api.get('/api/var/setting/:key', (req, res) => {
     let key = req.params.key;
     let data = {};
-    data[key] = parent.var[key];
+    if (key == 'cookies') {
+      data[key] = parent.cookies;
+    } else {
+      data[key] = parent.var[key];
+    }
+
     res.json({
       done: true,
       var: data,
@@ -290,7 +295,7 @@ module.exports = function init(parent) {
     parent.electron.session.fromPartition(req.data.Partition.createInterruptedDownload(req.data));
     res.json({ done: true });
   });
-  
+
   parent.api.post('/api/download_list/resume-item', (req, res) => {
     parent.api.call('resume-item', req.data);
     res.json({ done: true });
