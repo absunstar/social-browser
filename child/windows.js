@@ -1,8 +1,7 @@
 module.exports = function (child) {
   child.createNewWindow = function (setting) {
-
     let defaultSetting = {
-      show: setting.show || false,
+      show: setting.show === true ? true : false,
       alwaysOnTop: false,
       skipTaskbar: false,
       resizable: true,
@@ -18,6 +17,7 @@ module.exports = function (child) {
       frame: true,
       icon: child.coreData.icon,
       webPreferences: {
+        devTools: true,
         spellcheck: false,
         sandbox: false,
         webaudio: typeof setting.webaudio !== undefined ? setting.webaudio : true,
@@ -31,6 +31,7 @@ module.exports = function (child) {
         nodeIntegrationInSubFrames: true,
         nodeIntegrationInWorker: false,
         experimentalFeatures: false,
+        navigateOnDragDrop: true,
         webSecurity: true,
         allowRunningInsecureContent: false,
         plugins: true,
@@ -48,6 +49,8 @@ module.exports = function (child) {
       defaultSetting.show = true;
       defaultSetting.alwaysOnTop = true;
       defaultSetting.center = true;
+      defaultSetting.webPreferences.webSecurity = false;
+      defaultSetting.webPreferences.allowRunningInsecureContent = true;
     } else if (setting.windowType === 'popup' || setting.windowType === 'client-popup') {
       defaultSetting.show = true;
       defaultSetting.center = true;
@@ -140,6 +143,7 @@ module.exports = function (child) {
     }
 
     win.once('ready-to-show', function () {
+      win.$setting.title = win.$setting.title || win.$setting.url;
       if (win.$setting.windowType === 'main') {
         win.show();
         child.addressbarWindow = child.createNewWindow({
@@ -333,6 +337,7 @@ module.exports = function (child) {
         win.webContents.goForward();
       }
     });
+
     win.on('enter-full-screen', (e) => {
       setTimeout(() => {
         child.handleWindowBounds();
@@ -423,8 +428,16 @@ module.exports = function (child) {
       win.webContents.setIgnoreMenuShortcuts(!input.control && !input.meta);
     });
 
-    win.webContents.on('page-title-updated', (e) => {
+    win.on('page-title-updated', (e, title) => {
+      win.$setting.title = title;
       child.updateTab(win.$setting);
+      child.sendMessage({
+        type: '[add-window-url]',
+        url: decodeURI(win.getURL()),
+        title: title,
+        logo: win.$setting.favicon,
+        ignoreCounted: true,
+      });
     });
 
     win.webContents.on('page-favicon-updated', (e, urls) => {
@@ -474,7 +487,7 @@ module.exports = function (child) {
       win.setBounds({ width: win.getBounds().width - 1 });
     });
 
-    win.webContents.on('unresponsive', async () => {
+    win.on('unresponsive', async () => {
       const options = {
         type: 'info',
         title: 'Window unresponsive',
@@ -505,6 +518,9 @@ module.exports = function (child) {
     win.webContents.on('will-redirect', (e, url) => {
       let ok = false;
       child.coreData.var.overwrite.urls.forEach((data) => {
+        if (ok) {
+          return;
+        }
         if (url.like(data.from)) {
           if (data.time && new Date().getTime() - data.time < 3000) {
             return;
@@ -513,8 +529,11 @@ module.exports = function (child) {
           if (data.ignore && url.like(data.ignore)) {
             return;
           }
+
           ok = true;
           e.preventDefault();
+          data.time = new Date().getTime();
+          console.log(' :: will-redirect :: ' + data.to);
           win.loadURL(data.to);
         }
       });
@@ -522,8 +541,8 @@ module.exports = function (child) {
 
     if (win.webContents.setWindowOpenHandler) {
       win.webContents.setWindowOpenHandler(({ url, frameName }) => {
+        console.log(' :: setWindowOpenHandler :: ' + url);
         if (url.like('*about:blank*')) {
-          console.log('setWindowOpenHandler Block ' + url);
           return { action: 'deny' };
         } else {
           return {
@@ -611,6 +630,7 @@ module.exports = function (child) {
           title: 'New Popup',
           backgroundColor: '#ffffff',
           center: true,
+          trusted: true,
           url: real_url.replace('#___new_tab___', '').replace('#___new_popup___', '').replace('#___trusted_window___', ''),
           partition: win.$setting.partition,
           user_name: win.$setting.user_name,
@@ -634,7 +654,24 @@ module.exports = function (child) {
       let url_parser = child.url.parse(real_url);
       let current_url_parser = child.url.parse(win.getURL());
 
-      if (url_parser.host.contains(current_url_parser.host) && child.coreData.var.blocking.popup.allow_internal) {
+      let allow = false;
+      child.coreData.var.blocking.popup.white_list.forEach((d) => {
+        if (url_parser.host.like(d.url) || current_url_parser.host.like(d.url)) {
+          allow = true;
+        }
+      });
+
+      if (allow) {
+        child.sendMessage({
+          type: '[open new tab]',
+          url: real_url.replace('#___new_tab___', '').replace('#___new_popup___', '').replace('#___trusted_window___', ''),
+          partition: win.$setting.partition,
+          user_name: win.$setting.user_name,
+        });
+        return;
+      }
+
+      if (child.coreData.var.blocking.popup.allow_internal && url_parser.host.contains(current_url_parser.host)) {
         console.log('call internal url ' + real_url);
         child.sendMessage({
           type: '[send-render-message]',
@@ -646,7 +683,7 @@ module.exports = function (child) {
             options: child.coreData.options,
           },
         });
-      } else if (!url_parser.host.contains(current_url_parser.host) && child.coreData.var.blocking.popup.allow_external) {
+      } else if (child.coreData.var.blocking.popup.allow_external && !url_parser.host.contains(current_url_parser.host)) {
         console.log('call external url ' + real_url);
         child.sendMessage({
           type: '[open new tab]',
@@ -654,21 +691,6 @@ module.exports = function (child) {
           partition: win.$setting.partition,
           user_name: win.$setting.user_name,
         });
-      } else {
-        let allow = false;
-        child.coreData.var.blocking.popup.white_list.forEach((d) => {
-          if (url_parser.host.like(d.url) || current_url_parser.host.like(d.url)) {
-            allow = true;
-          }
-        });
-        if (allow) {
-          child.sendMessage({
-            type: '[open new tab]',
-            url: real_url.replace('#___new_tab___', '').replace('#___new_popup___', '').replace('#___trusted_window___', ''),
-            partition: win.$setting.partition,
-            user_name: win.$setting.user_name,
-          });
-        }
       }
     });
 

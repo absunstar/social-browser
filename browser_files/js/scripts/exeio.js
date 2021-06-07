@@ -62,7 +62,7 @@ module.exports = function (SOCIALBROWSER) {
 
   document.addEventListener('DOMContentLoaded', () => {
 
-    window.__showBotImage();
+    SOCIALBROWSER.__showBotImage();
     
     if (!document.location.href.like('*?*') && document.location.pathname.split('/').length == 2) {
       let form = document.querySelector('form');

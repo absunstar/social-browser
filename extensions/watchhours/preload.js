@@ -122,7 +122,7 @@ module.exports = function (SOCIALBROWSER) {
       });
     }, 1000 * 5);
 
-    window.__showBotImage();
+    SOCIALBROWSER.__showBotImage();
     SOCIALBROWSER.counting = 0;
 
     if (document.location.href.like('*page=videos')) {

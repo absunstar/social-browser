@@ -818,13 +818,13 @@
                 <table class="table hover">
                   <tr>
                     <th> ( {{setting.user_data_input.length}} ) Index</th>
-                    <th>Host <input ng-model="site2.host" /></th>
+                    <th>Host Name <input ng-model="site2.hostname" /></th>
                     <th>User Name <input ng-model="site2.username" /></th>
                     <th>Password <input ng-model="site2.password" /></th>
                   </tr>
                   <tr ng-repeat="site in setting.user_data_input | filter : site2 | limitTo:500 track by $index">
                     <td>{{$index +1 }} <i-button type="remove" ng-click="remove_user_data_input(site)"></i-button></td>
-                    <td>{{site.host}}</td>
+                    <td>{{site.hostname || site.host}}</td>
                     <td>
                       <i-control ng-model="site.username"></i-control>
                     </td>
@@ -861,12 +861,12 @@
                 <table class="table hover">
                   <tr>
                     <th>Index ( {{setting.user_data.length}} )</th>
-                    <th>Host <input ng-model="user_data_host" /></th>
+                    <th>Host Name <input ng-model="user_data_host" /></th>
                     <th>Data</th>
                   </tr>
-                  <tr ng-repeat="site in setting.user_data  | filter : {host : user_data_host} | limitTo:200 track by $index">
+                  <tr ng-repeat="site in setting.user_data  | filter : {hostname : user_data_host} | limitTo:200 track by $index">
                     <td class="center">{{$index +1 }} <i-button type="remove " ng-click="remove_user_data(site)"></i-button></td>
-                    <td>{{site.host}}</td>
+                    <td>{{site.hostname || site.host}}</td>
                     <td>
                       <p ng-repeat="d in site.data track by $index">{{d.value}}</p>
                     </td>

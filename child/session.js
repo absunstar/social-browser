@@ -9,7 +9,7 @@ module.exports = function (child) {
     }
 
     child.session_name_list.push(name);
-    child.cookies[name] = []
+    child.cookies[name] = [];
     let ss = name === '_' ? child.electron.session.defaultSession : child.electron.session.fromPartition(name);
 
     // let ex_date = Date.now() + 1000 * 60 * 60 * 24 * 30;
@@ -182,9 +182,16 @@ module.exports = function (child) {
         });
 
         if (end) {
-          callback({
-            cancel: true,
-          });
+          if (url.like('*.js*|*/js*')) {
+            callback({
+              cancel: false,
+              redirectURL: `http://127.0.0.1:60080/js/fake.js`,
+            });
+          } else {
+            callback({
+              cancel: true,
+            });
+          }
 
           return;
         }
@@ -311,13 +318,14 @@ module.exports = function (child) {
       }
 
       if (cookie_obj) {
-        if (child.cookies[name]) {
+        if (child.cookies[name] && !details.url.contains('facebook.com|yahoo.com')) {
           child.cookies[name].forEach((co) => {
             if (details.url.contains(co.domain)) {
               cookie_obj[co.name] = co.value;
             }
           });
         }
+
         let cookie_string = child.cookieStringify(cookie_obj);
         details.requestHeaders['Cookie'] = cookie_string;
       }
@@ -384,6 +392,7 @@ module.exports = function (child) {
         // 'Cross-Origin-Opener-Policy',
         //  'Strict-Transport-Security',
         // 'X-Content-Type-Options',
+        // 'Content-Security-Policy',
         'Access-Control-Allow-Credentials',
         'Access-Control-Allow-Methods',
         'Access-Control-Allow-Headers',
@@ -406,6 +415,11 @@ module.exports = function (child) {
       if (a_expose) {
         details.responseHeaders['Access-Control-Expose-Headers'.toLowerCase()] = a_expose;
       }
+
+      // if (s_policy) {
+      //   details.responseHeaders['Content-Security-Policy'.toLowerCase()] = "script-src 'unsafe-inline' 'unsafe-eval'";
+      // }
+
       // details.responseHeaders['Cross-Origin-Resource-Policy'.toLowerCase()] = 'cross-origin';
 
       child.coreData.var.overwrite.urls.forEach((data) => {
@@ -448,7 +462,7 @@ module.exports = function (child) {
       if (!child.coreData.var.blocking.permissions) {
         return false;
       }
-      if (webContents.getURL().like('http://127.0.0.1*|https://127.0.0.1*')) {
+      if (webContents && webContents.getURL().like('http://127.0.0.1*|https://127.0.0.1*')) {
         return true;
       } else {
         let allow = child.coreData.var.blocking.permissions['allow_' + permission.replace('-', '_')] || false;

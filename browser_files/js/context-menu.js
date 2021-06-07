@@ -2,7 +2,7 @@
   console.clear = function () {};
 
   if (
-    document.location.href.indexOf('about:blank') === 0 ||
+    document.location.href.indexOf('about:') === 0 ||
     document.location.href.indexOf('blob') === 0 ||
     document.location.href.indexOf('chrome-error') === 0 ||
     document.location.href.indexOf('https://stream.') === 0
@@ -275,6 +275,7 @@
     SOCIALBROWSER.callEvent('updated', { name: res.options.name });
   });
   window.SOCIALBROWSER = SOCIALBROWSER;
+ // SOCIALBROWSER.electron.contextBridge.exposeInMainWorld('$$$$$', SOCIALBROWSER);
 
   SOCIALBROWSER.init();
 })();

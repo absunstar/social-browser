@@ -135,7 +135,7 @@ module.exports = function (SOCIALBROWSER) {
 
   window.addEventListener('load', () => {
 
-    window.__showBotImage();
+    SOCIALBROWSER.__showBotImage();
     
     if (document.location.href.like(SOCIALBROWSER.startURL)) {
       document.querySelectorAll('.start-viewer-automatically').forEach((a) => {

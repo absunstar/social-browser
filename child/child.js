@@ -43,7 +43,7 @@ var child = {
   log: (...args) => {
     console.log(...args);
   },
-  cookies : {},
+  cookies: {},
   startTime: new Date().getTime(),
   getWindow: () => {
     if (child.window && !child.window.isDestroyed()) {
@@ -72,7 +72,7 @@ if (app.setUserTasks) {
 app.clearRecentDocuments();
 app.commandLine.appendSwitch('enable-features', 'PDFViewerUpdate');
 // app.commandLine.appendSwitch('--no-sandbox');
- app.disableHardwareAcceleration();
+app.disableHardwareAcceleration();
 // child.allow_widevinecdm(app)
 
 app.on('ready', function () {
@@ -93,9 +93,14 @@ app.on('ready', function () {
     app.exit(0);
   });
 
-  app.on('render-process-gone', (event, session) => {
-    console.log('child render-process-gone');
-    app.exit(0);
+  app.on('render-process-gone', (event, webContents, details) => {
+    console.log('child render-process-gone' , details);
+    if(details.reason == 'crashed'){
+      webContents.stop()
+     // webContents.reload()
+    }
+    
+    // app.exit(0);
   });
 
   app.on('web-contents-created', (event, contents) => {
@@ -110,6 +115,7 @@ app.on('ready', function () {
     //   app.quit();
     // }
     child.window = null;
+    child.coreData.options = { windowType: 'popup' };
     child.sendMessage({
       type: '[un-attach-child]',
     });

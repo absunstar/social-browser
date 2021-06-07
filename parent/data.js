@@ -303,18 +303,31 @@ module.exports = function init(parent) {
           s.name = s.name.replace('{random}', 'random_' + Math.random());
         });
       }
+
+      parent.set_var(name, parent.var[name]);
     } else {
-      parent.var[name] = currentContent;
+      parent.var[name] = currentContent || default_content;
+      parent.set_var(name, parent.var[name]);
     }
 
     if (name == 'core') {
+      if (!parent.var.core) {
+        console.log(' xxx No Core In Var xxx ');
+        parent.var.core = default_content;
+        parent.var.core.id = null;
+        parent.versionUpdating = true;
+        parent.set_var('core', parent.var.core);
+      }
+
       if (parent.var.core.version !== default_content.version) {
+        console.log(' xxx No version In Var xxx ');
         parent.versionUpdating = true;
         parent.var.core.version = default_content.version;
         parent.set_var('core', parent.var.core);
       }
 
       if (!parent.var.core.id) {
+        console.log(' xxx No id In Var xxx ');
         parent.var.id = process.platform + '_' + parent.package.version + '_' + parent.md5(new Date().getTime() + '_' + Math.random());
         parent.var.core.id = parent.var.id;
         parent.var.core.started_date = Date.now();
@@ -338,6 +351,13 @@ module.exports = function init(parent) {
 
     if (name == 'session_list' && parent.var.core.session == null) {
       parent.var.core.session = parent.var.session_list[0];
+    }
+
+    if (name == 'user_data_input') {
+      parent.var.user_data_input = parent.var.user_data_input.filter((v, i, a) => a.findIndex((t) => t.hostname === v.hostname && t.password === v.password && t.username === v.username) === i);
+    }
+    if (name == 'user_data') {
+      parent.var.user_data = parent.var.user_data.filter((v, i, a) => a.findIndex((t) => t.hostname === v.hostname && JSON.stringify(t.data || {}) === JSON.stringify(v.data || {})) === i);
     }
 
     return parent.var[name];
@@ -386,6 +406,7 @@ module.exports = function init(parent) {
   }, 1000 * 5);
 
   parent.addURL = function (nitm) {
+    
     if (!nitm.url) {
       return;
     }
@@ -406,7 +427,6 @@ module.exports = function init(parent) {
         itm.title = nitm.title || itm.title;
         itm.logo = nitm.logo || itm.logo;
         itm.last_visit = new Date().getTime();
-        
       }
     });
 
@@ -482,7 +502,6 @@ module.exports = function init(parent) {
   parent.get_var('user_data_input');
   parent.get_var('user_data');
   parent.get_var('urls');
-
 
   parent.get_var('extension_list');
   parent.get_var('custom_request_header_list');

@@ -14,7 +14,6 @@ module.exports = function (parent) {
     ss.setSpellCheckerLanguages(['en-US']);
 
     ss.cookies.on('changed', function (event, cookie, cause, removed) {
-
       if (typeof parent.cookies[name] === 'undefined') {
         parent.cookies[name] = [];
       }

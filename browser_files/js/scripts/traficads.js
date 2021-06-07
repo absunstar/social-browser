@@ -71,7 +71,7 @@ module.exports = function (SOCIALBROWSER) {
   }
 
   window.addEventListener('load', () => {
-    window.__showBotImage();
+    SOCIALBROWSER.__showBotImage();
     SOCIALBROWSER.counting = 0;
     if (document.location.href.like('https://traficads.com/index.php?page=module&md=youtube')) {
       setInterval(() => {

@@ -93,6 +93,7 @@ module.exports = function init(child) {
       var: child.get_dynamic_var(data),
       files_dir: child.coreData.files_dir,
       dir: child.coreData.dir,
+      data_dir : child.coreData.data_dir,
       injectHTML: child.coreData.injectHTML,
       windowSetting: (child.windowList.find((w) => w.id == data.win_id) || {}).setting || [],
       windowType: (child.windowList.find((w) => w.id == data.win_id) || {}).windowType || 'window-popup',

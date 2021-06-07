@@ -43,7 +43,7 @@ module.exports = function init(parent) {
             if (!child) {
               return;
             }
-
+            child.is_attached = true;
             child.ws = ws;
             let m = JSON.stringify({
               type: '[browser-core-data]',
@@ -70,12 +70,12 @@ module.exports = function init(parent) {
             });
             ws.send(m);
 
-            if (typeof child.is_attached === 'undefined') {
+            if (!child.is_cookie_sended) {
+              child.is_cookie_sended = true;
               for (const key in parent.cookies) {
                 ws.send(JSON.stringify({ type: '[browser-cookies]', name: key, value: parent.cookies[key] }));
               }
             }
-            child.is_attached = true;
 
             break;
           case '[un-attach-child]':
@@ -150,6 +150,10 @@ module.exports = function init(parent) {
           case '[update-browser-var][user_data_input][add]':
             parent.var.user_data_input.push(message.data);
             parent.set_var('user_data_input', parent.var.user_data_input);
+            break;
+          case '[update-browser-var][user_data][add]':
+            parent.var.user_data.push(message.data);
+            parent.set_var('user_data', parent.var.user_data);
             break;
           case '[update-browser-var][user_data_input][update]':
             parent.var.user_data_input.forEach((u) => {
@@ -245,6 +249,11 @@ module.exports = function init(parent) {
             break;
           case '[add-window-url]':
             parent.addURL(message);
+            parent.clientList.forEach((client) => {
+              if (client.windowType === 'main' && client.ws && client.ws.readyState === parent.WebSocket.OPEN) {
+                client.ws.send(JSON.stringify(message));
+              }
+            });
             break;
           case '[import-extension]':
             parent.importExtension();

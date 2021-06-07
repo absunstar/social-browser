@@ -1249,6 +1249,7 @@ module.exports = function (SOCIALBROWSER) {
   }
 
   function url_to_social(url, social_arr, title) {
+    /*
     social_arr.push({
       label: ` Open ${title} in 5 new tab [Audio Muted]`,
       click() {
@@ -1353,6 +1354,7 @@ module.exports = function (SOCIALBROWSER) {
     social_arr.push({
       type: 'separator',
     });
+    */
     social_arr.push({
       label: ` Open ${title} in 5 new Popup [Audio Muted]`,
       click() {

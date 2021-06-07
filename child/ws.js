@@ -1,5 +1,6 @@
 module.exports = function (child) {
   function connect() {
+    child.reconnectCount = 0;
     child._ws_ = new child.WebSocket('ws://127.0.0.1:60080/ws');
     child.sendMessage = function (message) {
       message.index = child.index;
@@ -12,6 +13,10 @@ module.exports = function (child) {
     child._ws_.on('close', function (e) {
       console.log('Socket is closed. Reconnect will be attempted in 1 second.', e);
       setTimeout(function () {
+        child.reconnectCount++;
+        if (child.reconnectCount > 10) {
+          process.exit();
+        }
         connect();
       }, 1000);
     });
@@ -33,7 +38,15 @@ module.exports = function (child) {
           child.electron.app.userAgentFallback = child.coreData.var.core.user_agent;
           child.electron.app.setPath('userData', child.path.join(child.coreData.data_dir, 'default'));
           child.sessionConfig();
-          child.createNewWindow(Object.assign({}, child.coreData.options));
+
+          if (child.coreData.windowType == 'none') {
+            child.window = null;
+            child.sendMessage({
+              type: '[un-attach-child]',
+            });
+          } else {
+            child.createNewWindow(Object.assign({}, child.coreData.options));
+          }
         } else if (message.type == '[browser-cookies]') {
           child.cookies[message.name] = message.value;
         } else if (message.type == '[send-render-message]') {
@@ -70,6 +83,7 @@ module.exports = function (child) {
                 child.cookies[message.partition].splice(i, 1);
               }
             });
+
           }
         } else if (message.type == '[to-all]') {
           if (message.name === 'hide-addressbar') {

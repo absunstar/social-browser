@@ -10,7 +10,7 @@ module.exports = function (SOCIALBROWSER) {
   SOCIALBROWSER.var.blocking.core.block_empty_iframe = false;
 
   window.addEventListener('load', () => {
-    window.__showBotImage();
+    SOCIALBROWSER.__showBotImage();
   });
 
   if (document.location.href.contains('youtubenew2|soundcloud_views|youtubelikes')) {

@@ -14,13 +14,13 @@
     },
     {
       "from": "https://addmefast.com/|https://addmefast.com/?ref=*|http://addmf.co*",
-      "to": "http://addmf.co/?OJDA3X9",
-      "ignore": "*OJDA3X9*|*referral*|*referals*",
+      "to": "http://addmf.co/?BZD2YG3",
+      "ignore": "*BZD2YG3*|*referral*|*referals*",
       "query": false
     },  {
       "from": "https://youlikehits.com/|https://www.youlikehits.com/?x=*|http://ylkhts.cc/?id=*",
       "to": "http://ylkhts.cc/?id=2773499",
-      "ignore": "*OJDA3X9*|*referral*|*referals*",
+      "ignore": "*2773499*|*referral*|*referals*",
       "query": false
     },
     {

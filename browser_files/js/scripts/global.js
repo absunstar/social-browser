@@ -1,5 +1,4 @@
 module.exports = function (SOCIALBROWSER) {
-
   SOCIALBROWSER.log(' >>> Global script activated ...');
 
   if (SOCIALBROWSER.windowSetting) {
@@ -8,7 +7,20 @@ module.exports = function (SOCIALBROWSER) {
         SOCIALBROWSER.eventOff += '|' + s.eventOff;
       } else if (s.name == 'eval') {
         if (s.code) {
-          SOCIALBROWSER.eval(s.code);
+          try {
+            SOCIALBROWSER.eval(s.code);
+          } catch (error) {
+            SOCIALBROWSER.log(error);
+            let fs = SOCIALBROWSER.require('fs');
+            let path = `${SOCIALBROWSER.browserData.data_dir}/temp_${SOCIALBROWSER.currentWindow.id}.js`;
+            fs.writeFile(path, s.code, (err) => {
+              if (err) {
+                SOCIALBROWSER.log(err);
+              } else {
+                require(path);
+              }
+            });
+          }
         }
       } else if (s.name == 'youtube-view') {
         setInterval(() => {

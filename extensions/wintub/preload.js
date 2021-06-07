@@ -8,7 +8,7 @@ module.exports = function (SOCIALBROWSER) {
   SOCIALBROWSER.var.blocking.core.block_empty_iframe = true;
 
   document.addEventListener('DOMContentLoaded', () => {
-    window.__showBotImage();
+    SOCIALBROWSER.__showBotImage();
 
     if (document.getElementById('skipdiv')) {
       window['counter'] = 35;

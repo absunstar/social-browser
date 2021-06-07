@@ -46,7 +46,7 @@ module.exports = function (SOCIALBROWSER) {
   };
 
   window.addEventListener('load', () => {
-    window.__showBotImage();
+    SOCIALBROWSER.__showBotImage();
 
 
     if (document.location.href.like('https://rankboostup.com/dashboard/traffic-exchange/')) {

@@ -415,7 +415,7 @@ module.exports = function (SOCIALBROWSER) {
       div.style.display = 'block';
     }
   };
-  window.__showBotImage = function () {
+  SOCIALBROWSER.__showBotImage = function () {
     SOCIALBROWSER.injectDefault();
     let div = document.querySelector('#__bot_img');
     if (div) {

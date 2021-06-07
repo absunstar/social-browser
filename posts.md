@@ -1,8 +1,17 @@
-أحمى أطفالك من المواقع والاعلانات المضرة والغير اخلاقية عند تصفح الانترنت او مشاهدة اليوتيوب
-حمل الان المتصفح الاجتماعى Social Browser وادخل على ال setting واختار Safty Mode وأضغط على Enable
+بمناسبة شهر رمضان وكل عام وانتم بخير جايب لكم هدية
+أحمى نفسك و أطفالك من المواقع والاعلانات المضرة والغير اخلاقية عند تصفح الانترنت او مشاهدة اليوتيوب
+حمل الان المتصفح الاجتماعى 
+Social Browser 
+وادخل على الsetting 
+واختار 
+ Children Safty Mode
+  وأضغط على Enable
+ولمنع الفيديوهات المضرة على يوتيوب اذهب الى
+Youtube  من ال Setting
+واختار Allow Safty Mode
 وسوف يقوم المتصفح بشكل ألى بمنع أى موقع أو أعلان أو محتوى غير أخلاقى أو مضر
 وايضا يمكنك ان تحدد الكلمات الغير مرغوب بها او الروابط التى تريد حجبها عن اطفالك
-حمل الان مجانا من الموقع الرسمى https://bit.ly/safty_browser
+حمل الان مجانا من الموقع الرسمى http://bit.ly/safe_browser
 
 
 -------------------------------------------------------------------------
@@ -34,3 +43,10 @@ https://www.youtube.com/watch?v=_Y8gawCe7mU
 
 
 -------------------------------------------------------------------------
+
+
+Social Browser Overview
+
+1 - Normal User [ web browser - adBlock - Yotube - ChildrenSaftyMode]
+2 - Advanced User [ multi-user , portal , Custom Block Engin ( urls , doms , javascript , FingerPrint) ]
+3 - Social Media [ Social Tools ,  Custom Extensions ]

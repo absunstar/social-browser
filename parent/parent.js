@@ -157,7 +157,6 @@ module.exports = function init(parent) {
   //  require(parent.path.join(parent.dir, 'spiders', 'page-info.js'))(parent);
   //  require(parent.path.join(parent.dir, 'spiders', 'page-content.js'))(parent);
 
-
   if (process.platform == 'win32') {
     parent.exec('wmic CPU get ProcessorId', (d) => {
       parent.information['ProcessorId'] = d.replace(/\n|\r|\t|\s+|ProcessorId/g, '');
@@ -177,6 +176,10 @@ module.exports = function init(parent) {
       parent.clientList[child.index].options = options;
       parent.clientList[child.index].ws.send(JSON.stringify({ type: 'connected' }));
     } else {
+      // browser.createChildProcess({
+      //   windowType: 'none',
+      // });
+
       let index = parent.child_index;
       parent.child_index++;
       parent.clientList[index] = {
@@ -206,11 +209,13 @@ module.exports = function init(parent) {
         parent.log(` [child ${child.pid} ] close with code ( ${code} ) and signal ( ${signal} )`);
 
         if (!parent.clientList[index] || !parent.clientList[index].options || !parent.clientList[index].options.tab_id) {
+          if (parent.clientList[index]) {
+            parent.clientList.splice(index, 1);
+          }
           return;
         }
 
         let tab_id = parent.clientList[index].options.tab_id;
-        parent.clientList.splice(index, 1);
 
         parent.clientList.forEach((client, i) => {
           if (client.windowType === 'main') {
@@ -222,6 +227,10 @@ module.exports = function init(parent) {
             );
           }
         });
+
+        if (parent.clientList[index]) {
+          parent.clientList.splice(index, 1);
+        }
       });
 
       child.on('error', (err) => {
@@ -243,10 +252,8 @@ module.exports = function init(parent) {
     }
   };
 
-
   parent.var.extension_list = parent.var.extension_list || [];
   parent.var.extension_list.forEach((ex) => {
     parent.loadExtension(ex, true);
   });
-
 };

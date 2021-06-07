@@ -9,7 +9,7 @@ module.exports = function (SOCIALBROWSER) {
   let link = '';
   let count = 0;
   function fake_hit(link) {
-    window.__showBotImage();
+    SOCIALBROWSER.__showBotImage();
     count++;
     alert(`Fake Hit number ${count}`);
     document.querySelector('title').innerText = 'Fake Hit  ' + count;
@@ -53,7 +53,7 @@ module.exports = function (SOCIALBROWSER) {
     }
   }
   document.addEventListener('DOMContentLoaded', () => {
-    window.__showBotImage();
+    SOCIALBROWSER.__showBotImage();
     if (!document.location.href.contains('https://www.10khits.com/dashboard/surf/sessions')) {
       return;
     }

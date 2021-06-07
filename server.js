@@ -100,8 +100,7 @@ browser.Partitions_data_dir = browser.path.join(browser.data_dir, 'default', 'Pa
 browser.electron.app.setPath('userData', browser.path.join(browser.data_dir, 'default'));
 require(browser.path.join(browser.dir, '/parent/parent.js'))(browser);
 
-
-require('@electron/remote/main').initialize()
+require('@electron/remote/main').initialize();
 
 browser.createChildProcess({
   url: browser.url.format({
@@ -112,16 +111,18 @@ browser.createChildProcess({
   windowType: 'main',
 });
 
-browser.createChildProcess({
-  url: browser.url.format({
-    pathname: browser.path.join(browser.dir, 'updates', 'index.html'),
-    protocol: 'file:',
-    slashes: true,
-  }),
-  windowType: 'updates',
-  show: false,
-  trusted: true,
-});
+setTimeout(() => {
+  browser.createChildProcess({
+    url: browser.url.format({
+      pathname: browser.path.join(browser.dir, 'updates', 'index.html'),
+      protocol: 'file:',
+      slashes: true,
+    }),
+    windowType: 'updates',
+    show: false,
+    trusted: true,
+  });
+}, 1000 * 60 * 5);
 
 browser.electron.Menu.setApplicationMenu(null);
 browser.electron.app.setAsDefaultProtocolClient('browser');
@@ -179,7 +180,6 @@ browser.electron.app.on('ready', function () {
   //     });
   //   });
   // });
-
 });
 browser.electron.app.on('second-instance', (event, commandLine, workingDirectory) => {
   browser.log('second-instance', commandLine);
