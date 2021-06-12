@@ -115,7 +115,7 @@
     "xlsx": "^0.16.9"
   },
   "devDependencies": {
-    "electron": "^13.1.0",
+    "electron": "^13.1.2",
     "electron-builder": "^22.10.5",
     "gulp": "*"
   }

@@ -83,7 +83,6 @@ module.exports = function (child) {
                 child.cookies[message.partition].splice(i, 1);
               }
             });
-
           }
         } else if (message.type == '[to-all]') {
           if (message.name === 'hide-addressbar') {
@@ -268,9 +267,11 @@ module.exports = function (child) {
         } else if (message.type == '[remove-tab]' && child.getWindow()) {
           child.sendToWindow('[send-render-message]', { name: '[remove-tab]', tab_id: message.tab_id });
         } else if (message.type == '[send-window-status]' && child.coreData.options.windowType === 'view' && child.getWindow()) {
-          child.coreData.options.screen = message.screen;
-          child.coreData.options.mainWindow = message.mainWindow;
-          child.handleWindowBounds();
+          if (message.screen && message.mainWindow) {
+            child.coreData.options.screen = message.screen;
+            child.coreData.options.mainWindow = message.mainWindow;
+            child.handleWindowBounds();
+          }
         }
       } catch (error) {
         console.log('onmessage Error', error);

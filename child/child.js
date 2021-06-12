@@ -94,12 +94,12 @@ app.on('ready', function () {
   });
 
   app.on('render-process-gone', (event, webContents, details) => {
-    console.log('child render-process-gone' , details);
-    if(details.reason == 'crashed'){
-      webContents.stop()
-     // webContents.reload()
+    console.log('child render-process-gone', details);
+    if (details.reason == 'crashed') {
+      webContents.stop();
+      // webContents.reload()
     }
-    
+
     // app.exit(0);
   });
 
@@ -143,12 +143,11 @@ app.on('ready', function () {
 
   child.handleWindowBounds = function () {
     let win = child.getWindow();
-    if (child.coreData.options.windowType === 'main' || !win) {
-      return;
-    }
-
     let mainWindow = child.coreData.options.mainWindow;
     let screen = child.coreData.options.screen;
+    if (!mainWindow || !screen || child.coreData.options.windowType === 'main' || !win) {
+      return;
+    }
 
     if (mainWindow.hide) {
       if (!child.is_hide) {
