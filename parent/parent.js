@@ -170,16 +170,19 @@ module.exports = function init(parent) {
   }
 
   parent.createChildProcess = function (options) {
+    
     let child = parent.clientList.find((cl) => cl && cl.is_attached === false);
     if (child && parent.clientList[child.index]) {
       parent.clientList[child.index].windowType = options.windowType || 'popup';
       parent.clientList[child.index].options = options;
       parent.clientList[child.index].ws.send(JSON.stringify({ type: 'connected' }));
+      if (parent.clientList.filter((cl) => cl && cl.is_attached === false).length === 0) {
+        parent.createChildProcess({
+          windowType: 'none',
+        });
+      }
     } else {
-      // browser.createChildProcess({
-      //   windowType: 'none',
-      // });
-
+      console.log(`\n () createChildProcess of ${parent.clientList.length} :: ${options.windowType} \n`);
       let index = parent.child_index;
       parent.child_index++;
       parent.clientList[index] = {
@@ -249,6 +252,14 @@ module.exports = function init(parent) {
       parent.clientList[index].id = child.pid;
       parent.clientList[index].pid = child.pid;
       parent.clientList[index].child = child;
+
+      setTimeout(() => {
+        if (parent.clientList.filter((cl) => cl && cl.is_attached === false).length === 0) {
+          parent.createChildProcess({
+            windowType: 'none',
+          });
+        }
+      }, 1000 * 5);
     }
   };
 
