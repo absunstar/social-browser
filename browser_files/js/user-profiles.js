@@ -19,7 +19,7 @@ app.controller('mainController', ($scope, $http, $interval, $timeout) => {
     if (p.name == 'session_list') {
       $scope.setting.session_list = [];
       SOCIALBROWSER.var.session_list.forEach((s) => {
-        $scope.setting.session_list.push(Object.assign({}, s));
+        $scope.setting.session_list.push({ ...s });
       });
     } else if (p.name == 'core') {
       $scope.setting.core = SOCIALBROWSER.var.core;
@@ -69,7 +69,7 @@ app.controller('mainController', ($scope, $http, $interval, $timeout) => {
   $scope.loadSetting = function () {
     $scope.setting.session_list = [];
     SOCIALBROWSER.var.session_list.forEach((s) => {
-      $scope.setting.session_list.push(Object.assign({}, s));
+      $scope.setting.session_list.push({...s});
     });
     $scope.setting.core = SOCIALBROWSER.var.core;
   };

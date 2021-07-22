@@ -9,7 +9,7 @@ module.exports = function (child) {
     }
 
     child.session_name_list.push(name);
-    child.cookies[name] = [];
+    child.cookies[name] = child.cookies[name] || [];
     let ss = name === '_' ? child.electron.session.defaultSession : child.electron.session.fromPartition(name);
 
     // let ex_date = Date.now() + 1000 * 60 * 60 * 24 * 30;

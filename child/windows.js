@@ -56,7 +56,7 @@ module.exports = function (child) {
       defaultSetting.center = true;
       defaultSetting.alwaysOnTop = true;
     } else if (setting.windowType === 'view') {
-      defaultSetting.show = true;
+      defaultSetting.show = false;
       defaultSetting.skipTaskbar = true;
       defaultSetting.frame = false;
       defaultSetting.resizable = false;
@@ -84,6 +84,15 @@ module.exports = function (child) {
       defaultSetting.frame = true;
       defaultSetting.webPreferences.webaudio = false;
       defaultSetting.center = true;
+    }else if (setting.windowType === 'none') {
+      setting.url = 'https://www.google.com';
+      defaultSetting.show = false;
+      defaultSetting.alwaysOnTop = false;
+      defaultSetting.skipTaskbar = true;
+      defaultSetting.resizable = true;
+      defaultSetting.frame = true;
+      defaultSetting.webPreferences.webaudio = false;
+      defaultSetting.center = true;
     }
 
     if (setting.trusted === true) {
@@ -93,7 +102,7 @@ module.exports = function (child) {
       defaultSetting.webPreferences.allowRunningInsecureContent = true;
     }
 
-    defaultSetting = Object.assign(defaultSetting, setting);
+    defaultSetting = {...defaultSetting, ...setting};
 
     let win = new child.electron.BrowserWindow(defaultSetting);
     win.$setting = defaultSetting;
@@ -128,6 +137,9 @@ module.exports = function (child) {
         };
 
         win.setBounds(new_bounds);
+        // setTimeout(() => {
+        //   win.show();
+        // }, 1000 * 2);
       }
     }
 
@@ -223,6 +235,8 @@ module.exports = function (child) {
           title: win.getTitle(),
           logo: win.$setting.favicon,
         });
+      }else if (win.$setting.windowType === 'none') {
+        win.close();
       }
     });
 
@@ -495,7 +509,7 @@ module.exports = function (child) {
         buttons: ['[winow-reload]', 'Close'],
       };
 
-      dialog.showMessageBox(options, function (index) {
+      child.electron.dialog.showMessageBox(options, function (index) {
         if (index === 0) {
           win.webContents.forcefullyCrashRenderer();
           win.webContents.reload();

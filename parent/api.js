@@ -147,7 +147,7 @@ module.exports = function init(parent) {
       origin: req.data.origin,
       url: req.data.href,
       win_id: req.data.win_id,
-      options: Object.assign(print_options, req.data.options),
+      options: { ...print_options, ...req.data.options },
     });
 
     if (true) {

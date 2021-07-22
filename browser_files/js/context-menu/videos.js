@@ -1,5 +1,5 @@
 module.exports = function (SOCIALBROWSER) {
-  if (SOCIALBROWSER.var.core.off || !SOCIALBROWSER.var.blocking.youtube.skip_ads && document.location.href.toLowerCase().like('*youtube.com*')) {
+  if (SOCIALBROWSER.var.core.off || (!SOCIALBROWSER.var.blocking.youtube.skip_ads && document.location.href.toLowerCase().like('*youtube.com*'))) {
     return;
   }
 
@@ -33,6 +33,12 @@ module.exports = function (SOCIALBROWSER) {
   let ads_src_list = '*cdn.cloudfrale.com*';
 
   function skipAdsVideos() {
+    if (!SOCIALBROWSER.var.blocking.core.skip_video_ads) {
+      setTimeout(() => {
+        skipAdsVideos();
+      }, 1000 * 10);
+      return;
+    }
     SOCIALBROWSER.log('skipAdsVideos()');
     let ads = false;
     let videos = document.querySelectorAll('video');

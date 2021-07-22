@@ -986,13 +986,13 @@ function render_new_tab(op) {
     op.url = 'http://' + op.url;
   }
 
-  op = Object.assign(
-    {
+  op = {
+    ...{
       url: '',
       title: null,
     },
-    op,
-  );
+    ...op,
+  };
 
   let tab = {
     id: 'tab_' + new Date().getTime(),

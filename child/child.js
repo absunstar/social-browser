@@ -63,16 +63,17 @@ require(child.path.join(child.dir, 'child', 'ipc'))(child);
 require(child.path.join(child.dir, 'child', 'session'))(child);
 require(child.path.join(child.dir, 'child', 'plugins'))(child);
 // require(child.path.join(child.dir, 'child', 'client'))(child);
-
+app.setAppUserModelId('Social.Browser');
 app.clearRecentDocuments();
+
 if (app.setUserTasks) {
   app.setUserTasks([]);
 }
 
 app.clearRecentDocuments();
 app.commandLine.appendSwitch('enable-features', 'PDFViewerUpdate');
-// app.commandLine.appendSwitch('--no-sandbox');
 app.disableHardwareAcceleration();
+// app.commandLine.appendSwitch('--no-sandbox');
 // child.allow_widevinecdm(app)
 
 app.on('ready', function () {
@@ -157,7 +158,7 @@ app.on('ready', function () {
     }
 
     if (win.isFullScreen()) {
-      console.log('isFullScreen');
+
       let width = screen.bounds.width;
       let height = screen.bounds.height;
       win.setBounds({

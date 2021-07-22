@@ -214,7 +214,7 @@
       SOCIALBROWSER.windowSetting = result.windowSetting;
       SOCIALBROWSER.windowType = result.windowType;
       SOCIALBROWSER.newTabData = result.newTabData;
-      SOCIALBROWSER.session = result.session ? Object.assign(SOCIALBROWSER.session, result.session) : SOCIALBROWSER.session;
+      SOCIALBROWSER.session = { ...SOCIALBROWSER.session, ...result.session };
 
       require(SOCIALBROWSER.files_dir + '/js/context-menu/init.js')(SOCIALBROWSER);
       require(SOCIALBROWSER.files_dir + '/js/context-menu/event.js')(SOCIALBROWSER);
@@ -275,7 +275,7 @@
     SOCIALBROWSER.callEvent('updated', { name: res.options.name });
   });
   window.SOCIALBROWSER = SOCIALBROWSER;
- // SOCIALBROWSER.electron.contextBridge.exposeInMainWorld('$$$$$', SOCIALBROWSER);
+  // SOCIALBROWSER.electron.contextBridge.exposeInMainWorld('$$$$$', SOCIALBROWSER);
 
   SOCIALBROWSER.init();
 })();

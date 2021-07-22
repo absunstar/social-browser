@@ -30,3 +30,11 @@ slow load
 1 - read scripts file from parent
 2 - off all require in contextmenu [fs , path]
 
+
+
+-------------------------------------------------------
+linx lag
+
+1 - check write var files
+2 - check session creation
+3 - 

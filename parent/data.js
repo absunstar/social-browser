@@ -399,11 +399,14 @@ module.exports = function init(parent) {
     }
   };
 
-  setInterval(() => {
-    if (save_var_quee.length > 0) {
-      parent.save_var(save_var_quee.shift());
-    }
-  }, 1000 * 5);
+  setTimeout(() => {
+    setInterval(() => {
+      if (save_var_quee.length > 0) {
+        parent.save_var(save_var_quee.shift());
+      }
+    }, 1000 * 5);
+  }, 1000 * 60 * 5);
+
 
   parent.addURL = function (nitm) {
     

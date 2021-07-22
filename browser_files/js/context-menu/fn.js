@@ -376,21 +376,25 @@ module.exports = function (SOCIALBROWSER) {
   };
 
   let alert_idle = null;
-  window.alert = window.prompt = function (msg, time) {
-    if (msg && msg.trim()) {
-      SOCIALBROWSER.injectDefault();
-      let div = document.querySelector('#__alertBox');
-      if (div) {
-        clearTimeout(alert_idle);
-        div.innerHTML = msg;
-        div.style.display = 'block';
-        alert_idle = setTimeout(() => {
-          div.style.display = 'none';
-          div.innerHTML = '';
-        }, time || 1000 * 3);
-      }
-    }
-  };
+  window.alert =
+    window.prompt =
+    window.confirm =
+      function (msg, time) {
+        if (msg && msg.trim()) {
+          SOCIALBROWSER.injectDefault();
+          let div = document.querySelector('#__alertBox');
+          if (div) {
+            clearTimeout(alert_idle);
+            div.innerHTML = msg;
+            div.style.display = 'block';
+            alert_idle = setTimeout(() => {
+              div.style.display = 'none';
+              div.innerHTML = '';
+            }, time || 1000 * 3);
+          }
+        }
+        return true;
+      };
 
   window.__showBookmarks = function () {
     SOCIALBROWSER.injectDefault();
@@ -422,7 +426,7 @@ module.exports = function (SOCIALBROWSER) {
       div.style.display = 'block';
     }
   };
-  window.__blockPage = window.prompt = function (block, msg, close) {
+  window.__blockPage = function (block, msg, close) {
     SOCIALBROWSER.injectDefault();
     let div = document.querySelector('#__blockDiv');
     if (div && block) {

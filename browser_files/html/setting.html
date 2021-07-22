@@ -804,8 +804,8 @@
                           <p class="green">{{_ex.description}}</p>
                         </td>
                         <td>
-                          <a ng-show="_ex.isEnabled === false" class="btn bg-green white" ng-click="enableExtension(_ex)"> Click to Enable </a>
-                          <a ng-show="_ex.isEnabled === true" class="btn bg-yellow black" ng-click="disableExtension(_ex)"> Click to Disable </a>
+                          <a ng-show="_ex.isEnabled === false" class="btn bg-black white" ng-click="enableExtension(_ex)"> OFF </a>
+                          <a ng-show="_ex.isEnabled === true" class="btn bg-green white" ng-click="disableExtension(_ex)"> ON </a>
                           <a ng-hide="_ex.canDelete == false" class="btn bg-red white right" ng-click="removeExtension(_ex)"> <i class="fa fa-trash"></i> Click to Remove </a>
                         </td>
                       </tr>

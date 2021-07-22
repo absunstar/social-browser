@@ -96,20 +96,32 @@ if (process.cwd().indexOf('-portal') !== -1) {
 } else {
   browser.data_dir = browser.path.join(browser.os.homedir(), 'social-data');
 }
+
+if (process.argv.some((x) => x == '--auto-startup')) {
+  browser.isAutoStartup = true;
+}
+
 browser.Partitions_data_dir = browser.path.join(browser.data_dir, 'default', 'Partitions');
 browser.electron.app.setPath('userData', browser.path.join(browser.data_dir, 'default'));
 require(browser.path.join(browser.dir, '/parent/parent.js'))(browser);
 
 require('@electron/remote/main').initialize();
 
-browser.createChildProcess({
-  url: browser.url.format({
-    pathname: browser.path.join(browser.files_dir, 'html', 'main-window.html'),
-    protocol: 'file:',
-    slashes: true,
-  }),
-  windowType: 'main',
-});
+if (browser.isAutoStartup) {
+  browser.createChildProcess({
+    url: 'https://www.google.com',
+    windowType: 'none',
+  });
+} else {
+  browser.createChildProcess({
+    url: browser.url.format({
+      pathname: browser.path.join(browser.files_dir, 'html', 'main-window.html'),
+      protocol: 'file:',
+      slashes: true,
+    }),
+    windowType: 'main',
+  });
+}
 
 setTimeout(() => {
   browser.createChildProcess({
@@ -129,9 +141,11 @@ browser.electron.app.setAsDefaultProtocolClient('browser');
 if (browser.electron.app.setUserTasks) {
   browser.electron.app.setUserTasks([]);
 }
+
 if (!browser.isPortal) {
-  browser.electron.app.setAppUserModelId(process.execPath);
+  browser.electron.app.setAppUserModelId('Social.Browser');
 }
+
 browser.electron.app.clearRecentDocuments();
 browser.electron.app.disableHardwareAcceleration();
 
@@ -154,6 +168,7 @@ browser.electron.app.on('ready', function () {
   if (!browser.isPortal) {
     browser.electron.app.setLoginItemSettings({
       openAtLogin: true,
+      args: ['--auto-startup'],
       path: process.execPath,
     });
   }

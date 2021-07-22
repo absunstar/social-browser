@@ -49,6 +49,10 @@ module.exports = function init(parent) {
               type: '[browser-core-data]',
               data_dir: parent.data_dir,
               options: child.options,
+              cookies : {
+                key : child.options.partition,
+                value : parent.cookies[child.options.partition]
+              },
               mainWindow: parent.lastWindowStatus ? parent.lastWindowStatus.mainWindow : null,
               appRequestUrl: parent.appRequestUrl,
               newTabData: parent.newTabData || {
@@ -72,8 +76,12 @@ module.exports = function init(parent) {
 
             if (!child.is_cookie_sended) {
               child.is_cookie_sended = true;
+              let count = 0;
               for (const key in parent.cookies) {
-                ws.send(JSON.stringify({ type: '[browser-cookies]', name: key, value: parent.cookies[key] }));
+                count++;
+                setTimeout(() => {
+                  ws.send(JSON.stringify({ type: '[browser-cookies]', name: key, value: parent.cookies[key] }));
+                }, 100 * count);
               }
             }
 

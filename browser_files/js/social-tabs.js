@@ -65,7 +65,7 @@ function getDefaultTapProperties() {
     defaultTapProperties.user_agent = SOCIALBROWSER.var.core.user_agent;
   }
 
-  return Object.assign({}, defaultTapProperties);
+  return { ...defaultTapProperties };
 }
 
 client.on('setting changed', (arr) => {
@@ -140,7 +140,7 @@ class SocialTabs {
     this.el.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      
+
       if (e.target.classList.contains('social-tab')) {
         this.setCurrentTab(e.target);
       } else if (e.target.classList.contains('social-tab-close')) {
@@ -272,18 +272,17 @@ class SocialTabs {
     }
 
     const tabEl = this.createNewTabEl();
-    
 
     tabEl.classList.add('social-tab-just-added');
     setTimeout(() => tabEl.classList.remove('social-tab-just-added'), 500);
 
-    tabProperties = Object.assign(
-      getDefaultTapProperties(),
-      {
+    tabProperties = {
+      ...getDefaultTapProperties(),
+      ...{
         id: 'tab_' + new Date().getTime(),
       },
-      tabProperties,
-    );
+      ...tabProperties,
+    };
 
     $('.social-tab.plus').remove();
     this.tabContentEl.appendChild(tabEl);
@@ -311,7 +310,7 @@ class SocialTabs {
     this.setupDraggabilly();
 
     tabEl.addEventListener('mousedown', (e) => {
-     // console.log('tab mousedown' , e)
+      // console.log('tab mousedown' , e)
       if (e.which == 2) {
         e.preventDefault();
         this.removeTab(tabEl);
@@ -338,7 +337,7 @@ class SocialTabs {
       } else if (tabEl.nextElementSibling) {
         this.setCurrentTab(tabEl.nextElementSibling);
       } else {
-       // ExitSocialWindow();
+        // ExitSocialWindow();
         // this.addTab()
       }
     }

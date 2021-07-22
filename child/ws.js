@@ -35,17 +35,18 @@ module.exports = function (child) {
         } else if (message.type == '[browser-core-data]') {
           child.coreData = message;
           child.cookies = child.cookies || {};
+          console.log('!!!!!!!   options    :   ' ,JSON.stringify(child.coreData.options));
+          child.cookies[child.coreData.options.partition] = child.coreData.cookies[child.coreData.options.partition];
           child.electron.app.userAgentFallback = child.coreData.var.core.user_agent;
           child.electron.app.setPath('userData', child.path.join(child.coreData.data_dir, 'default'));
           child.sessionConfig();
+          child.createNewWindow({ ...child.coreData.options });
 
           if (child.coreData.windowType == 'none') {
             child.window = null;
             child.sendMessage({
               type: '[un-attach-child]',
             });
-          } else {
-            child.createNewWindow(Object.assign({}, child.coreData.options));
           }
         } else if (message.type == '[browser-cookies]') {
           child.cookies[message.name] = message.value;
@@ -54,9 +55,7 @@ module.exports = function (child) {
         } else if (message.type == '$download_item') {
           child.sendToWindow('$download_item', message.data);
         } else if (message.type == '[cookie-changed]') {
-          if (typeof child.cookies[message.partition] === 'undefined') {
-            child.cookies[message.partition] = [];
-          }
+          child.cookies[message.partition] = child.cookies[message.partition] || []
 
           if (!message.removed) {
             let exists = false;
