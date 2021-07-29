@@ -1,7 +1,7 @@
 {
     "port":60080,
     "enabled": true,
-    "version": "2021.07.01",
+    "version": "2021.07.25",
     "full_version": true,
     "key" : "free key",
     "session": null,
