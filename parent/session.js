@@ -14,7 +14,7 @@ module.exports = function (parent) {
     ss.setSpellCheckerLanguages(['en-US']);
 
     ss.cookies.on('changed', function (event, cookie, cause, removed) {
-      if (typeof parent.cookies[name] === 'undefined') {
+      if (!Array.isArray(parent.cookies[name])) {
         parent.cookies[name] = [];
       }
 
@@ -413,7 +413,12 @@ module.exports = function (parent) {
       }
     });
     ss.on('will-download', (event, item, webContents) => {
-      console.log('parent will-download');
+      if (parent.var.last_download_url === item.getURL()) {
+        console.log(' Parent Will Download Cancel Duplicate : ' + item.getURL());
+        return;
+      }
+
+      parent.var.last_download_url = item.getURL();
 
       let dl = {
         id: new Date().getTime(),
@@ -429,26 +434,20 @@ module.exports = function (parent) {
         Partition: name,
       };
 
-      if (parent.var.last_download_url !== item.getURL()) {
-        parent.var.last_download_url = item.getURL();
-
-        if (parent.var.downloader.enabled && !item.getURL().like('*127.0.0.1*') && !item.getURL().like('blob*')) {
-          if (parent.api.isFileExistsSync(parent.var.downloader.app)) {
-            event.preventDefault();
-            let params = parent.var.downloader.params.split(' ');
-            for (const i in params) {
-              params[i] = params[i].replace('$url', decodeURIComponent(dl.url)).replace('$file_name', dl.name);
-            }
-            parent.exe(parent.var.downloader.app, params);
-            return;
+      if (parent.var.downloader.enabled && !item.getURL().like('*127.0.0.1*') && !item.getURL().like('blob*')) {
+        if (parent.api.isFileExistsSync(parent.var.downloader.app)) {
+          event.preventDefault();
+          let params = parent.var.downloader.params.split(' ');
+          for (const i in params) {
+            params[i] = params[i].replace('$url', decodeURIComponent(dl.url)).replace('$file_name', dl.name);
           }
+          parent.exe(parent.var.downloader.app, params);
+          return;
         }
       }
 
       parent.var.download_list.push(dl);
       parent.set_var('download_list', parent.var.download_list);
-
-      parent.var.last_download_url = null;
 
       parent.api.on('pause-item', (info) => {
         if (item.id == info.id) {

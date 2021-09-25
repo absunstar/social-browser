@@ -38,7 +38,7 @@ module.exports = function (SOCIALBROWSER) {
       try {
         require(p.path.replace('{dir}', SOCIALBROWSER.dir))(SOCIALBROWSER);
       } catch (error) {
-        console.error(error);
+        SOCIALBROWSER.log(error);
       }
     });
 

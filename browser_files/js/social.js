@@ -18,8 +18,8 @@ const updateOnlineStatus = () => {
 window.addEventListener('online', updateOnlineStatus);
 window.addEventListener('offline', updateOnlineStatus);
 
-const { remote, nativeImage } = SOCIALBROWSER.electron;
-const { Menu, MenuItem } = remote;
+const { nativeImage } = SOCIALBROWSER.electron;
+const { Menu, MenuItem } = SOCIALBROWSER.remote;
 
 function sendToMain(obj) {
   obj.tab_id = currentTabId;

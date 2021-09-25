@@ -13,7 +13,7 @@
         --fieldset-border: 1px dashed #9e9e9e;
         --modal-color: #000000;
         --modal-background: #00000026;
-        --font-family: 'Droid Arabic Kufi', monospace;
+        --font-family: monospace, 'Cairo';
       }
       html,
       body {
@@ -83,7 +83,6 @@
         <h2>Browser Version <span class="red bold"> {{setting.core.version}} </span></h2>
         <h2>Browser ID <span class="blue bold"> {{setting.core.id}} </span></h2>
         <i-checkbox class="row" label="Disabled Social Browser Engine " ng-model="setting.core.off"></i-checkbox>
-
       </div>
 
       <br />
@@ -393,6 +392,7 @@
                     <i-checkbox class="row" label="Block ( window.postMessage )" ng-model="setting.blocking.javascript.block_window_post_message"> </i-checkbox>
                     <i-checkbox class="row" label="Block ( window.Worker )" ng-model="setting.blocking.javascript.block_window_worker"> </i-checkbox>
                     <i-checkbox class="row" label="Auto Load ( jquery )" ng-model="setting.blocking.javascript.allow_jquery"> </i-checkbox>
+                    <i-checkbox class="row" label="Double Click [ Auto Paste ] " ng-model="setting.blocking.javascript.auto_paste"> </i-checkbox>
                     <div class="row border padding">
                       <div class="col6"><i-checkbox class="row" label="Custom Local Storage" ng-model="setting.blocking.javascript.custom_local_storage"> </i-checkbox></div>
                       <div class="col6"><i-checkbox class="row" label="Custom Session Storage" ng-model="setting.blocking.javascript.custom_session_storage"> </i-checkbox></div>
@@ -473,7 +473,7 @@
                         ng-change="setting.proxy.url = setting.selected_proxy.url"
                       >
                       </i-list>
-                      <i-control class="col10" label="Custom Proxy URL" type="text" ng-model="setting.proxy.url"> </i-control>
+                      <i-control class="col10" label="Custom Proxy URL [ ServerIP:Port ] " type="text" ng-model="setting.proxy.url"> </i-control>
                     </div>
                   </fieldset>
                 </div>
@@ -597,6 +597,24 @@
                         <i-list ng-search="search.$user_agent" primary="name" items="setting.user_agent_list" ng-model="currentSession.user_agent" label="Select User Agent"></i-list>
                         <i-control ng-disabled="true" class="row" label="Custom User Agent" ng-model="currentSession.user_agent.url"></i-control>
                       </div>
+
+                      <fieldset>
+                        <legend>Proxy</legend>
+
+                        <i-checkbox class="col2" label="Enable" ng-model="currentSession.proxy.enabled"></i-checkbox>
+                        <div class="row" ng-show="currentSession.proxy.enabled === true">
+                          <i-list
+                            ng-search="$selected_proxy"
+                            items="setting.proxy_list"
+                            display="name"
+                            label="Select Proxy"
+                            ng-model="currentSession.selected_proxy"
+                            ng-change="currentSession.proxy.url = currentSession.selected_proxy.url"
+                          >
+                          </i-list>
+                          <i-control class="col10" label="Custom Proxy URL [ ServerIP:Port ] " type="text" ng-model="currentSession.proxy.url"> </i-control>
+                        </div>
+                      </fieldset>
 
                       <i-checkbox label="Enable Finger Printing Protection" ng-model="currentSession.privacy.enable_finger_protect"></i-checkbox>
                       <br />
@@ -751,8 +769,8 @@
                     <div class="col6">
                       <fieldset>
                         <legend>New Proxy</legend>
-                        <i-control label="Name" ng-model="proxy.name"></i-control>
-                        <i-control label="URL" ng-model="proxy.url"></i-control>
+                        <i-control label="Name [ option ] " ng-model="proxy.name"></i-control>
+                        <i-control label="URL [ ServerIP:Port ] " ng-model="proxy.url"></i-control>
                         <i-button type="add" ng-click="addProxy()" label="Add to List"></i-button>
                       </fieldset>
                     </div>
@@ -765,8 +783,8 @@
                     <table class="table hover">
                       <tr>
                         <th>Index</th>
-                        <th>Name <input type="text" ng-model="proxy.name" /></th>
-                        <th>URL <input type="text" ng-model="proxy.url" /></th>
+                        <th>Name [ option ] <input type="text" ng-model="proxy.name" /></th>
+                        <th>URL [ ServerIP:Port ] <input type="text" ng-model="proxy.url" /></th>
                         <th>Actions</th>
                       </tr>
                       <tr ng-repeat="_se in setting.proxy_list | filter:proxy | orderBy : 'name' track by $index">
@@ -817,7 +835,7 @@
               <div id="passwords_tab" class="tab-content">
                 <table class="table hover">
                   <tr>
-                    <th> ( {{setting.user_data_input.length}} ) Index</th>
+                    <th>( {{setting.user_data_input.length}} ) Index</th>
                     <th>Host Name <input ng-model="site2.hostname" /></th>
                     <th>User Name <input ng-model="site2.username" /></th>
                     <th>Password <input ng-model="site2.password" /></th>

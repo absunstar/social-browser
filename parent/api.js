@@ -292,7 +292,7 @@ module.exports = function init(parent) {
     res.json({ done: true });
   });
   parent.api.post('/api/download_list/redownload-item', (req, res) => {
-    parent.electron.session.fromPartition(req.data.Partition.createInterruptedDownload(req.data));
+    parent.electron.session.fromPartition(req.data.Partition).createInterruptedDownload(req.data);
     res.json({ done: true });
   });
 

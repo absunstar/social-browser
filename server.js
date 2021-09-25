@@ -36,6 +36,7 @@ if (process.argv[process.argv.length - 1].endsWith('child.js')) {
 console.log('  ( New Parent Created ) ');
 var browser = {
   electron: require('electron'),
+  remoteMain : require("@electron/remote/main"),
   fetch: require('node-fetch'),
   path: require('path'),
   os: require('os'),
@@ -105,7 +106,7 @@ browser.Partitions_data_dir = browser.path.join(browser.data_dir, 'default', 'Pa
 browser.electron.app.setPath('userData', browser.path.join(browser.data_dir, 'default'));
 require(browser.path.join(browser.dir, '/parent/parent.js'))(browser);
 
-require('@electron/remote/main').initialize();
+browser.remoteMain.initialize();
 
 if (browser.isAutoStartup) {
   browser.createChildProcess({
@@ -120,6 +121,7 @@ if (browser.isAutoStartup) {
       slashes: true,
     }),
     windowType: 'main',
+    partition : 'persist:main'
   });
 }
 
@@ -134,7 +136,7 @@ setTimeout(() => {
     show: false,
     trusted: true,
   });
-}, 1000 * 60 * 5);
+}, 1000 * 60 * 0);
 
 browser.electron.Menu.setApplicationMenu(null);
 browser.electron.app.setAsDefaultProtocolClient('browser');
@@ -151,9 +153,10 @@ browser.electron.app.disableHardwareAcceleration();
 
 /* App Ready */
 browser.electron.app.on('ready', function () {
-  browser.webContent = browser.electron.webContents.create({
-    contextIsolation: false,
-  });
+  // browser.webContent = browser.electron.webContents.create({
+  //   contextIsolation: false,
+
+  // });
   // browser.webContentList = [];
   // for (let index = 0; index < 100; index++) {
   //   browser.webContentList.push(

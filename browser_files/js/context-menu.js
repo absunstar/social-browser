@@ -10,8 +10,6 @@
     return;
   }
 
-  console.log(' ^_^_^_^_^_^_^ ' + document.location.href);
-
   let __numberRange = function (min, max) {
     return Math.floor(Math.random() * (max - min) + min);
   };
@@ -68,7 +66,7 @@
     onEventOFF: [],
     jqueryOff: '',
     jqueryOn: '',
-    developerMode: true,
+    developerMode: false,
     log: function (...args) {
       if (this.developerMode) {
         console.log(...args);
@@ -124,7 +122,7 @@
         height: 16,
       });
     } catch (error) {
-      console.log('nativeImage', error);
+      SOCIALBROWSER.log('nativeImage', error);
       return null;
     }
   };

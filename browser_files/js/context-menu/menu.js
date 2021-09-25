@@ -2006,7 +2006,7 @@ module.exports = function (SOCIALBROWSER) {
         });
       }
     } catch (error) {
-      console.error(error);
+      SOCIALBROWSER.log(error);
     }
   });
 };

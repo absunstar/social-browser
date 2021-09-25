@@ -144,12 +144,11 @@
   font-family: monospace;
   border-radius: 4px;
   background-color: var(--social-current-tab-fill);
-  padding: 3px 7px;
+  padding: 3px 9px;
   cursor: pointer;
-  color: #000000;
+  color: #2196f3;
   font-size: 12px;
   z-index: 999999;
-  font-weight: bold;
 }
 
 #user_name:hover {

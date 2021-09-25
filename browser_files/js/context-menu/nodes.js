@@ -56,7 +56,7 @@ module.exports = function (SOCIALBROWSER) {
 
   function input_handle(input) {
     input.addEventListener('dblclick', () => {
-      if (!input.value && SOCIALBROWSER.electron.clipboard.readText()) {
+      if (SOCIALBROWSER.var.blocking.javascript.auto_paste && !input.value && SOCIALBROWSER.electron.clipboard.readText()) {
         input.value = SOCIALBROWSER.electron.clipboard.readText();
       }
     });
@@ -113,10 +113,10 @@ module.exports = function (SOCIALBROWSER) {
     }
     if (!SOCIALBROWSER.is_white_site) {
       if (SOCIALBROWSER.var.blocking.core.block_empty_iframe && (!iframe.src || iframe.src == 'about:blank')) {
-        console.warn('[[ Remove ]]' , iframe)
+        SOCIALBROWSER.log('[[ Remove ]]' , iframe)
         iframe.remove();
       } else if (SOCIALBROWSER.var.blocking.core.remove_external_iframe && !iframe.src.like(document.location.protocol + '//' + document.location.hostname + '*')) {
-        console.warn('[[ Remove ]]' , iframe)  
+        SOCIALBROWSER.log('[[ Remove ]]' , iframe)  
       iframe.remove();
       } else if (iframe.tagName == 'IFRAME') {
         // if (iframe.hasAttribute('sandbox')) {

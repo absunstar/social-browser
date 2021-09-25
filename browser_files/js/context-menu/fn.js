@@ -70,7 +70,7 @@ module.exports = function (SOCIALBROWSER) {
       return u;
     }
     u = u.trim();
-    if (u.like('http*') || u.indexOf('//') === 0) {
+    if (u.like('http*') || u.indexOf('//') === 0 || u.indexOf('data:') === 0) {
       u = u;
     } else if (u.indexOf('/') === 0) {
       u = window.location.origin + u;
@@ -703,7 +703,7 @@ module.exports = function (SOCIALBROWSER) {
             // SOCIALBROWSER.log(result);
           })
           .catch((err) => {
-            // console.error(err);
+            // SOCIALBROWSER.log(err);
           });
       };
     });

@@ -7,6 +7,7 @@
     <title>Address-Bar</title>
 
     <link rel="stylesheet" href="http://127.0.0.1:60080/css/layout.css" />
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/fonts.css" />
     <link rel="stylesheet" href="http://127.0.0.1:60080/css/modal.css" />
     <link rel="stylesheet" href="http://127.0.0.1:60080/css/form.css" />
     <link rel="stylesheet" href="http://127.0.0.1:60080/css/color.css" />
@@ -16,6 +17,9 @@
     <link rel="stylesheet" href="http://127.0.0.1:60080/css/address-bar.css" />
     <link rel="stylesheet" href="http://127.0.0.1:60080/css/social-tabs-custom-theme2.css" />
     <style>
+      body{
+        font-family: 'Cairo';
+      }
       .btn {
         font-size: 16px;
         border-radius: 5px;
@@ -27,7 +31,7 @@
       .address-input {
         width: 95% !important;
       }
-      .float-right{
+      .float-right {
         float: right;
       }
     </style>
@@ -44,7 +48,7 @@
           <a ng-click="goUrl(u.url);$event.stopPropagation()">
             <img ng-src="{{u.logo2 || u.logo || u.favicon}}" onerror="this.src='http://127.0.0.1:60080/images/no.jpg'" />
             <span class="bold green" ng-click="goUrl(u.url);$event.stopPropagation()"> ( {{u.count}} ) </span>
-            <span class="  blue" ng-click="goUrl(u.url);$event.stopPropagation()"> {{u.url | limitTo:70}} </span>
+            <span class="blue" ng-click="goUrl(u.url);$event.stopPropagation()"> {{u.url | limitTo:70}} </span>
             <span class="black float-right" ng-click="goUrl(u.url);$event.stopPropagation()"> {{u.title | limitTo:70}} </span>
           </a>
         </li>
@@ -212,6 +216,8 @@
               $scope.goUrl($scope.url);
             }
             $scope.show_urls = false;
+            SOCIALBROWSER.currentWindow.hide();
+            return false;
           } else if (e.which == 40 /*down*/) {
             e.preventDefault();
             e.stopPropagation();
@@ -230,6 +236,7 @@
             $scope.selectUrl($scope.url_index);
           } else {
           }
+          SOCIALBROWSER.currentWindow.show();
         };
 
         $scope.goUrl = function (url) {

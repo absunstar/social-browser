@@ -4,14 +4,15 @@ module.exports = function (child) {
   child.session_name_list = [];
 
   child.handleSession = function (name) {
-    if (!name || child.session_name_list.some((s) => s == name)) {
+    if (!name) {
       return;
     }
 
-    child.session_name_list.push(name);
+    child.log(`\n  $$  Will Handle Session ${name}  $$  \n`);
+
     child.cookies[name] = child.cookies[name] || [];
     let ss = name === '_' ? child.electron.session.defaultSession : child.electron.session.fromPartition(name);
-
+    let user = child.coreData.var.session_list.find((s) => s.name == name) ?? {};
     // let ex_date = Date.now() + 1000 * 60 * 60 * 24 * 30;
     // if (child.coreData.cookies && child.coreData.cookies.length > 0) {
     //   child.coreData.cookies.forEach((co) => {
@@ -23,8 +24,8 @@ module.exports = function (child) {
     //       .set(co)
     //       .then()
     //       .catch((err) => {
-    //         console.log(err);
-    //         console.log(co);
+    //         child.log(err);
+    //         child.log(co);
     //       });
     //   });
     // }
@@ -36,19 +37,33 @@ module.exports = function (child) {
 
     ss.setSpellCheckerLanguages(['en-US']);
 
-    setTimeout(() => {
-      ss.cookies.on('changed', function (event, cookie, cause, removed) {
-        child.sendMessage({
-          type: '[cookie-changed]',
-          partition: name,
-          cookie: cookie,
-          removed: removed,
-          cause: cause,
+    if (!child.session_name_list.some((s) => s == name)) {
+      setTimeout(() => {
+        ss.cookies.on('changed', function (event, cookie, cause, removed) {
+          child.sendMessage({
+            type: '[cookie-changed]',
+            partition: name,
+            cookie: cookie,
+            removed: removed,
+            cause: cause,
+          });
         });
-      });
-    }, 1000 * 3);
+      }, 1000 * 3);
+    }
 
-    if (child.coreData.var.proxy.enabled && child.coreData.var.proxy.url) {
+    if (user.proxy && user.proxy.enabled) {
+      if (user.proxy.url) {
+        ss.setProxy(
+          {
+            proxyRules: user.proxy.url,
+            proxyBypassRules: '127.0.0.1',
+          },
+          function () {},
+        );
+      } else {
+        ss.setProxy({}, function () {});
+      }
+    } else if (child.coreData.var.proxy.enabled && child.coreData.var.proxy.url) {
       ss.setProxy(
         {
           proxyRules: child.coreData.var.proxy.url,
@@ -74,7 +89,7 @@ module.exports = function (child) {
     //   url = `http://127.0.0.1:60080/error?url=${url}`;
     //   request.url = url;
     //   callback(request);
-    //   console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
+    //   child.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
     // });
 
     const filter = {
@@ -384,7 +399,7 @@ module.exports = function (child) {
       let a_expose = details.responseHeaders['Access-Control-Expose-Headers'] || details.responseHeaders['Access-Control-Expose-Headers'.toLowerCase()];
       let a_Methods = details.responseHeaders['Access-Control-Allow-Methods'] || details.responseHeaders['Access-Control-Allow-Methods'.toLowerCase()];
       let a_Headers = details.responseHeaders['Access-Control-Allow-Headers'] || details.responseHeaders['Access-Control-Allow-Headers'.toLowerCase()];
-      // let s_policy = details.responseHeaders['Content-Security-Policy'] || details.responseHeaders['Content-Security-Policy'.toLowerCase()];
+      let s_policy = details.responseHeaders['Content-Security-Policy'] || details.responseHeaders['Content-Security-Policy'.toLowerCase()];
 
       // Must Delete Before set new values [duplicate headers]
       [
@@ -392,7 +407,7 @@ module.exports = function (child) {
         // 'Cross-Origin-Opener-Policy',
         //  'Strict-Transport-Security',
         // 'X-Content-Type-Options',
-        // 'Content-Security-Policy',
+        'Content-Security-Policy',
         'Access-Control-Allow-Credentials',
         'Access-Control-Allow-Methods',
         'Access-Control-Allow-Headers',
@@ -416,9 +431,31 @@ module.exports = function (child) {
         details.responseHeaders['Access-Control-Expose-Headers'.toLowerCase()] = a_expose;
       }
 
-      // if (s_policy) {
-      //   details.responseHeaders['Content-Security-Policy'.toLowerCase()] = "script-src 'unsafe-inline' 'unsafe-eval'";
-      // }
+      if (s_policy) {
+        s_policy.forEach((s, i) => {
+          if (s.like('*data:*')) {
+            s = s.replace('data:', 'data: http://127.0.0.1:*');
+          }
+          if (s.like('*mediastream:*')) {
+            s = s.replace('mediastream:', 'mediastream: http://127.0.0.1:*');
+          }
+          if (s.like('*blob:*')) {
+            s = s.replace('blob:', 'blob: 127.0.0.1');
+          }
+          if (s.like('*filesystem:*')) {
+            s = s.replace('filesystem:', 'filesystem: http://127.0.0.1:*');
+          }
+          if (s.like("*img-src 'self'*")) {
+            s = s.replace("img-src 'self'", "img-src 'self' http://127.0.0.1:*");
+          }
+          if (s.like("*default-src 'self'*")) {
+            s = s.replace("default-src 'self'", "default-src 'self' http://127.0.0.1:*");
+          }
+          s_policy[i] = s;
+        });
+
+        details.responseHeaders['Content-Security-Policy'.toLowerCase()] = s_policy;
+      }
 
       // details.responseHeaders['Cross-Origin-Resource-Policy'.toLowerCase()] = 'cross-origin';
 
@@ -450,7 +487,7 @@ module.exports = function (child) {
         callback(false);
         return;
       }
-      if (webContents.getURL().like('http://127.0.0.1*|https://127.0.0.1*')) {
+      if (webContents.getURL().like('http://127.0.0.1*|https://127.0.0.1*|http://localhost*|https://localhost*')) {
         callback(true);
       } else {
         let allow = child.coreData.var.blocking.permissions['allow_' + permission.replace('-', '_')] || false;
@@ -462,7 +499,7 @@ module.exports = function (child) {
       if (!child.coreData.var.blocking.permissions) {
         return false;
       }
-      if (webContents && webContents.getURL().like('http://127.0.0.1*|https://127.0.0.1*')) {
+      if (webContents && webContents.getURL().like('http://127.0.0.1*|https://127.0.0.1*|http://localhost*|https://localhost*')) {
         return true;
       } else {
         let allow = child.coreData.var.blocking.permissions['allow_' + permission.replace('-', '_')] || false;
@@ -471,6 +508,7 @@ module.exports = function (child) {
       }
     });
     ss.on('will-download', (event, item, webContents) => {
+      console.log(' Child Will Download : ' + item.getURL())
       event.preventDefault();
       child.sendMessage({
         type: '[download-link]',
@@ -478,7 +516,8 @@ module.exports = function (child) {
         url: item.getURL(),
       });
     });
-    child.log(`Handle Session ${name} ( done ) `);
+    child.log(`\n  $$  Handle Session ${name} ( done )  $$  \n`);
+    child.session_name_list.push(name);
     return ss;
   };
 
@@ -488,6 +527,6 @@ module.exports = function (child) {
 
   child.sessionConfig = () => {
     child.handleSession(child.coreData.options.partition);
-    child.handleSession('_');
+    // child.handleSession('_');
   };
 };

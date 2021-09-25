@@ -1,8 +1,5 @@
-console.log('  ( New Child Created ) ');
-
 [('SIGTERM', 'SIGHUP', 'SIGINT', 'SIGBREAK')].forEach((signal) => {
   process.on(signal, () => {
-    console.log('Request signal :: ' + signal);
     process.exit(1);
   });
 });
@@ -31,6 +28,7 @@ var child = {
   index: parseInt(process.argv[1].replace('--index=', '')),
   dir: process.argv[2].replace('--dir=', ''),
   electron: require('electron'),
+  remoteMain: require('@electron/remote/main'),
   fetch: require('node-fetch'),
   url: require('url'),
   path: require('path'),
@@ -53,9 +51,10 @@ var child = {
   },
 };
 
-require('@electron/remote/main').initialize();
+child.remoteMain.initialize();
 
 const { app, BrowserWindow, globalShortcut } = child.electron;
+child.electron.nativeTheme.themeSource = 'light';
 
 require(child.path.join(child.dir, 'child', 'fn'))(child);
 require(child.path.join(child.dir, 'child', 'windows'))(child);
@@ -81,7 +80,7 @@ app.on('ready', function () {
   app.setAccessibilitySupportEnabled(false);
 
   // app.on('session-created', (session) => {
-  //   console.log(`session-created`);
+  //   child.log(`session-created`);
   // });
 
   app.on('certificate-error', (event, webContents, url, error, certificate, callback) => {
@@ -90,12 +89,10 @@ app.on('ready', function () {
   });
 
   app.on('crashed', (event, session) => {
-    console.log('child crashed');
     app.exit(0);
   });
 
   app.on('render-process-gone', (event, webContents, details) => {
-    console.log('child render-process-gone', details);
     if (details.reason == 'crashed') {
       webContents.stop();
       // webContents.reload()
@@ -105,6 +102,7 @@ app.on('ready', function () {
   });
 
   app.on('web-contents-created', (event, contents) => {
+    child.remoteMain.enable(contents);
     contents.on('will-attach-webview', (event, webPreferences, params) => {
       webPreferences.preload = child.coreData.files_dir + '/js/context-menu.js';
       delete webPreferences.preloadURL;
@@ -123,7 +121,6 @@ app.on('ready', function () {
   });
 
   app.on('login', (event, webContents, details, authInfo, callback) => {
-    console.log(`child ${child.id} request login`);
     event.preventDefault();
     callback('username', 'secret');
   });
@@ -158,7 +155,6 @@ app.on('ready', function () {
     }
 
     if (win.isFullScreen()) {
-
       let width = screen.bounds.width;
       let height = screen.bounds.height;
       win.setBounds({

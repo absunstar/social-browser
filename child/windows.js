@@ -21,7 +21,6 @@ module.exports = function (child) {
         spellcheck: false,
         sandbox: false,
         webaudio: typeof setting.webaudio !== undefined ? setting.webaudio : true,
-        enableRemoteModule: true,
         contextIsolation: false, // false -> can access preload window functions
         partition: setting.partition || child.coreData.var.core.session.name,
         preload: setting.preload || child.coreData.files_dir + '/js/context-menu.js',
@@ -60,6 +59,8 @@ module.exports = function (child) {
       defaultSetting.skipTaskbar = true;
       defaultSetting.frame = false;
       defaultSetting.resizable = false;
+      
+
     } else if (setting.windowType === 'addressbar') {
       defaultSetting.show = false;
       defaultSetting.alwaysOnTop = false;
@@ -105,6 +106,8 @@ module.exports = function (child) {
     defaultSetting = {...defaultSetting, ...setting};
 
     let win = new child.electron.BrowserWindow(defaultSetting);
+    child.remoteMain.enable(win.webContents)
+
     win.$setting = defaultSetting;
 
     if (!child.window) {
@@ -179,7 +182,6 @@ module.exports = function (child) {
           skipTaskbar: true,
           webPreferences: {
             contextIsolation: false,
-            enableRemoteModule: true,
             partition: 'address_bar',
             preload: child.coreData.files_dir + '/js/context-menu.js',
             nativeWindowOpen: false,
@@ -190,6 +192,7 @@ module.exports = function (child) {
             plugins: true,
           },
         });
+        child.remoteMain.enable(child.addressbarWindow.webContents)
         child.profilesWindow = child.createNewWindow({
           url: child.url.format({
             pathname: child.path.join(child.coreData.files_dir, 'html', 'user-profiles.html'),
@@ -211,7 +214,6 @@ module.exports = function (child) {
           skipTaskbar: true,
           webPreferences: {
             contextIsolation: false,
-            enableRemoteModule: true,
             partition: 'profiles',
             preload: child.coreData.files_dir + '/js/context-menu.js',
             nativeWindowOpen: false,
@@ -222,6 +224,7 @@ module.exports = function (child) {
             plugins: true,
           },
         });
+        child.remoteMain.enable(child.profilesWindow.webContents)
       } else if (win.$setting.windowType === 'view') {
         child.updateTab(win.$setting);
 
@@ -526,7 +529,7 @@ module.exports = function (child) {
 
     win.webContents.on('will-navigate', (e, url) => {
       // when user click on link
-      // console.log(win.getURL(), url);
+      // child.log(win.getURL(), url);
     });
 
     win.webContents.on('will-redirect', (e, url) => {
@@ -547,7 +550,6 @@ module.exports = function (child) {
           ok = true;
           e.preventDefault();
           data.time = new Date().getTime();
-          console.log(' :: will-redirect :: ' + data.to);
           win.loadURL(data.to);
         }
       });
@@ -555,7 +557,6 @@ module.exports = function (child) {
 
     if (win.webContents.setWindowOpenHandler) {
       win.webContents.setWindowOpenHandler(({ url, frameName }) => {
-        console.log(' :: setWindowOpenHandler :: ' + url);
         if (url.like('*about:blank*')) {
           return { action: 'deny' };
         } else {
@@ -568,19 +569,17 @@ module.exports = function (child) {
         }
       });
 
-      win.webContents.on('did-create-window', (win, { url, frameName, options, disposition, additionalFeatures, referrer, postData }) => {
-        console.log('did-create-window ' + url);
+      win.webContents.on('did-create-window', (win, { url, frameName, options, disposition , referrer, postData }) => {
+
       });
     }
-    win.webContents.on('new-window', function (event, url, frameName, disposition, options, additionalFeatures, referrer, postBody) {
+    win.webContents.on('new-window', function (event, url, frameName, disposition, options, referrer, postBody) {
       event.preventDefault();
 
       let real_url = url || event.url || '';
 
-      console.log('new-window Event call ' + real_url);
 
       if (real_url.like('*about:blank*')) {
-        console.log('new-window Event Block ' + real_url);
         return false;
       }
 
@@ -686,7 +685,6 @@ module.exports = function (child) {
       }
 
       if (child.coreData.var.blocking.popup.allow_internal && url_parser.host.contains(current_url_parser.host)) {
-        console.log('call internal url ' + real_url);
         child.sendMessage({
           type: '[send-render-message]',
           data: {
@@ -698,7 +696,6 @@ module.exports = function (child) {
           },
         });
       } else if (child.coreData.var.blocking.popup.allow_external && !url_parser.host.contains(current_url_parser.host)) {
-        console.log('call external url ' + real_url);
         child.sendMessage({
           type: '[open new tab]',
           url: real_url.replace('#___new_tab___', '').replace('#___new_popup___', '').replace('#___trusted_window___', ''),

@@ -11,7 +11,7 @@ module.exports = function (child) {
     child._ws_.on('open', function () {});
     child._ws_.on('ping', function () {});
     child._ws_.on('close', function (e) {
-      console.log('Socket is closed. Reconnect will be attempted in 1 second.', e);
+      child.log('Socket is closed. Reconnect will be attempted in 1 second.', e);
       setTimeout(function () {
         child.reconnectCount++;
         if (child.reconnectCount > 10) {
@@ -21,13 +21,17 @@ module.exports = function (child) {
       }, 1000);
     });
     child._ws_.on('error', function (err) {
-      console.error('Socket encountered error: ', err);
+      child.log('Socket encountered error: ', err);
       child._ws_.close();
     });
 
     child._ws_.on('message', function (event) {
       try {
         let message = JSON.parse(event.data || event);
+        if(message.type == 'text'){
+          console.log(message);
+        }
+        
         if (message.type == 'connected') {
           child.sendMessage({
             type: '[attach-child]',
@@ -35,13 +39,12 @@ module.exports = function (child) {
         } else if (message.type == '[browser-core-data]') {
           child.coreData = message;
           child.cookies = child.cookies || {};
-          console.log('!!!!!!!   options    :   ' ,JSON.stringify(child.coreData.options));
+
           child.cookies[child.coreData.options.partition] = child.coreData.cookies[child.coreData.options.partition];
           child.electron.app.userAgentFallback = child.coreData.var.core.user_agent;
           child.electron.app.setPath('userData', child.path.join(child.coreData.data_dir, 'default'));
           child.sessionConfig();
           child.createNewWindow({ ...child.coreData.options });
-
           if (child.coreData.windowType == 'none') {
             child.window = null;
             child.sendMessage({
@@ -55,7 +58,7 @@ module.exports = function (child) {
         } else if (message.type == '$download_item') {
           child.sendToWindow('$download_item', message.data);
         } else if (message.type == '[cookie-changed]') {
-          child.cookies[message.partition] = child.cookies[message.partition] || []
+          child.cookies[message.partition] = child.cookies[message.partition] || [];
 
           if (!message.removed) {
             let exists = false;
@@ -262,6 +265,7 @@ module.exports = function (child) {
         } else if (message.type == '[close-view]' && child.getWindow()) {
           child.getWindow().close();
         } else if (message.type == '[update-view-url]' && child.getWindow()) {
+          child.getWindow().webContents.stop();
           child.getWindow().loadURL(message.options.url);
         } else if (message.type == '[remove-tab]' && child.getWindow()) {
           child.sendToWindow('[send-render-message]', { name: '[remove-tab]', tab_id: message.tab_id });
@@ -273,7 +277,7 @@ module.exports = function (child) {
           }
         }
       } catch (error) {
-        console.log('onmessage Error', error);
+        child.log('onmessage Error', error);
       }
     });
   }

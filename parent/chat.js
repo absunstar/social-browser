@@ -44,7 +44,6 @@ module.exports = function init(parent) {
     ws.on('message', (data) => {
       try {
         if (Buffer.isBuffer(data)) {
-          console.log('isBuffer');
           parent.sendToAllChatUsers(new Uint8Array(data), false, user);
         } else {
           let message = JSON.parse(data);
@@ -116,7 +115,7 @@ module.exports = function init(parent) {
           }
         }
       } catch (e) {
-        console.log(e);
+        parent.log(e);
         ws.send(
           JSON.stringify({
             type: 'ERROR',

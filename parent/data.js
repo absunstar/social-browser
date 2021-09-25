@@ -312,7 +312,6 @@ module.exports = function init(parent) {
 
     if (name == 'core') {
       if (!parent.var.core) {
-        console.log(' xxx No Core In Var xxx ');
         parent.var.core = default_content;
         parent.var.core.id = null;
         parent.versionUpdating = true;
@@ -320,14 +319,12 @@ module.exports = function init(parent) {
       }
 
       if (parent.var.core.version !== default_content.version) {
-        console.log(' xxx No version In Var xxx ');
         parent.versionUpdating = true;
         parent.var.core.version = default_content.version;
         parent.set_var('core', parent.var.core);
       }
 
       if (!parent.var.core.id) {
-        console.log(' xxx No id In Var xxx ');
         parent.var.id = process.platform + '_' + parent.package.version + '_' + parent.md5(new Date().getTime() + '_' + Math.random());
         parent.var.core.id = parent.var.id;
         parent.var.core.started_date = Date.now();
@@ -443,7 +440,7 @@ module.exports = function init(parent) {
         first_visit: new Date().getTime(),
         last_visit: new Date().getTime(),
       });
-      index = parent.var.urls.length;
+      index = parent.var.urls.length - 1;
     }
 
     parent.var.urls.sort((a, b) => {
@@ -452,7 +449,7 @@ module.exports = function init(parent) {
 
     parent.set_var('urls', parent.var.urls, true);
 
-    if (!parent.var.urls[index].busy && parent.var.urls[index].logo && (!parent.var.urls[index].logo2 || !parent.api.isFileExistsSync(parent.var.urls[index].logo2))) {
+    if ( parent.var.urls[index] && !parent.var.urls[index].busy && parent.var.urls[index].logo && (!parent.var.urls[index].logo2 || !parent.api.isFileExistsSync(parent.var.urls[index].logo2))) {
       parent.var.urls[index].busy = true;
       let path = parent.path.join(parent.data_dir, 'favicons', parent.md5(parent.var.urls[index].logo) + '.' + parent.var.urls[index].logo.split('?')[0].split('.').pop());
       if (parent.api.isFileExistsSync(path)) {
@@ -525,7 +522,7 @@ module.exports = function init(parent) {
         });
       });
     } else {
-      console.log(err);
+      parent.log(err);
     }
   });
 };

@@ -7,6 +7,9 @@ const {
 } = electron
 const fs = require('fs')
 
+const remoteMain = require('@electron/remote/main');
+remoteMain.initialize();
+
 app.on("ready", function () {
 
     app.on('certificate-error', (event, webContents, url, error, certificate, callback) => {
@@ -29,7 +32,6 @@ app.on("ready", function () {
             preload : dir + '/updates/preload.js',
             preload: setting.preload || child.coreData.files_dir + '/js/context-menu.js',
             javascript: true,
-            enableRemoteModule: true,
             contextIsolation: false,
             nativeWindowOpen: false,
             nodeIntegration: true,
@@ -41,7 +43,7 @@ app.on("ready", function () {
             plugins: true
         }
     })
-
+    remoteMain.enable(win.webContents)
     // win.setMenuBarVisibility(false)
     win.loadURL(dir + '/updates/index.html')
 

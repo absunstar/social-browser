@@ -122,7 +122,7 @@ module.exports = function init(parent) {
         }
         parent.extensionList.splice(extension.index, 1);
         parent.var.extension_list.splice(i, 1);
-        console.log('removeExtension');
+        parent.log('removeExtension');
       }
     });
     parent.set_var('extension_list', parent.var.extension_list);
@@ -178,14 +178,13 @@ module.exports = function init(parent) {
     if (child && parent.clientList[child.index]) {
       parent.clientList[child.index].windowType = options.windowType || 'popup';
       parent.clientList[child.index].options = options;
-      parent.clientList[child.index].ws.send(JSON.stringify({ type: 'connected' }));
+      parent.clientList[child.index].ws.send({ type: 'connected' });
       if (parent.clientList.filter((cl) => cl && cl.is_attached === false).length === 0) {
         parent.createChildProcess({
           windowType: 'none',
         });
       }
     } else {
-      console.log(`\n () createChildProcess of ${parent.clientList.length} :: ${options.windowType} \n`);
       let index = parent.child_index;
       parent.child_index++;
       parent.clientList[index] = {
@@ -225,12 +224,10 @@ module.exports = function init(parent) {
 
         parent.clientList.forEach((client, i) => {
           if (client.windowType === 'main') {
-            client.ws.send(
-              JSON.stringify({
-                type: '[remove-tab]',
-                tab_id: tab_id,
-              }),
-            );
+            client.ws.send({
+              type: '[remove-tab]',
+              tab_id: tab_id,
+            });
           }
         });
 

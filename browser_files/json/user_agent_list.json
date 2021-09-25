@@ -1,1 +1,106 @@
-[{"url":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.67 Safari/537.36 Edg/87.0.664.47","name":"Windows Edge","$display":"Windows Edge ","$$hashKey":"object:3968","platform":"windows","oscpu":"windows"},{"url":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36","name":"Windows Chrome","$display":"Windows Chrome ","$$hashKey":"object:3969","platform":"windows","oscpu":"windows"},{"url":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:76.0) Gecko/20100101 Firefox/90.0","name":"Windows Firefox","$display":"Windows Firefox ","$$hashKey":"object:3970","platform":"windows","oscpu":"windows"},{"url":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/90.0.3729.157 Safari/537.36","name":"Linux Chrome","$display":"Linux Chrome ","$$hashKey":"object:3972","oscpu":"linux","vendor":"linux","platform":"chromium_os"},{"url":"Mozilla/5.0 (X11; Fedora;Linux x86; rv:60.0) Gecko/20100101 Firefox/90.0","name":"Linux Firefox","$display":"Linux Firefox ","$$hashKey":"object:3973","oscpu":"linux","platform":"linux","vendor":"linux"},{"url":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/534.30 (KHTML, like Gecko) Ubuntu/11.04 Chromium/12.0.742.112 Chrome/12.0.742.112 Safari/534.30","name":"Linux Chromium","$display":"Linux Chromium ","$$hashKey":"object:3974","oscpu":"linux","platform":"chromium_os","vendor":"Chromium"},{"url":"Mozilla/5.0 (SMART-TV; Linux; Tizen 2.4.0) AppleWebkit/538.1 (KHTML, like Gecko) SamsungBrowser/1.1 TV Safari/538.1","name":"Linux TV Samsung Browser","$display":"Linux TV Samsung Browser ","$$hashKey":"object:3975","oscpu":"linux","vendor":"linux","platform":"linux"},{"url":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/601.7.7 (KHTML, like Gecko) Version/9.1.2 Safari/601.7.7","name":"Mac x Safari 9","$display":"Mac x Safari 9 ","$$hashKey":"object:3976","oscpu":"Intel Mac OS X or macOS version 15","platform":"macos"},{"url":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:48.0) Gecko/20100101 Firefox/48.0","name":"Mac x Firefox 48","$display":"Mac x Firefox 48 ","$$hashKey":"object:3977","oscpu":"Intel Mac OS X or macOS version 15","platform":"macos"},{"url":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/605.1.15 (KHTML, like Gecko)","name":"mac Webkit based browser","$display":"mac Webkit based browser ","$$hashKey":"object:3978","oscpu":"Intel Mac OS X or macOS version 15","platform":"macos"},{"url":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1 Safari/605.1.15","name":"Mac Safari 12","$display":"Mac Safari 12 ","$$hashKey":"object:3979","oscpu":"Intel Mac OS X or macOS version 15","platform":"macos"},{"url":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36","name":"Mac Chrome 74","$display":"Mac Chrome 74 ","$$hashKey":"object:3980","oscpu":"Intel Mac OS X or macOS version 15","platform":"macos"},{"url":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:60.0) Gecko/20100101 Firefox/60.0","name":"Mac Firefox 60","$display":"Mac Firefox 60 ","$$hashKey":"object:3981","oscpu":"Intel Mac OS X or macOS version 15","platform":"macos"},{"url":"Mozilla/5.0 (Linux; Android 9; SM-G960F Build/PPR1.180610.011; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/74.0.3729.157 Mobile Safari/537.36","name":"Android Chrome 74","$display":"Android Chrome 74 ","$$hashKey":"object:3982","oscpu":"OS CPU: Linux arm7l","platform":"linux"}]
+[
+  {
+    "url": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36 Edg/92.0.902.84",
+    "name": "Windows Edge",
+    "platform": "Win32",
+    "oscpu": "",
+    "engine": { "name": "Edge" },
+    "vendor": "Google Inc."
+  },
+  {
+    "url": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.146 Safari/537.36",
+    "name": "Windows Chrome 88",
+    "platform": "Win32",
+    "oscpu": "",
+    "vendor": "Google Inc.",
+    "engine": { "name": "Chrome" }
+  },
+  {
+    "url": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:76.0) Gecko/20100101 Firefox/90.0",
+    "name": "Windows Firefox",
+    "platform": "Win32",
+    "oscpu": "Windows NT 10.0; Win64; x64",
+    "engine": { "name": "Firefox" }
+  },
+  {
+    "url": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/90.0.3729.157 Safari/537.36",
+    "name": "Linux Chrome",
+    "oscpu": "linux",
+    "vendor": "linux",
+    "platform": "chromium_os",
+    "engine": { "name": "Chrome" }
+  },
+  {
+    "url": "Mozilla/5.0 (X11; Fedora;Linux x86; rv:60.0) Gecko/20100101 Firefox/90.0",
+    "name": "Linux Firefox",
+    "oscpu": "linux",
+    "platform": "linux",
+    "vendor": "linux",
+    "engine": { "name": "Firefox" }
+  },
+  {
+    "url": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/534.30 (KHTML, like Gecko) Ubuntu/11.04 Chromium/12.0.742.112 Chrome/12.0.742.112 Safari/534.30",
+    "name": "Linux Chromium",
+    "oscpu": "linux",
+    "platform": "chromium_os",
+    "vendor": "Chromium",
+    "engine": { "name": "Chrome" }
+  },
+  {
+    "url": "Mozilla/5.0 (SMART-TV; Linux; Tizen 2.4.0) AppleWebkit/538.1 (KHTML, like Gecko) SamsungBrowser/1.1 TV Safari/538.1",
+    "name": "Linux TV Samsung Browser",
+    "oscpu": "linux",
+    "vendor": "linux",
+    "platform": "linux",
+    "engine": {}
+  },
+  {
+    "url": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/601.7.7 (KHTML, like Gecko) Version/9.1.2 Safari/601.7.7",
+    "name": "Mac x Safari 9",
+    "oscpu": "Intel Mac OS X or macOS version 15",
+    "platform": "macos",
+    "engine": { "name": "Safari" }
+  },
+  {
+    "url": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:48.0) Gecko/20100101 Firefox/48.0",
+    "name": "Mac x Firefox 48",
+    "oscpu": "Intel Mac OS X or macOS version 15",
+    "platform": "macos",
+    "engine": { "name": "Firefox" }
+  },
+  {
+    "url": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/605.1.15 (KHTML, like Gecko)",
+    "name": "mac Webkit based browser",
+    "oscpu": "Intel Mac OS X or macOS version 15",
+    "platform": "macos",
+    "engine": { "name": "Safari" }
+  },
+  {
+    "url": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1 Safari/605.1.15",
+    "name": "Mac Safari 12",
+    "oscpu": "Intel Mac OS X or macOS version 15",
+    "platform": "macos",
+    "engine": { "name": "Safari" }
+  },
+  {
+    "url": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36",
+    "name": "Mac Chrome 74",
+    "oscpu": "Intel Mac OS X or macOS version 15",
+    "platform": "macos",
+    "engine": { "name": "Chrome" }
+  },
+  {
+    "url": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:60.0) Gecko/20100101 Firefox/60.0",
+    "name": "Mac Firefox 60",
+    "oscpu": "Intel Mac OS X or macOS version 15",
+    "platform": "macos",
+    "engine": { "name": "Firefox" }
+  },
+  {
+    "url": "Mozilla/5.0 (Linux; Android 9; SM-G960F Build/PPR1.180610.011; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/74.0.3729.157 Mobile Safari/537.36",
+    "name": "Android Chrome 74",
+    "oscpu": "OS CPU: Linux arm7l",
+    "platform": "linux",
+    "engine": { "name": "Chrome" }
+  }
+]

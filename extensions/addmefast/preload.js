@@ -22,7 +22,6 @@ module.exports = function (SOCIALBROWSER) {
       });
     }
 
-
     if (document.location.hostname.contains('addmefast.com') && !document.location.href.like('*flipCounter*')) {
       SOCIALBROWSER.log(' :: Addmefast Activated :: ' + document.location.href);
 
@@ -30,6 +29,7 @@ module.exports = function (SOCIALBROWSER) {
 
       SOCIALBROWSER.onLoad(() => {
         SOCIALBROWSER.__showBotImage();
+        window.clicked = window.clicked || 0;
 
         document.querySelectorAll('a[href]').forEach((a) => {
           if (!a.getAttribute('xff')) {
@@ -226,13 +226,18 @@ module.exports = function (SOCIALBROWSER) {
           if (!document.f) {
             document.f = { m_text: { value: 0 } };
           }
-          setInterval(() => {
+
+          function rrr() {
             document.querySelectorAll('iframe').forEach((f) => {
               if (f.id == 'preview-frame') {
                 f.remove();
               }
             });
-          }, 1000);
+            setTimeout(() => {
+              rrr();
+            }, 500);
+          }
+          rrr();
         }
       });
     }

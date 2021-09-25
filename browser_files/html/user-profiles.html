@@ -9,41 +9,59 @@
     <link rel="stylesheet" href="http://127.0.0.1:60080/css/social-tabs-custom-theme2.css" />
 
     <style>
+      :root {
+        --input-focus-border-color: #030303;
+      }
+      body {
+        font-size: 12px;
+        margin: 0px;
+        padding: 20px;
+        font-family: monospace, 'Cairo';
+      }
+      fieldset {
+        border: 1px solid #ddd;
+      }
+      fieldset legend {
+        color: #2196f3;
+        font-size: 14px;
+        text-shadow: none;
+        font-weight: normal;
+        border: none;
+      }
       .user-box {
         background-color: #ffffff;
         padding: 3px;
-        margin: 5px;
+        margin: 3px;
         text-align: left;
         border: 1px solid #dddddd;
-        box-shadow: var(--social-box-shadow);
         cursor: pointer;
+        transition: all 0.4s ease;
+        border-radius: 3px;
       }
 
       .user-box:hover {
-        background-color: var(--social-background-color);
+        transform: scale(1.1);
       }
-      .user-box:hover p {
+      .user-box:hover p2 {
         color: var(--social-current-tab-fill);
       }
       .user-box p {
         display: inline-block;
-        font-size: 14px;
-        font-weight: bold;
+        font-size: 12px;
         text-align: center;
         color: #000000;
-        padding: 5px;
-        margin: 5px;
+        padding: 3px;
+        margin: 3px;
         vertical-align: top;
       }
 
       .user-box img {
         display: inline-block;
-        width: 48px;
-        height: 48px;
+        width: 28px;
+        height: 28px;
       }
-      body {
-        margin: 0px;
-        padding: 5px;
+      a.btn {
+        background-color: #4182e2 !important;
       }
     </style>
     <title>Document</title>
@@ -62,18 +80,17 @@
       <div class="row" ng-repeat="_se in setting.session_list | filter:session track by $index ">
         <div class="user-box" ng-click="selectSession(_se)">
           <img ng-src="http://127.0.0.1:60080/images/user.png" />
-          <p><span class="bold blue"> ( {{$index + 1}} ) </span> {{_se.display}}</p>
+          <p><span class="blue"> ( {{$index + 1}} ) </span> {{_se.display}}</p>
         </div>
       </div>
     </div>
 
     <div class="row padding margin">
       <fieldset>
-        <legend>New Profile</legend>
+        <legend>New Profile Name</legend>
         <div class="row">
-          <label> Name </label>
           <input class="block" type="text" ng-model="session.display" />
-          <a ng-click="addSession()" class="btn bg-green white"> <i class="fa fa-plus"></i> Create </a>
+          <a ng-click="addSession()" class="btn white"> <i class="fa fa-plus"></i> Create </a>
         </div>
       </fieldset>
     </div>

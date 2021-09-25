@@ -17,3 +17,15 @@
          url(http://127.0.0.1:60080/fonts/DroidKufi-Bold.woff) format('woff'),
          url(http://127.0.0.1:60080/fonts/DroidKufi-Bold.ttf) format('truetype');
   }
+  @font-face {
+     font-family: 'Cairo';
+     font-style: normal;
+     font-weight: normal;
+     src: url(http://127.0.0.1:60080/fonts/Cairo-Regular.ttf);
+   }
+   @font-face {
+     font-family: 'Cairo';
+     font-style: normal;
+     font-weight: bold;
+     src: url(http://127.0.0.1:60080/fonts/Cairo-Bold.ttf);
+   }
