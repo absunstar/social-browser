@@ -138,7 +138,15 @@
   };
 
   SOCIALBROWSER.currentWindow = SOCIALBROWSER.remote.getCurrentWindow();
-  SOCIALBROWSER.partition = SOCIALBROWSER.currentWindow.webContents.getWebPreferences().partition;
+  SOCIALBROWSER.webContents = SOCIALBROWSER.currentWindow.webContents;
+  if (SOCIALBROWSER.currentWindow.$setting) {
+    SOCIALBROWSER.webPreferences = SOCIALBROWSER.currentWindow.$setting.webPreferences;
+    SOCIALBROWSER.partition = SOCIALBROWSER.webPreferences.partition;
+  } else {
+    SOCIALBROWSER.webPreferences = SOCIALBROWSER.webContents.getLastWebPreferences();
+    SOCIALBROWSER.partition = SOCIALBROWSER.webPreferences.partition;
+  }
+
   SOCIALBROWSER.timeOffset = new Date().getTimezoneOffset();
 
   SOCIALBROWSER.guid = function () {

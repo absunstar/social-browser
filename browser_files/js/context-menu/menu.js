@@ -386,7 +386,7 @@ module.exports = function (SOCIALBROWSER) {
       } else {
         menu.append(
           new $menuItem({
-            label: 'Open link in new tab',
+            label: 'Open link in ( new tab ) ',
             click() {
               SOCIALBROWSER.call('[send-render-message]', {
                 name: '[open new tab]',
@@ -402,7 +402,7 @@ module.exports = function (SOCIALBROWSER) {
 
         menu.append(
           new $menuItem({
-            label: 'Open link in current window',
+            label: 'Open link in ( current window ) ',
             click() {
               document.location.href = u;
             },
@@ -591,7 +591,7 @@ module.exports = function (SOCIALBROWSER) {
 
       menu.append(
         new $menuItem({
-          label: 'Open image in new tab',
+          label: 'Open image in ( new tab ) ',
           click() {
             SOCIALBROWSER.call('[send-render-message]', {
               name: '[open new tab]',
@@ -1573,7 +1573,7 @@ module.exports = function (SOCIALBROWSER) {
       if (SOCIALBROWSER.memoryText && SOCIALBROWSER.isValidURL(SOCIALBROWSER.memoryText)) {
         menu.append(
           new $menuItem({
-            label: `Open ${SOCIALBROWSER.memoryText.substring(0, 30)} in current window`,
+            label: `Open ${SOCIALBROWSER.memoryText.substring(0, 30)} in ( current window ) `,
             click() {
               document.location.href = SOCIALBROWSER.memoryText;
             },
@@ -1581,7 +1581,7 @@ module.exports = function (SOCIALBROWSER) {
         );
         menu.append(
           new $menuItem({
-            label: `Open ${SOCIALBROWSER.memoryText.substring(0, 30)} in new tab`,
+            label: `Open ${SOCIALBROWSER.memoryText.substring(0, 30)} in ( new tab ) `,
             click() {
               SOCIALBROWSER.call('[send-render-message]', {
                 name: '[open new tab]',
@@ -1628,7 +1628,7 @@ module.exports = function (SOCIALBROWSER) {
       if (SOCIALBROWSER.selectedText && SOCIALBROWSER.isValidURL(SOCIALBROWSER.selectedText)) {
         menu.append(
           new $menuItem({
-            label: `Open ${SOCIALBROWSER.selectedText.substring(0, 30)} in current window`,
+            label: `Open ${SOCIALBROWSER.selectedText.substring(0, 30)} in ( current window ) `,
             click() {
               document.location.href = SOCIALBROWSER.selectedText;
             },
@@ -1636,7 +1636,7 @@ module.exports = function (SOCIALBROWSER) {
         );
         menu.append(
           new $menuItem({
-            label: `Open ${SOCIALBROWSER.selectedText.substring(0, 30)} in new tab`,
+            label: `Open ${SOCIALBROWSER.selectedText.substring(0, 30)} in ( new tab ) `,
             click() {
               SOCIALBROWSER.call('[send-render-message]', {
                 name: '[open new tab]',
@@ -1705,7 +1705,7 @@ module.exports = function (SOCIALBROWSER) {
               }
 
               arr.push({
-                label: ' in New Tab',
+                label: ' in ( new tab ) ',
                 click() {
                   SOCIALBROWSER.call('[send-render-message]', {
                     name: '[open new tab]',
@@ -1910,7 +1910,7 @@ module.exports = function (SOCIALBROWSER) {
         }
         menu.append(
           new $menuItem({
-            label: 'Open currnt page with proxy',
+            label: 'Open current page with proxy',
             type: 'submenu',
             submenu: arr,
           }),

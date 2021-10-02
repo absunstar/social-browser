@@ -667,8 +667,9 @@ module.exports = function (SOCIALBROWSER) {
       title: 'New Window',
       icon: SOCIALBROWSER.var.core.icon,
       parent2: SOCIALBROWSER.currentWindow,
-      webPreferences: SOCIALBROWSER.currentWindow.webContents.getWebPreferences(),
+      webPreferences: SOCIALBROWSER.webPreferences,
     });
+    win.$setting.webPreferences = SOCIALBROWSER.webPreferences;
     win.center();
     win.setMenuBarVisibility(false);
     win.loadURL(url, {

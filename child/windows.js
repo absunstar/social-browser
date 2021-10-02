@@ -59,8 +59,6 @@ module.exports = function (child) {
       defaultSetting.skipTaskbar = true;
       defaultSetting.frame = false;
       defaultSetting.resizable = false;
-      
-
     } else if (setting.windowType === 'addressbar') {
       defaultSetting.show = false;
       defaultSetting.alwaysOnTop = false;
@@ -85,7 +83,7 @@ module.exports = function (child) {
       defaultSetting.frame = true;
       defaultSetting.webPreferences.webaudio = false;
       defaultSetting.center = true;
-    }else if (setting.windowType === 'none') {
+    } else if (setting.windowType === 'none') {
       setting.url = 'https://www.google.com';
       defaultSetting.show = false;
       defaultSetting.alwaysOnTop = false;
@@ -103,10 +101,10 @@ module.exports = function (child) {
       defaultSetting.webPreferences.allowRunningInsecureContent = true;
     }
 
-    defaultSetting = {...defaultSetting, ...setting};
+    defaultSetting = { ...defaultSetting, ...setting };
 
     let win = new child.electron.BrowserWindow(defaultSetting);
-    child.remoteMain.enable(win.webContents)
+    child.remoteMain.enable(win.webContents);
 
     win.$setting = defaultSetting;
 
@@ -192,7 +190,7 @@ module.exports = function (child) {
             plugins: true,
           },
         });
-        child.remoteMain.enable(child.addressbarWindow.webContents)
+        child.remoteMain.enable(child.addressbarWindow.webContents);
         child.profilesWindow = child.createNewWindow({
           url: child.url.format({
             pathname: child.path.join(child.coreData.files_dir, 'html', 'user-profiles.html'),
@@ -224,7 +222,7 @@ module.exports = function (child) {
             plugins: true,
           },
         });
-        child.remoteMain.enable(child.profilesWindow.webContents)
+        child.remoteMain.enable(child.profilesWindow.webContents);
       } else if (win.$setting.windowType === 'view') {
         child.updateTab(win.$setting);
 
@@ -238,7 +236,7 @@ module.exports = function (child) {
           title: win.getTitle(),
           logo: win.$setting.favicon,
         });
-      }else if (win.$setting.windowType === 'none') {
+      } else if (win.$setting.windowType === 'none') {
         win.close();
       }
     });
@@ -293,10 +291,12 @@ module.exports = function (child) {
       }
       setTimeout(() => {
         child.sendCurrentDataLoop();
-      }, 10);
+      }, 30);
     };
 
-    child.sendCurrentDataLoop();
+    if (win.$setting.windowType === 'main') {
+      child.sendCurrentDataLoop();
+    }
 
     function sendCurrentData() {
       if (win.$setting.windowType === 'main') {
@@ -569,15 +569,12 @@ module.exports = function (child) {
         }
       });
 
-      win.webContents.on('did-create-window', (win, { url, frameName, options, disposition , referrer, postData }) => {
-
-      });
+      win.webContents.on('did-create-window', (win, { url, frameName, options, disposition, referrer, postData }) => {});
     }
     win.webContents.on('new-window', function (event, url, frameName, disposition, options, referrer, postBody) {
       event.preventDefault();
 
       let real_url = url || event.url || '';
-
 
       if (real_url.like('*about:blank*')) {
         return false;

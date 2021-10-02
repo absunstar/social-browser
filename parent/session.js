@@ -2,6 +2,7 @@ module.exports = function (parent) {
   parent.session_name_list = [];
 
   parent.handleSession = function (name) {
+
     if (!name || parent.session_name_list.some((s) => s == name)) {
       return;
     }
@@ -413,12 +414,6 @@ module.exports = function (parent) {
       }
     });
     ss.on('will-download', (event, item, webContents) => {
-      if (parent.var.last_download_url === item.getURL()) {
-        console.log(' Parent Will Download Cancel Duplicate : ' + item.getURL());
-        return;
-      }
-
-      parent.var.last_download_url = item.getURL();
 
       let dl = {
         id: new Date().getTime(),

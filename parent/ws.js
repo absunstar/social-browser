@@ -194,6 +194,11 @@ module.exports = function init(parent) {
           });
           break;
         case '[download-link]':
+          if (parent.var.last_download_url === message.url) {
+            console.log(' Parent Will Download Cancel Duplicate : ' + message.url);
+            return;
+          }
+          parent.var.last_download_url = message.url;
           parent.handleSession(message.partition);
           let ss = parent.electron.session.fromPartition(message.partition);
           ss.downloadURL(message.url);

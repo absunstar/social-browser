@@ -265,26 +265,15 @@ module.exports = function (child) {
         }
       });
 
-      // Must For Login Problem ^_^
-      if (details.url.like('*google.com*|*youtube.com*')) {
-        callback({
-          cancel: false,
-          requestHeaders: details.requestHeaders,
-        });
-        return;
-      }
-
       // custom header request
-      child.coreData.var.custom_request_header_list.forEach((r) => {
-        if (url.like(r.url)) {
-          r.value_list = r.value_list || [];
-          r.value_list.forEach((v) => {
+      child.coreData.var.customHeaderList.forEach((r) => {
+        if (r.type == 'request' && url.like(r.url)) {
+          r.list.forEach((v) => {
             delete details.requestHeaders[v.name];
             delete details.requestHeaders[v.name.toLowerCase()];
-            details.requestHeaders[v.name] = v.value;
+            details.requestHeaders[v.name] = v.value.replace('{{url}}', source_url);
           });
-          r.delete_list = r.delete_list || [];
-          r.delete_list.forEach((key) => {
+          r.ignore.forEach((key) => {
             delete details.requestHeaders[key];
             delete details.requestHeaders[key.toLowerCase()];
           });
@@ -293,6 +282,15 @@ module.exports = function (child) {
 
       if (child.coreData.var.blocking.privacy.dnt) {
         details.requestHeaders['DNT'] = '1'; // dont track me
+      }
+
+      // Must For Login Problem ^_^
+      if (details.url.like('*google.com*|*youtube.com*')) {
+        callback({
+          cancel: false,
+          requestHeaders: details.requestHeaders,
+        });
+        return;
       }
 
       //details.requestHeaders['Referrer-Policy'] = 'no-referrer';
@@ -364,6 +362,8 @@ module.exports = function (child) {
     });
 
     ss.webRequest.onHeadersReceived(filter, function (details, callback) {
+      let url = details.url;
+
       if (child.coreData.var.core.off) {
         callback({
           cancel: false,
@@ -375,14 +375,30 @@ module.exports = function (child) {
         return;
       }
 
+      // custom header request
+      child.coreData.var.customHeaderList.forEach((r) => {
+        if (r.type == 'response' && url.like(r.url)) {
+          r.list.forEach((v) => {
+            delete details.responseHeaders[v.name];
+            delete details.responseHeaders[v.name.toLowerCase()];
+            details.responseHeaders[v.name.toLowerCase()] = v.value;
+          });
+          r.ignore.forEach((key) => {
+            delete details.responseHeaders[key];
+            delete details.responseHeaders[key.toLowerCase()];
+          });
+        }
+      });
+
       let is_white = false;
       child.coreData.var.white_list.forEach((w) => {
-        if (details.url.like(w.url)) {
+        if (url.like(w.url)) {
           is_white = true;
         }
       });
 
       if (is_white) {
+        console.log(details.responseHeaders);
         callback({
           cancel: false,
           responseHeaders: {
@@ -460,7 +476,7 @@ module.exports = function (child) {
       // details.responseHeaders['Cross-Origin-Resource-Policy'.toLowerCase()] = 'cross-origin';
 
       child.coreData.var.overwrite.urls.forEach((data) => {
-        if (details.url.like(data.to)) {
+        if (url.like(data.to)) {
           if (data.rediect_from) {
             // details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = [child.coreData.url.parse(data.rediect_from, false).host];
             details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = ['*'];
@@ -508,7 +524,7 @@ module.exports = function (child) {
       }
     });
     ss.on('will-download', (event, item, webContents) => {
-      console.log(' Child Will Download : ' + item.getURL())
+      console.log(' Child Will Download : ' + item.getURL());
       event.preventDefault();
       child.sendMessage({
         type: '[download-link]',

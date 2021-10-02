@@ -404,9 +404,7 @@ module.exports = function init(parent) {
     }, 1000 * 5);
   }, 1000 * 60 * 5);
 
-
   parent.addURL = function (nitm) {
-    
     if (!nitm.url) {
       return;
     }
@@ -449,7 +447,7 @@ module.exports = function init(parent) {
 
     parent.set_var('urls', parent.var.urls, true);
 
-    if ( parent.var.urls[index] && !parent.var.urls[index].busy && parent.var.urls[index].logo && (!parent.var.urls[index].logo2 || !parent.api.isFileExistsSync(parent.var.urls[index].logo2))) {
+    if (parent.var.urls[index] && !parent.var.urls[index].busy && parent.var.urls[index].logo && (!parent.var.urls[index].logo2 || !parent.api.isFileExistsSync(parent.var.urls[index].logo2))) {
       parent.var.urls[index].busy = true;
       let path = parent.path.join(parent.data_dir, 'favicons', parent.md5(parent.var.urls[index].logo) + '.' + parent.var.urls[index].logo.split('?')[0].split('.').pop());
       if (parent.api.isFileExistsSync(path)) {
@@ -505,6 +503,37 @@ module.exports = function init(parent) {
 
   parent.get_var('extension_list');
   parent.get_var('custom_request_header_list');
+
+  parent.var.customHeaderList = [];
+  parent.addRequestHeader = function (h) {
+    parent.var.customHeaderList.push({ ...{ type: 'request', list: [] , ignore : [] }, ...h });
+    parent.applay('customHeaderList');
+  };
+  parent.addResponseHeader = function (h) {
+    parent.var.customHeaderList.push({ ...{ type: 'response', list: [], ignore : [] }, ...h });
+    parent.applay('customHeaderList');
+  };
+  parent.removeHeader = function (id) {
+    parent.var.customHeaderList.forEach((h, i) => {
+      if (h.id === id) {
+        parent.var.customHeaderList.splice(i, 1);
+      }
+    });
+    parent.applay('customHeaderList');
+  };
+
+  parent.addPreload = function (p) {
+    parent.var.preload_list.push({...p });
+    parent.applay('preload_list');
+  };
+  parent.removePreload = function(id){
+    parent.var.preload_list.forEach((p, i) => {
+      if (p.id == id) {
+        parent.var.preload_list.splice(i, 1);
+      }
+    });
+    browser.applay('preload_list');
+  }
 
   parent.files.push({
     path: parent.path.join(parent.files_dir, 'html', 'custom', 'browser.html'),
