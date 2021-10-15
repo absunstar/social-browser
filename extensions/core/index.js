@@ -30,7 +30,19 @@ module.exports = function (browser) {
           value: `cross-site`,
         },
       ],
-      ignore: ['Sec-Fetch-User'],
+      ignore: ['Sec-Fetch-User', 'Sec-Fetch-Dest', 'Sec-Fetch-Site', 'Sec-Fetch-Mode', 'X-Frame-Options'],
+    });
+
+    browser.addResponseHeader({
+      id: 'core',
+      url: '*embed*',
+      list: [
+        {
+          name: 'x-server',
+          value: ['https://social-browser.com/'],
+        },
+      ],
+      ignore: ['X-Frame-Options'],
     });
 
     browser.addRequestHeader({
@@ -46,7 +58,7 @@ module.exports = function (browser) {
           value: 'https://www.youtube.com/',
         },
       ],
-      ignore: ['Sec-Fetch-User', 'Sec-Fetch-Dest', 'Sec-Fetch-Site', 'Sec-Fetch-Mode'],
+      ignore: ['Service-Worker-Navigation-Preload'],
     });
     browser.addResponseHeader({
       id: 'core',
@@ -57,12 +69,12 @@ module.exports = function (browser) {
           value: ['https://www.youtube.com/'],
         },
       ],
-      ignore: ['x-browser'],
+      ignore: ['x-browser', 'X-Frame-Options'],
     });
   };
 
   extension.disable = () => {
-    parent.removePreload(extension.id);
+    browser.removePreload(extension.id);
     browser.removeHeader('core');
   };
 

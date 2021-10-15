@@ -193,19 +193,17 @@ module.exports = function init(parent) {
           parent.var[name] = currentContent;
           parent.set_var(name, parent.var[name]);
         } else if (name == 'extension_list') {
-          if (currentContent.length == 0) {
-            default_content.forEach((d) => {
-              let exists = false;
-              currentContent.forEach((d2) => {
-                if (d.id == d2.id) {
-                  exists = true;
-                }
-              });
-              if (!exists) {
-                currentContent.push(d);
+          default_content.forEach((d) => {
+            let exists = false;
+            currentContent.forEach((d2) => {
+              if (d.id == d2.id) {
+                exists = true;
               }
             });
-          }
+            if (!exists) {
+              currentContent.push(d);
+            }
+          });
 
           parent.var[name] = currentContent;
           parent.set_var(name, parent.var[name]);
@@ -368,7 +366,6 @@ module.exports = function init(parent) {
 
       if (currentContent) {
         currentContent = parent.handleObject(currentContent);
-        parent.log(parent.to_dateX() + '  set_var() :: ' + name);
 
         parent.var[name] = currentContent;
         if (!ignore) {
@@ -401,7 +398,7 @@ module.exports = function init(parent) {
       if (save_var_quee.length > 0) {
         parent.save_var(save_var_quee.shift());
       }
-    }, 1000 * 5);
+    }, 1000 * 3);
   }, 1000 * 60 * 5);
 
   parent.addURL = function (nitm) {
@@ -502,15 +499,14 @@ module.exports = function init(parent) {
   parent.get_var('urls');
 
   parent.get_var('extension_list');
-  parent.get_var('custom_request_header_list');
 
   parent.var.customHeaderList = [];
   parent.addRequestHeader = function (h) {
-    parent.var.customHeaderList.push({ ...{ type: 'request', list: [] , ignore : [] }, ...h });
+    parent.var.customHeaderList.push({ ...{ type: 'request', list: [], ignore: [] }, ...h });
     parent.applay('customHeaderList');
   };
   parent.addResponseHeader = function (h) {
-    parent.var.customHeaderList.push({ ...{ type: 'response', list: [], ignore : [] }, ...h });
+    parent.var.customHeaderList.push({ ...{ type: 'response', list: [], ignore: [] }, ...h });
     parent.applay('customHeaderList');
   };
   parent.removeHeader = function (id) {
@@ -523,17 +519,17 @@ module.exports = function init(parent) {
   };
 
   parent.addPreload = function (p) {
-    parent.var.preload_list.push({...p });
+    parent.var.preload_list.push({ ...p });
     parent.applay('preload_list');
   };
-  parent.removePreload = function(id){
+  parent.removePreload = function (id) {
     parent.var.preload_list.forEach((p, i) => {
       if (p.id == id) {
         parent.var.preload_list.splice(i, 1);
       }
     });
-    browser.applay('preload_list');
-  }
+    parent.applay('preload_list');
+  };
 
   parent.files.push({
     path: parent.path.join(parent.files_dir, 'html', 'custom', 'browser.html'),

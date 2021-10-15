@@ -28,10 +28,10 @@ module.exports = function (child) {
     child._ws_.on('message', function (event) {
       try {
         let message = JSON.parse(event.data || event);
-        if(message.type == 'text'){
+        if (message.type == 'text') {
           console.log(message);
         }
-        
+
         if (message.type == 'connected') {
           child.sendMessage({
             type: '[attach-child]',
@@ -57,6 +57,34 @@ module.exports = function (child) {
           child.sendToWindow('[send-render-message]', message.data);
         } else if (message.type == '$download_item') {
           child.sendToWindow('$download_item', message.data);
+        } else if (message.type == '[add-window-url]') {
+          let exists = false;
+          child.coreData.var.urls.forEach((u) => {
+            if (u.url == message.url) {
+              exists = true;
+              if (!message.ignoreCounted) {
+                u.count++;
+              }
+              u.title = message.title || u.title;
+              u.logo = message.logo || u.logo;
+              u.last_visit = new Date().getTime();
+            }
+          });
+          if (!exists) {
+            child.coreData.var.urls.push({
+              url: message.url,
+              logo: message.logo,
+              logo2: message.logo,
+              title: message.title || message.url,
+              count: 1,
+              first_visit: new Date().getTime(),
+              last_visit: new Date().getTime(),
+            });
+          }
+
+          if (child.addressbarWindow && !child.addressbarWindow.isDestroyed()) {
+            child.addressbarWindow.webContents.send('[update-browser-var]', { options: { name: 'urls', data: child.coreData.var.urls } });
+          }
         } else if (message.type == '[cookie-changed]') {
           child.cookies[message.partition] = child.cookies[message.partition] || [];
 
@@ -98,15 +126,15 @@ module.exports = function (child) {
             if (child.coreData.var.core.user_agent) {
               child.electron.app.userAgentFallback = child.coreData.var.core.user_agent;
             }
-          } else if (message.options.name == 'proxy' || message.options.name == 'session_list') {
+          } else if (message.options.name == 'core' || message.options.name == 'proxy' || message.options.name == 'session_list') {
             child.sessionConfig();
           }
 
           child.sendToWindows('[update-browser-var]', message);
         } else if (message.type == '[call-window-action]') {
-          if (message.data.name == '[winow-reload]' && child.getWindow()) {
+          if (message.data.name == '[window-reload]' && child.getWindow()) {
             child.getWindow().reload();
-          } else if (message.data.name == '[winow-reload-hard]' && child.getWindow()) {
+          } else if (message.data.name == '[window-reload-hard]' && child.getWindow()) {
             let info = message.data;
             if (info.origin) {
               info.origin = info.origin === 'null' ? child.getWindow().webContents.getURL() : info.origin;
@@ -166,11 +194,11 @@ module.exports = function (child) {
             child.getWindow().setFullScreen(true);
           } else if (message.data.name == '!full_screen' && child.getWindow()) {
             child.getWindow().setFullScreen(false);
-          } else if (message.data.name == '[winow-zoom]' && child.getWindow()) {
+          } else if (message.data.name == '[window-zoom]' && child.getWindow()) {
             child.getWindow().webContents.zoomFactor = 1;
-          } else if (message.data.name == '[winow-zoom+]' && child.getWindow()) {
+          } else if (message.data.name == '[window-zoom+]' && child.getWindow()) {
             child.getWindow().webContents.zoomFactor += 0.2;
-          } else if (message.data.name == '[winow-zoom-]' && child.getWindow()) {
+          } else if (message.data.name == '[window-zoom-]' && child.getWindow()) {
             child.getWindow().webContents.zoomFactor -= 0.2;
           } else if (message.data.name == '[window-go-back]' && child.getWindow()) {
             if (child.getWindow().webContents.canGoBack()) {

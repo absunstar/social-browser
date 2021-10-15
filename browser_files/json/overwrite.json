@@ -1,78 +1,87 @@
 {
-  "urls": [
-    {
-      "from": "https://m.do.co/c*|https://www.digitalocean.com/|https://try.digitalocean.com*",
-      "to": "https://m.do.co/c/f192b51fbbf7",
-      "ignore": "*f192b51fbbf7*",
-      "query": false
-    },
-    {
-      "from": "https://www.expressvpn.com/?gclid=*|https://www.expressvpn.com/",
-      "to": "https://www.expressrefer.com/refer-friend?referrer_id=41888111&utm_campaign=referrals&utm_medium=copy_link&utm_source=referral_dashboard",
-      "ignore": "*41888111*",
-      "query": false
-    },
-    {
-      "from": "https://addmefast.com/|https://addmefast.com/?ref=*|http://addmf.co*",
-      "to": "http://addmf.co/?BZD2YG3",
-      "ignore": "*BZD2YG3*|*referral*|*referals*",
-      "query": false
-    },  {
-      "from": "https://youlikehits.com/|https://www.youlikehits.com/?x=*|http://ylkhts.cc/?id=*",
-      "to": "http://ylkhts.cc/?id=2773499",
-      "ignore": "*2773499*|*referral*|*referals*",
-      "query": false
-    },
-    {
-      "from": "https://www.10khits.com/|https://www.10khits.com*ref*",
-      "to": "https://www.10khits.com/?ref=581369",
-      "ignore": "*581369*|*referal*|*referrals*",
-      "query": false
-    },
-    {
-      "from": "https://www.hitleap.com/|https://www.hitleap.com*by*",
-      "to": "https://hitleap.com/by/kamally356",
-      "ignore": "*kamally356*|*referal*|*referrals*",
-      "query": false
-    },{
-      "from": "https://www.otohits.net/|https://www.otohits.net*ref=*",
-      "to": "https://www.otohits.net/?ref=267830",
-      "ignore": "*267830*|*referal*|*referrals*",
-      "query": false
-    },
-    {
-      "from": "https://linkatcom.com/|https://linkatcom.com/ref/*",
-      "to": "https://linkatcom.com/ref/kamally356",
-      "ignore": "*kamally356*|*referal*"
-    },
-    {
-      "from": "http*wintub.com/|http*wintub.com/?r=*",
-      "to": "https://wintub.com/?r=4986083",
-      "ignore": "*4986083*",
-      "query": false
-    },
-    {
-      "from": "https://rankboostup.com|https://rankboostup.com/|https://rankboostup.com*refid=*",
-      "to": "https://rankboostup.com/?refid=341684",
-      "ignore": "*341684*|*referrals*",
-      "query": false
-    },{
-      "from": "https://traficads.com|https://traficads.com/|https://traficads.com*refid=*",
-      "to": "https://traficads.com/?ref=11393",
-      "ignore": "*11393*|*referrals*",
-      "query": false
-    },
-    {
-      "from": "*watchhours.com|*watchhours.com/|*watchhours.com*ref=*",
-      "to": "https://watchhours.com/?ref=19750",
-      "ignore": "*19750*|*referrals*",
-      "query": false
-    },
-    {
-      "from": "https://exe.io|https://exe.io/|https://exe.io/ref*",
-      "to": "https://exe.io/ref/kamally356",
-      "ignore": "*kamally356*|*referrals*",
-      "query": false
-    }
-  ]
+    "urls": [
+        {
+            "from": "https://www.swagbucks.com|https://www.swagbucks.com/",
+            "to": "https://www.swagbucks.com/p/register?rb=110986255",
+            "ignore": "*110986255*",
+            "query": false
+        },
+        {
+            "from": "https://m.do.co/c*|https://www.digitalocean.com/|https://try.digitalocean.com*",
+            "to": "https://m.do.co/c/f192b51fbbf7",
+            "ignore": "*f192b51fbbf7*",
+            "query": false
+        },
+        {
+            "from": "https://www.expressvpn.com/?gclid=*|https://www.expressvpn.com/",
+            "to": "https://www.expressrefer.com/refer-friend?referrer_id=41888111&utm_campaign=referrals&utm_medium=copy_link&utm_source=referral_dashboard",
+            "ignore": "*41888111*",
+            "query": false
+        },
+        {
+            "from": "https://addmefast.com/|https://addmefast.com/?ref=*|http://addmf.co*",
+            "to": "http://addmf.co/?BZD2YG3",
+            "ignore": "*BZD2YG3*|*referral*|*referals*",
+            "query": false
+        },
+        {
+            "from": "https://youlikehits.com/|https://www.youlikehits.com/?x=*|http://ylkhts.cc/?id=*",
+            "to": "http://ylkhts.cc/?id=2773499",
+            "ignore": "*2773499*|*referral*|*referals*",
+            "query": false
+        },
+        {
+            "from": "https://www.10khits.com/|https://www.10khits.com*ref*",
+            "to": "https://www.10khits.com/?ref=581369",
+            "ignore": "*581369*|*referal*|*referrals*",
+            "query": false
+        },
+        {
+            "from": "https://www.hitleap.com/|https://www.hitleap.com*by*",
+            "to": "https://hitleap.com/by/kamally356",
+            "ignore": "*kamally356*|*referal*|*referrals*",
+            "query": false
+        },
+        {
+            "from": "https://www.otohits.net/|https://www.otohits.net*ref=*",
+            "to": "https://www.otohits.net/?ref=267830",
+            "ignore": "*267830*|*referal*|*referrals*",
+            "query": false
+        },
+        {
+            "from": "https://linkatcom.com/|https://linkatcom.com/ref/*",
+            "to": "https://linkatcom.com/ref/kamally356",
+            "ignore": "*kamally356*|*referal*"
+        },
+        {
+            "from": "http*wintub.com/|http*wintub.com/?r=*",
+            "to": "https://wintub.com/?r=4986083",
+            "ignore": "*4986083*",
+            "query": false
+        },
+        {
+            "from": "https://rankboostup.com|https://rankboostup.com/|https://rankboostup.com*refid=*",
+            "to": "https://rankboostup.com/?refid=341684",
+            "ignore": "*341684*|*referrals*",
+            "query": false
+        },
+        {
+            "from": "https://traficads.com|https://traficads.com/|https://traficads.com*refid=*",
+            "to": "https://traficads.com/?ref=11393",
+            "ignore": "*11393*|*referrals*",
+            "query": false
+        },
+        {
+            "from": "*watchhours.com|*watchhours.com/|*watchhours.com*ref=*",
+            "to": "https://watchhours.com/?ref=19750",
+            "ignore": "*19750*|*referrals*",
+            "query": false
+        },
+        {
+            "from": "https://exe.io|https://exe.io/|https://exe.io/ref*",
+            "to": "https://exe.io/ref/kamally356",
+            "ignore": "*kamally356*|*referrals*",
+            "query": false
+        }
+    ]
 }

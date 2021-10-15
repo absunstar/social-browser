@@ -277,7 +277,7 @@ module.exports = function init(child) {
         name: '[open new tab]',
         url: 'http://127.0.0.1:60080/setting',
       });
-    } else if (data.name == '[winow-reload-hard]') {
+    } else if (data.name == '[window-reload-hard]') {
       let win = child.electron.BrowserWindow.fromId(data.win_id);
       if (win && data.origin && data.origin !== 'null') {
         let ss = win.webContents.session;
@@ -295,16 +295,16 @@ module.exports = function init(child) {
     } else if (data.name == '[toggle-fullscreen]') {
       let win = child.electron.BrowserWindow.fromId(data.win_id);
       win.setFullScreen(!win.isFullScreen());
-    } else if (data.name == '[winow-zoom]') {
+    } else if (data.name == '[window-zoom]') {
       let win = child.electron.BrowserWindow.fromId(data.win_id);
       win.webContents.zoomFactor = 1;
-    } else if (data.name == '[winow-zoom+]') {
+    } else if (data.name == '[window-zoom+]') {
       let win = child.electron.BrowserWindow.fromId(data.win_id);
       win.webContents.zoomFactor += 0.2;
-    } else if (data.name == '[winow-zoom-]') {
+    } else if (data.name == '[window-zoom-]') {
       let win = child.electron.BrowserWindow.fromId(data.win_id);
       win.webContents.zoomFactor -= 0.2;
-    } else if (data.name == '[winow-reload]') {
+    } else if (data.name == '[window-reload]') {
       let win = child.electron.BrowserWindow.fromId(data.win_id);
       win.webContents.reload();
     } else if (data.name == '[show-window-dev-tools]') {

@@ -2,7 +2,6 @@ module.exports = function (parent) {
   parent.session_name_list = [];
 
   parent.handleSession = function (name) {
-
     if (!name || parent.session_name_list.some((s) => s == name)) {
       return;
     }
@@ -220,6 +219,25 @@ module.exports = function (parent) {
         }
       });
 
+      // custom header request
+      parent.var.customHeaderList.forEach((r) => {
+        if (r.type == 'request' && url.like(r.url)) {
+          r.list.forEach((v) => {
+            if (v && v.name && v.value) {
+              delete details.requestHeaders[v.name];
+              delete details.requestHeaders[v.name.toLowerCase()];
+              details.requestHeaders[v.name] = v.value.replace('{{url}}', source_url);
+            }
+          });
+          r.ignore.forEach((key) => {
+            if (key) {
+              delete details.requestHeaders[key];
+              delete details.requestHeaders[key.toLowerCase()];
+            }
+          });
+        }
+      });
+
       // Must For Login Problem ^_^
       if (details.url.like('*google.com*|*youtube.com*')) {
         callback({
@@ -228,21 +246,6 @@ module.exports = function (parent) {
         });
         return;
       }
-
-      // custom header request
-      parent.var.custom_request_header_list.forEach((r) => {
-        if (url.like(r.url)) {
-          r.value_list.forEach((v) => {
-            delete details.requestHeaders[v.name];
-            delete details.requestHeaders[v.name.toLowerCase()];
-            details.requestHeaders[v.name] = v.value;
-          });
-          r.delete_list.forEach((key) => {
-            delete details.requestHeaders[key];
-            delete details.requestHeaders[key.toLowerCase()];
-          });
-        }
-      });
 
       if (parent.var.blocking.privacy.dnt) {
         details.requestHeaders['DNT'] = '1'; // dont track me
@@ -309,6 +312,39 @@ module.exports = function (parent) {
     });
 
     ss.webRequest.onHeadersReceived(filter, function (details, callback) {
+      let url = details.url;
+
+      if (parent.var.core.off) {
+        callback({
+          cancel: false,
+          responseHeaders: {
+            ...details.responseHeaders,
+          },
+          statusLine: details.statusLine,
+        });
+        return;
+      }
+
+      // custom header request
+      parent.var.customHeaderList.forEach((r) => {
+        if (r.type == 'response' && url.like(r.url)) {
+          r.ignore.forEach((key) => {
+            if (key) {
+              delete details.responseHeaders[key];
+              delete details.responseHeaders[key.toLowerCase()];
+            }
+          });
+
+          r.list.forEach((v) => {
+            if (v && v.name && v.value) {
+              delete details.responseHeaders[v.name];
+              delete details.responseHeaders[v.name.toLowerCase()];
+              details.responseHeaders[v.name.toLowerCase()] = v.value;
+            }
+          });
+        }
+      });
+
       let is_white = false;
       parent.var.white_list.forEach((w) => {
         if (details.url.like(w.url)) {
@@ -414,7 +450,6 @@ module.exports = function (parent) {
       }
     });
     ss.on('will-download', (event, item, webContents) => {
-
       let dl = {
         id: new Date().getTime(),
         date: new Date(),

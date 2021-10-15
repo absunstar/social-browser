@@ -64,7 +64,7 @@ var browser = {
     open_list: [],
     preload_list: [],
     context_menu: { dev_tools: true, inspect: true },
-    custom_request_header_list: [],
+    customHeaderList: [],
   },
   var0: {},
   content_list: [],

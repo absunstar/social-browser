@@ -8,20 +8,14 @@ module.exports = function (browser) {
   extension.canDelete = false;
   extension.init = () => {};
   extension.enable = () => {
-    browser.var.preload_list.push({
+    browser.addPreload({
       id: extension.id,
-      path: browser.path.join(__dirname , 'preload.js'),
+      path: browser.path.join(__dirname, 'preload.js'),
     });
-    browser.applay('preload_list');
   };
 
   extension.disable = () => {
-    browser.var.preload_list.forEach((p, i) => {
-      if (p.id == extension.id) {
-        browser.var.preload_list.splice(i, 1);
-      }
-    });
-    browser.applay('preload_list');
+    browser.removePreload(extension.id);
   };
 
   extension.remove = () => {

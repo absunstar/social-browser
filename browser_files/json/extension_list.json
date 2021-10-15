@@ -1,5 +1,14 @@
 [
   {
+    "id": "81dde4443a25f1da9ca836b2f31320ad",
+    "path": "{dir}/extensions/core/index.js",
+    "name": "Core ",
+    "description": "Social Browser Core",
+    "paid": false,
+    "canDelete": false,
+    "isEnabled": true
+  },
+  {
     "id": "945a6e09c8ea780817c03db12d4be00d",
     "path": "{dir}/extensions/alexa/index.js",
     "name": "Alexa Integration",

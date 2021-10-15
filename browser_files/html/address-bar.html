@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="http://127.0.0.1:60080/css/address-bar.css" />
     <link rel="stylesheet" href="http://127.0.0.1:60080/css/social-tabs-custom-theme2.css" />
     <style>
-      body{
+      body {
         font-family: 'Cairo';
       }
       .btn {
@@ -125,6 +125,13 @@
       });
 
       app.controller('mainController', ($scope, $http, $timeout) => {
+        SOCIALBROWSER.onEvent('updated', (p) => {
+          if (p.name == 'urls') {
+            $scope.url_list = SOCIALBROWSER.var.urls;
+            $scope.$applyAsync();
+          }
+        });
+
         $scope.url_list = [];
         $scope.url_list2 = [];
         $scope.url_index = -1;

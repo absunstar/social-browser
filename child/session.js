@@ -269,13 +269,17 @@ module.exports = function (child) {
       child.coreData.var.customHeaderList.forEach((r) => {
         if (r.type == 'request' && url.like(r.url)) {
           r.list.forEach((v) => {
-            delete details.requestHeaders[v.name];
-            delete details.requestHeaders[v.name.toLowerCase()];
-            details.requestHeaders[v.name] = v.value.replace('{{url}}', source_url);
+            if (v && v.name && v.value) {
+              delete details.requestHeaders[v.name];
+              delete details.requestHeaders[v.name.toLowerCase()];
+              details.requestHeaders[v.name] = v.value.replace('{{url}}', source_url);
+            }
           });
           r.ignore.forEach((key) => {
-            delete details.requestHeaders[key];
-            delete details.requestHeaders[key.toLowerCase()];
+            if (key) {
+              delete details.requestHeaders[key];
+              delete details.requestHeaders[key.toLowerCase()];
+            }
           });
         }
       });
@@ -378,14 +382,19 @@ module.exports = function (child) {
       // custom header request
       child.coreData.var.customHeaderList.forEach((r) => {
         if (r.type == 'response' && url.like(r.url)) {
-          r.list.forEach((v) => {
-            delete details.responseHeaders[v.name];
-            delete details.responseHeaders[v.name.toLowerCase()];
-            details.responseHeaders[v.name.toLowerCase()] = v.value;
-          });
           r.ignore.forEach((key) => {
-            delete details.responseHeaders[key];
-            delete details.responseHeaders[key.toLowerCase()];
+            if (key) {
+              delete details.responseHeaders[key];
+              delete details.responseHeaders[key.toLowerCase()];
+            }
+          });
+
+          r.list.forEach((v) => {
+            if (v && v.name && v.value) {
+              delete details.responseHeaders[v.name];
+              delete details.responseHeaders[v.name.toLowerCase()];
+              details.responseHeaders[v.name.toLowerCase()] = v.value;
+            }
           });
         }
       });
@@ -398,7 +407,6 @@ module.exports = function (child) {
       });
 
       if (is_white) {
-        console.log(details.responseHeaders);
         callback({
           cancel: false,
           responseHeaders: {
@@ -492,6 +500,8 @@ module.exports = function (child) {
         statusLine: details.statusLine,
       });
     });
+    
+    ss.webRequest.onSendHeaders(filter, function (details) {});
     ss.webRequest.onResponseStarted(filter, function (details) {});
     ss.webRequest.onBeforeRedirect(filter, function (details) {});
     ss.webRequest.onCompleted(filter, function (details) {});

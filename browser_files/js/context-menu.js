@@ -35,7 +35,7 @@
       open_list: [],
       preload_list: [],
       context_menu: { dev_tools: true, inspect: true },
-      custom_request_header_list: [],
+      customHeaderList: [],
     },
     navigator: {
       hardwareConcurrency: navigator.hardwareConcurrency,
@@ -194,7 +194,7 @@
   SOCIALBROWSER.href = document.location.href;
 
   SOCIALBROWSER.selected_properties =
-    'scripts_files,user_data,user_data_input,sites,facebook,context_menu,open_list,preload_list,proxy_list,proxy,core,login,vip,bookmarks,black_list,white_list,session_list,user_agent_list,blocking,video_quality_list,custom_request_header_list';
+    'scripts_files,user_data,user_data_input,sites,facebook,context_menu,open_list,preload_list,proxy_list,proxy,core,login,vip,bookmarks,black_list,white_list,session_list,user_agent_list,blocking,video_quality_list,customHeaderList';
   if (SOCIALBROWSER.href.indexOf('127.0.0.1:60080') !== -1 || SOCIALBROWSER.href.indexOf('file://') == 0 || SOCIALBROWSER.href.indexOf('browser://') == 0) {
     SOCIALBROWSER.selected_properties = '*';
   }

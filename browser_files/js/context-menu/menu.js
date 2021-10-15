@@ -759,7 +759,7 @@ module.exports = function (SOCIALBROWSER) {
       accelerator: 'CommandOrControl+F5',
       click() {
         SOCIALBROWSER.call('[send-render-message]', {
-          name: '[winow-reload-hard]',
+          name: '[window-reload-hard]',
           win_id: SOCIALBROWSER.currentWindow.id,
           origin: document.location.origin || document.location.href,
           storages: ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage'],
@@ -771,7 +771,7 @@ module.exports = function (SOCIALBROWSER) {
       label: 'Clear Site Cookies',
       click() {
         SOCIALBROWSER.call('[send-render-message]', {
-          name: '[winow-reload-hard]',
+          name: '[window-reload-hard]',
           win_id: SOCIALBROWSER.currentWindow.id,
           origin: document.location.origin || document.location.href,
           storages: ['cookies'],
@@ -783,7 +783,7 @@ module.exports = function (SOCIALBROWSER) {
       label: 'Clear All Site Data',
       click() {
         SOCIALBROWSER.call('[send-render-message]', {
-          name: '[winow-reload-hard]',
+          name: '[window-reload-hard]',
           win_id: SOCIALBROWSER.currentWindow.id,
           origin: document.location.origin || document.location.href,
           storages: ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage', 'cookies'],
@@ -1855,7 +1855,7 @@ module.exports = function (SOCIALBROWSER) {
           accelerator: 'CommandOrControl+F5',
           click() {
             SOCIALBROWSER.call('[send-render-message]', {
-              name: '[winow-reload-hard]',
+              name: '[window-reload-hard]',
               win_id: SOCIALBROWSER.currentWindow.id,
               origin: document.location.origin || document.location.href,
               partition: SOCIALBROWSER.partition,

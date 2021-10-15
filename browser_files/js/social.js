@@ -351,21 +351,21 @@ document.addEventListener(
     } else if (e.keyCode == 107 /*+*/) {
       if (e.ctrlKey == true) {
         SOCIALBROWSER.call('[send-render-message]', {
-          name: '[winow-zoom+]',
+          name: '[window-zoom+]',
           action: true,
         });
       }
     } else if (e.keyCode == 109 /*-*/) {
       if (e.ctrlKey == true) {
         SOCIALBROWSER.call('[send-render-message]', {
-          name: '[winow-zoom-]',
+          name: '[window-zoom-]',
           action: true,
         });
       }
     } else if (e.keyCode == 48 /*0*/) {
       if (e.ctrlKey == true) {
         SOCIALBROWSER.call('[send-render-message]', {
-          name: '[winow-zoom]',
+          name: '[window-zoom]',
           action: true,
         });
       }
@@ -408,13 +408,13 @@ document.addEventListener(
     } else if (e.keyCode == 116 /*f5*/) {
       if (e.ctrlKey === true) {
         SOCIALBROWSER.call('[send-render-message]', {
-          name: '[winow-reload-hard]',
+          name: '[window-reload-hard]',
           action: true,
           origin: document.location.origin || document.location.href,
         });
       } else {
         SOCIALBROWSER.call('[send-render-message]', {
-          name: '[winow-reload]',
+          name: '[window-reload]',
           action: true,
         });
       }
@@ -560,7 +560,7 @@ function showSettingMenu() {
     accelerator: 'F5',
     click: () =>
       sendToMain({
-        name: '[winow-reload]',
+        name: '[window-reload]',
         action: true,
       }),
   });
@@ -569,7 +569,7 @@ function showSettingMenu() {
     accelerator: 'CommandOrControl+F5',
     click: () =>
       sendToMain({
-        name: '[winow-reload-hard]',
+        name: '[window-reload-hard]',
         action: true,
       }),
   });
@@ -583,17 +583,17 @@ function showSettingMenu() {
     click: (event) => {
       // console.log(event);
       sendToMain({
-        name: '[winow-zoom+]',
+        name: '[window-zoom+]',
         action: true,
       });
     },
   });
   arr.push({
-    label: '[winow-zoom]',
+    label: 'Zoom',
     accelerator: 'CommandOrControl+0',
     click: () =>
       sendToMain({
-        name: '[winow-zoom]',
+        name: '[window-zoom]',
         action: true,
       }),
   });
@@ -602,7 +602,7 @@ function showSettingMenu() {
     accelerator: 'CommandOrControl+numsub',
     click: () =>
       sendToMain({
-        name: '[winow-zoom-]',
+        name: '[window-zoom-]',
         action: true,
       }),
   });

@@ -12,7 +12,7 @@ module.exports = function (SOCIALBROWSER) {
   window.addEventListener('wheel', function (e) {
     if (e.ctrlKey == true) {
       SOCIALBROWSER.call('[send-render-message]', {
-        name: '[winow-zoom' + (e.deltaY > 0 ? '-' : '+') + ']',
+        name: '[window-zoom' + (e.deltaY > 0 ? '-' : '+') + ']',
         win_id: SOCIALBROWSER.currentWindow.id,
       });
     }
@@ -54,21 +54,21 @@ module.exports = function (SOCIALBROWSER) {
       } else if (e.keyCode == 107 /*+*/) {
         if (e.ctrlKey == true) {
           SOCIALBROWSER.call('[send-render-message]', {
-            name: '[winow-zoom+]',
+            name: '[window-zoom+]',
             win_id: SOCIALBROWSER.currentWindow.id,
           });
         }
       } else if (e.keyCode == 109 /*-*/) {
         if (e.ctrlKey == true) {
           SOCIALBROWSER.call('[send-render-message]', {
-            name: '[winow-zoom-]',
+            name: '[window-zoom-]',
             win_id: SOCIALBROWSER.currentWindow.id,
           });
         }
       } else if (e.keyCode == 48 /*0*/) {
         if (e.ctrlKey == true) {
           SOCIALBROWSER.call('[send-render-message]', {
-            name: '[winow-zoom]',
+            name: '[window-zoom]',
             win_id: SOCIALBROWSER.currentWindow.id,
           });
         }
@@ -120,12 +120,12 @@ module.exports = function (SOCIALBROWSER) {
       } else if (e.keyCode == 116 /*f5*/) {
         if (e.ctrlKey === true) {
           SOCIALBROWSER.call('[send-render-message]', {
-            name: '[winow-reload-hard]',
+            name: '[window-reload-hard]',
             origin: document.location.origin || document.location.href,
           });
         } else {
           SOCIALBROWSER.call('[send-render-message]', {
-            name: '[winow-reload]',
+            name: '[window-reload]',
           });
         }
       }

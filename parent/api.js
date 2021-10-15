@@ -29,6 +29,9 @@ module.exports = function init(parent) {
     },
   });
 
+  parent.api.getBrowser = function () {
+    return parent.api;
+  };
   parent.api.loadLocalApp('client-side');
   parent.api.loadLocalApp('charts');
 
