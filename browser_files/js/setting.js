@@ -116,14 +116,14 @@ app.controller('mainController', ($scope, $http, $timeout) => {
   };
   $scope.ad = {};
   $scope.addAd = function () {
-    $scope.setting.blocking.ad_list.push($scope.ad);
+    $scope.setting.ad_list.push($scope.ad);
     $scope.ad = {};
   };
 
   $scope.removeAd = function (_ad) {
-    $scope.setting.blocking.ad_list.forEach((ad, i) => {
-      if (ad.url === _ad.url) {
-        $scope.setting.blocking.ad_list.splice(i, 1);
+    $scope.setting.ad_list.forEach((ad, i) => {
+      if (ad.name === _ad.name) {
+        $scope.setting.ad_list.splice(i, 1);
       }
     });
   };

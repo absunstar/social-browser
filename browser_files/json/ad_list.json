@@ -1,0 +1,37 @@
+[
+    {
+        "url": "*doubleclick.net*|*googleads.*|*pubads.*|*pagead2.*|*/pagead/*|*securepubads.*|*adsbygoogle.js|*analytics.js|*googlesyndication.com*|*googletagmanager.com*|*traffer.net*|*analytics.twitter.com*|*hitsteps.com*"
+    },
+    {
+        "url": "*adservice*|*adserver*|*google-analytics.com*|*advertisements.js*|*generate_204*|*crwdcntrl.net*|*whos.amung.us*|*riverhit.com*|*hadsecs.com*|*rukoval.com*|*uprimp.com*|*in-page-push.com*"
+    },
+    {
+        "url": "*/ad/*|*_ads.js|*/ads/*|http://ads.*|https://ads.*|*ad_companion*|*/banners/*|*popads.net*|*-ad.net/*|*-ads.js*|*-ad.js*|*fuckadblock*js|*adtrue.com*|*run-syndicate.com*|*alexametrics.com*"
+    },
+    {
+        "url": "*mgid.com*|*yandex*watch.js|*advertisement.js|*pvclouds.com*.js|*js.foxpush.com*|*effectivemeasure.com*|*fdrgtt9edmej010.com*|*flagros2sii8fdbrh09.com*|*podsolnu9hi10.com*|*ptwmstc.com*"
+    },
+    {
+        "url": "*addthis.com*|*adskeeper.co*|*brightonclick.com*|*gigaonclick.com*|*padsdel.com*|*cdn4ads*|/ad.js|*bestcontentproject.top*|*popsoffer.com*|*ppfrlfe.com*|*awmserve.com*|*labeldollars.com*"
+    },
+    {
+        "url": "*adglare.net*|*clickaine.com*|*exosrv.com*|*clcknads.pro*|*contentabc.com*|*omapetor.xyz*|*n214adserv.com*|*adsco.re*|*negyuk.com*|*gnorityari.club*|*volna2babla1dh1.com*|*advertiser.com*"
+    },
+    {
+        "url": "*tsyndicate.com*|*adspyglass.com*|*realsrv.com*|*exoclick.com*|*hunt4k.com*|*amzcdn.info*|*poweredby.jads.co*|*bngpt.com*|*creamssicsite.com*|*media.aso1.net*|*buleor.com*|*lupush.com*"
+    },
+    { "url": "*inpagepush.com*|*inabsolor.com*|*viatepigan.com*|*dasimporary.club*|*graizoah.com*|*louchees.net*|*juicyads.com*|*tidint.pro*|*popcash.net*|*sailif.com*" },
+    { "url": "*abeforeign.club*|*matchintsv.club*|*l2wisd9g5d9u.com*|*providentsopport.site*|*aionfavoura.club*|*displayvertising.com*|*easyads29*" },
+    { "url": "*https://www.google.com/js/bg*.js|*tour.eplay.com*|*adtng.com*|*jwpltx.com*|*revengemeantjackpot.com*|*fluffycodepotc.com*" },
+    { "url": "*adblockchecker.js|*cdn.onesignal.com*|*traffichaus.com*|*notify.solutions*|*newrelic.com*|*eyefuneve.com*|*msgose.com*" },
+    { "url": "*cdn.engine.phn.doublepimp.com*|*services.disqus.com*|*storeacdn.com*|*histats.com*|*raupsica.net*|*playwrightglancing.com*" },
+    { "url": "*ueuodgnrhb.com*|*visariomedia.com*|*qfjherc.com*|*2cnjuh34jbpoint.com*|*d13k7prax1yi04.cloudfront.net*|*d38itq6vdv6gr9.cloudfront.net*|*d36zfztxfflmqo.cloudfront.net*" },
+    { "url": "*asewlfjqwlflkew.com*|*dlfvgndsdfsn.com*|*easy2cnjuh34jb.com*|*s0.2mdn.net*|*empflix.com*mew.js|*cdn.ftd.agency*" },
+    { "url": "*m2track.co*|*cardiwersg.com*" },
+    { "url": "*mgid.com*|*yandex*watch.js|*advertisement.js|*pvclouds.com*.js|*js.foxpush.com*|*effectivemeasure.com*|*fdrgtt9edmej010.com*|*flagros2sii8fdbrh09.com*|*podsolnu9hi10.com*" },
+    { "url": "*https://www.google.com/js/bg*.js|*tour.eplay.com*|*adtng.com*|*jwpltx.com*" },
+    { "url": "*m2track.co*" },
+    { "url": "*https://www.google.com/js/bg*.js|*tour.eplay.com*|*adtng.com*|*jwpltx.com*|*revengemeantjackpot.com*" },
+    { "url": "*adblockchecker.js|*cdn.onesignal.com*|*traffichaus.com*|*notify.solutions*|*newrelic.com*|*eyefuneve.com*" },
+    { "url": "*cdn.engine.phn.doublepimp.com*|*services.disqus.com*|*storeacdn.com*|*histats.com*|*raupsica.net*" }
+]

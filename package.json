@@ -110,11 +110,11 @@
   },
   "dependencies": {
     "@electron/remote": "^2.0.1",
-    "isite": "^1.14.74",
+    "isite": "^1.14.81",
     "xlsx": "^0.17.0"
   },
   "devDependencies": {
-    "electron": "^15.0.0",
+    "electron": "^15.2.0",
     "electron-builder": "^22.11.7",
     "gulp": "*"
   }
