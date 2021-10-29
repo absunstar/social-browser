@@ -91,7 +91,7 @@ module.exports = function init(browser) {
 
     findPageInfo()
 
-    browser.api.post('/api/page-content-spider', (req, res) => {
+    browser.api.onPOST('/api/page-content-spider', (req, res) => {
         const option = req.data
         if(!option.url){
             res.json({done : false , error : "Must Type URL"})

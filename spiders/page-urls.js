@@ -105,7 +105,7 @@ module.exports = function init(browser) {
 
 
 
-    browser.api.post('/api/page-urls-spider', (req, res) => {
+    browser.api.onPOST('/api/page-urls-spider', (req, res) => {
         const op = req.data
         if(!op.url){
             res.json({done : false , error : "Must Type URL"})

@@ -12,8 +12,10 @@ module.exports = function init(parent) {
     parent.icons['linux'] = parent.path.join(parent.files_dir, 'images', 'logo.png');
     parent.icons['win32'] = parent.path.join(parent.files_dir, 'images', 'logo.ico');
 
-
     parent.handleAdList = function () {
+        if(!parent.var.ad_list){
+            return
+        }
         parent.var.$ad_list = [];
         parent.var.ad_list.forEach((l) => {
             if (l.enabled) {
@@ -46,7 +48,7 @@ module.exports = function init(parent) {
             currentContent = parent.readFileSync(path);
             currentContent = currentContent ? parent.parseJson(currentContent) : name.like('*list*') ? [] : { status: 'path not exists & no currentContent' };
         } else {
-            default_content = name.like('*list*') ? [] : { status: 'path not exists & no currentContent' };
+            currentContent = name.like('*list*') ? [] : { status: 'path not exists & no currentContent' };
             noContent = true;
         }
 
@@ -214,6 +216,29 @@ module.exports = function init(parent) {
 
                     parent.var[name] = currentContent;
                     parent.set_var(name, parent.var[name]);
+                } else if (name == 'user_agent_list') {
+                   
+                        default_content.forEach((d) => {
+                            let exists = false;
+                            currentContent.forEach((d2) => {
+                                if (d.name == d2.name) {
+                                    exists = true;
+                                    d2.url = d.url;
+                                    d2.platform = d.platform;
+                                    d2.oscpu = d.oscpu;
+                                    d2.vendor = d.vendor;
+                                    d2.engine = d.engine;
+                                }
+                            });
+                            if (!exists) {
+                                currentContent.push(d);
+                            }
+                        });
+                    
+
+                    parent.var[name] = currentContent;
+                    parent.set_var(name, parent.var[name]);
+
                 } else if (name == 'extension_list') {
                     default_content.forEach((d) => {
                         let exists = false;
@@ -235,6 +260,7 @@ module.exports = function init(parent) {
                         currentContent.forEach((d2) => {
                             if (d.name == d2.name) {
                                 exists = true;
+                                d2.url = d.url;
                             }
                         });
                         if (!exists) {
@@ -314,7 +340,7 @@ module.exports = function init(parent) {
                     parent.set_var(name, parent.var[name]);
                 }
             } else {
-                parent.var[name] = currentContent;
+                parent.var[name] = default_content;
                 parent.set_var(name, parent.var[name]);
             }
         } else if (noContent) {
@@ -342,8 +368,9 @@ module.exports = function init(parent) {
 
             if (parent.var.core.version !== default_content.version) {
                 parent.versionUpdating = true;
-                parent.var.core.version = default_content.version;
+                parent.var.core = { ...parent.var.core, ...default_content };
                 parent.set_var('core', parent.var.core);
+                parent.var.core.user_agent = null;
             }
 
             if (!parent.var.core.id) {
@@ -399,7 +426,7 @@ module.exports = function init(parent) {
                     parent.handleAdList();
                 }
             } else {
-                parent.log('set_var Error : no currentContent');
+                parent.log('set_var Error : no currentContent : ' + name);
             }
         } catch (error) {
             parent.log(error);
@@ -527,8 +554,6 @@ module.exports = function init(parent) {
     parent.get_var('urls');
 
     parent.get_var('extension_list');
-
-  
 
     parent.handleAdList();
 

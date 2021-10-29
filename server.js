@@ -125,19 +125,6 @@ if (browser.isAutoStartup) {
   });
 }
 
-setTimeout(() => {
-  browser.createChildProcess({
-    url: browser.url.format({
-      pathname: browser.path.join(browser.dir, 'updates', 'index.html'),
-      protocol: 'file:',
-      slashes: true,
-    }),
-    windowType: 'updates',
-    show: false,
-    trusted: true,
-    partition : 'persist:update'
-  });
-}, 1000 * 60 * 5);
 
 browser.electron.Menu.setApplicationMenu(null);
 browser.electron.app.setAsDefaultProtocolClient('browser');

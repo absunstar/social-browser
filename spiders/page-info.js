@@ -77,7 +77,7 @@ module.exports = function init(browser) {
     });
   }
 
-  browser.api.post('/api/page-info-spider', (req, res) => {
+  browser.api.onPOST('/api/page-info-spider', (req, res) => {
     if (req.data.url) {
       tryFindPageInfo(req.data, res);
     } else {

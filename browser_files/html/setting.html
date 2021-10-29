@@ -841,15 +841,15 @@
                                                     <div class="row">
                                                         <table class="table">
                                                             <tr>
-                                                                <th>Engine</th>
                                                                 <th>Name</th>
+                                                                <th>Engine</th>
                                                                 <th>vendor</th>
                                                                 <th>oscpu</th>
                                                                 <th>platform</th>
                                                             </tr>
                                                             <tr>
-                                                                <td><i-list primary="name" class="" items="setting.privacy.browserEnginList" label="Engine" ng-model="_se.engine"></i-list></td>
                                                                 <td><input class="" type="text" ng-model="_se.name" /></td>
+                                                                <td><i-list primary="name" class="" items="setting.privacy.browserEnginList" label="Engine" ng-model="_se.engine"></i-list></td>
                                                                 <td><input class="" type="text" ng-model="_se.vendor" /></td>
                                                                 <td><input class="" type="text" ng-model="_se.oscpu" /></td>
                                                                 <td><input class="" type="text" ng-model="_se.platform" /></td>
@@ -1131,7 +1131,6 @@
                                 <td>{{$index + 1}}<i-button type="remove default" ng-click="removeAd(_ad)" label="Remove"></i-button></td>
                                 <td class="center">
                                     <i-control ng-model="_ad.name"></i-control>
-                                    <br />
                                     <i-checkbox ng-model="_ad.enabled" label="Enable"></i-checkbox>
                                 </td>
                                 <td>

@@ -1,15 +1,13 @@
 {
     "port":60080,
     "enabled": true,
-    "version": "2021.10.01",
+    "version": "2021.11.01",
     "full_version": true,
     "key" : "free key",
-    "session": null,
-    "password": "",
     "brand": "Social Browser",
     "home_page": "https://www.google.com",
     "default_page": "https://www.google.com",
     "max_tabs": 20,
-    "windows_user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.71 Safari/537.36 Edg/94.0.992.38",
-    "linux_user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.71 Safari/537.36 Edg/94.0.992.38"
+    "windows_user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36 Edg/95.0.1020.30",
+    "linux_user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36 Edg/95.0.1020.30"
 }
