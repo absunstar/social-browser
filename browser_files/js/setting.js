@@ -457,7 +457,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
           }
         });
 
-        if ($scope.setting.core.password.length > 0) {
+        if ($scope.setting.core.password) {
           $scope.knowPassword = false;
           $scope.password = '';
         } else {
@@ -563,7 +563,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     $scope.busy = false;
     $scope.setting_busy = false;
 
-    if ($scope.setting.core.password.length > 0) {
+    if ($scope.setting.core.password) {
       $scope.knowPassword = false;
       $scope.password = '';
     } else {

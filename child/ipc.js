@@ -274,6 +274,7 @@ module.exports = function init(child) {
                     referrer: data.referrer,
                     partition: data.partition || child.coreData.var.core.session.name,
                     user_name: data.user_name || child.coreData.var.core.session.display,
+                    trusted : data.trusted
                 });
             }
         } else if (data.name == '[show-browser-setting]') {
