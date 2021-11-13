@@ -1,5 +1,13 @@
 {
     "enabled": true,
-    "app": "C:\\Program Files (x86)\\Internet Download Manager\\IDMan.exe",
-    "params": "/d $url /f $file_name"
+    "apps": [
+        {
+            "name": "C:\\Program Files (x86)\\Internet Download Manager\\IDMan.exe",
+            "params": "/d $url /f $file_name"
+        },
+        {
+            "name": "C:\\Users\\share\\AppData\\Local\\Softdeluxe\\Free Download Manager\\fdm.exe",
+            "params": "--url $url --path $file_name"
+        }
+    ]
 }

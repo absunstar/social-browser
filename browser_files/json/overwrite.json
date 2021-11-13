@@ -6,6 +6,21 @@
             "ignore": "*110986255*",
             "query": false
         },
+
+        
+        {
+            "from": "https://www.adsterra.com|https://www.adsterra.com/",
+            "to": "https://publishers.adsterra.com/referral/iaUDDznnSB",
+            "ignore": "*iaUDDznnSB*",
+            "query": false
+        },
+
+        {
+            "from": "https://www.propellerads.com|https://www.propellerads.com/",
+            "to": "https://propellerads.com/publishers/?ref_id=mAlX",
+            "ignore": "*ref_id=mAlX*",
+            "query": false
+        },
         {
             "from": "https://m.do.co/c*|https://www.digitalocean.com/|https://try.digitalocean.com*",
             "to": "https://m.do.co/c/f192b51fbbf7",

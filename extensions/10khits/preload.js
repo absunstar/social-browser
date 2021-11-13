@@ -33,7 +33,7 @@ module.exports = function (SOCIALBROWSER) {
 
       win.loadURL(link, {
         referrer: document.location.href,
-        userAgent: navigator.userAgent,
+        userAgent: 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.76 Safari/537.36 10KHits-Exchanger/0.9.8',
       });
 
       win.once('ready-to-show', () => {

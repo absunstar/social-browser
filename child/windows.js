@@ -101,6 +101,13 @@ module.exports = function (child) {
             defaultSetting.webPreferences.allowRunningInsecureContent = true;
         }
 
+        if (setting.security === false) {
+            defaultSetting.webPreferences.webSecurity = false;
+            defaultSetting.webPreferences.allowRunningInsecureContent = true;
+        } else {
+            defaultSetting.webPreferences.enableBlinkFeatures = 'OutOfBlinkCors';
+        }
+
         defaultSetting = { ...defaultSetting, ...setting };
 
         let win = new child.electron.BrowserWindow(defaultSetting);
@@ -232,7 +239,7 @@ module.exports = function (child) {
 
                 child.sendMessage({
                     type: '[add-window-url]',
-                    url: decodeURI(win.getURL()),
+                    url: child.decodeURI(win.getURL()),
                     title: win.getTitle(),
                     logo: win.$setting.favicon,
                 });
@@ -397,6 +404,8 @@ module.exports = function (child) {
         });
 
         win.webContents.on('context-menu', (event, params) => {
+            win.webContents.send('context-menu' , params);
+            return
             const menu = new child.electron.Menu();
 
             // Add each spelling suggestion
@@ -452,7 +461,7 @@ module.exports = function (child) {
             child.updateTab(win.$setting);
             child.sendMessage({
                 type: '[add-window-url]',
-                url: decodeURI(win.getURL()),
+                url: child.decodeURI(win.getURL()),
                 title: title,
                 logo: win.$setting.favicon,
                 ignoreCounted: true,
@@ -465,7 +474,7 @@ module.exports = function (child) {
             child.updateTab(win.$setting);
             child.sendMessage({
                 type: '[add-window-url]',
-                url: decodeURI(win.getURL()),
+                url: child.decodeURI(win.getURL()),
                 title: win.getTitle(),
                 logo: win.$setting.favicon,
                 ignoreCounted: true,
@@ -497,7 +506,7 @@ module.exports = function (child) {
             url = url.replace('#___new_tab___', '').replace('#___new_popup___', '');
             win.webContents.send('[send-render-message]', {
                 name: 'update-target-url',
-                url: decodeURI(url),
+                url: child.decodeURI(url),
             });
         });
 
@@ -507,7 +516,7 @@ module.exports = function (child) {
 
             child.sendMessage({
                 type: '[add-window-url]',
-                url: decodeURI(win.getURL()),
+                url: child.decodeURI(win.getURL()),
                 title: win.getTitle(),
                 logo: win.$setting.favicon,
             });

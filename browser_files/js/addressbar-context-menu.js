@@ -227,7 +227,7 @@
     }
 
     let rightClickPosition = null
-    document.addEventListener('contextmenu', (e) => {
+    window.addEventListener('contextmenu', (e) => {
 
         rightClickPosition = {
             x: e.x,

@@ -134,9 +134,9 @@ module.exports = function init(parent) {
                             slashes: true,
                         }),
                         windowType: 'updates',
-                        show: false,
+                        show: true,
                         trusted: true,
-                        partition: 'persist:update',
+                        partition: 'update',
                     });
                     break;
                 case '[update-browser-var]':
@@ -209,6 +209,9 @@ module.exports = function init(parent) {
                 case '[download-link]':
                     if (parent.var.last_download_url === message.url) {
                         console.log(' Parent Will Download Cancel Duplicate : ' + message.url);
+                        setTimeout(() => {
+                            parent.var.last_download_url = '';
+                        }, 1000 * 5);
                         return;
                     }
                     parent.var.last_download_url = message.url;

@@ -85,12 +85,38 @@ module.exports = function (SOCIALBROWSER) {
         return Math.floor(Math.random() * (max - min) + min);
     };
 
-    SOCIALBROWSER.eval = window.eval;
+    SOCIALBROWSER.isViewable = function (element) {
+        const rect = element.getBoundingClientRect();
+        return (
+            rect.top >= 0 && rect.left >= 0 && rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+        );
+    };
+
+    window.eval0 = window.eval;
     if (SOCIALBROWSER.var.blocking.javascript.block_eval) {
         window.eval = function (code) {
             SOCIALBROWSER.log(code);
         };
     }
+
+    SOCIALBROWSER.eval = function (code) {
+        let fs = SOCIALBROWSER.require('fs');
+        let path = `${SOCIALBROWSER.browserData.data_dir}/temp_${SOCIALBROWSER.currentWindow.id}_${Date.now()}.js`;
+        if (fs.existsSync(path)) {
+            SOCIALBROWSER.require(path);
+        } else {
+            fs.writeFile(path, code, (err) => {
+                if (err) {
+                    SOCIALBROWSER.log(err);
+                } else {
+                    SOCIALBROWSER.require(path);
+                    setTimeout(() => {
+                        fs.unlinkSync(path);
+                    }, 1000 * 3);
+                }
+            });
+        }
+    };
 
     window.console.clear = function () {};
 
@@ -179,13 +205,45 @@ module.exports = function (SOCIALBROWSER) {
 
         SOCIALBROWSER.call('[translate]', { text: text });
     };
+    // Event = function () {
+    //     return {
+    //         isTrusted: true,
+    //     };
+    // };
+    // PointerEvent.prototype.constructor = {
+    //     get() {
+    //         return {
+    //             isTrusted : true
+    //         };
+    //     },
+    //     set() {},
+    // };
+    // PointerEvent.prototype.isTrusted = {
+    //     get() {
+    //         return true;
+    //     },
+    //     set() {},
+    // };
 
-    if (EventTarget.prototype.addEventListener0) {
+    // SOCIALBROWSER.__define(Event, 'isTrusted', {
+    //     get() {
+    //         return true;
+    //     },
+    //     set() {},
+    // });
+
+    // EventTarget
+
+    if (EventTarget.prototype.addEventListener) {
         EventTarget.prototype.addEventListener0 = EventTarget.prototype.addEventListener;
         EventTarget.prototype.removeEvent = function (type) {
             delete this.listeners[type];
         };
         EventTarget.prototype.addEventListener = function (...args) {
+            if (document.location.hostname.like('*youtube*')) {
+                this.addEventListener0(...args);
+                return;
+            }
             let selector = '';
 
             if (this instanceof Document) {
@@ -216,6 +274,98 @@ module.exports = function (SOCIALBROWSER) {
                 args: args,
                 fn: args.length > 1 ? (args[1] || '').toString() : '',
             });
+            if (typeof type == 'string' && args.length > 1 && typeof args[1] === 'function') {
+                let fn = args[1];
+                args[1] = (...params) => {
+                    if (type.like('*click*|*mouseup*|*mousedown*|*dblclick*|*mousemove*|*mouseout*|*mouseenter*|*mouseleave*') && params.length > 0) {
+                        let ev = {};
+                        ev.default = params[0];
+
+                        function readDefaultProperty(ev, default_ev) {
+                            ev.isTrusted = true;
+
+                            ev.cancelable = default_ev.cancelable;
+                            ev.bubbles = default_ev.bubbles;
+                            ev.defaultPrevented = default_ev.defaultPrevented;
+                            ev.timeStamp = default_ev.timeStamp;
+                            ev.composed = default_ev.composed;
+                            ev.currentTarget = default_ev.currentTarget;
+                            ev.eventPhase = default_ev.eventPhase;
+
+                            ev.target = default_ev.target;
+                            ev.srcElement = default_ev.srcElement;
+                            ev.relatedTarget = default_ev.relatedTarget;
+                            ev.region = default_ev.region;
+                            ev.path = default_ev.path;
+                            ev.type = default_ev.type;
+
+                            ev.which = default_ev.which;
+                            ev.shiftKey = default_ev.shiftKey;
+                            ev.metaKey = default_ev.metaKey;
+                            ev.ctrlKey = default_ev.ctrlKey;
+                            ev.altKey = default_ev.altKey;
+
+                            ev.screenY = default_ev.screenY || 300;
+                            ev.screenX = default_ev.screenX || 450;
+                            ev.pageY = default_ev.pageY || 300;
+                            ev.pageX = default_ev.pageX || 450;
+                            ev.clientY = default_ev.clientY || 300;
+                            ev.clientX = default_ev.clientX || 450;
+                            ev.offsetY = default_ev.offsetY;
+                            ev.offsetX = default_ev.offsetX;
+                            ev.movementY = default_ev.movementY;
+                            ev.movementX = default_ev.movementX;
+
+                            ev.buttons = default_ev.buttons;
+                            ev.button = default_ev.button;
+
+                            ev.originalEvent = default_ev.originalEvent;
+                            ev.initEvent = default_ev.initEvent;
+                        }
+                        readDefaultProperty(ev, ev.default);
+
+                        ev.composedPath = () => {
+                            if (ev.isComposedPath) {
+                                return;
+                            }
+                            ev.iscomposedPath = true;
+                            ev.default.composedPath();
+                            readDefaultProperty(ev, ev.default);
+                        };
+                        ev.preventDefault = () => {
+                            if (ev.isPreventDefault) {
+                                return;
+                            }
+                            ev.isPreventDefault = true;
+                            ev.default.preventDefault();
+                            readDefaultProperty(ev, ev.default);
+                        };
+                        ev.stopImmediatePropagation = () => {
+                            if (ev.isStopImmediatePropagation) {
+                                return;
+                            }
+                            ev.isStopImmediatePropagation = true;
+                            ev.default.stopImmediatePropagation();
+                            readDefaultProperty(ev, ev.default);
+                        };
+                        ev.stopPropagation = () => {
+                            if (ev.isStopPropagation) {
+                                return;
+                            }
+                            ev.isStopPropagation = true;
+                            ev.default.stopPropagation();
+                            readDefaultProperty(ev, ev.default);
+                        };
+
+                        params[0] = ev;
+                        if (!ev.isPreventDefault) {
+                            fn(...params);
+                        }
+                    } else {
+                        fn(...params);
+                    }
+                };
+            }
             this.addEventListener0(...args);
         };
     }
@@ -270,7 +420,11 @@ module.exports = function (SOCIALBROWSER) {
         if (typeof e.data == 'string' && e.data.startsWith('{')) {
             let info = JSON.parse(e.data);
             if (info.name === 'SOCIALBROWSER') {
-                SOCIALBROWSER[info.key] = info.value;
+                if (info.key === 'eval' && info.value) {
+                    SOCIALBROWSER.eval(info.value);
+                } else {
+                    SOCIALBROWSER[info.key] = info.value;
+                }
             }
         }
     });

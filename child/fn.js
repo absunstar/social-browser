@@ -79,6 +79,14 @@ module.exports = function (child) {
     }
   };
 
+  child.decodeURI = (value) => {
+    try {
+      return decodeURI(value);
+    } catch (error) {
+      return value;
+    }
+  };
+
   child.decodeURIComponent = (value) => {
     try {
       return decodeURIComponent(value);

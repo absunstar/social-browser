@@ -49,11 +49,31 @@ module.exports = function init(child) {
     });
 
     child.electron.ipcMain.on('[fetch][json]', (e, options) => {
+        options.body = options.body || options.data;
+        if (options.body && typeof options.body != 'string') {
+            options.body = JSON.stringify(options.body);
+        }
         child
             .fetch(options.url, {
+                mode: 'cors',
                 method: options.method || 'get',
-                headers: options.headers || { 'Content-Type': 'application/json' },
+                headers: options.headers || {
+                    'Content-Type': 'application/json',
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36',
+                },
                 body: options.body,
+                redirect: options.redirect || 'follow',
+                agent: function (_parsedURL) {
+                    if (_parsedURL.protocol == 'http:') {
+                        return new child.http.Agent({
+                            keepAlive: true,
+                        });
+                    } else {
+                        return new child.https.Agent({
+                            keepAlive: true,
+                        });
+                    }
+                },
             })
             .then((res) => res.json())
             .then((data) => {
@@ -65,6 +85,7 @@ module.exports = function init(child) {
             })
             .catch((err) => {
                 child.log('[fetch][json]', err);
+                child.log(options);
             });
     });
 
@@ -274,7 +295,8 @@ module.exports = function init(child) {
                     referrer: data.referrer,
                     partition: data.partition || child.coreData.var.core.session.name,
                     user_name: data.user_name || child.coreData.var.core.session.display,
-                    trusted : data.trusted
+                    trusted: data.trusted,
+                    security: data.security,
                 });
             }
         } else if (data.name == '[show-browser-setting]') {

@@ -388,7 +388,10 @@ module.exports = function (parent) {
 
             if (a_orgin) {
                 details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = [a_orgin[0]];
+            } else {
+                details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = details['referer'] ? [details['referer']] : ['*'];
             }
+
             if (a_expose) {
                 details.responseHeaders['Access-Control-Expose-Headers'.toLowerCase()] = a_expose;
             }
@@ -434,13 +437,16 @@ module.exports = function (parent) {
             if (!parent.var.blocking.permissions) {
                 return false;
             }
-            if (webContents.getURL().like('http://127.0.0.1*|https://127.0.0.1*')) {
-                return true;
-            } else {
-                let allow = parent.var.blocking.permissions['allow_' + permission.replace('-', '_')] || false;
-                parent.log(` \n  <<< setPermissionCheckHandler ${permission} ( ${allow} )  ${webContents.getURL()} \n `);
-                return allow;
+            if (webContents) {
+                if (webContents.getURL().like('http://127.0.0.1*|https://127.0.0.1*')) {
+                    return true;
+                } else {
+                    let allow = parent.var.blocking.permissions['allow_' + permission.replace('-', '_')] || false;
+                    parent.log(` \n  <<< setPermissionCheckHandler ${permission} ( ${allow} )  ${webContents.getURL()} \n `);
+                    return allow;
+                }
             }
+            return false;
         });
         ss.on('will-download', (event, item, webContents) => {
             let dl = {
@@ -458,15 +464,17 @@ module.exports = function (parent) {
             };
 
             if (parent.var.downloader.enabled && !item.getURL().like('*127.0.0.1*') && !item.getURL().like('blob*')) {
-                if (parent.api.isFileExistsSync(parent.var.downloader.app)) {
-                    event.preventDefault();
-                    let params = parent.var.downloader.params.split(' ');
-                    for (const i in params) {
-                        params[i] = params[i].replace('$url', decodeURIComponent(dl.url)).replace('$file_name', dl.name);
+                parent.var.downloader.apps.forEach((app) => {
+                    if (app.name && parent.api.isFileExistsSync(app.name)) {
+                        event.preventDefault();
+                        let params = app.params.split(' ');
+                        for (const i in params) {
+                            params[i] = params[i].replace('$url', decodeURIComponent(dl.url)).replace('$file_name', dl.name);
+                        }
+                        parent.exe(app.name, params);
+                        return;
                     }
-                    parent.exe(parent.var.downloader.app, params);
-                    return;
-                }
+                });
             }
 
             parent.var.download_list.push(dl);

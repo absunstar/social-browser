@@ -1,5 +1,5 @@
 module.exports = function init(parent) {
-    parent.api = require('isite')({
+    parent.api = require('../../isite')({
         port: [60080, 60000],
         name: 'API',
         dir: parent.files_dir + '',
@@ -95,7 +95,7 @@ module.exports = function init(parent) {
         });
     });
 
-    parent.api.onPOST(['/printing', '/print'], (req, res) => {
+    parent.api.onPOST({ name: ['/printing', '/print'], public: true }, (req, res) => {
         let id = new Date().getTime();
 
         let print_options = {
@@ -144,7 +144,7 @@ module.exports = function init(parent) {
             print_options.deviceName = req.data.printer || 'Microsoft Print to PDF';
         }
 
-        parent.content_list.push({
+        let content = {
             id: id,
             data: req.data.html,
             type: req.data.type,
@@ -152,10 +152,36 @@ module.exports = function init(parent) {
             url: req.data.href,
             win_id: req.data.win_id,
             options: { ...print_options, ...req.data.options },
-        });
+            index: parent.content_list.length,
+        };
+
+        parent.content_list.push(content);
 
         if (true) {
-            parent.run([parent.dir + '/printing/index.js']);
+            let printing = parent.run(['--index=' + content.index, '--dir=' + parent.dir, parent.dir + '/printing/index.js']);
+            printing.stdout.on('data', function (data) {
+                parent.log(` [ printing ${printing.pid} ] Log \n      ${data}`);
+            });
+
+            printing.stderr.on('data', (data) => {
+                parent.log(` [ printing ${printing.pid} ] Error \n    ${data}`);
+            });
+
+            printing.on('error', (err) => {
+                parent.log(` [ printing ${printing.pid} ] Error \n ${err}`);
+            });
+            printing.on('disconnect', (err) => {
+                parent.log(` [ printing ${printing.pid} ] disconnect`);
+            });
+            printing.on('spawn', (err) => {
+                parent.log(` [ printing ${printing.pid} ] spawn`);
+            });
+            printing.on('message', (msg) => {
+                parent.log(msg);
+            });
+            printing.on('close', (code, signal) => {
+                parent.log(` [printing ${printing.pid} ] close with code ( ${code} ) and signal ( ${signal} )`);
+            });
         } else {
             let w = new parent.electron.BrowserWindow({
                 show: false,
@@ -174,6 +200,7 @@ module.exports = function init(parent) {
                     nodeIntegrationInSubFrames: false,
                     nodeIntegrationInWorker: false,
                     experimentalFeatures: false,
+                    sandbox: false,
                     webSecurity: false,
                     allowRunningInsecureContent: true,
                     plugins: true,
@@ -186,12 +213,12 @@ module.exports = function init(parent) {
 
         res.json({
             done: true,
-            data: req.data.html,
+            data: content,
         });
     });
 
-    parent.api.onGET('/data-content/last', (req, res) => {
-        let pdf = parent.content_list[parent.content_list.length - 1];
+    parent.api.onGET('/data-content', (req, res) => {
+        let pdf = parent.content_list[req.query.index];
         if (pdf) {
             if (pdf.type == 'html') {
                 res.set('Content-Type', 'text/html; charset=utf-8');
@@ -203,13 +230,15 @@ module.exports = function init(parent) {
         } else {
             res.json({
                 error: 'pdf id not exists',
+                query: req.query,
+                index: req.query.index,
                 length: parent.content_list.length,
             });
         }
     });
 
     parent.api.onPOST('/data-content/details', (req, res) => {
-        let content = parent.content_list[parent.content_list.length - 1] || {};
+        let content = parent.content_list[req.query.index] || {};
         res.json({
             options: content.options,
         });

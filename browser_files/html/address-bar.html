@@ -1,271 +1,277 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="myApp">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Address-Bar</title>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Address-Bar</title>
 
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/layout.css" />
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/fonts.css" />
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/modal.css" />
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/form.css" />
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/color.css" />
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/effect.css" />
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/table.css" />
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/theme.css" />
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/address-bar.css" />
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/social-tabs-custom-theme2.css" />
-    <style>
-      body {
-        font-family: 'Cairo';
-      }
-      .btn {
-        font-size: 16px;
-        border-radius: 5px;
-        background: #2196f3;
-        color: #ffffff;
-        width: 80%;
-        display: inline-block;
-      }
-      .address-input {
-        width: 95% !important;
-      }
-      .float-right {
-        float: right;
-      }
-    </style>
-  </head>
+        <link rel="stylesheet" href="http://127.0.0.1:60080/css/layout.css" />
+        <link rel="stylesheet" href="http://127.0.0.1:60080/css/fonts.css" />
+        <link rel="stylesheet" href="http://127.0.0.1:60080/css/modal.css" />
+        <link rel="stylesheet" href="http://127.0.0.1:60080/css/form.css" />
+        <link rel="stylesheet" href="http://127.0.0.1:60080/css/color.css" />
+        <link rel="stylesheet" href="http://127.0.0.1:60080/css/effect.css" />
+        <link rel="stylesheet" href="http://127.0.0.1:60080/css/table.css" />
+        <link rel="stylesheet" href="http://127.0.0.1:60080/css/theme.css" />
+        <link rel="stylesheet" href="http://127.0.0.1:60080/css/address-bar.css" />
+        <link rel="stylesheet" href="http://127.0.0.1:60080/css/social-tabs-custom-theme2.css" />
+        <style>
+            body {
+                font-family: 'Cairo';
+            }
+            .btn {
+                font-size: 16px;
+                border-radius: 5px;
+                background: #2196f3;
+                color: #ffffff;
+                width: 80%;
+                display: inline-block;
+            }
+            .address-input {
+                width: 95% !important;
+            }
+            .float-right {
+                float: right;
+            }
+        </style>
+    </head>
 
-  <body ng-controller="mainController">
-    <div class="address-input">
-      <input id="addressbar_id" onclick="SOCIALBROWSER.currentWindow.show()" ng-change="loadUrls(url)" ng-keydown="addressbarKeydown($event)" ng-model="url" type="text" />
-    </div>
+    <body ng-controller="mainController">
+        <div class="address-input">
+            <input id="addressbar_id" onclick="SOCIALBROWSER.currentWindow.show()" ng-change="loadUrls(url)" ng-keydown="addressbarKeydown($event)" ng-model="url" type="text" />
+        </div>
 
-    <div class="url-list">
-      <ul>
-        <li ng-click="goUrl(u.url);$event.stopPropagation()" ng-class="{'selected' : u.selected}" href="{{u.url}}" ng-repeat="u in url_list2 track by $index">
-          <a ng-click="goUrl(u.url);$event.stopPropagation()">
-            <img ng-src="{{u.logo2 || u.logo || u.favicon}}" onerror="this.src='http://127.0.0.1:60080/images/no.jpg'" />
-            <span class="bold green" ng-click="goUrl(u.url);$event.stopPropagation()"> ( {{u.count}} ) </span>
-            <span class="blue" ng-click="goUrl(u.url);$event.stopPropagation()"> {{u.url | limitTo:70}} </span>
-            <span class="black float-right" ng-click="goUrl(u.url);$event.stopPropagation()"> {{u.title | limitTo:70}} </span>
-          </a>
-        </li>
-      </ul>
-      <br />
-    </div>
+        <div class="url-list">
+            <ul>
+                <li ng-click="goUrl(u.url);$event.stopPropagation()" ng-class="{'selected' : u.selected}" href="{{u.url}}" ng-repeat="u in url_list2 track by $index">
+                    <a ng-click="goUrl(u.url);$event.stopPropagation()">
+                        <img ng-src="{{u.logo2 || u.logo || u.favicon}}" onerror="this.src='http://127.0.0.1:60080/images/no.jpg'" />
+                        <span class="bold green" ng-click="goUrl(u.url);$event.stopPropagation()"> ( {{u.count}} ) </span>
+                        <span class="blue" ng-click="goUrl(u.url);$event.stopPropagation()"> {{u.url | limitTo:70}} </span>
+                        <span class="black float-right" ng-click="goUrl(u.url);$event.stopPropagation()"> {{u.title | limitTo:70}} </span>
+                    </a>
+                </li>
+            </ul>
+            <br />
+        </div>
 
-    <div class="url-list-actions center" ng-show="url_list.length > 0">
-      <span class="btn" onclick="event.preventDefault();event.stopPropagation();" ng-click="loadUrls(url , 'count')">By Count </span>
+        <div class="url-list-actions center" ng-show="url_list.length > 0">
+            <span class="btn" onclick="event.preventDefault();event.stopPropagation();" ng-click="loadUrls(url , 'count')">By Count </span>
 
-      <span class="btn" onclick="event.preventDefault();event.stopPropagation();" ng-click="loadUrls(url, 'date') ">By Date </span>
+            <span class="btn" onclick="event.preventDefault();event.stopPropagation();" ng-click="loadUrls(url, 'date') ">By Date </span>
 
-      <span class="btn" onclick="event.preventDefault();event.stopPropagation();" ng-click="loadUrls(url, 'url') ">By URL </span>
-      <br />
-      <br />
-      <br />
-      <br />
-      <span class="btn" onclick="event.preventDefault();event.stopPropagation();" ng-click="loadUrls(url, 'bookmark') "> Show Bookmarks </span>
-    </div>
+            <span class="btn" onclick="event.preventDefault();event.stopPropagation();" ng-click="loadUrls(url, 'url') ">By URL </span>
+            <br />
+            <br />
+            <br />
+            <br />
+            <span class="btn" onclick="event.preventDefault();event.stopPropagation();" ng-click="loadUrls(url, 'bookmark') "> Show Bookmarks </span>
+        </div>
 
-    <script src="http://127.0.0.1:60080/js/an.min.js"></script>
+        <script src="http://127.0.0.1:60080/js/an.min.js"></script>
 
-    <script>
-      if (typeof module === 'object') {
-        window.module = module;
-        module = undefined;
-      }
-    </script>
+        <script>
+            if (typeof module === 'object') {
+                window.module = module;
+                module = undefined;
+            }
+        </script>
 
-    <script src="http://127.0.0.1:60080/js/client.js"></script>
-    <script src="http://127.0.0.1:60080/js/jquery.js"></script>
+        <script src="http://127.0.0.1:60080/js/client.js"></script>
+        <script src="http://127.0.0.1:60080/js/jquery.js"></script>
 
-    <script>
-      if (window.module) module = window.module;
-    </script>
+        <script>
+            if (window.module) module = window.module;
+        </script>
 
-    <script>
-      // if (SOCIALBROWSER.var.core.id.like('*test*')) {
-      //   SOCIALBROWSER.menu_list.push({
-      //     label: 'inspect Element',
-      //     click() {
-      //       SOCIALBROWSER.currentWindow.webContents.openDevTools({
-      //         mode: 'detach',
-      //       });
-      //       SOCIALBROWSER.currentWindow.webContents.inspectElement(SOCIALBROWSER.rightClickPosition.x, SOCIALBROWSER.rightClickPosition.y);
-      //     },
-      //   });
+        <script>
+            // if (SOCIALBROWSER.var.core.id.like('*test*')) {
+            //   SOCIALBROWSER.menu_list.push({
+            //     label: 'inspect Element',
+            //     click() {
+            //       SOCIALBROWSER.currentWindow.webContents.openDevTools({
+            //         mode: 'detach',
+            //       });
+            //       SOCIALBROWSER.currentWindow.webContents.inspectElement(SOCIALBROWSER.rightClickPosition.x, SOCIALBROWSER.rightClickPosition.y);
+            //     },
+            //   });
 
-      //   SOCIALBROWSER.menu_list.push({
-      //     label: '[show-window-dev-tools]',
-      //     click() {
-      //       SOCIALBROWSER.currentWindow.webContents.openDevTools({
-      //         mode: 'detach',
-      //       });
-      //     },
-      //   });
-      // }
+            //   SOCIALBROWSER.menu_list.push({
+            //     label: '[show-window-dev-tools]',
+            //     click() {
+            //       SOCIALBROWSER.currentWindow.webContents.openDevTools({
+            //         mode: 'detach',
+            //       });
+            //     },
+            //   });
+            // }
 
-      var app = angular.module('myApp', []);
+            var app = angular.module('myApp', []);
 
-      var scope = function () {
-        return angular.element(document.querySelector('body')).scope();
-      };
+            var scope = function () {
+                return angular.element(document.querySelector('body')).scope();
+            };
 
-      SOCIALBROWSER.on('set-text-url', (e, data) => {
-        scope().url = data.url;
-        scope().tab_id = data.tab_id;
-        scope().loadUrls(scope().url, 'count');
-
-        setTimeout(() => {
-          $('#addressbar_id').select();
-          $('#addressbar_id').focus();
-        }, 500);
-      });
-
-      app.controller('mainController', ($scope, $http, $timeout) => {
-        SOCIALBROWSER.onEvent('updated', (p) => {
-          if (p.name == 'urls') {
-            $scope.url_list = SOCIALBROWSER.var.urls;
-            $scope.$applyAsync();
-          }
-        });
-
-        $scope.url_list = [];
-        $scope.url_list2 = [];
-        $scope.url_index = -1;
-        $scope.url0 = '';
-        $scope.sort = 'count';
-
-        $scope.loadUrls = function (url, sort) {
-          if (url) {
-            $scope.url = url;
-          }
-
-          $scope.url_list = SOCIALBROWSER.var.urls || [];
-
-          $scope.url_list2 = [];
-          $scope.url_index = -1;
-          $scope.sort = sort || $scope.sort;
-
-          if ($scope.sort === 'count') {
-            $scope.url_list.sort((a, b) => {
-              return b.count - a.count;
-            });
-          } else if ($scope.sort === 'date') {
-            $scope.url_list.sort((a, b) => {
-              return b.last_visit - a.last_visit;
-            });
-          } else if ($scope.sort === 'url') {
-            $scope.url_list.sort((a, b) => {
-              if (a.url < b.url) {
-                return -1;
-              } else if (a.url > b.url) {
-                return 1;
-              } else {
-                return 0;
+            SOCIALBROWSER.on('set-text-url', (e, data) => {
+              try {
+                scope().url = decodeURI(data.url);
+              } catch (error) {
+                scope().url = data.url;
               }
+                scope().tab_id = data.tab_id;
+                scope().loadUrls(scope().url, 'count');
+
+                setTimeout(() => {
+                    $('#addressbar_id').select();
+                    $('#addressbar_id').focus();
+                }, 500);
             });
-          }
 
-          let word = $scope.url;
+            app.controller('mainController', ($scope, $http, $timeout) => {
+                SOCIALBROWSER.onEvent('updated', (p) => {
+                    if (p.name == 'urls') {
+                        $scope.url_list = SOCIALBROWSER.var.urls;
+                        $scope.$applyAsync();
+                    }
+                });
 
-          if ($scope.sort === 'bookmark') {
-            SOCIALBROWSER.var.bookmarks.forEach((b) => {
-              $scope.url_list2.push(b);
+                $scope.url_list = [];
+                $scope.url_list2 = [];
+                $scope.url_index = -1;
+                $scope.url0 = '';
+                $scope.sort = 'count';
+
+                $scope.loadUrls = function (url, sort) {
+                    if (url) {
+                        $scope.url = url;
+                    }
+
+                    $scope.url_list = SOCIALBROWSER.var.urls || [];
+
+                    $scope.url_list2 = [];
+                    $scope.url_index = -1;
+                    $scope.sort = sort || $scope.sort;
+
+                    if ($scope.sort === 'count') {
+                        $scope.url_list.sort((a, b) => {
+                            return b.count - a.count;
+                        });
+                    } else if ($scope.sort === 'date') {
+                        $scope.url_list.sort((a, b) => {
+                            return b.last_visit - a.last_visit;
+                        });
+                    } else if ($scope.sort === 'url') {
+                        $scope.url_list.sort((a, b) => {
+                            if (a.url < b.url) {
+                                return -1;
+                            } else if (a.url > b.url) {
+                                return 1;
+                            } else {
+                                return 0;
+                            }
+                        });
+                    }
+
+                    let word = $scope.url;
+
+                    if ($scope.sort === 'bookmark') {
+                        SOCIALBROWSER.var.bookmarks.forEach((b) => {
+                            $scope.url_list2.push(b);
+                        });
+                    } else {
+                        for (let i = 0; i < $scope.url_list.length; i++) {
+                            let itm = $scope.url_list[i];
+
+                            if ((itm.url && itm.url.like('*' + word + '*')) || (itm.title && itm.title.like('*' + word + '*'))) {
+                                $scope.url_list2.push(itm);
+                            }
+                            if ($scope.url_list2.length > 500) {
+                                break;
+                            }
+                        }
+                        if ($scope.url_list2.length == 0) {
+                            $scope.url_list2.push({
+                                title: word,
+                                url: word,
+                            });
+                        }
+                    }
+
+                    $scope.$applyAsync();
+                };
+
+                $scope.clearUrlSelection = function () {
+                    $scope.url_list2.forEach((u) => {
+                        u.selected = false;
+                    });
+                };
+
+                $scope.selectUrl = function (index) {
+                    $scope.clearUrlSelection();
+                    if ($scope.url_list2.length > index) {
+                        $scope.url_list2[index].selected = true;
+                        $scope.url = $scope.url_list2[index].url;
+                        $('.url-list ul').scrollTop($('.url-list ul li')[index].offsetTop - $('.url-list ul').height() + 100);
+                    }
+                };
+
+                $scope.addressbarKeydown = function (e) {
+                    if (e.which === 13) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (e.ctrlKey === true) {
+                            $scope.url = $scope.url + '.com';
+                            $scope.goUrl($scope.url);
+                        } else {
+                            $scope.goUrl($scope.url);
+                        }
+                        $scope.show_urls = false;
+                        SOCIALBROWSER.currentWindow.hide();
+                        return false;
+                    } else if (e.which == 40 /*down*/) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        $scope.url_index++;
+                        if ($scope.url_list2.length <= $scope.url_index) {
+                            $scope.url_index = 0;
+                        }
+                        $scope.selectUrl($scope.url_index);
+                    } else if (e.which == 38 /*up*/) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        $scope.url_index--;
+                        if ($scope.url_index < 0) {
+                            $scope.url_index = $scope.url_list2.length - 1;
+                        }
+                        $scope.selectUrl($scope.url_index);
+                    } else {
+                    }
+                    SOCIALBROWSER.currentWindow.show();
+                };
+
+                $scope.goUrl = function (url) {
+                    url = url || $scope.url || '';
+
+                    if (url.indexOf('localhost') == 0) {
+                        url = 'http://' + url;
+                    } else if (url.indexOf('://') === -1) {
+                        if (url.indexOf('.') !== -1) {
+                            url = 'http://' + url;
+                        } else {
+                            url = 'https://google.com/search?q=' + url;
+                        }
+                    }
+                    $scope.url = url;
+                    SOCIALBROWSER.call('[update-view-url]', {
+                        url: $scope.url,
+                        tab_id: $scope.tab_id,
+                    });
+                    SOCIALBROWSER.currentWindow.hide();
+                };
+
+                $scope.loadUrls();
             });
-          } else {
-            for (let i = 0; i < $scope.url_list.length; i++) {
-              let itm = $scope.url_list[i];
-
-              if ((itm.url && itm.url.like('*' + word + '*')) || (itm.title && itm.title.like('*' + word + '*'))) {
-                $scope.url_list2.push(itm);
-              }
-              if ($scope.url_list2.length > 500) {
-                break;
-              }
-            }
-            if ($scope.url_list2.length == 0) {
-              $scope.url_list2.push({
-                title: word,
-                url: word,
-              });
-            }
-          }
-
-          $scope.$applyAsync();
-        };
-
-        $scope.clearUrlSelection = function () {
-          $scope.url_list2.forEach((u) => {
-            u.selected = false;
-          });
-        };
-
-        $scope.selectUrl = function (index) {
-          $scope.clearUrlSelection();
-          if ($scope.url_list2.length > index) {
-            $scope.url_list2[index].selected = true;
-            $scope.url = $scope.url_list2[index].url;
-            $('.url-list ul').scrollTop($('.url-list ul li')[index].offsetTop - $('.url-list ul').height() + 100);
-          }
-        };
-
-        $scope.addressbarKeydown = function (e) {
-          if (e.which === 13) {
-            e.preventDefault();
-            e.stopPropagation();
-            if (e.ctrlKey === true) {
-              $scope.url = $scope.url + '.com';
-              $scope.goUrl($scope.url);
-            } else {
-              $scope.goUrl($scope.url);
-            }
-            $scope.show_urls = false;
-            SOCIALBROWSER.currentWindow.hide();
-            return false;
-          } else if (e.which == 40 /*down*/) {
-            e.preventDefault();
-            e.stopPropagation();
-            $scope.url_index++;
-            if ($scope.url_list2.length <= $scope.url_index) {
-              $scope.url_index = 0;
-            }
-            $scope.selectUrl($scope.url_index);
-          } else if (e.which == 38 /*up*/) {
-            e.preventDefault();
-            e.stopPropagation();
-            $scope.url_index--;
-            if ($scope.url_index < 0) {
-              $scope.url_index = $scope.url_list2.length - 1;
-            }
-            $scope.selectUrl($scope.url_index);
-          } else {
-          }
-          SOCIALBROWSER.currentWindow.show();
-        };
-
-        $scope.goUrl = function (url) {
-          url = url || $scope.url || '';
-
-          if (url.indexOf('://') === -1) {
-            if (url.indexOf('.') !== -1) {
-              url = 'http://' + url;
-            } else {
-              url = 'https://google.com/search?q=' + url;
-            }
-          }
-          $scope.url = url;
-          SOCIALBROWSER.call('[update-view-url]', {
-            url: $scope.url,
-            tab_id: $scope.tab_id,
-          });
-          SOCIALBROWSER.currentWindow.hide();
-        };
-
-        $scope.loadUrls();
-      });
-    </script>
-  </body>
+        </script>
+    </body>
 </html>

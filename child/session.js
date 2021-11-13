@@ -447,7 +447,9 @@ module.exports = function (child) {
                 a_Headers || 'Authorization ,Access-Control-Allow-Headers, Access-Control-Request-Method, Access-Control-Request-Headers,Origin, X-Requested-With, Content-Type, Accept';
 
             if (a_orgin) {
-                details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = [a_orgin[0]];
+                details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = a_orgin;
+            } else {
+                details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = details['referer'] ? [details['referer']] : ['*'];
             }
             if (a_expose) {
                 details.responseHeaders['Access-Control-Expose-Headers'.toLowerCase()] = a_expose;

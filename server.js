@@ -25,15 +25,19 @@ process.on('warning', (warning) => {
   console.warn(warning.stack);
 });
 
+console.log(' [ App Start ] [ * ] ')
+
 if (process.argv[process.argv.length - 1].endsWith('child.js')) {
+  console.log(' [ App Start ] [ child ] ')
   require(__dirname + '/child/child.js');
   return;
 } else if (process.argv[process.argv.length - 1].endsWith('.js')) {
+  console.log(' [ App Start ] [ js ] ')
   require(process.argv[process.argv.length - 1]);
   return;
 }
 
-console.log('  ( New Parent Created ) ');
+console.log(' [ New Parent Created ] ');
 var browser = {
   electron: require('electron'),
   remoteMain : require("@electron/remote/main"),

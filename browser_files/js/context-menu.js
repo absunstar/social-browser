@@ -24,7 +24,7 @@
       session_list: [],
       blocking: {
         javascript: {},
-        privacy: { languages: 'en', connection: {} },
+        privacy: { languages: 'en', connection: {} , hide_permissions : true },
         youtube: {},
         social: {},
         popup: { white_list: [] },
@@ -57,7 +57,7 @@
       { name: 'cellular', value: 'cellular' },
     ],
     session: {
-      privacy: { languages: 'en', connection: {} },
+      privacy: { languages: 'en', connection: {} , hide_permissions : true },
     },
     menu_list: [],
     events: [],

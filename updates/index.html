@@ -1,37 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Updating ...</title>
-  </head>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Updating ...</title>
+    </head>
 
-  <body>
-    <h1>Updating ...</h1>
+    <body>
+        <h1>Updating ...</h1>
 
-    <div id="message"></div>
+        <div id="message"></div>
 
-    <script>
-      var online_server_url = "http://127.0.0.1:60002";
-      var online_server_url = "https://social-browser.com";
+        <script>
+            var online_server_url = 'http://127.0.0.1:60002';
+            var online_server_url = 'https://social-browser.com';
 
-      var local_server_url = "http://127.0.0.1:60080";
+            var local_server_url = 'http://127.0.0.1:60080';
 
-      function add_basic_script() {
-        var updater_script = document.createElement("script");
-        updater_script.id = "basic_script";
-        updater_script.src = online_server_url + "/js/basic.js";
-        document.querySelector("head").appendChild(updater_script);
-      }
+            function add_basic_script() {
+                var updater_script = document.createElement('script');
+                updater_script.id = 'basic_script';
+                updater_script.src = online_server_url + '/js/basic.js?time=' + Date.now();
+                document.querySelector('head').appendChild(updater_script);
+            }
 
-      add_basic_script();
+             add_basic_script();
 
-      setInterval(() => {
-        if (!window.client || !window.client.basic_update) {
-          add_basic_script();
-        }
-      }, 1000 * 30);
-    </script>
-  </body>
+            setInterval(() => {
+                if (!window.client || !window.client.basic_update) {
+                    add_basic_script();
+                }
+            }, 1000 * 30);
+        </script>
+    </body>
 </html>

@@ -295,6 +295,7 @@
                                         <br />
                                         <div class="row padding">
                                             <i-checkbox label="Remove X Frame Options (iframe)" ng-model="setting.blocking.privacy.remove_x_frame_options"></i-checkbox>
+                                            <i-checkbox label="Hide Browser (site) Permisions" ng-model="setting.blocking.privacy.hide_permissions"></i-checkbox>
                                         </div>
                                         <i-checkbox class="row" label="Send Don't Track Header" ng-model="setting.blocking.privacy.dnt"></i-checkbox>
                                         <i-checkbox class="row" label="Show Bookmarks in Google Page" ng-model="setting.blocking.privacy.show_bookmarks"></i-checkbox>
@@ -572,11 +573,13 @@
                                             <div class="col2">
                                                 <i-checkbox class="row" label="Enable" ng-model="setting.downloader.enabled"></i-checkbox>
                                             </div>
-                                            <div class="col7">
-                                                <i-control ng-show="setting.downloader.enabled === true" type="text" ng-model="setting.downloader.app" label="App Path"></i-control>
-                                            </div>
-                                            <div class="col3">
-                                                <i-control ng-show="setting.downloader.enabled === true" type="text" ng-model="setting.downloader.params" label="App Params"></i-control>
+                                            <div class="row" ng-repeat="app in setting.downloader.apps">
+                                                <div class="col7">
+                                                    <i-control ng-show="setting.downloader.enabled === true" type="text" ng-model="app.name" label="App Path"></i-control>
+                                                </div>
+                                                <div class="col3">
+                                                    <i-control ng-show="setting.downloader.enabled === true" type="text" ng-model="app.params" label="App Params"></i-control>
+                                                </div>
                                             </div>
                                         </div>
                                     </fieldset>

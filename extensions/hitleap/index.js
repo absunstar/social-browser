@@ -1,25 +1,38 @@
 module.exports = function (browser) {
-  let extension = {};
-  extension.id = browser.md5(__filename);
-  extension.name = 'HitLeap ';
-  extension.description = 'hitleap.com site integration';
-  extension.paid = false;
-  extension.version = '1.0.0';
-  extension.canDelete = false;
-  extension.init = () => {};
-  extension.enable = () => {
-    browser.addPreload({
-      id: extension.id,
-      path: browser.path.join(__dirname , 'preload.js'),
-    });
-  };
+    let extension = {};
+    extension.id = browser.md5(__filename);
+    extension.name = 'HitLeap ';
+    extension.description = 'hitleap.com site integration';
+    extension.paid = false;
+    extension.version = '1.0.0';
+    extension.canDelete = false;
+    extension.init = () => {};
+    extension.enable = () => {
+        browser.addPreload({
+            id: extension.id,
+            path: browser.path.join(__dirname, 'preload.js'),
+        });
 
-  extension.disable = () => {
-    browser.removePreload(extension.id);
-  };
+        browser.addRequestHeader({
+            id: 'hitleap',
+            url: '*hitleap.com*',
+            list: [
+                {
+                    name: 'User-Agent',
+                    value: 'HitLeap Viewer 2.2',
+                },
+            ],
+            ignore: [],
+        });
+    };
 
-  extension.remove = () => {
-    extension.disable();
-  };
-  return extension;
+    extension.disable = () => {
+        browser.removePreload(extension.id);
+        browser.removeHeader('hitleap');
+    };
+
+    extension.remove = () => {
+        extension.disable();
+    };
+    return extension;
 };
