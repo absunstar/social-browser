@@ -1,5 +1,5 @@
 module.exports = function (SOCIALBROWSER) {
-    if (SOCIALBROWSER.var.core.off) {
+    if (SOCIALBROWSER.var.core.disabled) {
         return false;
     }
     SOCIALBROWSER.log(' >>> Nodes Script Activated');
@@ -109,7 +109,7 @@ module.exports = function (SOCIALBROWSER) {
     }
 
     function iframe_handle(iframe) {
-        if (SOCIALBROWSER.var.core.off) {
+        if (SOCIALBROWSER.var.core.disabled) {
             return false;
         }
         if (!SOCIALBROWSER.is_white_site) {

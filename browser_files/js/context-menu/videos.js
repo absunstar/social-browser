@@ -1,5 +1,5 @@
 module.exports = function (SOCIALBROWSER) {
-  if (SOCIALBROWSER.var.core.off || (!SOCIALBROWSER.var.blocking.youtube.skip_ads && document.location.href.toLowerCase().like('*youtube.com*'))) {
+  if (SOCIALBROWSER.var.core.disabled || (!SOCIALBROWSER.var.blocking.youtube.skip_ads && document.location.href.toLowerCase().like('*youtube.com*'))) {
     return;
   }
 

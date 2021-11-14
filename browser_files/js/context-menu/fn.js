@@ -234,139 +234,153 @@ module.exports = function (SOCIALBROWSER) {
 
     // EventTarget
 
+    function handleEventListener(eventTarget) {
+        eventTarget.handler2 = function (...params) {
+            if (eventTarget.type.like('click|mouseup|mousedown|dblclick|mousemove|mouseout|mouseenter|mouseleave') && params.length > 0) {
+                let ev = {};
+                ev.default = params[0];
+
+                function readDefaultProperty(ev, default_ev) {
+                    ev.isTrusted = true;
+
+                    ev.cancelable = default_ev.cancelable;
+                    ev.bubbles = default_ev.bubbles;
+                    ev.defaultPrevented = default_ev.defaultPrevented;
+                    ev.timeStamp = default_ev.timeStamp;
+                    ev.composed = default_ev.composed;
+                    ev.currentTarget = default_ev.currentTarget;
+                    ev.eventPhase = default_ev.eventPhase;
+
+                    ev.target = default_ev.target;
+                    ev.srcElement = default_ev.srcElement;
+                    ev.relatedTarget = default_ev.relatedTarget;
+                    ev.region = default_ev.region;
+                    ev.path = default_ev.path;
+                    ev.type = default_ev.type;
+
+                    ev.which = default_ev.which;
+                    ev.shiftKey = default_ev.shiftKey;
+                    ev.metaKey = default_ev.metaKey;
+                    ev.ctrlKey = default_ev.ctrlKey;
+                    ev.altKey = default_ev.altKey;
+
+                    ev.screenY = default_ev.screenY || 300;
+                    ev.screenX = default_ev.screenX || 450;
+                    ev.pageY = default_ev.pageY || 300;
+                    ev.pageX = default_ev.pageX || 450;
+                    ev.clientY = default_ev.clientY || 300;
+                    ev.clientX = default_ev.clientX || 450;
+                    ev.offsetY = default_ev.offsetY;
+                    ev.offsetX = default_ev.offsetX;
+                    ev.movementY = default_ev.movementY;
+                    ev.movementX = default_ev.movementX;
+
+                    ev.buttons = default_ev.buttons;
+                    ev.button = default_ev.button;
+
+                    ev.originalEvent = default_ev.originalEvent;
+                    ev.initEvent = default_ev.initEvent;
+                }
+                readDefaultProperty(ev, ev.default);
+
+                ev.composedPath = () => {
+                    if (ev.isComposedPath) {
+                        return;
+                    }
+                    ev.iscomposedPath = true;
+                    ev.default.composedPath();
+                    readDefaultProperty(ev, ev.default);
+                };
+                ev.preventDefault = () => {
+                    if (ev.isPreventDefault) {
+                        return;
+                    }
+                    ev.isPreventDefault = true;
+                    ev.default.preventDefault();
+                    readDefaultProperty(ev, ev.default);
+                };
+                ev.stopImmediatePropagation = () => {
+                    if (ev.isStopImmediatePropagation) {
+                        return;
+                    }
+                    ev.isStopImmediatePropagation = true;
+                    ev.default.stopImmediatePropagation();
+                    readDefaultProperty(ev, ev.default);
+                };
+                ev.stopPropagation = () => {
+                    if (ev.isStopPropagation) {
+                        return;
+                    }
+                    ev.isStopPropagation = true;
+                    ev.default.stopPropagation();
+                    readDefaultProperty(ev, ev.default);
+                };
+
+                params[0] = ev;
+                if (!ev.isPreventDefault) {
+                    eventTarget.handler(...params);
+                }
+            } else {
+                eventTarget.handler(...params);
+            }
+        };
+    }
     if (EventTarget.prototype.addEventListener) {
+        EventTarget.prototype.removeEventListener0 = EventTarget.prototype.removeEventListener;
+        EventTarget.prototype.removeEventListener = function (type, handler, option) {
+            let exists = false;
+            if (typeof type == 'string' && handler && typeof handler === 'function') {
+                SOCIALBROWSER.events.forEach((ev) => {
+                    if (ev.this === this && ev.handler === handler) {
+                        exists = true;
+                        this.removeEventListener0(ev.type, ev.handler2, ev.option);
+                    }
+                });
+            }
+            if (!exists) {
+                this.removeEventListener0(type, handler, option);
+            }
+        };
         EventTarget.prototype.addEventListener0 = EventTarget.prototype.addEventListener;
         EventTarget.prototype.removeEvent = function (type) {
             delete this.listeners[type];
         };
-        EventTarget.prototype.addEventListener = function (...args) {
-            if (document.location.hostname.like('*youtube*')) {
-                this.addEventListener0(...args);
-                return;
-            }
+        EventTarget.prototype.addEventListener = function (type, handler, option) {
+            let eventTarget = {
+                this: this,
+                selector: '',
+                enabled: true,
+                type: type,
+                handler: handler,
+                handler2: handler,
+                option: option,
+            };
             let selector = '';
 
             if (this instanceof Document) {
-                selector += 'document';
+                eventTarget.selector += 'document';
             } else if (this instanceof Window) {
-                selector += 'window';
+                eventTarget.selector += 'window';
             } else if (this instanceof Element) {
-                selector += this.tagName;
+                eventTarget.selector += this.tagName;
             }
 
-            let type = args[0];
             if (typeof type == 'string') {
-                selector += `${this.id ? '#' + this.id : ''}${this.className ? '.' + this.className : ''}(${type})`;
-                if (typeof type == 'string' && selector.like(SOCIALBROWSER.eventOff) && !selector.like(SOCIALBROWSER.eventOn)) {
-                    SOCIALBROWSER.log(`${selector} OFF`);
-                    SOCIALBROWSER.events.push({
-                        enabled: false,
-                        selector: selector,
-                        args: args,
-                        fn: args.length > 1 ? (args[1] || '').toString() : '',
-                    });
+                eventTarget.selector += `${this.id ? '#' + this.id : ''}${this.className ? '.' + this.className : ''}(${type})`;
+                if (typeof type == 'string' && eventTarget.selector.like(SOCIALBROWSER.eventOff) && !eventTarget.selector.like(SOCIALBROWSER.eventOn)) {
+                    SOCIALBROWSER.log(`${selector} ::OFF:: `);
+                    eventTarget.enabled = false;
+                    SOCIALBROWSER.events.push(eventTarget);
                     return;
-                }
-            }
-            SOCIALBROWSER.events.push({
-                enabled: true,
-                selector: selector,
-                args: args,
-                fn: args.length > 1 ? (args[1] || '').toString() : '',
-            });
-            if (typeof type == 'string' && args.length > 1 && typeof args[1] === 'function') {
-                let fn = args[1];
-                args[1] = (...params) => {
-                    if (type.like('*click*|*mouseup*|*mousedown*|*dblclick*|*mousemove*|*mouseout*|*mouseenter*|*mouseleave*') && params.length > 0) {
-                        let ev = {};
-                        ev.default = params[0];
-
-                        function readDefaultProperty(ev, default_ev) {
-                            ev.isTrusted = true;
-
-                            ev.cancelable = default_ev.cancelable;
-                            ev.bubbles = default_ev.bubbles;
-                            ev.defaultPrevented = default_ev.defaultPrevented;
-                            ev.timeStamp = default_ev.timeStamp;
-                            ev.composed = default_ev.composed;
-                            ev.currentTarget = default_ev.currentTarget;
-                            ev.eventPhase = default_ev.eventPhase;
-
-                            ev.target = default_ev.target;
-                            ev.srcElement = default_ev.srcElement;
-                            ev.relatedTarget = default_ev.relatedTarget;
-                            ev.region = default_ev.region;
-                            ev.path = default_ev.path;
-                            ev.type = default_ev.type;
-
-                            ev.which = default_ev.which;
-                            ev.shiftKey = default_ev.shiftKey;
-                            ev.metaKey = default_ev.metaKey;
-                            ev.ctrlKey = default_ev.ctrlKey;
-                            ev.altKey = default_ev.altKey;
-
-                            ev.screenY = default_ev.screenY || 300;
-                            ev.screenX = default_ev.screenX || 450;
-                            ev.pageY = default_ev.pageY || 300;
-                            ev.pageX = default_ev.pageX || 450;
-                            ev.clientY = default_ev.clientY || 300;
-                            ev.clientX = default_ev.clientX || 450;
-                            ev.offsetY = default_ev.offsetY;
-                            ev.offsetX = default_ev.offsetX;
-                            ev.movementY = default_ev.movementY;
-                            ev.movementX = default_ev.movementX;
-
-                            ev.buttons = default_ev.buttons;
-                            ev.button = default_ev.button;
-
-                            ev.originalEvent = default_ev.originalEvent;
-                            ev.initEvent = default_ev.initEvent;
-                        }
-                        readDefaultProperty(ev, ev.default);
-
-                        ev.composedPath = () => {
-                            if (ev.isComposedPath) {
-                                return;
-                            }
-                            ev.iscomposedPath = true;
-                            ev.default.composedPath();
-                            readDefaultProperty(ev, ev.default);
-                        };
-                        ev.preventDefault = () => {
-                            if (ev.isPreventDefault) {
-                                return;
-                            }
-                            ev.isPreventDefault = true;
-                            ev.default.preventDefault();
-                            readDefaultProperty(ev, ev.default);
-                        };
-                        ev.stopImmediatePropagation = () => {
-                            if (ev.isStopImmediatePropagation) {
-                                return;
-                            }
-                            ev.isStopImmediatePropagation = true;
-                            ev.default.stopImmediatePropagation();
-                            readDefaultProperty(ev, ev.default);
-                        };
-                        ev.stopPropagation = () => {
-                            if (ev.isStopPropagation) {
-                                return;
-                            }
-                            ev.isStopPropagation = true;
-                            ev.default.stopPropagation();
-                            readDefaultProperty(ev, ev.default);
-                        };
-
-                        params[0] = ev;
-                        if (!ev.isPreventDefault) {
-                            fn(...params);
-                        }
-                    } else {
-                        fn(...params);
+                } else {
+                    if (typeof type == 'string' && eventTarget.handler && typeof eventTarget.handler === 'function') {
+                        handleEventListener(eventTarget);
                     }
-                };
+                }
+                SOCIALBROWSER.events.push(eventTarget);
             }
-            this.addEventListener0(...args);
+
+            this.addEventListener0(eventTarget.type, eventTarget.handler2, eventTarget.option);
         };
     }
 
@@ -785,7 +799,7 @@ module.exports = function (SOCIALBROWSER) {
             return child_window;
         }
 
-        if (!SOCIALBROWSER.var.core.off) {
+        if (!SOCIALBROWSER.var.core.disabled) {
             let allow = false;
 
             let toUrlParser = SOCIALBROWSER.url.parse(url);

@@ -4,7 +4,7 @@ module.exports = function (SOCIALBROWSER) {
   //   return;
   // }
 
-  if (SOCIALBROWSER.var.core.off || !document.location.host.like('*traficads.com*')) {
+  if (SOCIALBROWSER.var.core.disabled || !document.location.host.like('*traficads.com*')) {
     return;
   }
 

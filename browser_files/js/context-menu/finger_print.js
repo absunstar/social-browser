@@ -18,7 +18,7 @@ module.exports = function (SOCIALBROWSER) {
    *  browser permissions random
    */
 
-  if (SOCIALBROWSER.var.core.off || SOCIALBROWSER.windowType === 'main' || document.location.href.like('http://localhost*|https://localhost*|http://127.0.0.1*|https://127.0.0.1*|browser://*|chrome://*')) {
+  if (SOCIALBROWSER.var.core.disabled || SOCIALBROWSER.windowType === 'main' || document.location.href.like('http://localhost*|https://localhost*|http://127.0.0.1*|https://127.0.0.1*|browser://*|chrome://*')) {
     SOCIALBROWSER.log(' [Finger Printing] OFF : ' + document.location.href);
     return;
   }
@@ -120,7 +120,7 @@ module.exports = function (SOCIALBROWSER) {
       length: 0,
     });
   }
-  if (SOCIALBROWSER.var.blocking.privacy.hide_plugins) {
+  if (SOCIALBROWSER.var.blocking.privacy.hide_pluginsxxx) {
     SOCIALBROWSER.navigator.plugins = navigator.plugins;
     SOCIALBROWSER.__define(navigator, 'plugins', {
       // 0: {

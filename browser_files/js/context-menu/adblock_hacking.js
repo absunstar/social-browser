@@ -1,5 +1,5 @@
 module.exports = function (SOCIALBROWSER) {
-  if (SOCIALBROWSER.var.core.off || SOCIALBROWSER.windowType === 'main' || SOCIALBROWSER.is_white_site == true || !SOCIALBROWSER.var.blocking.core.block_ads || document.location.href.like('*http://127.0.0.1*')) {
+  if (SOCIALBROWSER.var.core.disabled || SOCIALBROWSER.windowType === 'main' || SOCIALBROWSER.is_white_site == true || !SOCIALBROWSER.var.blocking.core.block_ads || document.location.href.like('*http://127.0.0.1*')) {
     SOCIALBROWSER.log(' [AD Hacking] OFF : ' + document.location.href);
     return;
   }

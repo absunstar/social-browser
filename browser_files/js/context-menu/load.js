@@ -27,7 +27,7 @@ module.exports = function (SOCIALBROWSER) {
 
     require(SOCIALBROWSER.files_dir + '/js/context-menu/safty.js')(SOCIALBROWSER);
 
-    if (!SOCIALBROWSER.var.core.off) {
+    if (!SOCIALBROWSER.var.core.disabled) {
         // Load Custom Scripts
         SOCIALBROWSER.var.scripts_files.forEach((file) => {
             require(file.path)(SOCIALBROWSER);

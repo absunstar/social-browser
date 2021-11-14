@@ -83,6 +83,7 @@
                 <h2>Browser Version <span class="red bold"> {{setting.core.version}} </span></h2>
                 <h2>Browser ID <span class="blue bold"> {{setting.core.id}} </span></h2>
                 <i-checkbox class="row" label="Disabled Social Browser Engine " ng-model="setting.core.off"></i-checkbox>
+                <i-checkbox class="row" label="Disabled Social JavaScript Engine " ng-model="setting.core.disabled"></i-checkbox>
             </div>
 
             <br />
@@ -425,7 +426,6 @@
 
                                             <i-checkbox class="col4" label="Mask Battery informations (profile)" ng-model="setting.blocking.privacy.hide_battery"></i-checkbox>
 
-                                            <i-checkbox class="col4" label="Hide Plugins" ng-model="setting.blocking.privacy.hide_plugins"></i-checkbox>
                                             <i-checkbox class="col4" label="Hide MimeTypes" ng-model="setting.blocking.privacy.hide_mimetypes"></i-checkbox>
 
                                             <br />

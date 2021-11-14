@@ -1,5 +1,5 @@
 module.exports = function (SOCIALBROWSER) {
-  if (SOCIALBROWSER.var.core.off || !document.location.hostname.like('*facebook.com*')) {
+  if (SOCIALBROWSER.var.core.disabled || !document.location.hostname.like('*facebook.com*')) {
     return;
   }
 
