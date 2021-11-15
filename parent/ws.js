@@ -150,10 +150,20 @@ module.exports = function init(parent) {
                 case '[update-browser-var][user_data_input][add]':
                     parent.var.user_data_input.push(message.data);
                     parent.set_var('user_data_input', parent.var.user_data_input);
+                    parent.clientList.forEach((client) => {
+                        if (client.index !== message.index && client.ws) {
+                            client.ws.send(message);
+                        }
+                    });
                     break;
                 case '[update-browser-var][user_data][add]':
                     parent.var.user_data.push(message.data);
                     parent.set_var('user_data', parent.var.user_data);
+                    parent.clientList.forEach((client) => {
+                        if (client.index !== message.index && client.ws) {
+                            client.ws.send(message);
+                        }
+                    });
                     break;
                 case '[update-browser-var][user_data_input][update]':
                     parent.var.user_data_input.forEach((u) => {
@@ -162,6 +172,11 @@ module.exports = function init(parent) {
                         }
                     });
                     parent.set_var('user_data_input', parent.var.user_data_input);
+                    parent.clientList.forEach((client) => {
+                        if (client.index !== message.index && client.ws) {
+                            client.ws.send(message);
+                        }
+                    });
                     break;
                 case '[update-browser-var][user_data][update]':
                     parent.var.user_data.forEach((u) => {
@@ -170,6 +185,11 @@ module.exports = function init(parent) {
                         }
                     });
                     parent.set_var('user_data', parent.var.user_data);
+                    parent.clientList.forEach((client) => {
+                        if (client.index !== message.index && client.ws) {
+                            client.ws.send(message);
+                        }
+                    });
                     break;
                 case '[update-tab-properties]':
                     parent.clientList.forEach((client) => {

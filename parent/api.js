@@ -1,5 +1,5 @@
 module.exports = function init(parent) {
-    parent.api = require('../../isite')({
+    parent.api = require('isite')({
         port: [60080, 60000],
         name: 'API',
         dir: parent.files_dir + '',

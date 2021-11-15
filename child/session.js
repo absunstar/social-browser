@@ -422,6 +422,7 @@ module.exports = function (child) {
             let a_Methods = details.responseHeaders['Access-Control-Allow-Methods'] || details.responseHeaders['Access-Control-Allow-Methods'.toLowerCase()];
             let a_Headers = details.responseHeaders['Access-Control-Allow-Headers'] || details.responseHeaders['Access-Control-Allow-Headers'.toLowerCase()];
             let s_policy = details.responseHeaders['Content-Security-Policy'] || details.responseHeaders['Content-Security-Policy'.toLowerCase()];
+            let s_policy_report = details.responseHeaders['Content-Security-Policy-Report-Only'] || details.responseHeaders['content-security-policy-report-only'.toLowerCase()];
 
             // Must Delete Before set new values [duplicate headers]
             [
@@ -429,6 +430,7 @@ module.exports = function (child) {
                 // 'Cross-Origin-Opener-Policy',
                 //  'Strict-Transport-Security',
                 // 'X-Content-Type-Options',
+                'Content-Security-Policy-Report-Only',
                 'Content-Security-Policy',
                 'Access-Control-Allow-Credentials',
                 'Access-Control-Allow-Methods',
@@ -456,32 +458,44 @@ module.exports = function (child) {
             }
 
             if (s_policy) {
-                s_policy.forEach((s, i) => {
-                    if (s.like('*data:*')) {
-                        s = s.replace('data:', 'data: http://127.0.0.1:*');
-                    }
-                    if (s.like('*mediastream:*')) {
-                        s = s.replace('mediastream:', 'mediastream: http://127.0.0.1:*');
-                    }
-                    if (s.like('*blob:*')) {
-                        s = s.replace('blob:', 'blob: 127.0.0.1');
-                    }
-                    if (s.like('*filesystem:*')) {
-                        s = s.replace('filesystem:', 'filesystem: http://127.0.0.1:*');
-                    }
-                    if (s.like("*img-src 'self'*")) {
-                        s = s.replace("img-src 'self'", "img-src 'self' http://127.0.0.1:*");
-                    }
-                    if (s.like("*default-src 'self'*")) {
-                        s = s.replace("default-src 'self'", "default-src 'self' http://127.0.0.1:*");
-                    }
-                    s_policy[i] = s;
-                });
+                s_policy = JSON.stringify(s_policy);
 
-                details.responseHeaders['Content-Security-Policy'.toLowerCase()] = s_policy;
+                s_policy = s_policy.replace('data: ', 'data: http://127.0.0.1:60080 ');
+
+                s_policy = s_policy.replace('mediastream: ', 'mediastream: http://127.0.0.1:60080 ');
+
+                s_policy = s_policy.replace('blob: ', 'blob: http://127.0.0.1:60080 ');
+
+                s_policy = s_policy.replace('filesystem: ', 'filesystem: http://127.0.0.1:60080 ');
+
+                s_policy = s_policy.replace('img-src ', 'img-src http://127.0.0.1:60080 ');
+
+                s_policy = s_policy.replace('default-src ', "default-src 'self' http://127.0.0.1:60080 ");
+                s_policy = s_policy.replace('script-src ', "script-src 'self' http://127.0.0.1:60080 ");
+
+                details.responseHeaders['Content-Security-Policy'.toLowerCase()] = JSON.parse(s_policy);
             }
 
-            // details.responseHeaders['Cross-Origin-Resource-Policy'.toLowerCase()] = 'cross-origin';
+            if (s_policy_report) {
+                s_policy_report = JSON.stringify(s_policy_report);
+
+                s_policy_report = s_policy_report.replace('data: ', 'data: http://127.0.0.1:60080 ');
+
+                s_policy_report = s_policy_report.replace('mediastream: ', 'mediastream: http://127.0.0.1:60080 ');
+
+                s_policy_report = s_policy_report.replace('blob: ', 'blob: http://127.0.0.1:60080 ');
+
+                s_policy_report = s_policy_report.replace('filesystem: ', 'filesystem: http://127.0.0.1:60080 ');
+
+                s_policy_report = s_policy_report.replace('img-src ', 'img-src http://127.0.0.1:60080 ');
+
+                s_policy_report = s_policy_report.replace('default-src ', 'default-src http://127.0.0.1:60080 ');
+                s_policy_report = s_policy_report.replace('script-src ', 'script-src http://127.0.0.1:60080 ');
+
+                details.responseHeaders['Content-Security-Policy-Report-Only'.toLowerCase()] = JSON.parse(s_policy_report);
+            }
+
+            details.responseHeaders['Cross-Origin-Resource-Policy'.toLowerCase()] = 'cross-origin';
 
             child.coreData.var.overwrite.urls.forEach((data) => {
                 if (url.like(data.to)) {

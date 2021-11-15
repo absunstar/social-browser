@@ -61,8 +61,7 @@ module.exports = function init(parent) {
         }
 
         if (parent.versionUpdating) {
-            let handle = !noContent;
-            if (handle) {
+            if (!noContent) {
                 if (name == 'user_data_input') {
                     default_content.forEach((d) => {
                         let exists = false;
@@ -336,7 +335,7 @@ module.exports = function init(parent) {
                     parent.var[name] = currentContent;
                     parent.set_var(name, parent.var[name]);
                 } else {
-                    parent.var[name] = currentContent;
+                    parent.var[name] = default_content;
                     parent.set_var(name, parent.var[name]);
                 }
             } else {

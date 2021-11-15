@@ -234,155 +234,203 @@ module.exports = function (SOCIALBROWSER) {
 
     // EventTarget
 
-    function handleEventListener(eventTarget) {
-        eventTarget.handler2 = function (...params) {
-            if (eventTarget.type.like('click|mouseup|mousedown|dblclick|mousemove|mouseout|mouseenter|mouseleave') && params.length > 0) {
-                let ev = {};
-                ev.default = params[0];
+    SOCIALBROWSER.allowTrustedEvents = function () {
+        if (SOCIALBROWSER.allowTrustedEventsSets) {
+            return;
+        }
+        SOCIALBROWSER.allowTrustedEventsSets = true;
 
-                function readDefaultProperty(ev, default_ev) {
-                    ev.isTrusted = true;
+        SOCIALBROWSER.handleEventListener = function (eventTarget) {
+            eventTarget.handler2 = function (...params) {
+                if (eventTarget.type.like('click') && params.length > 0) {
+                    let default_event = params[0];
 
-                    ev.cancelable = default_ev.cancelable;
-                    ev.bubbles = default_ev.bubbles;
-                    ev.defaultPrevented = default_ev.defaultPrevented;
-                    ev.timeStamp = default_ev.timeStamp;
-                    ev.composed = default_ev.composed;
-                    ev.currentTarget = default_ev.currentTarget;
-                    ev.eventPhase = default_ev.eventPhase;
+                    eventTarget.event2 = eventTarget.event2 || {
+                        get isTrusted() {
+                            return true;
+                        },
+                        get view() {
+                            return default_event.view;
+                        },
+                        get target() {
+                            return default_event.target;
+                        },
+                        get cancelable() {
+                            return default_event.cancelable;
+                        },
+                        get bubbles() {
+                            return default_event.bubbles;
+                        },
+                        get defaultPrevented() {
+                            return default_event.defaultPrevented;
+                        },
+                        get timeStamp() {
+                            return default_event.timeStamp;
+                        },
+                        get composed() {
+                            return default_event.composed;
+                        },
+                        get currentTarget() {
+                            return default_event.currentTarget;
+                        },
+                        get eventPhase() {
+                            return default_event.eventPhase;
+                        },
 
-                    ev.target = default_ev.target;
-                    ev.srcElement = default_ev.srcElement;
-                    ev.relatedTarget = default_ev.relatedTarget;
-                    ev.region = default_ev.region;
-                    ev.path = default_ev.path;
-                    ev.type = default_ev.type;
+                        get srcElement() {
+                            return default_event.srcElement;
+                        },
+                        get relatedTarget() {
+                            return default_event.relatedTarget;
+                        },
+                        get region() {
+                            return default_event.region;
+                        },
+                        get path() {
+                            return default_event.path;
+                        },
+                        get type() {
+                            return default_event.type;
+                        },
+                        get which() {
+                            return default_event.which;
+                        },
+                        get shiftKey() {
+                            return default_event.shiftKey;
+                        },
+                        get metaKey() {
+                            return default_event.metaKey;
+                        },
+                        get ctrlKey() {
+                            return default_event.ctrlKey;
+                        },
+                        get altKey() {
+                            return default_event.altKey;
+                        },
+                        get screenY() {
+                            return default_event.screenY || 300;
+                        },
+                        get screenX() {
+                            return default_event.screenX || 450;
+                        },
 
-                    ev.which = default_ev.which;
-                    ev.shiftKey = default_ev.shiftKey;
-                    ev.metaKey = default_ev.metaKey;
-                    ev.ctrlKey = default_ev.ctrlKey;
-                    ev.altKey = default_ev.altKey;
-
-                    ev.screenY = default_ev.screenY || 300;
-                    ev.screenX = default_ev.screenX || 450;
-                    ev.pageY = default_ev.pageY || 300;
-                    ev.pageX = default_ev.pageX || 450;
-                    ev.clientY = default_ev.clientY || 300;
-                    ev.clientX = default_ev.clientX || 450;
-                    ev.offsetY = default_ev.offsetY;
-                    ev.offsetX = default_ev.offsetX;
-                    ev.movementY = default_ev.movementY;
-                    ev.movementX = default_ev.movementX;
-
-                    ev.buttons = default_ev.buttons;
-                    ev.button = default_ev.button;
-
-                    ev.originalEvent = default_ev.originalEvent;
-                    ev.initEvent = default_ev.initEvent;
-                }
-                readDefaultProperty(ev, ev.default);
-
-                ev.composedPath = () => {
-                    if (ev.isComposedPath) {
-                        return;
-                    }
-                    ev.iscomposedPath = true;
-                    ev.default.composedPath();
-                    readDefaultProperty(ev, ev.default);
-                };
-                ev.preventDefault = () => {
-                    if (ev.isPreventDefault) {
-                        return;
-                    }
-                    ev.isPreventDefault = true;
-                    ev.default.preventDefault();
-                    readDefaultProperty(ev, ev.default);
-                };
-                ev.stopImmediatePropagation = () => {
-                    if (ev.isStopImmediatePropagation) {
-                        return;
-                    }
-                    ev.isStopImmediatePropagation = true;
-                    ev.default.stopImmediatePropagation();
-                    readDefaultProperty(ev, ev.default);
-                };
-                ev.stopPropagation = () => {
-                    if (ev.isStopPropagation) {
-                        return;
-                    }
-                    ev.isStopPropagation = true;
-                    ev.default.stopPropagation();
-                    readDefaultProperty(ev, ev.default);
-                };
-
-                params[0] = ev;
-                if (!ev.isPreventDefault) {
+                        get pageY() {
+                            return default_event.pageY || 300;
+                        },
+                        get pageX() {
+                            return default_event.pageX || 450;
+                        },
+                        get clientY() {
+                            return default_event.clientY || 300;
+                        },
+                        get clientX() {
+                            return default_event.clientX || 450;
+                        },
+                        get offsetY() {
+                            return default_event.offsetY;
+                        },
+                        get offsetX() {
+                            return default_event.offsetX;
+                        },
+                        get movementY() {
+                            return default_event.movementY;
+                        },
+                        get movementX() {
+                            return default_event.movementX;
+                        },
+                        get buttons() {
+                            return default_event.buttons;
+                        },
+                        get button() {
+                            return default_event.button;
+                        },
+                        get originalEvent() {
+                            return default_event;
+                        },
+                        initEvent() {
+                            return default_event.initEvent();
+                        },
+                        preventDefault() {
+                            return default_event.preventDefault();
+                        },
+                        stopImmediatePropagation() {
+                            return default_event.stopImmediatePropagation();
+                        },
+                        stopPropagation() {
+                            this.stopPropagationSet = true;
+                            return default_event.stopPropagation();
+                        },
+                        composedPath() {
+                            return default_event.composedPath();
+                        },
+                    };
+                    params[0] = eventTarget.event2;
+                    eventTarget.handler(...params);
+                } else {
                     eventTarget.handler(...params);
                 }
-            } else {
-                eventTarget.handler(...params);
-            }
-        };
-    }
-    if (EventTarget.prototype.addEventListener) {
-        EventTarget.prototype.removeEventListener0 = EventTarget.prototype.removeEventListener;
-        EventTarget.prototype.removeEventListener = function (type, handler, option) {
-            let exists = false;
-            if (typeof type == 'string' && handler && typeof handler === 'function') {
-                SOCIALBROWSER.events.forEach((ev) => {
-                    if (ev.this === this && ev.handler === handler) {
-                        exists = true;
-                        this.removeEventListener0(ev.type, ev.handler2, ev.option);
-                    }
-                });
-            }
-            if (!exists) {
-                this.removeEventListener0(type, handler, option);
-            }
-        };
-        EventTarget.prototype.addEventListener0 = EventTarget.prototype.addEventListener;
-        EventTarget.prototype.removeEvent = function (type) {
-            delete this.listeners[type];
-        };
-        EventTarget.prototype.addEventListener = function (type, handler, option) {
-            let eventTarget = {
-                this: this,
-                selector: '',
-                enabled: true,
-                type: type,
-                handler: handler,
-                handler2: handler,
-                option: option,
             };
-            let selector = '';
-
-            if (this instanceof Document) {
-                eventTarget.selector += 'document';
-            } else if (this instanceof Window) {
-                eventTarget.selector += 'window';
-            } else if (this instanceof Element) {
-                eventTarget.selector += this.tagName;
-            }
-
-            if (typeof type == 'string') {
-                eventTarget.selector += `${this.id ? '#' + this.id : ''}${this.className ? '.' + this.className : ''}(${type})`;
-                if (typeof type == 'string' && eventTarget.selector.like(SOCIALBROWSER.eventOff) && !eventTarget.selector.like(SOCIALBROWSER.eventOn)) {
-                    SOCIALBROWSER.log(`${selector} ::OFF:: `);
-                    eventTarget.enabled = false;
-                    SOCIALBROWSER.events.push(eventTarget);
-                    return;
-                } else {
-                    if (typeof type == 'string' && eventTarget.handler && typeof eventTarget.handler === 'function') {
-                        handleEventListener(eventTarget);
-                    }
-                }
-                SOCIALBROWSER.events.push(eventTarget);
-            }
-
-            this.addEventListener0(eventTarget.type, eventTarget.handler2, eventTarget.option);
         };
-    }
+
+        if (EventTarget.prototype.addEventListener) {
+            EventTarget.prototype.removeEventListener0 = EventTarget.prototype.removeEventListener;
+            EventTarget.prototype.removeEventListener = function (type, handler, option) {
+                let exists = false;
+                if (typeof type == 'string' && handler && typeof handler === 'function') {
+                    SOCIALBROWSER.events.forEach((ev) => {
+                        if (ev.this === this && ev.handler === handler) {
+                            exists = true;
+                            return this.removeEventListener0(ev.type, ev.handler2, ev.option);
+                        }
+                    });
+                }
+                if (!exists) {
+                    return this.removeEventListener0(type, handler, option);
+                }
+            };
+            EventTarget.prototype.addEventListener0 = EventTarget.prototype.addEventListener;
+            EventTarget.prototype.removeEvent = function (type) {
+                delete this.listeners[type];
+            };
+            EventTarget.prototype.addEventListener = function (type, handler, option) {
+                let eventTarget = {
+                    this: this,
+                    selector: '',
+                    enabled: true,
+                    type: type,
+                    handler: handler,
+                    handler2: handler,
+                    option: option,
+                };
+                let selector = '';
+
+                if (this instanceof Document) {
+                    eventTarget.selector += 'document';
+                } else if (this instanceof Window) {
+                    eventTarget.selector += 'window';
+                } else if (this instanceof Element) {
+                    eventTarget.selector += this.tagName;
+                }
+
+                if (typeof type == 'string') {
+                    eventTarget.selector += `${this.id ? '#' + this.id : ''}${this.className ? '.' + this.className : ''}(${type})`;
+                    if (typeof type == 'string' && eventTarget.selector.like(SOCIALBROWSER.eventOff) && !eventTarget.selector.like(SOCIALBROWSER.eventOn)) {
+                        SOCIALBROWSER.log(`${selector} ::OFF:: `);
+                        eventTarget.enabled = false;
+                        SOCIALBROWSER.events.push(eventTarget);
+                        return;
+                    } else {
+                        if (typeof type == 'string' && eventTarget.handler && typeof eventTarget.handler === 'function') {
+                            SOCIALBROWSER.handleEventListener(eventTarget);
+                        }
+                    }
+                    SOCIALBROWSER.events.push(eventTarget);
+                }
+
+                return this.addEventListener0(eventTarget.type, eventTarget.handler2, eventTarget.option);
+            };
+        }
+    };
 
     // window.setInterval0 = window.setInterval;
     // window.setInterval = function (...args) {

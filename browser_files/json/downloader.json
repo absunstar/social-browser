@@ -6,7 +6,7 @@
             "params": "/d $url /f $file_name"
         },
         {
-            "name": "C:\\Users\\share\\AppData\\Local\\Softdeluxe\\Free Download Manager\\fdm.exe",
+            "name": "C:\\Users\\$username\\AppData\\Local\\Softdeluxe\\Free Download Manager\\fdm.exe",
             "params": "--url $url --path $file_name"
         }
     ]

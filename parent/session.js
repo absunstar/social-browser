@@ -464,14 +464,20 @@ module.exports = function (parent) {
             };
 
             if (parent.var.downloader.enabled && !item.getURL().like('*127.0.0.1*') && !item.getURL().like('blob*')) {
+                let ok = false;
                 parent.var.downloader.apps.forEach((app) => {
-                    if (app.name && parent.api.isFileExistsSync(app.name)) {
+                    let app_name = app.name.replace('$username', parent.os.userInfo().username);
+                    if (parent.api.isFileExistsSync(app_name)) {
                         event.preventDefault();
+                        if (ok) {
+                            return;
+                        }
+                        ok = true;
                         let params = app.params.split(' ');
                         for (const i in params) {
                             params[i] = params[i].replace('$url', decodeURIComponent(dl.url)).replace('$file_name', dl.name);
                         }
-                        parent.exe(app.name, params);
+                        parent.exe(app_name, params);
                         return;
                     }
                 });

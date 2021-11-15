@@ -11,7 +11,7 @@
     }
 
     console.log(` [ ${document.location.href} ] `);
-    
+
     let __numberRange = function (min, max) {
         return Math.floor(Math.random() * (max - min) + min);
     };
@@ -268,7 +268,25 @@
     };
 
     SOCIALBROWSER.on('[update-browser-var]', (e, res) => {
-        if (res.options.name.contains('user_data')) {
+        if (res.options.name == 'user_data_input') {
+            SOCIALBROWSER.var.user_data_input = [];
+            res.options.data.forEach((d) => {
+                if (document.location.href.indexOf(d.hostname) !== -1) {
+                    SOCIALBROWSER.var.user_data_input.push(d);
+                }
+            });
+
+            return;
+        }
+
+        if (res.options.name == 'user_data') {
+            SOCIALBROWSER.var.user_data = [];
+            res.options.data.forEach((d) => {
+                if (document.location.href.indexOf(d.hostname) !== -1) {
+                    SOCIALBROWSER.var.user_data.push(d);
+                }
+            });
+
             return;
         }
 
