@@ -2,7 +2,7 @@ const electron = require('electron');
 const remote = require('@electron/remote');
 
 window.print = function (options) {
-    console.log('window.print() rewrite ...');
+    console.log('window.print() OFF :: ...');
 };
 
 window.addEventListener('load', () => {
@@ -23,26 +23,26 @@ window.addEventListener('load', () => {
                 callback(data);
             })
             .catch((err) => {
-                console.log(err);
+                console.log('get_details', err);
             });
     }
 
     let print_options = {
-        silent: false,
+        show: false,
+        silent: true,
         printBackground: false,
         printSelectionOnly: false,
-        deviceName: null,
-        color: true,
+        color: false,
         margins: {
-            marginType: 'default',
+            marginType: 'none',
             top: 0,
             bottom: 0,
             left: 0,
             right: 0,
         },
         landscape: false,
-        scaleFactor: 70,
-        pagesPerSheet: 1,
+        scaleFactor: null,
+        pagesPerSheet: null,
         collate: false,
         copies: 1,
         pageRanges: {
@@ -50,30 +50,31 @@ window.addEventListener('load', () => {
             to: 0,
         },
         duplexMode: null,
-        dpi: {},
+        dpi: null,
         header: null,
         footer: null,
-        pageSize: 'A4',
+        pageSize: 'Letter',
         marginsType: 0,
+        deviceName: 'Microsoft Print to PDF',
     };
 
     get_details((info) => {
-        if (info.options && info.options.show) {
+        remote.getCurrentWindow().openDevTools();
+        print_options = { ...print_options, ...info.options };
+
+        if (print_options.show) {
             remote.getCurrentWindow().show();
         }
 
-        if (info.options.width) {
-            remote.getCurrentWindow().setSize(info.options.width, 720);
+        if (print_options.width) {
+            remote.getCurrentWindow().setSize(print_options.width, 720);
         }
 
-        if (info.options && info.options.silent) {
-            console.log(info.options);
-            remote.getCurrentWindow().webContents.print(info.options, (success, errorType) => {
-                if (!success) {
-                    console.log(errorType);
-                }
-                remote.getCurrentWindow().close();
-            });
-        }
+        remote.getCurrentWindow().webContents.print(print_options, (success, failureReason ) => {
+            if (!success) {
+                console.log(failureReason );
+            }
+            remote.getCurrentWindow().close();
+        });
     });
 });

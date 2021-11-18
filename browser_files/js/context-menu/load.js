@@ -83,15 +83,6 @@ module.exports = function (SOCIALBROWSER) {
 
     // user agent
 
-    if (!SOCIALBROWSER.user_agent_url) {
-        SOCIALBROWSER.var.sites.forEach((site) => {
-            if (document.location.href.like(site.url) && site.user_agent) {
-                SOCIALBROWSER.__define(navigator, 'userAgent', site.user_agent);
-                SOCIALBROWSER.user_agent_url = site.user_agent;
-            }
-        });
-    }
-
     SOCIALBROWSER.var.customHeaderList.forEach((h) => {
         if (h.type == 'request' && document.location.href.like(h.url)) {
             h.list.forEach((v) => {

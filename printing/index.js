@@ -39,7 +39,7 @@ app.on('ready', function () {
 
     remoteMain.enable(win.webContents);
 
-    win.openDevTools();
+    
     win.setMenuBarVisibility(false);
     win.loadURL('http://127.0.0.1:60080/data-content?index=' + index);
 

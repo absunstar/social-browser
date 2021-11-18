@@ -541,7 +541,6 @@ module.exports = function init(parent) {
     parent.get_var('video_quality_list');
 
     parent.get_var('vip');
-    parent.get_var('sites');
 
     parent.get_var('blocking');
 

@@ -256,12 +256,7 @@ module.exports = function (child) {
                 details.requestHeaders['User-Agent'] = details.requestHeaders['User-Agent'].replace(') ', ') (' + child.md5(code) + ') ');
             }
 
-            // set site custom user agent
-            child.coreData.var.sites.forEach((site) => {
-                if (url.like(site.url) && site.user_agent) {
-                    details.requestHeaders['User-Agent'] = site.user_agent;
-                }
-            });
+
 
             // custom header request
             child.coreData.var.customHeaderList.forEach((r) => {

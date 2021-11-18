@@ -205,12 +205,6 @@ module.exports = function (parent) {
                 details.requestHeaders['User-Agent'] = details.requestHeaders['User-Agent'].replace(') ', ') (' + parent.md5(code) + ') ');
             }
 
-            // set site custom user agent
-            parent.var.sites.forEach((site) => {
-                if (url.like(site.url) && site.user_agent) {
-                    details.requestHeaders['User-Agent'] = site.user_agent;
-                }
-            });
 
             // custom header request
             parent.var.customHeaderList.forEach((r) => {
