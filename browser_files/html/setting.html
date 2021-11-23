@@ -5,15 +5,24 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta http-equiv="X-UA-Compatible" content="ie=edge" />
         <link rel="stylesheet" href="http://127.0.0.1:60080/x-css/site.css" />
-        <link rel="stylesheet" href="http://127.0.0.1:60080/x-css/theme_paper.css" />
-        <link rel="stylesheet" href="http://127.0.0.1:60080/x-css/font-awesome.css" />
         <title>Setting</title>
         <style>
             :root {
-                --fieldset-border: 1px dashed #9e9e9e;
+                --theme-color: #2196f3;
+                --fieldset-border: 1px solid #bbb;
                 --modal-color: #000000;
                 --modal-background: #00000026;
                 --font-family: monospace, 'Cairo';
+                --tabs-background-color: #2196f3;
+                --btn-add-color: #272727;
+                --btn-add-background-color: #fff;
+                --btn-delete-color: red;
+                --btn-delete-background-color: #fff;
+                --legend-font-size: 16px;
+                --legend-font-weight: normal;
+                --label-font-weight: normal;
+                --input-focus-border-width : 0 0 1px;
+                --input-focus-border-color : #2196f3;
             }
             html,
             body {
@@ -22,7 +31,10 @@
             body {
                 margin: 30px;
             }
-
+            .tabs .tabs-header .tab-link {
+                font-size: 18px;
+                font-weight: normal;
+            }
             .modal-body {
                 overflow-y: auto;
             }
@@ -32,9 +44,23 @@
             }
 
             .btn {
-                min-width: 200px;
+                box-shadow: none;
+                border: 1px solid #ddd;
+                background: #fff;
+                color: #272727;
             }
-
+            .btn-on {
+                color: #ffffff;
+                background: #4caf50;
+                font-weight: bold;
+            }
+            .btn-save {
+                font-size: 22px;
+                min-width: 200px;
+                color: #4caf50;
+                font-weight: bold;
+                padding: 20px;
+            }
             .main-setting {
                 padding: 20px !important;
             }
@@ -60,10 +86,10 @@
             i-checkbox .selector.selected {
                 background: #009688;
                 color: #fff;
-                box-shadow: 0 0 10px 1px #ffeb3b;
+                box-shadow: 0 0 10px 1px #8bc34a;
             }
             i-checkbox .selector.un-selected {
-                background: #6f6a6a;
+                background: #0000006e;
                 border: none;
                 color: #ddd;
             }
@@ -77,16 +103,6 @@
 
         <div ng-hide="setting_busy" class="content loaded">
             <h1 class="text-center"><i class="fa fa-cog"></i> Browser Setting</h1>
-            <br />
-            <br />
-            <div class="row padding">
-                <h2>Browser Version <span class="red bold"> {{setting.core.version}} </span></h2>
-                <h2>Browser ID <span class="blue bold"> {{setting.core.id}} </span></h2>
-                <i-checkbox class="row" label="Disabled Social Browser Engine " ng-model="setting.core.off"></i-checkbox>
-                <i-checkbox class="row" label="Disabled Social JavaScript Engine " ng-model="setting.core.disabled"></i-checkbox>
-            </div>
-
-            <br />
             <br />
             <div class="">
                 <h2 class="red" id="settingError"></h2>
@@ -138,6 +154,58 @@
                             <a class="tab-link" onclick="site.showTabContent(event, '#proxy_list_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-list"></i> Proxy List </a>
                         </div>
                         <div class="tabs-content">
+                            <div id="basic_tab" class="tab-content">
+                                <div class="row">
+                                    <div class="row padding">
+                                        <div class="row">
+                                            <h2>Browser Version <span class="red bold"> {{setting.core.version}} </span></h2>
+                                        </div>
+                                        <div class="row">
+                                            <h2>Browser ID <span class="bold blue"> {{setting.core.id}} </span> <i-button label="copy" ng-click="copy(setting.core.id)"></i-button></h2>
+                                        </div>
+                                    </div>
+
+                                    <div class="row padding">
+                                        <i-checkbox class="" label="I'm Using Social Browser" ng-model="setting.blocking.privacy.send_browser_id"></i-checkbox>
+                                        <i-checkbox class="" label="Disabled New Browser Engine " ng-model="setting.core.off"></i-checkbox>
+                                        <i-checkbox class="" label="Disabled New JavaScript Engine " ng-model="setting.core.disabled"></i-checkbox>
+                                    </div>
+
+                                    <fieldset>
+                                        <legend>Basic</legend>
+                                        <i-control type="password" class="col3" label="setting Password" ng-model="setting.core.password"> </i-control>
+                                        <i-control class="col3" label="Home Page" ng-model="setting.core.home_page"></i-control>
+                                        <i-control class="col3" label="New Tab" ng-model="setting.core.default_page"></i-control>
+                                        <i-control type="number" class="col3" label="Max Opend Tabs" ng-model="setting.core.max_tabs"></i-control>
+                                        <i-list
+                                            ng-search="search.$user_agent"
+                                            primary="name"
+                                            items="setting.user_agent_list"
+                                            ng-change="setting.core.user_agent = setting.core.selected_user_agent.url"
+                                            ng-model="setting.core.selected_user_agent"
+                                            label="Select User Agent"
+                                        ></i-list>
+                                        <i-control class="row" label="Custom User Agent" ng-model="setting.core.user_agent"></i-control>
+                                    </fieldset>
+
+                                    <div class="row padding">
+                                        <div class="col6">
+                                            <i-button ng-click="showBlackListModal()" label="Black List Sites"></i-button>
+                                            <i-button ng-click="showWhiteListModal()" label="White List Sites"></i-button>
+                                        </div>
+                                        <div class="col6">
+                                            <div class="row">
+                                                <div class="col6">
+                                                    <div><a class="btn" href="/api/var/export"> Export Data </a></div>
+                                                </div>
+                                                <div class="col6">
+                                                    <div><i-upload type="bg-white" api="/api/var/import" ng-model="setting.import_file_url" label="Import Data"> </i-upload></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div id="login_tab" class="tab-content">
                                 <div class="row padding">
                                     <fieldset ng-hide="login_busy">
@@ -164,44 +232,6 @@
                                 </div>
                             </div>
 
-                            <div id="basic_tab" class="tab-content">
-                                <div class="row">
-                                    <fieldset>
-                                        <legend>Basic</legend>
-                                        <i-control type="password" class="col3" label="setting Password" ng-model="setting.core.password"> </i-control>
-                                        <i-control class="col3" label="Home Page" ng-model="setting.core.home_page"></i-control>
-                                        <i-control class="col3" label="New Tab" ng-model="setting.core.default_page"></i-control>
-                                        <i-control type="number" class="col3" label="Max Opend Tabs" ng-model="setting.core.max_tabs"></i-control>
-                                        <i-list
-                                            ng-search="search.$user_agent"
-                                            primary="name"
-                                            items="setting.user_agent_list"
-                                            ng-change="setting.core.user_agent = setting.core.selected_user_agent.url"
-                                            ng-model="setting.core.selected_user_agent"
-                                            label="Select User Agent"
-                                        ></i-list>
-                                        <i-control class="row" label="Custom User Agent" ng-model="setting.core.user_agent"></i-control>
-                                    </fieldset>
-
-                                    <br />
-                                    <br />
-                                    <br />
-                                    <i-checkbox class="row" label="Send Browser ID" ng-model="setting.blocking.privacy.send_browser_id"></i-checkbox>
-                                    <br />
-                                    <br />
-                                    <br />
-                                    <div class="row">
-                                        <div class="col6">
-                                            <i-button type="btn  bg-yellow blue bold" ng-click="showBlackListModal()" label="Black List Sites"></i-button>
-                                            <i-button type="btn  bg-yellow blue bold" ng-click="showWhiteListModal()" label="White List Sites"></i-button>
-                                        </div>
-                                        <div class="col6">
-                                            <div><a class="btn" href="/api/var/export"> Export Data </a></div>
-                                            <div><i-upload api="/api/var/import" ng-model="setting.import_file_url" label="Import Data"> </i-upload></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                             <div id="blocking_tab" class="tab-content">
                                 <div class="row">
                                     <fieldset>
@@ -209,11 +239,11 @@
 
                                         <br />
                                         <div class="row">
-                                            <div class="col6">
-                                                <i-checkbox class="row" label="Allow External Popup" ng-model="setting.blocking.popup.allow_external"></i-checkbox>
-                                                <i-checkbox class="row" label="Allow Internal Popup" ng-model="setting.blocking.popup.allow_internal"></i-checkbox>
+                                            <div class="row">
+                                                <i-checkbox class="" label="Allow External Popup" ng-model="setting.blocking.popup.allow_external"></i-checkbox>
+                                                <i-checkbox class="" label="Allow Internal Popup" ng-model="setting.blocking.popup.allow_internal"></i-checkbox>
                                             </div>
-                                            <div class="col6"><i-button label="Popup White List" type="btn  bg-yellow blue bold" ng-click="showPopupIgnoreURLsModal()"></i-button></div>
+                                            <div class="row"><i-button label="Popup White List" type="btn  " ng-click="showPopupIgnoreURLsModal()"></i-button></div>
                                         </div>
                                     </fieldset>
 
@@ -226,12 +256,12 @@
                                                 <i-checkbox class="row" label="Auto Skip Video Ads " ng-model="setting.blocking.core.skip_video_ads"> </i-checkbox>
                                                 <i-checkbox class="row" label="Auto Remove External IFRAMES " ng-model="setting.blocking.core.remove_external_iframe"> </i-checkbox>
                                                 <i-checkbox class="row" label="Auto Remove Empty IFRAMES " ng-model="setting.blocking.core.block_empty_iframe"> </i-checkbox>
-                                                <i-checkbox class="row" label="Enable Block Ads " ng-model="setting.blocking.core.block_ads"></i-checkbox>
-                                                <i-checkbox class="row" label="Enable Block HTML Tags " ng-model="setting.blocking.core.block_html_tags"></i-checkbox>
+                                                <i-checkbox class="" label="Enable Block Ads " ng-model="setting.blocking.core.block_ads"></i-checkbox>
+                                                <i-checkbox class="" label="Enable Block HTML Tags " ng-model="setting.blocking.core.block_html_tags"></i-checkbox>
                                             </div>
-                                            <div class="col6">
-                                                <i-button type="btn  bg-yellow blue bold" ng-click="showAdsModal()" label="Blocking Ads Links"></i-button>
-                                                <i-button type="btn  bg-yellow blue bold" ng-click="showDomsModal()" label="Blocking Doms Selector"></i-button>
+                                            <div class="row">
+                                                <i-button type="btn  " ng-click="showAdsModal()" label="Blocking Ads Links"></i-button>
+                                                <i-button type="btn  " ng-click="showDomsModal()" label="Blocking Doms Selector"></i-button>
                                             </div>
                                         </div>
                                     </fieldset>
@@ -477,12 +507,7 @@
                                             </div>
 
                                             <div class="row">
-                                                <i-button
-                                                    label="Blocking Words"
-                                                    ng-show="setting.blocking.youtube.allow_safty_mode"
-                                                    type="btn  bg-yellow blue bold"
-                                                    ng-click="showYoutubeWordsModal()"
-                                                ></i-button>
+                                                <i-button label="Blocking Words" ng-show="setting.blocking.youtube.allow_safty_mode" type="btn  " ng-click="showYoutubeWordsModal()"></i-button>
                                             </div>
                                         </div>
                                     </fieldset>
@@ -513,8 +538,8 @@
                                             <div class="col6"><i-checkbox class="row" label="Enable" ng-model="setting.blocking.allow_safty_mode"></i-checkbox></div>
                                             <div class="col6">
                                                 <div class="row">
-                                                    <i-button label="Blocking Page URLs" type="btn  bg-yellow blue bold" ng-click="showUnsafeLinksModal()"></i-button>
-                                                    <i-button label="Blocking Page Contains Words " type="btn  bg-yellow blue bold" ng-click="showUnsafeWordsModal()"></i-button>
+                                                    <i-button label="Blocking Page URLs" type="btn  " ng-click="showUnsafeLinksModal()"></i-button>
+                                                    <i-button label="Blocking Page Contains Words " type="btn  " ng-click="showUnsafeWordsModal()"></i-button>
                                                 </div>
                                             </div>
                                         </div>
@@ -548,7 +573,7 @@
                                     <fieldset>
                                         <legend>Fast Open Menu</legend>
 
-                                        <i-button type="btn  bg-yellow blue bold" ng-click="showOpenListModal()" label="Manage List"></i-button>
+                                        <i-button type="btn  " ng-click="showOpenListModal()" label="Manage List"></i-button>
                                     </fieldset>
                                 </div>
 
@@ -642,7 +667,7 @@
                                                 <td><input class="block full-width" type="text" ng-model="_se.display" /></td>
                                                 <td>
                                                     <a class="btn" ng-click="showSession(_se)"> Options </a>
-                                                    <a class="btn bg-red white" ng-click="removeSession(_se)"> <i class="fa fa-trash"></i> Remove </a>
+                                                    <a class="btn red" ng-click="removeSession(_se)"> <i class="fa fa-trash"></i> Remove </a>
                                                 </td>
                                             </tr>
                                         </table>
@@ -660,6 +685,7 @@
                                         <form class="form">
                                             <i-control ng-model="currentSession.display" label="Name"></i-control>
                                             <br />
+                                            <br />
                                             <div class="row padding border">
                                                 <i-list
                                                     ng-search="search.$user_agent"
@@ -670,7 +696,8 @@
                                                 ></i-list>
                                                 <i-control ng-disabled="true" class="row" label="Custom User Agent" ng-model="currentSession.user_agent.url"></i-control>
                                             </div>
-
+                                            <br />
+                                            <br />
                                             <fieldset>
                                                 <legend>Proxy</legend>
 
@@ -835,7 +862,7 @@
                                             </tr>
                                             <tr ng-repeat="_se in setting.user_agent_list | filter:_userAgent | orderBy : 'name' track by $index">
                                                 <td class="center">
-                                                    {{$index + 1}} <a class="btn bg-red white" ng-click="removeUserAgent(_se)"> <i class="fa fa-trash"></i> Remove </a>
+                                                    {{$index + 1}} <a class="btn red" ng-click="removeUserAgent(_se)"> <i class="fa fa-trash"></i> Remove </a>
                                                 </td>
 
                                                 <td>
@@ -898,7 +925,7 @@
                                                 <td><input class="block full-width" type="text" ng-model="_se.name" /></td>
                                                 <td><input class="block full-width" type="text" ng-model="_se.url" /></td>
                                                 <td>
-                                                    <a class="btn bg-red white" ng-click="removeProxy(_se)"> <i class="fa fa-trash"></i> Remove </a>
+                                                    <a class="btn red" ng-click="removeProxy(_se)"> <i class="fa fa-trash"></i> Remove </a>
                                                 </td>
                                             </tr>
                                         </table>
@@ -928,9 +955,9 @@
                                                     <p class="green">{{_ex.description}}</p>
                                                 </td>
                                                 <td>
-                                                    <a ng-show="_ex.isEnabled === false" class="btn bg-black white" ng-click="enableExtension(_ex)"> OFF </a>
-                                                    <a ng-show="_ex.isEnabled === true" class="btn bg-green white" ng-click="disableExtension(_ex)"> ON </a>
-                                                    <a ng-hide="_ex.canDelete == false" class="btn bg-red white right" ng-click="removeExtension(_ex)"> <i class="fa fa-trash"></i> Click to Remove </a>
+                                                    <a ng-show="_ex.isEnabled === false" class="btn" ng-click="enableExtension(_ex)"> OFF </a>
+                                                    <a ng-show="_ex.isEnabled === true" class="btn btn-on" ng-click="disableExtension(_ex)"> ON </a>
+                                                    <a ng-hide="_ex.canDelete == false" class="btn red bold right" ng-click="removeExtension(_ex)"> <i class="fa fa-trash"></i> Click to Remove </a>
                                                 </td>
                                             </tr>
                                         </table>
@@ -954,8 +981,8 @@
                                         </td>
                                         <td>
                                             <div class="row">
-                                                <i-control type="password" ng-model="site.password"></i-control>
-                                                <i-button label="copy" ng-click="copy(site.password)"></i-button>
+                                                <div class="col6"><i-control type="password" ng-model="site.password"></i-control></div>
+                                                <div class="col6"><i-button label="copy" ng-click="copy(site.password)"></i-button></div>
                                             </div>
                                         </td>
                                     </tr>
@@ -979,7 +1006,7 @@
                             </div>
                             <div id="user_data_tab" class="tab-content">
                                 <div class="row">
-                                    <div class="col6"><i-button type="bg-red white" ng-click="clearUserData()" label="Clear All User Data"></i-button></div>
+                                    <div class="col6"><i-button type="red" ng-click="clearUserData()" label="Clear All User Data"></i-button></div>
                                 </div>
 
                                 <table class="table hover">
@@ -1042,12 +1069,12 @@
             </div>
 
             <div class="center">
-                <a ng-show="knowPassword === true" class="btn" ng-click="saveSetting(true)"> <i class="fa fa-save" aria-hidden="true"></i> Save </a>
+                <a ng-show="knowPassword === true" class="btn btn-save" ng-click="saveSetting(true)"> <i class="fa fa-save" aria-hidden="true"></i> Save </a>
 
-                <a ng-show="knowPassword === false" class="btn" ng-click="checkPassword()"> <i class="fa fa-save" aria-hidden="true"></i> Next </a>
+                <a ng-show="knowPassword === false" class="btn btn-save" ng-click="checkPassword()"> <i class="fa fa-save" aria-hidden="true"></i> Next </a>
             </div>
 
-            <div id="openListModal" class="modal small" fixed>
+            <div id="openListModal" class="modal" fixed>
                 <div class="modal-content">
                     <div class="modal-header">
                         <span class="close">&times;</span>
@@ -1148,7 +1175,7 @@
                 </div>
             </div>
 
-            <div id="popupIgnoreURLsModal" class="modal small" fixed>
+            <div id="popupIgnoreURLsModal" class="modal" fixed>
                 <div class="modal-content">
                     <div class="modal-header">
                         <span class="close">&times;</span>
@@ -1210,7 +1237,7 @@
                                     </div>
 
                                     <div class="row center">
-                                        <a ng-click="addDom()" class="btn bg-yellow blue bold"> Add New </a>
+                                        <a ng-click="addDom()" class="btn"> Add New </a>
                                     </div>
                                 </form>
                             </div>
@@ -1235,7 +1262,7 @@
                                         </form>
                                     </div>
                                     <div class="col2 center">
-                                        <a class="btn bg-red white" ng-click="removeDom(_dom , $index)"> Remove </a>
+                                        <a class="btn red" ng-click="removeDom(_dom , $index)"> Remove </a>
                                     </div>
                                 </div>
                             </fieldset>
@@ -1321,7 +1348,7 @@
                 </div>
             </div>
 
-            <div id="youtubeWordsModal" class="modal small" fixed>
+            <div id="youtubeWordsModal" class="modal" fixed>
                 <div class="modal-content">
                     <div class="modal-header">
                         <span class="close">&times;</span>
@@ -1372,31 +1399,40 @@
                     </div>
                     <div class="modal-body">
                         <h2 class="padding margin center">These Sites Can Display [ Ads , popup , un safty content , iframes ]</h2>
-                        <div class="row padding">
-                            <div class="col6">
-                                <a ng-click="addWhiteSite()" class="btn bg-yellow blue bold"> Add New </a>
+                        <br />
+                        <br />
+                        <div class="row padding border">
+                            <div class="col2">
+                                <a ng-click="addWhiteSite()" class="btn"> Add New </a>
                             </div>
-                            <div class="col6">
+                            <div class="col10">
                                 <input class="block" type="text" ng-model="whiteSite.url" />
                             </div>
                         </div>
+                        <br />
+                        <br />
+                        <table class="table">
+                            <tr>
+                                <th class="w200">Action</th>
+                                <th>URL</th>
+                            </tr>
 
-                        <div class="row padding" ng-repeat="_ws in setting.white_list | filter:whiteSite track by $index">
-                            <div class="col6">
-                                <a class="btn bg-red white" ng-click="removeWhiteSite(_ws)"> Remove </a>
-                            </div>
-                            <div class="col6">
-                                <input class="block" type="text" ng-model="_ws.url" />
-                            </div>
+                            <tr ng-repeat="_ws in setting.white_list | filter:whiteSite track by $index">
+                                <td>
+                                    <a class="btn red" ng-click="removeWhiteSite(_ws)"> Remove </a>
+                                </td>
+                                <td>
+                                    <input class="block" type="text" ng-model="_ws.url" />
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div class="modal-footer center">
+                            <a id="saveBtn" class="btn" ng-click="hideWhiteListModal()"> <i class="fa fa-save" aria-hidden="true"></i> Close </a>
                         </div>
-                    </div>
-
-                    <div class="modal-footer center">
-                        <a id="saveBtn" class="btn" ng-click="hideWhiteListModal()"> <i class="fa fa-save" aria-hidden="true"></i> Close </a>
                     </div>
                 </div>
             </div>
-
             <div id="blackListModal" class="modal small" fixed>
                 <div class="modal-content">
                     <div class="modal-header">
@@ -1405,23 +1441,32 @@
                     </div>
                     <div class="modal-body">
                         <h2 class="padding margin center">This Sites Can't loaded</h2>
-                        <div class="row padding">
-                            <div class="col6">
-                                <a ng-click="addBlackSite()" class="btn bg-yellow blue bold"> Add New </a>
+                        <br>
+                        <br>
+                        <div class="row padding border">
+                            <div class="col2">
+                                <a ng-click="addBlackSite()" class="btn"> Add New </a>
                             </div>
-                            <div class="col6">
+                            <div class="col10">
                                 <input class="block" type="text" ng-model="blackSite.url" />
                             </div>
                         </div>
-
-                        <div class="row padding" ng-repeat="_ws in setting.black_list | filter:blackSite track by $index">
-                            <div class="col6">
-                                <a class="btn bg-red white" ng-click="removeBlackSite(_ws)"> Remove </a>
-                            </div>
-                            <div class="col6">
-                                <input class="block" type="text" ng-model="_ws.url" />
-                            </div>
-                        </div>
+                        <br>
+                        <br>
+                        <table class="table">
+                            <tr>
+                                <th class="w200">Action</th>
+                                <th>URL</th>
+                            </tr>
+                            <tr ng-repeat="_ws in setting.black_list | filter:blackSite track by $index">
+                                <td>
+                                    <a class="btn red" ng-click="removeBlackSite(_ws)"> Remove </a>
+                                </td>
+                                <td>
+                                    <input class="block" type="text" ng-model="_ws.url" />
+                                </td>
+                            </tr>
+                        </table>
                     </div>
 
                     <div class="modal-footer center">
@@ -1431,10 +1476,7 @@
             </div>
         </div>
 
-        <script src="http://127.0.0.1:60080/x-js/jquery.js"></script>
-        <script src="http://127.0.0.1:60080/x-js/site.js"></script>
-        <script src="http://127.0.0.1:60080/x-js/angular.js"></script>
-        <script src="http://127.0.0.1:60080/x-js/directive.js"></script>
+        <script src="http://127.0.0.1:60080/x-js/all.js"></script>
         <script src="http://127.0.0.1:60080/js/setting.js"></script>
         <script>
             document.querySelector('.tab-link').click();

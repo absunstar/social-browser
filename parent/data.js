@@ -13,8 +13,8 @@ module.exports = function init(parent) {
     parent.icons['win32'] = parent.path.join(parent.files_dir, 'images', 'logo.ico');
 
     parent.handleAdList = function () {
-        if(!parent.var.ad_list){
-            return
+        if (!parent.var.ad_list) {
+            return;
         }
         parent.var.$ad_list = [];
         parent.var.ad_list.forEach((l) => {
@@ -216,28 +216,25 @@ module.exports = function init(parent) {
                     parent.var[name] = currentContent;
                     parent.set_var(name, parent.var[name]);
                 } else if (name == 'user_agent_list') {
-                   
-                        default_content.forEach((d) => {
-                            let exists = false;
-                            currentContent.forEach((d2) => {
-                                if (d.name == d2.name) {
-                                    exists = true;
-                                    d2.url = d.url;
-                                    d2.platform = d.platform;
-                                    d2.oscpu = d.oscpu;
-                                    d2.vendor = d.vendor;
-                                    d2.engine = d.engine;
-                                }
-                            });
-                            if (!exists) {
-                                currentContent.push(d);
+                    default_content.forEach((d) => {
+                        let exists = false;
+                        currentContent.forEach((d2) => {
+                            if (d.name == d2.name) {
+                                exists = true;
+                                d2.url = d.url;
+                                d2.platform = d.platform;
+                                d2.oscpu = d.oscpu;
+                                d2.vendor = d.vendor;
+                                d2.engine = d.engine;
                             }
                         });
-                    
+                        if (!exists) {
+                            currentContent.push(d);
+                        }
+                    });
 
                     parent.var[name] = currentContent;
                     parent.set_var(name, parent.var[name]);
-
                 } else if (name == 'extension_list') {
                     default_content.forEach((d) => {
                         let exists = false;
@@ -373,7 +370,7 @@ module.exports = function init(parent) {
             }
 
             if (!parent.var.core.id) {
-                parent.var.id = process.platform + '_' + parent.package.version + '_' + parent.md5(new Date().getTime() + '_' + Math.random());
+                parent.var.id = parent.md5(process.platform + '_' + parent.package.version + '_' + new Date().getTime() + '_' + Math.random());
                 parent.var.core.id = parent.var.id;
                 parent.var.core.started_date = Date.now();
                 parent.set_var('core', parent.var.core);

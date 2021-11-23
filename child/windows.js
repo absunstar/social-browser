@@ -370,17 +370,21 @@ module.exports = function (child) {
             }, 100);
 
             setTimeout(() => {
-                win.setAlwaysOnTop(true);
-                win.show();
+                if (win && !win.isDestroyed) {
+                    win.setAlwaysOnTop(true);
+                    win.show();
+                }
             }, 200);
         });
         win.on('leave-full-screen', (e) => {
             setTimeout(() => {
                 child.handleWindowBounds();
-                if (!win.$setting.windowType.like('*youtube*')) {
-                    win.setAlwaysOnTop(false);
+                if (win && !win.isDestroyed) {
+                    if (!win.$setting.windowType.like('*youtube*')) {
+                        win.setAlwaysOnTop(false);
+                    }
+                    win.show();
                 }
-                win.show();
             }, 100);
         });
         win.on('enter-html-full-screen', (e) => {
@@ -389,23 +393,27 @@ module.exports = function (child) {
             }, 100);
 
             setTimeout(() => {
-                win.setAlwaysOnTop(true);
-                win.show();
+                if (win && !win.isDestroyed) {
+                    win.setAlwaysOnTop(true);
+                    win.show();
+                }
             }, 200);
         });
         win.on('leave-html-full-screen', (e) => {
             setTimeout(() => {
                 child.handleWindowBounds();
-                if (!win.$setting.windowType.like('*youtube*')) {
-                    win.setAlwaysOnTop(false);
+                if (win && !win.isDestroyed) {
+                    if (!win.$setting.windowType.like('*youtube*')) {
+                        win.setAlwaysOnTop(false);
+                    }
+                    win.show();
                 }
-                win.show();
             }, 100);
         });
 
         win.webContents.on('context-menu', (event, params) => {
-            win.webContents.send('context-menu' , params);
-            return
+            win.webContents.send('context-menu', params);
+            return;
             const menu = new child.electron.Menu();
 
             // Add each spelling suggestion
