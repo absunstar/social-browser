@@ -282,7 +282,7 @@ module.exports = function (child) {
                     child.profilesWindow.hide();
                 }
 
-                if (child.mainWindow && !child.mainWindow.isDestroyed) {
+                if (child.mainWindow && !child.mainWindow.isDestroyed()) {
                     let data = {
                         type: '[send-window-status]',
                         //options: setting,
@@ -349,7 +349,7 @@ module.exports = function (child) {
             }
         });
         win.on('close', (e) => {
-            if (win && !win.isDestroyed) {
+            if (win && !win.isDestroyed()) {
                 win.destroy();
             }
         });
@@ -374,7 +374,7 @@ module.exports = function (child) {
             }, 100);
 
             setTimeout(() => {
-                if (win && !win.isDestroyed) {
+                if (win && !win.isDestroyed()) {
                     win.setAlwaysOnTop(true);
                     win.show();
                 }
@@ -383,7 +383,7 @@ module.exports = function (child) {
         win.on('leave-full-screen', (e) => {
             setTimeout(() => {
                 child.handleWindowBounds();
-                if (win && !win.isDestroyed) {
+                if (win && !win.isDestroyed()) {
                     if (!win.$setting.windowType.like('*youtube*')) {
                         win.setAlwaysOnTop(false);
                     }
@@ -397,7 +397,7 @@ module.exports = function (child) {
             }, 100);
 
             setTimeout(() => {
-                if (win && !win.isDestroyed) {
+                if (win && !win.isDestroyed()) {
                     win.setAlwaysOnTop(true);
                     win.show();
                 }
@@ -406,7 +406,7 @@ module.exports = function (child) {
         win.on('leave-html-full-screen', (e) => {
             setTimeout(() => {
                 child.handleWindowBounds();
-                if (win && !win.isDestroyed) {
+                if (win && !win.isDestroyed()) {
                     if (!win.$setting.windowType.like('*youtube*')) {
                         win.setAlwaysOnTop(false);
                     }
@@ -416,7 +416,7 @@ module.exports = function (child) {
         });
 
         win.webContents.on('context-menu', (event, params) => {
-            if (win && !win.isDestroyed) {
+            if (win && !win.isDestroyed()) {
                 win.webContents.send('context-menu', params);
             }
 
@@ -468,7 +468,7 @@ module.exports = function (child) {
         win.webContents.on('before-input-event', (event, input) => {
             // For example, only enable application menu keyboard shortcuts when
             // Ctrl/Cmd are down.
-            if (win && !win.isDestroyed) {
+            if (win && !win.isDestroyed()) {
                 win.webContents.setIgnoreMenuShortcuts(!input.control && !input.meta);
             }
         });
@@ -521,7 +521,7 @@ module.exports = function (child) {
 
         win.webContents.on('update-target-url', (e, url) => {
             url = url.replace('#___new_tab___', '').replace('#___new_popup___', '');
-            if (win && !win.isDestroyed) {
+            if (win && !win.isDestroyed()) {
                 win.webContents.send('[send-render-message]', {
                     name: 'update-target-url',
                     url: child.decodeURI(url),
@@ -530,7 +530,7 @@ module.exports = function (child) {
         });
 
         win.webContents.on('dom-ready', (e) => {
-            if (win && !win.isDestroyed) {
+            if (win && !win.isDestroyed()) {
                 win.setBounds({ width: win.getBounds().width + 1 });
                 win.setBounds({ width: win.getBounds().width - 1 });
 
@@ -551,7 +551,7 @@ module.exports = function (child) {
                 buttons: ['[window-reload]', 'Close'],
             };
 
-            if (win && !win.isDestroyed) {
+            if (win && !win.isDestroyed()) {
                 child.electron.dialog.showMessageBox(options, function (index) {
                     if (index === 0) {
                         win.webContents.forcefullyCrashRenderer();
@@ -564,7 +564,7 @@ module.exports = function (child) {
         });
 
         win.webContents.on('crashed', (e) => {
-            if (win && !win.isDestroyed) {
+            if (win && !win.isDestroyed()) {
                 win.webContents.forcefullyCrashRenderer();
                 win.webContents.reload();
             }
@@ -593,7 +593,7 @@ module.exports = function (child) {
                     ok = true;
                     e.preventDefault();
                     data.time = new Date().getTime();
-                    if (win && !win.isDestroyed) {
+                    if (win && !win.isDestroyed()) {
                         win.loadURL(data.to);
                     }
                    
@@ -620,7 +620,7 @@ module.exports = function (child) {
         win.webContents.on('new-window', function (event, url, frameName, disposition, options, referrer, postBody) {
             event.preventDefault();
 
-            if (!win || win.isDestroyed) {
+            if (!win || win.isDestroyed()) {
                return
             }
 
