@@ -148,7 +148,7 @@ app.on('ready', function () {
         let win = child.getWindow();
         let mainWindow = child.coreData.options.mainWindow;
         let screen = child.coreData.options.screen;
-        if (!mainWindow || !screen || child.coreData.options.windowType === 'main' || !win) {
+        if (!mainWindow || mainWindow.isDestroyed() || !screen || child.coreData.options.windowType === 'main' || !win || win.isDestroyed()) {
             return;
         }
 
