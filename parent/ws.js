@@ -121,7 +121,7 @@ module.exports = function init(parent) {
                     break;
                 case '[request-window-status]':
                     parent.clientList.forEach((client) => {
-                        if (client.windowType !== 'main' && client.ws) {
+                        if (parent.lastWindowStatus && client.windowType !== 'main' && client.ws) {
                             client.ws.send(parent.lastWindowStatus);
                         }
                     });
