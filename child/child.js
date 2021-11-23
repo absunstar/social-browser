@@ -149,12 +149,12 @@ app.on('ready', function () {
             return;
         }
         child.handleWindowBoundsBusy = true;
-        console.log('child.handleWindowBounds()');
         let win = child.getWindow();
         let mainWindow = child.coreData.options.mainWindow;
         let screen = child.coreData.options.screen;
         if (!mainWindow || !screen || child.coreData.options.windowType === 'main' || !win || win.isDestroyed()) {
             child.handleWindowBoundsBusy = false;
+
             return;
         }
 
@@ -174,7 +174,9 @@ app.on('ready', function () {
                 width: width,
                 height: height,
             });
+
             child.handleWindowBoundsBusy = false;
+
             return;
         } else {
             let new_bounds = {
@@ -202,7 +204,6 @@ app.on('ready', function () {
             }
         }
         child.handleWindowBoundsBusy = false;
-        console.log('child.handleWindowBounds() ............');
     };
 
     require(child.path.join(child.dir, 'child', 'ws'))(child);
