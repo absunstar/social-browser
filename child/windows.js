@@ -282,21 +282,23 @@ module.exports = function (child) {
                     child.profilesWindow.hide();
                 }
 
-                let data = {
-                    type: '[send-window-status]',
-                    //options: setting,
-                    pid: child.id,
-                    index: child.index,
-                    mainWindow: {
-                        bounds: child.mainWindow.getBounds(),
-                        isMaximized: child.mainWindow.isMaximized(),
-                        hide: child.mainWindow.isMinimized() || !child.mainWindow.isVisible(),
-                    },
-                    screen: {
-                        bounds: child.electron.screen.getPrimaryDisplay().bounds,
-                    },
-                };
-                child.sendMessage(data);
+                if (child.mainWindow && !child.mainWindow.isDestroyed) {
+                    let data = {
+                        type: '[send-window-status]',
+                        //options: setting,
+                        pid: child.id,
+                        index: child.index,
+                        mainWindow: {
+                            bounds: child.mainWindow.getBounds(),
+                            isMaximized: child.mainWindow.isMaximized(),
+                            hide: child.mainWindow.isMinimized() || !child.mainWindow.isVisible(),
+                        },
+                        screen: {
+                            bounds: child.electron.screen.getPrimaryDisplay().bounds,
+                        },
+                    };
+                    child.sendMessage(data);
+                }
             }
             setTimeout(() => {
                 child.sendCurrentDataLoop();
@@ -347,7 +349,9 @@ module.exports = function (child) {
             }
         });
         win.on('close', (e) => {
-            win.destroy();
+            if (win && !win.isDestroyed) {
+                win.destroy();
+            }
         });
 
         win.on('closed', () => {
@@ -412,7 +416,10 @@ module.exports = function (child) {
         });
 
         win.webContents.on('context-menu', (event, params) => {
-            win.webContents.send('context-menu', params);
+            if (win && !win.isDestroyed) {
+                win.webContents.send('context-menu', params);
+            }
+
             return;
             const menu = new child.electron.Menu();
 
@@ -461,7 +468,9 @@ module.exports = function (child) {
         win.webContents.on('before-input-event', (event, input) => {
             // For example, only enable application menu keyboard shortcuts when
             // Ctrl/Cmd are down.
-            win.webContents.setIgnoreMenuShortcuts(!input.control && !input.meta);
+            if (win && !win.isDestroyed) {
+                win.webContents.setIgnoreMenuShortcuts(!input.control && !input.meta);
+            }
         });
 
         win.on('page-title-updated', (e, title) => {
@@ -512,22 +521,26 @@ module.exports = function (child) {
 
         win.webContents.on('update-target-url', (e, url) => {
             url = url.replace('#___new_tab___', '').replace('#___new_popup___', '');
-            win.webContents.send('[send-render-message]', {
-                name: 'update-target-url',
-                url: child.decodeURI(url),
-            });
+            if (win && !win.isDestroyed) {
+                win.webContents.send('[send-render-message]', {
+                    name: 'update-target-url',
+                    url: child.decodeURI(url),
+                });
+            }
         });
 
         win.webContents.on('dom-ready', (e) => {
-            win.setBounds({ width: win.getBounds().width + 1 });
-            win.setBounds({ width: win.getBounds().width - 1 });
+            if (win && !win.isDestroyed) {
+                win.setBounds({ width: win.getBounds().width + 1 });
+                win.setBounds({ width: win.getBounds().width - 1 });
 
-            child.sendMessage({
-                type: '[add-window-url]',
-                url: child.decodeURI(win.getURL()),
-                title: win.getTitle(),
-                logo: win.$setting.favicon,
-            });
+                child.sendMessage({
+                    type: '[add-window-url]',
+                    url: child.decodeURI(win.getURL()),
+                    title: win.getTitle(),
+                    logo: win.$setting.favicon,
+                });
+            }
         });
 
         win.on('unresponsive', async () => {
@@ -538,19 +551,23 @@ module.exports = function (child) {
                 buttons: ['[window-reload]', 'Close'],
             };
 
-            child.electron.dialog.showMessageBox(options, function (index) {
-                if (index === 0) {
-                    win.webContents.forcefullyCrashRenderer();
-                    win.webContents.reload();
-                } else {
-                    win.close();
-                }
-            });
+            if (win && !win.isDestroyed) {
+                child.electron.dialog.showMessageBox(options, function (index) {
+                    if (index === 0) {
+                        win.webContents.forcefullyCrashRenderer();
+                        win.webContents.reload();
+                    } else {
+                        win.close();
+                    }
+                });
+            }
         });
 
         win.webContents.on('crashed', (e) => {
-            win.webContents.forcefullyCrashRenderer();
-            win.webContents.reload();
+            if (win && !win.isDestroyed) {
+                win.webContents.forcefullyCrashRenderer();
+                win.webContents.reload();
+            }
         });
 
         win.webContents.on('will-navigate', (e, url) => {
@@ -576,7 +593,10 @@ module.exports = function (child) {
                     ok = true;
                     e.preventDefault();
                     data.time = new Date().getTime();
-                    win.loadURL(data.to);
+                    if (win && !win.isDestroyed) {
+                        win.loadURL(data.to);
+                    }
+                   
                 }
             });
         });
@@ -599,6 +619,10 @@ module.exports = function (child) {
         }
         win.webContents.on('new-window', function (event, url, frameName, disposition, options, referrer, postBody) {
             event.preventDefault();
+
+            if (!win || win.isDestroyed) {
+               return
+            }
 
             let real_url = url || event.url || '';
 
