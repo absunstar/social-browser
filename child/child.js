@@ -76,7 +76,7 @@ app.commandLine.appendSwitch('disable-web-security');
 app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
 app.commandLine.appendSwitch('disable-site-isolation-trials');
 app.commandLine.appendSwitch('enable-features', 'PDFViewerUpdate');
-app.disableHardwareAcceleration();
+// app.disableHardwareAcceleration();
 app.commandLine.appendSwitch('--no-sandbox');
 // child.allow_widevinecdm(app)
 
@@ -145,6 +145,7 @@ app.on('ready', function () {
     };
 
     child.handleWindowBounds = function () {
+        console.log('child.handleWindowBounds()');
         let win = child.getWindow();
         let mainWindow = child.coreData.options.mainWindow;
         let screen = child.coreData.options.screen;
@@ -194,6 +195,8 @@ app.on('ready', function () {
                 win.setAlwaysOnTop(false);
             }
         }
+
+        console.log('child.handleWindowBounds() ............');
     };
 
     require(child.path.join(child.dir, 'child', 'ws'))(child);

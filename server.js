@@ -141,7 +141,7 @@ if (!browser.isPortal) {
 }
 
 browser.electron.app.clearRecentDocuments();
-browser.electron.app.disableHardwareAcceleration();
+// browser.electron.app.disableHardwareAcceleration();
 
 /* App Ready */
 browser.electron.app.on('ready', function () {
