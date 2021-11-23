@@ -76,7 +76,7 @@ app.commandLine.appendSwitch('disable-web-security');
 app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
 app.commandLine.appendSwitch('disable-site-isolation-trials');
 app.commandLine.appendSwitch('enable-features', 'PDFViewerUpdate');
-// app.disableHardwareAcceleration();
+app.disableHardwareAcceleration();
 app.commandLine.appendSwitch('--no-sandbox');
 // child.allow_widevinecdm(app)
 
