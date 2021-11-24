@@ -154,7 +154,6 @@ app.on('ready', function () {
         let screen = child.coreData.options.screen;
         if (!mainWindow || !screen || child.coreData.options.windowType === 'main' || !win || win.isDestroyed()) {
             child.handleWindowBoundsBusy = false;
-
             return;
         }
 
