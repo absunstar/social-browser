@@ -23,9 +23,9 @@ module.exports = function (child) {
       if (data.type == 'attached') {
         child.log('^_^ child Attached !!!');
       } else if (data.type == '[send-window-status]') {
-        child.coreData = child.coreData || { options: {} };
-        child.coreData.options.screen = data.screen;
-        child.coreData.options.mainWindow = data.mainWindow;
+        child.parent = child.parent || { options: {} };
+        child.parent.options.screen = data.screen;
+        child.parent.options.mainWindow = data.mainWindow;
         child.handleWindowBounds();
       }
     });

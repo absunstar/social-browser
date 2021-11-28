@@ -30,7 +30,7 @@ app.on("ready", function () {
         alwaysOnTop: false,
         webPreferences: {
             preload : dir + '/updates/preload.js',
-            preload: setting.preload || child.coreData.files_dir + '/js/context-menu.js',
+            preload: setting.preload || child.parent.files_dir + '/js/context-menu.js',
             javascript: true,
             contextIsolation: false,
             nativeWindowOpen: false,

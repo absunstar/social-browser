@@ -152,6 +152,10 @@ module.exports = function init(parent) {
     require(parent.path.join(parent.dir, 'parent', 'ipc.js'))(parent);
     require(parent.path.join(parent.dir, 'parent', 'ws.js'))(parent);
     require(parent.path.join(parent.dir, 'parent', 'chat.js'))(parent);
+    // if (parent.speedMode) {
+    //     require(parent.path.join(parent.dir, 'child', 'windows.js'))(parent);
+    //     require(parent.path.join(parent.dir, 'child', 'ipc.js'))(parent);
+    // }
     // require(parent.path.join(parent.dir, 'parent', 'host.js'))(parent);
     //  require(parent.path.join(parent.dir, 'spiders', 'page-urls.js'))(parent);
     //  require(parent.path.join(parent.dir, 'spiders', 'page-info.js'))(parent);
@@ -168,6 +172,10 @@ module.exports = function init(parent) {
             parent.information['BIOS'] = d.replace(/\n|\r|\t|\s+|SerialNumber/g, '');
         });
     }
+
+    parent.createChildWindow = function (options) {
+        parent.createNewWindow(options);
+    };
 
     parent.createChildProcess = function (options) {
         options = options || {};
@@ -200,7 +208,7 @@ module.exports = function init(parent) {
             //   options: options,
             // };
 
-            let child = parent.run(['--index=' + index, '--dir=' + parent.dir, parent.dir + '/child/child.js']);
+            let child = parent.run(['--index=' + index, '--dir=' + parent.dir, '--speed=' + (parent.speedMode || ''), parent.dir + '/child/child.js']);
 
             child.stdout.on('data', function (data) {
                 parent.log(` [ child ${child.pid} ] Log \n      ${data}`);
@@ -306,12 +314,11 @@ module.exports = function init(parent) {
             .then((info) => {
                 console.log(info);
                 if (info.version > parent.var.core.version) {
-                    console.log('Will Updating')
+                    console.log('Will Updating');
                     // parent.child_process.spawn('C:\\Users\\share\\Downloads\\social_browser_64.exe', null, { detached: true });
                     // process.exit();
-                }else{
-                    console.log('No Updated')
-                    
+                } else {
+                    console.log('No Updated');
                 }
             });
     };

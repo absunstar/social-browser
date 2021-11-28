@@ -1,5 +1,23 @@
 module.exports = function (child) {
+    child.assignWindows = [];
+
+    child.getMainWindow = function () {
+        let mainWindow = null;
+        child.windowList.forEach((w) => {
+            if (!mainWindow && w.windowType == 'main') {
+                mainWindow = w.window;
+            }
+        });
+        return mainWindow;
+    };
+
+    child.getWindow = function () {
+        return child.window || child.mainWindow || child.getMainWindow();
+    };
+
     child.createNewWindow = function (setting) {
+        let parent = child.parent;
+
         let defaultSetting = {
             show: setting.show === true ? true : false,
             alwaysOnTop: false,
@@ -15,15 +33,15 @@ module.exports = function (child) {
             title: 'New Window',
             backgroundColor: '#ffffff',
             frame: true,
-            icon: child.coreData.icon,
+            icon: parent.icon,
             webPreferences: {
                 devTools: true,
                 spellcheck: false,
                 sandbox: false,
                 webaudio: typeof setting.webaudio !== undefined ? setting.webaudio : true,
                 contextIsolation: false, // false -> can access preload window functions
-                partition: setting.partition || child.coreData.var.core.session.name,
-                preload: setting.preload || child.coreData.files_dir + '/js/context-menu.js',
+                partition: setting.partition || parent.var.core.session.name,
+                preload: setting.preload || child.parent.files_dir + '/js/context-menu.js',
                 javascript: true,
                 nativeWindowOpen: false,
                 nodeIntegration: false,
@@ -118,11 +136,13 @@ module.exports = function (child) {
         if (!child.window) {
             child.window = win;
         }
+
         child.windowList.push({
             id: win.id,
-            windowType: win.$setting.windowType,
-            setting: [],
             window: win,
+            windowType: win.$setting.windowType,
+            $setting: win.$setting,
+            setting: [],
         });
 
         if (win.$setting.center) {
@@ -136,29 +156,44 @@ module.exports = function (child) {
             //   mode: 'detach',
             // });
         } else if (win.$setting.windowType === 'view') {
-            if (child.coreData.mainWindow) {
-                let new_bounds = {
-                    x: child.coreData.mainWindow.isMaximized ? child.coreData.mainWindow.bounds.x + 8 : child.coreData.mainWindow.bounds.x,
-                    y: child.coreData.mainWindow.isMaximized ? child.coreData.mainWindow.bounds.y + 78 : child.coreData.mainWindow.bounds.y + 70,
-                    width: child.coreData.mainWindow.isMaximized ? child.coreData.mainWindow.bounds.width - 15 : child.coreData.mainWindow.bounds.width - 2,
-                    height: child.coreData.mainWindow.isMaximized ? child.coreData.mainWindow.bounds.height - 84 : child.coreData.mainWindow.bounds.height - 72,
-                };
+            if (child.speedMode) {
+                if (!child.currentView) {
+                    child.currentView = win.$setting;
+                }
 
-                win.setBounds(new_bounds);
-                // setTimeout(() => {
-                //   win.show();
-                // }, 1000 * 2);
+                if ((mainWindow = child.getMainWindow())) {
+                    let bounds = mainWindow.getBounds();
+                    let new_bounds = {
+                        x: mainWindow.isMaximized() ? bounds.x + 8 : bounds.x,
+                        y: mainWindow.isMaximized() ? bounds.y + 78 : bounds.y + 70,
+                        width: mainWindow.isMaximized() ? bounds.width - 15 : bounds.width - 2,
+                        height: mainWindow.isMaximized() ? bounds.height - 84 : bounds.height - 72,
+                    };
+                    win.setBounds(new_bounds);
+                }
+            } else {
+                if ((mainWindow = child.parent.lastWindowStatus)) {
+                    let bounds = mainWindow.bounds;
+                    let new_bounds = {
+                        x: mainWindow.isMaximized ? bounds.x + 8 : bounds.x,
+                        y: mainWindow.isMaximized ? bounds.y + 78 : bounds.y + 70,
+                        width: mainWindow.isMaximized ? bounds.width - 15 : bounds.width - 2,
+                        height: mainWindow.isMaximized ? bounds.height - 84 : bounds.height - 72,
+                    };
+
+                    win.setBounds(new_bounds);
+                }
             }
         }
 
         if (win.$setting.url) {
             win.loadURL(win.$setting.url, {
                 referrer: win.$setting.referrer,
-                userAgent: win.$setting.user_agent || child.coreData.var.core.user_agent,
+                userAgent: win.$setting.user_agent || parent.var.core.user_agent,
             });
         } else {
-            win.loadURL(child.coreData.var.core.default_page || 'http://127.0.0.1:60080/newTab', {
-                userAgent: win.$setting.user_agent || child.coreData.var.core.user_agent,
+            win.loadURL(parent.var.core.default_page || 'http://127.0.0.1:60080/newTab', {
+                userAgent: win.$setting.user_agent || parent.var.core.user_agent,
             });
         }
 
@@ -168,7 +203,7 @@ module.exports = function (child) {
                 win.show();
                 child.addressbarWindow = child.createNewWindow({
                     url: child.url.format({
-                        pathname: child.path.join(child.coreData.files_dir, 'html', 'address-bar.html'),
+                        pathname: child.path.join(child.parent.files_dir, 'html', 'address-bar.html'),
                         protocol: 'file:',
                         slashes: true,
                     }),
@@ -188,7 +223,7 @@ module.exports = function (child) {
                     webPreferences: {
                         contextIsolation: false,
                         partition: 'address_bar',
-                        preload: child.coreData.files_dir + '/js/context-menu.js',
+                        preload: child.parent.files_dir + '/js/context-menu.js',
                         nativeWindowOpen: false,
                         nodeIntegration: true,
                         experimentalFeatures: false,
@@ -200,7 +235,7 @@ module.exports = function (child) {
                 child.remoteMain.enable(child.addressbarWindow.webContents);
                 child.profilesWindow = child.createNewWindow({
                     url: child.url.format({
-                        pathname: child.path.join(child.coreData.files_dir, 'html', 'user-profiles.html'),
+                        pathname: child.path.join(child.parent.files_dir, 'html', 'user-profiles.html'),
                         protocol: 'file:',
                         slashes: true,
                     }),
@@ -220,7 +255,7 @@ module.exports = function (child) {
                     webPreferences: {
                         contextIsolation: false,
                         partition: 'profiles',
-                        preload: child.coreData.files_dir + '/js/context-menu.js',
+                        preload: child.parent.files_dir + '/js/context-menu.js',
                         nativeWindowOpen: false,
                         nodeIntegration: false,
                         experimentalFeatures: false,
@@ -231,7 +266,7 @@ module.exports = function (child) {
                 });
                 child.remoteMain.enable(child.profilesWindow.webContents);
             } else if (win.$setting.windowType === 'view') {
-                child.updateTab(win.$setting);
+                child.updateTab(win);
 
                 child.sendMessage({
                     type: '[request-window-status]',
@@ -255,7 +290,7 @@ module.exports = function (child) {
         win.setMenuBarVisibility(false);
 
         if (!win.$setting.user_agent || win.$setting.user_agent == 'undefined') {
-            win.$setting.user_agent = child.coreData.var.core.user_agent;
+            win.$setting.user_agent = parent.var.core.user_agent;
         }
 
         if (win.$setting.proxy) {
@@ -289,6 +324,7 @@ module.exports = function (child) {
                         pid: child.id,
                         index: child.index,
                         mainWindow: {
+                            id: child.mainWindow.id,
                             bounds: child.mainWindow.getBounds(),
                             isMaximized: child.mainWindow.isMaximized(),
                             hide: child.mainWindow.isMinimized() || !child.mainWindow.isVisible(),
@@ -297,7 +333,33 @@ module.exports = function (child) {
                             bounds: child.electron.screen.getPrimaryDisplay().bounds,
                         },
                     };
-                    child.sendMessage(data);
+
+                    if (child.speedMode) {
+                        parent.options.mainWindow = data.mainWindow;
+                        parent.options.screen = data.screen;
+
+                        if ((mainWindow = data.mainWindow)) {
+                            let bounds = mainWindow.bounds;
+                            let new_bounds = {
+                                x: mainWindow.isMaximized ? bounds.x + 8 : bounds.x,
+                                y: mainWindow.isMaximized ? bounds.y + 78 : bounds.y + 70,
+                                width: mainWindow.isMaximized ? bounds.width - 15 : bounds.width - 2,
+                                height: mainWindow.isMaximized ? bounds.height - 84 : bounds.height - 72,
+                            };
+                            child.windowList.forEach((w) => {
+                                if (w.windowType == 'view' && w.$setting.main_window_id == mainWindow.id) {
+                                    w.window.setBounds(new_bounds);
+                                    if (!mainWindow.hide && w.$setting.tab_id == child.currentView.tab_id) {
+                                        w.window.show();
+                                    } else {
+                                        w.window.hide();
+                                    }
+                                }
+                            });
+                        }
+                    } else {
+                        child.sendMessage(data);
+                    }
                 }
             }
             setTimeout(() => {
@@ -349,6 +411,11 @@ module.exports = function (child) {
             }
         });
         win.on('close', (e) => {
+            child.windowList.forEach((w, i) => {
+                if (w.id == win.id) {
+                    child.windowList.splice(i, 1);
+                }
+            });
             if (win && !win.isDestroyed()) {
                 win.destroy();
             }
@@ -475,7 +542,7 @@ module.exports = function (child) {
 
         win.on('page-title-updated', (e, title) => {
             win.$setting.title = title;
-            child.updateTab(win.$setting);
+            child.updateTab(win);
             child.sendMessage({
                 type: '[add-window-url]',
                 url: child.decodeURI(win.getURL()),
@@ -488,7 +555,7 @@ module.exports = function (child) {
         win.webContents.on('page-favicon-updated', (e, urls) => {
             win.$setting.icon = urls[0];
             win.$setting.favicon = urls[0];
-            child.updateTab(win.$setting);
+            child.updateTab(win);
             child.sendMessage({
                 type: '[add-window-url]',
                 url: child.decodeURI(win.getURL()),
@@ -502,20 +569,20 @@ module.exports = function (child) {
 
         win.webContents.on('did-start-loading', (e, urls) => {
             win.$setting.icon = loading_icon;
-            child.updateTab(win.$setting);
+            child.updateTab(win);
         });
         win.webContents.on('did-stop-loading', (e) => {
             win.$setting.icon = win.$setting.favicon;
-            child.updateTab(win.$setting);
+            child.updateTab(win);
         });
         win.webContents.on('did-finish-load', (e) => {
             win.$setting.icon = win.$setting.favicon;
-            child.updateTab(win.$setting);
+            child.updateTab(win);
         });
         win.webContents.on('did-fail-load', (e) => {
             e.preventDefault();
             win.$setting.icon = error_icon;
-            child.updateTab(win.$setting);
+            child.updateTab(win);
             // win.loadURL('browser://error?url=' + win.getURL() + '&description=Error While Loading');
         });
 
@@ -572,12 +639,12 @@ module.exports = function (child) {
 
         win.webContents.on('will-navigate', (e, url) => {
             // when user click on link
-            // child.log(win.getURL(), url);
+            // parent.log(win.getURL(), url);
         });
 
         win.webContents.on('will-redirect', (e, url) => {
             let ok = false;
-            child.coreData.var.overwrite.urls.forEach((data) => {
+            parent.var.overwrite.urls.forEach((data) => {
                 if (ok) {
                     return;
                 }
@@ -596,7 +663,6 @@ module.exports = function (child) {
                     if (win && !win.isDestroyed()) {
                         win.loadURL(data.to);
                     }
-                   
                 }
             });
         });
@@ -621,7 +687,7 @@ module.exports = function (child) {
             event.preventDefault();
 
             if (!win || win.isDestroyed()) {
-               return
+                return;
             }
 
             let real_url = url || event.url || '';
@@ -648,14 +714,15 @@ module.exports = function (child) {
                     title: 'YouTube',
                     width: 440,
                     height: 330,
-                    x: child.coreData.options.screen.bounds.width - 460,
-                    y: child.coreData.options.screen.bounds.height - 350,
+                    x: parent.options.screen.bounds.width - 460,
+                    y: parent.options.screen.bounds.height - 350,
                     backgroundColor: '#030303',
                     center: false,
                     url: real_url,
                     partition: win.$setting.partition,
                     user_name: win.$setting.user_name,
                 });
+
                 return;
             } else if (real_url.like('https://www.youtube.com/embed*')) {
                 child.createNewWindow({
@@ -663,8 +730,8 @@ module.exports = function (child) {
                     title: 'YouTube',
                     width: 440,
                     height: 330,
-                    x: child.coreData.options.screen.bounds.width - 460,
-                    y: child.coreData.options.screen.bounds.height - 350,
+                    x: parent.options.screen.bounds.width - 460,
+                    y: parent.options.screen.bounds.height - 350,
                     backgroundColor: '#030303',
                     center: false,
                     url: real_url,
@@ -715,7 +782,7 @@ module.exports = function (child) {
             let current_url_parser = child.url.parse(win.getURL());
 
             let allow = false;
-            child.coreData.var.blocking.popup.white_list.forEach((d) => {
+            parent.var.blocking.popup.white_list.forEach((d) => {
                 if (url_parser.host.like(d.url) || current_url_parser.host.like(d.url)) {
                     allow = true;
                 }
@@ -731,7 +798,7 @@ module.exports = function (child) {
                 return;
             }
 
-            if (child.coreData.var.blocking.popup.allow_internal && url_parser.host.contains(current_url_parser.host)) {
+            if (parent.var.blocking.popup.allow_internal && url_parser.host.contains(current_url_parser.host)) {
                 child.sendMessage({
                     type: '[send-render-message]',
                     data: {
@@ -739,10 +806,10 @@ module.exports = function (child) {
                         url: real_url.replace('#___new_tab___', '').replace('#___new_popup___', '').replace('#___trusted_window___', ''),
                         partition: win.$setting.partition,
                         user_name: win.$setting.user_name,
-                        options: child.coreData.options,
+                        options: parent.options,
                     },
                 });
-            } else if (child.coreData.var.blocking.popup.allow_external && !url_parser.host.contains(current_url_parser.host)) {
+            } else if (parent.var.blocking.popup.allow_external && !url_parser.host.contains(current_url_parser.host)) {
                 child.sendMessage({
                     type: '[open new tab]',
                     url: real_url.replace('#___new_tab___', '').replace('#___new_popup___', '').replace('#___trusted_window___', ''),

@@ -27,7 +27,7 @@ module.exports = function init(parent) {
                             key: child.options.partition,
                             value: parent.cookies[child.options.partition],
                         },
-                        mainWindow: parent.lastWindowStatus ? parent.lastWindowStatus.mainWindow : null,
+                        lastWindowStatus: parent.lastWindowStatus ? parent.lastWindowStatus.mainWindow : null,
                         appRequestUrl: parent.appRequestUrl,
                         newTabData: parent.newTabData || {
                             name: '[open new tab]',
@@ -308,5 +308,9 @@ module.exports = function init(parent) {
                 client.ws.send(message);
             }
         });
+    };
+
+    parent.sendMessage = function (message) {
+            console.log('... m ...')
     };
 };

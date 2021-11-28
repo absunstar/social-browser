@@ -109,18 +109,18 @@ module.exports = function init(child) {
         return {
             child_id: child.id,
             child_index: child.index,
-            options: child.coreData.options,
-            information: child.coreData.information,
+            options: child.parent.options,
+            information: child.parent.information,
             var: child.get_dynamic_var(data),
-            files_dir: child.coreData.files_dir,
-            dir: child.coreData.dir,
-            data_dir: child.coreData.data_dir,
-            injectHTML: child.coreData.injectHTML,
+            files_dir: child.parent.files_dir,
+            dir: child.parent.dir,
+            data_dir: child.parent.data_dir,
+            injectHTML: child.parent.injectHTML,
             windowSetting: (child.windowList.find((w) => w.id == data.win_id) || {}).setting || [],
             windowType: (child.windowList.find((w) => w.id == data.win_id) || {}).windowType || 'window-popup',
-            newTabData: child.coreData.newTabData,
+            newTabData: child.parent.newTabData,
             windows: child.assignWindows.find((w) => w.child_id == data.win_id),
-            session: child.coreData.var.session_list.find((s) => s.name == data.partition),
+            session: child.parent.var.session_list.find((s) => s.name == data.partition),
         };
     });
 
@@ -128,50 +128,98 @@ module.exports = function init(child) {
         event.returnValue = {
             child_id: child.id,
             child_index: child.index,
-            options: child.coreData.options,
-            information: child.coreData.information,
+            options: child.parent.options,
+            information: child.parent.information,
             var: child.get_dynamic_var(data),
-            files_dir: child.coreData.files_dir,
-            dir: child.coreData.dir,
-            injectHTML: child.coreData.injectHTML,
+            files_dir: child.parent.files_dir,
+            dir: child.parent.dir,
+            injectHTML: child.parent.injectHTML,
             windowSetting: (child.windowList.find((w) => w.id == data.win_id) || {}).setting || [],
             windowType: (child.windowList.find((w) => w.id == data.win_id) || {}).windowType || 'window-popup',
-            newTabData: child.coreData.newTabData,
+            newTabData: child.parent.newTabData,
             windows: child.assignWindows.find((w) => w.child_id == data.win_id),
-            session: child.coreData.var.session_list.find((s) => s.name == data.partition),
+            session: child.parent.var.session_list.find((s) => s.name == data.partition),
         };
     });
 
     child.electron.ipcMain.on('[create-new-view]', (event, options) => {
-        options.url = options.url || child.coreData.var.core.default_page;
+        options.url = options.url || child.parent.var.core.default_page;
         options.windowType = 'view';
         options.parent_id = child.id;
         options.parent_index = child.index;
-        child.sendMessage({
-            type: '[create-new-view]',
-            options: options,
-        });
+        if (child.speedMode) {
+            if (!child.session_name_list.some((s) => s == options.partition)) {
+                child.handleSession(options.partition);
+            }
+            child.createNewWindow(options);
+        } else {
+            child.sendMessage({
+                type: '[create-new-view]',
+                options: options,
+            });
+        }
     });
 
     child.electron.ipcMain.on('[show-view]', (e, options) => {
-        child.sendMessage({
-            type: '[show-view]',
-            options: options,
-        });
+        if (child.speedMode) {
+            child.currentView = options;
+            child.windowList.forEach((w) => {
+                if (w.windowType == 'view') {
+                    if (w.$setting.tab_id == child.currentView.tab_id) {
+                        w.window.show();
+                    } else {
+                        w.window.hide();
+                    }
+                }
+            });
+
+            if (child.addressbarWindow && !child.addressbarWindow.isDestroyed()) {
+                child.addressbarWindow.hide();
+            }
+            if (child.profilesWindow && !child.profilesWindow.isDestroyed()) {
+                child.profilesWindow.hide();
+            }
+        } else {
+            child.sendMessage({
+                type: '[show-view]',
+                options: options,
+            });
+        }
     });
 
     child.electron.ipcMain.on('[close-view]', (e, options) => {
-        child.sendMessage({
-            type: '[close-view]',
-            options: options,
-        });
+        if (child.speedMode) {
+            child.windowList.forEach((w) => {
+                if (w.windowType == 'view') {
+                    if (w.$setting.tab_id == options.tab_id) {
+                        w.window.close();
+                    }
+                }
+            });
+        } else {
+            child.sendMessage({
+                type: '[close-view]',
+                options: options,
+            });
+        }
     });
 
     child.electron.ipcMain.on('[update-view-url]', (e, options) => {
-        child.sendMessage({
-            type: '[update-view-url]',
-            options: options,
-        });
+        if (child.speedMode) {
+            child.windowList.forEach((w) => {
+                if (w.windowType == 'view') {
+                    if (w.$setting.tab_id == options.tab_id) {
+                        w.window.webContents.stop();
+                        w.window.loadURL(message.options.url);
+                    }
+                }
+            });
+        } else {
+            child.sendMessage({
+                type: '[update-view-url]',
+                options: options,
+            });
+        }
     });
 
     child.electron.ipcMain.on('[import-extension]', (e, options) => {
@@ -244,7 +292,7 @@ module.exports = function init(child) {
     });
 
     child.electron.ipcMain.on('[send-render-message]', (event, data) => {
-        if (data.action) {
+        if (!child.speedMode && data.action) {
             delete data.action;
             child.sendMessage({
                 type: '[call-window-action]',
@@ -255,28 +303,29 @@ module.exports = function init(child) {
                 type: '[run-window-update]',
             });
         } else if (data.name == '[open new tab]') {
-            data.partition = data.partition || child.coreData.var.core.session.name;
-            data.user_name = data.user_name || child.coreData.var.core.session.display;
-            if (child.coreData.options.windowType == 'main') {
-                child.getWindow().webContents.send('[send-render-message]', data);
+            data.partition = data.partition || child.parent.var.core.session.name;
+            data.user_name = data.user_name || child.parent.var.core.session.display;
+
+            if (child.parent.options.windowType == 'main') {
+                child.getMainWindow().webContents.send('[send-render-message]', data);
             } else {
-                data.main_window_id = child.coreData.options.main_window_id;
+                data.main_window_id = child.parent.options.main_window_id;
                 child.sendMessage({
                     type: '[send-render-message]',
                     data: data,
                 });
             }
         } else if (data.name == '[open new popup]') {
-            data.partition = data.partition || child.coreData.var.core.session.name;
-            data.user_name = data.user_name || child.coreData.var.core.session.display;
-            if (child.coreData.options.windowType == 'main') {
-                data.main_window_id = child.coreData.options.main_window_id;
+            data.partition = data.partition || child.parent.var.core.session.name;
+            data.user_name = data.user_name || child.parent.var.core.session.display;
+            if (child.parent.options.windowType == 'main') {
+                data.main_window_id = child.parent.options.main_window_id;
                 child.sendMessage({
                     type: '[send-render-message]',
                     data: data,
                 });
             } else {
-                if (data.partition && data.partition !== child.coreData.var.core.session.name) {
+                if (data.partition && data.partition !== child.parent.var.core.session.name) {
                     child.handleSession(data.partition);
                 }
 
@@ -284,8 +333,8 @@ module.exports = function init(child) {
                     windowType: data.url.like('https://www.youtube.com/embed*') ? 'youtube' : 'client-popup',
                     width: data.url.like('https://www.youtube.com/embed*') ? 440 : 1200,
                     height: data.url.like('https://www.youtube.com/embed*') ? 330 : 720,
-                    x: data.url.like('https://www.youtube.com/embed*') ? child.coreData.options.screen.bounds.width - 460 : 0,
-                    y: data.url.like('https://www.youtube.com/embed*') ? child.coreData.options.screen.bounds.height - 350 : 0,
+                    x: data.url.like('https://www.youtube.com/embed*') ? child.parent.options.screen.bounds.width - 460 : 0,
+                    y: data.url.like('https://www.youtube.com/embed*') ? child.parent.options.screen.bounds.height - 350 : 0,
                     show: true,
                     webaudio: data.webaudio,
                     center: data.url.like('https://www.youtube.com/embed*') ? false : true,
@@ -293,8 +342,8 @@ module.exports = function init(child) {
                     backgroundColor: data.url.like('https://www.youtube.com/embed*') ? '#030303' : '#ffffff',
                     url: data.url,
                     referrer: data.referrer,
-                    partition: data.partition || child.coreData.var.core.session.name,
-                    user_name: data.user_name || child.coreData.var.core.session.display,
+                    partition: data.partition || child.parent.var.core.session.name,
+                    user_name: data.user_name || child.parent.var.core.session.display,
                     trusted: data.trusted,
                     security: data.security,
                 });
@@ -314,10 +363,11 @@ module.exports = function init(child) {
                     origin: data.origin,
                     storages: data.storages,
                     quotas: data.quotas,
-                });
-                ss.clearCache().then(() => {
-                    win.webContents.reload();
-                });
+                }).then(() => {
+                        ss.clearCache().then(() => {
+                            win.webContents.reload();
+                        });
+                    });
             }
         } else if (data.name == '[toggle-fullscreen]') {
             let win = child.electron.BrowserWindow.fromId(data.win_id);
@@ -368,9 +418,9 @@ module.exports = function init(child) {
             let win = child.electron.BrowserWindow.fromId(data.win_id);
             win.webContents.setAudioMuted(!win.webContents.audioMuted);
         } else if (data.name == 'user_data') {
-            child.coreData.var.user_data = child.coreData.var.user_data || [];
+            child.parent.var.user_data = child.parent.var.user_data || [];
             let exists = false;
-            child.coreData.var.user_data.forEach((u) => {
+            child.parent.var.user_data.forEach((u) => {
                 if (u.id === data.id) {
                     exists = true;
                     u.data = data.data;
@@ -381,16 +431,16 @@ module.exports = function init(child) {
                 }
             });
             if (!exists) {
-                child.coreData.var.user_data.push(data);
+                child.parent.var.user_data.push(data);
                 child.sendMessage({
                     type: '[update-browser-var][user_data][add]',
                     data: data,
                 });
             }
         } else if (data.name == 'user_data_input') {
-            child.coreData.var.user_data_input = child.coreData.var.user_data_input || [];
+            child.parent.var.user_data_input = child.parent.var.user_data_input || [];
             let exists = false;
-            child.coreData.var.user_data_input.forEach((u) => {
+            child.parent.var.user_data_input.forEach((u) => {
                 if (u.id === data.id) {
                     exists = true;
                     u.data = data.data;
@@ -401,7 +451,7 @@ module.exports = function init(child) {
                 }
             });
             if (!exists) {
-                child.coreData.var.user_data_input.push(data);
+                child.parent.var.user_data_input.push(data);
                 child.sendMessage({
                     type: '[update-browser-var][user_data_input][add]',
                     data: data,
@@ -432,14 +482,14 @@ module.exports = function init(child) {
             let win = child.electron.BrowserWindow.fromId(data.win_id);
 
             let exists = false;
-            child.coreData.var.bookmarks.forEach((b) => {
+            child.parent.var.bookmarks.forEach((b) => {
                 if (b.url == win.getURL()) {
                     b.title == win.getTitle();
                     exists = true;
                 }
             });
             if (!exists) {
-                child.coreData.var.bookmarks.push({
+                child.parent.var.bookmarks.push({
                     title: win.getTitle(),
                     url: win.getURL(),
                     favicon: win.$setting.favicon,
@@ -449,7 +499,7 @@ module.exports = function init(child) {
                 type: '[update-browser-var]',
                 options: {
                     name: 'bookmarks',
-                    data: child.coreData.var.bookmarks,
+                    data: child.parent.var.bookmarks,
                 },
             });
         } else if (data.name == '[save-window-as-pdf]') {
@@ -504,7 +554,7 @@ module.exports = function init(child) {
         } else if (data.name == '[download-link]') {
             child.sendMessage({
                 type: '[download-link]',
-                partition: data.partition || data.options.partition || child.coreData.partition,
+                partition: data.partition || data.options.partition || child.parent.partition,
                 url: data.url,
             });
         }

@@ -37,64 +37,64 @@ module.exports = function (child) {
                         type: '[attach-child]',
                     });
                 } else if (message.type == '[browser-core-data]') {
-                    child.coreData = message;
+                    child.parent = message;
                     child.cookies = child.cookies || {};
 
-                    child.cookies[child.coreData.options.partition] = child.coreData.cookies[child.coreData.options.partition];
-                    child.electron.app.userAgentFallback = child.coreData.var.core.user_agent;
-                    child.electron.app.setPath('userData', child.path.join(child.coreData.data_dir, 'default'));
+                    child.cookies[child.parent.options.partition] = child.parent.cookies[child.parent.options.partition];
+                    child.electron.app.userAgentFallback = child.parent.var.core.user_agent;
+                    child.electron.app.setPath('userData', child.path.join(child.parent.data_dir, 'default'));
                     child.sessionConfig();
-                    child.createNewWindow({ ...child.coreData.options });
-                    if (child.coreData.windowType == 'none') {
+                    child.createNewWindow({ ...child.parent.options });
+                    if (child.parent.windowType == 'none') {
                         child.window = null;
                         child.sendMessage({
                             type: '[un-attach-child]',
                         });
                     }
                 } else if (message.type == '[update-browser-var][user_data_input][add]') {
-                    child.coreData.var.user_data_input.push(message.data);
+                    child.parent.var.user_data_input.push(message.data);
                     child.sendToWindows('[update-browser-var]', {
                         type: '[update-browser-var]',
                         options: {
                             name: 'user_data_input',
-                            data: child.coreData.var.user_data_input,
+                            data: child.parent.var.user_data_input,
                         },
                     });
                 } else if (message.type == '[update-browser-var][user_data][add]') {
-                    child.coreData.var.user_data.push(message.data);
+                    child.parent.var.user_data.push(message.data);
                     child.sendToWindows('[update-browser-var]', {
-                      type: '[update-browser-var]',
-                      options: {
-                          name: 'user_data',
-                          data: child.coreData.var.user_data,
-                      },
-                  });
+                        type: '[update-browser-var]',
+                        options: {
+                            name: 'user_data',
+                            data: child.parent.var.user_data,
+                        },
+                    });
                 } else if (message.type == '[update-browser-var][user_data_input][update]') {
-                    child.coreData.var.user_data_input.forEach((u) => {
+                    child.parent.var.user_data_input.forEach((u) => {
                         if (u.id === message.data.id) {
                             u.data = message.data.data;
                         }
                     });
                     child.sendToWindows('[update-browser-var]', {
-                      type: '[update-browser-var]',
-                      options: {
-                          name: 'user_data_input',
-                          data: child.coreData.var.user_data_input,
-                      },
-                  });
+                        type: '[update-browser-var]',
+                        options: {
+                            name: 'user_data_input',
+                            data: child.parent.var.user_data_input,
+                        },
+                    });
                 } else if (message.type == '[update-browser-var][user_data][update]') {
-                    child.coreData.var.user_data.forEach((u) => {
+                    child.parent.var.user_data.forEach((u) => {
                         if (u.id === message.data.id) {
                             u.data = message.data.data;
                         }
                     });
                     child.sendToWindows('[update-browser-var]', {
-                      type: '[update-browser-var]',
-                      options: {
-                          name: 'user_data',
-                          data: child.coreData.var.user_data,
-                      },
-                  });
+                        type: '[update-browser-var]',
+                        options: {
+                            name: 'user_data',
+                            data: child.parent.var.user_data,
+                        },
+                    });
                 } else if (message.type == '[browser-cookies]') {
                     child.cookies[message.name] = message.value;
                 } else if (message.type == '[send-render-message]') {
@@ -103,7 +103,7 @@ module.exports = function (child) {
                     child.sendToWindow('$download_item', message.data);
                 } else if (message.type == '[add-window-url]') {
                     let exists = false;
-                    child.coreData.var.urls.forEach((u) => {
+                    child.parent.var.urls.forEach((u) => {
                         if (u.url == message.url) {
                             exists = true;
                             if (!message.ignoreCounted) {
@@ -115,7 +115,7 @@ module.exports = function (child) {
                         }
                     });
                     if (!exists) {
-                        child.coreData.var.urls.push({
+                        child.parent.var.urls.push({
                             url: message.url,
                             logo: message.logo,
                             logo2: message.logo,
@@ -127,7 +127,7 @@ module.exports = function (child) {
                     }
 
                     if (child.addressbarWindow && !child.addressbarWindow.isDestroyed()) {
-                        child.addressbarWindow.webContents.send('[update-browser-var]', { options: { name: 'urls', data: child.coreData.var.urls } });
+                        child.addressbarWindow.webContents.send('[update-browser-var]', { options: { name: 'urls', data: child.parent.var.urls } });
                     }
                 } else if (message.type == '[cookie-changed]') {
                     child.cookies[message.partition] = child.cookies[message.partition] || [];
@@ -165,10 +165,10 @@ module.exports = function (child) {
                         }
                     }
                 } else if (message.type == '[update-browser-var]') {
-                    child.coreData.var[message.options.name] = message.options.data;
+                    child.parent.var[message.options.name] = message.options.data;
                     if (message.options.name == 'core') {
-                        if (child.coreData.var.core.user_agent) {
-                            child.electron.app.userAgentFallback = child.coreData.var.core.user_agent;
+                        if (child.parent.var.core.user_agent) {
+                            child.electron.app.userAgentFallback = child.parent.var.core.user_agent;
                         }
                     } else if (message.options.name == 'core' || message.options.name == 'proxy' || message.options.name == 'session_list') {
                         child.sessionConfig();
@@ -231,7 +231,7 @@ module.exports = function (child) {
                         child.getWindow().webContents.openDevTools();
                     } else if (message.data.name == '[toggle-window-audio]' && child.getWindow()) {
                         child.getWindow().webContents.setAudioMuted(!child.getWindow().webContents.audioMuted);
-                        child.updateTab(child.coreData.options);
+                        child.updateTab(child.getWindow());
                     } else if (message.data.name == 'copy') {
                         child.electron.clipboard.writeText(message.data.text.replace('#___new_tab___', '').replace('#___new_popup__', ''));
                     } else if (message.data.name == 'full_screen' && child.getWindow()) {
@@ -256,14 +256,14 @@ module.exports = function (child) {
                         let win = child.getWindow();
 
                         let exists = false;
-                        child.coreData.var.bookmarks.forEach((b) => {
+                        child.parent.var.bookmarks.forEach((b) => {
                             if (b.url == win.getURL()) {
                                 b.title == win.getTitle();
                                 exists = true;
                             }
                         });
                         if (!exists) {
-                            child.coreData.var.bookmarks.push({
+                            child.parent.var.bookmarks.push({
                                 title: win.getTitle(),
                                 url: win.getURL(),
                                 favicon: win.$setting.favicon,
@@ -273,7 +273,7 @@ module.exports = function (child) {
                             type: '[update-browser-var]',
                             options: {
                                 name: 'bookmarks',
-                                data: child.coreData.var.bookmarks,
+                                data: child.parent.var.bookmarks,
                             },
                         });
                     } else if (message.data.name == '[edit-window]' && child.getWindow()) {
@@ -306,25 +306,26 @@ module.exports = function (child) {
                         child.profilesWindow.hide();
                     }
                 } else if (message.type == '[show-view]' && child.getWindow()) {
+
                     if (child.addressbarWindow && !child.addressbarWindow.isDestroyed()) {
                         child.addressbarWindow.hide();
                     }
                     if (child.profilesWindow && !child.profilesWindow.isDestroyed()) {
                         child.profilesWindow.hide();
                     }
-                    if (child.coreData.options.windowType !== 'view') {
+                    if (child.parent.options.windowType !== 'view') {
                         return;
                     }
-                    if (child.coreData.is_current_view == message.is_current_view) {
-                        if (child.coreData.is_current_view) {
+                    if (child.parent.is_current_view == message.is_current_view) {
+                        if (child.parent.is_current_view) {
                             child.is_hide = false;
                             child.getWindow().show();
                             child.getWindow().setAlwaysOnTop(true);
                             child.getWindow().setAlwaysOnTop(false);
                         }
                     } else {
-                        child.coreData.is_current_view = message.is_current_view;
-                        if (!child.coreData.is_current_view) {
+                        child.parent.is_current_view = message.is_current_view;
+                        if (!child.parent.is_current_view) {
                             child.getWindow().hide();
                             child.is_hide = true;
                         } else {
@@ -341,10 +342,10 @@ module.exports = function (child) {
                     child.getWindow().loadURL(message.options.url);
                 } else if (message.type == '[remove-tab]' && child.getWindow()) {
                     child.sendToWindow('[send-render-message]', { name: '[remove-tab]', tab_id: message.tab_id });
-                } else if (message.type == '[send-window-status]' && child.coreData.options.windowType === 'view' && child.getWindow()) {
+                } else if (message.type == '[send-window-status]' && child.parent.options.windowType === 'view' && child.getWindow()) {
                     if (message.screen && message.mainWindow) {
-                        child.coreData.options.screen = message.screen;
-                        child.coreData.options.mainWindow = message.mainWindow;
+                        child.parent.options.screen = message.screen;
+                        child.parent.options.mainWindow = message.mainWindow;
                         child.handleWindowBounds();
                     }
                 }

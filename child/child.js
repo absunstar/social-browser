@@ -1,3 +1,5 @@
+const { parse } = require('path');
+
 [('SIGTERM', 'SIGHUP', 'SIGINT', 'SIGBREAK')].forEach((signal) => {
     process.on(signal, () => {
         process.exit(1);
@@ -24,9 +26,12 @@ process.on('warning', (warning) => {
     console.warn(warning.stack);
 });
 
+process.setMaxListeners(0);
+
 var child = {
     index: parseInt(process.argv[1].replace('--index=', '')),
     dir: process.argv[2].replace('--dir=', ''),
+    speedMode: Boolean(process.argv[3].replace('--speed=', '')),
     electron: require('electron'),
     remoteMain: require('@electron/remote/main'),
     fetch: require('node-fetch'),
@@ -72,12 +77,17 @@ if (app.setUserTasks) {
 }
 
 app.clearRecentDocuments();
-app.commandLine.appendSwitch('disable-web-security');
-app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
-app.commandLine.appendSwitch('disable-site-isolation-trials');
-app.commandLine.appendSwitch('enable-features', 'PDFViewerUpdate');
+
+app.commandLine.appendSwitch('disable-software-rasterizer');
+app.commandLine.appendSwitch('enable-webgl');
+app.commandLine.appendSwitch('disable-dev-shm-usage');
+app.commandLine.appendSwitch('no-sandbox');
+
+//app.commandLine.appendSwitch('disable-web-security');
+// app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
+//app.commandLine.appendSwitch('disable-site-isolation-trials');
+//app.commandLine.appendSwitch('enable-features', 'PDFViewerUpdate');
 // app.disableHardwareAcceleration();
-app.commandLine.appendSwitch('--no-sandbox');
 // child.allow_widevinecdm(app)
 
 app.on('ready', function () {
@@ -109,7 +119,7 @@ app.on('ready', function () {
     app.on('web-contents-created', (event, contents) => {
         child.remoteMain.enable(contents);
         contents.on('will-attach-webview', (event, webPreferences, params) => {
-            webPreferences.preload = child.coreData.files_dir + '/js/context-menu.js';
+            webPreferences.preload = child.parent.files_dir + '/js/context-menu.js';
             delete webPreferences.preloadURL;
         });
     });
@@ -119,7 +129,7 @@ app.on('ready', function () {
         //   app.quit();
         // }
         child.window = null;
-        child.coreData.options = { windowType: 'popup' };
+        child.parent.options = { windowType: 'popup' };
         child.sendMessage({
             type: '[un-attach-child]',
         });
@@ -150,9 +160,9 @@ app.on('ready', function () {
         }
         child.handleWindowBoundsBusy = true;
         let win = child.getWindow();
-        let mainWindow = child.coreData.options.mainWindow;
-        let screen = child.coreData.options.screen;
-        if (!mainWindow || !screen || child.coreData.options.windowType === 'main' || !win || win.isDestroyed()) {
+        let mainWindow = child.parent.options.mainWindow;
+        let screen = child.parent.options.screen;
+        if (!mainWindow || !screen || child.parent.options.windowType === 'main' || !win || win.isDestroyed()) {
             child.handleWindowBoundsBusy = false;
             return;
         }
@@ -195,7 +205,7 @@ app.on('ready', function () {
                 child.is_hide = true;
             }
         } else {
-            if (child.coreData.is_current_view && win) {
+            if (child.parent.is_current_view && win) {
                 child.is_hide = false;
                 win.show();
                 win.setAlwaysOnTop(true);

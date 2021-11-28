@@ -54,6 +54,56 @@ module.exports = function init(parent) {
         };
     }
 
+    parent.get_dynamic_var = function (info) {
+        info.name = info.name || '*';
+        if (info.name == '*') {
+          return parent.var;
+        } else {
+          let arr = info.name.split(',');
+          let obj = {};
+          arr.forEach((k) => {
+            if ((k == 'user_data' || k == 'user_data_input') && info.hostname) {
+              obj[k] = [];
+              parent.var[k].forEach((dd) => {
+                dd.hostname = dd.hostname || dd.host || '';
+                dd.url = dd.url || '';
+                if (dd.hostname.contains(info.hostname) || info.hostname.contains(dd.hostname)) {
+                  obj[k].push(dd);
+                }
+              });
+            } else {
+              obj[k] = parent.var[k];
+            }
+          });
+          return arr.length == 1 ? obj[info.name] : obj;
+        }
+      };
+
+    parent.updateTab = function (setting) {
+        console.log('... u ...');
+        return
+        if (setting.windowType !== 'view') {
+          return;
+        }
+        let win = child.getWindow();
+        if (!win) {
+          return;
+        }
+        setting.name = '[update-tab-properties]';
+        setting.child_id = child.id;
+        setting.url = win.getURL();
+        setting.title = win.webContents.getTitle();
+        setting.forward = win.webContents.canGoForward();
+        setting.back = win.webContents.canGoBack();
+        setting.webaudio = !win.webContents.audioMuted;
+    
+        child.sendMessage({
+          type: '[update-tab-properties]',
+          source: 'window',
+          data: setting,
+        });
+      };
+
     parent.run = function (file, options) {
         console.log(process.argv[0], file, options);
         return parent.child_process.spawn(process.argv[0], file, options);
@@ -137,6 +187,14 @@ module.exports = function init(parent) {
     parent.sleep = function (millis) {
         return new Promise((resolve) => setTimeout(resolve, millis));
     };
+
+    parent.decodeURI = (value) => {
+        try {
+          return decodeURI(value);
+        } catch (error) {
+          return value;
+        }
+      };
 
     parent.decodeURIComponent = (value) => {
         try {

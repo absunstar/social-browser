@@ -12,10 +12,10 @@ module.exports = function (child) {
 
         child.cookies[name] = child.cookies[name] || [];
         let ss = name === '_' ? child.electron.session.defaultSession : child.electron.session.fromPartition(name);
-        let user = child.coreData.var.session_list.find((s) => s.name == name) ?? {};
+        let user = child.parent.var.session_list.find((s) => s.name == name) ?? {};
         // let ex_date = Date.now() + 1000 * 60 * 60 * 24 * 30;
-        // if (child.coreData.cookies && child.coreData.cookies.length > 0) {
-        //   child.coreData.cookies.forEach((co) => {
+        // if (child.parent.cookies && child.parent.cookies.length > 0) {
+        //   child.parent.cookies.forEach((co) => {
         //     let scheme = co.secure ? 'https' : 'http';
         //     let host = co.domain[0] === '.' ? co.domain.substr(1) : co.domain;
         //     co.url = scheme + '://' + host;
@@ -37,7 +37,7 @@ module.exports = function (child) {
 
         ss.setSpellCheckerLanguages(['en-US']);
 
-        if (!child.session_name_list.some((s) => s == name)) {
+        if (!child.speedMode && !child.session_name_list.some((s) => s == name)) {
             setTimeout(() => {
                 ss.cookies.on('changed', function (event, cookie, cause, removed) {
                     child.sendMessage({
@@ -63,10 +63,10 @@ module.exports = function (child) {
             } else {
                 ss.setProxy({}, function () {});
             }
-        } else if (child.coreData.var.proxy.enabled && child.coreData.var.proxy.url) {
+        } else if (child.parent.var.proxy.enabled && child.parent.var.proxy.url) {
             ss.setProxy(
                 {
-                    proxyRules: child.coreData.var.proxy.url,
+                    proxyRules: child.parent.var.proxy.url,
                     proxyBypassRules: '127.0.0.1',
                 },
                 function () {},
@@ -76,8 +76,8 @@ module.exports = function (child) {
         }
 
         ss.allowNTLMCredentialsForDomains('*');
-        ss.userAgent = child.coreData.var.core.user_agent;
-        ss.setUserAgent(child.coreData.var.core.user_agent);
+        ss.userAgent = child.parent.var.core.user_agent;
+        ss.setUserAgent(child.parent.var.core.user_agent);
         ss.protocol.registerHttpProtocol('browser', (request, callback) => {
             let url = request.url.substr(10);
             url = `http://127.0.0.1:60080/${url}`;
@@ -97,7 +97,7 @@ module.exports = function (child) {
         };
 
         ss.webRequest.onBeforeRequest(filter, function (details, callback) {
-            if (child.coreData.var.core.off) {
+            if (child.parent.var.core.off) {
                 callback({
                     cancel: false,
                 });
@@ -135,7 +135,7 @@ module.exports = function (child) {
             }
 
             let end = false;
-            child.coreData.var.white_list.forEach((s) => {
+            child.parent.var.white_list.forEach((s) => {
                 if (end) {
                     return;
                 }
@@ -152,8 +152,8 @@ module.exports = function (child) {
                 return;
             }
 
-            if (child.coreData.var.black_list) {
-                child.coreData.var.black_list.forEach((s) => {
+            if (child.parent.var.black_list) {
+                child.parent.var.black_list.forEach((s) => {
                     if (url.like(s.url)) {
                         end = true;
                         //  child.log(`\n Block black_list :  ${s.url} \n`);
@@ -170,8 +170,8 @@ module.exports = function (child) {
                 }
             }
 
-            if (child.coreData.var.blocking.allow_safty_mode) {
-                child.coreData.var.blocking.un_safe_list.forEach((s) => {
+            if (child.parent.var.blocking.allow_safty_mode) {
+                child.parent.var.blocking.un_safe_list.forEach((s) => {
                     if (url.like(s.url)) {
                         end = true;
                         // child.log(`\n Block un_safe_list : ${s.url} \n ${url} \n`);
@@ -188,8 +188,8 @@ module.exports = function (child) {
                 }
             }
 
-            if (child.coreData.var.blocking.core.block_ads) {
-                if (url.like(child.coreData.var.$ad_string)) {
+            if (child.parent.var.blocking.core.block_ads) {
+                if (url.like(child.parent.var.$ad_string)) {
                     end = true;
                     //child.log(`\n Block Ads : ${l.url} \n ${url} \n`);
                 }
@@ -217,8 +217,8 @@ module.exports = function (child) {
         });
 
         ss.webRequest.onBeforeSendHeaders(filter, function (details, callback) {
-            if (child.coreData.var.core.off) {
-                details.requestHeaders['User-Agent'] = child.coreData.var.core.user_agent;
+            if (child.parent.var.core.off) {
+                details.requestHeaders['User-Agent'] = child.parent.var.core.user_agent;
                 callback({
                     cancel: false,
                     requestHeaders: details.requestHeaders,
@@ -226,7 +226,7 @@ module.exports = function (child) {
                 return;
             }
 
-            let user = child.coreData.var.session_list.find((s) => s.name == name);
+            let user = child.parent.var.session_list.find((s) => s.name == name);
             let user_agent = null;
             if (user && user.user_agent && user.user_agent.url) {
                 user_agent = user.user_agent.url;
@@ -244,22 +244,22 @@ module.exports = function (child) {
             let d = child.startTime.toString().substring(0, 9);
             details.requestHeaders = details.requestHeaders || {};
 
-            details.requestHeaders['User-Agent'] = user_agent || details.requestHeaders['User-Agent'] || child.coreData.var.core.user_agent;
+            details.requestHeaders['User-Agent'] = user_agent || details.requestHeaders['User-Agent'] || child.parent.var.core.user_agent;
             if (details.requestHeaders['User-Agent'] == 'undefined') {
-                details.requestHeaders['User-Agent'] = child.coreData.var.core.user_agent;
+                details.requestHeaders['User-Agent'] = child.parent.var.core.user_agent;
             }
 
-            if (child.coreData.var.blocking.privacy.enable_finger_protect && child.coreData.var.blocking.privacy.mask_user_agent) {
+            if (child.parent.var.blocking.privacy.enable_finger_protect && child.parent.var.blocking.privacy.mask_user_agent) {
                 let code = name;
                 code += new URL(url).hostname;
-                code += child.coreData.var.core.id;
+                code += child.parent.var.core.id;
                 details.requestHeaders['User-Agent'] = details.requestHeaders['User-Agent'].replace(') ', ') (' + child.md5(code) + ') ');
             }
 
 
 
             // custom header request
-            child.coreData.var.customHeaderList.forEach((r) => {
+            child.parent.var.customHeaderList.forEach((r) => {
                 if (r.type == 'request' && url.like(r.url)) {
                     r.list.forEach((v) => {
                         if (v && v.name && v.value) {
@@ -277,7 +277,7 @@ module.exports = function (child) {
                 }
             });
 
-            if (child.coreData.var.blocking.privacy.dnt) {
+            if (child.parent.var.blocking.privacy.dnt) {
                 details.requestHeaders['DNT'] = '1'; // dont track me
             }
 
@@ -297,11 +297,11 @@ module.exports = function (child) {
 
             let cookie_obj = details.requestHeaders['Cookie'] ? child.cookieParse(details.requestHeaders['Cookie']) : null;
 
-            if (cookie_obj && child.coreData.var.blocking.privacy.send_browser_id) {
-                cookie_obj['_gab'] = 'sb.' + child.coreData.var.core.id;
+            if (cookie_obj && child.parent.var.blocking.privacy.send_browser_id) {
+                cookie_obj['_gab'] = 'sb.' + child.parent.var.core.id;
             }
 
-            if (cookie_obj && child.coreData.var.blocking.privacy.enable_finger_protect && child.coreData.var.blocking.privacy.block_cloudflare) {
+            if (cookie_obj && child.parent.var.blocking.privacy.enable_finger_protect && child.parent.var.blocking.privacy.block_cloudflare) {
                 if (cookie_obj['_cflb']) {
                     cookie_obj['_cflb'] = 'cf.' + cookie_obj['_gab'];
                 }
@@ -320,7 +320,7 @@ module.exports = function (child) {
             }
 
             if (cookie_obj && !url.like('*google.com*|*youtube.com*')) {
-                if (child.coreData.var.blocking.privacy.enable_finger_protect && child.coreData.var.blocking.privacy.hide_gid) {
+                if (child.parent.var.blocking.privacy.enable_finger_protect && child.parent.var.blocking.privacy.hide_gid) {
                     if (cookie_obj['_gid']) {
                         delete cookie_obj['_gid'];
                     }
@@ -361,7 +361,7 @@ module.exports = function (child) {
         ss.webRequest.onHeadersReceived(filter, function (details, callback) {
             let url = details.url;
 
-            if (child.coreData.var.core.off) {
+            if (child.parent.var.core.off) {
                 callback({
                     cancel: false,
                     responseHeaders: {
@@ -373,7 +373,7 @@ module.exports = function (child) {
             }
 
             // custom header request
-            child.coreData.var.customHeaderList.forEach((r) => {
+            child.parent.var.customHeaderList.forEach((r) => {
                 if (r.type == 'response' && url.like(r.url)) {
                     r.ignore.forEach((key) => {
                         if (key) {
@@ -393,7 +393,7 @@ module.exports = function (child) {
             });
 
             let is_white = false;
-            child.coreData.var.white_list.forEach((w) => {
+            child.parent.var.white_list.forEach((w) => {
                 if (url.like(w.url)) {
                     is_white = true;
                 }
@@ -432,7 +432,7 @@ module.exports = function (child) {
                 'Access-Control-Allow-Headers',
                 'Access-Control-Allow-Origin',
                 'Access-Control-Expose-Headers',
-                child.coreData.var.blocking.privacy.remove_x_frame_options ? 'X-Frame-Options' : '',
+                child.parent.var.blocking.privacy.remove_x_frame_options ? 'X-Frame-Options' : '',
             ].forEach((p) => {
                 delete details.responseHeaders[p];
                 delete details.responseHeaders[p.toLowerCase()];
@@ -492,10 +492,10 @@ module.exports = function (child) {
 
             details.responseHeaders['Cross-Origin-Resource-Policy'.toLowerCase()] = 'cross-origin';
 
-            child.coreData.var.overwrite.urls.forEach((data) => {
+            child.parent.var.overwrite.urls.forEach((data) => {
                 if (url.like(data.to)) {
                     if (data.rediect_from) {
-                        // details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = [child.coreData.url.parse(data.rediect_from, false).host];
+                        // details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = [child.parent.url.parse(data.rediect_from, false).host];
                         details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = ['*'];
                     }
                 }
@@ -518,26 +518,26 @@ module.exports = function (child) {
 
         ss.setPermissionRequestHandler((webContents, permission, callback) => {
             // https://www.electronjs.org/docs/api/session
-            if (!child.coreData.var.blocking.permissions) {
+            if (!child.parent.var.blocking.permissions) {
                 callback(false);
                 return;
             }
             if (webContents.getURL().like('http://127.0.0.1*|https://127.0.0.1*|http://localhost*|https://localhost*')) {
                 callback(true);
             } else {
-                let allow = child.coreData.var.blocking.permissions['allow_' + permission.replace('-', '_')] || false;
+                let allow = child.parent.var.blocking.permissions['allow_' + permission.replace('-', '_')] || false;
                 // child.log(` \n  <<< setPermissionRequestHandler ${permission} ( ${allow} )  ${webContents.getURL()} \n `);
                 callback(allow);
             }
         });
         ss.setPermissionCheckHandler((webContents, permission) => {
-            if (!child.coreData.var.blocking.permissions) {
+            if (!child.parent.var.blocking.permissions) {
                 return false;
             }
             if (webContents && webContents.getURL().like('http://127.0.0.1*|https://127.0.0.1*|http://localhost*|https://localhost*')) {
                 return true;
             } else {
-                let allow = child.coreData.var.blocking.permissions['allow_' + permission.replace('-', '_')] || false;
+                let allow = child.parent.var.blocking.permissions['allow_' + permission.replace('-', '_')] || false;
                 // child.log(` \n  <<< setPermissionCheckHandler ${permission} ( ${allow} )  ${webContents.getURL()} \n `);
                 return allow;
             }
@@ -561,7 +561,7 @@ module.exports = function (child) {
     });
 
     child.sessionConfig = () => {
-        child.handleSession(child.coreData.options.partition);
+        child.handleSession(child.parent.options.partition);
         // child.handleSession('_');
     };
 };

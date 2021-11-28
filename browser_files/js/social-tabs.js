@@ -239,12 +239,13 @@ class SocialTabs {
     if (!tabProperties.partition || !tabProperties.user_name) {
       sendToMain({
         name: '[open new tab]',
+        windowType : 'view',
         url: tabProperties.url || defaultTapProperties.url,
         proxy: tabProperties.proxy,
         source: 'session',
         active: tabProperties.active,
         win_id: tabProperties.win_id,
-        main_window_id: tabProperties.main_window_id,
+        main_window_id: SOCIALBROWSER.currentWindow.id,
       });
       return;
     }

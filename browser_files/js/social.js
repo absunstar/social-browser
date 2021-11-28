@@ -24,6 +24,7 @@ const { Menu, MenuItem } = SOCIALBROWSER.remote;
 function sendToMain(obj) {
     obj.tab_id = currentTabId;
     obj.tab_win_id = $('#' + currentTabId).attr('win_id');
+    obj.win_id = obj.tab_win_id || SOCIALBROWSER.currentWindow.id;
     SOCIALBROWSER.call('[send-render-message]', obj);
 }
 
@@ -774,7 +775,7 @@ function setURL(url, url2) {
         try {
             url = decodeURI(url);
         } catch (error) {
-            console.log(error);
+            console.log(error , url);
         }
         $addressbar.text(url.replace('http://', '').replace('https://', ''));
         $addressbar.attr('title', url2);
@@ -987,6 +988,10 @@ socialTabsDom.addEventListener('tabRemove', ({ detail }) => {
 
 function render_new_tab(op) {
     console.log('render_new_tab', op);
+    if (!op) {
+        console.log('render_new_tab() !op');
+        return;
+    }
 
     if (typeof op === 'string') {
         op = op.split('...').join('\\');
@@ -1131,6 +1136,11 @@ function renderMessage(cm) {
             } else {
                 let protocol = '';
                 let url = '';
+                try {
+                    cm.url = decodeURI(cm.url);
+                } catch (error) {
+                    console.log(error, cm.url);
+                }
                 if (cm.url.like('https*')) {
                     protocol = 'HTTPS';
                     // var parser = document.createElement('a')
