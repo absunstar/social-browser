@@ -110,7 +110,7 @@
   },
   "dependencies": {
     "@electron/remote": "^2.0.1",
-    "isite": "^2021.11.23",
+    "isite": "^2021.11.25",
     "node-fetch": "^2.6.6",
     "xlsx": "^0.17.0"
   },

@@ -2,6 +2,7 @@ var socialTabsDom = document.querySelector('.social-tabs');
 var socialTabs = new SocialTabs();
 var currentTabId = null;
 var opendTabList = [];
+let $addressbar = $('.address-input .url');
 
 SOCIALBROWSER.on('user_downloads', (event, data) => {
     if (typeof data.progress != 'undefined') {
@@ -30,7 +31,7 @@ function sendToMain(obj) {
 
 function goURL(e) {
     if (e.keyCode == 13) {
-        url = $addressbar.val();
+        url = $addressbar.text();
         if (url.indexOf('://') === -1) {
             if (url.indexOf('.') !== -1) {
                 url = 'http://' + url;
@@ -762,12 +763,8 @@ socialTabs.init(socialTabsDom, {
     maxWidth: 270,
 });
 
-let $addressbar = $('.address-input .url');
-$addressbar.focus(() => {
-    if ($addressbar.val().like('*...*') || !$addressbar.val().like('http*')) {
-        $addressbar.val($('#' + currentTabId).attr('url'));
-    }
-});
+
+
 
 function setURL(url, url2) {
     /*!$addressbar.is(':focus')*/
@@ -775,7 +772,7 @@ function setURL(url, url2) {
         try {
             url = decodeURI(url);
         } catch (error) {
-            console.log(error , url);
+            console.log(error, url);
         }
         $addressbar.text(url.replace('http://', '').replace('https://', ''));
         $addressbar.attr('title', url2);
@@ -940,12 +937,8 @@ socialTabsDom.addEventListener('activeTabChange', ({ detail }) => {
             }
 
             $('.address-input .protocol').html(protocol);
-            let w = document.querySelectorAll('.address-input')[0].clientWidth / 11;
-            if (url.length > w) {
-                setURL(url.substring(0, w) + ' ...', url);
-            } else {
-                setURL(url, url);
-            }
+            handleUrlText();
+      
         }
     }
 });
@@ -987,9 +980,7 @@ socialTabsDom.addEventListener('tabRemove', ({ detail }) => {
 });
 
 function render_new_tab(op) {
-    console.log('render_new_tab', op);
     if (!op) {
-        console.log('render_new_tab() !op');
         return;
     }
 
@@ -1055,7 +1046,6 @@ function renderMessage(cm) {
     } else if (cm.name == 'close tab') {
         closeCurrentTab();
     } else if (cm.name == '[update-tab-properties]') {
-        console.log(cm);
         if (cm.tab_id && cm.url) {
             $('#' + cm.tab_id).attr('url', cm.url);
         }
@@ -1172,12 +1162,7 @@ function renderMessage(cm) {
                 }
 
                 $('.address-input .protocol').html(protocol);
-                let w = document.querySelectorAll('.address-input')[0].clientWidth / 11;
-                if (url.length > w) {
-                    setURL(url.substring(0, w) + ' ...', url);
-                } else {
-                    setURL(url, url);
-                }
+               handleUrlText()
             }
         }
     } else if (cm.name == 'mini_iframe') {
@@ -1260,14 +1245,23 @@ function init_tab() {
     render_new_tab(SOCIALBROWSER.newTabData);
 }
 
-window.addEventListener('resize', () => {
+function handleUrlText() {
     let url = $('#' + currentTabId).attr('url') || '';
+    try {
+        url = decodeURI(url);
+    } catch (error) {
+        console.log(error, url);
+    }
     let w = document.querySelectorAll('.address-input')[0].clientWidth / 11;
     if (url.length > w) {
         setURL(url.substring(0, w) + ' ...', url);
     } else {
         setURL(url, url);
     }
+}
+
+window.addEventListener('resize', () => {
+    handleUrlText();
 });
 
 SOCIALBROWSER.on('show-tab-view', (data) => {
