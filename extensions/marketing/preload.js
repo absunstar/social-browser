@@ -1,7 +1,6 @@
 module.exports = function (SOCIALBROWSER) {
-    SOCIALBROWSER.log(' >>> Core Extention activated ...');
-
     if (document.location.hostname.like('*amazon.eg*')) {
+        SOCIALBROWSER.log(' >>> marketing Extention activated : ' + document.location.href);
         SOCIALBROWSER.onLoad(() => {
             SOCIALBROWSER.__showBotImage();
             SOCIALBROWSER.menu_list.push({

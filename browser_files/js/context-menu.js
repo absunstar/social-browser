@@ -10,8 +10,6 @@
         return;
     }
 
-    console.log(` [ ${document.location.href} ] `);
-
     let __numberRange = function (min, max) {
         return Math.floor(Math.random() * (max - min) + min);
     };
@@ -108,7 +106,13 @@
         options.id = new Date().getTime() + Math.random();
         SOCIALBROWSER.on('[fetch][json][data]', (e, res) => {
             if (res.options.id == options.id) {
-                callback(res.data);
+                if (res.error) {
+                    SOCIALBROWSER.log('SOCIALBROWSER.fetchJson error : ', res.error);
+                } else if (res.data) {
+                    callback(res.data);
+                } else {
+                    SOCIALBROWSER.log('[fetch][json][data] res : ', res);
+                }
             }
         });
         SOCIALBROWSER.call('[fetch][json]', options);
@@ -226,9 +230,11 @@
             require(SOCIALBROWSER.files_dir + '/js/context-menu/init.js')(SOCIALBROWSER);
             require(SOCIALBROWSER.files_dir + '/js/context-menu/event.js')(SOCIALBROWSER);
 
-            if (!SOCIALBROWSER.var.core.id.like('*test*')) {
-                SOCIALBROWSER.developerMode = false;
+            if (SOCIALBROWSER.var.core.id.like('*test*')) {
+                SOCIALBROWSER.developerMode = true;
             }
+
+            SOCIALBROWSER.log(` [ ${document.location.href} ] `);
 
             if (SOCIALBROWSER.sessionId() == 0) {
                 SOCIALBROWSER.session.privacy = {

@@ -18,7 +18,7 @@ app.on('ready', function () {
     let win = new BrowserWindow({
         show: false,
         title: 'Print Viewer',
-        width: 850,
+        width: 1200,
         height: 720,
         alwaysOnTop: false,
         webPreferences: {

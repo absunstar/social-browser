@@ -78,9 +78,12 @@ module.exports = function (SOCIALBROWSER) {
                                 arr1.push({
                                     label: d.value,
                                     click() {
-                                        node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
+                                        node.nodeName === 'INPUT' ? (node.value = '') : (node.innerHTML = '');
+                                        SOCIALBROWSER.remote.clipboard.writeText(d.value);
+                                        SOCIALBROWSER.webContents.paste();
+                                        /*node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
                                         node.dispatchEvent(inputEvent);
-                                        node.dispatchEvent(changeEvent);
+                                        node.dispatchEvent(changeEvent);*/
                                     },
                                 });
                                 arr2.push({
@@ -119,9 +122,12 @@ module.exports = function (SOCIALBROWSER) {
                                 arr1.push({
                                     label: d.value,
                                     click() {
-                                        node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
+                                        node.nodeName === 'INPUT' ? (node.value = '') : (node.innerHTML = '');
+                                        SOCIALBROWSER.remote.clipboard.writeText(d.value);
+                                        SOCIALBROWSER.webContents.paste();
+                                        /*node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
                                         node.dispatchEvent(inputEvent);
-                                        node.dispatchEvent(changeEvent);
+                                        node.dispatchEvent(changeEvent);*/
                                     },
                                 });
 
@@ -161,9 +167,12 @@ module.exports = function (SOCIALBROWSER) {
                                 arr1.push({
                                     label: d.value,
                                     click() {
-                                        node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
+                                        node.nodeName === 'INPUT' ? (node.value = '') : (node.innerHTML = '');
+                                        SOCIALBROWSER.remote.clipboard.writeText(d.value);
+                                        SOCIALBROWSER.webContents.paste();
+                                        /* node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
                                         node.dispatchEvent(inputEvent);
-                                        node.dispatchEvent(changeEvent);
+                                        node.dispatchEvent(changeEvent);*/
                                     },
                                 });
                             }
@@ -185,9 +194,12 @@ module.exports = function (SOCIALBROWSER) {
                                 arr1.push({
                                     label: d.value,
                                     click() {
-                                        node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
+                                        node.nodeName === 'INPUT' ? (node.value = '') : (node.innerHTML = '');
+                                        SOCIALBROWSER.remote.clipboard.writeText(d.value);
+                                        SOCIALBROWSER.webContents.paste();
+                                        /*node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
                                         node.dispatchEvent(inputEvent);
-                                        node.dispatchEvent(changeEvent);
+                                        node.dispatchEvent(changeEvent);*/
                                     },
                                 });
 
@@ -219,9 +231,12 @@ module.exports = function (SOCIALBROWSER) {
                                 arr1.push({
                                     label: d.value,
                                     click() {
-                                        node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
+                                        node.nodeName === 'INPUT' ? (node.value = '') : (node.innerHTML = '');
+                                        SOCIALBROWSER.remote.clipboard.writeText(d.value);
+                                        SOCIALBROWSER.webContents.paste();
+                                        /*node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
                                         node.dispatchEvent(inputEvent);
-                                        node.dispatchEvent(changeEvent);
+                                        node.dispatchEvent(changeEvent);*/
                                     },
                                 });
 
@@ -254,9 +269,12 @@ module.exports = function (SOCIALBROWSER) {
                                 arr1.push({
                                     label: d.value,
                                     click() {
-                                        node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
+                                        SOCIALBRO
+                                        node.nodeName === 'INPUT' ? (node.value = '') : (node.innerHTML = '');WSER.remote.clipboard.writeText(d.value);
+                                        SOCIALBROWSER.webContents.paste();
+                                        /*node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
                                         node.dispatchEvent(inputEvent);
-                                        node.dispatchEvent(changeEvent);
+                                        node.dispatchEvent(changeEvent);*/
                                     },
                                 });
                             }

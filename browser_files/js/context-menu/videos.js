@@ -7,7 +7,7 @@ module.exports = function (SOCIALBROWSER) {
     return;
   }
 
-  SOCIALBROWSER.log(' >>> Video script activated ...');
+  SOCIALBROWSER.log(' >>> Video script activated : ' + document.location.href);
 
   SOCIALBROWSER.skipAdsVideosRunning = false;
   SOCIALBROWSER.video_list = [];

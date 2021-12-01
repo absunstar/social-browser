@@ -2,7 +2,7 @@ module.exports = function (SOCIALBROWSER) {
     if (SOCIALBROWSER.var.core.disabled) {
         return false;
     }
-    SOCIALBROWSER.log(' >>> Nodes Script Activated');
+    SOCIALBROWSER.log(' >>> Nodes Script Activated : ' + document.location.href);
 
     SOCIALBROWSER.onEvent('newDom', (node) => {
         if (node && node.tagName == 'A') {
@@ -55,9 +55,14 @@ module.exports = function (SOCIALBROWSER) {
     }
 
     function input_handle(input) {
+        if (input.getAttribute('x-input') == 'true') {
+            return;
+        }
+        input.setAttribute('x-input', 'true');
         input.addEventListener('dblclick', () => {
             if (SOCIALBROWSER.var.blocking.javascript.auto_paste && !input.value && SOCIALBROWSER.electron.clipboard.readText()) {
-                input.value = SOCIALBROWSER.electron.clipboard.readText();
+                /*input.value = SOCIALBROWSER.electron.clipboard.readText();*/
+                SOCIALBROWSER.webContents.paste();
             }
         });
 
@@ -68,7 +73,7 @@ module.exports = function (SOCIALBROWSER) {
         if (input.type.contains('hidden|submit|range|checkbox|button|color|file|image|radio|reset|search|date|time')) {
             return;
         }
-        input.setAttribute('x-input', 'true');
+
         input.addEventListener('input', () => {
             collectData();
         });

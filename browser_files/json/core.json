@@ -1,7 +1,7 @@
 {
     "port":60080,
     "enabled": true,
-    "version": "2021.11.25",
+    "version": "2021.12.01",
     "full_version": true,
     "key" : "free key",
     "brand": "Social Browser",

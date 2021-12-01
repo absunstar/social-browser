@@ -104,13 +104,6 @@ module.exports = function init(parent) {
             printSelectionOnly: false,
             deviceName: null,
             color: false,
-            margins: {
-                marginType: 'none',
-                top: 0,
-                bottom: 0,
-                left: 0,
-                right: 0,
-            },
             landscape: false,
             scaleFactor: null,
             pagesPerSheet: 1,
@@ -124,15 +117,16 @@ module.exports = function init(parent) {
             dpi: {},
             header: null,
             footer: null,
-            pageSize: 'Letter',
-            width: 850,
-            marginsType: 0,
+            pageSize: req.data.pageSize || 'Letter',
+            width: null,
         };
 
         if (req.data.data) {
-            req.data.type = 'html';
+            req.data.type = req.data.type || 'html';
             req.data.html = parent.json_to_html(req.data.data);
-            print_options.width = 320;
+            if (print_options.pageSize == 'Letter') {
+                print_options.width = 320;
+            }
         }
 
         // req.data.view = true

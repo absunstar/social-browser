@@ -84,8 +84,11 @@ module.exports = function init(child) {
                 e.returnValue = data;
             })
             .catch((err) => {
-                child.log('[fetch][json]', err);
-                child.log(options);
+                e.reply('[fetch][json][data]', {
+                    options: options,
+                    error: err.message,
+                });
+                child.log('[fetch][json]', err.message);
             });
     });
 
@@ -352,6 +355,7 @@ module.exports = function init(child) {
             child.getWindow().webContents.send('[send-render-message]', {
                 name: '[open new tab]',
                 url: 'http://127.0.0.1:60080/setting',
+                partition: 'setting',
             });
         } else if (data.name == '[window-reload-hard]') {
             let win = child.electron.BrowserWindow.fromId(data.win_id);
@@ -364,10 +368,10 @@ module.exports = function init(child) {
                     storages: data.storages,
                     quotas: data.quotas,
                 }).then(() => {
-                        ss.clearCache().then(() => {
-                            win.webContents.reload();
-                        });
+                    ss.clearCache().then(() => {
+                        win.webContents.reload();
                     });
+                });
             }
         } else if (data.name == '[toggle-fullscreen]') {
             let win = child.electron.BrowserWindow.fromId(data.win_id);

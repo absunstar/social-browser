@@ -33,13 +33,6 @@ window.addEventListener('load', () => {
         printBackground: false,
         printSelectionOnly: false,
         color: false,
-        margins: {
-            marginType: 'none',
-            top: 0,
-            bottom: 0,
-            left: 0,
-            right: 0,
-        },
         landscape: false,
         scaleFactor: null,
         pagesPerSheet: null,
@@ -54,7 +47,6 @@ window.addEventListener('load', () => {
         header: null,
         footer: null,
         pageSize: 'Letter',
-        marginsType: 0,
         deviceName: 'Microsoft Print to PDF',
     };
 
@@ -62,19 +54,19 @@ window.addEventListener('load', () => {
         remote.getCurrentWindow().openDevTools();
         print_options = { ...print_options, ...info.options };
 
-        if (print_options.show) {
-            remote.getCurrentWindow().show();
-        }
-
         if (print_options.width) {
             remote.getCurrentWindow().setSize(print_options.width, 720);
         }
 
-        remote.getCurrentWindow().webContents.print(print_options, (success, failureReason ) => {
-            if (!success) {
-                console.log(failureReason );
-            }
-            remote.getCurrentWindow().close();
-        });
+        if (print_options.show) {
+            remote.getCurrentWindow().show();
+        } else {
+            remote.getCurrentWindow().webContents.print(print_options, (success, failureReason) => {
+                if (!success) {
+                    console.log(failureReason);
+                }
+                remote.getCurrentWindow().close();
+            });
+        }
     });
 });

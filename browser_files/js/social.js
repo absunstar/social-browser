@@ -1008,7 +1008,7 @@ function render_new_tab(op) {
         url: op.url,
         title: op.title,
         partition: op.partition,
-        user_name: op.user_name,
+        user_name: op.user_name || op.partition,
         user_agent: op.user_agent,
         proxy: op.proxy,
         webaudio: op.webaudio,
