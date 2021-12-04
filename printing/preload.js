@@ -27,7 +27,7 @@ window.addEventListener('load', () => {
             });
     }
 
-    let print_options = {
+    window.print_options = {
         show: false,
         silent: true,
         printBackground: false,

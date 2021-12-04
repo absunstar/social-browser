@@ -119,16 +119,20 @@ module.exports = function init(parent) {
             footer: null,
             pageSize: req.data.pageSize || 'Letter',
             width: null,
+            margins: req.data.margins,
         };
 
         if (req.data.data) {
             req.data.type = req.data.type || 'html';
             req.data.html = parent.json_to_html(req.data.data);
-            if (print_options.pageSize == 'Letter') {
-                print_options.width = 320;
-            }
         }
 
+        if (print_options.pageSize == 'Letter') {
+            print_options.width = 320;
+            print_options.margins = {
+                marginType: 'none',
+            };
+        }
         // req.data.view = true
 
         if (req.data.view) {
@@ -145,7 +149,7 @@ module.exports = function init(parent) {
             origin: req.data.origin,
             url: req.data.href,
             win_id: req.data.win_id,
-            options: { ...print_options, ...req.data.options },
+            options: { ...print_options, ...req.data },
             index: parent.content_list.length,
         };
 
