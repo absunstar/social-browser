@@ -283,6 +283,8 @@ module.exports = function (SOCIALBROWSER) {
                 }
 
                 if (arr1.length > 0) {
+                    arr1.sort((a, b) => (a.label > b.label ? 1 : -1));
+
                     menu.append(
                         new $menuItem({
                             label: 'Fill',
@@ -292,6 +294,7 @@ module.exports = function (SOCIALBROWSER) {
                     );
                 }
                 if (arr2.length > 0) {
+                    arr2.sort((a, b) => (a.label > b.label ? 1 : -1));
                     menu.append(
                         new $menuItem({
                             label: 'Auto Fill All',

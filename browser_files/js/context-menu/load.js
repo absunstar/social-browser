@@ -157,4 +157,41 @@ module.exports = function (SOCIALBROWSER) {
     SOCIALBROWSER.on('$download_item', (e, dl) => {
         SOCIALBROWSER.showDownloads(` ${dl.status} ${((dl.received / dl.total) * 100).toFixed(2)} %  ${dl.name} ( ${(dl.received / 1000000).toFixed(2)} MB / ${(dl.total / 1000000).toFixed(2)} MB )`);
     });
+
+    if (SOCIALBROWSER.partition && SOCIALBROWSER.partition.indexOf('persist:') !== 0) {
+        SOCIALBROWSER.log('Hide Mode Detected');
+        window.RequestFileSystem = window.webkitRequestFileSystem = function (arg1, arg2, callback, error) {
+            callback({
+                name: document.location.origin + ':' + arg1,
+                root: {
+                    fullPath: '/',
+                    isDirectory: true,
+                    isFile: false,
+                    name: '',
+                },
+            });
+        };
+        navigator.storage.estimate = function () {
+            return new Promise((resolve, reject) => {
+                resolve({
+                    usage: 100000,
+                    quota: 12000000000,
+                });
+            });
+        };
+        window.localStorage = window.localStorage || function () {};
+        window.location.setItem = function () {};
+        window.location.removeItem = function () {};
+        window.indexedDB = {
+            open: () => {
+                let db = {};
+                setTimeout(() => {
+                    if (db.onsuccess) {
+                        db.onsuccess();
+                    }
+                }, 1000);
+                return db;
+            },
+        };
+    }
 };

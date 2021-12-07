@@ -363,12 +363,15 @@ module.exports = function init(child) {
                 let ss = win.webContents.session;
                 data.storages = data.storages || ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage'];
                 data.quotas = data.quotas || ['temporary', 'persistent', 'syncable'];
+               console.log(' will clear storage data ...')
                 ss.clearStorageData({
                     origin: data.origin,
                     storages: data.storages,
                     quotas: data.quotas,
                 }).then(() => {
+                    console.log(' will clear cache ...')
                     ss.clearCache().then(() => {
+                        console.log(' will reload ...')
                         win.webContents.reload();
                     });
                 });

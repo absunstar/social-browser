@@ -30,7 +30,7 @@ window.addEventListener('load', () => {
     window.print_options = {
         show: false,
         silent: true,
-        printBackground: false,
+        printBackground: true,
         printSelectionOnly: false,
         color: false,
         landscape: false,

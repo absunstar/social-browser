@@ -162,6 +162,7 @@ module.exports = function (SOCIALBROWSER) {
     }
 
     if (SOCIALBROWSER.session.privacy.hide_lang || SOCIALBROWSER.var.blocking.privacy.hide_lang) {
+        SOCIALBROWSER.session.privacy.languages = SOCIALBROWSER.session.privacy.languages || navigator.languages;
         SOCIALBROWSER.__define(navigator, 'languages', SOCIALBROWSER.session.privacy.languages.split(','));
         SOCIALBROWSER.__define(navigator, 'language', SOCIALBROWSER.session.privacy.languages.split(',')[0]);
     }

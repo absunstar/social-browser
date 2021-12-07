@@ -187,7 +187,7 @@ module.exports = function init(parent) {
                 icon: parent.icons[process.platform],
                 width: 850,
                 height: 720,
-                alwaysOnTop: false,
+                alwaysOnTop: true,
                 webPreferences: {
                     preload: parent.dir + '/printing/preload.js',
                     javascript: true,
@@ -204,7 +204,7 @@ module.exports = function init(parent) {
                     plugins: true,
                 },
             });
-
+            parent.remoteMain.enable(w.webContents);
             w.setMenuBarVisibility(false);
             w.loadURL('http://127.0.0.1:60080/data-content/last');
         }
