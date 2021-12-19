@@ -100,10 +100,10 @@ module.exports = function init(parent) {
 
         let print_options = {
             silent: true,
-            printBackground: false,
+            printBackground: true,
             printSelectionOnly: false,
             deviceName: null,
-            color: false,
+            color: true,
             landscape: false,
             scaleFactor: null,
             pagesPerSheet: 1,

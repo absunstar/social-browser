@@ -40,7 +40,7 @@ module.exports = function (child) {
                     child.parent = message;
                     child.cookies = child.cookies || {};
 
-                    child.cookies[child.parent.options.partition] = child.parent.cookies[child.parent.options.partition];
+                    child.cookies[child.parent.cookies.key] = child.parent.cookies.value;
                     child.electron.app.userAgentFallback = child.parent.var.core.user_agent;
                     child.electron.app.setPath('userData', child.path.join(child.parent.data_dir, 'default'));
                     child.sessionConfig();
@@ -306,7 +306,6 @@ module.exports = function (child) {
                         child.profilesWindow.hide();
                     }
                 } else if (message.type == '[show-view]' && child.getWindow()) {
-
                     if (child.addressbarWindow && !child.addressbarWindow.isDestroyed()) {
                         child.addressbarWindow.hide();
                     }

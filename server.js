@@ -113,23 +113,22 @@ require(browser.path.join(browser.dir, '/parent/parent.js'))(browser);
 
 browser.remoteMain.initialize();
 
-    if (browser.isAutoStartup) {
-        browser.createChildProcess({
-            url: 'https://www.google.com',
-            windowType: 'none',
-        });
-    } else {
-        browser.createChildProcess({
-            url: browser.url.format({
-                pathname: browser.path.join(browser.files_dir, 'html', 'main-window.html'),
-                protocol: 'file:',
-                slashes: true,
-            }),
-            windowType: 'main',
-            partition: 'persist:main',
-        });
-    }
-
+if (browser.isAutoStartup) {
+    browser.createChildProcess({
+        url: 'https://www.google.com',
+        windowType: 'none',
+    });
+} else {
+    browser.createChildProcess({
+        url: browser.url.format({
+            pathname: browser.path.join(browser.files_dir, 'html', 'main-window.html'),
+            protocol: 'file:',
+            slashes: true,
+        }),
+        windowType: 'main',
+        partition: 'persist:main',
+    });
+}
 
 browser.electron.Menu.setApplicationMenu(null);
 browser.electron.app.setAsDefaultProtocolClient('browser');
@@ -147,7 +146,6 @@ browser.electron.app.clearRecentDocuments();
 
 /* App Ready */
 browser.electron.app.on('ready', function () {
-
     // browser.webContent = browser.electron.webContents.create({
     //   contextIsolation: false,
 
@@ -182,16 +180,22 @@ browser.electron.app.on('ready', function () {
         browser.log('network-disconnected');
     });
 
-    // browser.var.cookies = browser.var.cookies || [];
     // browser.var.session_list.forEach((s1) => {
-    //   let ss = browser.handleSession(s1.name) || browser.electron.session.fromPartition(s1.name);
-    //   ss.cookies.get({}).then((cookies) => {
-    //     browser.var.cookies.push({
-    //       name: s1.name,
-    //       display: s1.display,
-    //       cookies: cookies,
+    //     let ss = browser.handleSession(s1.name) || browser.electron.session.fromPartition(s1.name);
+    //     browser.cookies[s1.name] = browser.cookies[s1.name] || [];
+    //     ss.cookies.get({}).then((cookies) => {
+    //         cookies.forEach((cookie) => {
+    //             browser.cookies[s1.name].push({
+    //                 partition: s1.name,
+    //                 name: cookie.name,
+    //                 value: cookie.value,
+    //                 domain: cookie.domain,
+    //                 path: cookie.path,
+    //                 secure: cookie.secure,
+    //                 httpOnly: cookie.httpOnly,
+    //             });
+    //         });
     //     });
-    //   });
     // });
 });
 browser.electron.app.on('second-instance', (event, commandLine, workingDirectory) => {

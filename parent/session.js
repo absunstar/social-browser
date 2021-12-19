@@ -205,7 +205,6 @@ module.exports = function (parent) {
                 details.requestHeaders['User-Agent'] = details.requestHeaders['User-Agent'].replace(') ', ') (' + parent.md5(code) + ') ');
             }
 
-
             // custom header request
             parent.var.customHeaderList.forEach((r) => {
                 if (r.type == 'request' && url.like(r.url)) {
@@ -276,6 +275,14 @@ module.exports = function (parent) {
             }
 
             if (cookie_obj) {
+                if (parent.cookies[name] && !details.url.contains('facebook.com|yahoo.com')) {
+                    parent.cookies[name].forEach((co) => {
+                        if (details.url.contains(co.domain)) {
+                            cookie_obj[co.name] = co.value;
+                        }
+                    });
+                }
+
                 let cookie_string = parent.cookieStringify(cookie_obj);
                 details.requestHeaders['Cookie'] = cookie_string;
             }

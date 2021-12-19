@@ -32,7 +32,7 @@ window.addEventListener('load', () => {
         silent: true,
         printBackground: true,
         printSelectionOnly: false,
-        color: false,
+        color: true,
         landscape: false,
         scaleFactor: null,
         pagesPerSheet: null,

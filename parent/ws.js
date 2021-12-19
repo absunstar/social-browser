@@ -273,7 +273,6 @@ module.exports = function init(parent) {
                             }
                         });
                     }
-
                     break;
                 case '[add-window-url]':
                     parent.addURL(message);
@@ -311,6 +310,6 @@ module.exports = function init(parent) {
     };
 
     parent.sendMessage = function (message) {
-            console.log('... m ...')
+        console.log('... m ...');
     };
 };

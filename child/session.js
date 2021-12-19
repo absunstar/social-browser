@@ -12,6 +12,25 @@ module.exports = function (child) {
 
         child.cookies[name] = child.cookies[name] || [];
         let ss = name === '_' ? child.electron.session.defaultSession : child.electron.session.fromPartition(name);
+        if (!child.speedMode && !child.session_name_list.some((s) => s == name)) {
+            let saveCookies = false;
+            setInterval(() => {
+                if (saveCookies) {
+                    ss.cookies.flushStore();
+                    saveCookies = false;
+                }
+            }, 1000);
+            ss.cookies.on('changed', function (event, cookie, cause, removed) {
+                saveCookies = true;
+                child.sendMessage({
+                    type: '[cookie-changed]',
+                    partition: name,
+                    cookie: cookie,
+                    removed: removed,
+                    cause: cause,
+                });
+            });
+        }
         let user = child.parent.var.session_list.find((s) => s.name == name) ?? {};
         // let ex_date = Date.now() + 1000 * 60 * 60 * 24 * 30;
         // if (child.parent.cookies && child.parent.cookies.length > 0) {
@@ -36,20 +55,6 @@ module.exports = function (child) {
         // }, 1000 * 15);
 
         ss.setSpellCheckerLanguages(['en-US']);
-
-        if (!child.speedMode && !child.session_name_list.some((s) => s == name)) {
-            setTimeout(() => {
-                ss.cookies.on('changed', function (event, cookie, cause, removed) {
-                    child.sendMessage({
-                        type: '[cookie-changed]',
-                        partition: name,
-                        cookie: cookie,
-                        removed: removed,
-                        cause: cause,
-                    });
-                });
-            }, 1000 * 3);
-        }
 
         if (user.proxy && user.proxy.enabled) {
             if (user.proxy.url) {
@@ -255,8 +260,6 @@ module.exports = function (child) {
                 code += child.parent.var.core.id;
                 details.requestHeaders['User-Agent'] = details.requestHeaders['User-Agent'].replace(') ', ') (' + child.md5(code) + ') ');
             }
-
-
 
             // custom header request
             child.parent.var.customHeaderList.forEach((r) => {
