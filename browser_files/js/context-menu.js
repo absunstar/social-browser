@@ -150,7 +150,7 @@
         SOCIALBROWSER.partition = SOCIALBROWSER.webPreferences.partition;
     } else {
         SOCIALBROWSER.webPreferences = SOCIALBROWSER.webContents.getLastWebPreferences();
-        SOCIALBROWSER.partition = SOCIALBROWSER.webPreferences.partition;
+        SOCIALBROWSER.partition = SOCIALBROWSER.webContents.session.storagePath ? SOCIALBROWSER.webContents.session.storagePath.split('\\').pop() : null;
     }
 
     SOCIALBROWSER.timeOffset = new Date().getTimezoneOffset();
@@ -226,6 +226,7 @@
             SOCIALBROWSER.windowType = result.windowType;
             SOCIALBROWSER.newTabData = result.newTabData;
             SOCIALBROWSER.session = { ...SOCIALBROWSER.session, ...result.session };
+            SOCIALBROWSER.partition = result.partition;
 
             require(SOCIALBROWSER.files_dir + '/js/context-menu/init.js')(SOCIALBROWSER);
             require(SOCIALBROWSER.files_dir + '/js/context-menu/event.js')(SOCIALBROWSER);

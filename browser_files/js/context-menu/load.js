@@ -27,6 +27,7 @@ module.exports = function (SOCIALBROWSER) {
 
     require(SOCIALBROWSER.files_dir + '/js/context-menu/safty.js')(SOCIALBROWSER);
 
+    SOCIALBROWSER.isMemoryMode = !SOCIALBROWSER.webContents.session.isPersistent();
     if (!SOCIALBROWSER.var.core.disabled) {
         // Load Custom Scripts
         SOCIALBROWSER.var.scripts_files.forEach((file) => {
@@ -158,7 +159,7 @@ module.exports = function (SOCIALBROWSER) {
         SOCIALBROWSER.showDownloads(` ${dl.status} ${((dl.received / dl.total) * 100).toFixed(2)} %  ${dl.name} ( ${(dl.received / 1000000).toFixed(2)} MB / ${(dl.total / 1000000).toFixed(2)} MB )`);
     });
 
-    if (SOCIALBROWSER.partition && SOCIALBROWSER.partition.indexOf('persist:') !== 0) {
+    if (SOCIALBROWSER.isMemoryMode) {
         SOCIALBROWSER.log('Hide Mode Detected');
         window.RequestFileSystem = window.webkitRequestFileSystem = function (arg1, arg2, callback, error) {
             callback({

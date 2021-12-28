@@ -109,6 +109,7 @@ module.exports = function init(child) {
     });
 
     child.electron.ipcMain.handle('[browser][data]', async (event, data) => {
+        data.partition = data.partition || child.parent.var.core.session.name;
         return {
             child_id: child.id,
             child_index: child.index,
@@ -124,10 +125,12 @@ module.exports = function init(child) {
             newTabData: child.parent.newTabData,
             windows: child.assignWindows.find((w) => w.child_id == data.win_id),
             session: child.parent.var.session_list.find((s) => s.name == data.partition),
+            partition : data.partition
         };
     });
 
     child.electron.ipcMain.on('[browser][data]', async (event, data) => {
+        data.partition = data.partition || child.parent.var.core.session.name;
         event.returnValue = {
             child_id: child.id,
             child_index: child.index,

@@ -20,10 +20,11 @@ module.exports = function (SOCIALBROWSER) {
     };
 
     SOCIALBROWSER.copy = function (text) {
-        SOCIALBROWSER.call('[send-render-message]', {
-            name: 'copy',
-            text: text,
-        });
+        SOCIALBROWSER.electron.clipboard.writeText(text);
+
+    };
+    SOCIALBROWSER.paste = function () {
+        SOCIALBROWSER.webContents.paste();
     };
 
     SOCIALBROWSER.getTimeZone = () => {

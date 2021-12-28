@@ -56,8 +56,12 @@ module.exports = function (SOCIALBROWSER) {
     }
 
     function add_input_menu(node, menu, doc) {
-        if (!node) return;
-
+        if (!node) {
+            return menu;
+        }
+        if (SOCIALBROWSER.menuInputOFF) {
+            return menu;
+        }
         if (node.nodeName === 'INPUT' || isContentEditable(node)) {
             if (SOCIALBROWSER.windowType !== 'main') {
                 let arr1 = [];
@@ -79,7 +83,7 @@ module.exports = function (SOCIALBROWSER) {
                                     label: d.value,
                                     click() {
                                         node.nodeName === 'INPUT' ? (node.value = '') : (node.innerHTML = '');
-                                        SOCIALBROWSER.remote.clipboard.writeText(d.value);
+                                        SOCIALBROWSER.electron.clipboard.writeText(d.value);
                                         SOCIALBROWSER.webContents.paste();
                                         /*node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
                                         node.dispatchEvent(inputEvent);
@@ -123,7 +127,7 @@ module.exports = function (SOCIALBROWSER) {
                                     label: d.value,
                                     click() {
                                         node.nodeName === 'INPUT' ? (node.value = '') : (node.innerHTML = '');
-                                        SOCIALBROWSER.remote.clipboard.writeText(d.value);
+                                        SOCIALBROWSER.electron.clipboard.writeText(d.value);
                                         SOCIALBROWSER.webContents.paste();
                                         /*node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
                                         node.dispatchEvent(inputEvent);
@@ -168,7 +172,7 @@ module.exports = function (SOCIALBROWSER) {
                                     label: d.value,
                                     click() {
                                         node.nodeName === 'INPUT' ? (node.value = '') : (node.innerHTML = '');
-                                        SOCIALBROWSER.remote.clipboard.writeText(d.value);
+                                        SOCIALBROWSER.electron.clipboard.writeText(d.value);
                                         SOCIALBROWSER.webContents.paste();
                                         /* node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
                                         node.dispatchEvent(inputEvent);
@@ -195,7 +199,7 @@ module.exports = function (SOCIALBROWSER) {
                                     label: d.value,
                                     click() {
                                         node.nodeName === 'INPUT' ? (node.value = '') : (node.innerHTML = '');
-                                        SOCIALBROWSER.remote.clipboard.writeText(d.value);
+                                        SOCIALBROWSER.electron.clipboard.writeText(d.value);
                                         SOCIALBROWSER.webContents.paste();
                                         /*node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
                                         node.dispatchEvent(inputEvent);
@@ -232,7 +236,7 @@ module.exports = function (SOCIALBROWSER) {
                                     label: d.value,
                                     click() {
                                         node.nodeName === 'INPUT' ? (node.value = '') : (node.innerHTML = '');
-                                        SOCIALBROWSER.remote.clipboard.writeText(d.value);
+                                        SOCIALBROWSER.electron.clipboard.writeText(d.value);
                                         SOCIALBROWSER.webContents.paste();
                                         /*node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
                                         node.dispatchEvent(inputEvent);
@@ -269,8 +273,8 @@ module.exports = function (SOCIALBROWSER) {
                                 arr1.push({
                                     label: d.value,
                                     click() {
-                                        SOCIALBRO
-                                        node.nodeName === 'INPUT' ? (node.value = '') : (node.innerHTML = '');WSER.remote.clipboard.writeText(d.value);
+                                        node.nodeName === 'INPUT' ? (node.value = '') : (node.innerHTML = '');
+                                        SOCIALBROWSER.electron.clipboard.writeText(d.value);
                                         SOCIALBROWSER.webContents.paste();
                                         /*node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
                                         node.dispatchEvent(inputEvent);
@@ -400,7 +404,12 @@ module.exports = function (SOCIALBROWSER) {
     }
 
     function get_a_menu(node, menu, doc) {
-        if (!node) return;
+        if (!node) {
+            return menu;
+        }
+        if (SOCIALBROWSER.menuAOFF) {
+            return menu;
+        }
         if (node.nodeName === 'A' && node.getAttribute('href') && !node.getAttribute('href').startsWith('#')) {
             let u = node.getAttribute('href');
             u = handle_url(u);
@@ -648,7 +657,12 @@ module.exports = function (SOCIALBROWSER) {
     }
 
     function get_img_menu(node, menu, doc) {
-        if (!node) return;
+        if (!node) {
+            return menu;
+        }
+        if (SOCIALBROWSER.menuImgOFF) {
+            return menu;
+        }
         if (node.nodeName == 'IMG' && node.getAttribute('src')) {
             let url = node.getAttribute('src');
             url = handle_url(url);
@@ -732,7 +746,12 @@ module.exports = function (SOCIALBROWSER) {
     }
 
     function add_div_menu(node, menu) {
-        if (!node) return;
+        if (!node) {
+            return menu;
+        }
+        if (SOCIALBROWSER.menuDivOFF) {
+            return menu;
+        }
         if (node.nodeName === 'DIV') {
             menu.append(
                 new $menuItem({
@@ -776,6 +795,9 @@ module.exports = function (SOCIALBROWSER) {
     }
 
     function get_options_menu(node, menu, doc) {
+        if (SOCIALBROWSER.menuOptionsOFF) {
+            return menu;
+        }
         let arr = [];
 
         arr.push({
@@ -1181,6 +1203,9 @@ module.exports = function (SOCIALBROWSER) {
     }
 
     function get_custom_menu(menu, doc) {
+        if (SOCIALBROWSER.menuCustomOFF) {
+            return menu;
+        }
         menu.append(
             new $menuItem({
                 label: 'Copy page Link',
@@ -1292,6 +1317,9 @@ module.exports = function (SOCIALBROWSER) {
     }
 
     function createTestMenu(menu) {
+        if (SOCIALBROWSER.menuTestOFF) {
+            return menu;
+        }
         let arr = [];
 
         if (document.location.href.contains('free-proxy-list.net')) {
@@ -1353,6 +1381,9 @@ module.exports = function (SOCIALBROWSER) {
     }
 
     function url_to_social(url, social_arr, title) {
+        if (SOCIALBROWSER.menuSocialOFF) {
+            return menu;
+        }
         social_arr.push({
             label: ` Open  [ ${title} ] in 5 new Popup [Audio Muted]`,
             click() {
@@ -1432,6 +1463,9 @@ module.exports = function (SOCIALBROWSER) {
     }
 
     function get_social_menu(node, menu, doc, social_arr) {
+        if (SOCIALBROWSER.menuSocialOFF) {
+            return menu;
+        }
         social_arr = social_arr || [];
 
         if (!node) {
@@ -2027,6 +2061,9 @@ module.exports = function (SOCIALBROWSER) {
 
     SOCIALBROWSER.contextmenu = function (e) {
         try {
+            if (SOCIALBROWSER.menuOFF) {
+                return;
+            }
             SOCIALBROWSER.memoryText = SOCIALBROWSER.electron.clipboard.readText();
             SOCIALBROWSER.selectedText = getSelection().toString().trim();
 

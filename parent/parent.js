@@ -28,9 +28,12 @@ module.exports = function init(parent) {
     };
     parent.loadExtension = function (_extension, exists) {
         if (!_extension) {
-            return;
+            return null;
         }
         let path = _extension.path.replace('{dir}', parent.dir);
+        if (!parent.api.isFileExistsSync(path)) {
+            return null;
+        }
         let extension = require(path)(parent);
         if (!extension) {
             return;

@@ -11,7 +11,7 @@ module.exports = function (child) {
         child._ws_.on('open', function () {});
         child._ws_.on('ping', function () {});
         child._ws_.on('close', function (e) {
-            child.log('Socket is closed. Reconnect will be attempted in 1 second.', e);
+            child.log('Child Socket is closed. Reconnect will be attempted in 1 second.', e);
             setTimeout(function () {
                 child.reconnectCount++;
                 if (child.reconnectCount > 10) {

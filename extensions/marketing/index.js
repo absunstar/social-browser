@@ -1,7 +1,7 @@
 module.exports = function (browser) {
     let extension = {};
     extension.id = browser.md5(__filename);
-    extension.name = 'Marketing ';
+    extension.name = 'Marketing';
     extension.description = 'Marketing Tools';
     extension.paid = false;
     extension.version = '1.0.0';
