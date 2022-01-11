@@ -12,7 +12,7 @@ module.exports = function (SOCIALBROWSER) {
         if (a) {
           a.click();
           alert('Auto Like Video - change from extentions');
-          if (SOCIALBROWSER.windowType === 'client-popup') {
+          if (SOCIALBROWSER.__options.windowType === 'client-popup') {
             window.close();
           }
         }
@@ -21,7 +21,7 @@ module.exports = function (SOCIALBROWSER) {
   }, 1000 * 3);
 
   setTimeout(() => {
-    if (SOCIALBROWSER.windowType === 'client-popup') {
+    if (SOCIALBROWSER.__options.windowType === 'client-popup') {
       window.close();
     }
   }, 1000 * 15);

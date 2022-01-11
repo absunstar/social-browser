@@ -1,4 +1,6 @@
 {
-    "enabled" : false,
-    "url" : ""
+    "enabled": false,
+    "url": "",
+    "port" : 8080,
+    "mode": "direct"
 }

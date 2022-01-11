@@ -4,7 +4,7 @@ module.exports = function (child) {
     child.getMainWindow = function () {
         let mainWindow = null;
         child.windowList.forEach((w) => {
-            if (!mainWindow && w.windowType == 'main') {
+            if (!mainWindow && w.__options.windowType == 'main') {
                 mainWindow = w.window;
             }
         });
@@ -17,7 +17,7 @@ module.exports = function (child) {
 
     child.createNewWindow = function (setting) {
         let parent = child.parent;
-
+        setting.partition = setting.partition || parent.var.core.session.name;
         let defaultSetting = {
             show: setting.show === true ? true : false,
             alwaysOnTop: false,
@@ -40,7 +40,7 @@ module.exports = function (child) {
                 sandbox: false,
                 webaudio: typeof setting.webaudio !== undefined ? setting.webaudio : true,
                 contextIsolation: false, // false -> can access preload window functions
-                partition: setting.partition || parent.var.core.session.name,
+                partition: setting.partition,
                 preload: setting.preload || child.parent.files_dir + '/js/context-menu.js',
                 javascript: true,
                 nativeWindowOpen: false,
@@ -131,7 +131,7 @@ module.exports = function (child) {
         let win = new child.electron.BrowserWindow(defaultSetting);
         child.remoteMain.enable(win.webContents);
 
-        win.$setting = defaultSetting;
+        win.__options = defaultSetting;
 
         if (!child.window) {
             child.window = win;
@@ -140,25 +140,24 @@ module.exports = function (child) {
         child.windowList.push({
             id: win.id,
             window: win,
-            windowType: win.$setting.windowType,
-            $setting: win.$setting,
+            __options: win.__options,
             setting: [],
         });
 
-        if (win.$setting.center) {
+        if (win.__options.center) {
             win.center();
         }
 
-        if (win.$setting.windowType === 'main') {
+        if (win.__options.windowType === 'main') {
             child.mainWindow = win;
             win.center();
             // win.openDevTools({
             //   mode: 'detach',
             // });
-        } else if (win.$setting.windowType === 'view') {
+        } else if (win.__options.windowType === 'view') {
             if (child.speedMode) {
                 if (!child.currentView) {
-                    child.currentView = win.$setting;
+                    child.currentView = win.__options;
                 }
 
                 if ((mainWindow = child.getMainWindow())) {
@@ -186,20 +185,20 @@ module.exports = function (child) {
             }
         }
 
-        if (win.$setting.url) {
-            win.loadURL(win.$setting.url, {
-                referrer: win.$setting.referrer,
-                userAgent: win.$setting.user_agent || parent.var.core.user_agent,
+        if (win.__options.url) {
+            win.loadURL(win.__options.url, {
+                referrer: win.__options.referrer,
+                userAgent: win.__options.user_agent || parent.var.core.user_agent,
             });
         } else {
             win.loadURL(parent.var.core.default_page || 'http://127.0.0.1:60080/newTab', {
-                userAgent: win.$setting.user_agent || parent.var.core.user_agent,
+                userAgent: win.__options.user_agent || parent.var.core.user_agent,
             });
         }
 
         win.once('ready-to-show', function () {
-            win.$setting.title = win.$setting.title || win.$setting.url;
-            if (win.$setting.windowType === 'main') {
+            win.__options.title = win.__options.title || win.__options.url;
+            if (win.__options.windowType === 'main') {
                 win.show();
                 child.addressbarWindow = child.createNewWindow({
                     url: child.url.format({
@@ -265,7 +264,7 @@ module.exports = function (child) {
                     },
                 });
                 child.remoteMain.enable(child.profilesWindow.webContents);
-            } else if (win.$setting.windowType === 'view') {
+            } else if (win.__options.windowType === 'view') {
                 child.updateTab(win);
 
                 child.sendMessage({
@@ -276,32 +275,32 @@ module.exports = function (child) {
                     type: '[add-window-url]',
                     url: child.decodeURI(win.getURL()),
                     title: win.getTitle(),
-                    logo: win.$setting.favicon,
+                    logo: win.__options.favicon,
                 });
-            } else if (win.$setting.windowType === 'none') {
+            } else if (win.__options.windowType === 'none') {
                 win.close();
             }
         });
 
-        if (win.$setting.webaudio === false) {
+        if (win.__options.webaudio === false) {
             win.webContents.audioMuted = true;
         }
 
         win.setMenuBarVisibility(false);
 
-        if (!win.$setting.user_agent || win.$setting.user_agent == 'undefined') {
-            win.$setting.user_agent = parent.var.core.user_agent;
+        if (!win.__options.user_agent || win.__options.user_agent == 'undefined') {
+            win.__options.user_agent = parent.var.core.user_agent;
         }
 
-        if (win.$setting.proxy) {
+        if (win.__options.proxy) {
             win.webContents.session.setProxy({
-                proxyRules: win.$setting.proxy,
+                proxyRules: win.__options.proxy,
                 proxyBypassRules: '127.0.0.1',
             });
         }
 
         win.on('blur', function () {
-            // if (win.$setting.windowType === 'addressbar' || win.$setting.windowType === 'profiles') {
+            // if (win.__options.windowType === 'addressbar' || win.__options.windowType === 'profiles') {
             //   win.hide();
             // }
         });
@@ -347,9 +346,9 @@ module.exports = function (child) {
                                 height: mainWindow.isMaximized ? bounds.height - 84 : bounds.height - 72,
                             };
                             child.windowList.forEach((w) => {
-                                if (w.windowType == 'view' && w.$setting.main_window_id == mainWindow.id) {
+                                if (w.__options.windowType == 'view' && w.__options.main_window_id == mainWindow.id) {
                                     w.window.setBounds(new_bounds);
-                                    if (!mainWindow.hide && w.$setting.tab_id == child.currentView.tab_id) {
+                                    if (!mainWindow.hide && w.__options.tab_id == child.currentView.tab_id) {
                                         w.window.show();
                                     } else {
                                         w.window.hide();
@@ -367,12 +366,12 @@ module.exports = function (child) {
             }, 10);
         };
 
-        if (win.$setting.windowType === 'main') {
+        if (win.__options.windowType === 'main') {
             child.sendCurrentDataLoop();
         }
 
         function sendCurrentData() {
-            if (win.$setting.windowType === 'main') {
+            if (win.__options.windowType === 'main') {
                 child.sendCurrentDataAllow = true;
             }
         }
@@ -403,7 +402,7 @@ module.exports = function (child) {
         });
         win.on('focus', function () {
             sendCurrentData();
-            if (win.$setting.windowType !== 'addressbar') {
+            if (win.__options.windowType !== 'addressbar') {
                 child.sendMessage({
                     type: '[to-all]',
                     name: 'hide-addressbar',
@@ -451,7 +450,7 @@ module.exports = function (child) {
             setTimeout(() => {
                 child.handleWindowBounds();
                 if (win && !win.isDestroyed()) {
-                    if (!win.$setting.windowType.like('*youtube*')) {
+                    if (!win.__options.windowType.like('*youtube*')) {
                         win.setAlwaysOnTop(false);
                     }
                     win.show();
@@ -474,7 +473,7 @@ module.exports = function (child) {
             setTimeout(() => {
                 child.handleWindowBounds();
                 if (win && !win.isDestroyed()) {
-                    if (!win.$setting.windowType.like('*youtube*')) {
+                    if (!win.__options.windowType.like('*youtube*')) {
                         win.setAlwaysOnTop(false);
                     }
                     win.show();
@@ -541,26 +540,26 @@ module.exports = function (child) {
         });
 
         win.on('page-title-updated', (e, title) => {
-            win.$setting.title = title;
+            win.__options.title = title;
             child.updateTab(win);
             child.sendMessage({
                 type: '[add-window-url]',
                 url: child.decodeURI(win.getURL()),
                 title: title,
-                logo: win.$setting.favicon,
+                logo: win.__options.favicon,
                 ignoreCounted: true,
             });
         });
 
         win.webContents.on('page-favicon-updated', (e, urls) => {
-            win.$setting.icon = urls[0];
-            win.$setting.favicon = urls[0];
+            win.__options.icon = urls[0];
+            win.__options.favicon = urls[0];
             child.updateTab(win);
             child.sendMessage({
                 type: '[add-window-url]',
                 url: child.decodeURI(win.getURL()),
                 title: win.getTitle(),
-                logo: win.$setting.favicon,
+                logo: win.__options.favicon,
                 ignoreCounted: true,
             });
         });
@@ -568,20 +567,20 @@ module.exports = function (child) {
         let error_icon = 'http://127.0.0.1:60080/images/no.jpg';
 
         win.webContents.on('did-start-loading', (e, urls) => {
-            win.$setting.icon = loading_icon;
+            win.__options.icon = loading_icon;
             child.updateTab(win);
         });
         win.webContents.on('did-stop-loading', (e) => {
-            win.$setting.icon = win.$setting.favicon;
+            win.__options.icon = win.__options.favicon;
             child.updateTab(win);
         });
         win.webContents.on('did-finish-load', (e) => {
-            win.$setting.icon = win.$setting.favicon;
+            win.__options.icon = win.__options.favicon;
             child.updateTab(win);
         });
         win.webContents.on('did-fail-load', (e) => {
             e.preventDefault();
-            win.$setting.icon = error_icon;
+            win.__options.icon = error_icon;
             child.updateTab(win);
             // win.loadURL('browser://error?url=' + win.getURL() + '&description=Error While Loading');
         });
@@ -605,7 +604,7 @@ module.exports = function (child) {
                     type: '[add-window-url]',
                     url: child.decodeURI(win.getURL()),
                     title: win.getTitle(),
-                    logo: win.$setting.favicon,
+                    logo: win.__options.favicon,
                 });
             }
         });
@@ -712,15 +711,15 @@ module.exports = function (child) {
                 child.createNewWindow({
                     windowType: 'youtube',
                     title: 'YouTube',
-                    width: 440,
+                    width: 520,
                     height: 330,
-                    x: parent.options.screen.bounds.width - 460,
-                    y: parent.options.screen.bounds.height - 350,
+                    x: parent.options.screen.bounds.width - 550,
+                    y: parent.options.screen.bounds.height - 400,
                     backgroundColor: '#030303',
                     center: false,
                     url: real_url,
-                    partition: win.$setting.partition,
-                    user_name: win.$setting.user_name,
+                    partition: win.__options.partition,
+                    user_name: win.__options.user_name,
                 });
 
                 return;
@@ -728,15 +727,15 @@ module.exports = function (child) {
                 child.createNewWindow({
                     windowType: 'youtube',
                     title: 'YouTube',
-                    width: 440,
+                    width: 520,
                     height: 330,
-                    x: parent.options.screen.bounds.width - 460,
-                    y: parent.options.screen.bounds.height - 350,
+                    x: parent.options.screen.bounds.width - 550,
+                    y: parent.options.screen.bounds.height - 400,
                     backgroundColor: '#030303',
                     center: false,
                     url: real_url,
-                    partition: win.$setting.partition,
-                    user_name: win.$setting.user_name,
+                    partition: win.__options.partition,
+                    user_name: win.__options.user_name,
                 });
                 return;
             }
@@ -745,8 +744,8 @@ module.exports = function (child) {
                 child.sendMessage({
                     type: '[open new tab]',
                     url: real_url.replace('#___new_tab___', '').replace('#___new_popup___', '').replace('#___trusted_window___', ''),
-                    partition: win.$setting.partition,
-                    user_name: win.$setting.user_name,
+                    partition: win.__options.partition,
+                    user_name: win.__options.user_name,
                 });
                 return;
             }
@@ -759,8 +758,8 @@ module.exports = function (child) {
                     center: true,
                     trusted: true,
                     url: real_url.replace('#___new_tab___', '').replace('#___new_popup___', '').replace('#___trusted_window___', ''),
-                    partition: win.$setting.partition,
-                    user_name: win.$setting.user_name,
+                    partition: win.__options.partition,
+                    user_name: win.__options.user_name,
                 });
                 return;
             }
@@ -772,8 +771,8 @@ module.exports = function (child) {
                     backgroundColor: '#ffffff',
                     center: true,
                     url: real_url.replace('#___new_tab___', '').replace('#___new_popup___', '').replace('#___trusted_window___', ''),
-                    partition: win.$setting.partition,
-                    user_name: win.$setting.user_name,
+                    partition: win.__options.partition,
+                    user_name: win.__options.user_name,
                 });
                 return;
             }
@@ -792,8 +791,8 @@ module.exports = function (child) {
                 child.sendMessage({
                     type: '[open new tab]',
                     url: real_url.replace('#___new_tab___', '').replace('#___new_popup___', '').replace('#___trusted_window___', ''),
-                    partition: win.$setting.partition,
-                    user_name: win.$setting.user_name,
+                    partition: win.__options.partition,
+                    user_name: win.__options.user_name,
                 });
                 return;
             }
@@ -804,8 +803,8 @@ module.exports = function (child) {
                     data: {
                         name: '[open new tab]',
                         url: real_url.replace('#___new_tab___', '').replace('#___new_popup___', '').replace('#___trusted_window___', ''),
-                        partition: win.$setting.partition,
-                        user_name: win.$setting.user_name,
+                        partition: win.__options.partition,
+                        user_name: win.__options.user_name,
                         options: parent.options,
                     },
                 });
@@ -813,8 +812,8 @@ module.exports = function (child) {
                 child.sendMessage({
                     type: '[open new tab]',
                     url: real_url.replace('#___new_tab___', '').replace('#___new_popup___', '').replace('#___trusted_window___', ''),
-                    partition: win.$setting.partition,
-                    user_name: win.$setting.user_name,
+                    partition: win.__options.partition,
+                    user_name: win.__options.user_name,
                 });
             }
         });

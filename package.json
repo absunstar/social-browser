@@ -110,12 +110,11 @@
   },
   "dependencies": {
     "@electron/remote": "^2.0.1",
-    "isite": "^2021.12.16",
-    "node-fetch": "^2.6.6",
-    "xlsx": "^0.17.0"
+    "isite": "^2022.1.10",
+    "node-fetch": "^2.6.6"
   },
   "devDependencies": {
-    "electron": "^16.0.0",
+    "electron": "^16.0.6",
     "electron-builder": "*",
     "gulp": "*"
   }

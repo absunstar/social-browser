@@ -10,52 +10,112 @@ module.exports = function (parent) {
 
         parent.log(`Handle Session ${name}`);
         let ss = name === '0' ? parent.electron.session.defaultSession : parent.electron.session.fromPartition(name);
+        let user = parent.var.session_list.find((s) => s.name == name) ?? {};
 
         ss.setSpellCheckerLanguages(['en-US']);
 
-        ss.cookies.on('changed', function (event, cookie, cause, removed) {
-            if (!Array.isArray(parent.cookies[name])) {
-                parent.cookies[name] = [];
-            }
+        // ss.cookies.on('changed', function (event, cookie, cause, removed) {
+        //     if (!Array.isArray(parent.cookies[name])) {
+        //         parent.cookies[name] = [];
+        //     }
 
-            if (!removed) {
-                let exists = false;
-                parent.cookies[name].forEach((co) => {
-                    if (co.name == cookie.name) {
-                        exists = true;
-                        co.value = cookie.value;
-                    }
-                });
-                if (!exists) {
-                    parent.cookies[name].push({
-                        partition: name,
-                        name: cookie.name,
-                        value: cookie.value,
-                        domain: cookie.domain,
-                        path: cookie.path,
-                        secure: cookie.secure,
-                        httpOnly: cookie.httpOnly,
-                    });
+        //     if (!removed) {
+        //         let exists = false;
+        //         parent.cookies[name].forEach((co) => {
+        //             if (co.name == cookie.name) {
+        //                 exists = true;
+        //                 co.value = cookie.value;
+        //             }
+        //         });
+        //         if (!exists) {
+        //             parent.cookies[name].push({
+        //                 partition: name,
+        //                 name: cookie.name,
+        //                 value: cookie.value,
+        //                 domain: cookie.domain,
+        //                 path: cookie.path,
+        //                 secure: cookie.secure,
+        //                 httpOnly: cookie.httpOnly,
+        //             });
+        //         }
+        //     } else {
+        //         parent.cookies[name].forEach((co, i) => {
+        //             if (co.name == cookie.name) {
+        //                 parent.cookies[name].splice(i, 1);
+        //             }
+        //         });
+        //     }
+        // });
+
+        let proxy = null;
+
+        if (user.proxy && user.proxy.enabled && user.proxy.mode) {
+            proxy = user.proxy;
+        } else if (parent.var.proxy.enabled && parent.var.proxy.mode) {
+            proxy = parent.var.proxy;
+        }
+
+        if (proxy) {
+            if (proxy.mode == 'fixed_servers' && proxy.url) {
+                proxy.url = proxy.url.replace('http://', '').replace('https://', '').replace('ftp://', '').replace('socks4://', '').replace('socks4://', '');
+                let arr = proxy.url.split(':');
+                if (arr.length > 1) {
+                    proxy.url = arr[0];
+                    proxy.port = arr[1];
                 }
+                let proxyRules = '';
+                let startline = '';
+                if (proxy.socks4) {
+                    proxyRules += startline + 'socks4://' + proxy.url + ':' + proxy.port;
+                    startline = ',';
+                }
+                if (proxy.socks5) {
+                    proxyRules += startline + 'socks5://' + proxy.url + ':' + proxy.port;
+                    startline = ',';
+                }
+                if (proxy.ftp) {
+                    proxyRules += startline + 'ftp://' + proxy.url + ':' + proxy.port;
+                    startline = ',';
+                }
+                if (proxy.http) {
+                    proxyRules += startline + 'http://' + proxy.url + ':' + proxy.port;
+                    startline = ',';
+                }
+                if (proxy.https) {
+                    proxyRules += startline + 'https://' + proxy.url + ':' + proxy.port;
+                    startline = ',';
+                }
+                if (proxyRules == '') {
+                    proxyRules = proxy.url + ':' + proxy.port;
+                    startline = ',';
+                }
+                ss.setProxy({
+                    mode: proxy.mode,
+                    proxyRules: proxyRules,
+                    proxyBypassRules: proxy.ignore || '127.0.0.1',
+                }).then(() => {
+                    console.log('Proxy Set : ' + proxyRules);
+                });
+            } else if (proxy.mode == 'pac_script' && proxy.pacScript) {
+                ss.setProxy({
+                    mode: proxy.mode,
+                    pacScript: proxy.pacScript,
+                }).then(() => {
+                    console.log('Proxy Set : ' + proxy.mode);
+                });
             } else {
-                parent.cookies[name].forEach((co, i) => {
-                    if (co.name == cookie.name) {
-                        parent.cookies[name].splice(i, 1);
-                    }
+                ss.setProxy({
+                    mode: proxy.mode,
+                }).then(() => {
+                    console.log('Proxy Set to default : ' + proxy.mode);
                 });
             }
-        });
-
-        if (parent.var.proxy.enabled && parent.var.proxy.url) {
-            ss.setProxy(
-                {
-                    proxyRules: parent.var.proxy.url,
-                    proxyBypassRules: '127.0.0.1',
-                },
-                function () {},
-            );
         } else {
-            ss.setProxy({}, function () {});
+            ss.setProxy({
+                mode: 'system',
+            }).then(() => {
+                console.log('Default Proxy Set :system ');
+            });
         }
 
         ss.allowNTLMCredentialsForDomains('*');
@@ -199,10 +259,12 @@ module.exports = function (parent) {
             }
 
             if (parent.var.blocking.privacy.enable_finger_protect && parent.var.blocking.privacy.mask_user_agent) {
-                let code = name;
-                code += new URL(url).hostname;
-                code += parent.var.core.id;
-                details.requestHeaders['User-Agent'] = details.requestHeaders['User-Agent'].replace(') ', ') (' + parent.md5(code) + ') ');
+                if (!details.requestHeaders['User-Agent'].like('*[xx-*')) {
+                    let code = name;
+                    code += new URL(url).hostname;
+                    code += parent.var.core.id;
+                    details.requestHeaders['User-Agent'] = details.requestHeaders['User-Agent'].replace(') ', ') [xx-' + parent.md5(code) + '] ');
+                }
             }
 
             // custom header request
@@ -522,7 +584,7 @@ module.exports = function (parent) {
 
                 if (state === 'interrupted') {
                     dl.status = 'error';
-                    ddld.canResume = item.canResume();
+                    dl.canResume = item.canResume();
                     dl.type = item.getMimeType();
                     dl.path = item.getSavePath();
                     dl.name = item.getFilename();

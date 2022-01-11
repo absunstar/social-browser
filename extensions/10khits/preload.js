@@ -23,7 +23,7 @@ module.exports = function (SOCIALBROWSER) {
         webPreferences: {
           contextIsolation: false,
           enableRemoteModule: true,
-          partition: SOCIALBROWSER.remote.getCurrentWindow().webContents.session.name,
+          partition: SOCIALBROWSER.partition,
           webaudio: false,
           preload2: SOCIALBROWSER.files_dir + '/js/context-menu.js',
         },

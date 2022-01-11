@@ -51,7 +51,6 @@ var browser = {
     child_process: require('child_process'),
     WebSocket: require('ws'),
     package: require('./package.json'),
-    xlsx: require('xlsx'),
     id: process.pid,
     windowList: [],
     files: [],

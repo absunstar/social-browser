@@ -20,7 +20,7 @@ module.exports = function (SOCIALBROWSER) {
 
     if (
         SOCIALBROWSER.var.core.disabled ||
-        SOCIALBROWSER.windowType === 'main' ||
+        SOCIALBROWSER.__options.windowType === 'main' ||
         document.location.href.like('http://localhost*|https://localhost*|http://127.0.0.1*|https://127.0.0.1*|browser://*|chrome://*')
     ) {
         SOCIALBROWSER.log(' [Finger Printing] OFF : ' + document.location.href);
@@ -163,8 +163,13 @@ module.exports = function (SOCIALBROWSER) {
 
     if (SOCIALBROWSER.session.privacy.hide_lang || SOCIALBROWSER.var.blocking.privacy.hide_lang) {
         SOCIALBROWSER.session.privacy.languages = SOCIALBROWSER.session.privacy.languages || navigator.languages;
-        SOCIALBROWSER.__define(navigator, 'languages', SOCIALBROWSER.session.privacy.languages.split(','));
-        SOCIALBROWSER.__define(navigator, 'language', SOCIALBROWSER.session.privacy.languages.split(',')[0]);
+        if (Array.isArray(SOCIALBROWSER.session.privacy.languages)) {
+            SOCIALBROWSER.__define(navigator, 'languages', SOCIALBROWSER.session.privacy.languages);
+            SOCIALBROWSER.__define(navigator, 'language', SOCIALBROWSER.session.privacy.languages[0]);
+        } else if (typeof SOCIALBROWSER.session.privacy.languages === 'string') {
+            SOCIALBROWSER.__define(navigator, 'languages', SOCIALBROWSER.session.privacy.languages.split(','));
+            SOCIALBROWSER.__define(navigator, 'language', SOCIALBROWSER.session.privacy.languages.split(',')[0]);
+        }
     }
     if (SOCIALBROWSER.session.privacy.hide_connection || SOCIALBROWSER.var.blocking.privacy.hide_connection) {
         SOCIALBROWSER.__define(navigator, 'connection', {

@@ -1,0 +1,7 @@
+[
+    { "id": 1, "name": "auto_detect [ Auto-detect Proxy Setting for this network ] ", "value": "auto_detect" },
+    { "id": 2, "name": "direct [ No Proxy ] ", "value": "direct" },
+    { "id": 3, "name": "system [ Use System Proxy Setting ] ", "value": "system" },
+    { "id": 4, "name": "fixed_servers [ Manual Proxy Configuration ] ", "value": "fixed_servers" },
+    { "id": 5, "name": "pac_script [ Automatic Proxy Configuration URL ] ", "value": "pac_script" }
+]

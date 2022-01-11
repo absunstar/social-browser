@@ -763,9 +763,6 @@ socialTabs.init(socialTabsDom, {
     maxWidth: 270,
 });
 
-
-
-
 function setURL(url, url2) {
     /*!$addressbar.is(':focus')*/
     if (url) {
@@ -938,7 +935,6 @@ socialTabsDom.addEventListener('activeTabChange', ({ detail }) => {
 
             $('.address-input .protocol').html(protocol);
             handleUrlText();
-      
         }
     }
 });
@@ -1006,7 +1002,7 @@ function render_new_tab(op) {
     let tab = {
         id: 'tab_' + new Date().getTime(),
         url: op.url,
-        title: op.title,
+        title: op.title || op.url,
         partition: op.partition,
         user_name: op.user_name || op.partition,
         user_agent: op.user_agent,
@@ -1021,6 +1017,7 @@ function render_new_tab(op) {
 }
 
 function renderMessage(cm) {
+    console.log('renderMessge', cm);
     if (!cm) {
         return;
     }
@@ -1162,7 +1159,7 @@ function renderMessage(cm) {
                 }
 
                 $('.address-input .protocol').html(protocol);
-               handleUrlText()
+                handleUrlText();
             }
         }
     } else if (cm.name == 'mini_iframe') {

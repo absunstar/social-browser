@@ -22,6 +22,9 @@ module.exports = function (child) {
             }, 1000);
             ss.cookies.on('changed', function (event, cookie, cause, removed) {
                 saveCookies = true;
+                if (cookie.domain.startsWith('.')) {
+                    cookie.domain = cookie.domain.substring(1);
+                }
                 child.sendMessage({
                     type: '[cookie-changed]',
                     partition: name,
@@ -55,29 +58,74 @@ module.exports = function (child) {
         // }, 1000 * 15);
 
         ss.setSpellCheckerLanguages(['en-US']);
+        let proxy = null;
 
-        if (user.proxy && user.proxy.enabled) {
-            if (user.proxy.url) {
-                ss.setProxy(
-                    {
-                        proxyRules: user.proxy.url,
-                        proxyBypassRules: '127.0.0.1',
-                    },
-                    function () {},
-                );
+        if (user.proxy && user.proxy.enabled && user.proxy.mode) {
+            proxy = user.proxy;
+        } else if (child.parent.var.proxy.enabled && child.parent.var.proxy.mode) {
+            proxy = child.parent.var.proxy;
+        }
+        if (proxy) {
+            if (proxy.mode == 'fixed_servers' && proxy.url) {
+                proxy.url = proxy.url.replace('http://', '').replace('https://', '').replace('ftp://', '').replace('socks4://', '').replace('socks4://', '');
+                let arr = proxy.url.split(':');
+                if (arr.length > 1) {
+                    proxy.url = arr[0];
+                    proxy.port = arr[1];
+                }
+                let proxyRules = '';
+                let startline = '';
+                if (proxy.socks4) {
+                    proxyRules += startline + 'socks4://' + proxy.url + ':' + proxy.port;
+                    startline = ',';
+                }
+                if (proxy.socks5) {
+                    proxyRules += startline + 'socks5://' + proxy.url + ':' + proxy.port;
+                    startline = ',';
+                }
+                if (proxy.ftp) {
+                    proxyRules += startline + 'ftp://' + proxy.url + ':' + proxy.port;
+                    startline = ',';
+                }
+                if (proxy.http) {
+                    proxyRules += startline + 'http://' + proxy.url + ':' + proxy.port;
+                    startline = ',';
+                }
+                if (proxy.https) {
+                    proxyRules += startline + 'https://' + proxy.url + ':' + proxy.port;
+                    startline = ',';
+                }
+                if (proxyRules == '') {
+                    proxyRules = proxy.url + ':' + proxy.port;
+                    startline = ',';
+                }
+                ss.setProxy({
+                    mode: proxy.mode,
+                    proxyRules: proxyRules,
+                    proxyBypassRules: proxy.ignore || '127.0.0.1',
+                }).then(() => {
+                    console.log('Proxy Set : ' + proxyRules);
+                });
+            } else if (proxy.mode == 'pac_script' && proxy.pacScript) {
+                ss.setProxy({
+                    mode: proxy.mode,
+                    pacScript: proxy.pacScript,
+                }).then(() => {
+                    console.log('Proxy Set : ' + proxy.mode);
+                });
             } else {
-                ss.setProxy({}, function () {});
+                ss.setProxy({
+                    mode: proxy.mode,
+                }).then(() => {
+                    console.log('Proxy Set to default : ' + proxy.mode);
+                });
             }
-        } else if (child.parent.var.proxy.enabled && child.parent.var.proxy.url) {
-            ss.setProxy(
-                {
-                    proxyRules: child.parent.var.proxy.url,
-                    proxyBypassRules: '127.0.0.1',
-                },
-                function () {},
-            );
         } else {
-            ss.setProxy({}, function () {});
+            ss.setProxy({
+                mode: 'system',
+            }).then(() => {
+                console.log('Default Proxy Set :system ');
+            });
         }
 
         ss.allowNTLMCredentialsForDomains('*');
@@ -255,10 +303,12 @@ module.exports = function (child) {
             }
 
             if (child.parent.var.blocking.privacy.enable_finger_protect && child.parent.var.blocking.privacy.mask_user_agent) {
-                let code = name;
-                code += new URL(url).hostname;
-                code += child.parent.var.core.id;
-                details.requestHeaders['User-Agent'] = details.requestHeaders['User-Agent'].replace(') ', ') (' + child.md5(code) + ') ');
+                if (!details.requestHeaders['User-Agent'].like('*[xx-*')) {
+                    let code = name;
+                    code += new URL(url).hostname;
+                    code += child.parent.var.core.id;
+                    details.requestHeaders['User-Agent'] = details.requestHeaders['User-Agent'].replace(') ', ') [xx-' + child.md5(code) + '] ');
+                }
             }
 
             // custom header request
@@ -298,7 +348,7 @@ module.exports = function (child) {
             // try edit cookies before send [tracking cookies]
             // child.log(details.requestHeaders['Cookie'])
 
-            let cookie_obj = details.requestHeaders['Cookie'] ? child.cookieParse(details.requestHeaders['Cookie']) : null;
+            let cookie_obj = details.requestHeaders['Cookie'] ? child.cookieParse(details.requestHeaders['Cookie']) : {};
 
             if (cookie_obj && child.parent.var.blocking.privacy.send_browser_id) {
                 cookie_obj['_gab'] = 'sb.' + child.parent.var.core.id;

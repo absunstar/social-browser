@@ -66,22 +66,6 @@
         "isEnabled": false
     },
     {
-        "id": "898a334c209c4efc37cd065be981e48e",
-        "path": "{dir}/extensions/youtube-subscribe/index.js",
-        "name": "Auto Youtube Subscribes",
-        "description": "will auto subscribe to any channel viewing ",
-        "canDelete": false,
-        "isEnabled": false
-    },
-    {
-        "id": "fabb1a17262da95f56ac47c661167c38",
-        "path": "{dir}/extensions/youtube-like/index.js",
-        "name": "Auto Youtube Likes",
-        "description": "will auto like to any channel viewing ",
-        "canDelete": false,
-        "isEnabled": false
-    },
-    {
         "id": "8aa91756d52ff31ae623919c23f50ba1",
         "path": "{dir}/extensions/addmefast/index.js",
         "name": "Addmefast ",

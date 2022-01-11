@@ -1,6 +1,6 @@
 module.exports = function (SOCIALBROWSER) {
     SOCIALBROWSER.onLoad(() => {
-        if (document.location.hostname.contains('youtube.com') && SOCIALBROWSER.windowType === 'window-popup') {
+        if (document.location.hostname.contains('youtube.com') && SOCIALBROWSER.__options.windowType === 'window-popup') {
             SOCIALBROWSER.subscribed_btn = null;
             SOCIALBROWSER.is_user_login = false;
             SOCIALBROWSER.channel_subscribed = false;
@@ -37,10 +37,9 @@ module.exports = function (SOCIALBROWSER) {
                         a.setAttribute('xff', 'xff');
 
                         if (a.href.like('*facebook*|*youtube*|*instagram*|*telegram*|*tiktok*|*twitter*|*websites*|*twitch*|*pinterest*|*like*|*soundcloud*|*vkontakte*|*ok_group*|*reverbnation*')) {
-                            a.href += '#___new_popup___';
-                            a.setAttribute('target', '_blank');
+                           // a.href += '#___new_popup___';
+                           // a.setAttribute('target', '_blank');
                             a.style.cursor = 'pointer';
-                            return;
                             let url = a.href;
                             a.removeAttribute('href');
                             a.addEventListener('click', (ev) => {
@@ -78,6 +77,11 @@ module.exports = function (SOCIALBROWSER) {
                                 win.loadURL(url, {
                                     referrer: document.location.href,
                                     userAgent: navigator.userAgent,
+                                });
+                                win.webContents.on('context-menu', (event, params) => {
+                                    if (win && !win.isDestroyed()) {
+                                        win.webContents.send('context-menu', params);
+                                    }
                                 });
                             });
                         }
@@ -153,7 +157,7 @@ module.exports = function (SOCIALBROWSER) {
 
                         win.setMenuBarVisibility(false);
                         win.webContents.audioMuted = true;
-                       // win.openDevTools();
+                        // win.openDevTools();
                         win.loadURL(url, {
                             referrer: document.location.href,
                             userAgent: navigator.userAgent,
@@ -169,17 +173,17 @@ module.exports = function (SOCIALBROWSER) {
                         };
 
                         win.webContents.on('dom-ready', () => {
+
                             if (document.location.href.contains('youtube_subscribe')) {
                                 childWindow.postMessage('subscribed_enable', '*');
                             }
 
-                            if (win.getURL().contains('youtube|soundcloud')) {
-                              childWindow.close();
-                            }else{
-                              win.show();
-                            }
-
                             if (!document.location.href.contains('youtube_views|soundcloud_views')) {
+                                if (win.getURL().contains('youtube|soundcloud')) {
+                                    childWindow.close();
+                                } else {
+                                    win.show();
+                                }
                                 setTimeout(() => {
                                     childWindow.close();
                                     let single_like_button = document.querySelector('a.single_like_button');
@@ -214,19 +218,17 @@ module.exports = function (SOCIALBROWSER) {
                     };
 
                     setInterval(() => {
-                      let single_like_button = document.querySelector('a.single_like_button');
-                      if (single_like_button && !single_like_button.id.like('*confirm*') && single_like_button.style.display != 'none') {
-                          single_like_button.click();
-                          single_like_button.style.display = 'none';
-                      }
-                  }, 1000 * 2);
+                        let single_like_button = document.querySelector('a.single_like_button');
+                        if (single_like_button && !single_like_button.id.like('*confirm*') && single_like_button.style.display != 'none') {
+                            single_like_button.click();
+                            single_like_button.style.display = 'none';
+                        }
+                    }, 1000 * 2);
 
                     if (document.querySelector('#content #content')) {
                         document.location.reload();
                         return;
                     }
-
-
 
                     if (document.location.href.contains('youtube_views|soundcloud_views')) {
                         let captca_count = 0;

@@ -81,41 +81,57 @@
     SOCIALBROWSER.url = SOCIALBROWSER.require('url');
     SOCIALBROWSER.md5 = SOCIALBROWSER.require('md5');
 
-    SOCIALBROWSER.callSync = function (channel, value) {
-        value.options = SOCIALBROWSER.options;
+    SOCIALBROWSER.callSync = SOCIALBROWSER.ipcSync = function (channel, value) {
+        value.__options = SOCIALBROWSER.options;
         return SOCIALBROWSER.electron.ipcRenderer.sendSync(channel, value);
     };
-    SOCIALBROWSER.call = function (channel, value) {
+    SOCIALBROWSER.call = SOCIALBROWSER.ipc = function (channel, value) {
         if (!channel) {
             return;
         }
         value = value || {};
-        value.options = SOCIALBROWSER.options;
+        value.__options = SOCIALBROWSER.options;
         return SOCIALBROWSER.electron.ipcRenderer.send(channel, value);
     };
     SOCIALBROWSER.invoke = function (channel, value) {
-        value.options = SOCIALBROWSER.options;
+        value.__options = SOCIALBROWSER.options;
         return SOCIALBROWSER.electron.ipcRenderer.invoke(channel, value);
     };
     SOCIALBROWSER.on = function (name, callback) {
         return SOCIALBROWSER.electron.ipcRenderer.on(name, callback);
     };
+    SOCIALBROWSER.ws = function (message) {
+        SOCIALBROWSER.ipc('ws', message);
+    };
+    SOCIALBROWSER.share = function (message) {
+        SOCIALBROWSER.ipc('share', message);
+    };
 
     SOCIALBROWSER.fetchJson = function (options, callback) {
-        callback = callback || function () {};
         options.id = new Date().getTime() + Math.random();
-        SOCIALBROWSER.on('[fetch][json][data]', (e, res) => {
-            if (res.options.id == options.id) {
-                if (res.error) {
-                    SOCIALBROWSER.log('SOCIALBROWSER.fetchJson error : ', res.error);
-                } else if (res.data) {
-                    callback(res.data);
-                } else {
-                    SOCIALBROWSER.log('[fetch][json][data] res : ', res);
+        options.url = SOCIALBROWSER.handleURL(options.url);
+
+        return new Promise((resolve, reject) => {
+            SOCIALBROWSER.on('[fetch][json][data]', (e, res) => {
+                if (res.options.id == options.id) {
+                    if (res.error) {
+                        if (!callback) {
+                            reject({ message: res.error });
+                        }
+                        SOCIALBROWSER.log('SOCIALBROWSER.fetchJson error : ', res.error);
+                    } else if (res.data) {
+                        if (!callback) {
+                            resolve(res.data);
+                        } else {
+                            callback(res.data);
+                        }
+                    } else {
+                        SOCIALBROWSER.log('[fetch][json][data] res : ', res);
+                    }
                 }
-            }
+            });
+            SOCIALBROWSER.call('[fetch][json]', options);
         });
-        SOCIALBROWSER.call('[fetch][json]', options);
     };
 
     SOCIALBROWSER.nativeImage = function (_path) {
@@ -145,20 +161,23 @@
 
     SOCIALBROWSER.currentWindow = SOCIALBROWSER.remote.getCurrentWindow();
     SOCIALBROWSER.webContents = SOCIALBROWSER.currentWindow.webContents;
-    if (SOCIALBROWSER.currentWindow.$setting) {
-        SOCIALBROWSER.webPreferences = SOCIALBROWSER.currentWindow.$setting.webPreferences;
+
+    if (SOCIALBROWSER.currentWindow.__options && SOCIALBROWSER.currentWindow.__options.webPreferences) {
+        SOCIALBROWSER.webPreferences = SOCIALBROWSER.currentWindow.__options.webPreferences;
         SOCIALBROWSER.partition = SOCIALBROWSER.webPreferences.partition;
     } else {
         SOCIALBROWSER.webPreferences = SOCIALBROWSER.webContents.getLastWebPreferences();
-        SOCIALBROWSER.partition = SOCIALBROWSER.webContents.session.storagePath ? SOCIALBROWSER.webContents.session.storagePath.split('\\').pop() : null;
+        SOCIALBROWSER.partition = SOCIALBROWSER.webContents.session.storagePath ? 'persist:' + SOCIALBROWSER.webContents.session.storagePath.split('\\').pop() : null;
+        SOCIALBROWSER.webPreferences = { ...SOCIALBROWSER.webPreferences, ...{ partition: SOCIALBROWSER.partition } };
     }
 
     SOCIALBROWSER.timeOffset = new Date().getTimezoneOffset();
 
     SOCIALBROWSER.guid = function () {
-        return SOCIALBROWSER.md5(SOCIALBROWSER.session.name + document.location.hostname + SOCIALBROWSER.var.core.id);
+        return SOCIALBROWSER.md5(SOCIALBROWSER.partition + document.location.hostname + SOCIALBROWSER.var.core.id);
     };
 
+    SOCIALBROWSER.isMemoryMode = !SOCIALBROWSER.webContents.session.isPersistent();
     SOCIALBROWSER.session_id = 0;
     SOCIALBROWSER.sessionId = function () {
         if (SOCIALBROWSER.session_id) {
@@ -217,16 +236,19 @@
             SOCIALBROWSER.child_id = result.child_id;
             SOCIALBROWSER.child_index = result.child_index;
             SOCIALBROWSER.options = result.options;
+            SOCIALBROWSER.__options = result.__options;
             SOCIALBROWSER.var = result.var;
             SOCIALBROWSER.files_dir = result.files_dir;
             SOCIALBROWSER.dir = result.dir;
             SOCIALBROWSER.injectHTML = result.injectHTML;
             SOCIALBROWSER.windows = result.windows;
             SOCIALBROWSER.windowSetting = result.windowSetting;
-            SOCIALBROWSER.windowType = result.windowType;
             SOCIALBROWSER.newTabData = result.newTabData;
             SOCIALBROWSER.session = { ...SOCIALBROWSER.session, ...result.session };
             SOCIALBROWSER.partition = result.partition;
+            if (!SOCIALBROWSER.partition && SOCIALBROWSER.isMemoryMode) {
+                SOCIALBROWSER.partition = 'ghost';
+            }
 
             require(SOCIALBROWSER.files_dir + '/js/context-menu/init.js')(SOCIALBROWSER);
             require(SOCIALBROWSER.files_dir + '/js/context-menu/event.js')(SOCIALBROWSER);

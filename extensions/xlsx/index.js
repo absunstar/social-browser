@@ -26,7 +26,7 @@ module.exports = function (browser) {
         .then((result) => {
           if (result.canceled === false && result.filePaths.length > 0) {
             let path = result.filePaths[0];
-            var workbook = browser.xlsx.readFile(path);
+            var workbook = browser.api.xlsx.readFile(path);
             res.json({
               done: true,
               workbook: workbook,

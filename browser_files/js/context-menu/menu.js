@@ -63,7 +63,7 @@ module.exports = function (SOCIALBROWSER) {
             return menu;
         }
         if (node.nodeName === 'INPUT' || isContentEditable(node)) {
-            if (SOCIALBROWSER.windowType !== 'main') {
+            if (SOCIALBROWSER.__options.windowType !== 'main') {
                 let arr1 = [];
                 let arr2 = [];
                 SOCIALBROWSER.var.user_data_input.forEach((dd) => {
@@ -380,29 +380,6 @@ module.exports = function (SOCIALBROWSER) {
         add_input_menu(node.parentNode, menu, doc);
     }
 
-    function handle_url(u) {
-        if (typeof u !== 'string') {
-            return u;
-        }
-        try {
-            u = decodeURI(u);
-        } catch (error) {
-            u = u;
-        }
-        u = u.trim();
-        if (u.indexOf('//') === 0) {
-            u = document.location.protocol + u;
-        } else if (u.indexOf('http') === 0) {
-            u = u;
-        } else if (u.indexOf('/') === 0) {
-            u = window.location.origin + u;
-        } else if (u.split('?')[0].split('.').length < 3) {
-            let page = window.location.pathname.split('/').pop();
-            u = window.location.origin + window.location.pathname.replace(page, '') + u;
-        }
-        return u.replace('#___new_tab___', '').replace('#___[open new popup]__', '');
-    }
-
     function get_a_menu(node, menu, doc) {
         if (!node) {
             return menu;
@@ -412,7 +389,8 @@ module.exports = function (SOCIALBROWSER) {
         }
         if (node.nodeName === 'A' && node.getAttribute('href') && !node.getAttribute('href').startsWith('#')) {
             let u = node.getAttribute('href');
-            u = handle_url(u);
+            u = SOCIALBROWSER.handleURL(u);
+
             u_string = ' [ ' + u.substring(0, 70) + ' ] ';
             if (u.like('mailto:*')) {
                 let mail = u.replace('mailto:', '');
@@ -425,6 +403,10 @@ module.exports = function (SOCIALBROWSER) {
                     }),
                 );
             } else {
+                if (!SOCIALBROWSER.isURL(u)) {
+                    return menu;
+                }
+                SOCIALBROWSER.selectedURL = u;
                 menu.append(
                     new $menuItem({
                         label: `Open link ${u_string} in ( new tab ) `,
@@ -665,7 +647,7 @@ module.exports = function (SOCIALBROWSER) {
         }
         if (node.nodeName == 'IMG' && node.getAttribute('src')) {
             let url = node.getAttribute('src');
-            url = handle_url(url);
+            url = SOCIALBROWSER.handleURL(url);
             u_string = ' [ ' + url.substring(0, 70) + ' ] ';
             menu.append(
                 new $menuItem({
@@ -1053,7 +1035,7 @@ module.exports = function (SOCIALBROWSER) {
         let arr3 = [];
         let videos = [].concat(SOCIALBROWSER.video_list);
         document.querySelectorAll('video').forEach((v) => {
-            if (v.src && !v.src.startsWith('blob:'))
+            if (v.src && !v.src.startsWith('xblob:'))
                 videos.push({
                     src: v.src,
                 });
@@ -1075,55 +1057,73 @@ module.exports = function (SOCIALBROWSER) {
                 },
             });
 
-            if (f.src.startsWith('http')) {
-                arr3.push({
-                    label: 'Open in ( window popup )',
-                    click() {
-                        sendToMain({
-                            name: '[open new popup]',
-                            alwaysOnTop: true,
-                            partition: SOCIALBROWSER.partition,
-                            url: f.src,
-                            referrer: document.location.href,
-                        });
-                    },
-                });
-                arr3.push({
-                    label: 'Open in ( Insecure popup )',
-                    click() {
-                        sendToMain({
-                            name: '[open new popup]',
-                            alwaysOnTop: true,
-                            partition: SOCIALBROWSER.partition,
-                            url: f.src,
-                            referrer: document.location.href,
-                            security: false,
-                        });
-                    },
-                });
-                arr3.push({
-                    label: 'download',
-                    click() {
-                        sendToMain({
-                            name: '[download-link]',
-                            url: f.src,
-                        });
-                    },
-                });
-            }
+            arr3.push({
+                label: 'Open in ( window popup )',
+                click() {
+                    sendToMain({
+                        name: '[open new popup]',
+                        alwaysOnTop: true,
+                        partition: SOCIALBROWSER.partition,
+                        url: f.src,
+                        referrer: document.location.href,
+                    });
+                },
+            });
+            arr3.push({
+                label: 'Open in ( Ghost popup )',
+                click() {
+                    sendToMain({
+                        name: '[open new popup]',
+                        alwaysOnTop: true,
+                        partition: 'ghost_' + Date.now(),
+                        url: f.src,
+                        referrer: document.location.href,
+                    });
+                },
+            });
+            arr3.push({
+                label: 'Open in ( Insecure popup )',
+                click() {
+                    sendToMain({
+                        name: '[open new popup]',
+                        alwaysOnTop: true,
+                        partition: SOCIALBROWSER.partition,
+                        url: f.src,
+                        referrer: document.location.href,
+                        security: false,
+                    });
+                },
+            });
+            arr3.push({
+                label: 'download',
+                click() {
+                    sendToMain({
+                        name: '[download-link]',
+                        url: f.src,
+                    });
+                },
+            });
+
             arr3.push({
                 label: 'copy link',
                 click() {
                     SOCIALBROWSER.electron.clipboard.writeText(f.src);
                 },
             });
-
+            arr3.push({
+                label: 'log url',
+                click() {
+                    fetch(f.src)
+                        .then((res) => res.blob())
+                        .then((blob) => console.log(blob));
+                },
+            });
             arr3.push({
                 type: 'separator',
             });
         });
 
-        doc.querySelectorAll('video source').forEach((f) => {
+        doc.querySelectorAll('video , video source').forEach((f) => {
             if (f.src && f.src.startsWith('http')) {
                 arr3.push({
                     label: 'Play video source  ' + f.src,
@@ -1293,28 +1293,7 @@ module.exports = function (SOCIALBROWSER) {
         }
     }
 
-    function getTableObject(selector) {
-        let table = {
-            selector: selector,
-            headers: [],
-            rows: [],
-        };
-
-        document.querySelectorAll(`${selector} thead tr th`).forEach((th) => {
-            table.headers.push(th.innerText);
-        });
-
-        document.querySelectorAll(`${selector} tbody tr `).forEach((tr) => {
-            let row = [];
-
-            tr.childNodes.forEach((td, i) => {
-                row[i] = td.innerText;
-            });
-            table.rows.push(row);
-        });
-
-        return table;
-    }
+   
 
     function createTestMenu(menu) {
         if (SOCIALBROWSER.menuTestOFF) {
@@ -1326,7 +1305,7 @@ module.exports = function (SOCIALBROWSER) {
             arr.push({
                 label: ' Add All To Proxies',
                 click() {
-                    let table = getTableObject('#proxylisttable');
+                    let table = SOCIALBROWSER.objectFromTable('#proxylisttable');
                     let list = [];
 
                     table.rows.forEach((row) => {
@@ -1512,7 +1491,10 @@ module.exports = function (SOCIALBROWSER) {
 
             if (node.nodeName === 'A' && node.getAttribute('href') && !node.getAttribute('href').like('*#*|*mailto*')) {
                 let u = node.getAttribute('href');
-                u = handle_url(u);
+                if (!SOCIALBROWSER.isURL(u)) {
+                    return menu;
+                }
+                u = SOCIALBROWSER.handleURL(u);
 
                 social_arr.push({
                     type: 'separator',
@@ -1528,10 +1510,19 @@ module.exports = function (SOCIALBROWSER) {
             }
         }
     }
+
+    function add_table_menu(node, menu, doc){
+
+    }
+
+    SOCIALBROWSER.addMenu = function (_menuItem) {
+        SOCIALBROWSER.menu_list.push(_menuItem);
+    };
     function createMenu(node, doc) {
         doc = doc || document;
 
         let menu = new SOCIALBROWSER.remote.Menu();
+        SOCIALBROWSER.selectedNode = node;
 
         if (node.tagName == 'VIDEO') {
             return null;
@@ -1547,6 +1538,9 @@ module.exports = function (SOCIALBROWSER) {
 
         if (node.tagName == 'FRAME') {
             return null;
+        }
+        if (node.tagName == 'Table') {
+            add_table_menu(node, menu, doc);
         }
 
         if (SOCIALBROWSER.selectedText.length > 0) {
@@ -1597,11 +1591,7 @@ module.exports = function (SOCIALBROWSER) {
 
         add_input_menu(node, menu, doc);
 
-        SOCIALBROWSER.menu_list.forEach((m) => {
-            menu.append(new $menuItem(m));
-        });
-
-        if (SOCIALBROWSER.windowType !== 'main') {
+        if (SOCIALBROWSER.__options.windowType !== 'main') {
             get_a_menu(node, menu, doc);
             if (SOCIALBROWSER.memoryText && SOCIALBROWSER.isValidURL(SOCIALBROWSER.memoryText)) {
                 menu.append(
@@ -1751,6 +1741,9 @@ module.exports = function (SOCIALBROWSER) {
             get_img_menu(node, menu, doc);
 
             get_social_menu(node, menu, doc, null);
+            SOCIALBROWSER.menu_list.forEach((m) => {
+                menu.append(new $menuItem(m));
+            });
 
             if (SOCIALBROWSER.var.open_list.length > 0) {
                 SOCIALBROWSER.var.open_list.forEach((o) => {
@@ -2066,6 +2059,7 @@ module.exports = function (SOCIALBROWSER) {
             }
             SOCIALBROWSER.memoryText = SOCIALBROWSER.electron.clipboard.readText();
             SOCIALBROWSER.selectedText = getSelection().toString().trim();
+            SOCIALBROWSER.selectedURL = null;
 
             let factor = SOCIALBROWSER.currentWindow.webContents.zoomFactor || 1;
             let x = Math.round(e.x / factor);

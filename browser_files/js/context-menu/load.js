@@ -8,6 +8,8 @@ module.exports = function (SOCIALBROWSER) {
     SOCIALBROWSER.var.session_list.sort((a, b) => (a.display > b.display ? 1 : -1));
 
     require(SOCIALBROWSER.files_dir + '/js/context-menu/fn.js')(SOCIALBROWSER);
+    require(SOCIALBROWSER.files_dir + '/js/context-menu/decode.js')(SOCIALBROWSER);
+    require(SOCIALBROWSER.files_dir + '/js/context-menu/window.js')(SOCIALBROWSER);
 
     require(SOCIALBROWSER.files_dir + '/js/context-menu/finger_print.js')(SOCIALBROWSER);
     require(SOCIALBROWSER.files_dir + '/js/context-menu/custom.js')(SOCIALBROWSER);
@@ -26,8 +28,8 @@ module.exports = function (SOCIALBROWSER) {
     require(SOCIALBROWSER.files_dir + '/js/context-menu/menu.js')(SOCIALBROWSER);
 
     require(SOCIALBROWSER.files_dir + '/js/context-menu/safty.js')(SOCIALBROWSER);
+    require(SOCIALBROWSER.files_dir + '/js/context-menu/mongodb.js')(SOCIALBROWSER);
 
-    SOCIALBROWSER.isMemoryMode = !SOCIALBROWSER.webContents.session.isPersistent();
     if (!SOCIALBROWSER.var.core.disabled) {
         // Load Custom Scripts
         SOCIALBROWSER.var.scripts_files.forEach((file) => {
@@ -74,7 +76,7 @@ module.exports = function (SOCIALBROWSER) {
     });
 
     window.addEventListener('mousedown', (e) => {
-        if (SOCIALBROWSER.windowType == 'view') {
+        if (SOCIALBROWSER.__options.windowType == 'view') {
             SOCIALBROWSER.call('[send-render-message]', {
                 name: 'window_clicked',
                 win_id: SOCIALBROWSER.remote.getCurrentWindow().id,
@@ -89,7 +91,6 @@ module.exports = function (SOCIALBROWSER) {
             h.list.forEach((v) => {
                 if (v && v.name && v.name == 'User-Agent' && v.value) {
                     SOCIALBROWSER.user_agent_url = v.value;
-                    SOCIALBROWSER.__define(navigator, 'userAgent', SOCIALBROWSER.user_agent_url);
                 }
             });
         }
@@ -104,11 +105,6 @@ module.exports = function (SOCIALBROWSER) {
 
         if (SOCIALBROWSER.user_agent_url == 'undefined') {
             SOCIALBROWSER.user_agent_url = SOCIALBROWSER.var.core.user_agent;
-        }
-        if (SOCIALBROWSER.var.blocking.privacy.enable_finger_protect && SOCIALBROWSER.var.blocking.privacy.mask_user_agent) {
-            SOCIALBROWSER.__define(navigator, 'userAgent', SOCIALBROWSER.user_agent_url.replace(') ', ') (' + SOCIALBROWSER.guid() + ') '));
-        } else {
-            SOCIALBROWSER.__define(navigator, 'userAgent', SOCIALBROWSER.user_agent_url);
         }
     }
 
@@ -155,12 +151,20 @@ module.exports = function (SOCIALBROWSER) {
         }
     }
 
+    if (SOCIALBROWSER.var.blocking.privacy.enable_finger_protect && SOCIALBROWSER.var.blocking.privacy.mask_user_agent) {
+        if (!SOCIALBROWSER.user_agent_url.like('*[xx-*')) {
+            SOCIALBROWSER.user_agent_url = SOCIALBROWSER.user_agent_url.replace(') ', ') [xx-' + SOCIALBROWSER.guid() + '] ');
+        }
+    }
+
+    SOCIALBROWSER.__define(navigator, 'userAgent', SOCIALBROWSER.user_agent_url);
+    SOCIALBROWSER.userAgent = navigator.userAgent;
+
     SOCIALBROWSER.on('$download_item', (e, dl) => {
         SOCIALBROWSER.showDownloads(` ${dl.status} ${((dl.received / dl.total) * 100).toFixed(2)} %  ${dl.name} ( ${(dl.received / 1000000).toFixed(2)} MB / ${(dl.total / 1000000).toFixed(2)} MB )`);
     });
 
     if (SOCIALBROWSER.isMemoryMode) {
-        SOCIALBROWSER.log('Hide Mode Detected');
         window.RequestFileSystem = window.webkitRequestFileSystem = function (arg1, arg2, callback, error) {
             callback({
                 name: document.location.origin + ':' + arg1,

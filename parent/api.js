@@ -7,6 +7,8 @@ module.exports = function init(parent) {
         apps: false,
         help: false,
         _0x14xo: !0,
+        public: true,
+        lang: 'en',
         https: {
             enabled: true,
             port: 60043,
@@ -15,17 +17,15 @@ module.exports = function init(parent) {
             enabled: false,
         },
         mongodb: {
-            enabled: false,
+            enabled: true,
+            db: 'social-browser-db',
+            limit: 100000,
         },
         security: {
-            enabled: false,
+            enabled: true,
         },
         proto: {
             object: false,
-        },
-        requires: {
-            features: [],
-            permissions: [],
         },
     });
 
@@ -34,6 +34,7 @@ module.exports = function init(parent) {
         return parent;
     };
     parent.api.loadLocalApp('client-side');
+    parent.api.loadLocalApp('security');
     parent.api.loadLocalApp('charts');
 
     parent.api.onGET('/empty', (req, res) => {

@@ -66,7 +66,7 @@ module.exports = function (SOCIALBROWSER) {
             }
         });
 
-        if (SOCIALBROWSER.windowType === 'main' || document.location.href.like('*127.0.0.1:60080*')) {
+        if (SOCIALBROWSER.__options.windowType === 'main' || document.location.href.like('*127.0.0.1:60080*')) {
             return;
         }
 

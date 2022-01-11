@@ -519,6 +519,7 @@ module.exports = function init(parent) {
 
     parent.get_var('proxy');
     parent.get_var('proxy_list');
+    parent.get_var('proxy_mode_list');
 
     parent.get_var('white_list');
     parent.get_var('black_list');

@@ -97,6 +97,12 @@ module.exports = function (child) {
                     });
                 } else if (message.type == '[browser-cookies]') {
                     child.cookies[message.name] = message.value;
+                } else if (message.type == 'share') {
+                    child.electron.BrowserWindow.getAllWindows().forEach((win) => {
+                        if (win && !win.isDestroyed()) {
+                            win.webContents.send('share', message.message);
+                        }
+                    });
                 } else if (message.type == '[send-render-message]') {
                     child.sendToWindow('[send-render-message]', message.data);
                 } else if (message.type == '$download_item') {
@@ -266,7 +272,7 @@ module.exports = function (child) {
                             child.parent.var.bookmarks.push({
                                 title: win.getTitle(),
                                 url: win.getURL(),
-                                favicon: win.$setting.favicon,
+                                favicon: win.__options.favicon,
                             });
                         }
                         child.sendMessage({

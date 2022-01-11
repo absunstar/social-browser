@@ -183,7 +183,7 @@ module.exports = function init(parent) {
     parent.createChildProcess = function (options) {
         options = options || {};
         options.partition = options.partition || parent.var.core.session.name;
-        options.username = options.username || parent.var.core.session.display;
+        options.user_name = options.user_name || parent.var.core.session.display;
 
         let child = parent.clientList.find((cl) => cl && cl.is_attached === false);
         if (child && parent.clientList[child.index]) {

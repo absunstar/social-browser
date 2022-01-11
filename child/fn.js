@@ -165,7 +165,7 @@ module.exports = function (child) {
     };
 
     child.updateTab = function (win) {
-        let setting = win.$setting;
+        let setting = win.__options;
 
         if (setting.windowType !== 'view') {
             return;

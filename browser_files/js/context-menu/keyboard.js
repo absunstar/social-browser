@@ -5,7 +5,7 @@ module.exports = function (SOCIALBROWSER) {
         mousemove = e;
     });
 
-    if (SOCIALBROWSER.windowType === 'main') {
+    if (SOCIALBROWSER.__options.windowType === 'main') {
         return;
     }
 

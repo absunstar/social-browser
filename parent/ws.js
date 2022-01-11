@@ -64,12 +64,20 @@ module.exports = function init(parent) {
                     // }
 
                     break;
+                case 'share':
+                    parent.clientList.forEach((client) => {
+                        if (client.ws) {
+                            client.ws.send(message);
+                        }
+                    });
+                    break;
                 case '[un-attach-child]':
                     parent.clientList[message.index].is_attached = false;
                     break;
                 case '[send-render-message]':
                     parent.clientList.forEach((client) => {
-                        if (client.index == message.data.options.parent_index && client.ws) {
+                        let index = message.data.__options ? message.data.__options.parent_index : 0;
+                        if (client.index == index && client.ws) {
                             client.ws.send(message);
                         }
                     });
@@ -293,6 +301,12 @@ module.exports = function init(parent) {
                     break;
                 case '[remove-extension]':
                     parent.removeExtension(message.extension);
+                    break;
+                case '[close]':
+                    process.exit(0);
+                    break;
+                case '[add-mongodb-doc]':
+                    console.log(message);
                     break;
                 default:
                     break;
