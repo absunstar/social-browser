@@ -21,10 +21,55 @@ setTimeout(() => {
 }, 1000 * 2);
 
 app.controller('mainController', ($scope, $http, $timeout) => {
+    $scope.proxy = {};
+
     SOCIALBROWSER.on('setting.session_list', (e, info) => {
         console.log('from scope', info);
         $scope.setting.session_list = info.data;
     });
+
+    $scope.do_click = function (proxy) {
+        let input = document.querySelector('#input_proxy');
+        if (!input.getAttribute('x-handle')) {
+            input.setAttribute('x-handle', 'yes');
+            input.addEventListener('change', () => {
+                $scope.import(input.files, proxy);
+            });
+        }
+        input.click();
+    };
+
+    $scope.import = function (files, proxy) {
+        var fd = new FormData();
+        fd.append('proxyFile', files[0]);
+        $http
+            .post('/api/proxy/import', fd, {
+                withCredentials: true,
+                headers: {
+                    'Content-Type': undefined,
+                },
+                uploadEventHandlers: {
+                    progress: function (e) {
+                        proxy.uploadStatus = 'Uploading : ' + Math.round((e.loaded * 100) / e.total) + ' %';
+                        if (e.loaded == e.total) {
+                            proxy.uploadStatus = '100%';
+                        }
+                    },
+                },
+                transformRequest: angular.identity,
+            })
+            .then(
+                function (res) {
+                    if (res.data && res.data.done) {
+                        proxy.uploadStatus = 'Proxies Added ';
+                    }
+                },
+                function (error) {
+                    proxy.uploadStatus = error;
+                },
+            );
+    };
+
     $scope.goBack = function () {
         SOCIALBROWSER.call('[send-render-message]', {
             name: '[window-go-back]',
@@ -353,26 +398,30 @@ app.controller('mainController', ($scope, $http, $timeout) => {
             }
         });
     };
-
+    $scope.checkProxy = function (_se) {
+        SOCIALBROWSER.ipc('[proxy-check-request]' , {proxy : _se})
+    };
     $scope.changeProxy = function (currentSession) {
         $timeout(() => {
             if (currentSession) {
                 currentSession.proxy.url = currentSession.selected_proxy.url;
+                currentSession.proxy.ip = currentSession.selected_proxy.ip;
                 currentSession.proxy.port = currentSession.selected_proxy.port;
                 currentSession.proxy.socks4 = currentSession.selected_proxy.socks4;
                 currentSession.proxy.socks5 = currentSession.selected_proxy.socks5;
                 currentSession.proxy.ftp = currentSession.selected_proxy.ftp;
                 currentSession.proxy.http = currentSession.selected_proxy.http;
-                currentSession.proxy.ssl = currentSession.selected_proxy.ssl;
+                currentSession.proxy.https = currentSession.selected_proxy.https;
                 currentSession.proxy.ignore = currentSession.selected_proxy.ignore;
             } else if ($scope.setting.proxy && $scope.setting.proxy.selected_proxy) {
                 $scope.setting.proxy.url = $scope.setting.proxy.selected_proxy.url;
+                $scope.setting.proxy.ip = $scope.setting.proxy.selected_proxy.ip;
                 $scope.setting.proxy.port = $scope.setting.proxy.selected_proxy.port;
                 $scope.setting.proxy.socks4 = $scope.setting.proxy.selected_proxy.socks4;
                 $scope.setting.proxy.socks5 = $scope.setting.proxy.selected_proxy.socks5;
                 $scope.setting.proxy.ftp = $scope.setting.proxy.selected_proxy.ftp;
                 $scope.setting.proxy.http = $scope.setting.proxy.selected_proxy.http;
-                $scope.setting.proxy.ssl = $scope.setting.proxy.selected_proxy.ssl;
+                $scope.setting.proxy.https = $scope.setting.proxy.selected_proxy.https;
                 $scope.setting.proxy.ignore = $scope.setting.proxy.selected_proxy.ignore;
             }
         }, 0);

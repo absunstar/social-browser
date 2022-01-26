@@ -96,6 +96,86 @@ module.exports = function init(parent) {
         });
     });
 
+    parent.api.onPOST('api/proxy/import', (req, res) => {
+        let response = {
+            done: false,
+            file: req.form.files.proxyFile,
+        };
+
+        if (!response.file) {
+            response.error = 'No File Uploaded';
+            res.json(response);
+            return;
+        }
+
+        if (parent.api.isFileExistsSync(response.file.filepath)) {
+            let docs = [];
+            if (response.file.originalFilename.like('*.xlsx')) {
+                let workbook = parent.api.XLSX.readFile(response.file.filepath);
+                docs = parent.api.XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+            } else if (response.file.originalFilename.like('*.csv')) {
+                let file = parent.api.readFileSync(response.file.filepath);
+                file = file.split('\n');
+                let headers = file.shift().split(',');
+                for (var i = 0; i < headers.length; i++) {
+                    headers[i] = headers[i].trim();
+                }
+                file.forEach(function (d) {
+                    tmp = {};
+                    let row = d.split(',');
+                    if (headers.length === row.length) {
+                        for (var i = 0; i < headers.length; i++) {
+                            tmp[headers[i]] = row[i].trim();
+                        }
+                        docs.push(tmp);
+                    }
+                });
+            } else {
+                docs = parent.api.fromJson(parent.api.readFileSync(response.file.filepath).toString());
+            }
+
+            if (Array.isArray(docs)) {
+                response.done = true;
+                console.log('Importing Proxy Array Count : ' + docs.length);
+                parent.var.proxy_list = [];
+                docs.forEach((doc) => {
+                    console.log('Importing Proxy : ', doc);
+                    if (doc.ip && doc.port) {
+                        doc.url = doc.ip + ':' + doc.port;
+                    } else if (doc.url) {
+                        doc.ip = doc.url.split(':')[0];
+                        doc.port = doc.url.split(':')[1];
+                    }
+                    parent.var.proxy_list.push({
+                        mode: 'fixed_servers',
+                        url: doc.url,
+                        ip: doc.ip,
+                        port: doc.port,
+                        name: doc.name + ' - ' + doc.url,
+                        socks5: true,
+                        socks4: true,
+                        http: true,
+                        https: true,
+                        ftp: true,
+                    });
+                });
+                console.log('saving proxy list');
+                parent.set_var('proxy_list', parent.var.proxy_list);
+                parent.sendToAll({
+                    type: '[update-browser-var]',
+                    options: {
+                        name: 'proxy_list',
+                        data: parent.var.proxy_list,
+                    },
+                });
+            }
+        } else {
+            response.error = 'file not exists : ' + response.file.filepath;
+        }
+
+        res.json(response);
+    });
+
     parent.api.onPOST({ name: ['/printing', '/print'], public: true }, (req, res) => {
         let id = new Date().getTime();
 

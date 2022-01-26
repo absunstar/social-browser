@@ -68,6 +68,9 @@ require(child.path.join(child.dir, 'child', 'windows'))(child);
 require(child.path.join(child.dir, 'child', 'ipc'))(child);
 require(child.path.join(child.dir, 'child', 'session'))(child);
 require(child.path.join(child.dir, 'child', 'plugins'))(child);
+require(child.path.join(child.dir, 'child', 'proxy_check'))(child);
+
+
 // require(child.path.join(child.dir, 'child', 'client'))(child);
 app.setAppUserModelId('Social.Browser');
 app.clearRecentDocuments();

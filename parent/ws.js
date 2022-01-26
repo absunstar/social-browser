@@ -324,6 +324,6 @@ module.exports = function init(parent) {
     };
 
     parent.sendMessage = function (message) {
-        console.log('... m ...');
+        parent.sendToAll(message);
     };
 };

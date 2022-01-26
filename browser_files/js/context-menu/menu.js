@@ -40,7 +40,7 @@ module.exports = function (SOCIALBROWSER) {
     });
 
     function sendToMain(obj) {
-        SOCIALBROWSER.call('[send-render-message]', obj);
+        SOCIALBROWSER.ipc('[send-render-message]', obj);
     }
 
     function isContentEditable(node) {
@@ -380,7 +380,7 @@ module.exports = function (SOCIALBROWSER) {
         add_input_menu(node.parentNode, menu, doc);
     }
 
-    function get_a_menu(node, menu, doc) {
+    function add_a_menu(node, menu, doc) {
         if (!node) {
             return menu;
         }
@@ -635,7 +635,7 @@ module.exports = function (SOCIALBROWSER) {
             return;
         }
 
-        get_a_menu(node.parentNode, menu, doc);
+        add_a_menu(node.parentNode, menu, doc);
     }
 
     function get_img_menu(node, menu, doc) {
@@ -1293,8 +1293,6 @@ module.exports = function (SOCIALBROWSER) {
         }
     }
 
-   
-
     function createTestMenu(menu) {
         if (SOCIALBROWSER.menuTestOFF) {
             return menu;
@@ -1417,16 +1415,15 @@ module.exports = function (SOCIALBROWSER) {
             },
         });
         social_arr.push({
-            label: ` Open [ ${title} ] in Many Popup [ All User Agents (${SOCIALBROWSER.var.user_agent_list.length}) ] [Audio Muted] + New Profiles `,
+            label: ` Open [ ${title} ] in Many Popup [ All User Agents (${SOCIALBROWSER.var.user_agent_list.length}) ] [Audio Muted] + Ghosts Profiles `,
             click() {
                 for (let index = 0; index < SOCIALBROWSER.var.user_agent_list.length; index++) {
-                    let partition2 = 'random_user_' + Math.random();
-                    SOCIALBROWSER.call('[handle-session]', partition2);
-
                     setTimeout(() => {
+                        let partition2 = 'ghost_' + Date.now();
+                        SOCIALBROWSER.ipc('[handle-session]', partition2);
                         sendToMain({
                             name: '[open new popup]',
-                            partition: SOCIALBROWSER.partition2,
+                            partition: partition2,
                             user_agent: SOCIALBROWSER.var.user_agent_list[index].url,
                             url: url,
                             referrer: document.location.href,
@@ -1437,7 +1434,26 @@ module.exports = function (SOCIALBROWSER) {
                 }
             },
         });
-
+        social_arr.push({
+            label: ` Open [ ${title} ] in Many Popup [ All Proxy List ( ${SOCIALBROWSER.var.proxy_list.slice(0 , 50).length} ) ] [Audio Muted] + Ghosts Profiles `,
+            click() {
+                for (let index = 0; index < SOCIALBROWSER.var.proxy_list.slice(0 , 50).length; index++) {
+                    setTimeout(() => {
+                        let partition2 = 'ghost_' + Date.now();
+                        SOCIALBROWSER.openWindow({
+                            name: '[open new popup]',
+                            partition: partition2,
+                            user_agent: SOCIALBROWSER.userAgent,
+                            url: url,
+                            referrer: document.location.href,
+                            audioOFF: true,
+                            show: true,
+                            proxy: SOCIALBROWSER.var.proxy_list[index],
+                        });
+                    }, 1000 * index * 2);
+                }
+            },
+        });
         return social_arr;
     }
 
@@ -1511,9 +1527,7 @@ module.exports = function (SOCIALBROWSER) {
         }
     }
 
-    function add_table_menu(node, menu, doc){
-
-    }
+    function add_table_menu(node, menu, doc) {}
 
     SOCIALBROWSER.addMenu = function (_menuItem) {
         SOCIALBROWSER.menu_list.push(_menuItem);
@@ -1539,6 +1553,7 @@ module.exports = function (SOCIALBROWSER) {
         if (node.tagName == 'FRAME') {
             return null;
         }
+      
         if (node.tagName == 'Table') {
             add_table_menu(node, menu, doc);
         }
@@ -1590,9 +1605,10 @@ module.exports = function (SOCIALBROWSER) {
         }
 
         add_input_menu(node, menu, doc);
+        add_a_menu(node, menu, doc);
 
         if (SOCIALBROWSER.__options.windowType !== 'main') {
-            get_a_menu(node, menu, doc);
+            node, menu, doc;
             if (SOCIALBROWSER.memoryText && SOCIALBROWSER.isValidURL(SOCIALBROWSER.memoryText)) {
                 menu.append(
                     new $menuItem({
@@ -1737,7 +1753,7 @@ module.exports = function (SOCIALBROWSER) {
                 );
                 menu.append(new $menuItem({ type: 'separator' }));
             }
-
+         
             get_img_menu(node, menu, doc);
 
             get_social_menu(node, menu, doc, null);
@@ -1913,11 +1929,12 @@ module.exports = function (SOCIALBROWSER) {
                     }),
                 );
             }
-
+   
             get_custom_menu(menu, doc);
             if (SOCIALBROWSER.var.context_menu.copy_div_content) {
                 add_div_menu(node, menu);
             }
+         
             menu.append(
                 new $menuItem({
                     label: 'Refresh',
@@ -1948,25 +1965,11 @@ module.exports = function (SOCIALBROWSER) {
                     type: 'separator',
                 }),
             );
-
+  
             if (SOCIALBROWSER.var.context_menu.proxy_options) {
                 let arr = [];
-                if (SOCIALBROWSER.var.core.id.like('*test*')) {
-                    arr.push({
-                        label: 'My Server',
-                        click() {
-                            sendToMain({
-                                name: '[open new popup]',
-                                show: true,
-                                url: document.location.href,
-                                user_agent: navigator.userAgent,
-                                proxy: '104.248.211.73:55555',
-                                partition: 'proxy_' + arr.length,
-                            });
-                        },
-                    });
-                }
-                SOCIALBROWSER.var.proxy_list.forEach((p) => {
+
+                SOCIALBROWSER.var.proxy_list.slice(0 , 50).forEach((p) => {
                     // if(document.location.href.contains('https') && !p.https){
                     //     return
                     // }
@@ -1977,7 +1980,7 @@ module.exports = function (SOCIALBROWSER) {
                                 name: '[open new popup]',
                                 show: true,
                                 url: document.location.href,
-                                proxy: p.url,
+                                proxy: p,
                                 partition: 'proxy' + new Date().getTime(),
                             });
                         },
@@ -1988,7 +1991,7 @@ module.exports = function (SOCIALBROWSER) {
                 }
                 menu.append(
                     new $menuItem({
-                        label: 'Open current page with proxy',
+                        label: 'Open current page with proxy + ghost user',
                         type: 'submenu',
                         submenu: arr,
                     }),
@@ -2048,7 +2051,7 @@ module.exports = function (SOCIALBROWSER) {
                 createTestMenu(menu);
             }
         }
-
+  
         return menu;
     }
 

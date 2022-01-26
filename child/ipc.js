@@ -96,6 +96,9 @@ module.exports = function init(child) {
             message: message,
         });
     });
+    child.electron.ipcMain.on('[proxy-check-request]', (e, message) => {
+        child.proxy_check(message.proxy);
+    });
     child.electron.ipcMain.on('getBlobData', (e, message) => {
         console.log('getBlobData', message);
         let ses = child.electron.session.fromPartition(message.partition);
@@ -411,6 +414,7 @@ module.exports = function init(child) {
                     user_name: data.user_name || child.parent.var.core.session.display,
                     trusted: data.trusted,
                     security: data.security,
+                    proxy: data.proxy,
                 });
             }
         } else if (data.name == '[show-browser-setting]') {
@@ -430,9 +434,9 @@ module.exports = function init(child) {
                     origin: data.origin,
                     storages: data.storages,
                     quotas: data.quotas,
-                }).then(() => {
+                }).finally(() => {
                     console.log(' will clear cache ...');
-                    ss.clearCache().then(() => {
+                    ss.clearCache().finally(() => {
                         console.log(' will reload ...');
                         win.webContents.reload();
                     });

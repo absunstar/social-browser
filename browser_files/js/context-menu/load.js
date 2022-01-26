@@ -151,7 +151,7 @@ module.exports = function (SOCIALBROWSER) {
         }
     }
 
-    if (SOCIALBROWSER.var.blocking.privacy.enable_finger_protect && SOCIALBROWSER.var.blocking.privacy.mask_user_agent) {
+    if (SOCIALBROWSER.var.blocking.privacy.enable_virtual_pc && SOCIALBROWSER.var.blocking.privacy.mask_user_agent) {
         if (!SOCIALBROWSER.user_agent_url.like('*[xx-*')) {
             SOCIALBROWSER.user_agent_url = SOCIALBROWSER.user_agent_url.replace(') ', ') [xx-' + SOCIALBROWSER.guid() + '] ');
         }
@@ -176,6 +176,7 @@ module.exports = function (SOCIALBROWSER) {
                 },
             });
         };
+        navigator.storage = navigator.storage || {};
         navigator.storage.estimate = function () {
             return new Promise((resolve, reject) => {
                 resolve({

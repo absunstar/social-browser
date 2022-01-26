@@ -38,7 +38,7 @@
         "block_rtc": true,
         "mask_user_agent": true,
         "mask_date": true,
-        "enable_finger_protect": true,
+        "enable_virtual_pc": true,
         "browser_code": true,
         "send_browser_id": true,
         "connection": { "effectiveType": "4g", "downlink": 1, "rtt": 400, "type": "wifi" },

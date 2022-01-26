@@ -4,7 +4,7 @@ module.exports = function (child) {
     child.getMainWindow = function () {
         let mainWindow = null;
         child.windowList.forEach((w) => {
-            if (!mainWindow && w.__options.windowType == 'main') {
+            if (!mainWindow && w.__options && w.__options.windowType == 'main') {
                 mainWindow = w.window;
             }
         });
@@ -293,10 +293,51 @@ module.exports = function (child) {
         }
 
         if (win.__options.proxy) {
-            win.webContents.session.setProxy({
-                proxyRules: win.__options.proxy,
-                proxyBypassRules: '127.0.0.1',
-            });
+            if ((proxy = win.__options.proxy)) {
+                console.log('window proxy ', proxy);
+                let ss = win.webContents.session;
+
+                proxy.url = proxy.url.replace('http://', '').replace('https://', '').replace('ftp://', '').replace('socks4://', '').replace('socks4://', '');
+                let arr = proxy.url.split(':');
+                if (arr.length > 1) {
+                    proxy.ip = arr[0];
+                    proxy.port = arr[1];
+                }
+                let proxyRules = '';
+                let startline = '';
+                if (proxy.socks4) {
+                    proxyRules += startline + 'socks4://' + proxy.ip + ':' + proxy.port;
+                    startline = ',';
+                }
+                if (proxy.socks5) {
+                    proxyRules += startline + 'socks5://' + proxy.ip + ':' + proxy.port;
+                    startline = ',';
+                }
+                if (proxy.ftp) {
+                    proxyRules += startline + 'ftp://' + proxy.ip + ':' + proxy.port;
+                    startline = ',';
+                }
+                if (proxy.http) {
+                    proxyRules += startline + 'http://' + proxy.ip + ':' + proxy.port;
+                    startline = ',';
+                }
+                if (proxy.https) {
+                    proxyRules += startline + 'https://' + proxy.ip + ':' + proxy.port;
+                    startline = ',';
+                }
+                if (proxyRules == '') {
+                    proxyRules = proxy.ip + ':' + proxy.port;
+                    startline = ',';
+                }
+
+                ss.setProxy({
+                    mode: proxy.mode,
+                    proxyRules: proxyRules,
+                    proxyBypassRules: proxy.ignore || '127.0.0.1',
+                }).then(() => {
+                    console.log('Proxy Set : ' + proxyRules);
+                });
+            }
         }
 
         win.on('blur', function () {
@@ -441,8 +482,11 @@ module.exports = function (child) {
 
             setTimeout(() => {
                 if (win && !win.isDestroyed()) {
-                    win.setAlwaysOnTop(true);
                     win.show();
+                    setTimeout(() => {
+                        win.setAlwaysOnTop(true);
+                        win.show();
+                    }, 20);
                 }
             }, 200);
         });
@@ -450,10 +494,10 @@ module.exports = function (child) {
             setTimeout(() => {
                 child.handleWindowBounds();
                 if (win && !win.isDestroyed()) {
+                    win.show();
                     if (!win.__options.windowType.like('*youtube*')) {
                         win.setAlwaysOnTop(false);
                     }
-                    win.show();
                 }
             }, 100);
         });
@@ -464,8 +508,11 @@ module.exports = function (child) {
 
             setTimeout(() => {
                 if (win && !win.isDestroyed()) {
-                    win.setAlwaysOnTop(true);
                     win.show();
+                    setTimeout(() => {
+                        win.setAlwaysOnTop(true);
+                        win.show();
+                    }, 20);
                 }
             }, 200);
         });
@@ -610,23 +657,22 @@ module.exports = function (child) {
         });
 
         win.on('unresponsive', async () => {
-            const options = {
-                type: 'info',
-                title: 'Window unresponsive',
-                message: 'This Window has been suspended',
-                buttons: ['[window-reload]', 'Close'],
-            };
-
-            if (win && !win.isDestroyed()) {
-                child.electron.dialog.showMessageBox(options, function (index) {
-                    if (index === 0) {
-                        win.webContents.forcefullyCrashRenderer();
-                        win.webContents.reload();
-                    } else {
-                        win.close();
-                    }
-                });
-            }
+            // const options = {
+            //     type: 'info',
+            //     title: 'Window unresponsive',
+            //     message: 'This Window has been suspended',
+            //     buttons: ['[window-reload]', 'Close'],
+            // };
+            // if (win && !win.isDestroyed()) {
+            //     child.electron.dialog.showMessageBox(options, function (index) {
+            //         if (index === 0) {
+            //             win.webContents.forcefullyCrashRenderer();
+            //             win.webContents.reload();
+            //         } else {
+            //             win.close();
+            //         }
+            //     });
+            // }
         });
 
         win.webContents.on('crashed', (e) => {

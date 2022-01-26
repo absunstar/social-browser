@@ -60,33 +60,33 @@ module.exports = function (parent) {
                 proxy.url = proxy.url.replace('http://', '').replace('https://', '').replace('ftp://', '').replace('socks4://', '').replace('socks4://', '');
                 let arr = proxy.url.split(':');
                 if (arr.length > 1) {
-                    proxy.url = arr[0];
+                    proxy.ip = arr[0];
                     proxy.port = arr[1];
                 }
                 let proxyRules = '';
                 let startline = '';
                 if (proxy.socks4) {
-                    proxyRules += startline + 'socks4://' + proxy.url + ':' + proxy.port;
+                    proxyRules += startline + 'socks4://' + proxy.ip + ':' + proxy.port;
                     startline = ',';
                 }
                 if (proxy.socks5) {
-                    proxyRules += startline + 'socks5://' + proxy.url + ':' + proxy.port;
+                    proxyRules += startline + 'socks5://' + proxy.ip + ':' + proxy.port;
                     startline = ',';
                 }
                 if (proxy.ftp) {
-                    proxyRules += startline + 'ftp://' + proxy.url + ':' + proxy.port;
+                    proxyRules += startline + 'ftp://' + proxy.ip + ':' + proxy.port;
                     startline = ',';
                 }
                 if (proxy.http) {
-                    proxyRules += startline + 'http://' + proxy.url + ':' + proxy.port;
+                    proxyRules += startline + 'http://' + proxy.ip + ':' + proxy.port;
                     startline = ',';
                 }
                 if (proxy.https) {
-                    proxyRules += startline + 'https://' + proxy.url + ':' + proxy.port;
+                    proxyRules += startline + 'https://' + proxy.ip + ':' + proxy.port;
                     startline = ',';
                 }
                 if (proxyRules == '') {
-                    proxyRules = proxy.url + ':' + proxy.port;
+                    proxyRules = proxy.ip + ':' + proxy.port;
                     startline = ',';
                 }
                 ss.setProxy({
@@ -258,7 +258,7 @@ module.exports = function (parent) {
                 details.requestHeaders['User-Agent'] = parent.var.core.user_agent;
             }
 
-            if (parent.var.blocking.privacy.enable_finger_protect && parent.var.blocking.privacy.mask_user_agent) {
+            if (parent.var.blocking.privacy.enable_virtual_pc && parent.var.blocking.privacy.mask_user_agent) {
                 if (!details.requestHeaders['User-Agent'].like('*[xx-*')) {
                     let code = name;
                     code += new URL(url).hostname;
@@ -310,7 +310,7 @@ module.exports = function (parent) {
                 cookie_obj['_gab'] = 'sb.' + parent.var.core.id;
             }
 
-            if (cookie_obj && parent.var.blocking.privacy.enable_finger_protect && parent.var.blocking.privacy.block_cloudflare) {
+            if (cookie_obj && parent.var.blocking.privacy.enable_virtual_pc && parent.var.blocking.privacy.block_cloudflare) {
                 if (cookie_obj['_cflb']) {
                     cookie_obj['_cflb'] = 'cf.' + cookie_obj['_gab'];
                 }
@@ -329,7 +329,7 @@ module.exports = function (parent) {
             }
 
             if (cookie_obj && !url.like('*google.com*|*youtube.com*')) {
-                if (parent.var.blocking.privacy.enable_finger_protect && parent.var.blocking.privacy.hide_gid) {
+                if (parent.var.blocking.privacy.enable_virtual_pc && parent.var.blocking.privacy.hide_gid) {
                     if (cookie_obj['_gid']) {
                         delete cookie_obj['_gid'];
                     }

@@ -410,8 +410,9 @@ module.exports = function init(parent) {
             if (!name || name.indexOf('$') == 0) {
                 return;
             }
-
+            
             if (currentContent) {
+                parent.log('parent.set_var() : ' + name);
                 currentContent = parent.handleObject(currentContent);
 
                 parent.var[name] = currentContent;

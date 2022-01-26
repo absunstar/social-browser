@@ -27,9 +27,13 @@ module.exports = function (SOCIALBROWSER) {
         return;
     }
 
-    if (!(SOCIALBROWSER.var.blocking.privacy.enable_finger_protect || SOCIALBROWSER.session.privacy.enable_finger_protect)) {
+    if (!(SOCIALBROWSER.var.blocking.privacy.enable_virtual_pc || SOCIALBROWSER.session.privacy.enable_virtual_pc)) {
         SOCIALBROWSER.log(' [Finger Printing] OFF (setting)');
         return;
+    }
+
+    if (!SOCIALBROWSER.session.privacy.enable_virtual_pc) {
+        SOCIALBROWSER.session.privacy = SOCIALBROWSER.var.blocking.privacy;
     }
 
     SOCIALBROWSER.log(' [Finger Printing] ON : ' + document.location.href);

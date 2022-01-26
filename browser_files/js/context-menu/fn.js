@@ -20,10 +20,47 @@ module.exports = function (SOCIALBROWSER) {
     };
 
     SOCIALBROWSER.copy = function (text) {
-        SOCIALBROWSER.electron.clipboard.writeText(text);
+        SOCIALBROWSER.electron.clipboard.writeText(text.toString());
     };
     SOCIALBROWSER.paste = function () {
         SOCIALBROWSER.webContents.paste();
+    };
+    SOCIALBROWSER.triggerMouseEvent = function (node, eventType) {
+        try {
+            if (document.createEvent) {
+                var clickEvent = document.createEvent('MouseEvents');
+                clickEvent.initEvent(eventType, true, true);
+                node.dispatchEvent(clickEvent);
+            } else {
+                document.documentElement['MouseEvents']++;
+            }
+        } catch (err) {}
+    };
+    SOCIALBROWSER.triggerKey = function (el, keyCode) {
+        SOCIALBROWSER.triggerKeydown(el, keyCode);
+        SOCIALBROWSER.triggerKeyup(el, keyCode);
+        SOCIALBROWSER.triggerKeypress(el, keyCode);
+    };
+    SOCIALBROWSER.triggerKeydown = function (el, keyCode) {
+        var e = document.createEvent('Events');
+        e.initEvent('keydown', true, true);
+        e.keyCode = keyCode;
+        e.which = keyCode;
+        el.dispatchEvent(e);
+    };
+    SOCIALBROWSER.triggerKeyup = function (el, keyCode) {
+        var e = document.createEvent('Events');
+        e.initEvent('keyup', true, true);
+        e.keyCode = keyCode;
+        e.which = keyCode;
+        el.dispatchEvent(e);
+    };
+    SOCIALBROWSER.triggerKeypress = function (el, keyCode) {
+        var e = document.createEvent('Events');
+        e.initEvent('keypress', true, true);
+        e.keyCode = keyCode;
+        e.which = keyCode;
+        el.dispatchEvent(e);
     };
     SOCIALBROWSER.write = function (text, selector, timeout) {
         return new Promise((resolver, reject) => {
@@ -50,7 +87,9 @@ module.exports = function (SOCIALBROWSER) {
     SOCIALBROWSER.click = function (selector) {
         let dom = SOCIALBROWSER.select(selector);
         if (dom) {
+            SOCIALBROWSER.triggerMouseEvent(dom, 'mousedown');
             dom.click();
+            SOCIALBROWSER.triggerMouseEvent(dom, 'mouseup');
             return dom;
         }
     };
@@ -88,7 +127,7 @@ module.exports = function (SOCIALBROWSER) {
                 '(\\#[-a-z\\d_]*)?$',
             'i',
         ); // fragment locator
-        return !!pattern.test(str);
+        return !!pattern.test(encodeURI(str));
     };
 
     SOCIALBROWSER.handle_url = SOCIALBROWSER.handleURL = function (u) {
@@ -171,7 +210,7 @@ module.exports = function (SOCIALBROWSER) {
             frame: options.frame ?? true,
             title: options.title ?? 'New Window',
             resizable: options.resizable ?? true,
-            fullscreenable: true,
+            fullscreenable: options.fullscreenable ?? true,
             webPreferences: {
                 contextIsolation: options.contextIsolation ?? false,
                 enableRemoteModule: options.enableRemoteModule ?? true,
@@ -188,7 +227,7 @@ module.exports = function (SOCIALBROWSER) {
             },
         });
 
-        SOCIALBROWSER.ipc('[add][window]', { win_id: win.id, options: { ...SOCIALBROWSER.__options, ...{ partition: options.partition, windowType: 'client-popup', win_id: win.id } } });
+        SOCIALBROWSER.ipc('[add][window]', { win_id: win.id, options: { ...SOCIALBROWSER.__options, ...options, ...{ windowType: 'client-popup', win_id: win.id } } });
         SOCIALBROWSER.ipc('[assign][window]', {
             parent_id: SOCIALBROWSER.currentWindow.id,
             child_id: win.id,
@@ -202,21 +241,55 @@ module.exports = function (SOCIALBROWSER) {
             win.webContents.audioMuted = true;
         }
 
-        if (options.proxy) {
-            const ss = win.webContents.session;
-            ss.setProxy(
-                {
-                    proxyRules: options.proxy,
-                    proxyBypassRules: '127.0.0.1',
-                },
-                function () {},
-            );
+        if ((proxy = options.proxy)) {
+            let ss = win.webContents.session;
+
+            proxy.url = proxy.url.replace('http://', '').replace('https://', '').replace('ftp://', '').replace('socks4://', '').replace('socks4://', '');
+            let arr = proxy.url.split(':');
+            if (arr.length > 1) {
+                proxy.ip = arr[0];
+                proxy.port = arr[1];
+            }
+            let proxyRules = '';
+            let startline = '';
+            if (proxy.socks4) {
+                proxyRules += startline + 'socks4://' + proxy.ip + ':' + proxy.port;
+                startline = ',';
+            }
+            if (proxy.socks5) {
+                proxyRules += startline + 'socks5://' + proxy.ip + ':' + proxy.port;
+                startline = ',';
+            }
+            if (proxy.ftp) {
+                proxyRules += startline + 'ftp://' + proxy.ip + ':' + proxy.port;
+                startline = ',';
+            }
+            if (proxy.http) {
+                proxyRules += startline + 'http://' + proxy.ip + ':' + proxy.port;
+                startline = ',';
+            }
+            if (proxy.https) {
+                proxyRules += startline + 'https://' + proxy.ip + ':' + proxy.port;
+                startline = ',';
+            }
+            if (proxyRules == '') {
+                proxyRules = proxy.url + ':' + proxy.port;
+                startline = ',';
+            }
+
+            ss.setProxy({
+                mode: proxy.mode,
+                proxyRules: proxyRules,
+                proxyBypassRules: proxy.ignore || '127.0.0.1',
+            }).then(() => {
+                console.log('Proxy Set : ' + proxyRules);
+            });
         }
 
         if (options.url) {
             win.loadURL(SOCIALBROWSER.handleURL(options.url), {
                 referrer: options.referrer || document.location.href,
-                userAgent: options.userAgent || navigator.userAgent,
+                userAgent: options.user_agent || options.userAgent || SOCIALBROWSER.userAgent || navigator.userAgent,
             });
         }
 

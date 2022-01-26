@@ -261,11 +261,11 @@
 
             if (SOCIALBROWSER.sessionId() == 0) {
                 SOCIALBROWSER.session.privacy = {
-                    enable_finger_protect: true,
+                    enable_virtual_pc: true,
                     hide_memory: true,
-                    memory_count: __numberRange(1, 128),
+                    memory_count: __numberRange(1, 64),
                     hide_cpu: true,
-                    cpu_count: __numberRange(1, 128),
+                    cpu_count: __numberRange(1, 64),
                     hide_vega: true,
                     hide_mimetypes: true,
                     hide_plugins: true,

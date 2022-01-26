@@ -9,6 +9,9 @@
         <style>
             :root {
                 --theme-color: #2196f3;
+                --input-color: #2196f3;
+                --input-font-size: 18px;
+                --input-font-wight: bold;
                 --fieldset-border: 1px solid #bbb;
                 --modal-color: #000000;
                 --modal-background: #00000026;
@@ -18,6 +21,7 @@
                 --btn-add-background-color: #fff;
                 --btn-delete-color: red;
                 --btn-delete-background-color: #fff;
+                --fieldset-border: 1px solid #2196f3;
                 --legend-font-size: 16px;
                 --legend-font-weight: normal;
                 --label-font-weight: normal;
@@ -29,7 +33,8 @@
                 background: #ffffff;
             }
             body {
-                margin: 30px;
+                margin: 0;
+                padding: 0px;
             }
             .tabs .tabs-header .tab-link {
                 font-size: 18px;
@@ -62,7 +67,8 @@
                 padding: 20px;
             }
             .main-setting {
-                padding: 20px !important;
+                padding: 0px !important;
+                margin: 0 !important;
             }
             div#loading {
                 text-align: center;
@@ -86,17 +92,24 @@
             .dropdown-item.center p {
                 text-align: left !important;
             }
-
+            .row.border2 {
+                border: 1px solid #118011;
+                box-shadow: 1px 1px 1px 2px #118011;
+            }
+            .table input {
+                font-size: 16px !important;
+            }
             i-checkbox .selector.selected {
-                background: #009688;
+                background: #4caf50;
                 color: #fff;
-                box-shadow: 0 0 10px 1px #8bc34a;
+                box-shadow: none;
                 border: none;
+                font-weight: bold;
             }
             i-checkbox .selector.un-selected {
-                background: #0000006e;
+                background: #bbb;
                 border: none;
-                color: #ddd;
+                color: #6a6969;
             }
         </style>
     </head>
@@ -107,7 +120,10 @@
         </div>
 
         <div ng-hide="setting_busy" class="content loaded">
-            <h1 class="text-center"><i class="fa fa-cog"></i> Browser Setting</h1>
+            <br />
+            <br />
+            <h1 class="text-center bold"><i class="fa fa-cog"></i> Browser Setting</h1>
+            <br />
             <br />
             <div class="">
                 <h2 class="red" id="settingError"></h2>
@@ -134,9 +150,7 @@
                                 <i class="fa fa-lock"></i> Children Safty Mode
                             </a>
                             <a class="tab-link" onclick="site.showTabContent(event, '#blocking_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-ban"></i> Blocking Engine</a>
-                            <a class="tab-link" onclick="site.showTabContent(event, '#privacy_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
-                                <i class="fa fa-code"></i> Browser Finger Print
-                            </a>
+                            <a class="tab-link" onclick="site.showTabContent(event, '#privacy_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-laptop"></i> Virtual PC </a>
                             <a class="tab-link" onclick="site.showTabContent(event, '#javascript_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-code"></i> Java Script </a>
 
                             <a class="tab-link" onclick="site.showTabContent(event, '#youtube_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fab fa-youtube"></i> Youtube </a>
@@ -203,7 +217,7 @@
                                             <i-button ng-click="showWhiteListModal()" label="White List Sites"></i-button>
                                         </div>
                                         <div class="col6">
-                                            <div class="row">
+                                            <div class="row hide">
                                                 <div class="col6">
                                                     <div><a class="btn" href="/api/var/export"> Export Data </a></div>
                                                 </div>
@@ -342,135 +356,131 @@
                                 </div>
                             </div>
                             <div id="privacy_tab" class="tab-content">
-                                <div class="row">
-                                    <fieldset>
-                                        <legend>
-                                            <i-checkbox label="Enable Finger Printing Protection" ng-model="setting.blocking.privacy.enable_finger_protect"></i-checkbox>
-                                        </legend>
-                                        <div class="row" ng-show="setting.blocking.privacy.enable_finger_protect">
-                                            <br />
-                                            <br />
-                                            <br />
-
-                                            <div class="row padding border">
-                                                <div class="col6"><i-checkbox label="Mask CPU Count ( Custom )" ng-model="setting.blocking.privacy.hide_cpu"></i-checkbox></div>
-                                                <div class="col6">
-                                                    <i-control
-                                                        type="number"
-                                                        ng-disabled="setting.blocking.privacy.hide_cpu !== true"
-                                                        ng-model="setting.blocking.privacy.cpu_count"
-                                                        label="CPU Count"
-                                                    ></i-control>
-                                                </div>
+                                <div class="row padding">
+                                    <i-checkbox label="Enable Virtual PC" ng-model="setting.blocking.privacy.enable_virtual_pc"></i-checkbox>
+                                    <br />
+                                    <br />
+                                    <br />
+                                    <div class="row padding" ng-show="setting.blocking.privacy.enable_virtual_pc">
+                                        <div class="row padding border2">
+                                            <div class="col3"><i-checkbox label="Hide CPU Count" ng-model="setting.blocking.privacy.hide_cpu"></i-checkbox></div>
+                                            <div class="col6">
+                                                <i-control
+                                                    type="number"
+                                                    ng-disabled="setting.blocking.privacy.hide_cpu !== true"
+                                                    ng-model="setting.blocking.privacy.cpu_count"
+                                                    label="Custom CPU Count"
+                                                ></i-control>
                                             </div>
-
-                                            <div class="row padding border">
-                                                <div class="col6"><i-checkbox label="Mask Memory Size ( Custom )" ng-model="setting.blocking.privacy.hide_memory"></i-checkbox></div>
-                                                <div class="col6">
-                                                    <i-control
-                                                        type="number"
-                                                        ng-disabled="setting.blocking.privacy.hide_memory !== true"
-                                                        ng-model="setting.blocking.privacy.memory_count"
-                                                        label="Memory Count"
-                                                    ></i-control>
-                                                </div>
-                                            </div>
-
-                                            <div class="row padding border">
-                                                <div class="col6"><i-checkbox label="Mask Language Information ( Custom )" ng-model="setting.blocking.privacy.hide_lang"></i-checkbox></div>
-                                                <div class="col6">
-                                                    <i-control ng-disabled="setting.blocking.privacy.hide_lang !== true" ng-model="setting.blocking.privacy.languages" label="Languages"></i-control>
-                                                </div>
-                                            </div>
-
-                                            <div class="row padding border">
-                                                <div class="col6"><i-checkbox label="Mask Date TimeZone ( Custom )" ng-model="setting.blocking.privacy.mask_date"></i-checkbox></div>
-                                                <div class="col6">
-                                                    <i-control
-                                                        type="number"
-                                                        ng-disabled="setting.blocking.privacy.mask_date !== true"
-                                                        ng-model="setting.blocking.privacy.date_offset"
-                                                        label="Date Offset"
-                                                    ></i-control>
-                                                </div>
-                                            </div>
-
-                                            <div class="row padding border">
-                                                <div class="col6"><i-checkbox label="Mask Screen Size ( Custom )" ng-model="setting.blocking.privacy.hide_screen"></i-checkbox></div>
-                                                <div class="col6">
-                                                    <i-control
-                                                        type="number"
-                                                        ng-disabled="setting.blocking.privacy.hide_screen !== true"
-                                                        ng-model="setting.blocking.privacy.screen_width"
-                                                        label="Screen Width"
-                                                    ></i-control>
-                                                    <i-control
-                                                        type="number"
-                                                        ng-disabled="setting.blocking.privacy.hide_screen !== true"
-                                                        ng-model="setting.blocking.privacy.screen_height"
-                                                        label="Screen Height"
-                                                    ></i-control>
-                                                    <i-control
-                                                        type="number"
-                                                        ng-disabled="setting.blocking.privacy.hide_screen !== true"
-                                                        ng-model="setting.blocking.privacy.screen_availWidth"
-                                                        label="Screen availbal Width"
-                                                    ></i-control>
-                                                    <i-control
-                                                        type="number"
-                                                        ng-disabled="setting.blocking.privacy.hide_screen !== true"
-                                                        ng-model="setting.blocking.privacy.screen_availHeight"
-                                                        label="Screen availbal Height"
-                                                    ></i-control>
-                                                </div>
-                                            </div>
-
-                                            <div class="row padding border">
-                                                <div class="col6"><i-checkbox label="Mask Connection Information ( Custom )" ng-model="setting.blocking.privacy.hide_connection"></i-checkbox></div>
-                                                <div class="col6">
-                                                    <i-control
-                                                        ng-disabled="setting.blocking.privacy.hide_connection !== true"
-                                                        ng-model="setting.blocking.privacy.connection.effectiveType"
-                                                        label="Network Provider Type"
-                                                    ></i-control>
-                                                    <i-control
-                                                        type="number"
-                                                        ng-disabled="setting.blocking.privacy.hide_connection !== true"
-                                                        ng-model="setting.blocking.privacy.connection.downlink"
-                                                        label="Download Speed (Mbit)"
-                                                    ></i-control>
-                                                    <i-control
-                                                        type="number"
-                                                        ng-disabled="setting.blocking.privacy.hide_connection !== true"
-                                                        ng-model="setting.blocking.privacy.connection.rtt"
-                                                        label="Ping (low is fast)"
-                                                    ></i-control>
-                                                    <i-control
-                                                        ng-disabled="setting.blocking.privacy.hide_connection !== true"
-                                                        ng-model="setting.blocking.privacy.connection.type"
-                                                        label="Network Source"
-                                                    ></i-control>
-                                                </div>
-                                            </div>
-
-                                            <i-checkbox class="col4" label="Set Window Alawys Active" ng-model="setting.blocking.privacy.set_window_active"></i-checkbox>
-                                            <i-checkbox class="col4" label="Mask User Agent (profile + host)" ng-model="setting.blocking.privacy.mask_user_agent"></i-checkbox>
-                                            <i-checkbox class="col4" label="Block HTML Canvas" ng-model="setting.blocking.privacy.block_canvas"></i-checkbox>
-
-                                            <i-checkbox class="col4" label="Block Media Devices [camera , mic , ...]" ng-model="setting.blocking.privacy.hide_media_devices"></i-checkbox>
-                                            <br />
-                                            <i-checkbox class="col4" label="Hide Graphic Card Details" ng-model="setting.blocking.privacy.hide_vega"></i-checkbox>
-                                            <i-checkbox class="col4" label="Block RTC Connections" ng-model="setting.blocking.privacy.block_rtc"></i-checkbox>
-
-                                            <i-checkbox class="col4" label="Mask Battery informations (profile)" ng-model="setting.blocking.privacy.hide_battery"></i-checkbox>
-
-                                            <i-checkbox class="col4" label="Hide MimeTypes" ng-model="setting.blocking.privacy.hide_mimetypes"></i-checkbox>
-
-                                            <br />
-                                            <i-checkbox class="col4" label="Block Google ID in other sites" ng-model="setting.blocking.privacy.hide_gid"></i-checkbox>
-                                            <i-checkbox class="col4" label="Block Cloud Flare Tracking" ng-model="setting.blocking.privacy.block_cloudflare"></i-checkbox>
                                         </div>
-                                    </fieldset>
+
+                                        <div class="row padding border2">
+                                            <div class="col3"><i-checkbox label="Hide Memory Size ( Custom )" ng-model="setting.blocking.privacy.hide_memory"></i-checkbox></div>
+                                            <div class="col6">
+                                                <i-control
+                                                    type="number"
+                                                    ng-disabled="setting.blocking.privacy.hide_memory !== true"
+                                                    ng-model="setting.blocking.privacy.memory_count"
+                                                    label="Custom Memory Count"
+                                                ></i-control>
+                                            </div>
+                                        </div>
+
+                                        <div class="row padding border2">
+                                            <div class="col3"><i-checkbox label="Hide Languages Information ( Custom )" ng-model="setting.blocking.privacy.hide_lang"></i-checkbox></div>
+                                            <div class="col6">
+                                                <i-control ng-disabled="setting.blocking.privacy.hide_lang !== true" ng-model="setting.blocking.privacy.languages" label="Custom Languages"></i-control>
+                                            </div>
+                                        </div>
+
+                                        <div class="row padding border2">
+                                            <div class="col3"><i-checkbox label="Hide Date TimeZone ( Custom )" ng-model="setting.blocking.privacy.mask_date"></i-checkbox></div>
+                                            <div class="col6">
+                                                <i-control
+                                                    type="number"
+                                                    ng-disabled="setting.blocking.privacy.mask_date !== true"
+                                                    ng-model="setting.blocking.privacy.date_offset"
+                                                    label="Custom Date Offset"
+                                                ></i-control>
+                                            </div>
+                                        </div>
+
+                                        <div class="row padding border2">
+                                            <div class="col3"><i-checkbox label="Hide Screen Size ( Custom )" ng-model="setting.blocking.privacy.hide_screen"></i-checkbox></div>
+                                            <div class="col6">
+                                                <i-control
+                                                    type="number"
+                                                    ng-disabled="setting.blocking.privacy.hide_screen !== true"
+                                                    ng-model="setting.blocking.privacy.screen_width"
+                                                    label="Screen Width"
+                                                ></i-control>
+                                                <i-control
+                                                    type="number"
+                                                    ng-disabled="setting.blocking.privacy.hide_screen !== true"
+                                                    ng-model="setting.blocking.privacy.screen_height"
+                                                    label="Screen Height"
+                                                ></i-control>
+                                                <i-control
+                                                    type="number"
+                                                    ng-disabled="setting.blocking.privacy.hide_screen !== true"
+                                                    ng-model="setting.blocking.privacy.screen_availWidth"
+                                                    label="Screen availbal Width"
+                                                ></i-control>
+                                                <i-control
+                                                    type="number"
+                                                    ng-disabled="setting.blocking.privacy.hide_screen !== true"
+                                                    ng-model="setting.blocking.privacy.screen_availHeight"
+                                                    label="Screen availbal Height"
+                                                ></i-control>
+                                            </div>
+                                        </div>
+
+                                        <div class="row padding border2">
+                                            <div class="col3"><i-checkbox label="Hide Connection Information ( Custom )" ng-model="setting.blocking.privacy.hide_connection"></i-checkbox></div>
+                                            <div class="col6">
+                                                <i-control
+                                                    ng-disabled="setting.blocking.privacy.hide_connection !== true"
+                                                    ng-model="setting.blocking.privacy.connection.effectiveType"
+                                                    label="Network Provider Type"
+                                                ></i-control>
+                                                <i-control
+                                                    type="number"
+                                                    ng-disabled="setting.blocking.privacy.hide_connection !== true"
+                                                    ng-model="setting.blocking.privacy.connection.downlink"
+                                                    label="Download Speed (Mbit)"
+                                                ></i-control>
+                                                <i-control
+                                                    type="number"
+                                                    ng-disabled="setting.blocking.privacy.hide_connection !== true"
+                                                    ng-model="setting.blocking.privacy.connection.rtt"
+                                                    label="Ping (low is fast)"
+                                                ></i-control>
+                                                <i-control
+                                                    ng-disabled="setting.blocking.privacy.hide_connection !== true"
+                                                    ng-model="setting.blocking.privacy.connection.type"
+                                                    label="Network Source"
+                                                ></i-control>
+                                            </div>
+                                        </div>
+                                        <div class="row padding border2">
+                                            <i-checkbox class="col6" label="Set Window Alawys Active" ng-model="setting.blocking.privacy.set_window_active"></i-checkbox>
+                                            <i-checkbox class="col6" label="Mask User Agent (profile + host)" ng-model="setting.blocking.privacy.mask_user_agent"></i-checkbox>
+                                            <i-checkbox class="col6" label="Block HTML Canvas" ng-model="setting.blocking.privacy.block_canvas"></i-checkbox>
+
+                                            <i-checkbox class="col6" label="Block Media Devices [camera , mic , ...]" ng-model="setting.blocking.privacy.hide_media_devices"></i-checkbox>
+                                            <br />
+                                            <i-checkbox class="col6" label="Hide Graphic Card Details" ng-model="setting.blocking.privacy.hide_vega"></i-checkbox>
+                                            <i-checkbox class="col6" label="Block RTC Connections" ng-model="setting.blocking.privacy.block_rtc"></i-checkbox>
+
+                                            <i-checkbox class="col6" label="Mask Battery informations (profile)" ng-model="setting.blocking.privacy.hide_battery"></i-checkbox>
+
+                                            <i-checkbox class="col6" label="Hide MimeTypes" ng-model="setting.blocking.privacy.hide_mimetypes"></i-checkbox>
+
+                                            <br />
+                                            <i-checkbox class="col6" label="Block Google ID in other sites" ng-model="setting.blocking.privacy.hide_gid"></i-checkbox>
+                                            <i-checkbox class="col6" label="Block Cloud Flare Tracking" ng-model="setting.blocking.privacy.block_cloudflare"></i-checkbox>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -478,16 +488,19 @@
                                 <div class="row">
                                     <fieldset>
                                         <legend>Javascript</legend>
-
-                                        <i-checkbox class="row" label="Block ( Eval functions )" ng-model="setting.blocking.javascript.block_eval"></i-checkbox>
-                                        <i-checkbox class="row" label="Block ( Console functions )" ng-model="setting.blocking.javascript.block_console_output"> </i-checkbox>
-                                        <i-checkbox class="row" label="Block ( window.postMessage )" ng-model="setting.blocking.javascript.block_window_post_message"> </i-checkbox>
-                                        <i-checkbox class="row" label="Block ( window.Worker )" ng-model="setting.blocking.javascript.block_window_worker"> </i-checkbox>
-                                        <i-checkbox class="row" label="Auto Load ( jquery )" ng-model="setting.blocking.javascript.allow_jquery"> </i-checkbox>
-                                        <i-checkbox class="row" label="Double Click [ Auto Paste ] " ng-model="setting.blocking.javascript.auto_paste"> </i-checkbox>
-                                        <div class="row border padding">
-                                            <div class="col6"><i-checkbox class="row" label="Custom Local Storage" ng-model="setting.blocking.javascript.custom_local_storage"> </i-checkbox></div>
-                                            <div class="col6"><i-checkbox class="row" label="Custom Session Storage" ng-model="setting.blocking.javascript.custom_session_storage"> </i-checkbox></div>
+                                        <div class="row padding">
+                                            <div class="col6">
+                                                <i-checkbox class="row" label="Block ( Eval functions )" ng-model="setting.blocking.javascript.block_eval"></i-checkbox>
+                                                <i-checkbox class="row" label="Block ( Console functions )" ng-model="setting.blocking.javascript.block_console_output"> </i-checkbox>
+                                                <i-checkbox class="row" label="Block ( window.postMessage )" ng-model="setting.blocking.javascript.block_window_post_message"> </i-checkbox>
+                                                <i-checkbox class="row" label="Block ( window.Worker )" ng-model="setting.blocking.javascript.block_window_worker"> </i-checkbox>
+                                                <i-checkbox class="row" label="Auto Load ( jquery )" ng-model="setting.blocking.javascript.allow_jquery"> </i-checkbox>
+                                                <i-checkbox class="row" label="Double Click [ Auto Paste ] " ng-model="setting.blocking.javascript.auto_paste"> </i-checkbox>
+                                            </div>
+                                            <div class="col6">
+                                                <i-checkbox class="row" label="Custom Local Storage" ng-model="setting.blocking.javascript.custom_local_storage"> </i-checkbox
+                                                ><i-checkbox class="row" label="Custom Session Storage" ng-model="setting.blocking.javascript.custom_session_storage"> </i-checkbox>
+                                            </div>
                                         </div>
                                     </fieldset>
                                 </div>
@@ -590,8 +603,8 @@
                                                         ng-change="changeProxy()"
                                                     >
                                                     </i-list>
-                                                    <i-control class="col4" label="Proxy URL" type="text" ng-model="setting.proxy.url"> </i-control>
-                                                    <i-control class="col2" label="Proxy Port" type="number" ng-model="setting.proxy.port"> </i-control>
+                                                    <i-control class="col4" label="Proxy IP" type="text" ng-model="setting.proxy.ip"> </i-control>
+                                                    <i-control class="col2" label="Proxy Port" type="text" ng-model="setting.proxy.port"> </i-control>
                                                     <i-control class="row" label="No Proxy For URLs" type="text" ng-model="setting.proxy.ignore"> </i-control>
                                                 </div>
                                                 <div class="row padding">
@@ -599,7 +612,7 @@
                                                     <i-checkbox class="" label="Socks 4" ng-model="setting.proxy.socks4"></i-checkbox>
                                                     <i-checkbox class="" label="FTP" ng-model="setting.proxy.ftp"></i-checkbox>
                                                     <i-checkbox class="" label="HTTP" ng-model="setting.proxy.http"></i-checkbox>
-                                                    <i-checkbox class="" label="SSL" ng-model="setting.proxy.https"></i-checkbox>
+                                                    <i-checkbox class="" label="HTTPS" ng-model="setting.proxy.https"></i-checkbox>
                                                 </div>
                                             </div>
                                         </div>
@@ -769,8 +782,8 @@
                                                                 ng-change="changeProxy(currentSession)"
                                                             >
                                                             </i-list>
-                                                            <i-control class="col4" label="Proxy URL" type="text" ng-model="currentSession.proxy.url"> </i-control>
-                                                            <i-control class="col2" label="Proxy Port" type="number" ng-model="currentSession.proxy.port"> </i-control>
+                                                            <i-control class="col4" label="Proxy IP" type="text" ng-model="currentSession.proxy.ip"> </i-control>
+                                                            <i-control class="col2" label="Proxy Port" type="text" ng-model="currentSession.proxy.port"> </i-control>
                                                             <i-control class="row" label="No Proxy For URLs" type="text" ng-model="currentSession.proxy.ignore"> </i-control>
                                                         </div>
                                                         <div class="row padding">
@@ -778,59 +791,59 @@
                                                             <i-checkbox class="" label="Socks 4" ng-model="currentSession.proxy.socks4"></i-checkbox>
                                                             <i-checkbox class="" label="FTP" ng-model="currentSession.proxy.ftp"></i-checkbox>
                                                             <i-checkbox class="" label="HTTP" ng-model="currentSession.proxy.http"></i-checkbox>
-                                                            <i-checkbox class="" label="SSL" ng-model="currentSession.proxy.https"></i-checkbox>
+                                                            <i-checkbox class="" label="HTTPS" ng-model="currentSession.proxy.https"></i-checkbox>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </fieldset>
 
-                                            <i-checkbox label="Enable Finger Printing Protection" ng-model="currentSession.privacy.enable_finger_protect"></i-checkbox>
+                                            <i-checkbox label="Enable Virtual PC" ng-model="currentSession.privacy.enable_virtual_pc"></i-checkbox>
                                             <br />
-                                            <div ng-show="currentSession.privacy.enable_finger_protect" class="row padding border">
-                                                <div class="col6"><i-checkbox label="Mask CPU ( Custom )" ng-model="currentSession.privacy.hide_cpu"></i-checkbox></div>
+                                            <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border">
+                                                <div class="col6"><i-checkbox label="Hide CPU Count" ng-model="currentSession.privacy.hide_cpu"></i-checkbox></div>
                                                 <div class="col6">
                                                     <i-control
                                                         type="number"
                                                         ng-disabled="currentSession.privacy.hide_cpu !== true"
                                                         ng-model="currentSession.privacy.cpu_count"
-                                                        label="CPU Count"
+                                                        label="Custom CPU Count"
                                                     ></i-control>
                                                 </div>
                                             </div>
 
-                                            <div ng-show="currentSession.privacy.enable_finger_protect" class="row padding border">
-                                                <div class="col6"><i-checkbox label="Mask Memory ( Custom )" ng-model="currentSession.privacy.hide_memory"></i-checkbox></div>
+                                            <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border">
+                                                <div class="col6"><i-checkbox label="Hide Memory Count" ng-model="currentSession.privacy.hide_memory"></i-checkbox></div>
                                                 <div class="col6">
                                                     <i-control
                                                         type="number"
                                                         ng-disabled="currentSession.privacy.hide_memory !== true"
                                                         ng-model="currentSession.privacy.memory_count"
-                                                        label="Memory Count"
+                                                        label="Custom Memory Count"
                                                     ></i-control>
                                                 </div>
                                             </div>
 
-                                            <div ng-show="currentSession.privacy.enable_finger_protect" class="row padding border">
-                                                <div class="col6"><i-checkbox label="Mask Language Information ( Custom )" ng-model="currentSession.privacy.hide_lang"></i-checkbox></div>
+                                            <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border">
+                                                <div class="col6"><i-checkbox label="Hide Languages Information" ng-model="currentSession.privacy.hide_lang"></i-checkbox></div>
                                                 <div class="col6">
-                                                    <i-control ng-disabled="currentSession.privacy.hide_lang !== true" ng-model="currentSession.privacy.languages" label="Languages"></i-control>
+                                                    <i-control ng-disabled="currentSession.privacy.hide_lang !== true" ng-model="currentSession.privacy.languages" label="Custom Languages"></i-control>
                                                 </div>
                                             </div>
 
-                                            <div ng-show="currentSession.privacy.enable_finger_protect" class="row padding border">
-                                                <div class="col6"><i-checkbox label="Mask Date TimeZone ( Custom )" ng-model="currentSession.privacy.mask_date"></i-checkbox></div>
+                                            <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border">
+                                                <div class="col6"><i-checkbox label="Hide Date TimeZone" ng-model="currentSession.privacy.mask_date"></i-checkbox></div>
                                                 <div class="col6">
                                                     <i-control
                                                         type="number"
                                                         ng-disabled="currentSession.privacy.mask_date !== true"
                                                         ng-model="currentSession.privacy.date_offset"
-                                                        label="Date Offset"
+                                                        label="Custom Date Offset"
                                                     ></i-control>
                                                 </div>
                                             </div>
 
-                                            <div ng-show="currentSession.privacy.enable_finger_protect" class="row padding border">
-                                                <div class="col6"><i-checkbox label="Mask Screen Size ( Custom )" ng-model="currentSession.privacy.hide_screen"></i-checkbox></div>
+                                            <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border">
+                                                <div class="col6"><i-checkbox label="Hide Screen Size " ng-model="currentSession.privacy.hide_screen"></i-checkbox></div>
                                                 <div class="col6">
                                                     <i-control
                                                         type="number"
@@ -859,8 +872,8 @@
                                                 </div>
                                             </div>
 
-                                            <div ng-show="currentSession.privacy.enable_finger_protect" class="row padding border">
-                                                <div class="col6"><i-checkbox label="Mask Connection Information ( Custom )" ng-model="currentSession.privacy.hide_connection"></i-checkbox></div>
+                                            <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border">
+                                                <div class="col6"><i-checkbox label="Hide Connection Information" ng-model="currentSession.privacy.hide_connection"></i-checkbox></div>
                                                 <div class="col6">
                                                     <i-control
                                                         ng-disabled="currentSession.privacy.hide_connection !== true"
@@ -962,8 +975,11 @@
 
                             <div id="proxy_list_tab" class="tab-content">
                                 <div class="row">
-                                    <h2>Manage Proxy List [ Add , Edit , Delete]</h2>
-
+                                    <form class="form text-center pointer">
+                                        <input id="input_proxy" class="hidden" type="file" name="proxyFile" ng-model="proxy.path" />
+                                        <i-button type="bg-blue white font-18" fa="cloud-upload-alt" ng-click="do_click(proxy)" label="Import Proxy List ( CSV or XLSX or JSON) File"></i-button>
+                                        <p class="bold green">{{proxy.uploadStatus}}</p>
+                                    </form>
                                     <br />
 
                                     <div class="row padding margin">
@@ -972,8 +988,8 @@
                                                 <legend>New Proxy</legend>
                                                 <div class="row padding">
                                                     <i-control class="row" label="Name [ option ] " ng-model="$proxy.name"></i-control>
-                                                    <i-control class="col4" label="Server URL" ng-model="$proxy.url"></i-control>
-                                                    <i-control class="col2" type="number" label="Server Port" ng-model="$proxy.port"></i-control>
+                                                    <i-control class="col4" label="Server IP" ng-model="$proxy.ip"></i-control>
+                                                    <i-control class="col2" type="text" label="Server Port" ng-model="$proxy.port"></i-control>
                                                     <i-control class="row" label="No Proxy For URLs" ng-model="$proxy.ignore"></i-control>
                                                 </div>
 
@@ -982,7 +998,7 @@
                                                     <i-checkbox class="" label="Socks 4" ng-model="$proxy.socks4"></i-checkbox>
                                                     <i-checkbox class="" label="FTP" ng-model="$proxy.ftp"></i-checkbox>
                                                     <i-checkbox class="" label="HTTP" ng-model="$proxy.http"></i-checkbox>
-                                                    <i-checkbox class="" label="SSL" ng-model="$proxy.https"></i-checkbox>
+                                                    <i-checkbox class="" label="HTTPS" ng-model="$proxy.https"></i-checkbox>
                                                 </div>
 
                                                 <i-button type="add" ng-click="addProxy()" label="Add to List"></i-button>
@@ -996,15 +1012,17 @@
                                     <div class="row">
                                         <table class="table hover">
                                             <tr>
-                                                <th>Index</th>
+                                                <th>
+                                                    Index ({{setting.proxy_list.length}}) Actions <a class="btn red" ng-click="setting.proxy_list = []"> <i class="fa fa-trash"></i> Remove All</a>
+                                                </th>
                                                 <th>Name [ option ] <input type="text" ng-model="$proxy.name" /></th>
-                                                <th>URL [ Server IP ] <input type="text" ng-model="$proxy.url" /></th>
+                                                <th>URL [ Server IP ] <input type="text" ng-model="$proxy.ip" /></th>
                                                 <th>Port [ Server Port ] <input type="text" ng-model="$proxy.port" /></th>
-
-                                                <th>Actions</th>
                                             </tr>
-                                            <tr ng-repeat="_se in setting.proxy_list | filter:$proxy | orderBy : 'name' track by $index">
-                                                <td>{{$index + 1}}</td>
+                                            <tr ng-repeat="_se in setting.proxy_list | limitTo : 100 | filter:$proxy | orderBy : 'name' track by $index">
+                                                <td>
+                                                    {{$index + 1}} <a class="btn red" ng-click="removeProxy(_se)"> <i class="fa fa-trash"></i> Remove </a>
+                                                </td>
                                                 <td>
                                                     <input class="block full-width" type="text" ng-model="_se.name" />
                                                     <div class="row padding">
@@ -1012,14 +1030,11 @@
                                                         <i-checkbox class="" label="Socks 4" ng-model="_se.socks4"></i-checkbox>
                                                         <i-checkbox class="" label="FTP" ng-model="_se.ftp"></i-checkbox>
                                                         <i-checkbox class="" label="HTTP" ng-model="_se.http"></i-checkbox>
-                                                        <i-checkbox class="" label="SSL" ng-model="_se.https"></i-checkbox>
+                                                        <i-checkbox class="" label="HTTPS" ng-model="_se.https"></i-checkbox>
                                                     </div>
                                                 </td>
-                                                <td><input class="block full-width" type="text" ng-model="_se.url" /></td>
-                                                <td><input class="block full-width" type="number" ng-model="_se.port" /></td>
-                                                <td>
-                                                    <a class="btn red" ng-click="removeProxy(_se)"> <i class="fa fa-trash"></i> Remove </a>
-                                                </td>
+                                                <td><input class="block full-width" type="text" ng-model="_se.ip" /></td>
+                                                <td><input class="block full-width" type="text" ng-model="_se.port" /></td>
                                             </tr>
                                         </table>
                                     </div>
