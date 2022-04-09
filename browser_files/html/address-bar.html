@@ -114,11 +114,11 @@
             };
 
             SOCIALBROWSER.on('set-text-url', (e, data) => {
-              try {
-                scope().url = decodeURI(data.url);
-              } catch (error) {
-                scope().url = data.url;
-              }
+                try {
+                    scope().url = decodeURI(data.url);
+                } catch (error) {
+                    scope().url = data.url;
+                }
                 scope().tab_id = data.tab_id;
                 scope().loadUrls(scope().url, 'count');
 
@@ -143,6 +143,10 @@
                 $scope.sort = 'count';
 
                 $scope.loadUrls = function (url, sort) {
+                    if ($scope.busy) {
+                        return false;
+                    }
+                    $scope.busy = true;
                     if (url) {
                         $scope.url = url;
                     }
@@ -199,6 +203,7 @@
                     }
 
                     $scope.$applyAsync();
+                    $scope.busy = false;
                 };
 
                 $scope.clearUrlSelection = function () {
@@ -263,7 +268,7 @@
                         }
                     }
                     $scope.url = url;
-                    SOCIALBROWSER.call('[update-view-url]', {
+                    SOCIALBROWSER.ipc('[update-view-url]', {
                         url: $scope.url,
                         tab_id: $scope.tab_id,
                     });

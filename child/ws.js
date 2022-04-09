@@ -238,6 +238,9 @@ module.exports = function (child) {
                     } else if (message.data.name == '[toggle-window-audio]' && child.getWindow()) {
                         child.getWindow().webContents.setAudioMuted(!child.getWindow().webContents.audioMuted);
                         child.updateTab(child.getWindow());
+                    }else if (message.data.name == '[set-window]') {
+                        child.getWindow().setSkipTaskbar(false);
+                        child.getWindow().setMenuBarVisibility(true);
                     } else if (message.data.name == 'copy') {
                         child.electron.clipboard.writeText(message.data.text.replace('#___new_tab___', '').replace('#___new_popup__', ''));
                     } else if (message.data.name == 'full_screen' && child.getWindow()) {

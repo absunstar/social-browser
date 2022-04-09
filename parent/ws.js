@@ -72,7 +72,11 @@ module.exports = function init(parent) {
                     });
                     break;
                 case '[un-attach-child]':
-                    parent.clientList[message.index].is_attached = false;
+                    let ch2 = parent.clientList[message.index];
+                    if (ch2) {
+                        ch2.is_attached = false;
+                    }
+
                     break;
                 case '[send-render-message]':
                     parent.clientList.forEach((client) => {
@@ -234,6 +238,26 @@ module.exports = function init(parent) {
                         }
                     });
                     break;
+                case '[remove-proxy]':
+                    parent.var.proxy_list.forEach((p, i) => {
+                        if (message.proxy.ip === p.ip && message.proxy.port === p.port) {
+                            parent.var.proxy_list.splice(i, 1);
+                        }
+                    });
+
+                    parent.set_var('proxy_list', parent.var.proxy_list);
+                    parent.clientList.forEach((client) => {
+                        if (client.ws) {
+                            client.ws.send({
+                                type: '[update-browser-var]',
+                                options: {
+                                    name: 'proxy_list',
+                                    data: parent.var.proxy_list,
+                                },
+                            });
+                        }
+                    });
+                    break;
                 case '[download-link]':
                     if (parent.var.last_download_url === message.url) {
                         console.log(' Parent Will Download Cancel Duplicate : ' + message.url);
@@ -243,7 +267,7 @@ module.exports = function init(parent) {
                         return;
                     }
                     parent.var.last_download_url = message.url;
-                    parent.handleSession(message.partition);
+                    parent.handleSession({ name: message.partition });
                     let ss = parent.electron.session.fromPartition(message.partition);
                     ss.downloadURL(message.url);
 

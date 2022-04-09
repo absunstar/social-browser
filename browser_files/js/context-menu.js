@@ -250,6 +250,7 @@
                 SOCIALBROWSER.partition = 'ghost';
             }
 
+            
             require(SOCIALBROWSER.files_dir + '/js/context-menu/init.js')(SOCIALBROWSER);
             require(SOCIALBROWSER.files_dir + '/js/context-menu/event.js')(SOCIALBROWSER);
 

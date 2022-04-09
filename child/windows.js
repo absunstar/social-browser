@@ -68,7 +68,7 @@ module.exports = function (child) {
             defaultSetting.center = true;
             defaultSetting.webPreferences.webSecurity = false;
             defaultSetting.webPreferences.allowRunningInsecureContent = true;
-        } else if (setting.windowType === 'popup' || setting.windowType === 'client-popup') {
+        } else if (setting.windowType.contains('popup')) {
             defaultSetting.show = true;
             defaultSetting.center = true;
             defaultSetting.alwaysOnTop = true;
@@ -122,8 +122,6 @@ module.exports = function (child) {
         if (setting.security === false) {
             defaultSetting.webPreferences.webSecurity = false;
             defaultSetting.webPreferences.allowRunningInsecureContent = true;
-        } else {
-            defaultSetting.webPreferences.enableBlinkFeatures = 'OutOfBlinkCors';
         }
 
         defaultSetting = { ...defaultSetting, ...setting };
@@ -294,7 +292,6 @@ module.exports = function (child) {
 
         if (win.__options.proxy) {
             if ((proxy = win.__options.proxy)) {
-                console.log('window proxy ', proxy);
                 let ss = win.webContents.session;
 
                 proxy.url = proxy.url.replace('http://', '').replace('https://', '').replace('ftp://', '').replace('socks4://', '').replace('socks4://', '');
@@ -531,9 +528,9 @@ module.exports = function (child) {
         win.webContents.on('context-menu', (event, params) => {
             if (win && !win.isDestroyed()) {
                 win.webContents.send('context-menu', params);
+                return;
             }
 
-            return;
             const menu = new child.electron.Menu();
 
             // Add each spelling suggestion
@@ -625,10 +622,25 @@ module.exports = function (child) {
             win.__options.icon = win.__options.favicon;
             child.updateTab(win);
         });
-        win.webContents.on('did-fail-load', (e) => {
-            e.preventDefault();
-            win.__options.icon = error_icon;
-            child.updateTab(win);
+        win.webContents.on('did-fail-load', (...callback) => {
+            callback[0].preventDefault();
+            if (callback[4]) {
+                if (child.parent.var.blocking.proxy_error_remove_proxy && win.__options.proxy) {
+                    child.sendMessage({
+                        type: '[remove-proxy]',
+                        proxy: win.__options.proxy,
+                    });
+                }
+                if (win.__options.windowType.like('*popup*')) {
+                    if (child.parent.var.blocking.proxy_error_close_window) {
+                        win.close();
+                    }
+                } else {
+                    win.__options.icon = error_icon;
+                    child.updateTab(win);
+                }
+            }
+
             // win.loadURL('browser://error?url=' + win.getURL() + '&description=Error While Loading');
         });
 

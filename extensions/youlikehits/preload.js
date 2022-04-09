@@ -58,7 +58,7 @@ module.exports = function (SOCIALBROWSER) {
         webPreferences: {
           contextIsolation: false,
           webaudio: false,
-          nativeWindowOpen: false,
+          nativeWindowOpen : false,
           nodeIntegration: false,
           nodeIntegrationInWorker: false,
           session: SOCIALBROWSER.remote.getCurrentWebContents().session,

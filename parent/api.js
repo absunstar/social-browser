@@ -92,7 +92,7 @@ module.exports = function init(parent) {
     parent.api.onALL('/printers/all', (req, res) => {
         res.json({
             done: true,
-            list: parent.webContent.getPrinters(),
+            list: parent.webContent.getPrintersAsync(),
         });
     });
 
@@ -130,6 +130,14 @@ module.exports = function init(parent) {
                         docs.push(tmp);
                     }
                 });
+            } else if (response.file.originalFilename.like('*.txt')) {
+                let docs2 = parent.api.readFileSync(response.file.filepath).toString().split('\n');
+                docs2.forEach((line) => {
+                    docs.push({
+                        url: line.split(',')[0].trim(),
+                        name: line.split(',')[1] || '',
+                    });
+                });
             } else {
                 docs = parent.api.fromJson(parent.api.readFileSync(response.file.filepath).toString());
             }
@@ -140,18 +148,30 @@ module.exports = function init(parent) {
                 parent.var.proxy_list = [];
                 docs.forEach((doc) => {
                     console.log('Importing Proxy : ', doc);
-                    if (doc.ip && doc.port) {
+                    if (!doc.url && doc.ip && doc.port) {
                         doc.url = doc.ip + ':' + doc.port;
-                    } else if (doc.url) {
-                        doc.ip = doc.url.split(':')[0];
-                        doc.port = doc.url.split(':')[1];
+                    } else if (doc.url && (!doc.ip || !doc.port)) {
+                        let arr = doc.url.split(':');
+                        if (arr.length == 2) {
+                            doc.ip = arr[0];
+                            doc.port = arr[1];
+                        } else if (arr.length == 4) {
+                            doc.ip = arr[0];
+                            doc.port = arr[1];
+                            doc.username = arr[2];
+                            doc.password = arr[3];
+                            
+                        }
+                    } else {
+                        return false;
                     }
                     parent.var.proxy_list.push({
                         mode: 'fixed_servers',
                         url: doc.url,
                         ip: doc.ip,
                         port: doc.port,
-                        name: doc.name + ' - ' + doc.url,
+                        username: doc.username,
+                        password: doc.password,
                         socks5: true,
                         socks4: true,
                         http: true,
@@ -274,7 +294,6 @@ module.exports = function init(parent) {
                     javascript: true,
                     enableRemoteModule: true,
                     contextIsolation: false,
-                    nativeWindowOpen: false,
                     nodeIntegration: false,
                     nodeIntegrationInSubFrames: false,
                     nodeIntegrationInWorker: false,

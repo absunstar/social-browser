@@ -33,7 +33,7 @@ app.on("ready", function () {
             preload: setting.preload || child.parent.files_dir + '/js/context-menu.js',
             javascript: true,
             contextIsolation: false,
-            nativeWindowOpen: false,
+            nativeWindowOpen : false,
             nodeIntegration: true,
             nodeIntegrationInSubFrames: false,
             nodeIntegrationInWorker: true,

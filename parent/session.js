@@ -1,7 +1,8 @@
 module.exports = function (parent) {
     parent.session_name_list = [];
 
-    parent.handleSession = function (name) {
+    parent.handleSession = function (obj) {
+        let name = obj.name;
         if (!name || parent.session_name_list.some((s) => s == name)) {
             return;
         }

@@ -267,27 +267,27 @@ module.exports = function (SOCIALBROWSER) {
             }
         }
 
-        if (document.location.href.like('https://www.youtube.com/watch*')) {
-            let sss = setInterval(() => {
-                if (!document.location.href.like('https://www.youtube.com/watch*')) {
-                    clearInterval(sss);
-                    return;
-                }
-                document.querySelectorAll('a.yt-simple-endpoint.style-scope.yt-button-renderer').forEach((d, i) => {
-                    if (i == 0) {
-                        d.click();
-                    }
-                });
-                document.querySelectorAll('iron-overlay-backdrop').forEach((d) => d.remove());
-                document.querySelectorAll('#dialog').forEach((d) => d.remove());
-            }, 1000 * 15);
-        }
+        // if (document.location.href.like('https://www.youtube.com/watch*')) {
+        //     let sss = setInterval(() => {
+        //         if (!document.location.href.like('https://www.youtube.com/watch*')) {
+        //             clearInterval(sss);
+        //             return;
+        //         }
+        //         document.querySelectorAll('a.yt-simple-endpoint.style-scope.yt-button-renderer').forEach((d, i) => {
+        //             if (i == 0) {
+        //                 d.click();
+        //             }
+        //         });
+        //         document.querySelectorAll('iron-overlay-backdrop').forEach((d) => d.remove());
+        //         document.querySelectorAll('#dialog').forEach((d) => d.remove());
+        //     }, 1000 * 15);
+        // }
 
-        setTimeout(() => {
-            if (!SOCIALBROWSER.session_id && !SOCIALBROWSER.PlayVideoOff && SOCIALBROWSER.video_player) {
-                SOCIALBROWSER.video_player.playVideo();
-            }
-        }, 1000 * 10);
+        // setTimeout(() => {
+        //     if (!SOCIALBROWSER.session_id && !SOCIALBROWSER.PlayVideoOff && SOCIALBROWSER.video_player) {
+        //         SOCIALBROWSER.video_player.playVideo();
+        //     }
+        // }, 1000 * 10);
 
         let titleEl = window.document.querySelector('title');
 

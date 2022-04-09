@@ -25,7 +25,7 @@ app.on('ready', function () {
             preload: dir + '/printing/preload.js',
             javascript: true,
             contextIsolation: false,
-            nativeWindowOpen: false,
+            nativeWindowOpen : false,
             nodeIntegration: false,
             nodeIntegrationInSubFrames: false,
             nodeIntegrationInWorker: false,

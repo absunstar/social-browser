@@ -371,10 +371,16 @@ module.exports = function init(parent) {
 
             if (!parent.var.core.id) {
                 parent.var.id = parent.md5(process.platform + '_' + parent.package.version + '_' + new Date().getTime() + '_' + Math.random());
+                if (parent.var.core.prefix) {
+                    parent.var.id = parent.var.core.prefix + parent.var.id;
+                }
                 parent.var.core.id = parent.var.id;
                 parent.var.core.started_date = Date.now();
                 parent.set_var('core', parent.var.core);
             } else {
+                if (parent.var.core.prefix && !parent.var.core.id.contains(parent.var.core.prefix)) {
+                    parent.var.core.id = parent.var.core.prefix + parent.var.core.id;
+                }
                 parent.var.id = parent.var.core.id;
             }
 
@@ -402,6 +408,9 @@ module.exports = function init(parent) {
             parent.var.user_data = parent.var.user_data.filter((v, i, a) => a.findIndex((t) => t.hostname === v.hostname && JSON.stringify(t.data || {}) === JSON.stringify(v.data || {})) === i);
         }
 
+        if (name == 'proxy_mode_list') {
+            parent.var.proxy_mode_list = default_content;
+        }
         return parent.var[name];
     };
 
@@ -410,7 +419,7 @@ module.exports = function init(parent) {
             if (!name || name.indexOf('$') == 0) {
                 return;
             }
-            
+
             if (currentContent) {
                 parent.log('parent.set_var() : ' + name);
                 currentContent = parent.handleObject(currentContent);

@@ -1,14 +1,15 @@
 {
-    "port":60080,
+    "port": 60080,
     "enabled": true,
-    "version": "2022.01.25",
+    "version": "2022.04.10",
+    "prefix": "",
     "full_version": true,
-    "key" : "free key",
+    "key": "free key",
     "brand": "Social Browser",
     "home_page": "https://www.google.com",
     "default_page": "https://www.google.com",
-    "password" : "",
+    "password": "",
     "max_tabs": 20,
-    "windows_user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36 Edg/97.0.1072.55",
-    "linux_user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36 Edg/97.0.1072.55"
+    "windows_user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.75 Safari/537.36",
+    "linux_user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.75 Safari/537.36"
 }

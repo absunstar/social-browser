@@ -70,7 +70,6 @@ require(child.path.join(child.dir, 'child', 'session'))(child);
 require(child.path.join(child.dir, 'child', 'plugins'))(child);
 require(child.path.join(child.dir, 'child', 'proxy_check'))(child);
 
-
 // require(child.path.join(child.dir, 'child', 'client'))(child);
 app.setAppUserModelId('Social.Browser');
 app.clearRecentDocuments();
@@ -140,7 +139,15 @@ app.on('ready', function () {
 
     app.on('login', (event, webContents, details, authInfo, callback) => {
         event.preventDefault();
-        callback('username', 'secret');
+        console.log(authInfo);
+        if (authInfo.isProxy) {
+            child.parent.var.proxy_list.forEach((p) => {
+                if (p.ip == authInfo.host) {
+                    callback(p.username, p.password);
+                    console.log(p);
+                }
+            });
+        }
     });
 
     child.sendToWindow = function (...args) {

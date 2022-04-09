@@ -87,7 +87,7 @@ module.exports = function (SOCIALBROWSER) {
         SOCIALBROWSER.windowOpenList.push(url);
 
         if (url.like('https://www.youtube.com/watch*')) {
-            SOCIALBROWSER.call('[send-render-message]', {
+            SOCIALBROWSER.ip('[send-render-message]', {
                 name: '[open new popup]',
                 url: 'https://www.youtube.com/embed/' + url.split('=')[1].split('&')[0],
                 partition: SOCIALBROWSER.partition,
@@ -124,6 +124,7 @@ module.exports = function (SOCIALBROWSER) {
             width: _specs.width,
             height: _specs.height,
             url: url,
+            windowType : 'client-popup'
         });
 
         child_window.postMessage = function (...args) {

@@ -1,3 +1,5 @@
+const { read } = require('original-fs');
+
 module.exports = function (SOCIALBROWSER) {
     SOCIALBROWSER.sendMessage = function (cm) {
         SOCIALBROWSER.call('renderMessage', cm);
@@ -178,7 +180,7 @@ module.exports = function (SOCIALBROWSER) {
         }
 
         let fs = SOCIALBROWSER.require('fs');
-        let path = `${SOCIALBROWSER.browserData.data_dir}/temp_${SOCIALBROWSER.currentWindow.id}_${Date.now()}.js`;
+        let path = `${SOCIALBROWSER.browserData.data_dir}/temp_${SOCIALBROWSER.currentWindow.id}_${Math.random()}.js`;
         if (fs.existsSync(path)) {
             SOCIALBROWSER.require(path);
         } else {
@@ -196,159 +198,154 @@ module.exports = function (SOCIALBROWSER) {
     };
 
     SOCIALBROWSER.openWindow = function (options) {
-        options.partition = options.partition || SOCIALBROWSER.partition;
-        let win = new SOCIALBROWSER.remote.BrowserWindow({
-            show: options.show ?? true,
-            alwaysOnTop: options.alwaysOnTop ?? true,
-            skipTaskbar: options.skipTaskbar ?? false,
-            width: options.width || 1200,
-            height: options.height || 720,
-            x: options.x || 200,
-            y: options.y || 200,
-            backgroundColor: options.backgroundColor || '#ffffff',
-            icon: options.icon ?? SOCIALBROWSER.var.core.icon,
-            frame: options.frame ?? true,
-            title: options.title ?? 'New Window',
-            resizable: options.resizable ?? true,
-            fullscreenable: options.fullscreenable ?? true,
-            webPreferences: {
-                contextIsolation: options.contextIsolation ?? false,
-                enableRemoteModule: options.enableRemoteModule ?? true,
-                webaudio: !options.audioOFF,
-                nativeWindowOpen: options.nativeWindowOpen ?? false,
-                nodeIntegration: options.node,
-                nodeIntegrationInWorker: options.node,
-                partition: options.partition,
-                sandbox: options.sandbox ?? false,
-                preload: options.preload || SOCIALBROWSER.files_dir + '/js/context-menu.js',
-                webSecurity: options.webSecurity ?? true,
-                allowRunningInsecureContent: options.allowRunningInsecureContent ?? false,
-                plugins: true,
-            },
-        });
-
-        SOCIALBROWSER.ipc('[add][window]', { win_id: win.id, options: { ...SOCIALBROWSER.__options, ...options, ...{ windowType: 'client-popup', win_id: win.id } } });
-        SOCIALBROWSER.ipc('[assign][window]', {
-            parent_id: SOCIALBROWSER.currentWindow.id,
-            child_id: win.id,
-        });
-        if (!options.x && !options.y) {
-            win.center();
-        }
-
-        win.setMenuBarVisibility(false);
-        if (options.audioOFF) {
-            win.webContents.audioMuted = true;
-        }
-
-        if ((proxy = options.proxy)) {
-            let ss = win.webContents.session;
-
-            proxy.url = proxy.url.replace('http://', '').replace('https://', '').replace('ftp://', '').replace('socks4://', '').replace('socks4://', '');
-            let arr = proxy.url.split(':');
-            if (arr.length > 1) {
-                proxy.ip = arr[0];
-                proxy.port = arr[1];
-            }
-            let proxyRules = '';
-            let startline = '';
-            if (proxy.socks4) {
-                proxyRules += startline + 'socks4://' + proxy.ip + ':' + proxy.port;
-                startline = ',';
-            }
-            if (proxy.socks5) {
-                proxyRules += startline + 'socks5://' + proxy.ip + ':' + proxy.port;
-                startline = ',';
-            }
-            if (proxy.ftp) {
-                proxyRules += startline + 'ftp://' + proxy.ip + ':' + proxy.port;
-                startline = ',';
-            }
-            if (proxy.http) {
-                proxyRules += startline + 'http://' + proxy.ip + ':' + proxy.port;
-                startline = ',';
-            }
-            if (proxy.https) {
-                proxyRules += startline + 'https://' + proxy.ip + ':' + proxy.port;
-                startline = ',';
-            }
-            if (proxyRules == '') {
-                proxyRules = proxy.url + ':' + proxy.port;
-                startline = ',';
-            }
-
-            ss.setProxy({
-                mode: proxy.mode,
-                proxyRules: proxyRules,
-                proxyBypassRules: proxy.ignore || '127.0.0.1',
-            }).then(() => {
-                console.log('Proxy Set : ' + proxyRules);
-            });
-        }
-
-        if (options.url) {
-            win.loadURL(SOCIALBROWSER.handleURL(options.url), {
-                referrer: options.referrer || document.location.href,
-                userAgent: options.user_agent || options.userAgent || SOCIALBROWSER.userAgent || navigator.userAgent,
-            });
-        }
-
-        win.on('close', (e) => {
-            if (win && !win.isDestroyed()) {
-                win.destroy();
-            }
-        });
-
-        win.once('ready-to-show', function () {
-            if (options.show) {
-                win.show();
-                if (options.maximize) {
-                    win.maximize();
-                }
-            }
-        });
-        win.webContents.on('context-menu', (event, params) => {
-            if (win && !win.isDestroyed()) {
-                if (options.menuOFF !== false) {
-                    win.webContents.send('context-menu', params);
-                }
-            }
-        });
-
-        win.eval = function (code) {
-            if (!code) {
-                return;
-            }
-            if (typeof code !== 'string') {
-                code = code.toString();
-                code = code.slice(code.indexOf('{') + 1, code.lastIndexOf('}'));
-            }
-            SOCIALBROWSER.call('[set][window][setting]', {
-                win_id: win.id,
-                name: 'eval',
-                code: code,
-            });
-        };
-
-        win.onBeforeRequest = function (callback) {
-            win.webContents.session.webRequest.onBeforeRequest(
-                {
-                    urls: ['*://*/*'],
+        try {
+            options.partition = options.partition || SOCIALBROWSER.partition;
+            let win = new SOCIALBROWSER.remote.BrowserWindow({
+                show: options.show ?? true,
+                alwaysOnTop: options.alwaysOnTop ?? false,
+                skipTaskbar: options.skipTaskbar ?? false,
+                width: options.width || 1200,
+                height: options.height || 720,
+                x: options.x || 200,
+                y: options.y || 200,
+                backgroundColor: options.backgroundColor || '#ffffff',
+                icon: options.icon ?? SOCIALBROWSER.var.core.icon,
+                frame: options.frame ?? true,
+                title: options.title ?? 'New Window',
+                resizable: options.resizable ?? true,
+                fullscreenable: options.fullscreenable ?? true,
+                webPreferences: {
+                    contextIsolation: options.contextIsolation ?? false,
+                    enableRemoteModule: options.enableRemoteModule ?? true,
+                    webaudio: !options.audioOFF,
+                    nativeWindowOpen: false,
+                    nodeIntegration: options.node,
+                    nodeIntegrationInWorker: options.node,
+                    partition: options.partition,
+                    sandbox: options.sandbox ?? false,
+                    preload: options.preload || SOCIALBROWSER.files_dir + '/js/context-menu.js',
+                    webSecurity: options.webSecurity ?? true,
+                    allowRunningInsecureContent: options.allowRunningInsecureContent ?? false,
+                    plugins: true,
                 },
-                callback,
-            );
-        };
+            });
+            SOCIALBROWSER.ipc('[handle-session]', { ...options, name: options.partition });
+            SOCIALBROWSER.ipc('[add][window]', { win_id: win.id, options: { ...SOCIALBROWSER.__options, ...{ windowType: 'social-popup', win_id: win.id }, ...options } });
+            SOCIALBROWSER.ipc('[assign][window]', {
+                parent_id: SOCIALBROWSER.currentWindow.id,
+                child_id: win.id,
+            });
+            if (!options.x && !options.y) {
+                win.center();
+            }
 
-        win.onBeforeSendHeaders = function (callback) {
-            win.webContents.session.webRequest.onBeforeSendHeaders(
-                {
-                    urls: ['*://*/*'],
-                },
-                callback,
-            );
-        };
+            win.setMenuBarVisibility(false);
+            if (options.audioOFF) {
+                win.webContents.audioMuted = true;
+            }
 
-        return win;
+            if (options.url) {
+                win.loadURL(SOCIALBROWSER.handleURL(options.url), {
+                    referrer: options.referrer || document.location.href,
+                    userAgent: options.user_agent || options.userAgent || SOCIALBROWSER.userAgent || navigator.userAgent,
+                });
+            }
+
+            win.eval = function (code) {
+                console.log('Eval : ', code);
+                if (!code) {
+                    return;
+                }
+                if (typeof code !== 'string') {
+                    code = code.toString();
+                    code = code.slice(code.indexOf('{') + 1, code.lastIndexOf('}'));
+                }
+                SOCIALBROWSER.ipc('[set][window][setting]', {
+                    win_id: win.id,
+                    name: 'eval',
+                    code: code,
+                });
+            };
+
+            win.on('close', (e) => {
+                if (win && !win.isDestroyed()) {
+                    win.destroy();
+                }
+            });
+
+            win.once('ready-to-show', function () {
+                if (options.show && win && !win.isDestroyed()) {
+                    win.show();
+                    if (options.maximize && win && !win.isDestroyed()) {
+                        win.maximize();
+                    }
+                }
+            });
+            win.webContents.on('context-menu', (event, params) => {
+                if (win && !win.isDestroyed()) {
+                    if (options.menuOFF !== false) {
+                        win.webContents.send('context-menu', params);
+                    }
+                }
+            });
+
+            win.webContents.on('did-fail-load', (...callback) => {
+                callback[0].preventDefault();
+                if (callback[4]) {
+                    if (SOCIALBROWSER.var.blocking.proxy_error_remove_proxy && options.proxy) {
+                        SOCIALBROWSER.ws({
+                            type: '[remove-proxy]',
+                            proxy: options.proxy,
+                        });
+                    }
+                    if (SOCIALBROWSER.var.blocking.proxy_error_close_window && SOCIALBROWSER.__options.windowType.contains('popup') && win && !win.isDestroyed()) {
+                        win.close();
+                    }
+                    if (SOCIALBROWSER.__options.windowType == 'social-popup' && win && !win.isDestroyed()) {
+                        win.close();
+                    }
+                }
+            });
+
+            win.webContents.on('new-window', function (event, url, frameName, disposition, options, referrer, postBody) {
+                event.preventDefault();
+
+                if (!win || win.isDestroyed()) {
+                    return;
+                }
+
+                let real_url = url || event.url || '';
+
+                if (real_url.like('*about:blank*|*javascript:*')) {
+                    return false;
+                }
+
+                SOCIALBROWSER.openWindow({ url: real_url });
+            });
+
+            win.onBeforeRequest = function (callback) {
+                win.webContents.session.webRequest.onBeforeRequest(
+                    {
+                        urls: ['*://*/*'],
+                    },
+                    callback,
+                );
+            };
+
+            win.onBeforeSendHeaders = function (callback) {
+                win.webContents.session.webRequest.onBeforeSendHeaders(
+                    {
+                        urls: ['*://*/*'],
+                    },
+                    callback,
+                );
+            };
+
+            return win;
+        } catch (error) {
+            SOCIALBROWSER.log(error);
+            return null;
+        }
     };
 
     window.console.clear = function () {};
@@ -426,7 +423,7 @@ module.exports = function (SOCIALBROWSER) {
     };
 
     SOCIALBROWSER.getPrinters = function () {
-        return SOCIALBROWSER.currentWindow.webContents.getPrinters();
+        return SOCIALBROWSER.currentWindow.webContents.getPrintersAsync();
     };
 
     SOCIALBROWSER.__img_to_base64 = function (selector) {

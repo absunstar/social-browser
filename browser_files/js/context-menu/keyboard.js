@@ -27,17 +27,17 @@ module.exports = function (SOCIALBROWSER) {
         (e) => {
             //e.preventDefault();
             //e.stopPropagation();
-            if (e.key == 'F12' /*f12*/ && !SOCIALBROWSER.DevToolsOff) {
+            if (e.key == 'F12' /*f12*/ && !SOCIALBROWSER.DevToolsOff && !SOCIALBROWSER.menuOFF) {
                 sendToMain({
                     name: '[show-window-dev-tools]',
                     win_id: SOCIALBROWSER.currentWindow.id,
                 });
-            } else if (e.key == 'F11' /*f11*/) {
+            } else if (e.key == 'F11' /*f11*/ && !SOCIALBROWSER.DevToolsOff && !SOCIALBROWSER.menuOFF) {
                 sendToMain({
                     name: '[toggle-fullscreen]',
                     win_id: SOCIALBROWSER.currentWindow.id,
                 });
-            } else if (e.keyCode == 121 /*f10*/) {
+            } else if (e.keyCode == 121 /*f10*/ && !SOCIALBROWSER.DevToolsOff && !SOCIALBROWSER.menuOFF) {
                 sendToMain({
                     name: 'service worker',
                 });

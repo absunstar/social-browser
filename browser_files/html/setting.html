@@ -597,14 +597,20 @@
                                                         class="col4"
                                                         ng-search="$selected_proxy"
                                                         items="setting.proxy_list"
-                                                        display="name"
+                                                        display="url"
                                                         label="Select Proxy"
                                                         ng-model="setting.proxy.selected_proxy"
                                                         ng-change="changeProxy()"
                                                     >
                                                     </i-list>
-                                                    <i-control class="col4" label="Proxy IP" type="text" ng-model="setting.proxy.ip"> </i-control>
-                                                    <i-control class="col2" label="Proxy Port" type="text" ng-model="setting.proxy.port"> </i-control>
+                                                    <div class="row border">
+                                                        <i-control class="row" label="Proxy URL" type="text" ng-model="setting.proxy.url"> </i-control>
+                                                        <i-control class="col4" label="Proxy IP" type="text" ng-model="setting.proxy.ip"> </i-control>
+                                                        <i-control class="col2" label="Proxy Port" type="text" ng-model="setting.proxy.port"> </i-control>
+                                                        <i-control class="col3" label="User Name" type="text" ng-model="setting.proxy.username"> </i-control>
+                                                        <i-control class="col3" label="Password" type="text" ng-model="setting.proxy.password"> </i-control>
+                                                    </div>
+
                                                     <i-control class="row" label="No Proxy For URLs" type="text" ng-model="setting.proxy.ignore"> </i-control>
                                                 </div>
                                                 <div class="row padding">
@@ -633,7 +639,6 @@
                                         <legend>Page Context Menu</legend>
 
                                         <i-checkbox class="row" label="Show page options" ng-model="setting.context_menu.page_options"></i-checkbox>
-                                        <i-checkbox class="row" label="Show proxy options" ng-model="setting.context_menu.proxy_options"></i-checkbox>
                                         <i-checkbox class="row" label="Allow Copy div content" ng-model="setting.context_menu.copy_div_content"> </i-checkbox>
                                         <i-checkbox class="row" label="Show Inspect Element" ng-model="setting.context_menu.inspect"> </i-checkbox>
                                         <i-checkbox class="row" label="Show Developer Tools" ng-model="setting.context_menu.dev_tools"> </i-checkbox>
@@ -776,14 +781,20 @@
                                                                 class="col4"
                                                                 ng-search="$selected_proxy"
                                                                 items="setting.proxy_list"
-                                                                display="name"
+                                                                display="url"
                                                                 label="Select Proxy"
                                                                 ng-model="currentSession.selected_proxy"
                                                                 ng-change="changeProxy(currentSession)"
                                                             >
                                                             </i-list>
-                                                            <i-control class="col4" label="Proxy IP" type="text" ng-model="currentSession.proxy.ip"> </i-control>
-                                                            <i-control class="col2" label="Proxy Port" type="text" ng-model="currentSession.proxy.port"> </i-control>
+                                                            <div class="row border">
+                                                                <i-control class="row" label="Proxy URL" type="text" ng-model="currentSession.proxy.url"> </i-control>
+                                                                <i-control class="col4" label="Proxy IP" type="text" ng-model="currentSession.proxy.ip"> </i-control>
+                                                                <i-control class="col2" label="Proxy Port" type="text" ng-model="currentSession.proxy.port"> </i-control>
+                                                                <i-control class="col3" label="User Name" type="text" ng-model="currentSession.proxy.username"> </i-control>
+                                                                <i-control class="col3" label="Password" type="text" ng-model="currentSession.proxy.password"> </i-control>
+                                                            </div>
+
                                                             <i-control class="row" label="No Proxy For URLs" type="text" ng-model="currentSession.proxy.ignore"> </i-control>
                                                         </div>
                                                         <div class="row padding">
@@ -981,15 +992,20 @@
                                         <p class="bold green">{{proxy.uploadStatus}}</p>
                                     </form>
                                     <br />
+                                    <i-checkbox class="row" label="Show proxy options" ng-model="setting.context_menu.proxy_options"></i-checkbox>
+                                    <i-checkbox class="row" label="Close Window on Proxy Error Loading" ng-model="setting.blocking.proxy_error_close_window"></i-checkbox>
+                                    <i-checkbox class="row" label="Remove Proxy on Error Loading" ng-model="setting.blocking.proxy_error_remove_proxy"></i-checkbox>
 
                                     <div class="row padding margin">
                                         <div class="col6">
                                             <fieldset>
                                                 <legend>New Proxy</legend>
                                                 <div class="row padding">
-                                                    <i-control class="row" label="Name [ option ] " ng-model="$proxy.name"></i-control>
+                                                    <i-control class="row" label="URL" ng-model="$proxy.url"></i-control>
                                                     <i-control class="col4" label="Server IP" ng-model="$proxy.ip"></i-control>
                                                     <i-control class="col2" type="text" label="Server Port" ng-model="$proxy.port"></i-control>
+                                                    <i-control class="col3" type="text" label="User Name" ng-model="$proxy.username"></i-control>
+                                                    <i-control class="col3" type="text" label="Password" ng-model="$proxy.password"></i-control>
                                                     <i-control class="row" label="No Proxy For URLs" ng-model="$proxy.ignore"></i-control>
                                                 </div>
 
@@ -1015,17 +1031,21 @@
                                                 <th>
                                                     Index ({{setting.proxy_list.length}}) Actions <a class="btn red" ng-click="setting.proxy_list = []"> <i class="fa fa-trash"></i> Remove All</a>
                                                 </th>
-                                                <th>Name [ option ] <input type="text" ng-model="$proxy.name" /></th>
-                                                <th>URL [ Server IP ] <input type="text" ng-model="$proxy.ip" /></th>
-                                                <th>Port [ Server Port ] <input type="text" ng-model="$proxy.port" /></th>
+                                                <th>URL <input type="text" ng-model="$proxy.url" /></th>
+                                                <th>IP <input type="text" ng-model="$proxy.ip" /></th>
+                                                <th>Port <input type="text" ng-model="$proxy.port" /></th>
                                             </tr>
                                             <tr ng-repeat="_se in setting.proxy_list | limitTo : 100 | filter:$proxy | orderBy : 'name' track by $index">
                                                 <td>
                                                     {{$index + 1}} <a class="btn red" ng-click="removeProxy(_se)"> <i class="fa fa-trash"></i> Remove </a>
                                                 </td>
                                                 <td>
-                                                    <input class="block full-width" type="text" ng-model="_se.name" />
-                                                    <div class="row padding">
+                                                    <div class="row">
+                                                        <input class="block full-width" type="text" label="URL" ng-model="_se.url" />
+                                                        <input class="col6" type="text" ng-model="_se.username" />
+                                                        <input class="col6" type="text" ng-model="_se.password" />
+                                                    </div>
+                                                    <div class="row">
                                                         <i-checkbox class="" label="Socks 5" ng-model="_se.socks5"></i-checkbox>
                                                         <i-checkbox class="" label="Socks 4" ng-model="_se.socks4"></i-checkbox>
                                                         <i-checkbox class="" label="FTP" ng-model="_se.ftp"></i-checkbox>

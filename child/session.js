@@ -3,11 +3,21 @@ module.exports = function (child) {
 
     child.session_name_list = [];
 
-    child.handleSession = function (name) {
+    child.handleSession = function (obj) {
+        let name = obj.name;
+
         if (!name) {
             return;
         }
 
+        let user_agent = obj.user_agent;
+        let user = child.parent.var.session_list.find((s) => s.name == name) ?? {};
+        if (!user_agent && user && user.user_agent && user.user_agent.url) {
+            user_agent = user.user_agent.url;
+        }
+        if (!user_agent) {
+            user_agent = child.parent.var.core.user_agent;
+        }
         child.log(`\n  $$  Will Handle Session ${name}  $$  \n`);
 
         child.cookies[name] = child.cookies[name] || [];
@@ -34,19 +44,26 @@ module.exports = function (child) {
                 });
             });
         }
-        let user = child.parent.var.session_list.find((s) => s.name == name) ?? {};
 
         ss.setSpellCheckerLanguages(['en-US']);
         let proxy = null;
 
-        if (user.proxy && user.proxy.enabled && user.proxy.mode) {
+        if (obj.proxy) {
+            proxy = obj.proxy;
+        } else if (user.proxy && user.proxy.enabled && user.proxy.mode) {
             proxy = user.proxy;
         } else if (child.parent.var.proxy.enabled && child.parent.var.proxy.mode) {
             proxy = child.parent.var.proxy;
         }
         if (proxy) {
-            if (proxy.mode == 'fixed_servers' && proxy.url) {
-                proxy.url = proxy.url.replace('http://', '').replace('https://', '').replace('ftp://', '').replace('socks4://', '').replace('socks4://', '');
+            if (proxy.mode == 'fixed_servers' && (proxy.url || (proxy.ip && proxy.port))) {
+                if (!proxy.url && proxy.ip && proxy.port) {
+                    proxy.url = proxy.ip + ':' + proxy.port;
+                }
+
+                if (proxy.url) {
+                    proxy.url = proxy.url.replace('http://', '').replace('https://', '').replace('ftp://', '').replace('socks4://', '').replace('socks4://', '');
+                }
 
                 if (!proxy.ip || !proxy.port) {
                     let arr = proxy.url.split(':');
@@ -84,7 +101,7 @@ module.exports = function (child) {
                     proxyRules: proxyRules,
                     proxyBypassRules: proxy.ignore || '127.0.0.1',
                 }).then(() => {
-                    console.log('Proxy Set : ' + proxyRules);
+                    console.log('Proxy Set : ' + proxyRules, proxy);
                 });
             } else if (proxy.mode == 'pac_script' && proxy.pacScript) {
                 ss.setProxy({
@@ -109,8 +126,8 @@ module.exports = function (child) {
         }
 
         ss.allowNTLMCredentialsForDomains('*');
-        ss.userAgent = child.parent.var.core.user_agent;
-        ss.setUserAgent(child.parent.var.core.user_agent);
+        ss.userAgent = user_agent;
+        ss.setUserAgent(user_agent);
         ss.protocol.registerHttpProtocol('browser', (request, callback) => {
             let url = request.url.substr(10);
             url = `http://127.0.0.1:60080/${url}`;
@@ -259,18 +276,12 @@ module.exports = function (child) {
 
             ss.webRequest.onBeforeSendHeaders(filter, function (details, callback) {
                 if (child.parent.var.core.off) {
-                    details.requestHeaders['User-Agent'] = child.parent.var.core.user_agent;
+                    details.requestHeaders['User-Agent'] = user_agent;
                     callback({
                         cancel: false,
                         requestHeaders: details.requestHeaders,
                     });
                     return;
-                }
-
-                let user = child.parent.var.session_list.find((s) => s.name == name);
-                let user_agent = null;
-                if (user && user.user_agent && user.user_agent.url) {
-                    user_agent = user.user_agent.url;
                 }
 
                 let exit = false;
@@ -285,7 +296,7 @@ module.exports = function (child) {
                 let d = child.startTime.toString().substring(0, 9);
                 details.requestHeaders = details.requestHeaders || {};
 
-                details.requestHeaders['User-Agent'] = user_agent || details.requestHeaders['User-Agent'] || child.parent.var.core.user_agent;
+                details.requestHeaders['User-Agent'] = user_agent || details.requestHeaders['User-Agent'];
                 if (details.requestHeaders['User-Agent'] == 'undefined') {
                     details.requestHeaders['User-Agent'] = child.parent.var.core.user_agent;
                 }
@@ -600,12 +611,12 @@ module.exports = function (child) {
         return ss;
     };
 
-    child.on('[handle-session]', (e, name) => {
-        child.handleSession(name);
+    child.on('[handle-session]', (e, obj) => {
+        child.handleSession(obj);
     });
 
     child.sessionConfig = () => {
-        child.handleSession(child.parent.options.partition);
+        child.handleSession({ name: child.parent.options.partition });
         // child.handleSession('_');
     };
 };

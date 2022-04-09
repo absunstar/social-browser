@@ -36,7 +36,6 @@ module.exports = function init(browser) {
         enableRemoteModule: true,
         contextIsolation: false,
         preload: __dirname + '/preload/page-info.js',
-        nativeWindowOpen: false,
         nodeIntegration: false,
         nodeIntegrationInWorker: false,
         experimentalFeatures: false,

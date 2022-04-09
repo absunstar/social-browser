@@ -80,6 +80,10 @@ module.exports = function init(child) {
         event.returnValue = data2;
     });
 
+    child.electron.ipcMain.on('[handle-session]', (e, obj) => {
+        child.handleSession(obj);
+    });
+
     child.electron.ipcMain.on('window.message', (e, obj) => {
         child.assignWindows.forEach((a) => {
             if (obj.parent_id && obj.parent_id == a.parent_id) {
@@ -241,7 +245,7 @@ module.exports = function init(child) {
         options.parent_index = child.index;
         if (child.speedMode) {
             if (!child.session_name_list.some((s) => s == options.partition)) {
-                child.handleSession(options.partition);
+                child.handleSession({name : options.partition});
             }
             child.createNewWindow(options);
         } else {
@@ -394,11 +398,11 @@ module.exports = function init(child) {
                 });
             } else {
                 if (data.partition && data.partition !== child.parent.var.core.session.name) {
-                    child.handleSession(data.partition);
+                    child.handleSession({name : data.partition});
                 }
 
                 child.createNewWindow({
-                    windowType: data.url.like('https://www.youtube.com/embed*') ? 'youtube' : 'client-popup',
+                    windowType: data.url.like('https://www.youtube.com/embed*') ? 'youtube' : 'popup',
                     width: data.url.like('https://www.youtube.com/embed*') ? 520 : 1200,
                     height: data.url.like('https://www.youtube.com/embed*') ? 330 : 720,
                     x: data.url.like('https://www.youtube.com/embed*') ? child.parent.options.screen.bounds.width - 550 : 0,
@@ -430,6 +434,7 @@ module.exports = function init(child) {
                 data.storages = data.storages || ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage'];
                 data.quotas = data.quotas || ['temporary', 'persistent', 'syncable'];
                 console.log(' will clear storage data ...');
+                let clear = false
                 ss.clearStorageData({
                     origin: data.origin,
                     storages: data.storages,
@@ -438,9 +443,15 @@ module.exports = function init(child) {
                     console.log(' will clear cache ...');
                     ss.clearCache().finally(() => {
                         console.log(' will reload ...');
+                        clear = true
                         win.webContents.reload();
                     });
                 });
+                setTimeout(() => {
+                    if(!clear){
+                        win.webContents.reload();
+                    }
+                }, 1000 * 3);
             }
         } else if (data.name == '[toggle-fullscreen]') {
             let win = child.electron.BrowserWindow.fromId(data.win_id);

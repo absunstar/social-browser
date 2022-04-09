@@ -223,6 +223,19 @@ module.exports = function init(parent) {
 
             child.on('close', (code, signal) => {
                 parent.log(` [child ${child.pid} ] close with code ( ${code} ) and signal ( ${signal} )`);
+                let ch = parent.clientList[index]
+                // [child 6892 ] close with code ( 2147483651 ) and signal ( null )
+                if(ch.options.windowType == 'main' && code == 2147483651 && !signal){
+                    console.log('\n\n ................. Main Window Close UpNormal ..............\n\n');
+                    parent.createChildProcess(ch.options);
+                    parent.clientList.forEach((client, i) => {
+                        if (client.windowType === 'view') {
+                            client.ws.send({
+                                type: '[set-window]',
+                            });
+                        }
+                    });
+                }
 
                 if (!parent.clientList[index] || !parent.clientList[index].options || !parent.clientList[index].options.tab_id) {
                     if (parent.clientList[index]) {

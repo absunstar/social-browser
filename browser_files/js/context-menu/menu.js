@@ -374,7 +374,7 @@ module.exports = function (SOCIALBROWSER) {
                 }),
             );
 
-            return;
+            return menu;
         }
 
         add_input_menu(node.parentNode, menu, doc);
@@ -437,7 +437,7 @@ module.exports = function (SOCIALBROWSER) {
                         type: 'separator',
                     }),
                 );
-
+/*
                 menu.append(
                     new $menuItem({
                         label: `Open link ${u_string} in ( window popup )`,
@@ -491,7 +491,7 @@ module.exports = function (SOCIALBROWSER) {
                         type: 'separator',
                     }),
                 );
-
+*/
                 menu.append(
                     new $menuItem({
                         label: `Copy link ${u_string}`,
@@ -632,7 +632,7 @@ module.exports = function (SOCIALBROWSER) {
                 );
             }
 
-            return;
+            return menu;
         }
 
         add_a_menu(node.parentNode, menu, doc);
@@ -722,7 +722,7 @@ module.exports = function (SOCIALBROWSER) {
                     type: 'separator',
                 }),
             );
-            return;
+            return menu;
         }
         get_img_menu(node.parentNode, menu, doc);
     }
@@ -756,7 +756,7 @@ module.exports = function (SOCIALBROWSER) {
                     type: 'separator',
                 }),
             );
-            return;
+            return menu;
         }
         add_div_menu(node.parentNode, menu);
     }
@@ -781,6 +781,17 @@ module.exports = function (SOCIALBROWSER) {
             return menu;
         }
         let arr = [];
+
+        arr.push({
+            label: 'Copy page Link',
+            click() {
+                SOCIALBROWSER.electron.clipboard.writeText(window.location.href);
+            },
+        });
+
+        arr.push({
+            type: 'separator',
+        });
 
         arr.push({
             label: 'Save page',
@@ -811,13 +822,76 @@ module.exports = function (SOCIALBROWSER) {
         arr.push({
             type: 'separator',
         });
+        arr.push({
+            label: 'Hard Refresh',
+            accelerator: 'CommandOrControl+F5',
+            click() {
+                sendToMain({
+                    name: '[window-reload-hard]',
+                    win_id: SOCIALBROWSER.currentWindow.id,
+                    origin: document.location.origin || document.location.href,
+                    partition: SOCIALBROWSER.partition,
+                    storages: ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage'],
+                });
+            },
+        });
+        arr.push({
+            type: 'separator',
+        });
 
-        // arr.push({
-        //     label: "Show Other Screens",
-        //     click() {
-        //         record()
-        //     }
-        // })
+        arr.push(
+           {
+                label: 'Full Screen',
+                accelerator: 'F11',
+                click() {
+                    sendToMain({
+                        name: '[toggle-fullscreen]',
+                        win_id: SOCIALBROWSER.currentWindow.id,
+                    });
+                },
+            }
+        );
+        arr.push({
+            type: 'separator',
+        });
+        if (!SOCIALBROWSER.var.blocking.popup.allow_external) {
+            arr.push({
+                label: 'Allow External Popup',
+                click() {
+                    SOCIALBROWSER.var.blocking.popup.allow_external = true;
+                },
+            });
+        }
+        if (!SOCIALBROWSER.var.blocking.popup.allow_internal) {
+            arr.push({
+                label: 'Allow Internal Popup',
+                click() {
+                    SOCIALBROWSER.var.blocking.popup.allow_internal = true;
+                },
+            });
+        }
+
+        if (SOCIALBROWSER.var.blocking.popup.allow_external) {
+            arr.push({
+                label: 'Block External Popup',
+                click() {
+                    SOCIALBROWSER.var.blocking.popup.allow_external = false;
+                },
+            });
+        }
+
+        if (SOCIALBROWSER.var.blocking.popup.allow_internal) {
+            arr.push({
+                label: 'Block Internal Popup',
+                click() {
+                    SOCIALBROWSER.var.blocking.popup.allow_internal = false;
+                },
+            });
+        }
+
+        arr.push({
+            type: 'separator',
+        });
 
         arr.push({
             type: 'separator',
@@ -949,11 +1023,7 @@ module.exports = function (SOCIALBROWSER) {
 
         if (menu) {
             menu.append(m);
-            menu.append(
-                new $menuItem({
-                    type: 'separator',
-                }),
-            );
+         
         }
 
         let arr2 = [];
@@ -1025,11 +1095,7 @@ module.exports = function (SOCIALBROWSER) {
                 submenu: arr2,
             });
             menu.append(m2);
-            menu.append(
-                new $menuItem({
-                    type: 'separator',
-                }),
-            );
+
         }
 
         let arr3 = [];
@@ -1206,20 +1272,6 @@ module.exports = function (SOCIALBROWSER) {
         if (SOCIALBROWSER.menuCustomOFF) {
             return menu;
         }
-        menu.append(
-            new $menuItem({
-                label: 'Copy page Link',
-                click() {
-                    SOCIALBROWSER.electron.clipboard.writeText(window.location.href);
-                },
-            }),
-        );
-
-        menu.append(
-            new $menuItem({
-                type: 'separator',
-            }),
-        );
 
         let vids = doc.querySelectorAll('video');
         if (vids.length > 0) {
@@ -1299,52 +1351,12 @@ module.exports = function (SOCIALBROWSER) {
         }
         let arr = [];
 
-        if (document.location.href.contains('free-proxy-list.net')) {
-            arr.push({
-                label: ' Add All To Proxies',
-                click() {
-                    let table = SOCIALBROWSER.objectFromTable('#proxylisttable');
-                    let list = [];
-
-                    table.rows.forEach((row) => {
-                        let itm = {
-                            url: row[0] + ':' + row[1],
-                            https: row[6] == 'yes' ? true : false,
-                            country: row[3],
-                            name: `${row[0]}:${row[1]} | ${row[3]}`,
-                        };
-                        if (itm.https) {
-                            itm.name += ' | HTTPS';
-                        }
-                        list.push(itm);
-                    });
-
-                    if (list.length > 0) {
-                        SOCIALBROWSER.log(list);
-                        list.sort((a, b) => (a.https < b.https ? 1 : -1));
-                        SOCIALBROWSER.var.proxy_list = [];
-                    }
-
-                    list.forEach((row) => {
-                        let exists = false;
-                        SOCIALBROWSER.var.proxy_list.forEach((p) => {
-                            if (p.url == row.url) {
-                                exists = true;
-                            }
-                        });
-                        if (!exists) {
-                            SOCIALBROWSER.var.proxy_list.push(row);
-                        }
-                    });
-
-                    sendToMain({
-                        name: '[update-browser-var]',
-                        key: 'proxy_list',
-                        value: SOCIALBROWSER.var.proxy_list,
-                    });
-                },
-            });
-        }
+        arr.push({
+            label: ' Close Social Browser',
+            click() {
+                SOCIALBROWSER.ws({ type: '[close]' });
+            },
+        });
 
         if (arr.length > 0) {
             menu.append(
@@ -1419,8 +1431,8 @@ module.exports = function (SOCIALBROWSER) {
             click() {
                 for (let index = 0; index < SOCIALBROWSER.var.user_agent_list.length; index++) {
                     setTimeout(() => {
-                        let partition2 = 'ghost_' + Date.now();
-                        SOCIALBROWSER.ipc('[handle-session]', partition2);
+                        let partition2 = 'ghost_' + Date.now() + '_' + Math.random();
+                        SOCIALBROWSER.ipc('[handle-session]', { name: partition2 });
                         sendToMain({
                             name: '[open new popup]',
                             partition: partition2,
@@ -1430,14 +1442,20 @@ module.exports = function (SOCIALBROWSER) {
                             webaudio: false,
                             show: true,
                         });
-                    }, 1000 * index * 2);
+                    }, 1000 * index * 1);
                 }
             },
         });
+
         social_arr.push({
-            label: ` Open [ ${title} ] in Many Popup [ All Proxy List ( ${SOCIALBROWSER.var.proxy_list.slice(0 , 50).length} ) ] [Audio Muted] + Ghosts Profiles `,
+            label: ` Open [ ${title} ] in Many Popup [ Proxy List ( 10 ) ] [Audio Muted] + Ghosts Profiles `,
             click() {
-                for (let index = 0; index < SOCIALBROWSER.var.proxy_list.slice(0 , 50).length; index++) {
+                if (!SOCIALBROWSER.proxyIndex) {
+                    SOCIALBROWSER.proxyIndex = 0;
+                }
+                SOCIALBROWSER.proxy_list = SOCIALBROWSER.var.proxy_list.slice(SOCIALBROWSER.proxyIndex, 10 + SOCIALBROWSER.proxyIndex);
+                SOCIALBROWSER.proxyIndex += 10;
+                for (let index = 0; index < SOCIALBROWSER.proxy_list.length; index++) {
                     setTimeout(() => {
                         let partition2 = 'ghost_' + Date.now();
                         SOCIALBROWSER.openWindow({
@@ -1485,7 +1503,7 @@ module.exports = function (SOCIALBROWSER) {
                     }),
                 );
             }
-            return;
+            return menu;
         }
 
         if (SOCIALBROWSER.var.blocking.social.allow_menu) {
@@ -1553,7 +1571,7 @@ module.exports = function (SOCIALBROWSER) {
         if (node.tagName == 'FRAME') {
             return null;
         }
-      
+
         if (node.tagName == 'Table') {
             add_table_menu(node, menu, doc);
         }
@@ -1608,7 +1626,6 @@ module.exports = function (SOCIALBROWSER) {
         add_a_menu(node, menu, doc);
 
         if (SOCIALBROWSER.__options.windowType !== 'main') {
-            node, menu, doc;
             if (SOCIALBROWSER.memoryText && SOCIALBROWSER.isValidURL(SOCIALBROWSER.memoryText)) {
                 menu.append(
                     new $menuItem({
@@ -1753,7 +1770,7 @@ module.exports = function (SOCIALBROWSER) {
                 );
                 menu.append(new $menuItem({ type: 'separator' }));
             }
-         
+
             get_img_menu(node, menu, doc);
 
             get_social_menu(node, menu, doc, null);
@@ -1795,7 +1812,12 @@ module.exports = function (SOCIALBROWSER) {
                                     });
                                 },
                             });
-
+                            arr.push({
+                                label: ' in ( current window ) ',
+                                click() {
+                                    document.location.href = o.url || document.location.href;
+                                },
+                            });
                             arr.push({
                                 label: ' in ( window popup )',
                                 click() {
@@ -1929,12 +1951,12 @@ module.exports = function (SOCIALBROWSER) {
                     }),
                 );
             }
-   
+
             get_custom_menu(menu, doc);
             if (SOCIALBROWSER.var.context_menu.copy_div_content) {
                 add_div_menu(node, menu);
             }
-         
+
             menu.append(
                 new $menuItem({
                     label: 'Refresh',
@@ -1944,37 +1966,22 @@ module.exports = function (SOCIALBROWSER) {
                     },
                 }),
             );
-            menu.append(
-                new $menuItem({
-                    label: 'Hard Refresh',
-                    accelerator: 'CommandOrControl+F5',
-                    click() {
-                        sendToMain({
-                            name: '[window-reload-hard]',
-                            win_id: SOCIALBROWSER.currentWindow.id,
-                            origin: document.location.origin || document.location.href,
-                            partition: SOCIALBROWSER.partition,
-                            storages: ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage'],
-                        });
-                    },
-                }),
-            );
 
             menu.append(
                 new $menuItem({
                     type: 'separator',
                 }),
             );
-  
+
             if (SOCIALBROWSER.var.context_menu.proxy_options) {
                 let arr = [];
 
-                SOCIALBROWSER.var.proxy_list.slice(0 , 50).forEach((p) => {
-                    // if(document.location.href.contains('https') && !p.https){
-                    //     return
-                    // }
+                SOCIALBROWSER.var.proxy_list.slice(0, 50).forEach((p) => {
+                    if (!p) {
+                        return;
+                    }
                     arr.push({
-                        label: p.name,
+                        label: p.name || p.url,
                         click() {
                             sendToMain({
                                 name: '[open new popup]',
@@ -1986,37 +1993,22 @@ module.exports = function (SOCIALBROWSER) {
                         },
                     });
                 });
-                if (arr.length == 0) {
-                    return;
+
+                if (arr.length > 0) {
+                    menu.append(
+                        new $menuItem({
+                            label: 'Open current page with proxy + ghost user',
+                            type: 'submenu',
+                            submenu: arr,
+                        }),
+                    );
+                
                 }
-                menu.append(
-                    new $menuItem({
-                        label: 'Open current page with proxy + ghost user',
-                        type: 'submenu',
-                        submenu: arr,
-                    }),
-                );
-                menu.append(
-                    new $menuItem({
-                        type: 'separator',
-                    }),
-                );
             }
             if (SOCIALBROWSER.var.context_menu.page_options) {
                 get_options_menu(node, menu, doc);
             }
-            menu.append(
-                new $menuItem({
-                    label: 'Full Screen',
-                    accelerator: 'F11',
-                    click() {
-                        sendToMain({
-                            name: '[toggle-fullscreen]',
-                            win_id: SOCIALBROWSER.currentWindow.id,
-                        });
-                    },
-                }),
-            );
+       
 
             if (SOCIALBROWSER.var.context_menu.inspect && !SOCIALBROWSER.DevToolsOff) {
                 menu.append(
@@ -2051,14 +2043,15 @@ module.exports = function (SOCIALBROWSER) {
                 createTestMenu(menu);
             }
         }
-  
+
         return menu;
     }
 
     SOCIALBROWSER.contextmenu = function (e) {
         try {
             if (SOCIALBROWSER.menuOFF) {
-                return;
+                SOCIALBROWSER.log('menu off');
+                return null;
             }
             SOCIALBROWSER.memoryText = SOCIALBROWSER.electron.clipboard.readText();
             SOCIALBROWSER.selectedText = getSelection().toString().trim();
@@ -2075,7 +2068,7 @@ module.exports = function (SOCIALBROWSER) {
             let node = document.elementFromPoint(x, y);
 
             if (!node || !!node.oncontextmenu) {
-                return;
+                return null;
             }
 
             let m = createMenu(node, document);
@@ -2093,7 +2086,4 @@ module.exports = function (SOCIALBROWSER) {
     SOCIALBROWSER.on('context-menu', (e, data) => {
         SOCIALBROWSER.contextmenu(data);
     });
-    // window.addEventListener('contextmenu', (e) => {
-    //     SOCIALBROWSER.contextmenu(e);
-    // });
 };

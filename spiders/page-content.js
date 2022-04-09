@@ -61,7 +61,7 @@ module.exports = function init(browser) {
                 enableRemoteModule: true,
                 contextIsolation: false,
                 preload: __dirname + "/preload/page-content.js",
-                nativeWindowOpen: false,
+                nativeWindowOpen : false,
                 nodeIntegration: false,
                 nodeIntegrationInWorker: false,
                 experimentalFeatures: false,

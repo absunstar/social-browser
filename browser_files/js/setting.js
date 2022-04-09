@@ -404,9 +404,12 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     $scope.changeProxy = function (currentSession) {
         $timeout(() => {
             if (currentSession) {
+                currentSession.proxy.name = currentSession.selected_proxy.name;
                 currentSession.proxy.url = currentSession.selected_proxy.url;
                 currentSession.proxy.ip = currentSession.selected_proxy.ip;
                 currentSession.proxy.port = currentSession.selected_proxy.port;
+                currentSession.proxy.username = currentSession.selected_proxy.username;
+                currentSession.proxy.password = currentSession.selected_proxy.password;
                 currentSession.proxy.socks4 = currentSession.selected_proxy.socks4;
                 currentSession.proxy.socks5 = currentSession.selected_proxy.socks5;
                 currentSession.proxy.ftp = currentSession.selected_proxy.ftp;
@@ -414,9 +417,12 @@ app.controller('mainController', ($scope, $http, $timeout) => {
                 currentSession.proxy.https = currentSession.selected_proxy.https;
                 currentSession.proxy.ignore = currentSession.selected_proxy.ignore;
             } else if ($scope.setting.proxy && $scope.setting.proxy.selected_proxy) {
+                $scope.setting.proxy.name = $scope.setting.proxy.selected_proxy.name;
                 $scope.setting.proxy.url = $scope.setting.proxy.selected_proxy.url;
                 $scope.setting.proxy.ip = $scope.setting.proxy.selected_proxy.ip;
                 $scope.setting.proxy.port = $scope.setting.proxy.selected_proxy.port;
+                $scope.setting.proxy.username = $scope.setting.proxy.selected_proxy.username;
+                $scope.setting.proxy.password = $scope.setting.proxy.selected_proxy.password;
                 $scope.setting.proxy.socks4 = $scope.setting.proxy.selected_proxy.socks4;
                 $scope.setting.proxy.socks5 = $scope.setting.proxy.selected_proxy.socks5;
                 $scope.setting.proxy.ftp = $scope.setting.proxy.selected_proxy.ftp;
