@@ -96,7 +96,7 @@ module.exports = function (SOCIALBROWSER) {
             a.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-
+                console.info('xlink click : ' + a.href);
                 if (document.location.href.like('https://www.youtube.com/embed*')) {
                     window.location.href = a.href;
                 } else {

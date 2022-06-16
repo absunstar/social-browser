@@ -315,6 +315,27 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         });
     };
 
+    $scope.showPopupBlockURLsModal = function () {
+        site.showModal('#popupBlockURLsModal');
+    };
+
+    $scope.hidePopupBlockURLsModal = function () {
+        site.hideModal('#popupBlockURLsModal');
+    };
+    $scope.popupBlockURL = {};
+    $scope.addPopupBlockURL = function () {
+        $scope.setting.blocking.popup.black_list.push($scope.popupBlockURL);
+        $scope.popupBlockURL = {};
+    };
+
+    $scope.removePopupBlockURL = function (_ws) {
+        $scope.setting.blocking.popup.black_list.forEach((ws, i) => {
+            if (ws.url === _ws.url) {
+                $scope.setting.blocking.popup.black_list.splice(i, 1);
+            }
+        });
+    };
+
     $scope.showSession = function (_se) {
         $scope.currentSession = _se;
         site.showModal('#usersOptionsModal');
@@ -475,6 +496,10 @@ app.controller('mainController', ($scope, $http, $timeout) => {
             .then((result) => {
                 $scope.setting = result.var;
                 $scope.$applyAsync();
+
+                $scope.setting.blocking.popup = $scope.setting.blocking.popup || {};
+                $scope.setting.blocking.popup.black_list = $scope.setting.blocking.popup.black_list || [];
+                $scope.setting.blocking.popup.white_list = $scope.setting.blocking.popup.white_list || [];
 
                 if ($scope.setting.blocking.privacy.hide_lang !== true) {
                     $scope.setting.blocking.privacy.languages = SOCIALBROWSER.navigator.languages.toString();

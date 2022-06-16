@@ -10,6 +10,7 @@ module.exports = function init(parent) {
     parent.extensionList = [];
     parent.information = {};
     parent.cookies = {};
+ 
 
     parent.importExtension = function () {
         parent.electron.dialog
@@ -223,9 +224,9 @@ module.exports = function init(parent) {
 
             child.on('close', (code, signal) => {
                 parent.log(` [child ${child.pid} ] close with code ( ${code} ) and signal ( ${signal} )`);
-                let ch = parent.clientList[index]
+                let ch = parent.clientList[index];
                 // [child 6892 ] close with code ( 2147483651 ) and signal ( null )
-                if(ch.options.windowType == 'main' && code == 2147483651 && !signal){
+                if (ch.options.windowType == 'main' && code == 2147483651 && !signal) {
                     console.log('\n\n ................. Main Window Close UpNormal ..............\n\n');
                     parent.createChildProcess(ch.options);
                     parent.clientList.forEach((client, i) => {

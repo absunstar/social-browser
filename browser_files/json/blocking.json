@@ -90,6 +90,7 @@
     "un_safe_words_list": [{ "text": "sex|سكس|جنس|porn|erotic|lesbain|fuck|brazzers|milf|orgasm|hentia|hentai|xxx" }],
     "popup": {
         "white_list": [{ "url": "*facebook.com*" }, { "url": "*google.com*" }, { "url": "*youtube.com*" }, { "url": "*microsoft.com*" }, { "url": "*linkedin.com*" }, { "url": "*127.0.0.1*" }],
+        "black_list" :[],
         "allow_external": false,
         "allow_internal": true
     },

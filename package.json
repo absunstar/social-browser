@@ -2,7 +2,7 @@
   "name": "social_browser",
   "productName": "Social Browser",
   "homepage": "https://social-browser.com",
-  "version": "2022.04.10",
+  "version": "2022.06.15",
   "description": "Browsing Any Site with Multi Users And without Ads",
   "author": {
     "name": "Social Developer",
@@ -31,7 +31,7 @@
   "build": {
     "appId": "com.social.browser",
     "productName": "Social Browser",
-    "copyright": "Copyright © 2020",
+    "copyright": "Copyright © 2022",
     "target": "NSIS",
     "files": [
       "**/*",
@@ -41,8 +41,7 @@
       "!**/social-data",
       "!**/test",
       "!**/downloads",
-      "!**/uploads",
-      "!**/build"
+      "!**/uploads"
     ],
     "protocols": [
       {
@@ -80,7 +79,7 @@
       "createDesktopShortcut": "always",
       "createStartMenuShortcut": true,
       "menuCategory": true,
-      "shortcutName": "Social Browser",
+      "shortcutName": "${productName}",
       "installerIcon": "browser_files/images/logo.ico",
       "allowToChangeInstallationDirectory": true
     },
@@ -110,12 +109,12 @@
   },
   "dependencies": {
     "@electron/remote": "^2.0.8",
-    "isite": "^2022.3.9",
+    "isite": "^2022.5.8",
     "node-fetch": "^2.6.6"
   },
   "devDependencies": {
-    "electron": "^18.0.1",
-    "electron-builder": "^22.14.5",
+    "electron": "^19.0.1",
+    "electron-builder": "^23.0.3",
     "gulp": "*"
   }
 }

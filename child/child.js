@@ -84,12 +84,14 @@ app.clearRecentDocuments();
 // app.commandLine.appendSwitch('enable-webgl');
 // app.commandLine.appendSwitch('disable-dev-shm-usage');
 // app.commandLine.appendSwitch('no-sandbox');
-
+ app.commandLine.appendSwitch('in-process-gpu');
+ // app.disableHardwareAcceleration();
+ 
 //app.commandLine.appendSwitch('disable-web-security');
 // app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
 //app.commandLine.appendSwitch('disable-site-isolation-trials');
 //app.commandLine.appendSwitch('enable-features', 'PDFViewerUpdate');
-// app.disableHardwareAcceleration();
+
 // child.allow_widevinecdm(app)
 
 app.on('ready', function () {

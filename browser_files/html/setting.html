@@ -266,7 +266,8 @@
                                                 <i-checkbox class="" label="Allow External Popup" ng-model="setting.blocking.popup.allow_external"></i-checkbox>
                                                 <i-checkbox class="" label="Allow Internal Popup" ng-model="setting.blocking.popup.allow_internal"></i-checkbox>
                                             </div>
-                                            <div class="row"><i-button label="Popup White List" type="btn  " ng-click="showPopupIgnoreURLsModal()"></i-button></div>
+                                            <div class="row"><i-button label="Popup White List" type="btn  " ng-click="showPopupIgnoreURLsModal()"></i-button>
+                                                <i-button label="Popup Black List" type="btn  " ng-click="showPopupBlockURLsModal()"></i-button></div>
                                         </div>
                                     </fieldset>
 
@@ -1348,6 +1349,46 @@
 
                     <div class="modal-footer center">
                         <a id="saveBtn" class="btn" ng-click="hidePopupIgnoreURLsModal()"> <i class="fa fa-save" aria-hidden="true"></i> Close </a>
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="popupBlockURLsModal" class="modal" fixed>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <span class="close">&times;</span>
+                        <h2>Popup black List</h2>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row padding">
+                            <fieldset>
+                                <legend>New Link</legend>
+                                <div class="row">
+                                    <i-control ng-model="popupBlockURL.url" label="link"></i-control>
+                                    <i-button ng-click="addPopupBlockURL()" type="add" label="Add to Links"></i-button>
+                                </div>
+                            </fieldset>
+                        </div>
+
+                        <table class="table hover">
+                            <tr>
+                                <th>Link</th>
+                                <th>Action</th>
+                            </tr>
+                            <tr ng-repeat="_d in setting.blocking.popup.black_list | filter:popupBlockURL track by $index">
+                                <td>
+                                    <i-control ng-model="_d.url"></i-control>
+                                </td>
+                                <td class="center">
+                                    <i-button type="remove" ng-click="removePopupBlockURL(_d)" label="Remove"></i-button>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="modal-footer center">
+                        <a id="saveBtn" class="btn" ng-click="hidePopupBlockURLsModal()"> <i class="fa fa-save" aria-hidden="true"></i> Close </a>
                     </div>
                 </div>
             </div>

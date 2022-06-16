@@ -238,10 +238,7 @@ module.exports = function (child) {
                     } else if (message.data.name == '[toggle-window-audio]' && child.getWindow()) {
                         child.getWindow().webContents.setAudioMuted(!child.getWindow().webContents.audioMuted);
                         child.updateTab(child.getWindow());
-                    }else if (message.data.name == '[set-window]') {
-                        child.getWindow().setSkipTaskbar(false);
-                        child.getWindow().setMenuBarVisibility(true);
-                    } else if (message.data.name == 'copy') {
+                    }else if (message.data.name == 'copy') {
                         child.electron.clipboard.writeText(message.data.text.replace('#___new_tab___', '').replace('#___new_popup__', ''));
                     } else if (message.data.name == 'full_screen' && child.getWindow()) {
                         child.getWindow().setFullScreen(true);
@@ -302,6 +299,11 @@ module.exports = function (child) {
                             false,
                         );
                     }
+                } else if (message.type == '[set-window]' && child.getWindow()) {
+                    child.getWindow().setSkipTaskbar(false);
+                    child.getWindow().setMenuBarVisibility(true);
+                    child.getWindow().setResizable(true);
+                    child.getWindow().setMovable(true)
                 } else if (message.type == '[update-tab-properties]' && child.getWindow()) {
                     child.sendToWindow('[send-render-message]', message.data);
                 } else if (message.type == '[window-clicked]') {

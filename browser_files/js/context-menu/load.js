@@ -48,18 +48,24 @@ module.exports = function (SOCIALBROWSER) {
         document.addEventListener('DOMNodeInsertedIntoDocument', function (e) {
             SOCIALBROWSER.callEvent('newDom', e.target);
             if (e.target.querySelectorAll) {
-                e.target.querySelectorAll('*').forEach((el) => {
-                    SOCIALBROWSER.callEvent('newDom', el);
-                });
+                let arr = e.target.querySelectorAll('*');
+                if (arr) {
+                    arr.forEach((el) => {
+                        SOCIALBROWSER.callEvent('newDom', el);
+                    });
+                }
             }
         });
         document.addEventListener('DOMNodeInserted', function (e) {
             SOCIALBROWSER.callEvent('newDom', e.target);
 
             if (e.target.querySelectorAll) {
-                e.target.querySelectorAll('*').forEach((el) => {
-                    SOCIALBROWSER.callEvent('newDom', el);
-                });
+                let arr = e.target.querySelectorAll('*');
+                if (arr) {
+                    arr.forEach((el) => {
+                        SOCIALBROWSER.callEvent('newDom', el);
+                    });
+                }
             }
         });
     }

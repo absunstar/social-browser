@@ -274,6 +274,7 @@ module.exports = function init(parent) {
                     currentContent.permissions = default_content.permissions;
                     currentContent.popup = currentContent.popup || {};
                     currentContent.popup.white_list = currentContent.popup.white_list || [];
+                    currentContent.popup.black_list = currentContent.popup.black_list || [];
                     currentContent.popup.allow_external = default_content.popup.allow_external;
                     currentContent.popup.allow_internal = default_content.popup.allow_internal;
 
