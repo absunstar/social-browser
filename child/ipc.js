@@ -104,14 +104,14 @@ module.exports = function init(child) {
         child.proxy_check(message.proxy);
     });
     child.electron.ipcMain.on('getBlobData', (e, message) => {
-        console.log('getBlobData', message);
+        child.log('getBlobData', message);
         let ses = child.electron.session.fromPartition(message.partition);
         ses.getBlobData(message.url)
             .then((data) => {
-                console.log(data);
+                child.log(data);
             })
             .catch((err) => {
-                console.log(err);
+                child.log(err);
             });
     });
     child.electron.ipcMain.on('ws', (e, message) => {
@@ -402,23 +402,17 @@ module.exports = function init(child) {
                 }
 
                 child.createNewWindow({
+                    ...data,
                     windowType: data.url.like('https://www.youtube.com/embed*') ? 'youtube' : 'popup',
                     width: data.url.like('https://www.youtube.com/embed*') ? 520 : 1200,
                     height: data.url.like('https://www.youtube.com/embed*') ? 330 : 720,
                     x: data.url.like('https://www.youtube.com/embed*') ? child.parent.options.screen.bounds.width - 550 : 0,
                     y: data.url.like('https://www.youtube.com/embed*') ? child.parent.options.screen.bounds.height - 400 : 0,
-                    show: true,
-                    webaudio: data.webaudio,
                     center: data.url.like('https://www.youtube.com/embed*') ? false : true,
                     title: 'New Popup',
                     backgroundColor: data.url.like('https://www.youtube.com/embed*') ? '#030303' : '#ffffff',
-                    url: data.url,
-                    referrer: data.referrer,
                     partition: data.partition || child.parent.var.core.session.name,
                     user_name: data.user_name || child.parent.var.core.session.display,
-                    trusted: data.trusted,
-                    security: data.security,
-                    proxy: data.proxy,
                 });
             }
         } else if (data.name == '[show-browser-setting]') {
@@ -433,16 +427,16 @@ module.exports = function init(child) {
                 let ss = win.webContents.session;
                 data.storages = data.storages || ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage'];
                 data.quotas = data.quotas || ['temporary', 'persistent', 'syncable'];
-                console.log(' will clear storage data ...');
+                child.log(' will clear storage data ...');
                 let clear = false
                 ss.clearStorageData({
                     origin: data.origin,
                     storages: data.storages,
                     quotas: data.quotas,
                 }).finally(() => {
-                    console.log(' will clear cache ...');
+                    child.log(' will clear cache ...');
                     ss.clearCache().finally(() => {
-                        console.log(' will reload ...');
+                        child.log(' will reload ...');
                         clear = true
                         win.webContents.reload();
                     });
@@ -615,7 +609,7 @@ module.exports = function init(child) {
                                             child.electron.shell.showItemInFolder(result.filePath);
                                         }
                                         if (result3.response == 0) {
-                                            child.electron.shell.openItem(result.filePath);
+                                            child.electron.shell.openPath(result.filePath);
                                         }
                                     });
                             } else {

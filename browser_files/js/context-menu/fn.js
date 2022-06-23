@@ -141,9 +141,15 @@ module.exports = function (SOCIALBROWSER) {
     if (!selector) {
       return;
     }
-    let dom = typeof selector === 'string' ? SOCIALBROWSER.select(selector) : selector;
+    let dom = typeof selector === 'string' ? SOCIALBROWSER.$(selector) : selector;
     if (dom) {
       dom.scrollIntoView();
+      if (window.scrollY == 0) {
+      } else if (window.innerHeight + window.scrollY >= document.body.scrollHeight) {
+      } else {
+        window.scroll(window.scrollX, window.scrollY - dom.clientHeight);
+      }
+
       if (SOCIALBROWSER.currentWindow && SOCIALBROWSER.webContents && SOCIALBROWSER.currentWindow.isVisible()) {
         let offset = SOCIALBROWSER.getOffset(dom);
         SOCIALBROWSER.currentWindow.focus();
@@ -156,6 +162,9 @@ module.exports = function (SOCIALBROWSER) {
         return dom;
       }
     }
+  };
+  SOCIALBROWSER.$ = function (selector) {
+    return document.querySelector(selector);
   };
   SOCIALBROWSER.select = function (selector, value) {
     if (!selector) {
@@ -252,20 +261,20 @@ module.exports = function (SOCIALBROWSER) {
       code = code.slice(code.indexOf('{') + 1, code.lastIndexOf('}'));
     }
 
-    let fs = SOCIALBROWSER.require('fs');
+    SOCIALBROWSER.fs = SOCIALBROWSER.fs || SOCIALBROWSER.require('fs');
     let path = `${SOCIALBROWSER.browserData.data_dir}/temp_${SOCIALBROWSER.currentWindow.id}_${Math.random()}.js`;
-    if (fs.existsSync(path)) {
+    if (SOCIALBROWSER.fs.existsSync(path)) {
       SOCIALBROWSER.require(path);
     } else {
-      fs.writeFile(path, code, (err) => {
+      SOCIALBROWSER.fs.writeFile(path, code, (err) => {
         if (err) {
           SOCIALBROWSER.log(err);
         } else {
           SOCIALBROWSER.require(path);
-          setTimeout(() => {
-            fs.unlinkSync(path);
-          }, 1000 * 3);
         }
+        setTimeout(() => {
+          SOCIALBROWSER.fs.unlinkSync(path);
+        }, 1000 * 3);
       });
     }
   };
@@ -325,8 +334,8 @@ module.exports = function (SOCIALBROWSER) {
       }
 
       win.eval = function (code) {
-        console.log('Eval : ', code);
         if (!code) {
+          console.log('No Eval Code');
           return;
         }
         if (typeof code !== 'string') {

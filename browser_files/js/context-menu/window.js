@@ -160,10 +160,10 @@ module.exports = function (SOCIALBROWSER) {
         win.webContents
           .executeJavaScript(code, userGesture)
           .then((result) => {
-            // SOCIALBROWSER.log(result);
+             SOCIALBROWSER.log(result);
           })
           .catch((err) => {
-            // SOCIALBROWSER.log(err);
+             SOCIALBROWSER.log(err);
           });
       };
     });

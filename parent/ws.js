@@ -153,29 +153,14 @@ module.exports = function init(parent) {
                     break;
                 case '[update-browser-var]':
                     parent.set_var(message.options.name, message.options.data);
-                    parent.clientList.forEach((client) => {
-                        if (client.ws) {
-                            client.ws.send(message);
-                        }
-                    });
                     break;
                 case '[update-browser-var][user_data_input][add]':
                     parent.var.user_data_input.push(message.data);
                     parent.set_var('user_data_input', parent.var.user_data_input);
-                    parent.clientList.forEach((client) => {
-                        if (client.index !== message.index && client.ws) {
-                            client.ws.send(message);
-                        }
-                    });
                     break;
                 case '[update-browser-var][user_data][add]':
                     parent.var.user_data.push(message.data);
                     parent.set_var('user_data', parent.var.user_data);
-                    parent.clientList.forEach((client) => {
-                        if (client.index !== message.index && client.ws) {
-                            client.ws.send(message);
-                        }
-                    });
                     break;
                 case '[update-browser-var][user_data_input][update]':
                     parent.var.user_data_input.forEach((u) => {
@@ -184,11 +169,6 @@ module.exports = function init(parent) {
                         }
                     });
                     parent.set_var('user_data_input', parent.var.user_data_input);
-                    parent.clientList.forEach((client) => {
-                        if (client.index !== message.index && client.ws) {
-                            client.ws.send(message);
-                        }
-                    });
                     break;
                 case '[update-browser-var][user_data][update]':
                     parent.var.user_data.forEach((u) => {
@@ -197,11 +177,6 @@ module.exports = function init(parent) {
                         }
                     });
                     parent.set_var('user_data', parent.var.user_data);
-                    parent.clientList.forEach((client) => {
-                        if (client.index !== message.index && client.ws) {
-                            client.ws.send(message);
-                        }
-                    });
                     break;
                 case '[update-tab-properties]':
                     parent.clientList.forEach((client) => {
@@ -246,21 +221,10 @@ module.exports = function init(parent) {
                     });
 
                     parent.set_var('proxy_list', parent.var.proxy_list);
-                    parent.clientList.forEach((client) => {
-                        if (client.ws) {
-                            client.ws.send({
-                                type: '[update-browser-var]',
-                                options: {
-                                    name: 'proxy_list',
-                                    data: parent.var.proxy_list,
-                                },
-                            });
-                        }
-                    });
                     break;
                 case '[download-link]':
                     if (parent.var.last_download_url === message.url) {
-                        console.log(' Parent Will Download Cancel Duplicate : ' + message.url);
+                        parent.log(' Parent Will Download Cancel Duplicate : ' + message.url);
                         setTimeout(() => {
                             parent.var.last_download_url = '';
                         }, 1000 * 5);
@@ -330,7 +294,7 @@ module.exports = function init(parent) {
                     process.exit(0);
                     break;
                 case '[add-mongodb-doc]':
-                    console.log(message);
+                    parent.log(message);
                     break;
                 default:
                     break;

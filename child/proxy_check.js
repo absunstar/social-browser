@@ -11,16 +11,16 @@ module.exports = function init(child) {
         req.end();
 
         req.on('connect', (res, socket, head) => {
-            console.log('got connected!');
+            child.log('got connected!');
             socket.write('GET / HTTP/1.1\r\n' + 'Host: social-browser:443\r\n' + 'Connection: close\r\n' + '\r\n');
             socket.on('data', (chunk) => {
-                console.log(chunk.toString());
+                child.log(chunk.toString());
             });
             socket.on('end', () => {
                 socket.close();
             });
             socket.on('error', (err) => {
-                console.log(err.message);
+                child.log(err.message);
             });
         });
     };

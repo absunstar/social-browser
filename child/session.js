@@ -22,6 +22,7 @@ module.exports = function (child) {
 
         child.cookies[name] = child.cookies[name] || [];
         let ss = name === '_' ? child.electron.session.defaultSession : child.electron.session.fromPartition(name);
+        ss.name = name
         if (!child.speedMode && !child.session_name_list.some((s) => s == name)) {
             let saveCookies = false;
             setInterval(() => {
@@ -101,27 +102,27 @@ module.exports = function (child) {
                     proxyRules: proxyRules,
                     proxyBypassRules: proxy.ignore || '127.0.0.1',
                 }).then(() => {
-                    console.log('Proxy Set : ' + proxyRules, proxy);
+                    child.log(`session ${name} Proxy Set : ${proxyRules}`);
                 });
             } else if (proxy.mode == 'pac_script' && proxy.pacScript) {
                 ss.setProxy({
                     mode: proxy.mode,
                     pacScript: proxy.pacScript,
                 }).then(() => {
-                    console.log('Proxy Set : ' + proxy.mode);
+                    child.log(`session ${name} Proxy Set : ${proxy.mode}`);
                 });
             } else {
                 ss.setProxy({
                     mode: proxy.mode,
                 }).then(() => {
-                    console.log('Proxy Set to default : ' + proxy.mode);
+                    child.log(`session ${name} Proxy Set Default : ${proxy.mode}`);
                 });
             }
         } else {
             ss.setProxy({
                 mode: 'system',
             }).then(() => {
-                console.log('Default Proxy Set :system ');
+                child.log(`session ${name} Proxy Set : System`);
             });
         }
 
@@ -597,7 +598,7 @@ module.exports = function (child) {
                 }
             });
             ss.on('will-download', (event, item, webContents) => {
-                console.log(' Child Will Download : ' + item.getURL());
+                child.log(' Child Will Download : ' + item.getURL());
                 event.preventDefault();
                 child.sendMessage({
                     type: '[download-link]',

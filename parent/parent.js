@@ -59,14 +59,6 @@ module.exports = function init(parent) {
             });
 
             parent.set_var('extension_list', parent.var.extension_list);
-
-            parent.sendToAll({
-                type: '[update-browser-var]',
-                options: {
-                    name: 'extension_list',
-                    data: parent.var.extension_list,
-                },
-            });
         } else {
             if (_extension.isEnabled) {
                 if (extension.enable) {
@@ -88,13 +80,6 @@ module.exports = function init(parent) {
                 }
             });
             parent.set_var('extension_list', parent.var.extension_list);
-            parent.sendToAll({
-                type: '[update-browser-var]',
-                options: {
-                    name: 'extension_list',
-                    data: parent.var.extension_list,
-                },
-            });
         }
     };
     parent.disableExtension = function (extension) {
@@ -107,13 +92,6 @@ module.exports = function init(parent) {
                 }
             });
             parent.set_var('extension_list', parent.var.extension_list);
-            parent.sendToAll({
-                type: '[update-browser-var]',
-                options: {
-                    name: 'extension_list',
-                    data: parent.var.extension_list,
-                },
-            });
         }
     };
 
@@ -130,22 +108,9 @@ module.exports = function init(parent) {
             }
         });
         parent.set_var('extension_list', parent.var.extension_list);
-        parent.sendToAll({
-            type: '[update-browser-var]',
-            options: {
-                name: 'extension_list',
-                data: parent.var.extension_list,
-            },
-        });
     };
     parent.applay = function (name) {
-        parent.sendToAll({
-            type: '[update-browser-var]',
-            options: {
-                name: name,
-                data: parent.var[name],
-            },
-        });
+        parent.set_var(name, parent.var[name]);
     };
     require(parent.path.join(parent.dir, 'parent', 'fn.js'))(parent);
     require(parent.path.join(parent.dir, 'parent', 'file.js'))(parent);

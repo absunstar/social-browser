@@ -121,19 +121,21 @@ module.exports = function init(parent) {
       } else if (response.file.originalFilename.like('*.csv')) {
         let file = parent.api.readFileSync(response.file.filepath);
         file = file.split('\n');
-        let headers = file.shift().split(',');
-        for (var i = 0; i < headers.length; i++) {
-          headers[i] = headers[i].trim();
-        }
-        file.forEach(function (d) {
+
+        file.forEach(function (d, i) {
           tmp = {};
           let row = d.split(',');
-          if (headers.length === row.length) {
-            for (var i = 0; i < headers.length; i++) {
-              tmp[headers[i]] = row[i].trim();
-            }
-            docs.push(tmp);
+          if (row.length == 2) {
+            tmp.url = row[0].replaceAll('"', '');
+            tmp.name = row[1].replaceAll('"', '');
+          } else if (row.length == 4) {
+            tmp.url = row[0].replaceAll('"', '');
+            tmp.port = row[1].replaceAll('"', '');
+            tmp.username = row[0].replaceAll('"', '');
+            tmp.port = row[1].replaceAll('"', '');
+          } else {
           }
+          docs.push(tmp);
         });
       } else if (response.file.originalFilename.like('*.txt')) {
         let docs2 = parent.api.readFileSync(response.file.filepath).toString().split('\n');
@@ -185,13 +187,6 @@ module.exports = function init(parent) {
         });
         console.log('saving proxy list');
         parent.set_var('proxy_list', parent.var.proxy_list);
-        parent.sendToAll({
-          type: '[update-browser-var]',
-          options: {
-            name: 'proxy_list',
-            data: parent.var.proxy_list,
-          },
-        });
       }
     } else {
       response.error = 'file not exists : ' + response.file.filepath;

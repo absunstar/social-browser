@@ -53,6 +53,70 @@ module.exports = function (child) {
       return r;
     };
   }
+  child.deleteFile = function (path, callback) {
+    child.fs.stat(path, (err, stats) => {
+      if (!err && stats.isFile()) {
+        child.fs.unlink(path, (err) => {
+          if (!err) {
+            callback(path);
+          } else {
+            child.log(err);
+          }
+        });
+      } else {
+        callback(path);
+      }
+    });
+  };
+  child.writeFile = function (path, data, encode) {
+    let path2 = path + '_tmp';
+    child.deleteFile(path2, () => {
+      child.fs.writeFile(
+        path2,
+        data,
+        {
+          encoding: encode || 'utf8',
+        },
+        (err) => {
+          if (!err) {
+            child.deleteFile(path, () => {
+              child.fs.rename(path2, path, (err) => {
+                if (!err) {
+                  child.log(`${child.parent.windowType} writeFile ${path}`);
+                } else {
+                  child.log(err);
+                }
+              });
+            });
+          } else {
+            child.log(err);
+          }
+        }
+      );
+    });
+  };
+
+  child.set_var = function (name, currentContent, ignore) {
+    try {
+      child.parent.var[name] = currentContent;
+      child.save_var_quee.push(name);
+    } catch (error) {
+      child.log(error);
+    }
+  };
+  child.save_var_quee = [];
+  child.save_var = function (name) {
+    if (child.save_var_quee.includes(name)) {
+      return;
+    }
+    try {
+      let path = child.path.join(child.parent.data_dir, 'json', name + '.json');
+      let currentContent = JSON.stringify(child.parent.var[name]);
+      child.writeFile(path, currentContent);
+    } catch (error) {
+      child.log(error);
+    }
+  };
 
   child.get_dynamic_var = function (info) {
     info.name = info.name || '*';

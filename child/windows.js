@@ -139,16 +139,35 @@ module.exports = function (child) {
     child.remoteMain.enable(win.webContents);
 
     win.__options = defaultSetting;
-
+    win.__options.userAgent = win.__options.user_agent = win.__options.userAgent || win.__options.user_agent;
+    if (win.__options.timeout) {
+      setTimeout(() => {
+        if (win && !win.isDestroyed()) {
+          child.sendToWindows('[window-event]', {
+            win_id: win.id,
+            options: win.__options,
+            name: 'close',
+          });
+          win.destroy();
+        }
+      }, win.__options.timeout);
+    }
     if (!child.window) {
       child.window = win;
     }
-
+    if (win.__options.eval) {
+      win.__options.setting = win.__options.setting || [];
+      win.__options.setting.push({
+        name: 'eval',
+        code: win.__options.eval,
+      });
+    }
     child.windowList.push({
       id: win.id,
+      id2: win.webContents.id,
       window: win,
       __options: win.__options,
-      setting: [],
+      setting: win.__options.setting || [],
     });
 
     if (win.__options.center) {
@@ -190,6 +209,10 @@ module.exports = function (child) {
           win.setBounds(new_bounds);
         }
       }
+    }
+
+    if (win.__options.openDevTools) {
+      win.openDevTools();
     }
 
     if (win.__options.url) {
@@ -341,7 +364,7 @@ module.exports = function (child) {
           proxyRules: proxyRules,
           proxyBypassRules: proxy.ignore || '127.0.0.1',
         }).then(() => {
-          console.log('Proxy Set : ' + proxyRules);
+          child.log('window Proxy Set : ' + proxyRules);
         });
       }
     }
@@ -457,6 +480,11 @@ module.exports = function (child) {
       }
     });
     win.on('close', (e) => {
+      child.sendToWindows('[window-event]', {
+        win_id: win.id,
+        options: win.__options,
+        name: 'close',
+      });
       child.windowList.forEach((w, i) => {
         if (w.id == win.id) {
           child.windowList.splice(i, 1);
@@ -703,17 +731,11 @@ module.exports = function (child) {
       }
     });
 
-    win.webContents.on('will-navigate', (e, url) => {
-      // when user click on link
-      // parent.log(win.getURL(), url);
-      console.log('will-navigate', url);
-    });
-
     win.webContents.on('will-redirect', (e, url) => {
-      console.log('will-redirect', url);
+      child.log('will-redirect', url);
       if (!child.isAllowURL(url)) {
         e.preventDefault();
-        console.log('Block-redirect', url);
+        child.log('Block-redirect', url);
         return;
       }
       let ok = false;
@@ -739,10 +761,17 @@ module.exports = function (child) {
         }
       });
     });
-
+    win.webContents.on('will-navigate', (e, url) => {
+      child.log('will-navigate', url);
+      if (!child.isAllowURL(url)) {
+        e.preventDefault();
+        child.log('Block-navigate', url);
+        return;
+      }
+    });
     if (win.webContents.setWindowOpenHandler) {
       win.webContents.setWindowOpenHandler(({ url, frameName }) => {
-        console.log('setWindowOpenHandler' , url)
+        child.log('setWindowOpenHandler', url);
         if (url.like('*about:blank*')) {
           return { action: 'deny' };
         } else {
@@ -756,7 +785,7 @@ module.exports = function (child) {
       });
 
       win.webContents.on('did-create-window', (win, { url, frameName, options, disposition, referrer, postData }) => {
-        console.log('did-create-window' , url)
+        child.log('did-create-window', url);
       });
     }
     win.webContents.on('new-window', function (event, url, frameName, disposition, options, referrer, postBody) {
@@ -767,27 +796,7 @@ module.exports = function (child) {
       }
 
       let real_url = url || event.url || '';
-      console.log('new-window', real_url);
-
-      if(!child.isAllowURL(real_url)){
-        console.log('Block-redirect', real_url);
-        return false;
-      }
-
-      if (real_url.like('*about:blank*')) {
-        return false;
-      }
-
-      const loadOptions = {
-        httpReferrer: referrer,
-      };
-
-      if (postBody != null) {
-        const { data, contentType, boundary } = postBody;
-        loadOptions.postData = postBody.data;
-        loadOptions.extraHeaders = `content-type: ${contentType}; boundary=${boundary}`;
-      }
-
+      child.log('new-window', real_url);
       if (real_url.like('https://www.youtube.com/watch*')) {
         real_url = 'https://www.youtube.com/embed/' + real_url.split('=')[1].split('&')[0];
 
@@ -821,6 +830,24 @@ module.exports = function (child) {
           user_name: win.__options.user_name,
         });
         return;
+      }
+      if (!child.isAllowURL(real_url)) {
+        child.log('Block-redirect', real_url);
+        return false;
+      }
+
+      if (real_url.like('*about:blank*')) {
+        return false;
+      }
+
+      const loadOptions = {
+        httpReferrer: referrer,
+      };
+
+      if (postBody != null) {
+        const { data, contentType, boundary } = postBody;
+        loadOptions.postData = postBody.data;
+        loadOptions.extraHeaders = `content-type: ${contentType}; boundary=${boundary}`;
       }
 
       if (real_url.like('*#___new_tab___*')) {

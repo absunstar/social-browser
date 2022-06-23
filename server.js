@@ -74,7 +74,7 @@
         var0: {},
         content_list: [],
         log: (...args) => {
-            console.log(...args);
+           // console.log(...args);
         },
         startTime: new Date().getTime(),
     };
@@ -130,6 +130,11 @@
         });
     }
 
+    browser.createChildProcess({
+        windowType: 'files',
+        partition: 'persist:file',
+    });
+
     browser.electron.Menu.setApplicationMenu(null);
     browser.electron.app.setAsDefaultProtocolClient('browser');
 
@@ -142,10 +147,9 @@
     }
 
     browser.electron.app.clearRecentDocuments();
-    // browser.electron.app.disableHardwareAcceleration();
-   // browser.electron.app.commandLine.appendSwitch('no-sandbox');
+    browser.electron.app.commandLine.appendSwitch('no-sandbox');
    // browser.electron.app.commandLine.appendSwitch('in-process-gpu');
-   // browser.electron.app.disableHardwareAcceleration();
+    browser.electron.app.disableHardwareAcceleration();
     /* App Ready */
     browser.electron.app.on('ready', function () {
         browser.webContent = browser.electron.webContents.create({

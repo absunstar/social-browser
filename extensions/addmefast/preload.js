@@ -194,7 +194,7 @@ module.exports = function (SOCIALBROWSER) {
                         });
 
                         childWindow.close = function () {
-                            console.log('childWindow.close()');
+                            SOCIALBROWSER.log('childWindow.close()');
                             if (win && !win.isDestroyed()) {
                                 win.close();
                                 setTimeout(() => {

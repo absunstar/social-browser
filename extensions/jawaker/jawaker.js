@@ -7,21 +7,45 @@ SOCIALBROWSER.jawaker = {
   log: function (msg) {
     document.querySelector('#_msg_').innerHTML = msg;
   },
+  newWindow: function (partition) {
+    SOCIALBROWSER.ipc('[send-render-message]', {
+      name: '[open new popup]',
+      alwaysOnTop: false,
+      partition: partition || SOCIALBROWSER.partition,
+      url: document.location.href,
+      referrer: document.referrer,
+    });
+  },
 };
 SOCIALBROWSER.jawaker.autoPlay = function () {
-  document.querySelector('#play_btn').classList.add('hide2');
-  document.querySelector('#stop_btn').classList.remove('hide2');
-  SOCIALBROWSER.jawaker.canPlay = true;
+  let playbtn = document.querySelector('#play_btn');
+  let stopbtn = document.querySelector('#stop_btn');
+  if (playbtn && stopbtn) {
+    playbtn.classList.add('hide2');
+    stopbtn.classList.remove('hide2');
+  } else {
+    return;
+  }
 
-  clearInterval(SOCIALBROWSER.jawaker.autoPlayInterval);
+  SOCIALBROWSER.jawaker.canPlay = true;
+  localStorage.setItem('autoPlay', 'ok');
+  SOCIALBROWSER.jawaker.Play();
   SOCIALBROWSER.jawaker.autoPlayInterval = setInterval(() => {
     SOCIALBROWSER.jawaker.Play();
   }, 1000 * 5);
 };
 SOCIALBROWSER.jawaker.stopPlay = function () {
-  document.querySelector('#play_btn').classList.remove('hide2');
-  document.querySelector('#stop_btn').classList.add('hide2');
+  let playbtn = document.querySelector('#play_btn');
+  let stopbtn = document.querySelector('#stop_btn');
+  if (playbtn && stopbtn) {
+    playbtn.classList.remove('hide2');
+    stopbtn.classList.add('hide2');
+  } else {
+    return;
+  }
+
   SOCIALBROWSER.jawaker.canPlay = false;
+  localStorage.setItem('autoPlay', 'no');
   clearInterval(SOCIALBROWSER.jawaker.autoPlayInterval);
 };
 
@@ -118,14 +142,9 @@ SOCIALBROWSER.jawaker.PlayCard = function () {
       SOCIALBROWSER.jawaker.log('try Play like first card');
       setTimeout(() => {
         if (SOCIALBROWSER.jawaker.isMyTurn) {
-          card.classList.add('xclick');
           SOCIALBROWSER.click(card);
           SOCIALBROWSER.jawaker.log('click like first card');
         }
-
-        setTimeout(() => {
-          card.classList.remove('xclick');
-        }, 100);
       }, 100 * i);
     }
     if (!SOCIALBROWSER.jawaker.played) {
@@ -133,14 +152,9 @@ SOCIALBROWSER.jawaker.PlayCard = function () {
       cards.forEach((card, i) => {
         setTimeout(() => {
           if (SOCIALBROWSER.jawaker.isMyTurn) {
-            card.classList.add('xclick');
             SOCIALBROWSER.click(card);
-            SOCIALBROWSER.jawaker.log('click card');
+            SOCIALBROWSER.jawaker.log('click any card');
           }
-
-          setTimeout(() => {
-            card.classList.remove('xclick');
-          }, 100);
         }, 100 * i);
       });
     }
@@ -153,26 +167,45 @@ SOCIALBROWSER.jawaker.PlayCard = function () {
 };
 
 SOCIALBROWSER.jawaker.handlePanel = function () {
-  if (document.location.href.like('*games*|*competitions*|*challenges*')) {
+  let panel = document.querySelector('.panel1');
+  let panel2 = document.querySelector('.panel2');
+  if (document.location.href.like('*games*|*competitions*|*challenges*') && panel) {
     if (document.location.href.like('*tarneeb*|*estimation*|*handgame*|*complex*|*banakil*|*saudi*|*basra*|*leekha*|*sbeetiya*|*kout*|*nathala*|*hareega*|*kasra*|*jack*')) {
-      document.querySelector('.panel').classList.add('hide2');
+      panel.classList.add('hide2');
+      panel2.classList.add('hide2');
       SOCIALBROWSER.jawaker.stopPlay();
     } else {
-      document.querySelector('.panel').classList.remove('hide2');
+      if (SOCIALBROWSER.__options.windowType.contains('popup')) {
+        panel.classList.remove('hide2');
+        document.querySelector('#__sb_url').value = document.location.href;
+        if (localStorage.getItem('autoPlay') === 'ok') {
+          SOCIALBROWSER.jawaker.autoPlay();
+        }
+      } else {
+        panel2.classList.remove('hide2');
+        SOCIALBROWSER.var.session_list.forEach((s) => {
+          panel2.innerHTML += `<a class="btn2" onclick="SOCIALBROWSER.jawaker.newWindow('${s.name}')"> Open Hack as ( ${s.display} ) </a><br><br>`;
+        });
+      }
     }
   }
 };
 window.addEventListener('locationchange', function () {
   SOCIALBROWSER.jawaker.handlePanel();
 });
-
-setInterval(() => {
-  let seat = document.querySelector('.seat.current');
-  if (seat && seat.className.contains('active')) {
-    SOCIALBROWSER.jawaker.isMyTurn = true;
-    SOCIALBROWSER.jawaker.log('My Turn ^_^', 200);
-    SOCIALBROWSER.jawaker.PlayCard();
-  } else {
-    SOCIALBROWSER.jawaker.isMyTurn = false;
-  }
-}, 500);
+if (SOCIALBROWSER.__options.windowType.contains('popup')) {
+  setInterval(() => {
+    let seat = document.querySelector('.seat.current');
+    if (seat && seat.className.contains('active')) {
+      SOCIALBROWSER.jawaker.isMyTurn = true;
+      SOCIALBROWSER.jawaker.log('My Turn ^_^', 200);
+      SOCIALBROWSER.jawaker.PlayCard();
+    } else {
+      SOCIALBROWSER.jawaker.isMyTurn = false;
+      SOCIALBROWSER.jawaker.log('.....................');
+    }
+  }, 200);
+  setTimeout(() => {
+    document.location.reload();
+  }, 1000 * 60 * 15);
+}
