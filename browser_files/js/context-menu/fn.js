@@ -30,36 +30,30 @@ module.exports = function (SOCIALBROWSER) {
 
   SOCIALBROWSER.addHTML = SOCIALBROWSER.addhtml = function (code) {
     try {
-      if (document.body) {
-        let _div = document.createElement('div');
-        _div.id = '_div_' + Math.random();
-        _div.innerHTML = code;
-        document.body.appendChild(_div);
-      }
+      let _div = document.createElement('div');
+      _div.id = '_div_' + Math.random();
+      _div.innerHTML = code;
+      (document.body || document.head || document.documentElement).appendChild(_div);
     } catch (error) {
       SOCIALBROWSER.log(error);
     }
   };
   SOCIALBROWSER.addJS = SOCIALBROWSER.addjs = function (code) {
     try {
-      if (document.body) {
-        let _script = document.createElement('script');
-        _script.id = '_script_' + Math.random();
-        _script.innerText = code;
-        document.body.appendChild(_script);
-      }
+      let _script = document.createElement('script');
+      _script.id = '_script_' + Math.random();
+      _script.innerText = code;
+      (document.body || document.head || document.documentElement).appendChild(_script);
     } catch (error) {
       SOCIALBROWSER.log(error);
     }
   };
   SOCIALBROWSER.addCSS = SOCIALBROWSER.addcss = function (code) {
     try {
-      if (document.body) {
-        let _style = document.createElement('style');
-        _style.id = '_style_' + Math.random();
-        _style.innerText = code;
-        document.body.appendChild(_style);
-      }
+      let _style = document.createElement('style');
+      _style.id = '_style_' + Math.random();
+      _style.innerText = code;
+      (document.body || document.head || document.documentElement).appendChild(_style);
     } catch (error) {
       SOCIALBROWSER.log(error);
     }
@@ -70,6 +64,7 @@ module.exports = function (SOCIALBROWSER) {
   SOCIALBROWSER.paste = function () {
     SOCIALBROWSER.webContents.paste();
   };
+
   SOCIALBROWSER.triggerMouseEvent = function (node, eventType) {
     try {
       if (document.createEvent) {
@@ -235,10 +230,6 @@ module.exports = function (SOCIALBROWSER) {
       u = window.location.origin + window.location.pathname.replace(page, '') + u;
     }
     return u;
-  };
-
-  SOCIALBROWSER.__numberRange = function (min, max) {
-    return Math.floor(Math.random() * (max - min) + min);
   };
 
   SOCIALBROWSER.isViewable = function (element) {
@@ -546,11 +537,11 @@ module.exports = function (SOCIALBROWSER) {
 
   SOCIALBROWSER.injectDefault = function () {
     try {
-      if (document.body && !document.querySelector('#xxx__browser')) {
+      if ((document.body || document.head || document.documentElement) &&!document.querySelector('#xxx__browser')) {
         let xxx__browser = document.createElement('div');
         xxx__browser.id = 'xxx__browser';
         xxx__browser.innerHTML = Buffer.from(SOCIALBROWSER.injectHTML).toString();
-        document.body.appendChild(xxx__browser);
+        (document.body || document.head || document.documentElement).appendChild(xxx__browser);
       }
     } catch (error) {
       SOCIALBROWSER.log(error);

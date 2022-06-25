@@ -302,7 +302,7 @@ module.exports = function (child) {
                     details.requestHeaders['User-Agent'] = child.parent.var.core.user_agent;
                 }
 
-                if (child.parent.var.blocking.privacy.enable_virtual_pc && child.parent.var.blocking.privacy.mask_user_agent) {
+                if (child.parent.var.blocking.privacy.enable_virtual_pc && child.parent.var.blocking.privacy.vpc.mask_user_agent) {
                     if (!details.requestHeaders['User-Agent'].like('*[xx-*')) {
                         let code = name;
                         code += new URL(url).hostname;
@@ -330,7 +330,7 @@ module.exports = function (child) {
                     }
                 });
 
-                if (child.parent.var.blocking.privacy.dnt) {
+                if (child.parent.var.blocking.privacy.vpc.dnt) {
                     details.requestHeaders['DNT'] = '1'; // dont track me
                 }
 
@@ -350,11 +350,11 @@ module.exports = function (child) {
 
                 let cookie_obj = details.requestHeaders['Cookie'] ? child.cookieParse(details.requestHeaders['Cookie']) : {};
 
-                if (cookie_obj && child.parent.var.blocking.privacy.send_browser_id) {
+                if (cookie_obj && child.parent.var.blocking.core.send_browser_id) {
                     cookie_obj['_gab'] = 'sb.' + child.parent.var.core.id;
                 }
 
-                if (cookie_obj && child.parent.var.blocking.privacy.enable_virtual_pc && child.parent.var.blocking.privacy.block_cloudflare) {
+                if (cookie_obj && child.parent.var.blocking.privacy.enable_virtual_pc && child.parent.var.blocking.privacy.vpc.block_cloudflare) {
                     if (cookie_obj['_cflb']) {
                         cookie_obj['_cflb'] = 'cf.' + cookie_obj['_gab'];
                     }
@@ -373,7 +373,7 @@ module.exports = function (child) {
                 }
 
                 if (cookie_obj && !url.like('*google.com*|*youtube.com*')) {
-                    if (child.parent.var.blocking.privacy.enable_virtual_pc && child.parent.var.blocking.privacy.hide_gid) {
+                    if (child.parent.var.blocking.privacy.enable_virtual_pc && child.parent.var.blocking.privacy.vpc.hide_gid) {
                         if (cookie_obj['_gid']) {
                             delete cookie_obj['_gid'];
                         }
@@ -486,7 +486,7 @@ module.exports = function (child) {
                     'Access-Control-Allow-Headers',
                     'Access-Control-Allow-Origin',
                     'Access-Control-Expose-Headers',
-                    child.parent.var.blocking.privacy.remove_x_frame_options ? 'X-Frame-Options' : '',
+                    child.parent.var.blocking.privacy.vpc.remove_x_frame_options ? 'X-Frame-Options' : '',
                 ].forEach((p) => {
                     delete details.responseHeaders[p];
                     delete details.responseHeaders[p.toLowerCase()];

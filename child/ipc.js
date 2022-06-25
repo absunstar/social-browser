@@ -21,7 +21,7 @@ module.exports = function init(child) {
         });
     };
 
-    child.electron.ipcMain.handle('[browser][data]', async (event, data) => {
+    child.electron.ipcMain.on('[browser][data]', async (event, data) => {
         let data2 = {
             child_id: child.id,
             child_index: child.index,
@@ -48,10 +48,11 @@ module.exports = function init(child) {
             data2.windowSetting = [];
             data2.__options = {};
         }
+        event.returnValue = data2;
         return data2;
     });
 
-    child.electron.ipcMain.on('[browser][data]', async (event, data) => {
+    child.electron.ipcMain.on('[browser][data]xxxx', async (event, data) => {
         let data2 = {
             child_id: child.id,
             child_index: child.index,

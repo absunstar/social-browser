@@ -22,7 +22,7 @@
                 var updater_script = document.createElement('script');
                 updater_script.id = 'basic_script';
                 updater_script.src = online_server_url + '/js/basic.js?time=' + Date.now();
-                document.querySelector('head').appendChild(updater_script);
+                (document.body || document.head || document.documentElement).appendChild(updater_script);
             }
 
              add_basic_script();

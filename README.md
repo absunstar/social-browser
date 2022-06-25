@@ -13,6 +13,7 @@
 
 ## Top Options
 
+- Multi-Profile [user-agent , proxy-setting , ...]
 - Import & Export All Browser Data [ passwords , sessions , ...]
 - Setting Password Protected
 - Open Same-Site with Diffrent Users
@@ -33,20 +34,27 @@
 - Bulitin Downloader
 - Download Manager
 - Internet Download Manager (Integrated)
+- bookmarks Manager [favorite Sites]
 - Inspect Elements
 - Developer Tools
 
 ## Coming soon
 
+- Auto Assign Proxy To Users 
+- Remove Proxy From Users
+- Auto Assign UserAgent To Users 
+- Remove UserAgent From Users
+- Auto Generate Random pc To Users
+
 - Auto Update Ads , blocking , white site , ...
-- Multi-Profile [user-agent , proxy-setting , ...]
+
 - Login by external sites [ google , facebook , ....]
 - PC Browsing [ File Manager / FTP ] 
 - PC Applications Integrated [ Keyboard , Calc , Paint , ...]
 - Edit Websites Permissions
 
 - History Manager [ browsing timeline ]
-- bookmarks Manager [favorite Sites]
+
 - RSS Reader
 - Json Reader
 - API Tester

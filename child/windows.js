@@ -177,9 +177,9 @@ module.exports = function (child) {
     if (win.__options.windowType === 'main') {
       child.mainWindow = win;
       win.center();
-      // win.openDevTools({
-      //   mode: 'detach',
-      // });
+      win.openDevTools({
+        mode: 'detach',
+      });
     } else if (win.__options.windowType === 'view') {
       if (child.speedMode) {
         if (!child.currentView) {

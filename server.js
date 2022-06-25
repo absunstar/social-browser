@@ -74,7 +74,7 @@
         var0: {},
         content_list: [],
         log: (...args) => {
-           // console.log(...args);
+            console.log(...args);
         },
         startTime: new Date().getTime(),
     };

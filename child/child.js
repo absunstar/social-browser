@@ -46,7 +46,7 @@ var child = {
   windowList: [],
   assignWindows: [],
   log: (...args) => {
-   // console.log(...args);
+    console.log(...args);
   },
   cookies: {},
   startTime: new Date().getTime(),

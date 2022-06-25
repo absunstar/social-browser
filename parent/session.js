@@ -259,7 +259,7 @@ module.exports = function (parent) {
                 details.requestHeaders['User-Agent'] = parent.var.core.user_agent;
             }
 
-            if (parent.var.blocking.privacy.enable_virtual_pc && parent.var.blocking.privacy.mask_user_agent) {
+            if (parent.var.blocking.privacy.enable_virtual_pc && parent.var.blocking.privacy.vpc.mask_user_agent) {
                 if (!details.requestHeaders['User-Agent'].like('*[xx-*')) {
                     let code = name;
                     code += new URL(url).hostname;
@@ -296,7 +296,7 @@ module.exports = function (parent) {
                 return;
             }
 
-            if (parent.var.blocking.privacy.dnt) {
+            if (parent.var.blocking.privacy.vpc.dnt) {
                 details.requestHeaders['DNT'] = '1'; // dont track me
             }
 
@@ -307,11 +307,11 @@ module.exports = function (parent) {
 
             let cookie_obj = details.requestHeaders['Cookie'] ? parent.cookieParse(details.requestHeaders['Cookie']) : null;
 
-            if (cookie_obj && parent.var.blocking.privacy.send_browser_id) {
+            if (cookie_obj && parent.var.blocking.core.send_browser_id) {
                 cookie_obj['_gab'] = 'sb.' + parent.var.core.id;
             }
 
-            if (cookie_obj && parent.var.blocking.privacy.enable_virtual_pc && parent.var.blocking.privacy.block_cloudflare) {
+            if (cookie_obj && parent.var.blocking.privacy.enable_virtual_pc && parent.var.blocking.privacy.vpc.block_cloudflare) {
                 if (cookie_obj['_cflb']) {
                     cookie_obj['_cflb'] = 'cf.' + cookie_obj['_gab'];
                 }
@@ -330,7 +330,7 @@ module.exports = function (parent) {
             }
 
             if (cookie_obj && !url.like('*google.com*|*youtube.com*')) {
-                if (parent.var.blocking.privacy.enable_virtual_pc && parent.var.blocking.privacy.hide_gid) {
+                if (parent.var.blocking.privacy.enable_virtual_pc && parent.var.blocking.privacy.vpc.hide_gid) {
                     if (cookie_obj['_gid']) {
                         delete cookie_obj['_gid'];
                     }
