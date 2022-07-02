@@ -252,6 +252,9 @@
   };
 
   if (EventTarget.prototype.addEventListener) {
+    SOCIALBROWSER.eventOff += 'document(mouseleave)|document(mouseout)|document(pagehide)|document(hashchange)|document(popstate)|document(state-change)|document(visibilitychange)|document(webkitvisibilitychange)|document(blur)';
+    SOCIALBROWSER.eventOff += 'window(mouseleave)|window(mouseout)|window(pagehide)|window(hashchange)|window(popstate)|window(state-change)|window(visibilitychange)|window(webkitvisibilitychange)|window(blur)';
+
       EventTarget.prototype.removeEventListener0 = EventTarget.prototype.removeEventListener;
       EventTarget.prototype.removeEventListener = function (type, handler, option) {
           let exists = false;

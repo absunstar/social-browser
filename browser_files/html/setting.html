@@ -341,36 +341,35 @@
                       <div class="col6">
                         <i-control ng-disabled="setting.blocking.privacy.vpc.hide_connection !== true" ng-model="setting.blocking.privacy.vpc.connection.effectiveType" label="Network Provider Type"></i-control>
                         <i-control type="number" ng-disabled="setting.blocking.privacy.vpc.hide_connection !== true" ng-model="setting.blocking.privacy.vpc.connection.downlink" label="Download Speed (Mbit)"></i-control>
+                        <i-control type="number" ng-disabled="setting.blocking.privacy.vpc.hide_connection !== true" ng-model="setting.blocking.privacy.vpc.connection.downlinkMax" label="Download Max Speed (Mbit)"></i-control>
                         <i-control type="number" ng-disabled="setting.blocking.privacy.vpc.hide_connection !== true" ng-model="setting.blocking.privacy.vpc.connection.rtt" label="Ping (low is fast)"></i-control>
                         <i-control ng-disabled="setting.blocking.privacy.vpc.hide_connection !== true" ng-model="setting.blocking.privacy.vpc.connection.type" label="Network Source"></i-control>
                       </div>
                     </div>
                     <div class="row padding border2">
                       <i-checkbox class="col6" label="Set Window Alawys Active" ng-model="setting.blocking.privacy.vpc.set_window_active"></i-checkbox>
-                      <i-checkbox class="col6" label="Mask User Agent (profile + host)" ng-model="setting.blocking.privacy.vpc.mask_user_agent"></i-checkbox>
-                      <i-checkbox class="col6" label="Block HTML Canvas" ng-model="setting.blocking.privacy.block_canvas"></i-checkbox>
+                      <i-checkbox class="col6" label="Mask User Agent (profile + host)[some videos not work]" ng-model="setting.blocking.privacy.vpc.mask_user_agent"></i-checkbox>
+                      <i-checkbox class="col6" label="Block HTML Canvas" ng-model="setting.blocking.privacy.vpc.hide_canvas"></i-checkbox>
 
                       <i-checkbox class="col6" label="Block Media Devices [camera , mic , ...]" ng-model="setting.blocking.privacy.vpc.hide_media_devices"></i-checkbox>
                       <br />
-                      <i-checkbox class="col6" label="Hide Graphic Card Details" ng-model="setting.blocking.privacy.vpc.hide_vega"></i-checkbox>
+                      <i-checkbox class="col6" label="Hide Audio" ng-model="setting.blocking.privacy.vpc.hide_audio"></i-checkbox>
+                      <i-checkbox class="col6" label="Hide WebGL" ng-model="setting.blocking.privacy.vpc.hide_webgl"></i-checkbox>
                       <i-checkbox class="col6" label="Block RTC Connections" ng-model="setting.blocking.privacy.vpc.block_rtc"></i-checkbox>
 
                       <i-checkbox class="col6" label="Mask Battery informations (profile)" ng-model="setting.blocking.privacy.vpc.hide_battery"></i-checkbox>
 
                       <i-checkbox class="col6" label="Hide MimeTypes" ng-model="setting.blocking.privacy.vpc.hide_mimetypes"></i-checkbox>
+                      <i-checkbox class="col6" label="Hide Fonts[some videos not work]" ng-model="setting.blocking.privacy.vpc.hide_fonts"></i-checkbox>
 
-                      <br />
-                      <i-checkbox class="col6" label="Block Google ID in other sites" ng-model="setting.blocking.privacy.vpc.hide_gid"></i-checkbox>
-                      <i-checkbox class="col6" label="Block Cloud Flare Tracking" ng-model="setting.blocking.privacy.vpc.block_cloudflare"></i-checkbox>
                       <fieldset>
                         <legend>Options</legend>
 
-                        <br />
-                        <div class="row padding">
-                          <i-checkbox label="Remove X Frame Options (iframe)" ng-model="setting.blocking.privacy.vpc.remove_x_frame_options"></i-checkbox>
-                          <i-checkbox label="Hide Browser (site) Permisions" ng-model="setting.blocking.privacy.vpc.hide_permissions"></i-checkbox>
-                        </div>
-                        <i-checkbox class="row" label="Send Don't Track Header" ng-model="setting.blocking.privacy.vpc.dnt"></i-checkbox>
+                        <i-checkbox class="col6" label="Remove X Frame Options (iframe)" ng-model="setting.blocking.privacy.vpc.remove_x_frame_options"></i-checkbox>
+                        <i-checkbox class="col6" label="Hide Browser (site) Permisions" ng-model="setting.blocking.privacy.vpc.hide_permissions"></i-checkbox>
+                        <i-checkbox class="col6" label="Block Google ID in other sites" ng-model="setting.blocking.privacy.vpc.hide_gid"></i-checkbox>
+                        <i-checkbox class="col6" label="Block Cloud Flare Tracking" ng-model="setting.blocking.privacy.vpc.block_cloudflare"></i-checkbox>
+                        <i-checkbox class="col6" label="Send Don't Track Header" ng-model="setting.blocking.privacy.vpc.dnt"></i-checkbox>
                       </fieldset>
                     </div>
                   </div>
@@ -424,11 +423,11 @@
                 <div class="row">
                   <fieldset>
                     <legend>Facebook</legend>
-                    <i-checkbox class="row" label="Enabled" ng-model="setting.facebook.enabled"></i-checkbox>
+                    <i-checkbox class="row" label="Enabled" ng-model="setting.blocking.facebook.enabled"></i-checkbox>
 
-                    <div ng-show="setting.facebook.enabled">
-                      <i-control class="col4" type="color" label="Theme Color" ng-model="setting.facebook.color"> </i-control>
-                      <i-checkbox class="row" label="Auto Remove Ads" ng-model="setting.facebook.remove_ads"></i-checkbox>
+                    <div ng-show="setting.blocking.facebook.enabled">
+                      <i-control class="col4" type="color" label="Theme Color" ng-model="setting.blocking.facebook.color"> </i-control>
+                      <i-checkbox class="row" label="Auto Remove Ads" ng-model="setting.blocking.facebook.remove_ads"></i-checkbox>
                     </div>
                   </fieldset>
                 </div>
@@ -506,10 +505,10 @@
                   <fieldset>
                     <legend>Page Context Menu</legend>
 
-                    <i-checkbox class="row" label="Show page options" ng-model="setting.context_menu.page_options"></i-checkbox>
-                    <i-checkbox class="row" label="Allow Copy div content" ng-model="setting.context_menu.copy_div_content"> </i-checkbox>
-                    <i-checkbox class="row" label="Show Inspect Element" ng-model="setting.context_menu.inspect"> </i-checkbox>
-                    <i-checkbox class="row" label="Show Developer Tools" ng-model="setting.context_menu.dev_tools"> </i-checkbox>
+                    <i-checkbox class="row" label="Show page options" ng-model="setting.blocking.context_menu.page_options"></i-checkbox>
+                    <i-checkbox class="row" label="Allow Copy div content" ng-model="setting.blocking.context_menu.copy_div_content"> </i-checkbox>
+                    <i-checkbox class="row" label="Show Inspect Element" ng-model="setting.blocking.context_menu.inspect"> </i-checkbox>
+                    <i-checkbox class="row" label="Show Developer Tools" ng-model="setting.blocking.context_menu.dev_tools"> </i-checkbox>
                   </fieldset>
                 </div>
               </div>
@@ -519,14 +518,14 @@
                     <legend>External Downloader</legend>
                     <div class="row">
                       <div class="col2">
-                        <i-checkbox class="row" label="Enable" ng-model="setting.downloader.enabled"></i-checkbox>
+                        <i-checkbox class="row" label="Enable" ng-model="setting.blocking.downloader.enabled"></i-checkbox>
                       </div>
-                      <div class="row" ng-repeat="app in setting.downloader.apps">
+                      <div class="row" ng-repeat="app in setting.blocking.downloader.apps">
                         <div class="col7">
-                          <i-control ng-show="setting.downloader.enabled === true" type="text" ng-model="app.name" label="App Path"></i-control>
+                          <i-control ng-show="setting.blocking.downloader.enabled === true" type="text" ng-model="app.name" label="App Path"></i-control>
                         </div>
                         <div class="col3">
-                          <i-control ng-show="setting.downloader.enabled === true" type="text" ng-model="app.params" label="App Params"></i-control>
+                          <i-control ng-show="setting.blocking.downloader.enabled === true" type="text" ng-model="app.params" label="App Params"></i-control>
                         </div>
                       </div>
                     </div>
@@ -698,6 +697,7 @@
                         <div class="col6">
                           <i-control ng-disabled="currentSession.privacy.vpc.hide_connection !== true" ng-model="currentSession.privacy.vpc.connection.effectiveType" label="Network Provider Type"></i-control>
                           <i-control type="number" ng-disabled="currentSession.privacy.vpc.hide_connection !== true" ng-model="currentSession.privacy.vpc.connection.downlink" label="Download Speed (Mbit)"></i-control>
+                          <i-control type="number" ng-disabled="currentSession.privacy.vpc.hide_connection !== true" ng-model="currentSession.privacy.vpc.connection.downlinkMax" label="Download Max Speed (Mbit)"></i-control>
                           <i-control type="number" ng-disabled="currentSession.privacy.vpc.hide_connection !== true" ng-model="currentSession.privacy.vpc.connection.rtt" label="Ping (low is fast)"></i-control>
                           <i-control ng-disabled="currentSession.privacy.vpc.hide_connection !== true" ng-model="currentSession.privacy.vpc.connection.type" label="Network Source"></i-control>
                         </div>
@@ -784,7 +784,7 @@
                     <p class="bold green">{{proxy.uploadStatus}}</p>
                   </form>
                   <br />
-                  <i-checkbox class="row" label="Show proxy options" ng-model="setting.context_menu.proxy_options"></i-checkbox>
+                  <i-checkbox class="row" label="Show proxy options" ng-model="setting.blocking.context_menu.proxy_options"></i-checkbox>
                   <i-checkbox class="row" label="Close Window on Proxy Error Loading" ng-model="setting.blocking.proxy_error_close_window"></i-checkbox>
                   <i-checkbox class="row" label="Remove Proxy on Error Loading" ng-model="setting.blocking.proxy_error_remove_proxy"></i-checkbox>
 
@@ -974,20 +974,20 @@
               </div>
 
               <div id="internet_speed_tab" class="tab-content">
-                <i-radio ng-model="setting.internet_speed.type" ng-value="default" label="Default"></i-radio>
-                <i-radio ng-model="setting.internet_speed.type" ng-value="offline" label="Offline"></i-radio>
-                <i-radio ng-model="setting.internet_speed.type" ng-value="custom" label="Custom"></i-radio>
+                <i-radio ng-model="setting.blocking.internet_speed.type" ng-value="default" label="Default"></i-radio>
+                <i-radio ng-model="setting.blocking.internet_speed.type" ng-value="offline" label="Offline"></i-radio>
+                <i-radio ng-model="setting.blocking.internet_speed.type" ng-value="custom" label="Custom"></i-radio>
                 <fieldset>
                   <legend>Internet Speed Options</legend>
                   <div class="row">
                     <div class="col4">
-                      <i-control type="number" ng-model="setting.internet_speed.latency" label="Latency"></i-control>
+                      <i-control type="number" ng-model="setting.blocking.internet_speed.latency" label="Latency"></i-control>
                     </div>
                     <div class="col4">
-                      <i-control type="number" ng-model="setting.internet_speed.download" label="Download Spped"> </i-control>
+                      <i-control type="number" ng-model="setting.blocking.internet_speed.download" label="Download Spped"> </i-control>
                     </div>
                     <div class="col4">
-                      <i-control type="number" ng-model="setting.internet_speed.upload" label="Upload Speed"></i-control>
+                      <i-control type="number" ng-model="setting.blocking.internet_speed.upload" label="Upload Speed"></i-control>
                     </div>
                   </div>
                 </fieldset>
@@ -1036,7 +1036,7 @@
                 <th>Options</th>
                 <th>Actions</th>
               </tr>
-              <tr ng-repeat="_open_menu in setting.open_list track by $index">
+              <tr ng-repeat="_open_menu in setting.blocking.open_list track by $index">
                 <td>
                   <i-control label="Menu URL" ng-model="_open_menu.name"></i-control>
                 </td>
@@ -1386,7 +1386,7 @@
                 <th>URL</th>
               </tr>
 
-              <tr ng-repeat="_ws in setting.white_list | filter:whiteSite track by $index">
+              <tr ng-repeat="_ws in setting.blocking.white_list | filter:whiteSite track by $index">
                 <td>
                   <a class="btn red" ng-click="removeWhiteSite(_ws)"> Remove </a>
                 </td>
@@ -1427,7 +1427,7 @@
                 <th class="w200">Action</th>
                 <th>URL</th>
               </tr>
-              <tr ng-repeat="_ws in setting.black_list | filter:blackSite track by $index">
+              <tr ng-repeat="_ws in setting.blocking.black_list | filter:blackSite track by $index">
                 <td>
                   <a class="btn red" ng-click="removeBlackSite(_ws)"> Remove </a>
                 </td>

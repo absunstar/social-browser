@@ -123,36 +123,6 @@ module.exports = function init(parent) {
           });
           parent.var[name] = currentContent;
           parent.set_var(name, parent.var[name]);
-        } else if (name == 'black_list') {
-          default_content.forEach((d) => {
-            let exists = false;
-            currentContent.forEach((d2) => {
-              if (d.url == d2.url) {
-                d2 = d;
-                exists = true;
-              }
-            });
-            if (!exists) {
-              currentContent.push(d);
-            }
-          });
-          parent.var[name] = currentContent;
-          parent.set_var(name, parent.var[name]);
-        } else if (name == 'white_list') {
-          default_content.forEach((d) => {
-            let exists = false;
-            currentContent.forEach((d2) => {
-              if (d.url == d2.url) {
-                d2 = d;
-                exists = true;
-              }
-            });
-            if (!exists) {
-              currentContent.push(d);
-            }
-          });
-          parent.var[name] = currentContent;
-          parent.set_var(name, parent.var[name]);
         } else if (name == 'proxy_list') {
           default_content.forEach((d) => {
             let exists = false;
@@ -268,16 +238,44 @@ module.exports = function init(parent) {
           parent.set_var(name, parent.var[name]);
         } else if (name == 'blocking') {
           currentContent.core = default_content.core || {};
-          currentContent.javascript = default_content.javascript;
-          currentContent.privacy = default_content.privacy;
-          currentContent.youtube = default_content.youtube;
-          currentContent.permissions = default_content.permissions;
+          currentContent.javascript = default_content.javascript || {};
+          currentContent.privacy = default_content.privacy || {};
+          currentContent.youtube = default_content.youtube || {};
+          currentContent.permissions = default_content.permissions || {};
+          currentContent.internet_speed = default_content.internet_speed || {};
+          currentContent.white_list = default_content.white_list || [];
+          currentContent.black_list = default_content.black_list || [];
+          currentContent.open_list = default_content.open_list || [];
           currentContent.popup = currentContent.popup || {};
           currentContent.popup.white_list = currentContent.popup.white_list || [];
           currentContent.popup.black_list = currentContent.popup.black_list || [];
           currentContent.popup.allow_external = default_content.popup.allow_external;
           currentContent.popup.allow_internal = default_content.popup.allow_internal;
 
+          default_content.white_list.forEach((d) => {
+            let exists = false;
+            currentContent.white_list.forEach((d2, i2) => {
+              if (d.url == d2.url) {
+                currentContent.white_list[i2] = d;
+                exists = true;
+              }
+            });
+            if (!exists) {
+              currentContent.white_list.push(d);
+            }
+          });
+          default_content.black_list.forEach((d) => {
+            let exists = false;
+            currentContent.black_list.forEach((d2, i2) => {
+              if (d.url == d2.url) {
+                currentContent.black_list[i2] = d;
+                exists = true;
+              }
+            });
+            if (!exists) {
+              currentContent.black_list.push(d);
+            }
+          });
           // selectros will remove when allow dom
           currentContent.html_tags_selector_list = currentContent.html_tags_selector_list || [];
           default_content.html_tags_selector_list.forEach((d) => {
@@ -412,6 +410,23 @@ module.exports = function init(parent) {
     if (name == 'proxy_mode_list') {
       parent.var.proxy_mode_list = default_content;
     }
+    if (name == 'blocking') {
+      parent.var.blocking.open_list = parent.var.blocking.open_list || [];
+      parent.var.blocking.core = parent.var.blocking.core || {};
+      parent.var.blocking.javascript = parent.var.blocking.javascript || {};
+      parent.var.blocking.privacy = parent.var.blocking.privacy || {};
+      parent.var.blocking.youtube = parent.var.blocking.youtube || {};
+      parent.var.blocking.permissions = parent.var.blocking.permissions || {};
+      parent.var.blocking.internet_speed = parent.var.blocking.internet_speed || {};
+      parent.var.blocking.white_list = parent.var.blocking.white_list || [];
+      parent.var.blocking.black_list = parent.var.blocking.black_list || [];
+      parent.var.blocking.open_list = parent.var.blocking.open_list || [];
+      parent.var.blocking.popup = parent.var.blocking.popup || {};
+      parent.var.blocking.context_menu = parent.var.blocking.context_menu || {};
+      parent.var.blocking.downloader = parent.var.blocking.downloader || {};
+      parent.var.blocking.downloader.apps = parent.var.blocking.downloader.apps || [];
+      
+    }
     return parent.var[name];
   };
 
@@ -447,7 +462,7 @@ module.exports = function init(parent) {
     }
     try {
       if (true && parent.clientList) {
-        parent.log(`update var ( ${name} ) to all childs`);
+       // parent.log(`update var ( ${name} ) to all childs`);
         parent.clientList.forEach((client) => {
           if (client.ws) {
             if (name == 'urls') {
@@ -480,8 +495,9 @@ module.exports = function init(parent) {
   setInterval(() => {
     let update_proxy_list = false;
     let update_session_list = false;
-    let update_context_menu = false;
     let update_ad_list = false;
+    let update_blocking = false;
+    let update_core = false;
     save_var_quee.forEach((q, i) => {
       if (q === 'proxy_list') {
         save_var_quee.splice(i, 1);
@@ -489,12 +505,15 @@ module.exports = function init(parent) {
       } else if (q === 'session_list') {
         save_var_quee.splice(i, 1);
         update_session_list = true;
-      } else if (q === 'context_menu') {
-        save_var_quee.splice(i, 1);
-        update_context_menu = true;
       } else if (q === 'ad_list') {
         save_var_quee.splice(i, 1);
         update_ad_list = true;
+      } else if (q === 'blocking') {
+        save_var_quee.splice(i, 1);
+        update_blocking = true;
+      } else if (q === 'core') {
+        save_var_quee.splice(i, 1);
+        update_core = true;
       }
     });
     if (update_proxy_list) {
@@ -503,16 +522,20 @@ module.exports = function init(parent) {
     if (update_session_list) {
       parent.save_var('session_list');
     }
-    if (update_context_menu) {
-      parent.save_var('context_menu');
-    }
     if (update_ad_list) {
       parent.save_var('ad_list');
+    }
+
+    if (update_blocking) {
+      parent.save_var('blocking');
+    }
+    if (update_core) {
+      parent.save_var('core');
     }
     if (save_var_quee.length > 0) {
       parent.save_var(save_var_quee.shift());
     }
-  }, 1000 * 5);
+  }, 1000 * 3);
 
   parent.addURL = function (nitm) {
     if (!nitm.url) {
@@ -575,37 +598,22 @@ module.exports = function init(parent) {
   parent.var['package'] = require(parent.dir + '/package.json');
 
   parent.get_var('core');
-  parent.get_var('privacy');
-  parent.get_var('overwrite');
-
   parent.get_var('session_list');
+  parent.get_var('blocking');
+  parent.get_var('ad_list');
+
+  parent.get_var('overwrite');
 
   parent.get_var('proxy');
   parent.get_var('proxy_list');
   parent.get_var('proxy_mode_list');
 
-  parent.get_var('white_list');
-  parent.get_var('black_list');
-  parent.get_var('ad_list');
-
-  parent.get_var('open_list');
-  parent.get_var('context_menu');
-
-  parent.get_var('downloader');
-  parent.get_var('facebook');
-  parent.get_var('twitter');
-
-  parent.get_var('internet_speed');
   parent.get_var('login');
   parent.get_var('user_agent_list');
   parent.get_var('bookmarks');
   parent.get_var('video_quality_list');
 
   parent.get_var('vip');
-
-  parent.get_var('blocking');
-
-  parent.get_var('data_list');
 
   parent.get_var('download_list');
   parent.get_var('user_data_input');

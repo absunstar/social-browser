@@ -177,9 +177,9 @@ module.exports = function (child) {
     if (win.__options.windowType === 'main') {
       child.mainWindow = win;
       win.center();
-      win.openDevTools({
-        mode: 'detach',
-      });
+      // win.openDevTools({
+      //   mode: 'detach',
+      // });
     } else if (win.__options.windowType === 'view') {
       if (child.speedMode) {
         if (!child.currentView) {
@@ -831,12 +831,14 @@ module.exports = function (child) {
         });
         return;
       }
+
       if (!child.isAllowURL(real_url)) {
         child.log('Block-redirect', real_url);
         return false;
       }
 
       if (real_url.like('*about:blank*')) {
+        child.log('Block-redirect', real_url);
         return false;
       }
 

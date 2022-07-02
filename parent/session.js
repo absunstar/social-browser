@@ -166,7 +166,7 @@ module.exports = function (parent) {
             }
 
             let end = false;
-            parent.var.white_list.forEach((s) => {
+            parent.var.blocking.white_list.forEach((s) => {
                 if (end) {
                     return;
                 }
@@ -183,8 +183,8 @@ module.exports = function (parent) {
                 return;
             }
 
-            if (parent.var.black_list) {
-                parent.var.black_list.forEach((s) => {
+            if (parent.var.blocking.black_list) {
+                parent.var.blocking.black_list.forEach((s) => {
                     if (url.like(s.url)) {
                         end = true;
                         //  parent.log(`\n Block black_list :  ${s.url} \n`);
@@ -403,7 +403,7 @@ module.exports = function (parent) {
             });
 
             let is_white = false;
-            parent.var.white_list.forEach((w) => {
+            parent.var.blocking.white_list.forEach((w) => {
                 if (details.url.like(w.url)) {
                     is_white = true;
                 }
@@ -527,9 +527,9 @@ module.exports = function (parent) {
                 Partition: name,
             };
 
-            if (parent.var.downloader.enabled && !item.getURL().like('*127.0.0.1*') && !item.getURL().like('blob*')) {
+            if (parent.var.blocking.downloader.enabled && !item.getURL().like('*127.0.0.1*') && !item.getURL().like('blob*')) {
                 let ok = false;
-                parent.var.downloader.apps.forEach((app) => {
+                parent.var.blocking.downloader.apps.forEach((app) => {
                     let app_name = app.name.replace('$username', parent.os.userInfo().username);
                     if (parent.api.isFileExistsSync(app_name)) {
                         event.preventDefault();

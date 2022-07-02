@@ -22,12 +22,18 @@ setTimeout(() => {
 
 app.controller('mainController', ($scope, $http, $timeout) => {
   $scope.proxy = {};
-
+  /*
   SOCIALBROWSER.on('setting.session_list', (e, info) => {
     console.log('from scope', info);
     $scope.setting.session_list = info.data;
   });
 
+  SOCIALBROWSER.onVarUpdated = function (name, data) {
+    console.log('from scope', name);
+    $scope.setting[name] = data;
+    $scope.$applyAsync();
+  };
+*/
   $scope.do_click = function (proxy) {
     let input = document.querySelector('#input_proxy');
     if (!input.getAttribute('x-handle')) {
@@ -62,6 +68,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         function (res) {
           if (res.data && res.data.done) {
             proxy.uploadStatus = 'Proxies Added ';
+            $scope.loadSetting();
           }
         },
         function (error) {
@@ -79,11 +86,6 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     SOCIALBROWSER.call('[send-render-message]', {
       name: '[window-go-forward]',
     });
-  };
-
-  SOCIALBROWSER.onVarUpdated = function (name, data) {
-    $scope.setting[name] = data;
-    $scope.$applyAsync();
   };
 
   $scope.url = '';
@@ -138,16 +140,16 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     enabled: true,
   };
   $scope.addOpenMenu = function () {
-    $scope.setting.open_list.push($scope.open_menu);
+    $scope.setting.blocking.open_list.push($scope.open_menu);
     $scope.open_menu = {
       enabled: true,
     };
   };
 
   $scope.removeOpenMenu = function (_open_menu) {
-    $scope.setting.open_list.forEach((open_menu, i) => {
+    $scope.setting.blocking.open_list.forEach((open_menu, i) => {
       if (open_menu.name === _open_menu.name) {
-        $scope.setting.open_list.splice(i, 1);
+        $scope.setting.blocking.open_list.splice(i, 1);
       }
     });
   };
@@ -261,14 +263,14 @@ app.controller('mainController', ($scope, $http, $timeout) => {
   };
   $scope.whiteSite = {};
   $scope.addWhiteSite = function () {
-    $scope.setting.white_list.push($scope.whiteSite);
+    $scope.setting.blocking.white_list.push($scope.whiteSite);
     $scope.whiteSite = {};
   };
 
   $scope.removeWhiteSite = function (_ws) {
-    $scope.setting.white_list.forEach((ws, i) => {
+    $scope.setting.blocking.white_list.forEach((ws, i) => {
       if (ws.url === _ws.url) {
-        $scope.setting.white_list.splice(i, 1);
+        $scope.setting.blocking.white_list.splice(i, 1);
       }
     });
   };
@@ -282,14 +284,14 @@ app.controller('mainController', ($scope, $http, $timeout) => {
   };
   $scope.blackSite = {};
   $scope.addBlackSite = function () {
-    $scope.setting.black_list.push($scope.blackSite);
+    $scope.setting.blocking.black_list.push($scope.blackSite);
     $scope.blackSite = {};
   };
 
   $scope.removeBlackSite = function (_ws) {
-    $scope.setting.black_list.forEach((ws, i) => {
+    $scope.setting.blocking.black_list.forEach((ws, i) => {
       if (ws.url === _ws.url) {
-        $scope.setting.black_list.splice(i, 1);
+        $scope.setting.blocking.black_list.splice(i, 1);
       }
     });
   };
@@ -492,7 +494,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
       name: '*',
       win_id: SOCIALBROWSER.currentWindow.id,
       partition: SOCIALBROWSER.partition,
-    });
+    }).var;
 
     $scope.$applyAsync();
 

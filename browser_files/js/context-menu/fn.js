@@ -1,6 +1,134 @@
-const { read } = require('original-fs');
-
 module.exports = function (SOCIALBROWSER) {
+  SOCIALBROWSER.ws = function (message) {
+    SOCIALBROWSER.ipc('ws', message);
+  };
+  SOCIALBROWSER.share = function (message) {
+    SOCIALBROWSER.ipc('share', message);
+  };
+
+  SOCIALBROWSER.fetchJson = function (options, callback) {
+    options.id = new Date().getTime() + Math.random();
+    options.url = SOCIALBROWSER.handleURL(options.url);
+
+    return new Promise((resolve, reject) => {
+      SOCIALBROWSER.on('[fetch][json][data]', (e, res) => {
+        if (res.options.id == options.id) {
+          if (res.error) {
+            if (!callback) {
+              reject({ message: res.error });
+            }
+            SOCIALBROWSER.log('SOCIALBROWSER.fetchJson error : ', res.error);
+          } else if (res.data) {
+            if (!callback) {
+              resolve(res.data);
+            } else {
+              callback(res.data);
+            }
+          } else {
+            SOCIALBROWSER.log('[fetch][json][data] res : ', res);
+          }
+        }
+      });
+      SOCIALBROWSER.call('[fetch][json]', options);
+    });
+  };
+  SOCIALBROWSER.rand = {
+    noise: function () {
+      let result;
+      let font_noise = SOCIALBROWSER.get('font_noise');
+      if (font_noise) {
+        result = font_noise;
+      } else {
+        let SIGN = Math.random() < Math.random() ? -1 : 1;
+        result = Math.floor(Math.random() + SIGN * Math.random());
+        SOCIALBROWSER.set('font_noise', result);
+      }
+      return result;
+    },
+    sign: function () {
+      const tmp = [-1, -1, -1, -1, -1, -1, +1, -1, -1, -1];
+      let index;
+      let font_sign = SOCIALBROWSER.get('font_sign');
+      if (font_sign) {
+        index = font_sign;
+      } else {
+        index = Math.floor(Math.random() * tmp.length);
+        SOCIALBROWSER.set('font_sign', index);
+      }
+
+      return tmp[index];
+    },
+  };
+
+  SOCIALBROWSER.generateVPC = function () {
+    let width = SOCIALBROWSER.random(800, 1080);
+    let height = SOCIALBROWSER.random(720, 1080);
+    return {
+      hide_memory: true,
+      memory_count: SOCIALBROWSER.random(1, 128),
+      hide_cpu: true,
+      cpu_count: SOCIALBROWSER.random(1, 64),
+      hide_lang: true,
+      languages: 'abcdefghijklmnopqrstuvwxyz'[SOCIALBROWSER.random(0, 25)] + 'abcdefghijklmnopqrstuvwxyz'[SOCIALBROWSER.random(0, 25)],
+      mask_date: true,
+      date_offset: SOCIALBROWSER.random(-300, 300),
+      hide_webgl: true,
+      hide_mimetypes: true,
+      hide_plugins: true,
+      hide_screen: true,
+      screen_width: width,
+      screen_height: height,
+      screen_availWidth: width,
+      screen_availHeight: height,
+      set_window_active: true,
+      block_rtc: true,
+      hide_battery: true,
+      hide_canvas : true,
+      hide_audio : true,
+      hide_media_devices: true,
+      connection: {
+        downlink: SOCIALBROWSER.random(1, 15) / 10,
+        downlinkMax: SOCIALBROWSER.random(15, 30) / 10,
+        effectiveType: SOCIALBROWSER.effectiveTypeList[SOCIALBROWSER.random(0, SOCIALBROWSER.effectiveTypeList.length - 1)],
+        rtt: SOCIALBROWSER.random(300, 900),
+        type: SOCIALBROWSER.connectionTypeList[SOCIALBROWSER.random(0, SOCIALBROWSER.connectionTypeList.length - 1)].name,
+      },
+      hide_plugins: true,
+      hide_mimetypes: true,
+      hide_media_devices: true,
+      hide_permissions: true,
+      hide_battery: true,
+      set_window_active: true,
+      dnt: true,
+      block_rtc: true,
+      mask_user_agent: false,
+      hide_fonts: false,
+    };
+  };
+  SOCIALBROWSER.nativeImage = function (_path) {
+    try {
+      if (!_path) {
+        return null;
+      }
+      return SOCIALBROWSER.electron.nativeImage.createFromPath(_path).resize({
+        width: 16,
+        height: 16,
+      });
+    } catch (error) {
+      SOCIALBROWSER.log('nativeImage', error);
+      return null;
+    }
+  };
+
+  SOCIALBROWSER.onLoad = function (fn) {
+    if (document.readyState !== 'loading') {
+      fn();
+    } else {
+      document.addEventListener('DOMContentLoaded', () => {
+        fn();
+      });
+    }
+  };
   SOCIALBROWSER.sendMessage = function (cm) {
     SOCIALBROWSER.call('renderMessage', cm);
   };
@@ -20,6 +148,33 @@ module.exports = function (SOCIALBROWSER) {
       o.prototype[p] = v;
     }
   };
+  SOCIALBROWSER.timeOffset = new Date().getTimezoneOffset();
+
+  SOCIALBROWSER.guid = function () {
+    return SOCIALBROWSER.md5(SOCIALBROWSER.partition + document.location.hostname + SOCIALBROWSER.var.core.id);
+  };
+  SOCIALBROWSER.maxOf = function (num, max) {
+    if (num == 0) {
+      num = SOCIALBROWSER.random(0, max);
+    }
+    if (num > max) {
+      num = num - max;
+      return SOCIALBROWSER.maxOf(num, max);
+    }
+    return num;
+  };
+  SOCIALBROWSER.sessionId = function () {
+    if (SOCIALBROWSER.session_id) {
+      return SOCIALBROWSER.session_id;
+    }
+    SOCIALBROWSER.var.session_list.forEach((s, i) => {
+      if (s.name == SOCIALBROWSER.partition) {
+        SOCIALBROWSER.session_id = i + 1;
+      }
+    });
+    return SOCIALBROWSER.session_id;
+  };
+
   SOCIALBROWSER.addMenu = function (m) {
     SOCIALBROWSER.menu_list.push(m);
   };
@@ -236,12 +391,6 @@ module.exports = function (SOCIALBROWSER) {
     const rect = element.getBoundingClientRect();
     return rect.top >= 0 && rect.left >= 0 && rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && rect.right <= (window.innerWidth || document.documentElement.clientWidth);
   };
-
-  if (SOCIALBROWSER.var.blocking.javascript.block_eval) {
-    window.eval = function (code) {
-      SOCIALBROWSER.log('eval block', code);
-    };
-  }
 
   SOCIALBROWSER.eval = function (code) {
     if (!code) {
@@ -509,7 +658,6 @@ module.exports = function (SOCIALBROWSER) {
 
     return SOCIALBROWSER.printerList;
   };
-  SOCIALBROWSER.getPrinters();
 
   SOCIALBROWSER.__img_to_base64 = function (selector) {
     let c = document.createElement('canvas');
@@ -537,7 +685,7 @@ module.exports = function (SOCIALBROWSER) {
 
   SOCIALBROWSER.injectDefault = function () {
     try {
-      if ((document.body || document.head || document.documentElement) &&!document.querySelector('#xxx__browser')) {
+      if ((document.body || document.head || document.documentElement) && !document.querySelector('#xxx__browser')) {
         let xxx__browser = document.createElement('div');
         xxx__browser.id = 'xxx__browser';
         xxx__browser.innerHTML = Buffer.from(SOCIALBROWSER.injectHTML).toString();
@@ -711,87 +859,6 @@ module.exports = function (SOCIALBROWSER) {
   SOCIALBROWSER.copyObject = function (obj) {
     return JSON.parse(JSON.stringify(obj));
   };
-  SOCIALBROWSER.on('found-in-page', (event, data) => {
-    if (data.win_id == SOCIALBROWSER.currentWindow.id) {
-      // SOCIALBROWSER.log(data);
-    }
-  });
-
-  SOCIALBROWSER.on('[send-render-message]', (event, data) => {
-    if (data.name == 'update-target-url') {
-      SOCIALBROWSER.showInfo(data.url);
-    } else if (data.name == 'show-info') {
-      SOCIALBROWSER.showInfo(data.msg);
-    }
-  });
-
-  SOCIALBROWSER.on('user_downloads', (event, data) => {
-    showDownloads(data.message, data.class);
-  });
-  SOCIALBROWSER.on('show_message', (event, data) => {
-    alert(data.message);
-  });
 
   SOCIALBROWSER.windowOpenList = [];
-
-  try {
-    if (SOCIALBROWSER.var.blocking.javascript.custom_local_storage && localStorage) {
-      SOCIALBROWSER.localStorage = window.localStorage;
-      SOCIALBROWSER.__define(window, 'localStorage', {
-        setItem: function (key, value) {
-          return SOCIALBROWSER.localStorage.setItem(key, value);
-        },
-        getItem: function (key) {
-          let value = SOCIALBROWSER.localStorage.getItem(key);
-          return value;
-        },
-        get length() {
-          return SOCIALBROWSER.localStorage.length;
-        },
-        removeItem: function (key) {
-          return SOCIALBROWSER.localStorage.removeItem(key);
-        },
-        clear: function () {
-          return SOCIALBROWSER.localStorage.clear();
-        },
-        key: function (index) {
-          return SOCIALBROWSER.localStorage.key(index);
-        },
-      });
-    }
-  } catch (error) {
-    SOCIALBROWSER.log(error);
-  }
-
-  try {
-    if (SOCIALBROWSER.var.blocking.javascript.custom_session_storage && sessionStorage) {
-      SOCIALBROWSER.sessionStorage = window.sessionStorage;
-
-      let hack = {
-        setItem: function (key, value) {
-          return SOCIALBROWSER.sessionStorage.setItem(key, value);
-        },
-        getItem: function (key) {
-          let value = SOCIALBROWSER.sessionStorage.getItem(key);
-          return value;
-        },
-        get length() {
-          return SOCIALBROWSER.sessionStorage.length;
-        },
-        removeItem: function (key) {
-          return SOCIALBROWSER.sessionStorage.removeItem(key);
-        },
-        clear: function () {
-          return SOCIALBROWSER.sessionStorage.clear();
-        },
-        key: function (index) {
-          return SOCIALBROWSER.sessionStorage.key(index);
-        },
-      };
-
-      SOCIALBROWSER.__define(window, 'sessionStorage', hack);
-    }
-  } catch (error) {
-    SOCIALBROWSER.log(error);
-  }
 };

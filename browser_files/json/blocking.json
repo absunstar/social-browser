@@ -5,13 +5,70 @@
   "remove_external_iframe": true,
   "block_html_tags": false,
   "skip_video_ads": true,
+  "context_menu": {
+    "copy_div_content": false,
+    "page_options": true,
+    "inspect": true,
+    "dev_tools": true
+  },
+  "facebook": {
+    "enabled": false,
+    "remove_ads": false,
+    "color": "#4267b2"
+  },
+  "open_list": [
+    {
+      "enabled": true,
+      "name": "Open Current Page",
+      "url": "",
+      "multi": true
+    },
+    {
+      "enabled": true,
+      "name": "Open Facebook",
+      "url": "https://www.facebook.com",
+      "multi": true
+    },
+    {
+      "enabled": true,
+      "name": "Open Youtube",
+      "url": "https://www.youtube.com/",
+      "multi": true
+    },
+    {
+      "enabled": true,
+      "name": "Open Social Browser Site",
+      "url": "https://social-browser.com",
+      "multi": false
+    }
+  ],
+  "downloader": {
+    "enabled": true,
+    "apps": [
+      {
+        "name": "C:\\Program Files (x86)\\Internet Download Manager\\IDMan.exe",
+        "params": "/d $url /f $file_name"
+      },
+      {
+        "name": "C:\\Users\\$username\\AppData\\Local\\Softdeluxe\\Free Download Manager\\fdm.exe",
+        "params": "--url $url --path $file_name"
+      }
+    ]
+  },
   "dom_selectors": [
     { "url": "*", "ex_url": "*openload.co*", "select": "[class='ad'],[class$='-ad']", "remove": true, "hide": false, "empty": false },
     { "url": "*mexashare.com*", "ex_url": "*openload.co*", "select": "#k749", "remove": false, "hide": true, "empty": false },
     { "ex_url": "*openload.co*", "url": "*", "hide": false, "select": "[class*='_ad_']", "remove": true },
     { "select": ".video-masthead-v2,#watch7-sidebar-ads,#masthead-ad", "url": "*www.youtube.com*", "remove": true }
   ],
-
+  "internet_speed": {
+    "type": "default",
+    "latency": 0,
+    "download": 0,
+    "upload": 0
+  },
+  "black_list": [],
+  "white_list": [{ "url": "*google.com*" }, { "url": "*facebook.com*" }, { "url": "*godaddy.com*" }, { "url": "*127.0.0.1*" }],
   "un_safe_words": [{ "text": "sex" }, { "text": "سكس" }, { "text": "hot" }, { "text": "جنس" }, { "text": "porn" }, { "text": "erotic" }],
   "javascript": { "block_console_output": false, "block_window_open": false, "block_eval": false, "allow_jquery": false },
   "privacy": {
@@ -19,7 +76,7 @@
       "hide_cpu": true,
       "hide_memory": true,
       "hide_screen": true,
-      "hide_vega": true,
+      "hide_webgl": true,
       "hide_connection": true,
       "hide_lang": true,
       "mask_date": true,
@@ -44,7 +101,7 @@
       "hide_gid": false,
       "block_cloudflare": false,
       "block_rtc": true,
-      "mask_user_agent": true,
+      "mask_user_agent": false,
       "remove_x_frame_options": false
     }
   },
@@ -115,6 +172,6 @@
     "allow_exeio": false,
     "allow_hitleap": true
   },
-  "permissions": { "aalow_geolocation": true, "allow_geolocation": false, "allow_fullscreen": true, "allow_openExternal": true, "allow_clipboard_read": true },
+  "permissions": { "allow_geolocation": false, "allow_fullscreen": true, "allow_openExternal": true, "allow_clipboard_read": true },
   "core": { "remove_external_iframe": false, "block_empty_iframe": false, "block_ads": true, "block_html_tags": false, "skip_video_ads": true }
 }

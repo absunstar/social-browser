@@ -1603,8 +1603,8 @@ module.exports = function (SOCIALBROWSER) {
         menu.append(new $menuItem(m));
       });
 
-      if (SOCIALBROWSER.var.open_list.length > 0) {
-        SOCIALBROWSER.var.open_list.forEach((o) => {
+      if (SOCIALBROWSER.var.blocking.open_list.length > 0) {
+        SOCIALBROWSER.var.blocking.open_list.forEach((o) => {
           if (o.enabled) {
             if (o.multi) {
               let arr = get_url_menu_list(o.url || document.location.href);
@@ -1678,7 +1678,7 @@ module.exports = function (SOCIALBROWSER) {
       }
 
       get_custom_menu(menu, doc);
-      if (SOCIALBROWSER.var.context_menu.copy_div_content) {
+      if (SOCIALBROWSER.var.blocking.context_menu.copy_div_content) {
         add_div_menu(node, menu);
       }
 
@@ -1698,7 +1698,7 @@ module.exports = function (SOCIALBROWSER) {
         })
       );
 
-      if (SOCIALBROWSER.var.context_menu.proxy_options) {
+      if (SOCIALBROWSER.var.blocking.context_menu.proxy_options) {
         let arr = [];
 
         SOCIALBROWSER.var.proxy_list.slice(0, 50).forEach((p) => {
@@ -1729,11 +1729,11 @@ module.exports = function (SOCIALBROWSER) {
           );
         }
       }
-      if (SOCIALBROWSER.var.context_menu.page_options) {
+      if (SOCIALBROWSER.var.blocking.context_menu.page_options) {
         get_options_menu(node, menu, doc);
       }
 
-      if (SOCIALBROWSER.var.context_menu.inspect && !SOCIALBROWSER.DevToolsOff) {
+      if (SOCIALBROWSER.var.blocking.context_menu.inspect && !SOCIALBROWSER.DevToolsOff) {
         menu.append(
           new $menuItem({
             type: 'separator',
@@ -1750,7 +1750,7 @@ module.exports = function (SOCIALBROWSER) {
         );
       }
 
-      if (SOCIALBROWSER.var.context_menu.dev_tools && !SOCIALBROWSER.DevToolsOff) {
+      if (SOCIALBROWSER.var.blocking.context_menu.dev_tools && !SOCIALBROWSER.DevToolsOff) {
         menu.append(
           new $menuItem({
             label: 'Developer Tools',

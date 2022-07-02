@@ -51,6 +51,7 @@
       { name: 'wimax', value: 'wimax' },
       { name: 'cellular', value: 'cellular' },
     ],
+    effectiveTypeList: ['slow-2g', '2g', '3g', '4g'],
     session: {
       privacy: { languages: 'en', connection: {}, hide_permissions: true },
     },
@@ -76,6 +77,41 @@
   SOCIALBROWSER.url = SOCIALBROWSER.require('url');
   SOCIALBROWSER.md5 = SOCIALBROWSER.require('md5');
 
+  SOCIALBROWSER.currentWindow = SOCIALBROWSER.remote.getCurrentWindow();
+  SOCIALBROWSER.webContents = SOCIALBROWSER.currentWindow.webContents;
+
+  if (SOCIALBROWSER.currentWindow.__options && SOCIALBROWSER.currentWindow.__options.webPreferences) {
+    SOCIALBROWSER.webPreferences = SOCIALBROWSER.currentWindow.__options.webPreferences;
+    SOCIALBROWSER.partition = SOCIALBROWSER.webPreferences.partition;
+  } else {
+    SOCIALBROWSER.webPreferences = SOCIALBROWSER.webContents.getLastWebPreferences();
+    SOCIALBROWSER.partition = SOCIALBROWSER.webContents.session.storagePath ? 'persist:' + SOCIALBROWSER.webContents.session.storagePath.split('\\').pop() : null;
+    SOCIALBROWSER.webPreferences = { ...SOCIALBROWSER.webPreferences, ...{ partition: SOCIALBROWSER.partition } };
+  }
+
+  SOCIALBROWSER.isMemoryMode = !SOCIALBROWSER.webContents.session.isPersistent();
+  SOCIALBROWSER.session_id = 0;
+
+  SOCIALBROWSER.isIframe = function () {
+    try {
+      return window.self !== window.top;
+    } catch (e) {
+      return true;
+    }
+  };
+
+  SOCIALBROWSER.origin = document.location.origin;
+  if (!SOCIALBROWSER.origin || SOCIALBROWSER.origin == 'null') {
+    SOCIALBROWSER.origin = document.location.hostname;
+  }
+  SOCIALBROWSER.hostname = document.location.hostname;
+  SOCIALBROWSER.href = document.location.href;
+
+  SOCIALBROWSER.selected_properties = 'scripts_files,user_data,user_data_input,sites,preload_list,ad_list,proxy_list,proxy,core,bookmarks,session_list,user_agent_list,blocking,video_quality_list,customHeaderList';
+  if (SOCIALBROWSER.href.indexOf('127.0.0.1:60080') !== -1 || SOCIALBROWSER.href.indexOf('file://') == 0 || SOCIALBROWSER.href.indexOf('browser://') == 0) {
+    SOCIALBROWSER.selected_properties = '*';
+  }
+
   SOCIALBROWSER.callSync = SOCIALBROWSER.ipcSync = function (channel, value) {
     value.__options = SOCIALBROWSER.options;
     return SOCIALBROWSER.electron.ipcRenderer.sendSync(channel, value);
@@ -95,136 +131,60 @@
   SOCIALBROWSER.on = function (name, callback) {
     return SOCIALBROWSER.electron.ipcRenderer.on(name, callback);
   };
-  SOCIALBROWSER.ws = function (message) {
-    SOCIALBROWSER.ipc('ws', message);
-  };
-  SOCIALBROWSER.share = function (message) {
-    SOCIALBROWSER.ipc('share', message);
-  };
-
-  SOCIALBROWSER.fetchJson = function (options, callback) {
-    options.id = new Date().getTime() + Math.random();
-    options.url = SOCIALBROWSER.handleURL(options.url);
-
-    return new Promise((resolve, reject) => {
-      SOCIALBROWSER.on('[fetch][json][data]', (e, res) => {
-        if (res.options.id == options.id) {
-          if (res.error) {
-            if (!callback) {
-              reject({ message: res.error });
-            }
-            SOCIALBROWSER.log('SOCIALBROWSER.fetchJson error : ', res.error);
-          } else if (res.data) {
-            if (!callback) {
-              resolve(res.data);
-            } else {
-              callback(res.data);
-            }
-          } else {
-            SOCIALBROWSER.log('[fetch][json][data] res : ', res);
-          }
-        }
-      });
-      SOCIALBROWSER.call('[fetch][json]', options);
-    });
-  };
-
-  SOCIALBROWSER.nativeImage = function (_path) {
-    try {
-      if (!_path) {
-        return null;
-      }
-      return SOCIALBROWSER.electron.nativeImage.createFromPath(_path).resize({
-        width: 16,
-        height: 16,
-      });
-    } catch (error) {
-      SOCIALBROWSER.log('nativeImage', error);
-      return null;
+  SOCIALBROWSER.set = function (key, value) {
+    if (!key || typeof value === 'undefined') {
+      return false;
     }
-  };
-
-  SOCIALBROWSER.onLoad = function (fn) {
-    if (document.readyState !== 'loading') {
-      fn();
-    } else {
-      document.addEventListener('DOMContentLoaded', () => {
-        fn();
-      });
-    }
-  };
-
-  SOCIALBROWSER.currentWindow = SOCIALBROWSER.remote.getCurrentWindow();
-  SOCIALBROWSER.webContents = SOCIALBROWSER.currentWindow.webContents;
-
-  if (SOCIALBROWSER.currentWindow.__options && SOCIALBROWSER.currentWindow.__options.webPreferences) {
-    SOCIALBROWSER.webPreferences = SOCIALBROWSER.currentWindow.__options.webPreferences;
-    SOCIALBROWSER.partition = SOCIALBROWSER.webPreferences.partition;
-  } else {
-    SOCIALBROWSER.webPreferences = SOCIALBROWSER.webContents.getLastWebPreferences();
-    SOCIALBROWSER.partition = SOCIALBROWSER.webContents.session.storagePath ? 'persist:' + SOCIALBROWSER.webContents.session.storagePath.split('\\').pop() : null;
-    SOCIALBROWSER.webPreferences = { ...SOCIALBROWSER.webPreferences, ...{ partition: SOCIALBROWSER.partition } };
-  }
-
-  SOCIALBROWSER.timeOffset = new Date().getTimezoneOffset();
-
-  SOCIALBROWSER.guid = function () {
-    return SOCIALBROWSER.md5(SOCIALBROWSER.partition + document.location.hostname + SOCIALBROWSER.var.core.id);
-  };
-
-  SOCIALBROWSER.isMemoryMode = !SOCIALBROWSER.webContents.session.isPersistent();
-  SOCIALBROWSER.session_id = 0;
-  SOCIALBROWSER.sessionId = function () {
-    if (SOCIALBROWSER.session_id) {
-      return SOCIALBROWSER.session_id;
-    }
-    SOCIALBROWSER.var.session_list.forEach((s, i) => {
-      if (s.name == SOCIALBROWSER.partition) {
-        SOCIALBROWSER.session_id = i + 1;
-      }
-    });
-    return SOCIALBROWSER.session_id;
-  };
-
-  SOCIALBROWSER.maxOf = function (num, max) {
-    if (num == 0) {
-      num = SOCIALBROWSER.random(0, max);
-    }
-    if (num > max) {
-      num = num - max;
-      return SOCIALBROWSER.maxOf(num, max);
-    }
-    return num;
-  };
-
-  SOCIALBROWSER.isIframe = function () {
-    try {
-      return window.self !== window.top;
-    } catch (e) {
+    value = JSON.stringify(value);
+    if (!SOCIALBROWSER.isMemoryMode) {
+      window.localStorage.setItem(key, value);
+      return true;
+    } else if (window.sessionStorage) {
+      window.sessionStorage.setItem(key, value);
       return true;
     }
+    return false;
+  };
+  SOCIALBROWSER.get = function (key) {
+    if (!key) {
+      return null;
+    }
+    let value = null;
+    if (!SOCIALBROWSER.isMemoryMode) {
+      value = window.localStorage.getItem(key);
+    } else if (window.sessionStorage) {
+      value = window.sessionStorage.getItem(key);
+    }
+    if (value) {
+      value = JSON.parse(value);
+    }
+    return value;
+  };
+  SOCIALBROWSER.remove = function (key) {
+    if (!key) {
+      return false;
+    }
+    if (!SOCIALBROWSER.isMemoryMode) {
+      if (key == '*') {
+        window.localStorage.clear();
+      } else {
+        window.localStorage.removeItem(key);
+      }
+
+      return true;
+    } else if (window.sessionStorage) {
+      if (key == '*') {
+        window.sessionStorage.clear();
+      } else {
+        window.sessionStorage.removeItem(key);
+      }
+      return true;
+    }
+    return false;
   };
 
-  SOCIALBROWSER.origin = document.location.origin;
-  if (!SOCIALBROWSER.origin || SOCIALBROWSER.origin == 'null') {
-    SOCIALBROWSER.origin = document.location.hostname;
-  }
-  SOCIALBROWSER.hostname = document.location.hostname;
-  SOCIALBROWSER.href = document.location.href;
-
-  SOCIALBROWSER.selected_properties = 'scripts_files,user_data,user_data_input,sites,facebook,context_menu,open_list,preload_list,ad_list,proxy_list,proxy,core,login,vip,bookmarks,black_list,white_list,session_list,user_agent_list,blocking,video_quality_list,customHeaderList';
-  if (SOCIALBROWSER.href.indexOf('127.0.0.1:60080') !== -1 || SOCIALBROWSER.href.indexOf('file://') == 0 || SOCIALBROWSER.href.indexOf('browser://') == 0) {
-    SOCIALBROWSER.selected_properties = '*';
-  }
-
-  SOCIALBROWSER.init = function () {
-    SOCIALBROWSER.browserData = SOCIALBROWSER.ipcSync('[browser][data]', {
-      hostname: SOCIALBROWSER.hostname,
-      url: SOCIALBROWSER.href,
-      name: SOCIALBROWSER.selected_properties,
-      win_id: SOCIALBROWSER.currentWindow.id,
-      partition: SOCIALBROWSER.partition,
-    });
+  SOCIALBROWSER.init2 = function () {
+    
     SOCIALBROWSER.is_main_data = true;
     SOCIALBROWSER.child_id = SOCIALBROWSER.browserData.child_id;
     SOCIALBROWSER.child_index = SOCIALBROWSER.browserData.child_index;
@@ -242,98 +202,18 @@
     if (!SOCIALBROWSER.partition && SOCIALBROWSER.isMemoryMode) {
       SOCIALBROWSER.partition = 'ghost';
     }
-
+    if (!SOCIALBROWSER.session.privacy.enable_virtual_pc && SOCIALBROWSER.var.blocking.privacy.enable_virtual_pc) {
+      SOCIALBROWSER.session.privacy.enable_virtual_pc = true
+      SOCIALBROWSER.session.privacy.vpc = SOCIALBROWSER.var.blocking.privacy.vpc;
+    }
     require(SOCIALBROWSER.files_dir + '/js/context-menu/init.js')(SOCIALBROWSER);
     require(SOCIALBROWSER.files_dir + '/js/context-menu/event.js')(SOCIALBROWSER);
+    require(SOCIALBROWSER.files_dir + '/js/context-menu/fn.js')(SOCIALBROWSER);
 
     if (SOCIALBROWSER.var.core.id.like('*test*')) {
       SOCIALBROWSER.developerMode = true;
     }
-
-    SOCIALBROWSER.log(` [[[ ${document.location.href} ]]] `);
-    SOCIALBROWSER.set = function (key, value) {
-      if (!key || typeof value === 'undefined') {
-        return false;
-      }
-      value = JSON.stringify(value);
-      if (!SOCIALBROWSER.isMemoryMode) {
-        window.localStorage.setItem(key, value);
-        return true;
-      } else if (window.sessionStorage) {
-        window.sessionStorage.setItem(key, value);
-        return true;
-      }
-      return false;
-    };
-    SOCIALBROWSER.get = function (key) {
-      if (!key) {
-        return null;
-      }
-      let value = null;
-      if (!SOCIALBROWSER.isMemoryMode) {
-        value = window.localStorage.getItem(key);
-      } else if (window.sessionStorage) {
-        value = window.sessionStorage.getItem(key);
-      }
-      if (value) {
-        value = JSON.parse(value);
-      }
-      return value;
-    };
-    SOCIALBROWSER.remove = function (key) {
-      if (!key) {
-        return false;
-      }
-      if (!SOCIALBROWSER.isMemoryMode) {
-        if (key == '*') {
-          window.localStorage.clear();
-        } else {
-          window.localStorage.removeItem(key);
-        }
-
-        return true;
-      } else if (window.sessionStorage) {
-        if (key == '*') {
-          window.sessionStorage.clear();
-        } else {
-          window.sessionStorage.removeItem(key);
-        }
-        return true;
-      }
-      return false;
-    };
-    SOCIALBROWSER.generateVPC = function () {
-      let width = SOCIALBROWSER.random(800, 1080);
-      let height = SOCIALBROWSER.random(720, 1080);
-      return {
-        hide_memory: true,
-        memory_count: SOCIALBROWSER.random(1, 128),
-        hide_cpu: true,
-        cpu_count: SOCIALBROWSER.random(1, 64),
-        hide_lang: true,
-        languages: 'abcdefghijklmnopqrstuvwxyz'[SOCIALBROWSER.random(0, 25)] + 'abcdefghijklmnopqrstuvwxyz'[SOCIALBROWSER.random(0, 25)],
-        mask_date: true,
-        date_offset: SOCIALBROWSER.random(-300, 300),
-        hide_vega: true,
-        hide_mimetypes: true,
-        hide_plugins: true,
-        hide_screen: true,
-        screen_width: width,
-        screen_height: height,
-        screen_availWidth: width,
-        screen_availHeight: height,
-        set_window_active: true,
-        block_rtc: true,
-        hide_battery: true,
-        hide_media_devices: true,
-        connection: {
-          downlink: SOCIALBROWSER.random(1, 20) / 10,
-          effectiveType: '4g',
-          rtt: SOCIALBROWSER.random(300, 900),
-          type: SOCIALBROWSER.connectionTypeList[SOCIALBROWSER.random(1, SOCIALBROWSER.connectionTypeList.length - 1)].name,
-        },
-      };
-    };
+    SOCIALBROWSER.log(` ... ${document.location.href} ... `);
     if (SOCIALBROWSER.sessionId() == 0) {
       SOCIALBROWSER.session.privacy.enable_virtual_pc = true;
       SOCIALBROWSER.session.privacy.vpc = SOCIALBROWSER.get('vpc') || SOCIALBROWSER.generateVPC();
@@ -342,39 +222,33 @@
     require(SOCIALBROWSER.files_dir + '/js/context-menu/load.js')(SOCIALBROWSER);
     window.SOCIALBROWSER = SOCIALBROWSER;
   };
+
+
+  SOCIALBROWSER.init = function () {
+    if (true || SOCIALBROWSER.isIframe()) {
+      SOCIALBROWSER.invoke('[browser][data]', {
+        hostname: SOCIALBROWSER.hostname,
+        url: SOCIALBROWSER.href,
+        name: SOCIALBROWSER.selected_properties,
+        win_id: SOCIALBROWSER.currentWindow.id,
+        partition: SOCIALBROWSER.partition,
+      }).then((data) => {
+        SOCIALBROWSER.browserData = data;
+        SOCIALBROWSER.init2();
+      });
+    } else {
+      SOCIALBROWSER.browserData = SOCIALBROWSER.ipcSync('[browser][data]', {
+        hostname: SOCIALBROWSER.hostname,
+        url: SOCIALBROWSER.href,
+        name: SOCIALBROWSER.selected_properties,
+        win_id: SOCIALBROWSER.currentWindow.id,
+        partition: SOCIALBROWSER.partition,
+      });
+      SOCIALBROWSER.init2();
+    }
+  };
+
   SOCIALBROWSER.init();
-  SOCIALBROWSER.on('[update-browser-var]', (e, res) => {
-    if (res.options.name == 'user_data_input') {
-      SOCIALBROWSER.var.user_data_input = [];
-      res.options.data.forEach((d) => {
-        if (document.location.href.indexOf(d.hostname) !== -1) {
-          SOCIALBROWSER.var.user_data_input.push(d);
-        }
-      });
 
-      return;
-    }
-
-    if (res.options.name == 'user_data') {
-      SOCIALBROWSER.var.user_data = [];
-      res.options.data.forEach((d) => {
-        if (document.location.href.indexOf(d.hostname) !== -1) {
-          SOCIALBROWSER.var.user_data.push(d);
-        }
-      });
-
-      return;
-    }
-
-    SOCIALBROWSER.var[res.options.name] = res.options.data;
-    if (SOCIALBROWSER.onVarUpdated) {
-      SOCIALBROWSER.onVarUpdated(res.options.name, res.options.data);
-    }
-    if (res.options.name == 'session_list') {
-      SOCIALBROWSER.var.session_list.sort((a, b) => (a.display > b.display ? 1 : -1));
-    }
-    SOCIALBROWSER.callEvent('updated', { name: res.options.name });
-  });
   window.SOCIALBROWSER = SOCIALBROWSER;
-  // SOCIALBROWSER.electron.contextBridge.exposeInMainWorld('$$$$$', SOCIALBROWSER);
 })();

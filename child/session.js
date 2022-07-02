@@ -187,7 +187,7 @@ module.exports = function (child) {
                 }
 
                 let end = false;
-                child.parent.var.white_list.forEach((s) => {
+                child.parent.var.blocking.white_list.forEach((s) => {
                     if (end) {
                         return;
                     }
@@ -204,8 +204,8 @@ module.exports = function (child) {
                     return;
                 }
 
-                if (child.parent.var.black_list) {
-                    child.parent.var.black_list.forEach((s) => {
+                if (child.parent.var.blocking.black_list) {
+                    child.parent.var.blocking.black_list.forEach((s) => {
                         if (url.like(s.url)) {
                             end = true;
                             //  child.log(`\n Block black_list :  ${s.url} \n`);
@@ -446,7 +446,7 @@ module.exports = function (child) {
                 });
 
                 let is_white = false;
-                child.parent.var.white_list.forEach((w) => {
+                child.parent.var.blocking.white_list.forEach((w) => {
                     if (url.like(w.url)) {
                         is_white = true;
                     }

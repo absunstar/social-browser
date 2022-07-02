@@ -22,11 +22,11 @@ module.exports = function (SOCIALBROWSER) {
 
     addCss(`
     ._2s1x ._2s1y {
-    background-color: ${SOCIALBROWSER.var.facebook.color};
+    background-color: ${SOCIALBROWSER.var.blocking.facebook.color};
     }
 `);
 
-    if (SOCIALBROWSER.var.facebook.remove_ads) {
+    if (SOCIALBROWSER.var.blocking.facebook.remove_ads) {
       document.querySelectorAll('.pagelet , .pagelet-group.pagelet a[href*="/ad_"]').forEach((p) => p.remove());
       setInterval(() => {
         document.querySelectorAll('.pagelet').forEach((p) => p.remove());

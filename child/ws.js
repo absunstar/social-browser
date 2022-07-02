@@ -29,7 +29,7 @@ module.exports = function (child) {
       try {
         let message = JSON.parse(event.data || event);
         let windowType = child.parent ? child.parent.windowType : child.index;
-        child.log(`\n\n ${windowType} new Message .............. ${message.type}`);
+       // child.log(`\n\n ${windowType} new Message .............. ${message.type}`);
 
         if (message.type == 'connected') {
           child.sendMessage({
