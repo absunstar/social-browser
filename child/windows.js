@@ -796,7 +796,7 @@ module.exports = function (child) {
       }
 
       let real_url = url || event.url || '';
-      child.log('new-window', real_url);
+      child.log('\n new-window', real_url);
       if (real_url.like('https://www.youtube.com/watch*')) {
         real_url = 'https://www.youtube.com/embed/' + real_url.split('=')[1].split('&')[0];
 
@@ -893,6 +893,27 @@ module.exports = function (child) {
       let current_url_parser = child.url.parse(win.getURL());
 
       let allow = false;
+
+      parent.var.blocking.white_list.forEach((d) => {
+        if (url_parser.host.like(d.url) || current_url_parser.host.like(d.url)) {
+          allow = true;
+        }
+      });
+
+      if (allow) {
+        child.sendMessage({
+          type: '[send-render-message]',
+          data: {
+            name: '[open new tab]',
+            url: real_url,
+            partition: win.__options.partition,
+            user_name: win.__options.user_name,
+            options: parent.options,
+          },
+        });
+        return;
+      }
+
       parent.var.blocking.popup.white_list.forEach((d) => {
         if (url_parser.host.like(d.url) || current_url_parser.host.like(d.url)) {
           allow = true;
@@ -901,10 +922,14 @@ module.exports = function (child) {
 
       if (allow) {
         child.sendMessage({
-          type: '[open new tab]',
-          url: real_url.replace('#___new_tab___', '').replace('#___new_popup___', '').replace('#___trusted_window___', ''),
-          partition: win.__options.partition,
-          user_name: win.__options.user_name,
+          type: '[send-render-message]',
+          data: {
+            name: '[open new tab]',
+            url: real_url,
+            partition: win.__options.partition,
+            user_name: win.__options.user_name,
+            options: parent.options,
+          },
         });
         return;
       }
@@ -914,7 +939,7 @@ module.exports = function (child) {
           type: '[send-render-message]',
           data: {
             name: '[open new tab]',
-            url: real_url.replace('#___new_tab___', '').replace('#___new_popup___', '').replace('#___trusted_window___', ''),
+            url: real_url,
             partition: win.__options.partition,
             user_name: win.__options.user_name,
             options: parent.options,
@@ -922,10 +947,14 @@ module.exports = function (child) {
         });
       } else if (parent.var.blocking.popup.allow_external && !url_parser.host.contains(current_url_parser.host)) {
         child.sendMessage({
-          type: '[open new tab]',
-          url: real_url.replace('#___new_tab___', '').replace('#___new_popup___', '').replace('#___trusted_window___', ''),
-          partition: win.__options.partition,
-          user_name: win.__options.user_name,
+          type: '[send-render-message]',
+          data: {
+            name: '[open new tab]',
+            url: real_url,
+            partition: win.__options.partition,
+            user_name: win.__options.user_name,
+            options: parent.options,
+          },
         });
       }
     });

@@ -83,9 +83,10 @@ module.exports = function (SOCIALBROWSER) {
       set_window_active: true,
       block_rtc: true,
       hide_battery: true,
-      hide_canvas : true,
-      hide_audio : true,
+      hide_canvas: true,
+      hide_audio: true,
       hide_media_devices: true,
+      hide_connection: true,
       connection: {
         downlink: SOCIALBROWSER.random(1, 15) / 10,
         downlinkMax: SOCIALBROWSER.random(15, 30) / 10,

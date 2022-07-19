@@ -27,13 +27,14 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     console.log('from scope', info);
     $scope.setting.session_list = info.data;
   });
-
-  SOCIALBROWSER.onVarUpdated = function (name, data) {
-    console.log('from scope', name);
-    $scope.setting[name] = data;
-    $scope.$applyAsync();
-  };
 */
+  SOCIALBROWSER.onVarUpdated = function (name, data) {
+    if (name == 'proxy_list') {
+      $scope.setting[name] = data;
+      $scope.$applyAsync();
+    }
+  };
+
   $scope.do_click = function (proxy) {
     let input = document.querySelector('#input_proxy');
     if (!input.getAttribute('x-handle')) {
@@ -44,7 +45,24 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     }
     input.click();
   };
+  $scope.generateVPC = function (session) {
+    if (typeof session == 'string' && session == '*') {
+      $scope.setting.session_list.forEach((s) => {
+        s.privacy.vpc = SOCIALBROWSER.generateVPC();
+        s.privacy.enable_virtual_pc = true;
+      });
+    } else {
+      if (session) {
+        session.privacy.vpc = SOCIALBROWSER.generateVPC();
+        session.privacy.enable_virtual_pc = true;
+      } else {
+        SOCIALBROWSER.var.blocking.privacy.vpc = SOCIALBROWSER.generateVPC();
+        $scope.setting.blocking.privacy.vpc = SOCIALBROWSER.var.blocking.privacy.vpc;
+      }
+    }
 
+    $scope.$applyAsync();
+  };
   $scope.import = function (files, proxy) {
     var fd = new FormData();
     fd.append('proxyFile', files[0]);

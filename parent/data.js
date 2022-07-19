@@ -424,8 +424,16 @@ module.exports = function init(parent) {
       parent.var.blocking.popup = parent.var.blocking.popup || {};
       parent.var.blocking.context_menu = parent.var.blocking.context_menu || {};
       parent.var.blocking.downloader = parent.var.blocking.downloader || {};
-      parent.var.blocking.downloader.apps = parent.var.blocking.downloader.apps || [];
-      
+      parent.var.blocking.downloader.apps = parent.var.blocking.downloader.apps || [
+        {
+          name: 'C:\\Program Files (x86)\\Internet Download Manager\\IDMan.exe',
+          params: '/d $url /f $file_name',
+        },
+        {
+          name: 'C:\\Users\\$username\\AppData\\Local\\Softdeluxe\\Free Download Manager\\fdm.exe',
+          params: '--url $url --path $file_name',
+        },
+      ];
     }
     return parent.var[name];
   };
@@ -462,7 +470,7 @@ module.exports = function init(parent) {
     }
     try {
       if (true && parent.clientList) {
-       // parent.log(`update var ( ${name} ) to all childs`);
+        // parent.log(`update var ( ${name} ) to all childs`);
         parent.clientList.forEach((client) => {
           if (client.ws) {
             if (name == 'urls') {

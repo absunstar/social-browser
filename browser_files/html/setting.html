@@ -27,14 +27,19 @@
         --label-font-weight: normal;
         --input-focus-border-width: 0 0 1px;
         --input-focus-border-color: #2196f3;
+        --tabs-header-width: 25%;
+        --tabs-content-width: 75%;
       }
       html,
       body {
-        background: #ffffff;
+        background: #2196f33b;
       }
       body {
         margin: 0;
         padding: 0px;
+      }
+      .tabs .tabs-header {
+        background: #2196f31c;
       }
       .tabs .tabs-header .tab-link {
         font-size: 18px;
@@ -148,7 +153,7 @@
 
               <a class="tab-link" id="safty_btn" onclick="site.showTabContent(event, '#safty_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-lock"></i> Children Safty Mode </a>
               <a class="tab-link" onclick="site.showTabContent(event, '#blocking_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-ban"></i> Blocking Engine</a>
-              <a class="tab-link" onclick="site.showTabContent(event, '#privacy_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-laptop"></i> Virtual PC </a>
+              <a class="tab-link" onclick="site.showTabContent(event, '#privacy_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-laptop"></i> Virtual PC [Browser FingerPrint]</a>
               <a class="tab-link" onclick="site.showTabContent(event, '#javascript_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-code"></i> Java Script </a>
 
               <a class="tab-link" onclick="site.showTabContent(event, '#youtube_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fab fa-youtube"></i> Youtube </a>
@@ -298,6 +303,7 @@
                   <br />
                   <br />
                   <div class="row padding" ng-show="setting.blocking.privacy.enable_virtual_pc">
+                    <i-button type="bg-black white bold" label="Generate Virual PC" ng-click="generateVPC()"></i-button>
                     <div class="row padding border2">
                       <div class="col3"><i-checkbox label="Hide CPU Count" ng-model="setting.blocking.privacy.vpc.hide_cpu"></i-checkbox></div>
                       <div class="col6">
@@ -348,7 +354,7 @@
                     </div>
                     <div class="row padding border2">
                       <i-checkbox class="col6" label="Set Window Alawys Active" ng-model="setting.blocking.privacy.vpc.set_window_active"></i-checkbox>
-                      <i-checkbox class="col6" label="Mask User Agent (profile + host)[some videos not work]" ng-model="setting.blocking.privacy.vpc.mask_user_agent"></i-checkbox>
+                      <i-checkbox class="col6" label="Mask User Agent (profile + host) [some Sites not work] " ng-model="setting.blocking.privacy.vpc.mask_user_agent"></i-checkbox>
                       <i-checkbox class="col6" label="Block HTML Canvas" ng-model="setting.blocking.privacy.vpc.hide_canvas"></i-checkbox>
 
                       <i-checkbox class="col6" label="Block Media Devices [camera , mic , ...]" ng-model="setting.blocking.privacy.vpc.hide_media_devices"></i-checkbox>
@@ -360,7 +366,7 @@
                       <i-checkbox class="col6" label="Mask Battery informations (profile)" ng-model="setting.blocking.privacy.vpc.hide_battery"></i-checkbox>
 
                       <i-checkbox class="col6" label="Hide MimeTypes" ng-model="setting.blocking.privacy.vpc.hide_mimetypes"></i-checkbox>
-                      <i-checkbox class="col6" label="Hide Fonts[some videos not work]" ng-model="setting.blocking.privacy.vpc.hide_fonts"></i-checkbox>
+                      <i-checkbox class="col6" label="Hide Fonts [some Sites not work] " ng-model="setting.blocking.privacy.vpc.hide_fonts"></i-checkbox>
 
                       <fieldset>
                         <legend>Options</legend>
@@ -574,6 +580,7 @@
                   <br />
                   <br />
                   <div class="row">
+                    <i-button type="bg-black white bold" label="Generate Virual PC for all users" ng-click="generateVPC('*')"></i-button>
                     <i-button type="" onclick="SOCIALBROWSER.call('check_sessions')" label="Checking Sessions"></i-button>
                   </div>
                   <div class="row">
@@ -590,6 +597,7 @@
                         <td><input class="block full-width" type="text" ng-model="_se.display" /></td>
                         <td>
                           <a class="btn" ng-click="showSession(_se)"> Options </a>
+                          <i-button type="bg-black white bold" label="Generate Virual PC" ng-click="generateVPC(_se)"></i-button>
                           <a class="btn red" ng-click="removeSession(_se)"> <i class="fa fa-trash"></i> Remove </a>
                         </td>
                       </tr>
@@ -655,6 +663,7 @@
                       <i-checkbox label="Enable Virtual PC" ng-model="currentSession.privacy.enable_virtual_pc"></i-checkbox>
                       <br />
                       <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border">
+                        <i-button type="bg-black white bold" label="Generate Virual PC" ng-click="generateVPC(currentSession)"></i-button>
                         <div class="col6"><i-checkbox label="Hide CPU Count" ng-model="currentSession.privacy.vpc.hide_cpu"></i-checkbox></div>
                         <div class="col6">
                           <i-control type="number" ng-disabled="currentSession.privacy.vpc.hide_cpu !== true" ng-model="currentSession.privacy.vpc.cpu_count" label="Custom CPU Count"></i-control>
@@ -701,6 +710,32 @@
                           <i-control type="number" ng-disabled="currentSession.privacy.vpc.hide_connection !== true" ng-model="currentSession.privacy.vpc.connection.rtt" label="Ping (low is fast)"></i-control>
                           <i-control ng-disabled="currentSession.privacy.vpc.hide_connection !== true" ng-model="currentSession.privacy.vpc.connection.type" label="Network Source"></i-control>
                         </div>
+                      </div>
+                      <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border2">
+                        <i-checkbox class="col6" label="Set Window Alawys Active" ng-model="currentSession.privacy.vpc.set_window_active"></i-checkbox>
+                        <i-checkbox class="col6" label="Mask User Agent (profile + host) [some Sites not work] " ng-model="currentSession.privacy.vpc.mask_user_agent"></i-checkbox>
+                        <i-checkbox class="col6" label="Block HTML Canvas" ng-model="currentSession.privacy.vpc.hide_canvas"></i-checkbox>
+
+                        <i-checkbox class="col6" label="Block Media Devices [camera , mic , ...]" ng-model="currentSession.privacy.vpc.hide_media_devices"></i-checkbox>
+                        <br />
+                        <i-checkbox class="col6" label="Hide Audio" ng-model="currentSession.privacy.vpc.hide_audio"></i-checkbox>
+                        <i-checkbox class="col6" label="Hide WebGL" ng-model="currentSession.privacy.vpc.hide_webgl"></i-checkbox>
+                        <i-checkbox class="col6" label="Block RTC Connections" ng-model="currentSession.privacy.vpc.block_rtc"></i-checkbox>
+
+                        <i-checkbox class="col6" label="Mask Battery informations (profile)" ng-model="currentSession.privacy.vpc.hide_battery"></i-checkbox>
+
+                        <i-checkbox class="col6" label="Hide MimeTypes" ng-model="currentSession.privacy.vpc.hide_mimetypes"></i-checkbox>
+                        <i-checkbox class="col6" label="Hide Fonts [some Sites not work] " ng-model="currentSession.privacy.vpc.hide_fonts"></i-checkbox>
+
+                        <fieldset>
+                          <legend>Options</legend>
+
+                          <i-checkbox class="col6" label="Remove X Frame Options (iframe)" ng-model="currentSession.privacy.vpc.remove_x_frame_options"></i-checkbox>
+                          <i-checkbox class="col6" label="Hide Browser (site) Permisions" ng-model="currentSession.privacy.vpc.hide_permissions"></i-checkbox>
+                          <i-checkbox class="col6" label="Block Google ID in other sites" ng-model="currentSession.privacy.vpc.hide_gid"></i-checkbox>
+                          <i-checkbox class="col6" label="Block Cloud Flare Tracking" ng-model="currentSession.privacy.vpc.block_cloudflare"></i-checkbox>
+                          <i-checkbox class="col6" label="Send Don't Track Header" ng-model="currentSession.privacy.vpc.dnt"></i-checkbox>
+                        </fieldset>
                       </div>
                     </form>
                   </div>

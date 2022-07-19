@@ -883,7 +883,16 @@ module.exports = function (SOCIALBROWSER) {
     arr.push({
       type: 'separator',
     });
-
+    arr.push({
+      label: 'Hide window',
+      click() {
+        SOCIALBROWSER.currentWindow.hide();
+        SOCIALBROWSER.currentWindow.setSkipTaskbar(true);
+        SOCIALBROWSER.currentWindow.setAlwaysOnTop(false);
+        SOCIALBROWSER.currentWindow.setFullScreen(false);
+        SOCIALBROWSER.currentWindow.setAudioMuted(true);
+      },
+    });
     arr.push({
       label: 'Close window',
       click() {
@@ -1569,7 +1578,7 @@ module.exports = function (SOCIALBROWSER) {
 
     add_input_menu(node, menu, doc);
     add_a_menu(node, menu, doc);
-
+   
     if (SOCIALBROWSER.__options.windowType !== 'main') {
       if (SOCIALBROWSER.memoryText && SOCIALBROWSER.isValidURL(SOCIALBROWSER.memoryText)) {
         let arr = get_url_menu_list(SOCIALBROWSER.memoryText);
@@ -1597,12 +1606,12 @@ module.exports = function (SOCIALBROWSER) {
       }
 
       get_img_menu(node, menu, doc);
-
+     
       get_social_menu(node, menu, doc, null);
       SOCIALBROWSER.menu_list.forEach((m) => {
         menu.append(new $menuItem(m));
       });
-
+ 
       if (SOCIALBROWSER.var.blocking.open_list.length > 0) {
         SOCIALBROWSER.var.blocking.open_list.forEach((o) => {
           if (o.enabled) {
@@ -1732,7 +1741,7 @@ module.exports = function (SOCIALBROWSER) {
       if (SOCIALBROWSER.var.blocking.context_menu.page_options) {
         get_options_menu(node, menu, doc);
       }
-
+      
       if (SOCIALBROWSER.var.blocking.context_menu.inspect && !SOCIALBROWSER.DevToolsOff) {
         menu.append(
           new $menuItem({
