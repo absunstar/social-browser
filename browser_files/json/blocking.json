@@ -91,7 +91,7 @@
     "quality": { "name": "medium", "value": "360" }
   },
   "social": { "allow_10khits": false, "allow_addmefast": false, "allow_youlikehits": false, "allow_menu": true, "allow_alexa": false, "allow_rankboostup": true, "allow_watchhours": true, "allow_exeio": false, "allow_hitleap": true },
-  "permissions": { "allow_geolocation": false, "allow_fullscreen": true, "allow_openExternal": true, "allow_clipboard_read": true },
+  "permissions": { "allow_geolocation": false, "allow_fullscreen": true, "allow_openExternal": false, "allow_clipboard_read": true },
   "core": { "remove_external_iframe": false, "block_empty_iframe": false, "block_ads": true, "block_html_tags": false, "skip_video_ads": true, "send_browser_id": true },
   "internet_speed": { "type": "default", "latency": 0, "download": 0, "upload": 0 },
   "white_list": [{ "url": "*google.com*" }, { "url": "*facebook.com*" }, { "url": "*godaddy.com*" }, { "url": "*127.0.0.1*" }],

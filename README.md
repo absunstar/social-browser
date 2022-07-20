@@ -14,6 +14,7 @@
 ## Top Options
 
 - Multi-Profile [user-agent , proxy-setting , ...]
+- Auto Generate Virual PC To Users
 - Import & Export All Browser Data [ passwords , sessions , ...]
 - Setting Password Protected
 - Open Same-Site with Diffrent Users
@@ -44,7 +45,6 @@
 - Remove Proxy From Users
 - Auto Assign UserAgent To Users 
 - Remove UserAgent From Users
-- Auto Generate Random pc To Users
 
 - Auto Update Ads , blocking , white site , ...
 
