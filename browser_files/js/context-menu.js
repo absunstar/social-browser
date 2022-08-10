@@ -194,6 +194,7 @@
     SOCIALBROWSER.files_dir = SOCIALBROWSER.browserData.files_dir;
     SOCIALBROWSER.dir = SOCIALBROWSER.browserData.dir;
     SOCIALBROWSER.injectHTML = SOCIALBROWSER.browserData.injectHTML;
+    SOCIALBROWSER.injectCSS = SOCIALBROWSER.browserData.injectCSS;
     SOCIALBROWSER.windows = SOCIALBROWSER.browserData.windows;
     SOCIALBROWSER.windowSetting = SOCIALBROWSER.browserData.windowSetting;
     SOCIALBROWSER.newTabData = SOCIALBROWSER.browserData.newTabData;

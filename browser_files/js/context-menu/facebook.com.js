@@ -1,9 +1,10 @@
 module.exports = function (SOCIALBROWSER) {
-  if (SOCIALBROWSER.var.core.disabled || !document.location.hostname.like('*facebook.com*')) {
+  if (SOCIALBROWSER.var.core.javaScriptOFF || !document.location.hostname.like('*facebook.com*')) {
     return;
   }
 
   SOCIALBROWSER.log(' >>> Facebook Activated');
+  SOCIALBROWSER.var.blocking.facebook = SOCIALBROWSER.var.blocking.facebook || {};
 
   function init() {
     function addCss(css) {
@@ -20,11 +21,13 @@ module.exports = function (SOCIALBROWSER) {
       }
     }
 
-    addCss(`
+    if (SOCIALBROWSER.var.blocking.facebook.color) {
+      addCss(`
     ._2s1x ._2s1y {
     background-color: ${SOCIALBROWSER.var.blocking.facebook.color};
     }
 `);
+    }
 
     if (SOCIALBROWSER.var.blocking.facebook.remove_ads) {
       document.querySelectorAll('.pagelet , .pagelet-group.pagelet a[href*="/ad_"]').forEach((p) => p.remove());

@@ -1,6 +1,8 @@
 module.exports = function init(parent) {
   parent.mkdirSync(parent.data_dir);
+  parent.removeDirSync(parent.path.join(parent.data_dir, 'sessionData'));
   parent.mkdirSync(parent.path.join(parent.data_dir, 'default'));
+  parent.mkdirSync(parent.path.join(parent.data_dir, 'sessionData'));
   parent.mkdirSync(parent.path.join(parent.data_dir, 'crashes'));
   parent.mkdirSync(parent.path.join(parent.data_dir, 'json'));
   parent.mkdirSync(parent.path.join(parent.data_dir, 'logs'));
@@ -483,6 +485,16 @@ module.exports = function init(parent) {
                   },
                 });
               }
+            }else if (name.contains('__cookies_')) {
+              if (client.windowType == 'files') {
+                client.ws.send({
+                  type: '[update-browser-var]',
+                  options: {
+                    name: name,
+                    data: parent.var[name],
+                  },
+                });
+              }
             } else {
               client.ws.send({
                 type: '[update-browser-var]',
@@ -502,6 +514,7 @@ module.exports = function init(parent) {
 
   setInterval(() => {
     let update_proxy_list = false;
+    let update_extension_list = false;
     let update_session_list = false;
     let update_ad_list = false;
     let update_blocking = false;
@@ -513,6 +526,9 @@ module.exports = function init(parent) {
       } else if (q === 'session_list') {
         save_var_quee.splice(i, 1);
         update_session_list = true;
+      } else if (q === 'extension_list') {
+        save_var_quee.splice(i, 1);
+        update_extension_list = true;
       } else if (q === 'ad_list') {
         save_var_quee.splice(i, 1);
         update_ad_list = true;
@@ -526,6 +542,9 @@ module.exports = function init(parent) {
     });
     if (update_proxy_list) {
       parent.save_var('proxy_list');
+    }
+    if (update_extension_list) {
+      parent.save_var('extension_list');
     }
     if (update_session_list) {
       parent.save_var('session_list');
@@ -668,6 +687,10 @@ module.exports = function init(parent) {
     data: parent.readFileSync(parent.path.join(parent.files_dir, 'html', 'custom', 'browser.html')),
   });
 
+  parent.files.push({
+    path: parent.path.join(parent.files_dir, 'html', 'custom', 'browser.css'),
+    data: parent.readFileSync(parent.path.join(parent.files_dir, 'html', 'custom', 'browser.css')),
+  });
   parent.var.scripts_files = [];
   parent.var.core.icon = parent.path.join(parent.files_dir, 'images', 'logo.ico');
   parent.fs.readdir(parent.files_dir + '/js/scripts', (err, files) => {
@@ -682,4 +705,9 @@ module.exports = function init(parent) {
       parent.log(err);
     }
   });
+
+  // parent.var.session_list.forEach((s1) => {
+  //   let s2 = '__cookies_' + s1.name.replace(':', '_list');
+  //   parent.get_var(s2);
+  // });
 };

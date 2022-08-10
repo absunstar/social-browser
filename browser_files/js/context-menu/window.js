@@ -98,7 +98,7 @@ module.exports = function (SOCIALBROWSER) {
       return child_window;
     }
 
-    if (!SOCIALBROWSER.var.core.disabled) {
+    if (!SOCIALBROWSER.var.core.javaScriptOFF) {
       if (!SOCIALBROWSER.isAllowURL(url)) {
         return child_window;
       }
@@ -160,10 +160,10 @@ module.exports = function (SOCIALBROWSER) {
         win.webContents
           .executeJavaScript(code, userGesture)
           .then((result) => {
-             SOCIALBROWSER.log(result);
+            SOCIALBROWSER.log(result);
           })
           .catch((err) => {
-             SOCIALBROWSER.log(err);
+            SOCIALBROWSER.log(err);
           });
       };
     });
@@ -365,4 +365,46 @@ module.exports = function (SOCIALBROWSER) {
     };
     return fake;
   };
+
+  SOCIALBROWSER.cookiesRaw = '';
+  SOCIALBROWSER.clearCookies = function () {
+    SOCIALBROWSER.ipcSync('[cookies-clear]', { domain: document.location.hostname, partition: SOCIALBROWSER.partition });
+    SOCIALBROWSER.cookiesRaw = SOCIALBROWSER.getCookieRaw();
+    return true;
+  };
+  SOCIALBROWSER.clearAllCookies = function () {
+    let domain = document.location.hostname.split('.');
+    let p2 = domain.pop();
+    let p1 = domain.pop();
+    SOCIALBROWSER.ipcSync('[cookies-clear]', { domain: p1 + '.' + p2, partition: SOCIALBROWSER.partition });
+    SOCIALBROWSER.cookiesRaw = SOCIALBROWSER.getCookieRaw();
+    return true;
+  };
+  SOCIALBROWSER.getAllCookies = function () {
+    let domain = document.location.hostname.split('.');
+    let p2 = domain.pop();
+    let p1 = domain.pop();
+    return SOCIALBROWSER.ipcSync('[cookie-get-all]', { domain: p1 + '.' + p2, partition: SOCIALBROWSER.partition });
+  };
+  SOCIALBROWSER.getCookieRaw = function () {
+    return SOCIALBROWSER.ipcSync('[cookie-get-raw]', { name: '*', domain: document.location.hostname, partition: SOCIALBROWSER.partition, url: document.location.origin, path: document.location.pathname, protocol: document.location.protocol });
+  };
+  SOCIALBROWSER.setCookieRaw = function (newValue) {
+    SOCIALBROWSER.ipcSync('[cookie-set-raw]', { cookie: newValue, partition: SOCIALBROWSER.partition, url: document.location.origin, domain: document.location.hostname, path: document.location.pathname, protocol: document.location.protocol });
+    SOCIALBROWSER.cookiesRaw = SOCIALBROWSER.getCookieRaw();
+  };
+  if (false) {
+    Object.defineProperty(document, 'cookie', {
+      get() {
+        if (!SOCIALBROWSER.cookiesRaw) {
+          SOCIALBROWSER.cookiesRaw = SOCIALBROWSER.getCookieRaw();
+        }
+        return encodeURIComponent(SOCIALBROWSER.cookiesRaw);
+      },
+      set(newValue) {
+        SOCIALBROWSER.setCookieRaw(newValue);
+        SOCIALBROWSER.cookiesRaw = SOCIALBROWSER.getCookieRaw();
+      },
+    });
+  }
 };

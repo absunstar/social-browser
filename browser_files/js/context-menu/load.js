@@ -29,7 +29,7 @@ module.exports = function (SOCIALBROWSER) {
   require(SOCIALBROWSER.files_dir + '/js/context-menu/safty.js')(SOCIALBROWSER);
   require(SOCIALBROWSER.files_dir + '/js/context-menu/mongodb.js')(SOCIALBROWSER);
 
-  if (!SOCIALBROWSER.var.core.disabled) {
+  if (!SOCIALBROWSER.var.core.javaScriptOFF) {
     // Load Custom Scripts
     SOCIALBROWSER.var.scripts_files.forEach((file) => {
       require(file.path)(SOCIALBROWSER);

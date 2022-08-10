@@ -32,6 +32,7 @@ module.exports = function init(child) {
       dir: child.parent.dir,
       data_dir: child.parent.data_dir,
       injectHTML: child.parent.injectHTML,
+      injectCSS: child.parent.injectCSS,
       newTabData: child.parent.newTabData,
       windows: child.assignWindows.find((w) => w.child_id == data.win_id),
     };
@@ -65,7 +66,19 @@ module.exports = function init(child) {
   child.electron.ipcMain.on('[handle-session]', (e, obj) => {
     child.handleSession(obj);
   });
-
+  child.electron.ipcMain.on('[cookie-set-raw]', (e, obj) => {
+    child.addCookie(obj);
+    e.returnValue = true;
+  });
+  child.electron.ipcMain.on('[cookie-get-raw]', (e, obj) => {
+    e.returnValue = child.getCookiesRaw(obj);
+  });
+  child.electron.ipcMain.on('[cookie-get-all]', (e, obj) => {
+    e.returnValue = child.getAllCookies(obj);
+  });
+  child.electron.ipcMain.on('[cookies-clear]', (e, obj) => {
+    e.returnValue = child.clearCookies(obj);
+  });
   child.electron.ipcMain.on('window.message', (e, obj) => {
     child.assignWindows.forEach((a) => {
       if (obj.parent_id && obj.parent_id == a.parent_id) {
@@ -154,7 +167,7 @@ module.exports = function init(child) {
     e.returnValue = w;
   });
 
-  child.electron.ipcMain.on('[fetch][json]', (e, options) => {
+  child.electron.ipcMain.on('[fetch-json]', (e, options) => {
     options.body = options.body || options.data || options.payload;
     if (options.body && typeof options.body != 'string') {
       options.body = JSON.stringify(options.body);
@@ -190,18 +203,18 @@ module.exports = function init(child) {
         }
       })
       .then((data) => {
-        e.reply('[fetch][json][data]', {
+        e.reply('[fetch-json-callback]', {
           options: options,
           data: data,
         });
         e.returnValue = data;
       })
       .catch((err) => {
-        e.reply('[fetch][json][data]', {
+        e.reply('[fetch-json-callback]', {
           options: options,
           error: err.message,
         });
-        child.log('[fetch][json]', err.message);
+        child.log('[fetch-json]', err.message);
       });
   });
 

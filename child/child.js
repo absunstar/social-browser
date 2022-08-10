@@ -31,7 +31,8 @@ process.setMaxListeners(0);
 var child = {
   index: parseInt(process.argv[1].replace('--index=', '')),
   dir: process.argv[2].replace('--dir=', ''),
-  speedMode: Boolean(process.argv[3].replace('--speed=', '')),
+  data_dir: process.argv[3].replace('--data_dir=', ''),
+  speedMode: Boolean(process.argv[4].replace('--speed=', '')),
   electron: require('electron'),
   remoteMain: require('@electron/remote/main'),
   fetch: require('node-fetch'),
@@ -71,7 +72,7 @@ require(child.path.join(child.dir, 'child', 'plugins'))(child);
 require(child.path.join(child.dir, 'child', 'proxy_check'))(child);
 
 // require(child.path.join(child.dir, 'child', 'client'))(child);
-app.setAppUserModelId('Social.Browser');
+// app.setAppUserModelId('Social.Browser');
 app.clearRecentDocuments();
 
 if (app.setUserTasks) {
@@ -93,7 +94,11 @@ app.disableHardwareAcceleration();
 //app.commandLine.appendSwitch('enable-features', 'PDFViewerUpdate');
 
 // child.allow_widevinecdm(app)
+app.setPath('userData', child.path.join(child.data_dir, 'default'));
 
+
+// child.mkdirSync(child.path.join(child.data_dir, 'sessionData', 'sessionData_' + 'default'));
+// app.setPath('userData', child.path.join(child.data_dir, 'sessionData', 'sessionData_' + 'default'));
 app.on('ready', function () {
   globalShortcut.unregisterAll();
   app.setAccessibilitySupportEnabled(false);

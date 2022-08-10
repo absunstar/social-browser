@@ -11,13 +11,13 @@ module.exports = function (SOCIALBROWSER) {
     options.url = SOCIALBROWSER.handleURL(options.url);
 
     return new Promise((resolve, reject) => {
-      SOCIALBROWSER.on('[fetch][json][data]', (e, res) => {
+      SOCIALBROWSER.on('[fetch-json-callback]', (e, res) => {
         if (res.options.id == options.id) {
           if (res.error) {
             if (!callback) {
               reject({ message: res.error });
             }
-            SOCIALBROWSER.log('SOCIALBROWSER.fetchJson error : ', res.error);
+            SOCIALBROWSER.log('SOCIALBROWSER.fetchJson error : ', res);
           } else if (res.data) {
             if (!callback) {
               resolve(res.data);
@@ -25,11 +25,11 @@ module.exports = function (SOCIALBROWSER) {
               callback(res.data);
             }
           } else {
-            SOCIALBROWSER.log('[fetch][json][data] res : ', res);
+            SOCIALBROWSER.log('[fetch-json-callback] res : ', res);
           }
         }
       });
-      SOCIALBROWSER.call('[fetch][json]', options);
+      SOCIALBROWSER.call('[fetch-json]', options);
     });
   };
   SOCIALBROWSER.rand = {
@@ -403,7 +403,7 @@ module.exports = function (SOCIALBROWSER) {
     }
 
     SOCIALBROWSER.fs = SOCIALBROWSER.fs || SOCIALBROWSER.require('fs');
-    let path = `${SOCIALBROWSER.browserData.data_dir}/temp_${SOCIALBROWSER.currentWindow.id}_${Math.random()}.js`;
+    let path = `${SOCIALBROWSER.browserData.data_dir}/sessionData/script_${SOCIALBROWSER.currentWindow.id}_${Math.random()}.js`;
     if (SOCIALBROWSER.fs.existsSync(path)) {
       SOCIALBROWSER.require(path);
     } else {
@@ -686,11 +686,17 @@ module.exports = function (SOCIALBROWSER) {
 
   SOCIALBROWSER.injectDefault = function () {
     try {
-      if ((document.body || document.head || document.documentElement) && !document.querySelector('#xxx__browser')) {
-        let xxx__browser = document.createElement('div');
-        xxx__browser.id = 'xxx__browser';
-        xxx__browser.innerHTML = Buffer.from(SOCIALBROWSER.injectHTML).toString();
-        (document.body || document.head || document.documentElement).appendChild(xxx__browser);
+      if ((document.body || document.head || document.documentElement) && !document.querySelector('#social_browser_html')) {
+        let social_browser_html = document.createElement('div');
+        social_browser_html.id = 'social_browser_html';
+        social_browser_html.innerHTML = Buffer.from(SOCIALBROWSER.injectHTML).toString();
+        (document.body || document.head || document.documentElement).appendChild(social_browser_html);
+      }
+      if ((document.body || document.head || document.documentElement) && !document.querySelector('#social_browser_css')) {
+        let social_browser_css = document.createElement('style');
+        social_browser_css.id = 'social_browser_css';
+        social_browser_css.innerText = Buffer.from(SOCIALBROWSER.injectCSS).toString();
+        (document.body || document.head || document.documentElement).appendChild(social_browser_css);
       }
     } catch (error) {
       SOCIALBROWSER.log(error);

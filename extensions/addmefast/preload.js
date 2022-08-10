@@ -72,7 +72,6 @@ module.exports = function (SOCIALBROWSER) {
                                 win.center();
                                 win.setMenuBarVisibility(false);
                                 win.webContents.audioMuted = true;
-                                win.openDevTools();
                                 win.loadURL(url, {
                                     referrer: document.location.href,
                                     userAgent: navigator.userAgent,

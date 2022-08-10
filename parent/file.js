@@ -17,6 +17,9 @@ module.exports = function (parent) {
       return false;
     }
   };
+  parent.removeDirSync = function(dirname){
+    parent.fs.rmSync(dirname, { recursive: true, force: true });
+  }
 
   parent.readFileSync = function (path, encode) {
     let path2 = path + '_tmp';

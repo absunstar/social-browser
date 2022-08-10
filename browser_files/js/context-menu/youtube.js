@@ -1,5 +1,5 @@
 module.exports = function (SOCIALBROWSER) {
-  if (SOCIALBROWSER.var.core.disabled || !document.location.href.like('*youtube.com*')) {
+  if (SOCIALBROWSER.var.core.javaScriptOFF || !document.location.href.like('*youtube.com*')) {
     return;
   }
 

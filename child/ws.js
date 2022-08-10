@@ -29,7 +29,7 @@ module.exports = function (child) {
       try {
         let message = JSON.parse(event.data || event);
         let windowType = child.parent ? child.parent.windowType : child.index;
-       // child.log(`\n\n ${windowType} new Message .............. ${message.type}`);
+        // child.log(`\n\n ${windowType} new Message .............. ${message.type}`);
 
         if (message.type == 'connected') {
           child.sendMessage({
@@ -38,10 +38,9 @@ module.exports = function (child) {
         } else if (message.type == '[browser-core-data]') {
           child.parent = message;
           child.cookies = child.cookies || {};
+          child.cookies[child.parent.cookies.value] = child.parent.cookies.value;
 
-          child.cookies[child.parent.cookies.key] = child.parent.cookies.value;
           child.electron.app.userAgentFallback = child.parent.var.core.user_agent;
-          child.electron.app.setPath('userData', child.path.join(child.parent.data_dir, 'default'));
           if (child.parent.windowType == 'none') {
             child.window = null;
             child.sendMessage({
@@ -63,11 +62,10 @@ module.exports = function (child) {
             child.set_var(message.options.name, message.options.data);
           } else {
             child.parent.var[message.options.name] = message.options.data;
-            if (message.options.name == 'core') {
-              if (child.parent.var.core.user_agent) {
-                child.electron.app.userAgentFallback = child.parent.var.core.user_agent;
-              }
-            } else if (message.options.name == 'core' || message.options.name == 'proxy' || message.options.name == 'session_list') {
+            if (child.parent.var.core.user_agent) {
+              child.electron.app.userAgentFallback = child.parent.var.core.user_agent;
+            }
+            if (message.options.name == 'core' || message.options.name == 'proxy' || message.options.name == 'session_list') {
               child.sessionConfig();
             }
             child.sendToWindows('[update-browser-var]', message);
@@ -155,35 +153,6 @@ module.exports = function (child) {
 
           if (child.addressbarWindow && !child.addressbarWindow.isDestroyed()) {
             child.addressbarWindow.webContents.send('[update-browser-var]', { options: { name: 'urls', data: child.parent.var.urls } });
-          }
-        } else if (message.type == '[cookie-changed]') {
-          child.cookies[message.partition] = child.cookies[message.partition] || [];
-
-          if (!message.removed) {
-            let exists = false;
-            child.cookies[message.partition].forEach((co) => {
-              if (co.name == message.cookie.name) {
-                exists = true;
-                co.value = message.cookie.value;
-              }
-            });
-            if (!exists) {
-              child.cookies[message.partition].push({
-                partition: message.partition,
-                name: message.cookie.name,
-                value: message.cookie.value,
-                domain: message.cookie.domain,
-                path: message.cookie.path,
-                secure: message.cookie.secure,
-                httpOnly: message.cookie.httpOnly,
-              });
-            }
-          } else {
-            child.cookies[message.partition].forEach((co, i) => {
-              if (co.name == message.cookie.name) {
-                child.cookies[message.partition].splice(i, 1);
-              }
-            });
           }
         } else if (message.type == '[to-all]') {
           if (message.name === 'hide-addressbar') {
@@ -367,6 +336,27 @@ module.exports = function (child) {
             child.parent.options.screen = message.screen;
             child.parent.options.mainWindow = message.mainWindow;
             child.handleWindowBounds();
+          }
+        } else if (message.type == '[cookie-changed]') {
+          child.cookies[message.partition] = child.cookies[message.partition] || [];
+          let ss = child.electron.session.fromPartition(message.partition);
+          if (!message.removed) {
+            let exists = false;
+            child.cookies[message.partition].forEach((co, i) => {
+              if (co && co.domain == message.cookie.domain && co.name == message.cookie.name) {
+                exists = true;
+                child.cookies[message.partition][i] = message.cookie;
+              }
+            });
+            if (!exists) {
+              child.cookies[message.partition].push(message.cookie);
+            }
+          } else {
+            child.cookies[message.partition].forEach((co, i) => {
+              if (co && co.domain == message.cookie.domain && co.name == message.cookie.name) {
+                child.cookies[message.partition].splice(i, 1);
+              }
+            });
           }
         }
       } catch (error) {

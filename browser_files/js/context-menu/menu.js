@@ -746,7 +746,7 @@ module.exports = function (SOCIALBROWSER) {
       label: 'Save page',
       accelerator: 'CommandOrControl+s',
       click() {
-        SOCIALBROWSER.currentWindow.webContents.downloadURL(document.location.href);
+        SOCIALBROWSER.webContents.downloadURL(document.location.href);
       },
     });
 
@@ -886,11 +886,13 @@ module.exports = function (SOCIALBROWSER) {
     arr.push({
       label: 'Hide window',
       click() {
-        SOCIALBROWSER.currentWindow.hide();
         SOCIALBROWSER.currentWindow.setSkipTaskbar(true);
         SOCIALBROWSER.currentWindow.setAlwaysOnTop(false);
         SOCIALBROWSER.currentWindow.setFullScreen(false);
-        SOCIALBROWSER.currentWindow.setAudioMuted(true);
+        SOCIALBROWSER.webContents.setAudioMuted(true);
+        setTimeout(() => {
+          SOCIALBROWSER.currentWindow.hide();
+        }, 500);
       },
     });
     arr.push({
@@ -1061,7 +1063,7 @@ module.exports = function (SOCIALBROWSER) {
         });
     });
     videos.forEach((f, i) => {
-      if (!f || !f.src || i > 10) {
+      if (!f || !f.src || arr3.length > 10 || f.src.like('blob*')) {
         return;
       }
       arr3.push({
@@ -1128,14 +1130,6 @@ module.exports = function (SOCIALBROWSER) {
         label: 'copy link',
         click() {
           SOCIALBROWSER.electron.clipboard.writeText(f.src);
-        },
-      });
-      arr3.push({
-        label: 'log url',
-        click() {
-          fetch(f.src)
-            .then((res) => res.blob())
-            .then((blob) => console.log(blob));
         },
       });
       arr3.push({
@@ -1509,7 +1503,7 @@ module.exports = function (SOCIALBROWSER) {
 
     let menu = new SOCIALBROWSER.remote.Menu();
     SOCIALBROWSER.selectedNode = node;
-
+    /*
     if (node.tagName == 'VIDEO') {
       return null;
     }
@@ -1525,7 +1519,7 @@ module.exports = function (SOCIALBROWSER) {
     if (node.tagName == 'FRAME') {
       return null;
     }
-
+*/
     if (node.tagName == 'Table') {
       add_table_menu(node, menu, doc);
     }
@@ -1578,7 +1572,7 @@ module.exports = function (SOCIALBROWSER) {
 
     add_input_menu(node, menu, doc);
     add_a_menu(node, menu, doc);
-   
+
     if (SOCIALBROWSER.__options.windowType !== 'main') {
       if (SOCIALBROWSER.memoryText && SOCIALBROWSER.isValidURL(SOCIALBROWSER.memoryText)) {
         let arr = get_url_menu_list(SOCIALBROWSER.memoryText);
@@ -1606,12 +1600,12 @@ module.exports = function (SOCIALBROWSER) {
       }
 
       get_img_menu(node, menu, doc);
-     
+
       get_social_menu(node, menu, doc, null);
       SOCIALBROWSER.menu_list.forEach((m) => {
         menu.append(new $menuItem(m));
       });
- 
+
       if (SOCIALBROWSER.var.blocking.open_list.length > 0) {
         SOCIALBROWSER.var.blocking.open_list.forEach((o) => {
           if (o.enabled) {
@@ -1741,7 +1735,7 @@ module.exports = function (SOCIALBROWSER) {
       if (SOCIALBROWSER.var.blocking.context_menu.page_options) {
         get_options_menu(node, menu, doc);
       }
-      
+
       if (SOCIALBROWSER.var.blocking.context_menu.inspect && !SOCIALBROWSER.DevToolsOff) {
         menu.append(
           new $menuItem({

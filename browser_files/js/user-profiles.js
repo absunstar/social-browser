@@ -33,6 +33,7 @@ app.controller('mainController', ($scope, $http, $interval, $timeout) => {
       if (se.name === _se.name) {
         $scope.setting.core.session = se;
         $scope.saveSessions();
+        $scope.session = {};
         SOCIALBROWSER.call('[send-render-message]', {
           name: '[open new tab]',
           referrer: document.location.href,

@@ -53,6 +53,21 @@ module.exports = function (child) {
       return r;
     };
   }
+
+  child.mkdirSync = function (dirname) {
+    try {
+      if (child.fs.existsSync(dirname)) {
+        return true;
+      }
+      if (child.mkdirSync(child.path.dirname(dirname))) {
+        child.fs.mkdirSync(dirname);
+        return true;
+      }
+    } catch (error) {
+      child.log(error.message);
+      return false;
+    }
+  };
   child.deleteFile = function (path, callback) {
     child.fs.stat(path, (err, stats) => {
       if (!err && stats.isFile()) {
@@ -167,17 +182,39 @@ module.exports = function (child) {
       return value;
     }
   };
-  child.cookieParse = (cookie) => {
+  child.cookieParse2 = (cookie) => {
     if (typeof cookie === 'undefined') return [];
     return cookie.split(';').reduce(function (prev, curr) {
       let m = / *([^=]+)=(.*)/.exec(curr);
       if (m) {
         let key = child.decodeURIComponent(m[1]);
         let value = child.decodeURIComponent(m[2]);
-        prev[key] = value;
+        prev[key] = typeof value === 'undefined' ? true : value;
       }
       return prev;
     }, {});
+  };
+  child.cookieParse = (cookie) => {
+    let co = {};
+    if (!cookie) {
+      return co;
+    }
+    cookie.split(';').forEach((d) => {
+      if (d) {
+        d = d.split('=');
+        if (d.length === 1) {
+          co[child.decodeURIComponent(d[0].trim())] = true;
+        } else if (d.length === 2) {
+          co[child.decodeURIComponent(d[0].trim())] = child.decodeURIComponent(d[1]);
+        } else {
+          let key = d[0].trim();
+          d.splice(0, 1);
+          co[child.decodeURIComponent(key)] = child.decodeURIComponent(d.join('='));
+        }
+      }
+    });
+
+    return co;
   };
 
   child.cookieStringify = (cookie) => {

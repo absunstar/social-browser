@@ -29,7 +29,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
   });
 */
   SOCIALBROWSER.onVarUpdated = function (name, data) {
-    if (name == 'proxy_list') {
+    if (name == 'proxy_list' || name == 'extension_list') {
       $scope.setting[name] = data;
       $scope.$applyAsync();
     }
@@ -644,6 +644,9 @@ app.controller('mainController', ($scope, $http, $timeout) => {
 
     $scope.setting.session_list.forEach((s, i) => {
       s.privacy = s.privacy || {};
+      s.privacy.vpc = s.privacy.vpc || {};
+      s.privacy.vpc.connection = s.privacy.vpc.connection || {};
+      
       if (s.privacy.vpc.hide_connection !== true) {
         s.privacy.vpc.connection = s.privacy.vpc.connection || {};
         s.privacy.vpc.connection.effectiveType = $scope.setting.blocking.privacy.vpc.connection.effectiveType;

@@ -1,5 +1,5 @@
 module.exports = function (SOCIALBROWSER) {
-  if(SOCIALBROWSER.var.core.disabled){
+  if(SOCIALBROWSER.var.core.javaScriptOFF){
     return false
   }
   // before css , image , iframes loaded

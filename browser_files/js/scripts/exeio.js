@@ -1,5 +1,5 @@
 module.exports = function (SOCIALBROWSER) {
-  if (SOCIALBROWSER.var.core.disabled || !SOCIALBROWSER.var.blocking.social.allow_exeio) {
+  if (SOCIALBROWSER.var.core.javaScriptOFF || !SOCIALBROWSER.var.blocking.social.allow_exeio) {
     return;
   }
 

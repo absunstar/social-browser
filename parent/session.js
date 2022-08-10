@@ -371,7 +371,7 @@ module.exports = function (parent) {
         ss.webRequest.onHeadersReceived(filter, function (details, callback) {
             let url = details.url;
 
-            if (parent.var.core.off) {
+            if (parent.var.core.enginOFF) {
                 callback({
                     cancel: false,
                     responseHeaders: {

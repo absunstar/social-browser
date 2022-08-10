@@ -183,8 +183,9 @@
 
                   <div class="row padding">
                     <i-checkbox class="" label="I'm Using Social Browser" ng-model="setting.blocking.core.send_browser_id"></i-checkbox>
-                    <i-checkbox class="" label="Disabled New Browser Engine " ng-model="setting.core.off"></i-checkbox>
-                    <i-checkbox class="" label="Disabled New JavaScript Engine " ng-model="setting.core.disabled"></i-checkbox>
+                    <i-checkbox class="" label="Disabled New Browser Engine " ng-model="setting.core.enginOFF"></i-checkbox>
+                    <i-checkbox class="" label="Disabled New JavaScript Engine " ng-model="setting.core.javaScriptOFF"></i-checkbox>
+                    <i-checkbox class="" label="Disabled New Share Sessions Engine " ng-model="setting.core.cookiesOFF"></i-checkbox>
                   </div>
 
                   <fieldset>
@@ -910,8 +911,8 @@
                           <p class="green">{{_ex.description}}</p>
                         </td>
                         <td>
-                          <a ng-show="_ex.isEnabled === false" class="btn" ng-click="enableExtension(_ex)"> OFF </a>
-                          <a ng-show="_ex.isEnabled === true" class="btn btn-on" ng-click="disableExtension(_ex)"> ON </a>
+                          <a ng-show="_ex.isEnabled === false" class="btn" ng-click="enableExtension(_ex)"> Click to Enabled </a>
+                          <a ng-show="_ex.isEnabled === true" class="btn btn-on" ng-click="disableExtension(_ex)"> Click to Disabled </a>
                           <a ng-hide="_ex.canDelete == false" class="btn red bold right" ng-click="removeExtension(_ex)"> <i class="fa fa-trash"></i> Click to Remove </a>
                         </td>
                       </tr>

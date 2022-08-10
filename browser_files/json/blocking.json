@@ -5,6 +5,7 @@
   "remove_external_iframe": true,
   "block_html_tags": false,
   "skip_video_ads": true,
+  "facebook" : {},
   "dom_selectors": [
     { "url": "*", "ex_url": "*openload.co*", "select": "[class='ad'],[class$='-ad']", "remove": true, "hide": false, "empty": false },
     { "url": "*mexashare.com*", "ex_url": "*openload.co*", "select": "#k749", "remove": false, "hide": true, "empty": false },

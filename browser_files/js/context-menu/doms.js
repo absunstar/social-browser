@@ -1,5 +1,5 @@
 module.exports = function (SOCIALBROWSER) {
-    if (SOCIALBROWSER.var.core.disabled || SOCIALBROWSER.__options.windowType === 'main' || document.location.href.like('*http://127.0.0.1*')) {
+    if (SOCIALBROWSER.var.core.javaScriptOFF || SOCIALBROWSER.__options.windowType === 'main' || document.location.href.like('*http://127.0.0.1*')) {
         SOCIALBROWSER.log(' [DOM Blocking] OFF : ' + document.location.href);
         return;
     }

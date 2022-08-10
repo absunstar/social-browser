@@ -18,7 +18,7 @@ module.exports = function (SOCIALBROWSER) {
    *  browser permissions random
    */
 
-  if (SOCIALBROWSER.var.core.disabled || SOCIALBROWSER.__options.windowType === 'main' || document.location.href.like('http://localhost*|https://localhost*|http://127.0.0.1*|https://127.0.0.1*|browser*')) {
+  if (SOCIALBROWSER.var.core.javaScriptOFF || SOCIALBROWSER.__options.windowType === 'main' || document.location.href.like('http://localhost*|https://localhost*|http://127.0.0.1*|https://127.0.0.1*|browser*')) {
     SOCIALBROWSER.log(' [Finger Printing] OFF : ' + document.location.href);
     return;
   }

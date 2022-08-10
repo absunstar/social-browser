@@ -113,8 +113,8 @@
     "node-fetch": "^2.6.6"
   },
   "devDependencies": {
-    "electron": "^19.0.7",
-    "electron-builder": "^23.0.3",
+    "electron": "^20.0.0",
+    "electron-builder": "^23.1.0",
     "gulp": "*"
   }
 }
