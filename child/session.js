@@ -181,6 +181,9 @@ module.exports = function (child) {
 
     let user = child.parent.var.session_list.find((s) => s.name == name) ?? {};
     user.privacy = user.privacy || child.parent.var.blocking.privacy;
+    if (!user.privacy.enable_virtual_pc) {
+      user.privacy = child.parent.var.blocking.privacy;
+    }
     user.user_agent = obj.user_agent ? { url: obj.user_agent } : user.user_agent || {};
 
     if (!user.user_agent.url || user.user_agent.edit) {
@@ -339,6 +342,8 @@ module.exports = function (child) {
           });
           return;
         }
+
+        let _ss = child.session_name_list.find((s) => s.name == name);
         details.requestHeaders = details.requestHeaders || {};
 
         let url = details.url.toLowerCase();
@@ -354,6 +359,8 @@ module.exports = function (child) {
         if (!source_url) {
           source_url = url;
         }
+
+       
 
         let urlObject1 = child.url.parse(url);
         let urlObject2 = child.url.parse(source_url);
@@ -381,18 +388,9 @@ module.exports = function (child) {
         }
 
         // protect from know login info
-        // if (!isSameSite&& url.like('*favicon.ico*')) {
-        //   callback({
-        //     cancel: true,
-        //   });
-        //   return;
-        // }
-
-        let info = child.get_overwrite_info(url);
-        if (info.overwrite) {
+        if (!isSameSite && url.like('*favicon.ico*') && _ss.user.privacy.enable_virtual_pc && _ss.user.privacy.hide_social_media_info) {
           callback({
-            cancel: false,
-            redirectURL: info.new_url,
+            cancel: true,
           });
           return;
         }
@@ -402,7 +400,7 @@ module.exports = function (child) {
           if (end) {
             return;
           }
-          if (s.url.length > 2 && (source_url.like(s.url) || url.like(s.url))) {
+          if (s.url.length > 2 && url.like(s.url)) {
             callback({
               cancel: false,
             });
@@ -412,6 +410,15 @@ module.exports = function (child) {
         });
 
         if (end) {
+          return;
+        }
+
+        let info = child.get_overwrite_info(url);
+        if (info.overwrite) {
+          callback({
+            cancel: false,
+            redirectURL: info.new_url,
+          });
           return;
         }
 
@@ -516,14 +523,32 @@ module.exports = function (child) {
         source_url = source_url.toLowerCase();
         let urlObject2 = child.url.parse(source_url);
 
+        let domain1 = urlObject.hostname.split('.');
+        domain1 = domain1[domain1.length - 2] || '';
+
+        let domain2 = urlObject2.hostname.split('.');
+        domain2 = domain2[domain2.length - 2] || '';
+
+        let isSameSite = domain1 === domain2;
+
+        if (_ss.user.privacy.enable_virtual_pc && _ss.user.privacy.vpc.mask_user_agent) {
+          if (!details.requestHeaders['User-Agent'].like('*[xx-*')) {
+            let code = name;
+            code += new URL(url).hostname;
+            code += child.parent.var.core.id;
+            details.requestHeaders['User-Agent'] = details.requestHeaders['User-Agent'].replace(') ', ') [xx-' + child.md5(code) + '] ');
+          }
+        }
+        // Must For Login Problem ^_^
+        if (domain1.like('*google*|*youtube*')) {
+          callback({
+            cancel: false,
+            requestHeaders: details.requestHeaders,
+          });
+          return;
+        }
+
         if ((cookie_obj = child.cookieParse(details.requestHeaders['Cookie']))) {
-          let domain1 = urlObject.hostname.split('.');
-          domain1 = domain1[domain1.length - 2];
-
-          let domain2 = urlObject2.hostname.split('.');
-          domain2 = domain2[domain2.length - 2];
-
-          let isSameSite = domain1 === domain2;
           let isMainFrame = details.resourceType === 'mainFrame';
           let isNotTopLevel = details.resourceType.like('*subFrame*|*image*|*xhr*|*other*');
 
@@ -558,7 +583,7 @@ module.exports = function (child) {
             cookie_obj['_gab'] = 'sb.' + child.parent.var.core.id;
           }
 
-          if (cookie_obj && child.parent.var.blocking.privacy.enable_virtual_pc && child.parent.var.blocking.privacy.vpc.block_cloudflare) {
+          if (cookie_obj && _ss.user.privacy.enable_virtual_pc && _ss.user.privacy.vpc.block_cloudflare) {
             if (cookie_obj['_cflb']) {
               cookie_obj['_cflb'] = 'cf.' + cookie_obj['_gab'];
             }
@@ -577,7 +602,7 @@ module.exports = function (child) {
           }
 
           if (cookie_obj && !url.like('*google.com*|*youtube.com*')) {
-            if (child.parent.var.blocking.privacy.enable_virtual_pc && child.parent.var.blocking.privacy.vpc.hide_gid) {
+            if (_ss.user.privacy.enable_virtual_pc && _ss.user.privacy.vpc.hide_gid) {
               if (cookie_obj['_gid']) {
                 delete cookie_obj['_gid'];
               }
@@ -586,15 +611,6 @@ module.exports = function (child) {
           details.requestHeaders['Cookie'] = child.cookieStringify(cookie_obj);
         } else {
           console.log('!cookie_obj', details.requestHeaders);
-        }
-
-        if (_ss.privacy.enable_virtual_pc && _ss.privacy.vpc.mask_user_agent) {
-          if (!details.requestHeaders['User-Agent'].like('*[xx-*')) {
-            let code = name;
-            code += new URL(url).hostname;
-            code += child.parent.var.core.id;
-            details.requestHeaders['User-Agent'] = details.requestHeaders['User-Agent'].replace(') ', ') [xx-' + child.md5(code) + '] ');
-          }
         }
 
         // custom header request
@@ -616,17 +632,8 @@ module.exports = function (child) {
           }
         });
 
-        if (child.parent.var.blocking.privacy.vpc.dnt) {
+        if (_ss.user.privacy.vpc.dnt) {
           details.requestHeaders['DNT'] = '1'; // dont track me
-        }
-
-        // Must For Login Problem ^_^
-        if (details.url.like('*google.com*|*youtube.com*')) {
-          callback({
-            cancel: false,
-            requestHeaders: details.requestHeaders,
-          });
-          return;
         }
 
         //details.requestHeaders['Referrer-Policy'] = 'no-referrer';
@@ -657,6 +664,7 @@ module.exports = function (child) {
       ss.webRequest.onHeadersReceived(filter, function (details, callback) {
         let url = details.url;
         let urlObject = child.url.parse(url);
+        let _ss = child.session_name_list.find((s) => s.name == name);
 
         if (false) {
           // cookies now save to my own json ^_^
@@ -740,7 +748,7 @@ module.exports = function (child) {
           'Access-Control-Allow-Headers',
           'Access-Control-Allow-Origin',
           'Access-Control-Expose-Headers',
-          child.parent.var.blocking.privacy.vpc.remove_x_frame_options ? 'X-Frame-Options' : '',
+          _ss.user.privacy.vpc.remove_x_frame_options ? 'X-Frame-Options' : '',
         ].forEach((p) => {
           delete details.responseHeaders[p];
           delete details.responseHeaders[p.toLowerCase()];
