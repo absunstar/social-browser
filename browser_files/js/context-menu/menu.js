@@ -998,6 +998,7 @@ module.exports = function (SOCIALBROWSER) {
               partition: SOCIALBROWSER.partition,
               url: 'http://127.0.0.1:60080/iframe?url=' + f.src,
               referrer: document.location.href,
+              vip: true,
             });
           },
         });
@@ -1075,6 +1076,7 @@ module.exports = function (SOCIALBROWSER) {
             partition: SOCIALBROWSER.partition,
             url: 'http://127.0.0.1:60080/iframe?url=' + f.src,
             referrer: document.location.href,
+            vip: true,
           });
         },
       });
@@ -1503,77 +1505,61 @@ module.exports = function (SOCIALBROWSER) {
 
     let menu = new SOCIALBROWSER.remote.Menu();
     SOCIALBROWSER.selectedNode = node;
-    /*
-    if (node.tagName == 'VIDEO') {
-      return null;
-    }
-
-    if (node.tagName == 'OBJECT') {
-      return null;
-    }
-
-    if (node.tagName == 'IFRAME') {
-      return null;
-    }
-
-    if (node.tagName == 'FRAME') {
-      return null;
-    }
-*/
-    if (node.tagName == 'Table') {
-      add_table_menu(node, menu, doc);
-    }
-
-    if (SOCIALBROWSER.selectedText.length > 0) {
-      let stext = SOCIALBROWSER.selectedText.substring(0, 70);
-      menu.append(
-        new $menuItem({
-          label: `Copy [ ${stext} ] `,
-          click() {
-            SOCIALBROWSER.electron.clipboard.writeText(SOCIALBROWSER.selectedText);
-          },
-        })
-      );
-
-      menu.append(
-        new $menuItem({
-          label: `Translate [ ${stext} ] `,
-          click() {
-            sendToMain({
-              name: '[open new popup]',
-              partition: SOCIALBROWSER.partition,
-              show: true,
-              url: 'https://translate.google.com/?num=100&newwindow=1&um=1&ie=UTF-8&hl=en&client=tw-ob#auto/ar/' + encodeURIComponent(SOCIALBROWSER.selectedText),
-            });
-          },
-        })
-      );
-
-      menu.append(
-        new $menuItem({
-          label: `Search  [ ${stext} ] `,
-          click() {
-            sendToMain({
-              name: '[open new tab]',
-              referrer: document.location.href,
-              url: 'https://www.google.com/search?q=' + encodeURIComponent(SOCIALBROWSER.selectedText),
-              win_id: SOCIALBROWSER.currentWindow.id,
-            });
-          },
-        })
-      );
-
-      menu.append(
-        new $menuItem({
-          type: 'separator',
-        })
-      );
-    }
-
-    add_input_menu(node, menu, doc);
-    add_a_menu(node, menu, doc);
 
     if (SOCIALBROWSER.__options.windowType !== 'main') {
+      if (node.tagName == 'Table') {
+        add_table_menu(node, menu, doc);
+      }
+
+      if (SOCIALBROWSER.selectedText.length > 0) {
+        let stext = SOCIALBROWSER.selectedText.substring(0, 70);
+        menu.append(
+          new $menuItem({
+            label: `Copy [ ${stext} ] `,
+            click() {
+              SOCIALBROWSER.electron.clipboard.writeText(SOCIALBROWSER.selectedText);
+            },
+          })
+        );
+
+        menu.append(
+          new $menuItem({
+            label: `Translate [ ${stext} ] `,
+            click() {
+              sendToMain({
+                name: '[open new popup]',
+                partition: SOCIALBROWSER.partition,
+                show: true,
+                url: 'https://translate.google.com/?num=100&newwindow=1&um=1&ie=UTF-8&hl=en&client=tw-ob#auto/ar/' + encodeURIComponent(SOCIALBROWSER.selectedText),
+              });
+            },
+          })
+        );
+
+        menu.append(
+          new $menuItem({
+            label: `Search  [ ${stext} ] `,
+            click() {
+              sendToMain({
+                name: '[open new tab]',
+                referrer: document.location.href,
+                url: 'https://www.google.com/search?q=' + encodeURIComponent(SOCIALBROWSER.selectedText),
+                win_id: SOCIALBROWSER.currentWindow.id,
+              });
+            },
+          })
+        );
+
+        menu.append(
+          new $menuItem({
+            type: 'separator',
+          })
+        );
+      }
+
+      add_input_menu(node, menu, doc);
+      add_a_menu(node, menu, doc);
+
       if (SOCIALBROWSER.memoryText && SOCIALBROWSER.isValidURL(SOCIALBROWSER.memoryText)) {
         let arr = get_url_menu_list(SOCIALBROWSER.memoryText);
         menu.append(
@@ -1767,6 +1753,146 @@ module.exports = function (SOCIALBROWSER) {
 
       if (SOCIALBROWSER.var.core.id.like('*test*')) {
         createTestMenu(menu);
+      }
+    } else {
+      if (node.classList.contains('social-tab')) {
+        let url = node.getAttribute('url');
+        let partition = node.getAttribute('partition');
+        let user_name = node.getAttribute('user_name');
+        let user_agent = node.getAttribute('user_agent');
+        let child_id = node.getAttribute('child_id');
+        let ghost = 'ghost_' + Math.random().toString().replace('.', '');
+        menu.append(
+          new MenuItem({
+            label: 'New tab',
+            click() {
+              sendToMain({ name: '[open new tab]', main_window_id: SOCIALBROWSER.currentWindow.id });
+            },
+          })
+        );
+        menu.append(
+          new MenuItem({
+            label: 'Duplicate tab',
+            click() {
+              sendToMain({ name: '[open new tab]', url: url, partition: partition, user_name: user_name, user_agent: user_agent, main_window_id: SOCIALBROWSER.currentWindow.id });
+            },
+          })
+        );
+        menu.append(
+          new MenuItem({
+            type: 'separator',
+          })
+        );
+        menu.append(
+          new MenuItem({
+            label: 'New Ghost tab',
+            click() {
+              sendToMain({ name: '[open new tab]', partition: ghost, user_name: ghost, user_agent: user_agent, main_window_id: SOCIALBROWSER.currentWindow.id });
+            },
+          })
+        );
+        menu.append(
+          new MenuItem({
+            label: 'Duplicate tab in Ghost tab',
+            click() {
+              sendToMain({ name: '[open new tab]', url: url, partition: ghost, user_name: ghost, user_agent: user_agent, main_window_id: SOCIALBROWSER.currentWindow.id });
+            },
+          })
+        );
+        menu.append(
+          new MenuItem({
+            type: 'separator',
+          })
+        );
+
+        menu.append(
+          new MenuItem({
+            label: 'Duplicate tab in Popup',
+            click() {
+              sendToMain({
+                name: '[open new popup]',
+                child_id: child_id,
+                show: true,
+                url: url,
+                partition: partition,
+                user_name: user_name,
+                user_agent: user_agent,
+                main_window_id: SOCIALBROWSER.currentWindow.id,
+              });
+            },
+          })
+        );
+        menu.append(
+          new MenuItem({
+            label: 'Duplicate tab in Ghost Popup',
+            click() {
+              sendToMain({
+                name: '[open new popup]',
+                child_id: child_id,
+                show: true,
+                url: url,
+                partition: ghost,
+                user_name: ghost,
+                user_agent: user_agent,
+                main_window_id: SOCIALBROWSER.currentWindow.id,
+              });
+            },
+          })
+        );
+        menu.append(
+          new MenuItem({
+            type: 'separator',
+          })
+        );
+        menu.append(
+          new MenuItem({
+            label: 'Close',
+            click() {
+              client.call('remove-tab', node);
+            },
+          })
+        );
+        menu.append(
+          new MenuItem({
+            label: 'Close other tabs',
+            click() {
+              document.querySelectorAll('.social-tab').forEach((node2) => {
+                if (!node2.classList.contains('plus') && node.id !== node2.id) {
+                  client.call('remove-tab', node2);
+                }
+              });
+            },
+          })
+        );
+
+        if (SOCIALBROWSER.var.core.id.contains('test')) {
+          menu.append(
+            new $menuItem({
+              type: 'separator',
+            })
+          );
+
+          menu.append(
+            new $menuItem({
+              label: 'Inspect Element',
+              click() {
+                SOCIALBROWSER.currentWindow.webContents.inspectElement(SOCIALBROWSER.rightClickPosition.x2, SOCIALBROWSER.rightClickPosition.y2);
+              },
+            })
+          );
+
+          menu.append(
+            new $menuItem({
+              label: 'Developer Tools',
+              accelerator: 'F12',
+              click() {
+                SOCIALBROWSER.currentWindow.webContents.openDevTools({
+                  mode: 'detach',
+                });
+              },
+            })
+          );
+        }
       }
     }
 

@@ -82,7 +82,8 @@ module.exports = function init(parent) {
         case '[send-render-message]':
           parent.clientList.forEach((client) => {
             let index = message.data.__options ? message.data.__options.parent_index : 0;
-            if (client.index == index && client.ws) {
+            let child_id = message.data.child_id;
+            if ((client.index == index || client.pid == child_id) && client.ws) {
               client.ws.send(message);
             }
           });
@@ -313,12 +314,15 @@ module.exports = function init(parent) {
           parent.save_var(session4);
           break;
         case '[add-window-url]':
-          parent.addURL(message);
-          parent.clientList.forEach((client) => {
-            if (client.windowType === 'main' && client.ws) {
-              client.ws.send(message);
-            }
-          });
+          if (message.url && !message.url.contains('60080')) {
+            parent.addURL(message);
+            parent.clientList.forEach((client) => {
+              if (client.windowType === 'main' && client.ws) {
+                client.ws.send(message);
+              }
+            });
+          }
+
           break;
         case '[import-extension]':
           parent.importExtension();

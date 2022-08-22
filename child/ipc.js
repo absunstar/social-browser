@@ -396,7 +396,7 @@ module.exports = function init(child) {
         if (data.partition && data.partition !== child.parent.var.core.session.name) {
           child.handleSession({ name: data.partition });
         }
-
+        console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         child.createNewWindow({
           ...data,
           windowType: data.url.like('https://www.youtube.com/embed*') ? 'youtube' : 'popup',
@@ -416,6 +416,7 @@ module.exports = function init(child) {
         name: '[open new tab]',
         url: 'http://127.0.0.1:60080/setting',
         partition: 'setting',
+        vip : true
       });
     } else if (data.name == '[window-reload-hard]') {
       let win = child.electron.BrowserWindow.fromId(data.win_id);

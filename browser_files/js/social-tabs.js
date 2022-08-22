@@ -123,7 +123,7 @@ class SocialTabs {
     this.el.dispatchEvent(
       new CustomEvent(eventName, {
         detail: data,
-      }),
+      })
     );
   }
 
@@ -238,13 +238,11 @@ class SocialTabs {
 
     if (!tabProperties.partition || !tabProperties.user_name) {
       sendToMain({
+        ...tabProperties,
         name: '[open new tab]',
-        windowType : 'view',
+        windowType: 'view',
         url: tabProperties.url || defaultTapProperties.url,
-        proxy: tabProperties.proxy,
         source: 'session',
-        active: tabProperties.active,
-        win_id: tabProperties.win_id,
         main_window_id: SOCIALBROWSER.currentWindow.id,
       });
       return;
@@ -279,9 +277,7 @@ class SocialTabs {
 
     tabProperties = {
       ...getDefaultTapProperties(),
-      ...{
-        id: 'tab_' + new Date().getTime(),
-      },
+      id: 'tab_' + new Date().getTime(),
       ...tabProperties,
     };
 
@@ -297,6 +293,7 @@ class SocialTabs {
 
     this.emit('tabAdd', {
       tabEl,
+      tabProperties,
     });
     if ($('.social-tab').length == 2) {
       this.setCurrentTab(tabEl, tabProperties);

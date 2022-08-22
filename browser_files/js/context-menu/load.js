@@ -226,7 +226,6 @@ module.exports = function (SOCIALBROWSER) {
     SOCIALBROWSER.log(error);
   }
 
-
   SOCIALBROWSER.getPrinters();
 
   if (SOCIALBROWSER.var.blocking.javascript.block_eval) {
@@ -249,6 +248,8 @@ module.exports = function (SOCIALBROWSER) {
       SOCIALBROWSER.showInfo(data.url);
     } else if (data.name == 'show-info') {
       SOCIALBROWSER.showInfo(data.msg);
+    } else if (data.name == '[open new popup]') {
+      SOCIALBROWSER.ipc('[send-render-message]', data);
     }
   });
 

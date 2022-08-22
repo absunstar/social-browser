@@ -40,6 +40,7 @@ app.controller('mainController', ($scope, $http, $interval, $timeout) => {
           url: $scope.setting.core.default_page,
           partition: se.name,
           user_name: se.display,
+          vip : true
         });
         SOCIALBROWSER.currentWindow.hide();
       }

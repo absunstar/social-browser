@@ -426,10 +426,8 @@ app.controller('mainController', ($scope, $http, $timeout) => {
   };
 
   $scope.addProxy = function () {
-    if ($scope.$proxy.name.length > 0) {
-      $scope.setting.proxy_list.push($scope.$proxy);
-      $scope.$proxy = {};
-    }
+    $scope.setting.proxy_list.push({ ...$scope.$proxy });
+    $scope.$proxy = {};
   };
 
   $scope.removeProxy = function (_se) {
@@ -646,7 +644,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
       s.privacy = s.privacy || {};
       s.privacy.vpc = s.privacy.vpc || {};
       s.privacy.vpc.connection = s.privacy.vpc.connection || {};
-      
+
       if (s.privacy.vpc.hide_connection !== true) {
         s.privacy.vpc.connection = s.privacy.vpc.connection || {};
         s.privacy.vpc.connection.effectiveType = $scope.setting.blocking.privacy.vpc.connection.effectiveType;

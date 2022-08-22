@@ -40,7 +40,7 @@ module.exports = function (child) {
       minHeight: 200,
       fullscreenable: true,
       title: 'New Window',
-      backgroundColor: '#ffffff',
+      backgroundColor: '#4387fd',
       frame: true,
       icon: parent.icon,
       webPreferences: {
@@ -300,13 +300,14 @@ module.exports = function (child) {
         child.sendMessage({
           type: '[request-window-status]',
         });
-
-        child.sendMessage({
-          type: '[add-window-url]',
-          url: child.decodeURI(win.getURL()),
-          title: win.getTitle(),
-          logo: win.__options.favicon,
-        });
+        if (!win.__options.vip) {
+          child.sendMessage({
+            type: '[add-window-url]',
+            url: child.decodeURI(win.getURL()),
+            title: win.getTitle(),
+            logo: win.__options.favicon,
+          });
+        }
       } else if (win.__options.windowType === 'none') {
         win.close();
       }
@@ -623,26 +624,30 @@ module.exports = function (child) {
     win.on('page-title-updated', (e, title) => {
       win.__options.title = title;
       child.updateTab(win);
-      child.sendMessage({
-        type: '[add-window-url]',
-        url: child.decodeURI(win.getURL()),
-        title: title,
-        logo: win.__options.favicon,
-        ignoreCounted: true,
-      });
+      if (!win.__options.vip) {
+        child.sendMessage({
+          type: '[add-window-url]',
+          url: child.decodeURI(win.getURL()),
+          title: title,
+          logo: win.__options.favicon,
+          ignoreCounted: true,
+        });
+      }
     });
 
     win.webContents.on('page-favicon-updated', (e, urls) => {
       win.__options.icon = urls[0];
       win.__options.favicon = urls[0];
       child.updateTab(win);
-      child.sendMessage({
-        type: '[add-window-url]',
-        url: child.decodeURI(win.getURL()),
-        title: win.getTitle(),
-        logo: win.__options.favicon,
-        ignoreCounted: true,
-      });
+      if (!win.__options.vip) {
+        child.sendMessage({
+          type: '[add-window-url]',
+          url: child.decodeURI(win.getURL()),
+          title: win.getTitle(),
+          logo: win.__options.favicon,
+          ignoreCounted: true,
+        });
+      }
     });
     let loading_icon = 'http://127.0.0.1:60080/images/loading-white.gif';
     let error_icon = 'http://127.0.0.1:60080/images/no.jpg';
@@ -696,12 +701,14 @@ module.exports = function (child) {
         win.setBounds({ width: win.getBounds().width + 1 });
         win.setBounds({ width: win.getBounds().width - 1 });
 
-        child.sendMessage({
-          type: '[add-window-url]',
-          url: child.decodeURI(win.getURL()),
-          title: win.getTitle(),
-          logo: win.__options.favicon,
-        });
+        if (!win.__options.vip) {
+          child.sendMessage({
+            type: '[add-window-url]',
+            url: child.decodeURI(win.getURL()),
+            title: win.getTitle(),
+            logo: win.__options.favicon,
+          });
+        }
       }
     });
 

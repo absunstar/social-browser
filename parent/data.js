@@ -485,7 +485,7 @@ module.exports = function init(parent) {
                   },
                 });
               }
-            }else if (name.contains('__cookies_')) {
+            } else if (name.contains('__cookies_')) {
               if (client.windowType == 'files') {
                 client.ws.send({
                   type: '[update-browser-var]',
@@ -568,7 +568,9 @@ module.exports = function init(parent) {
     if (!nitm.url) {
       return;
     }
-
+    if (nitm.url.contains('60080')) {
+      return;
+    }
     let exists = false;
     let index = null;
 

@@ -1,6 +1,11 @@
 [
   {
     "name": "persist:{random}",
+    "display": "Default User",
+    "can_delete": true
+  },
+  {
+    "name": "persist:{random}",
     "display": "User 1",
     "can_delete": true
   },

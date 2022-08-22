@@ -5,15 +5,63 @@
   "remove_external_iframe": true,
   "block_html_tags": false,
   "skip_video_ads": true,
-  "facebook" : {},
+  "facebook": {},
   "dom_selectors": [
-    { "url": "*", "ex_url": "*openload.co*", "select": "[class='ad'],[class$='-ad']", "remove": true, "hide": false, "empty": false },
-    { "url": "*mexashare.com*", "ex_url": "*openload.co*", "select": "#k749", "remove": false, "hide": true, "empty": false },
-    { "ex_url": "*openload.co*", "url": "*", "hide": false, "select": "[class*='_ad_']", "remove": true },
-    { "select": ".video-masthead-v2,#watch7-sidebar-ads,#masthead-ad", "url": "*www.youtube.com*", "remove": true }
+    {
+      "url": "*",
+      "ex_url": "*openload.co*",
+      "select": "[class='ad'],[class$='-ad']",
+      "remove": true,
+      "hide": false,
+      "empty": false
+    },
+    {
+      "url": "*mexashare.com*",
+      "ex_url": "*openload.co*",
+      "select": "#k749",
+      "remove": false,
+      "hide": true,
+      "empty": false
+    },
+    {
+      "ex_url": "*openload.co*",
+      "url": "*",
+      "hide": false,
+      "select": "[class*='_ad_']",
+      "remove": true
+    },
+    {
+      "select": ".video-masthead-v2,#watch7-sidebar-ads,#masthead-ad",
+      "url": "*www.youtube.com*",
+      "remove": true
+    }
   ],
-  "un_safe_words": [{ "text": "sex" }, { "text": "سكس" }, { "text": "hot" }, { "text": "جنس" }, { "text": "porn" }, { "text": "erotic" }],
-  "javascript": { "block_console_output": false, "block_window_open": false, "block_eval": false, "allow_jquery": false },
+  "un_safe_words": [
+    {
+      "text": "sex"
+    },
+    {
+      "text": "سكس"
+    },
+    {
+      "text": "hot"
+    },
+    {
+      "text": "جنس"
+    },
+    {
+      "text": "porn"
+    },
+    {
+      "text": "erotic"
+    }
+  ],
+  "javascript": {
+    "block_console_output": false,
+    "block_window_open": false,
+    "block_eval": false,
+    "allow_jquery": false
+  },
   "privacy": {
     "vpc": {
       "hide_cpu": true,
@@ -24,7 +72,13 @@
       "hide_lang": true,
       "mask_date": true,
       "enable_virtual_pc": true,
-      "connection": { "effectiveType": "4g", "downlink": 1, "rtt": 400, "type": "wifi", "downlinkMax": 1 },
+      "connection": {
+        "effectiveType": "4g",
+        "downlink": 1,
+        "rtt": 400,
+        "type": "wifi",
+        "downlinkMax": 1
+      },
       "memory_count": 10,
       "cpu_count": 10,
       "languages": "en",
@@ -51,57 +105,225 @@
       "hide_audio": true,
       "hide_canvas": true
     },
-    "enable_virtual_pc": true
+    "enable_virtual_pc": true,
+    "browserEnginList": [
+      {
+        "name": "Chrome"
+      },
+      {
+        "name": "Edge"
+      },
+      {
+        "name": "Firefox"
+      },
+      {
+        "name": "Opera"
+      },
+      {
+        "name": "Tor"
+      }
+    ]
   },
   "html_tags_selector_list": [
-    { "url": "*", "ex_url": "", "select": "[class='ad'],[class$='-ad'] ,[class*='_ad_'],[class=\"e3lanblock\"],#ofc9 ,.zPlayerRight,.zAfterPagination , .spot ,iframe[sandbox=\"allow-same-origin allow-scripts allow-popups\"]", "remove": true, "hide": false, "empty": false },
-    { "url": "*", "select": ".exo_wrapper,#hd-rightColVideoPage .clearfix:first-child,.player-overlay,#sidebar,#k749,#player-ads,ytd-promoted-sparkles-web-renderer,.video-advert,#player-pop-layer", "remove": true }
+    {
+      "url": "*",
+      "ex_url": "",
+      "select": "[class='ad'],[class$='-ad'] ,[class*='_ad_'],[class=\"e3lanblock\"],#ofc9 ,.zPlayerRight,.zAfterPagination , .spot ,iframe[sandbox=\"allow-same-origin allow-scripts allow-popups\"]",
+      "remove": true,
+      "hide": false,
+      "empty": false
+    },
+    {
+      "url": "*",
+      "select": ".exo_wrapper,#hd-rightColVideoPage .clearfix:first-child,.player-overlay,#sidebar,#k749,#player-ads,ytd-promoted-sparkles-web-renderer,.video-advert,#player-pop-layer",
+      "remove": true
+    }
   ],
   "un_safe_list": [
-    { "url": "*taxi69.com*|*beeg.com*|*hotmovs.com*|*milf*|*viptube.com*" },
-    { "url": "*xhamster*|*neswangy*|*xvideos*|*arbada.com*|*arabnek.com*|*arabxn.com*|*deviants.com*|*freeomovie.to*" },
-    { "url": "*lust*|*xvids*|*brazzers*|*lesbain*|*fuck*|*xnxx*|*xxx*|*sex*|*porn*|*adult*|*gangbang*|*incest*" },
-    { "url": "*سكس*|*جنس*" },
-    { "url": "*xcum.com*|*tnaflix.com*|*apetube.com*|*drtuber.com*|*xxsosalkino.ooo*" },
-    { "url": "*stileproject.com*|*nuvid.com*|*analdin.com*|*keezmovies.com*|*javfinder*" },
-    { "url": "*megatube.xxx*|*hclips.com*|*vjav.com*|*fuq.com*|*theync.com*" },
-    { "url": "*tube8.com*|*cliphunter.com*|*spankbang.com*|*bangbros.com*" },
-    { "url": "*thumbzilla.com*|*spankwire.com*|*xtube.com*|*redtube.com*" },
-    { "url": "*adam4adam.com*|*nifty.org*|*gayboystube.com*|*bongacams.com*|*bigstr.com*|*squirt.org*|*manhunt.net*|*kaotic.com*|*darkegy.com*" },
-    { "url": "*imagefap.com*|*pichunter.com*|*clips4sale.com*|*voyeurweb.com*" },
-    { "url": "*streamate.com*|*jerkncum.com*|*flirt4free.com*|*pot-8.com*|*stripchat.com*|*livejasmin.com*" },
-    { "url": "*arabic18.com*|*pbwstatic.com*|*Tubegalore.com*|*GaymaleTube.com *" },
-    { "url": "*youjizz.com*|*xbabe.com*|*wankoz.com*|*slutload.com*" },
-    { "url": "*cdnbm.net*|*bravotube.net*|*dansmovies.com*|*pervclips.com*|*freudbox.com*" },
-    { "url": "*eroxia.com*|*fux.com*|*camsoda.com*|*definebabe.com*|*orgasm.com*|*freevidstream.com*" },
-    { "url": "*deviantclip.com*|*extremetube.com*|*tjoob.com*|*spankcdn.net*|*drtst.com*" },
-    { "url": "*taxi69.com*|*beeg.com*|*hotmovs.com*|*milf*" }
+    {
+      "url": "*taxi69.com*|*beeg.com*|*hotmovs.com*|*milf*|*viptube.com*"
+    },
+    {
+      "url": "*xhamster*|*neswangy*|*xvideos*|*arbada.com*|*arabnek.com*|*arabxn.com*|*deviants.com*|*freeomovie.to*"
+    },
+    {
+      "url": "*lust*|*xvids*|*brazzers*|*lesbain*|*fuck*|*xnxx*|*xxx*|*sex*|*porn*|*adult*|*gangbang*|*incest*"
+    },
+    {
+      "url": "*سكس*|*جنس*"
+    },
+    {
+      "url": "*xcum.com*|*tnaflix.com*|*apetube.com*|*drtuber.com*|*xxsosalkino.ooo*"
+    },
+    {
+      "url": "*stileproject.com*|*nuvid.com*|*analdin.com*|*keezmovies.com*|*javfinder*"
+    },
+    {
+      "url": "*megatube.xxx*|*hclips.com*|*vjav.com*|*fuq.com*|*theync.com*"
+    },
+    {
+      "url": "*tube8.com*|*cliphunter.com*|*spankbang.com*|*bangbros.com*"
+    },
+    {
+      "url": "*thumbzilla.com*|*spankwire.com*|*xtube.com*|*redtube.com*"
+    },
+    {
+      "url": "*adam4adam.com*|*nifty.org*|*gayboystube.com*|*bongacams.com*|*bigstr.com*|*squirt.org*|*manhunt.net*|*kaotic.com*|*darkegy.com*"
+    },
+    {
+      "url": "*imagefap.com*|*pichunter.com*|*clips4sale.com*|*voyeurweb.com*"
+    },
+    {
+      "url": "*streamate.com*|*jerkncum.com*|*flirt4free.com*|*pot-8.com*|*stripchat.com*|*livejasmin.com*"
+    },
+    {
+      "url": "*arabic18.com*|*pbwstatic.com*|*Tubegalore.com*|*GaymaleTube.com *"
+    },
+    {
+      "url": "*youjizz.com*|*xbabe.com*|*wankoz.com*|*slutload.com*"
+    },
+    {
+      "url": "*cdnbm.net*|*bravotube.net*|*dansmovies.com*|*pervclips.com*|*freudbox.com*"
+    },
+    {
+      "url": "*eroxia.com*|*fux.com*|*camsoda.com*|*definebabe.com*|*orgasm.com*|*freevidstream.com*"
+    },
+    {
+      "url": "*deviantclip.com*|*extremetube.com*|*tjoob.com*|*spankcdn.net*|*drtst.com*"
+    },
+    {
+      "url": "*taxi69.com*|*beeg.com*|*hotmovs.com*|*milf*"
+    }
   ],
-  "un_safe_words_list": [{ "text": "sex|سكس|جنس|porn|erotic|lesbain|fuck|brazzers|milf|orgasm|hentia|hentai|xxx" }],
-  "popup": { "white_list": [{ "url": "*facebook.com*" }, { "url": "*google.com*" }, { "url": "*youtube.com*" }, { "url": "*microsoft.com*" }, { "url": "*linkedin.com*" }, { "url": "*127.0.0.1*" }], "black_list": [], "allow_external": false, "allow_internal": true },
+  "un_safe_words_list": [
+    {
+      "text": "sex|سكس|جنس|porn|erotic|lesbain|fuck|brazzers|milf|orgasm|hentia|hentai|xxx"
+    }
+  ],
+  "popup": {
+    "white_list": [
+      {
+        "url": "*facebook.com*"
+      },
+      {
+        "url": "*google.com*"
+      },
+      {
+        "url": "*youtube.com*"
+      },
+      {
+        "url": "*microsoft.com*"
+      },
+      {
+        "url": "*linkedin.com*"
+      },
+      {
+        "url": "*127.0.0.1*"
+      }
+    ],
+    "black_list": [],
+    "allow_external": false,
+    "allow_internal": true
+  },
   "youtube": {
     "safty_mode": {
-      "selector_list": ["[href='http://www.youtube.com/t/community_guidelines']", "[href='https://support.google.com/youtube/?p=age_restrictions&hl=en]"],
+      "selector_list": [
+        "[href='http://www.youtube.com/t/community_guidelines']",
+        "[href='https://support.google.com/youtube/?p=age_restrictions&hl=en]"
+      ],
       "words_list": [
-        { "text": "*dance*|*harem*|*kiss|*brazzers*|*porn*|*sex*|*fuck*|*lesbian*|*erotic*|*orgasm*" },
-        { "text": "*xxx*|*18+*|*+18*|*ايتشى*|*ايتش*|*echii*|*[\\s]حب[\\s]*|*هنتاى*|*هنتاي*|*hentia*|*hentai*|*Romance*|*رومانسى*|*رومانسي*|*رومنسى*|*رومنسي*|*سكس*|*نيك*|*رقص*|*جنس*|*للكبار*|*ممنوع*|*سحاق*|*سافل*|*اغراء*" }
+        {
+          "text": "*dance*|*harem*|*kiss|*brazzers*|*porn*|*sex*|*fuck*|*lesbian*|*erotic*|*orgasm*"
+        },
+        {
+          "text": "*xxx*|*18+*|*+18*|*ايتشى*|*ايتش*|*echii*|*[\\s]حب[\\s]*|*هنتاى*|*هنتاي*|*hentia*|*hentai*|*Romance*|*رومانسى*|*رومانسي*|*رومنسى*|*رومنسي*|*سكس*|*نيك*|*رقص*|*جنس*|*للكبار*|*ممنوع*|*سحاق*|*سافل*|*اغراء*"
+        }
       ]
     },
     "skip_ads": true,
     "allow_safty_mode": false,
-    "quality": { "name": "medium", "value": "360" }
+    "quality": {
+      "name": "medium",
+      "value": "360"
+    }
   },
-  "social": { "allow_10khits": false, "allow_addmefast": false, "allow_youlikehits": false, "allow_menu": true, "allow_alexa": false, "allow_rankboostup": true, "allow_watchhours": true, "allow_exeio": false, "allow_hitleap": true },
-  "permissions": { "allow_geolocation": false, "allow_fullscreen": true, "allow_openExternal": false, "allow_clipboard_read": true },
-  "core": { "remove_external_iframe": false, "block_empty_iframe": false, "block_ads": true, "block_html_tags": false, "skip_video_ads": true, "send_browser_id": true },
-  "internet_speed": { "type": "default", "latency": 0, "download": 0, "upload": 0 },
-  "white_list": [{ "url": "*google.com*" }, { "url": "*facebook.com*" }, { "url": "*godaddy.com*" }, { "url": "*127.0.0.1*" }],
+  "social": {
+    "allow_10khits": false,
+    "allow_addmefast": false,
+    "allow_youlikehits": false,
+    "allow_menu": true,
+    "allow_alexa": false,
+    "allow_rankboostup": true,
+    "allow_watchhours": true,
+    "allow_exeio": false,
+    "allow_hitleap": true
+  },
+  "permissions": {
+    "allow_geolocation": false,
+    "allow_fullscreen": true,
+    "allow_openExternal": false,
+    "allow_clipboard_read": true
+  },
+  "core": {
+    "remove_external_iframe": false,
+    "block_empty_iframe": false,
+    "block_ads": true,
+    "block_html_tags": false,
+    "skip_video_ads": true,
+    "send_browser_id": true
+  },
+  "internet_speed": {
+    "type": "default",
+    "latency": 0,
+    "download": 0,
+    "upload": 0
+  },
+  "white_list": [
+    {
+      "url": "*google.com*"
+    },
+    {
+      "url": "*facebook.com*"
+    },
+    {
+      "url": "*godaddy.com*"
+    },
+    {
+      "url": "*127.0.0.1*"
+    }
+  ],
   "black_list": [],
   "open_list": [
-    { "enabled": true, "url": "https://www.youtube.com/", "multi": true, "name": "Open Youtube" },
-    { "enabled": true, "name": "Open Facebook", "url": "https://www.facebook.com/", "multi": true },
-    { "enabled": true, "name": "Open Current Page", "multi": true }
+    {
+      "enabled": true,
+      "url": "https://www.youtube.com/",
+      "multi": true,
+      "name": "Open Youtube"
+    },
+    {
+      "enabled": true,
+      "name": "Open Facebook",
+      "url": "https://www.facebook.com/",
+      "multi": true
+    },
+    {
+      "enabled": true,
+      "name": "Open Current Page",
+      "multi": true
+    }
   ],
-  "context_menu": { "inspect": true, "dev_tools": true, "page_options": true },
-  "downloader": { "apps": [{ "name": "C:\\Program Files\\Softdeluxe\\Free Download Manager\\fdm.exe", "params": "--url $url" }], "enabled": true }
+  "context_menu": {
+    "inspect": true,
+    "dev_tools": true,
+    "page_options": true
+  },
+  "downloader": {
+    "apps": [
+      {
+        "name": "C:\\Program Files\\Softdeluxe\\Free Download Manager\\fdm.exe",
+        "params": "--url $url"
+      }
+    ],
+    "enabled": true
+  }
 }

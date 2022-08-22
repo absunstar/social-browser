@@ -29,17 +29,18 @@
         --input-focus-border-color: #2196f3;
         --tabs-header-width: 25%;
         --tabs-content-width: 75%;
+        --table-hover-background-color: #4caf5070;
       }
       html,
       body {
-        background: #2196f33b;
+        background: #fff;
       }
       body {
         margin: 0;
         padding: 0px;
       }
       .tabs .tabs-header {
-        background: #2196f31c;
+        background: #fff;
       }
       .tabs .tabs-header .tab-link {
         font-size: 18px;
@@ -525,15 +526,20 @@
                   <fieldset>
                     <legend>External Downloader</legend>
                     <div class="row">
-                      <div class="col2">
+                      <div class="col12">
                         <i-checkbox class="row" label="Enable" ng-model="setting.blocking.downloader.enabled"></i-checkbox>
                       </div>
-                      <div class="row" ng-repeat="app in setting.blocking.downloader.apps">
+                      <i-button label="Add New App" ng-click="setting.blocking.downloader.apps.push({})" ng-show="setting.blocking.downloader.enabled === true"></i-button>
+                      <div class="row padding margin border" ng-repeat="app in setting.blocking.downloader.apps" ng-show="setting.blocking.downloader.enabled === true">
                         <div class="col7">
-                          <i-control ng-show="setting.blocking.downloader.enabled === true" type="text" ng-model="app.name" label="App Path"></i-control>
+                          <i-control type="text" ng-model="app.name" label="App Path"></i-control>
                         </div>
                         <div class="col3">
-                          <i-control ng-show="setting.blocking.downloader.enabled === true" type="text" ng-model="app.params" label="App Params"></i-control>
+                          <i-control type="text" ng-model="app.params" label="App Params"></i-control>
+                        </div>
+                        <div class="col2">
+                          <br /><br />
+                          <i-button type="delete default" ng-click="setting.blocking.downloader.apps.splice($index ,1)"></i-button>
                         </div>
                       </div>
                     </div>
@@ -763,7 +769,7 @@
                       </div>
 
                       <div class="row">
-                        <i-list class="col3" items="setting.privacy.browserEnginList" label="Engine" ng-model="userAgent.engine"></i-list>
+                        <i-list class="col3" items="setting.blocking.privacy.browserEnginList" label="Engine" ng-model="userAgent.engine"></i-list>
                         <i-control class="col3" label="vendor" ng-model="userAgent.vendor" placeholder="apple || "></i-control>
                         <i-control class="col3" label="oscpu" ng-model="userAgent.oscpu" placeholder="windows || macos || linux"></i-control>
                         <i-control class="col3" label="platform" ng-model="userAgent.platform" placeholder="windows || macos || iphone || linux || android"></i-control>
@@ -782,30 +788,19 @@
                         <th>Index</th>
                         <th>search <input class="block full-width" type="text" ng-model="_userAgent" /></th>
                       </tr>
-                      <tr ng-repeat="_se in setting.user_agent_list | filter:_userAgent | orderBy : 'name' track by $index">
+                      <tr ng-repeat="_se in setting.user_agent_list | filter:_userAgent track by $index ">
                         <td class="center">
                           {{$index + 1}} <a class="btn red" ng-click="removeUserAgent(_se)"> <i class="fa fa-trash"></i> Remove </a>
                         </td>
 
                         <td>
-                          <input class="bold block full-width" type="text" ng-model="_se.url" />
-                          <div class="row">
-                            <table class="table">
-                              <tr>
-                                <th>Name</th>
-                                <th>Engine</th>
-                                <th>vendor</th>
-                                <th>oscpu</th>
-                                <th>platform</th>
-                              </tr>
-                              <tr>
-                                <td><input class="" type="text" ng-model="_se.name" /></td>
-                                <td><i-list primary="name" class="" items="setting.privacy.browserEnginList" label="Engine" ng-model="_se.engine"></i-list></td>
-                                <td><input class="" type="text" ng-model="_se.vendor" /></td>
-                                <td><input class="" type="text" ng-model="_se.oscpu" /></td>
-                                <td><input class="" type="text" ng-model="_se.platform" /></td>
-                              </tr>
-                            </table>
+                          <div class="row padding border margin">
+                            <i-control label="Name" class="col8" type="text" ng-model="_se.name"></i-control>
+                            <i-list label="Engine" class="col4" primary="name" items="setting.blocking.privacy.browserEnginList" ng-model="_se.engine"></i-list>
+                            <i-control label="vendor" class="col4" type="text" ng-model="_se.vendor"></i-control>
+                            <i-control label="oscpu" class="col4" type="text" ng-model="_se.oscpu"></i-control>
+                            <i-control label="platform" class="col4" type="text" ng-model="_se.platform"></i-control>
+                            <i-control label="URL" class="bold col12" type="text" ng-model="_se.url"></i-control>
                           </div>
                         </td>
                       </tr>
