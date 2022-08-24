@@ -417,6 +417,23 @@ module.exports = function init(parent) {
       parent.var.blocking.core = parent.var.blocking.core || {};
       parent.var.blocking.javascript = parent.var.blocking.javascript || {};
       parent.var.blocking.privacy = parent.var.blocking.privacy || {};
+      parent.var.blocking.privacy.browserEnginList = [
+        {
+          name: 'Chrome',
+        },
+        {
+          name: 'Edge',
+        },
+        {
+          name: 'Firefox',
+        },
+        {
+          name: 'Opera',
+        },
+        {
+          name: 'Tor',
+        },
+      ];
       parent.var.blocking.youtube = parent.var.blocking.youtube || {};
       parent.var.blocking.permissions = parent.var.blocking.permissions || {};
       parent.var.blocking.internet_speed = parent.var.blocking.internet_speed || {};
@@ -432,7 +449,7 @@ module.exports = function init(parent) {
           params: '/d $url /f $file_name',
         },
         {
-          name: 'C:\\Users\\$username\\AppData\\Local\\Softdeluxe\\Free Download Manager\\fdm.exe',
+          name: 'C:\\Program Files\\Softdeluxe\\Free Download Manager\\fdm.exe',
           params: '--url $url --path $file_name',
         },
       ];
