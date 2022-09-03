@@ -512,6 +512,7 @@ module.exports = function (parent) {
       return false;
     });
     ss.on('will-download', (event, item, webContents) => {
+      console.log('parent session will-download', item);
       let dl = {
         id: new Date().getTime(),
         date: new Date(),
@@ -525,16 +526,15 @@ module.exports = function (parent) {
         status: 'waiting',
         Partition: name,
       };
-
+      let ok = false;
       if (parent.var.blocking.downloader.enabled && !item.getURL().like('*127.0.0.1*') && !item.getURL().like('blob*')) {
-        let ok = false;
         parent.var.blocking.downloader.apps.forEach((app) => {
+          if (ok) {
+            return;
+          }
           let app_name = app.name.replace('$username', parent.os.userInfo().username);
           if (parent.api.isFileExistsSync(app_name)) {
             event.preventDefault();
-            if (ok) {
-              return;
-            }
             ok = true;
             let params = app.params.split(' ');
             for (const i in params) {

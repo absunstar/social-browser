@@ -1783,6 +1783,33 @@ module.exports = function (SOCIALBROWSER) {
             type: 'separator',
           })
         );
+
+        menu.append(
+          new MenuItem({
+            label: 'Hide tab',
+            click() {
+              node.classList.add('display-none');
+              if ((t = document.querySelector('.social-tab:not(display-none)'))) {
+                t.click();
+              }
+            },
+          })
+        );
+        menu.append(
+          new MenuItem({
+            label: 'Show hidden tabs',
+            click() {
+              document.querySelectorAll('.social-tab').forEach((t) => {
+                t.classList.remove('display-none');
+              });
+            },
+          })
+        );
+        menu.append(
+          new MenuItem({
+            type: 'separator',
+          })
+        );
         menu.append(
           new MenuItem({
             label: 'New Ghost tab',

@@ -110,6 +110,7 @@ module.exports = function init(parent) {
   };
 
   parent.exe = function (app_path, args) {
+    console.log('parent.exe', app_path, args);
     let child = parent.child_process.execFile;
     let executablePath = app_path;
     let parameters = args;

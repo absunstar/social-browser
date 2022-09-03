@@ -2,6 +2,9 @@
     cursor: pointer !important;
 }
 
+.display-none{
+    display: none !important;
+}
 .bold {
     font-weight: bold !important;
 }
