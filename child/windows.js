@@ -40,7 +40,7 @@ module.exports = function (child) {
       minHeight: 200,
       fullscreenable: true,
       title: 'New Window',
-      backgroundColor: '#4387fd',
+      backgroundColor: '#e8eaed',
       frame: true,
       icon: parent.icon,
       webPreferences: {

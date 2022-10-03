@@ -441,7 +441,7 @@ module.exports = function init(parent) {
       parent.var.blocking.black_list = parent.var.blocking.black_list || [];
       parent.var.blocking.open_list = parent.var.blocking.open_list || [];
       parent.var.blocking.popup = parent.var.blocking.popup || {};
-      parent.var.blocking.context_menu = parent.var.blocking.context_menu || {};
+      parent.var.blocking.context_menu = parent.var.blocking.context_menu || { inspect: true, dev_tools: true, page_options: true };
       parent.var.blocking.downloader = parent.var.blocking.downloader || {};
       parent.var.blocking.downloader.apps = parent.var.blocking.downloader.apps || [
         {

@@ -137,15 +137,12 @@
     });
   }, 1000 * 5);
 
+  browser.electron.app.setAppUserModelId('Social.Browser');
   browser.electron.Menu.setApplicationMenu(null);
   browser.electron.app.setAsDefaultProtocolClient('browser');
 
   if (browser.electron.app.setUserTasks) {
     browser.electron.app.setUserTasks([]);
-  }
-
-  if (!browser.isPortal) {
-    browser.electron.app.setAppUserModelId('Social.Browser');
   }
 
   browser.electron.app.clearRecentDocuments();
@@ -168,7 +165,7 @@
     // }
     // console.log(browser.webContentList.length);
     browser.electron.app.setAccessibilitySupportEnabled(true);
-    if (!browser.isPortal) {
+    if (!browser.isPortal && !browser.var.core.id.like('*test*')) {
       browser.electron.app.setLoginItemSettings({
         openAtLogin: true,
         args: ['--auto-startup'],
@@ -201,8 +198,6 @@
     //     });
     //   }
     // });
-
-
   });
   browser.electron.app.on('second-instance', (event, commandLine, workingDirectory) => {
     browser.log('second-instance', commandLine);

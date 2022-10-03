@@ -71,15 +71,13 @@ require(child.path.join(child.dir, 'child', 'session'))(child);
 require(child.path.join(child.dir, 'child', 'plugins'))(child);
 require(child.path.join(child.dir, 'child', 'proxy_check'))(child);
 
-// require(child.path.join(child.dir, 'child', 'client'))(child);
-// app.setAppUserModelId('Social.Browser');
+app.setAppUserModelId('Social.Browser');
 app.clearRecentDocuments();
 
 if (app.setUserTasks) {
   app.setUserTasks([]);
 }
 
-app.clearRecentDocuments();
 
 // app.commandLine.appendSwitch('disable-software-rasterizer');
 // app.commandLine.appendSwitch('enable-webgl');

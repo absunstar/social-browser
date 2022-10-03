@@ -158,11 +158,11 @@ module.exports = function init(parent) {
       parent.clientList[child.index].windowType = options.windowType || 'popup';
       parent.clientList[child.index].options = options;
       parent.clientList[child.index].ws.send({ type: 'connected' });
-      if (parent.clientList.filter((cl) => cl && cl.is_attached === false).length === 0) {
-        parent.createChildProcess({
-          windowType: 'none',
-        });
-      }
+      // if (parent.clientList.filter((cl) => cl && cl.is_attached === false).length === 0) {
+      //   parent.createChildProcess({
+      //     windowType: 'none',
+      //   });
+      // }
     } else {
       let index = parent.child_index;
       parent.child_index++;
@@ -245,13 +245,13 @@ module.exports = function init(parent) {
       parent.clientList[index].pid = child.pid;
       parent.clientList[index].child = child;
 
-      setTimeout(() => {
-        if (parent.clientList.filter((cl) => cl && cl.is_attached === false).length === 0) {
-          parent.createChildProcess({
-            windowType: 'none',
-          });
-        }
-      }, 1000 * 5);
+      // setTimeout(() => {
+      //   if (parent.clientList.filter((cl) => cl && cl.is_attached === false).length === 0) {
+      //     parent.createChildProcess({
+      //       windowType: 'none',
+      //     });
+      //   }
+      // }, 1000 * 5);
     }
   };
 
