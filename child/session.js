@@ -210,7 +210,7 @@ module.exports = function (child) {
       });
     }
 
-    if (child.allowSessionHandle) {
+    if (false && child.allowSessionHandle) {
       ss.cookies.on('changed', function (event, cookie, cause, removed) {
         if (child.sessionBusy) {
           return;
@@ -549,10 +549,10 @@ module.exports = function (child) {
         }
 
         if ((cookie_obj = child.cookieParse(details.requestHeaders['Cookie']))) {
-          let isMainFrame = details.resourceType === 'mainFrame';
-          let isNotTopLevel = details.resourceType.like('*subFrame*|*image*|*xhr*|*other*');
+          
 
-          if (!child.parent.var.core.cookiesOFF && cookie_obj) {
+          if (false && !child.parent.var.core.cookiesOFF && cookie_obj) {
+            let isMainFrame = details.resourceType === 'mainFrame';
             if (child.cookies[name]) {
               let co_list = child.cookies[name].filter((c) => c && (urlObject.hostname.indexOf(c.domain) > -1 || c.domain.indexOf(urlObject.hostname) > -1) && urlObject.path.indexOf(c.path) > -1);
               co_list.forEach((co) => {

@@ -153,31 +153,24 @@ module.exports = function init(parent) {
     options.partition = options.partition || parent.var.core.session.name;
     options.user_name = options.user_name || parent.var.core.session.display;
 
-    let child = parent.clientList.find((cl) => cl && cl.is_attached === false);
+    let child = parent.clientList.find((cl) => cl && cl.partition === options.partition);
     if (child && parent.clientList[child.index]) {
       parent.clientList[child.index].windowType = options.windowType || 'popup';
+      parent.clientList[child.index].option_list.push(options);
       parent.clientList[child.index].options = options;
-      parent.clientList[child.index].ws.send({ type: 'connected' });
-      // if (parent.clientList.filter((cl) => cl && cl.is_attached === false).length === 0) {
-      //   parent.createChildProcess({
-      //     windowType: 'none',
-      //   });
-      // }
+      parent.clientList[child.index].ws.send({ type: 're-connected' });
+
     } else {
       let index = parent.child_index;
       parent.child_index++;
       parent.clientList[index] = {
         source: 'child',
-        index: index,
+        partition : options.partition,
+        option_list : [options],
         windowType: options.windowType || 'popup',
+        index: index,
         options: options,
       };
-      // parent.ipcClientList[index] = {
-      //   source: 'child',
-      //   index: index,
-      //   windowType: options.windowType || 'popup',
-      //   options: options,
-      // };
 
       let child = parent.run(['--index=' + index, '--dir=' + parent.dir, '--data_dir=' + parent.data_dir, '--speed=' + (parent.speedMode || ''), parent.dir + '/child/child.js']);
 
@@ -245,13 +238,6 @@ module.exports = function init(parent) {
       parent.clientList[index].pid = child.pid;
       parent.clientList[index].child = child;
 
-      // setTimeout(() => {
-      //   if (parent.clientList.filter((cl) => cl && cl.is_attached === false).length === 0) {
-      //     parent.createChildProcess({
-      //       windowType: 'none',
-      //     });
-      //   }
-      // }, 1000 * 5);
     }
   };
 

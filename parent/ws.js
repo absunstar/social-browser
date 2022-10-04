@@ -12,7 +12,7 @@ module.exports = function init(parent) {
         case 'connected':
           ws_user.send({ type: 'connected' });
           break;
-        case '[attach-child]':
+        case '[request-browser-core-data]':
           let child = parent.clientList[message.index];
           if (!child) {
             return;
@@ -23,10 +23,6 @@ module.exports = function init(parent) {
             type: '[browser-core-data]',
             data_dir: parent.data_dir,
             options: child.options,
-            cookies: {
-              key: child.options.partition,
-              value: parent.cookies[child.options.partition],
-            },
             lastWindowStatus: parent.lastWindowStatus ? parent.lastWindowStatus.mainWindow : null,
             appRequestUrl: parent.appRequestUrl,
             newTabData: parent.newTabData || {
@@ -50,19 +46,18 @@ module.exports = function init(parent) {
 
           child.ws.send(m);
 
-          // if (!child.is_cookie_sended) {
-          //   child.is_cookie_sended = true;
-          //   let count = 0;
-          //   for (const key in parent.cookies) {
-          //     if (child.options.partition == key) {
-          //     } else {
-          //       count++;
-          //       setTimeout(() => {
-          //         ws.send(JSON.stringify({ type: '[browser-cookies]', name: key, value: parent.cookies[key] }));
-          //       }, 1000 * count);
-          //     }
-          //   }
-          // }
+          break;
+        case '[re-request-browser-core-data]':
+          let child2 = parent.clientList[message.index];
+          if (!child2) {
+            return;
+          }
+          let m2 = {
+            type: '[re-browser-core-data]',
+            options: child2.options,
+          };
+
+          child2.ws.send(m2);
 
           break;
         case 'share':
@@ -101,7 +96,7 @@ module.exports = function init(parent) {
         case '[show-view]':
           parent.clientList.forEach((client) => {
             if (client.index != message.index && client.ws) {
-              if (message.options.tab_id === client.options.tab_id) {
+              if (client.option_list.some((op) => op.tab_id === message.options.tab_id)) {
                 message.is_current_view = true;
                 client.ws.send(message);
               } else {
@@ -113,14 +108,14 @@ module.exports = function init(parent) {
           break;
         case '[close-view]':
           parent.clientList.forEach((client) => {
-            if (client.index != message.index && client.ws && message.options.tab_id === client.options.tab_id) {
+            if (client.index != message.index && client.ws && client.option_list.some((op) => op.tab_id === message.options.tab_id)) {
               client.ws.send(message);
             }
           });
           break;
         case '[update-view-url]':
           parent.clientList.forEach((client) => {
-            if (client.index !== message.index && client.ws && message.options.tab_id === client.options.tab_id) {
+            if (client.index !== message.index && client.ws && client.option_list.some((op) => op.tab_id === message.options.tab_id)) {
               client.ws.send(message);
             }
           });
@@ -182,14 +177,14 @@ module.exports = function init(parent) {
           break;
         case '[update-tab-properties]':
           parent.clientList.forEach((client) => {
-            if (client.windowType == 'main' && client.ws) {
+            if (client.option_list.some((op) => op.windowType == 'main') && client.ws) {
               client.ws.send(message);
             }
           });
           break;
         case '[call-window-action]':
           parent.clientList.forEach((client) => {
-            if (client.windowType !== 'main' && client.ws && client.options.tab_id === message.data.tab_id) {
+            if (client.windowType !== 'main' && client.ws && client.option_list.some((op) => op.tab_id === message.data.tab_id)) {
               client.ws.send(message);
             }
           });

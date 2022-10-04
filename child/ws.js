@@ -28,18 +28,18 @@ module.exports = function (child) {
     child._ws_.on('message', function (event) {
       try {
         let message = JSON.parse(event.data || event);
-        let windowType = child.parent ? child.parent.windowType : child.index;
-        // child.log(`\n\n ${windowType} new Message .............. ${message.type}`);
 
         if (message.type == 'connected') {
           child.sendMessage({
-            type: '[attach-child]',
+            type: '[request-browser-core-data]',
+          });
+        } else if (message.type == 're-connected') {
+          child.sendMessage({
+            type: '[re-request-browser-core-data]',
           });
         } else if (message.type == '[browser-core-data]') {
           child.parent = message;
-          child.cookies = child.cookies || {};
-          child.cookies[child.parent.cookies.value] = child.parent.cookies.value;
-
+          child.cookies = {};
           child.electron.app.userAgentFallback = child.parent.var.core.user_agent;
           if (child.parent.windowType == 'none') {
             child.window = null;
@@ -57,6 +57,8 @@ module.exports = function (child) {
             child.sessionConfig();
             child.createNewWindow({ ...child.parent.options });
           }
+        } else if (message.type == '[re-browser-core-data]') {
+          child.createNewWindow({ ...message.options });
         } else if (message.type == '[update-browser-var]') {
           if (child.parent.windowType == 'files') {
             child.set_var(message.options.name, message.options.data);
@@ -68,6 +70,7 @@ module.exports = function (child) {
             if (message.options.name == 'core' || message.options.name == 'proxy' || message.options.name == 'session_list') {
               child.sessionConfig();
             }
+
             child.sendToWindows('[update-browser-var]', message);
           }
         } else if (message.type == '[update-browser-var][user_data_input][add]') {
@@ -161,105 +164,140 @@ module.exports = function (child) {
             }
           }
         } else if (message.type == '[call-window-action]') {
-          if (message.data.name == '[window-reload]' && child.getWindow()) {
-            child.getWindow().reload();
-          } else if (message.data.name == '[window-reload-hard]' && child.getWindow()) {
-            let info = message.data;
-            if (info.origin) {
-              info.origin = info.origin === 'null' ? child.getWindow().webContents.getURL() : info.origin;
-              info.storages = info.storages || ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage'];
-              info.quotas = info.quotas || ['temporary', 'persistent', 'syncable'];
-              if (info.origin.replace('://', '').indexOf(':') == -1) {
-                info.origin = info.origin + ':80';
+          if (message.data.name == '[window-reload]') {
+            child.windowList.forEach((w) => {
+              if (w.window && !w.window.isDestroyed() && w.__options.tab_id == message.data.tab_id) {
+                w.window.reload();
               }
+            });
+          } else if (message.data.name == '[window-reload-hard]') {
+            child.windowList.forEach((w) => {
+              if (w.window && !w.window.isDestroyed() && w.__options.tab_id == message.data.tab_id) {
+                let info = message.data;
+                if (info.origin) {
+                  info.origin = info.origin === 'null' ? w.window.webContents.getURL() : info.origin;
+                  info.storages = info.storages || ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage'];
+                  info.quotas = info.quotas || ['temporary', 'persistent', 'syncable'];
+                  if (info.origin.replace('://', '').indexOf(':') == -1) {
+                    info.origin = info.origin + ':80';
+                  }
 
-              if (info.storages[0] == 'cookies') {
-                child
-                  .getWindow()
-                  .webContents.session.clearStorageData({
-                    origin: info.origin,
-                    storages: info.storages,
-                    quotas: info.quotas,
-                  })
-                  .then(() => {
-                    child
-                      .getWindow()
-                      .webContents.session.clearCache()
-                      .then(() => {
-                        child.getWindow().webContents.reload();
-                      });
-                  });
-              } else {
-                child
-                  .getWindow()
-                  .webContents.session.clearCache()
-                  .then(() => {
-                    child
-                      .getWindow()
-                      .webContents.session.clearStorageData({
+                  if (info.storages[0] == 'cookies') {
+                    w.window.webContents.session
+                      .clearStorageData({
                         origin: info.origin,
                         storages: info.storages,
                         quotas: info.quotas,
                       })
                       .then(() => {
-                        child
-                          .getWindow()
-                          .webContents.session.clearCache()
-                          .then(() => {
-                            child.getWindow().webContents.reload();
-                          });
+                        w.window.webContents.session.clearCache().then(() => {
+                          w.window.webContents.reload();
+                        });
                       });
-                  });
-              }
-            }
-          } else if (message.data.name == '[show-window-dev-tools]' && child.getWindow()) {
-            child.getWindow().webContents.openDevTools();
-          } else if (message.data.name == '[toggle-window-audio]' && child.getWindow()) {
-            child.getWindow().webContents.setAudioMuted(!child.getWindow().webContents.audioMuted);
-            child.updateTab(child.getWindow());
-          } else if (message.data.name == 'copy') {
-            child.electron.clipboard.writeText(message.data.text.replace('#___new_tab___', '').replace('#___new_popup__', ''));
-          } else if (message.data.name == 'full_screen' && child.getWindow()) {
-            child.getWindow().setFullScreen(true);
-          } else if (message.data.name == '!full_screen' && child.getWindow()) {
-            child.getWindow().setFullScreen(false);
-          } else if (message.data.name == '[window-zoom]' && child.getWindow()) {
-            child.getWindow().webContents.zoomFactor = 1;
-          } else if (message.data.name == '[window-zoom+]' && child.getWindow()) {
-            child.getWindow().webContents.zoomFactor += 0.2;
-          } else if (message.data.name == '[window-zoom-]' && child.getWindow()) {
-            child.getWindow().webContents.zoomFactor -= 0.2;
-          } else if (message.data.name == '[window-go-back]' && child.getWindow()) {
-            if (child.getWindow().webContents.canGoBack()) {
-              child.getWindow().webContents.goBack();
-            }
-          } else if (message.data.name == '[window-go-forward]' && child.getWindow()) {
-            if (child.getWindow().webContents.canGoForward()) {
-              child.getWindow().webContents.goForward();
-            }
-          } else if (message.data.name == 'add_to_bookmark' && child.getWindow()) {
-            let win = child.getWindow();
-
-            let exists = false;
-            child.parent.var.bookmarks.forEach((b) => {
-              if (b.url == win.getURL()) {
-                b.title == win.getTitle();
-                exists = true;
+                  } else {
+                    w.window.webContents.session.clearCache().then(() => {
+                      w.window.webContents.session
+                        .clearStorageData({
+                          origin: info.origin,
+                          storages: info.storages,
+                          quotas: info.quotas,
+                        })
+                        .then(() => {
+                          w.window.webContents.session.clearCache().then(() => {
+                            w.window.webContents.reload();
+                          });
+                        });
+                    });
+                  }
+                }
               }
             });
-            if (!exists) {
-              child.parent.var.bookmarks.push({
-                title: win.getTitle(),
-                url: win.getURL(),
-                favicon: win.__options.favicon,
-              });
-            }
-            child.sendMessage({
-              type: '[update-browser-var]',
-              options: {
-                name: 'bookmarks',
-                data: child.parent.var.bookmarks,
-              },
+          } else if (message.data.name == '[show-window-dev-tools]') {
+            child.windowList.forEach((w) => {
+              if (w.window && !w.window.isDestroyed() && w.__options.tab_id == message.data.tab_id) {
+                w.window.webContents.openDevTools();
+              }
+            });
+          } else if (message.data.name == '[toggle-window-audio]') {
+            child.windowList.forEach((w) => {
+              if (w.window && !w.window.isDestroyed() && w.__options.tab_id == message.data.tab_id) {
+                w.window.webContents.setAudioMuted(!w.window.webContents.audioMuted);
+                child.updateTab(w.window);
+              }
+            });
+          } else if (message.data.name == 'copy') {
+            child.electron.clipboard.writeText(message.data.text.replace('#___new_tab___', '').replace('#___new_popup__', ''));
+          } else if (message.data.name == 'full_screen') {
+            child.windowList.forEach((w) => {
+              if (w.window && !w.window.isDestroyed() && w.__options.tab_id == message.data.tab_id) {
+                w.window.setFullScreen(true);
+              }
+            });
+          } else if (message.data.name == '!full_screen') {
+            child.windowList.forEach((w) => {
+              if (w.window && !w.window.isDestroyed() && w.__options.tab_id == message.data.tab_id) {
+                w.window.setFullScreen(false);
+              }
+            });
+          } else if (message.data.name == '[window-zoom]') {
+            child.windowList.forEach((w) => {
+              if (w.window && !w.window.isDestroyed() && w.__options.tab_id == message.data.tab_id) {
+                w.window.webContents.zoomFactor = 1;
+              }
+            });
+          } else if (message.data.name == '[window-zoom+]') {
+            child.windowList.forEach((w) => {
+              if (w.window && !w.window.isDestroyed() && w.__options.tab_id == message.data.tab_id) {
+                w.window.webContents.zoomFactor += 0.2;
+              }
+            });
+          } else if (message.data.name == '[window-zoom-]') {
+            child.windowList.forEach((w) => {
+              if (w.window && !w.window.isDestroyed() && w.__options.tab_id == message.data.tab_id) {
+                w.window.webContents.zoomFactor -= 0.2;
+              }
+            });
+          } else if (message.data.name == '[window-go-back]') {
+            child.windowList.forEach((w) => {
+              if (w.window && !w.window.isDestroyed() && w.__options.tab_id == message.data.tab_id) {
+                if (w.window.webContents.canGoBack()) {
+                  w.window.webContents.goBack();
+                }
+              }
+            });
+          } else if (message.data.name == '[window-go-forward]') {
+            child.windowList.forEach((w) => {
+              if (w.window && !w.window.isDestroyed() && w.__options.tab_id == message.data.tab_id) {
+                if (w.window.webContents.canGoForward()) {
+                  w.window.webContents.goForward();
+                }
+              }
+            });
+          } else if (message.data.name == 'add_to_bookmark') {
+            child.windowList.forEach((w) => {
+              if (w.window && !w.window.isDestroyed() && w.window.isVisible()) {
+                let exists = false;
+                child.parent.var.bookmarks.forEach((b) => {
+                  if (b.url == w.window.getURL()) {
+                    b.title == w.window.getTitle();
+                    exists = true;
+                  }
+                });
+                if (!exists) {
+                  child.parent.var.bookmarks.push({
+                    title: w.window.getTitle(),
+                    url: w.window.getURL(),
+                    favicon: w.window.__options.favicon,
+                  });
+                }
+                child.sendMessage({
+                  type: '[update-browser-var]',
+                  options: {
+                    name: 'bookmarks',
+                    data: child.parent.var.bookmarks,
+                  },
+                });
+              }
             });
           } else if (message.data.name == '[edit-window]' && child.getWindow()) {
             child.getWindow().webContents.executeJavaScript(
@@ -283,8 +321,12 @@ module.exports = function (child) {
           child.getWindow().setMenuBarVisibility(true);
           child.getWindow().setResizable(true);
           child.getWindow().setMovable(true);
-        } else if (message.type == '[update-tab-properties]' && child.getWindow()) {
-          child.sendToWindow('[send-render-message]', message.data);
+        } else if (message.type == '[update-tab-properties]') {
+          child.windowList.forEach((w) => {
+            if (w.__options.windowType == 'main' && w.window && !w.window.isDestroyed()) {
+              w.window.webContents.send('[send-render-message]', message.data);
+            }
+          });
         } else if (message.type == '[window-clicked]') {
           if (child.mainWindow && !child.mainWindow.isDestroyed()) {
             child.mainWindow.show();
@@ -295,47 +337,55 @@ module.exports = function (child) {
           if (child.profilesWindow && !child.profilesWindow.isDestroyed()) {
             child.profilesWindow.hide();
           }
-        } else if (message.type == '[show-view]' && child.getWindow()) {
+        } else if (message.type == '[show-view]') {
+          child.is_hide = true;
+
           if (child.addressbarWindow && !child.addressbarWindow.isDestroyed()) {
             child.addressbarWindow.hide();
           }
           if (child.profilesWindow && !child.profilesWindow.isDestroyed()) {
             child.profilesWindow.hide();
           }
-          if (child.parent.options.windowType !== 'view') {
-            return;
-          }
-          if (child.parent.is_current_view == message.is_current_view) {
-            if (child.parent.is_current_view) {
-              child.is_hide = false;
-              child.getWindow().show();
-              child.getWindow().setAlwaysOnTop(true);
-              child.getWindow().setAlwaysOnTop(false);
+
+          child.windowList.forEach((w) => {
+            if (w.__options.windowType == 'view' && w.window && !w.window.isDestroyed()) {
+              if (w.__options.tab_id == message.options.tab_id) {
+                if (message.is_current_view) {
+                  child.is_hide = false;
+                  w.window.show();
+                  w.window.setAlwaysOnTop(true);
+                  w.window.setAlwaysOnTop(false);
+                } else {
+                  w.window.hide();
+                }
+              } else {
+                w.window.hide();
+              }
             }
-          } else {
-            child.parent.is_current_view = message.is_current_view;
-            if (!child.parent.is_current_view) {
-              child.getWindow().hide();
-              child.is_hide = true;
-            } else {
-              child.is_hide = false;
-              child.getWindow().show();
-              child.getWindow().setAlwaysOnTop(true);
-              child.getWindow().setAlwaysOnTop(false);
+          });
+        } else if (message.type == '[close-view]') {
+          if ((w = child.windowList.find((w) => w.__options.tab_id == message.options.tab_id))) {
+            if (!w || w.window.isDestroyed()) {
+              w.window.close();
             }
           }
-        } else if (message.type == '[close-view]' && child.getWindow()) {
-          child.getWindow().close();
-        } else if (message.type == '[update-view-url]' && child.getWindow()) {
-          child.getWindow().webContents.stop();
-          child.getWindow().loadURL(message.options.url);
+        } else if (message.type == '[update-view-url]') {
+          console.log(message);
+          if ((w = child.windowList.find((w) => w.__options.tab_id == message.options.tab_id))) {
+            if (w && !w.window.isDestroyed()) {
+              // w.window.webContents.stop();
+              w.window.loadURL(message.options.url);
+            }
+          }
         } else if (message.type == '[remove-tab]' && child.getWindow()) {
           child.sendToWindow('[send-render-message]', { name: '[remove-tab]', tab_id: message.tab_id });
-        } else if (message.type == '[send-window-status]' && child.parent.options.windowType === 'view' && child.getWindow()) {
-          if (message.screen && message.mainWindow) {
-            child.parent.options.screen = message.screen;
-            child.parent.options.mainWindow = message.mainWindow;
-            child.handleWindowBounds();
+        } else if (message.type == '[send-window-status]') {
+          if ((w = child.windowList.find((w) => w.__options.windowType == 'view'))) {
+            if (message.screen && message.mainWindow) {
+              child.parent.options.screen = message.screen;
+              child.parent.options.mainWindow = message.mainWindow;
+              child.handleWindowBounds();
+            }
           }
         } else if (message.type == '[cookie-changed]') {
           child.cookies[message.partition] = child.cookies[message.partition] || [];

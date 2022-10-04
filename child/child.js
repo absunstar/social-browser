@@ -78,7 +78,6 @@ if (app.setUserTasks) {
   app.setUserTasks([]);
 }
 
-
 // app.commandLine.appendSwitch('disable-software-rasterizer');
 // app.commandLine.appendSwitch('enable-webgl');
 // app.commandLine.appendSwitch('disable-dev-shm-usage');
@@ -93,7 +92,6 @@ app.disableHardwareAcceleration();
 
 // child.allow_widevinecdm(app)
 app.setPath('userData', child.path.join(child.data_dir, 'default'));
-
 
 // child.mkdirSync(child.path.join(child.data_dir, 'sessionData', 'sessionData_' + 'default'));
 // app.setPath('userData', child.path.join(child.data_dir, 'sessionData', 'sessionData_' + 'default'));
@@ -185,15 +183,17 @@ app.on('ready', function () {
   });
 
   child.sendToWindow = function (...args) {
-    if (child.window && !child.window.isDestroyed()) {
-      child.window.webContents.send(...args);
-    }
+    child.windowList.forEach((w) => {
+      if (w.window && !w.window.isDestroyed()) {
+        w.window.webContents.send(...args);
+      }
+    });
   };
 
   child.sendToWindows = function (...args) {
-    child.windowList.forEach((win) => {
-      if (win.window && !win.window.isDestroyed()) {
-        win.window.webContents.send(...args);
+    child.windowList.forEach((w) => {
+      if (w.window && !w.window.isDestroyed()) {
+        w.window.webContents.send(...args);
       }
     });
   };
@@ -203,59 +203,42 @@ app.on('ready', function () {
       return;
     }
     child.handleWindowBoundsBusy = true;
-    let win = child.getWindow();
     let mainWindow = child.parent.options.mainWindow;
     let screen = child.parent.options.screen;
-    if (!mainWindow || !screen || child.parent.options.windowType === 'main' || !win || win.isDestroyed()) {
-      child.handleWindowBoundsBusy = false;
-      return;
-    }
 
-    if (mainWindow.hide) {
-      if (!child.is_hide) {
-        win.hide();
-        child.is_hide = true;
-      }
-    }
+    child.windowList.forEach((w) => {
+      if (w.__options.windowType == 'view' && w.window && !w.window.isDestroyed()) {
+        let win = w.window;
 
-    if (win.isFullScreen()) {
-      let width = screen.bounds.width;
-      let height = screen.bounds.height;
-      win.setBounds({
-        x: 0,
-        y: 0,
-        width: width,
-        height: height,
-      });
+        if (mainWindow.hide) {
+          win.hide();
+          child.is_hide = true;
+        }
 
-      child.handleWindowBoundsBusy = false;
+        if (win.isFullScreen()) {
+          let width = screen.bounds.width;
+          let height = screen.bounds.height;
+          win.setBounds({
+            x: 0,
+            y: 0,
+            width: width,
+            height: height,
+          });
+        } else {
+          let new_bounds = {
+            x: mainWindow.isMaximized ? mainWindow.bounds.x + 8 : mainWindow.bounds.x,
+            y: mainWindow.isMaximized ? mainWindow.bounds.y + 78 : mainWindow.bounds.y + 70,
+            width: mainWindow.isMaximized ? mainWindow.bounds.width - 15 : mainWindow.bounds.width - 2,
+            height: mainWindow.isMaximized ? mainWindow.bounds.height - 84 : mainWindow.bounds.height - 72,
+          };
+          let old_bounds = win.getBounds();
+          if (old_bounds.width != new_bounds.width || old_bounds.height != new_bounds.height || old_bounds.y != new_bounds.y || old_bounds.x != new_bounds.x) {
+            win.setBounds(new_bounds);
+          }
+        }
+      }
+    });
 
-      return;
-    } else {
-      let new_bounds = {
-        x: mainWindow.isMaximized ? mainWindow.bounds.x + 8 : mainWindow.bounds.x,
-        y: mainWindow.isMaximized ? mainWindow.bounds.y + 78 : mainWindow.bounds.y + 70,
-        width: mainWindow.isMaximized ? mainWindow.bounds.width - 15 : mainWindow.bounds.width - 2,
-        height: mainWindow.isMaximized ? mainWindow.bounds.height - 84 : mainWindow.bounds.height - 72,
-      };
-      let old_bounds = win.getBounds();
-      if (old_bounds.width != new_bounds.width || old_bounds.height != new_bounds.height || old_bounds.y != new_bounds.y || old_bounds.x != new_bounds.x) {
-        win.setBounds(new_bounds);
-      }
-    }
-    if (mainWindow.hide && win) {
-      if (!child.is_hide) {
-        win.hide();
-        child.is_hide = true;
-      }
-    } else {
-      if (child.parent.is_current_view && win) {
-        child.is_hide = false;
-        win.show();
-        win.setAlwaysOnTop(true);
-        win.setAlwaysOnTop(false);
-      }
-    }
     child.handleWindowBoundsBusy = false;
   };
 

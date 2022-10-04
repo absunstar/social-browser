@@ -536,6 +536,7 @@ module.exports = function init(parent) {
     let update_ad_list = false;
     let update_blocking = false;
     let update_core = false;
+    let update_bookmarks = false;
     save_var_quee.forEach((q, i) => {
       if (q === 'proxy_list') {
         save_var_quee.splice(i, 1);
@@ -555,6 +556,9 @@ module.exports = function init(parent) {
       } else if (q === 'core') {
         save_var_quee.splice(i, 1);
         update_core = true;
+      } else if (q === 'bookmarks') {
+        save_var_quee.splice(i, 1);
+        update_bookmarks = true;
       }
     });
     if (update_proxy_list) {
@@ -575,6 +579,9 @@ module.exports = function init(parent) {
     }
     if (update_core) {
       parent.save_var('core');
+    }
+    if (update_bookmarks) {
+      parent.save_var('bookmarks');
     }
     if (save_var_quee.length > 0) {
       parent.save_var(save_var_quee.shift());
