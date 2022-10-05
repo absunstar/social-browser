@@ -127,9 +127,35 @@ module.exports = function (child) {
           });
         } else if (message.type == '[send-render-message]') {
           child.sendToWindow('[send-render-message]', message.data);
-        } else if (message.type == '$download_item') {
-          child.sendToWindow('$download_item', message.data);
-        } else if (message.type == '[add-window-url]') {
+        } else if (message.type == 'pause-item') {
+          child.parent.var.download_list.forEach((dl) => {
+            if (dl.id == info.id) {
+              dl.item.pause();
+              dl.status = 'paused';
+              dl.path = item.getSavePath();
+              child.sendMessage({ type: '$download_item', data: dl });
+            }
+          });
+        } else if (message.type == 'remove-item') {
+          child.parent.var.download_list.forEach((dl , i) => {
+            if (dl.id == info.id) {
+              dl.item.cancel();
+              dl.status = 'cancel';
+              child.sendMessage({ type: '$download_item', data: dl });
+            }
+          });
+        }  else if (message.type == 'resume-item') {
+          child.parent.var.download_list.forEach((dl , i) => {
+            if (dl.id == info.id) {
+              if (dl.item.canResume()) {
+                dl.item.resume();
+                dl.status = 'downloading';
+                dl.path = item.getSavePath();
+                child.sendMessage({ type: '$download_item', data: dl });
+              }
+            }
+          });
+        }else if (message.type == '[add-window-url]') {
           let exists = false;
           child.parent.var.urls.forEach((u) => {
             if (u.url == message.url) {
@@ -365,7 +391,7 @@ module.exports = function (child) {
           });
         } else if (message.type == '[close-view]') {
           if ((w = child.windowList.find((w) => w.__options.tab_id == message.options.tab_id))) {
-            if (!w || w.window.isDestroyed()) {
+            if (w && !w.window.isDestroyed()) {
               w.window.close();
             }
           }

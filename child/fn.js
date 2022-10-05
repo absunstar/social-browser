@@ -110,7 +110,17 @@ module.exports = function (child) {
       );
     });
   };
-
+  child.isFileExistsSync = (path) => {
+    return fs.existsSync(path);
+  };
+  child.exe = function (app_path, args) {
+    child.log('child.exe', app_path, args);
+    child.child_process.execFile(app_path, args, function (err, stdout, stderr) {
+      if (err) {
+        child.log(err);
+      }
+    });
+  };
   child.set_var = function (name, currentContent, ignore) {
     try {
       child.parent.var[name] = currentContent;

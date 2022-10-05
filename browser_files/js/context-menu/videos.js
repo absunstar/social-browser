@@ -43,19 +43,21 @@ module.exports = function (SOCIALBROWSER) {
     let ads = false;
     let videos = document.querySelectorAll('video');
     if (videos.length > 0) {
-      document.querySelectorAll('*').forEach((el) => {
-        if (el.className && typeof el.className == 'string' && !el.className.like(trusted_classes) && color_list.includes(getComputedStyle(el)['backgroundColor'])) {
+      // document.querySelectorAll('*').forEach((el) => {
+      //   if (el.className && typeof el.className == 'string' && !el.className.like(trusted_classes) && color_list.includes(getComputedStyle(el)['backgroundColor'])) {
+      //     ads = true;
+      //   }
+      // });
+      document.querySelectorAll(skip_buttons).forEach((b) => {
+        b.click();
+      });
+
+      videos.forEach((v) => {
+        if (v.src.like(ads_src_list)) {
           ads = true;
         }
       });
 
-      if (!ads) {
-        videos.forEach((v) => {
-          if (v.src.like(ads_src_list)) {
-            ads = true;
-          }
-        });
-      }
       if (ads) {
         videos.forEach((v) => {
           if (!trusted_ids.includes(v.id) && v.currentTime > 0 && !v.paused && !v.ended && v.readyState > 2) {
@@ -65,9 +67,6 @@ module.exports = function (SOCIALBROWSER) {
               setTimeout(() => {
                 v.dispatchEvent(new Event('ended'));
               }, 200);
-              document.querySelectorAll(skip_buttons).forEach((b) => {
-                b.click();
-              });
             } catch (error) {
               SOCIALBROWSER.log(error);
             }

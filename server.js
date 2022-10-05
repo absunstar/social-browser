@@ -117,6 +117,7 @@
     browser.createChildProcess({
       url: 'https://www.google.com',
       windowType: 'none',
+      partition: 'persist:social',
     });
   } else {
     browser.createChildProcess({
@@ -126,7 +127,7 @@
         slashes: true,
       }),
       windowType: 'main',
-      partition: 'persist:main',
+      partition: 'persist:social',
     });
   }
 
@@ -232,6 +233,7 @@
         slashes: true,
       }),
       windowType: 'main',
+      partition: 'persist:social',
     });
   });
 })();

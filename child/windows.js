@@ -251,7 +251,7 @@ module.exports = function (child) {
           skipTaskbar: true,
           webPreferences: {
             contextIsolation: false,
-            partition: 'address_bar',
+            partition: 'addressbar',
             preload: child.parent.files_dir + '/js/context-menu.js',
             nativeWindowOpen: false,
             nodeIntegration: true,

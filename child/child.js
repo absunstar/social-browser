@@ -38,10 +38,12 @@ var child = {
   fetch: require('node-fetch'),
   url: require('url'),
   path: require('path'),
+  os: require('os'),
   http: require('http'),
   https: require('https'),
   fs: require('fs'),
   md5: require('md5'),
+  child_process: require('child_process'),
   WebSocket: require('ws'),
   id: process.pid,
   windowList: [],
@@ -60,6 +62,9 @@ var child = {
 };
 
 child.remoteMain.initialize();
+
+child.shell = child.electron.shell;
+child.dialog = child.electron.dialog;
 
 const { app, BrowserWindow, globalShortcut } = child.electron;
 child.electron.nativeTheme.themeSource = 'light';

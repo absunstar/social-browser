@@ -153,20 +153,23 @@ module.exports = function init(parent) {
     options.partition = options.partition || parent.var.core.session.name;
     options.user_name = options.user_name || parent.var.core.session.display;
 
-    let child = parent.clientList.find((cl) => cl && cl.partition === options.partition);
+    options.uuid = options.partition.contains('ghost') ? 'ghost' : options.partition;
+
+    let child = parent.clientList.find((cl) => cl && cl.uuid === options.uuid);
     if (child && parent.clientList[child.index]) {
       parent.clientList[child.index].windowType = options.windowType || 'popup';
       parent.clientList[child.index].option_list.push(options);
       parent.clientList[child.index].options = options;
       parent.clientList[child.index].ws.send({ type: 're-connected' });
-
     } else {
+      console.log('createChildProcess', options);
       let index = parent.child_index;
       parent.child_index++;
       parent.clientList[index] = {
         source: 'child',
-        partition : options.partition,
-        option_list : [options],
+        partition: options.partition,
+        uuid: options.uuid,
+        option_list: [options],
         windowType: options.windowType || 'popup',
         index: index,
         options: options,
@@ -175,15 +178,15 @@ module.exports = function init(parent) {
       let child = parent.run(['--index=' + index, '--dir=' + parent.dir, '--data_dir=' + parent.data_dir, '--speed=' + (parent.speedMode || ''), parent.dir + '/child/child.js']);
 
       child.stdout.on('data', function (data) {
-        parent.log(` [ child ${index} / ${parent.clientList.length} ] Log \n      ${data}`);
+        parent.log(` [ child ${index + 1} / ${parent.clientList.length} ] Log \n      ${data}`);
       });
 
       child.stderr.on('data', (data) => {
-        parent.log(` [ child ${index} / ${parent.clientList.length} ] Error \n    ${data}`);
+        parent.log(` [ child ${index + 1} / ${parent.clientList.length} ] Error \n    ${data}`);
       });
 
       child.on('close', (code, signal) => {
-        parent.log(` [ child ${index} / ${parent.clientList.length} ] close with code ( ${code} ) and signal ( ${signal} )`);
+        parent.log(` [ child ${index + 1} / ${parent.clientList.length} ] close with code ( ${code} ) and signal ( ${signal} )`);
         let ch = parent.clientList[index];
         // [child 6892 ] close with code ( 2147483651 ) and signal ( null )
         if (ch.options.windowType == 'main' && code == 2147483651 && !signal) {
@@ -222,22 +225,21 @@ module.exports = function init(parent) {
       });
 
       child.on('error', (err) => {
-        parent.log(` [ child ${index} / ${parent.clientList.length} ] Error \n ${err}`);
+        parent.log(` [ child ${index + 1} / ${parent.clientList.length} ] Error \n ${err}`);
       });
       child.on('disconnect', (err) => {
-        parent.log(` [ child ${index} / ${parent.clientList.length} ] disconnect`);
+        parent.log(` [ child ${index + 1} / ${parent.clientList.length} ] disconnect`, err);
       });
       child.on('spawn', (err) => {
-        parent.log(` [ child ${index} / ${parent.clientList.length} ] spawn`);
+        parent.log(` [ child ${index + 1} / ${parent.clientList.length} ] spawn`, err);
       });
       child.on('message', (msg) => {
-        parent.log(msg);
+        parent.log(` [ child ${index + 1} / ${parent.clientList.length} ] message`, msg);
       });
 
       parent.clientList[index].id = child.pid;
       parent.clientList[index].pid = child.pid;
       parent.clientList[index].child = child;
-
     }
   };
 

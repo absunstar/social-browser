@@ -90,6 +90,9 @@ module.exports = function init(parent) {
             }
           });
           break;
+          case '[create-new-window]':
+            parent.createChildProcess(message.options);
+            break;
         case '[create-new-view]':
           parent.createChildProcess(message.options);
           break;
@@ -145,7 +148,7 @@ module.exports = function init(parent) {
             windowType: 'updates',
             show: true,
             trusted: true,
-            partition: 'update',
+            partition: 'updates',
           });
           break;
         case '[update-browser-var]':

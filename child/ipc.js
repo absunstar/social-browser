@@ -394,29 +394,34 @@ module.exports = function init(child) {
         });
       } else {
         if (data.partition && data.partition !== child.parent.var.core.session.name) {
-          child.handleSession({ name: data.partition });
+          delete data.name;
+          data.windowType = 'popup';
+          child.sendMessage({
+            type: '[create-new-window]',
+            options: data,
+          });
+        } else {
+          child.createNewWindow({
+            ...data,
+            windowType: data.url.like('https://www.youtube.com/embed*') ? 'youtube' : 'popup',
+            width: data.url.like('https://www.youtube.com/embed*') ? 520 : 1200,
+            height: data.url.like('https://www.youtube.com/embed*') ? 330 : 720,
+            x: data.url.like('https://www.youtube.com/embed*') ? child.parent.options.screen.bounds.width - 550 : 0,
+            y: data.url.like('https://www.youtube.com/embed*') ? child.parent.options.screen.bounds.height - 400 : 0,
+            center: data.url.like('https://www.youtube.com/embed*') ? false : true,
+            title: 'New Popup',
+            backgroundColor: data.url.like('https://www.youtube.com/embed*') ? '#030303' : '#ffffff',
+            partition: data.partition || child.parent.var.core.session.name,
+            user_name: data.user_name || child.parent.var.core.session.display,
+          });
         }
-        console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-        child.createNewWindow({
-          ...data,
-          windowType: data.url.like('https://www.youtube.com/embed*') ? 'youtube' : 'popup',
-          width: data.url.like('https://www.youtube.com/embed*') ? 520 : 1200,
-          height: data.url.like('https://www.youtube.com/embed*') ? 330 : 720,
-          x: data.url.like('https://www.youtube.com/embed*') ? child.parent.options.screen.bounds.width - 550 : 0,
-          y: data.url.like('https://www.youtube.com/embed*') ? child.parent.options.screen.bounds.height - 400 : 0,
-          center: data.url.like('https://www.youtube.com/embed*') ? false : true,
-          title: 'New Popup',
-          backgroundColor: data.url.like('https://www.youtube.com/embed*') ? '#030303' : '#ffffff',
-          partition: data.partition || child.parent.var.core.session.name,
-          user_name: data.user_name || child.parent.var.core.session.display,
-        });
       }
     } else if (data.name == '[show-browser-setting]') {
       child.getWindow().webContents.send('[send-render-message]', {
         name: '[open new tab]',
         url: 'http://127.0.0.1:60080/setting',
         partition: 'setting',
-        vip : true
+        vip: true,
       });
     } else if (data.name == '[window-reload-hard]') {
       let win = child.electron.BrowserWindow.fromId(data.win_id);

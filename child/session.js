@@ -360,8 +360,6 @@ module.exports = function (child) {
           source_url = url;
         }
 
-       
-
         let urlObject1 = child.url.parse(url);
         let urlObject2 = child.url.parse(source_url);
 
@@ -549,8 +547,6 @@ module.exports = function (child) {
         }
 
         if ((cookie_obj = child.cookieParse(details.requestHeaders['Cookie']))) {
-          
-
           if (false && !child.parent.var.core.cookiesOFF && cookie_obj) {
             let isMainFrame = details.resourceType === 'mainFrame';
             if (child.cookies[name]) {
@@ -858,13 +854,133 @@ module.exports = function (child) {
           return allow;
         }
       });
-      ss.on('will-download', (event, item, webContents) => {
+      ss.on('will-download0', (event, item, webContents) => {
         child.log(' Child Will Download : ' + item.getURL());
         event.preventDefault();
         child.sendMessage({
           type: '[download-link]',
           partition: name,
           url: item.getURL(),
+        });
+      });
+
+      ss.on('will-download', (event, item, webContents) => {
+        console.log('session will-download', item);
+        let dl = {
+          id: new Date().getTime(),
+          date: new Date(),
+          total: item.getTotalBytes(),
+          received: item.getReceivedBytes(),
+          name: item.getFilename().replace('#___new_tab___', '').replace('#___new_popup__', '').replace('#___trusted_window___', ''),
+          path: item.getSavePath(),
+          url: item.getURL().replace('#___new_tab___', '').replace('#___new_popup__', '').replace('#___trusted_window___', ''),
+          canResume: item.canResume(),
+          type: item.getMimeType(),
+          status: 'waiting',
+          Partition: name,
+          item: item,
+        };
+        let ok = false;
+        if (child.parent.var.blocking.downloader.enabled && !item.getURL().like('*127.0.0.1*') && !item.getURL().like('blob*')) {
+          child.parent.var.blocking.downloader.apps.forEach((app) => {
+            if (ok) {
+              return;
+            }
+            let app_name = app.name.replace('$username', child.os.userInfo().username);
+            if (child.isFileExistsSync(app_name)) {
+              event.preventDefault();
+              ok = true;
+              let params = app.params.split(' ');
+              for (const i in params) {
+                params[i] = params[i].replace('$url', decodeURIComponent(dl.url)).replace('$file_name', dl.name);
+              }
+              child.exe(app_name, params);
+              return;
+            }
+          });
+        }
+        if (ok) {
+          return;
+        }
+
+        child.parent.var.download_list.push(dl);
+
+        item.on('updated', (event, state) => {
+          if (!item.getSavePath()) {
+            return;
+          }
+
+          if (state === 'interrupted') {
+            dl.status = 'error';
+            dl.canResume = item.canResume();
+            dl.type = item.getMimeType();
+            dl.path = item.getSavePath();
+            dl.name = item.getFilename();
+          } else if (state === 'progressing') {
+            if (item.isPaused()) {
+              dl.status = 'paused';
+              dl.type = item.getMimeType();
+              dl.path = item.getSavePath();
+              dl.name = item.getFilename();
+              dl.canResume = item.canResume();
+            } else {
+              dl.type = item.getMimeType();
+              dl.path = item.getSavePath();
+              dl.name = item.getFilename();
+              dl.canResume = item.canResume();
+              dl.total = item.getTotalBytes();
+              dl.received = item.getReceivedBytes();
+              dl.status = 'downloading';
+            }
+          }
+          child.sendMessage({ type: '$download_item', data: dl });
+        });
+
+        item.once('done', (event, state) => {
+          if (!item.getSavePath()) {
+            return;
+          }
+          if (state === 'completed') {
+            dl.name = item.getFilename();
+            dl.type = item.getMimeType();
+            dl.total = item.getTotalBytes();
+            dl.canResume = item.canResume();
+            dl.received = item.getReceivedBytes();
+            dl.status = 'completed';
+            dl.path = item.getSavePath();
+
+            child.sendMessage({ type: '$download_item', data: dl });
+
+            let _path = item.getSavePath();
+            let _url = item.getURL().replace('#___new_tab___', '').replace('#___new_popup__', '').replace('#___trusted_window___', '');
+
+            child.dialog
+              .showMessageBox({
+                title: 'Download Complete',
+                type: 'info',
+                buttons: ['Open File', 'Open Folder', 'Close'],
+                message: `Saved URL \n ${_url} \n To \n ${_path} `,
+              })
+              .then((result) => {
+                child.shell.beep();
+                if (result.response == 1) {
+                  child.shell.showItemInFolder(_path);
+                }
+                if (result.response == 0) {
+                  child.shell.openPath(_path);
+                }
+              });
+          } else {
+            dl.name = item.getFilename();
+            dl.type = item.getMimeType();
+            dl.total = item.getTotalBytes();
+            dl.canResume = item.canResume();
+            dl.received = item.getReceivedBytes();
+            dl.status = state;
+            dl.path = item.getSavePath();
+
+            child.sendMessage({ type: '$download_item', data: dl });
+          }
         });
       });
     }
@@ -878,6 +994,6 @@ module.exports = function (child) {
 
   child.sessionConfig = () => {
     child.handleSession({ name: child.parent.options.partition });
-    child.handleSession('_');
+    // child.handleSession('_');
   };
 };

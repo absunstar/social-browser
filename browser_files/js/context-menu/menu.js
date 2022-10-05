@@ -450,8 +450,8 @@ module.exports = function (SOCIALBROWSER) {
           name: '[open new popup]',
           url: url,
           referrer: document.location.href,
-          partition: 'Ghost_' + new Date().getTime() + Math.random(),
-          user_name: 'Ghost_' + new Date().getTime() + Math.random(),
+          partition: 'ghost_' + new Date().getTime() + Math.random(),
+          user_name: 'ghost_' + new Date().getTime() + Math.random(),
           show: true,
         });
       },
@@ -1702,7 +1702,7 @@ module.exports = function (SOCIALBROWSER) {
                 show: true,
                 url: document.location.href,
                 proxy: p,
-                partition: 'proxy' + new Date().getTime(),
+                partition: 'ghost_' + new Date().getTime(),
               });
             },
           });
