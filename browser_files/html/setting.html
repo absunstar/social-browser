@@ -118,9 +118,16 @@
         color: #6a6969;
       }
     </style>
+    <script src="http://127.0.0.1:60080/x-js/all.js"></script>
+    <script src="http://127.0.0.1:60080/js/setting.js"></script>
+    <script>
+      SOCIALBROWSER.onLoad(() => {
+        document.querySelector('.tab-link').click();
+      });
+    </script>
   </head>
 
-  <body ng-controller="mainController" class="main-setting">
+  <body ng-controller="mainController" class="main-setting ">
     <div ng-show="busy" id="loading">
       <img src="/images/loading-white.gif" alt="" />
     </div>
@@ -186,7 +193,7 @@
                     <i-checkbox class="" label="I'm Using Social Browser" ng-model="setting.blocking.core.send_browser_id"></i-checkbox>
                     <i-checkbox class="" label="Disabled New Browser Engine " ng-model="setting.core.enginOFF"></i-checkbox>
                     <i-checkbox class="" label="Disabled New JavaScript Engine " ng-model="setting.core.javaScriptOFF"></i-checkbox>
-                    <i-checkbox class="" label="Disabled New Share Sessions Engine " ng-model="setting.core.cookiesOFF"></i-checkbox>
+                    <i-checkbox class="hidden" label="Disabled New Share Sessions Engine " ng-model="setting.core.cookiesOFF"></i-checkbox>
                   </div>
 
                   <fieldset>
@@ -1477,11 +1484,5 @@
         </div>
       </div>
     </div>
-
-    <script src="http://127.0.0.1:60080/x-js/all.js"></script>
-    <script src="http://127.0.0.1:60080/js/setting.js"></script>
-    <script>
-      document.querySelector('.tab-link').click();
-    </script>
   </body>
 </html>

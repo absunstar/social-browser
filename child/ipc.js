@@ -296,22 +296,11 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.on('[update-view-url]', (e, options) => {
-    if (child.speedMode) {
-      child.windowList.forEach((w) => {
-        if (w.__options.windowType == 'view') {
-          if (w.__options.tab_id == options.tab_id) {
-            w.window.webContents.stop();
-            w.window.loadURL(message.options.url);
-          }
-        }
-      });
-    } else {
-      child.sendMessage({
-        type: '[update-view-url]',
-        options: options,
-      });
-    }
+  child.electron.ipcMain.on('[update-view-url]', (e, data) => {
+    child.sendMessage({
+      type: '[update-view-url]',
+      data: data,
+    });
   });
 
   child.electron.ipcMain.on('[import-extension]', (e, options) => {
@@ -359,71 +348,94 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.on('[send-render-message]', (event, data) => {
-    if (!child.speedMode && data.action) {
-      delete data.action;
+  child.electron.ipcMain.on('[open new tab]', (event, data) => {
+    data.partition = data.partition || child.parent.var.core.session.name;
+    data.user_name = data.user_name || child.parent.var.core.session.display;
+
+    if (child.windowList.some((w) => w.__options.windowType == 'main')) {
+      child.windowList.forEach((w) => {
+        if (w.__options.windowType == 'main' && !w.window.isDestroyed()) {
+          w.window.webContents.send('[open new tab]', data);
+        }
+      });
+    } else {
+      data.main_window_id = child.parent.options.main_window_id;
       child.sendMessage({
-        type: '[call-window-action]',
+        type: '[open new tab]',
         data: data,
       });
-    } else if (data.name == '[run-window-update]') {
-      child.sendMessage({
-        type: '[run-window-update]',
-      });
-    } else if (data.name == '[open new tab]') {
-      data.partition = data.partition || child.parent.var.core.session.name;
-      data.user_name = data.user_name || child.parent.var.core.session.display;
+    }
+  });
 
-      if (child.parent.options.windowType == 'main') {
-        child.getMainWindow().webContents.send('[send-render-message]', data);
-      } else {
-        data.main_window_id = child.parent.options.main_window_id;
-        child.sendMessage({
-          type: '[send-render-message]',
-          data: data,
-        });
-      }
-    } else if (data.name == '[open new popup]') {
-      data.partition = data.partition || child.parent.var.core.session.name;
-      data.user_name = data.user_name || child.parent.var.core.session.display;
-      if (child.parent.options.windowType == 'main') {
-        data.main_window_id = child.parent.options.main_window_id;
-        child.sendMessage({
-          type: '[send-render-message]',
-          data: data,
-        });
-      } else {
-        if (data.partition && data.partition !== child.parent.var.core.session.name) {
-          delete data.name;
-          data.windowType = 'popup';
-          child.sendMessage({
-            type: '[create-new-window]',
-            options: data,
-          });
-        } else {
-          child.createNewWindow({
-            ...data,
-            windowType: data.url.like('https://www.youtube.com/embed*') ? 'youtube' : 'popup',
-            width: data.url.like('https://www.youtube.com/embed*') ? 520 : 1200,
-            height: data.url.like('https://www.youtube.com/embed*') ? 330 : 720,
-            x: data.url.like('https://www.youtube.com/embed*') ? child.parent.options.screen.bounds.width - 550 : 0,
-            y: data.url.like('https://www.youtube.com/embed*') ? child.parent.options.screen.bounds.height - 400 : 0,
-            center: data.url.like('https://www.youtube.com/embed*') ? false : true,
-            title: 'New Popup',
-            backgroundColor: data.url.like('https://www.youtube.com/embed*') ? '#030303' : '#ffffff',
-            partition: data.partition || child.parent.var.core.session.name,
-            user_name: data.user_name || child.parent.var.core.session.display,
-          });
-        }
-      }
-    } else if (data.name == '[show-browser-setting]') {
-      child.getWindow().webContents.send('[send-render-message]', {
-        name: '[open new tab]',
-        url: 'http://127.0.0.1:60080/setting',
-        partition: 'setting',
-        vip: true,
+  child.electron.ipcMain.on('[open new popup]', (event, data) => {
+    data.partition = data.partition || child.parent.var.core.session.name;
+    data.user_name = data.user_name || child.parent.var.core.session.display;
+
+    delete data.name;
+    data.windowType = 'popup';
+    child.sendMessage({
+      type: '[create-new-window]',
+      options: data,
+    });
+  });
+
+  child.electron.ipcMain.on('[show-addressbar]', (event, data) => {
+    if (child.addressbarWindow && child.window && !child.window.isDestroyed() && !child.addressbarWindow.isDestroyed()) {
+      child.addressbarWindow.send('set-text-url', data);
+      child.addressbarWindow.setBounds({
+        width: child.window.getBounds().width - 200,
+        height: 500,
+        x: child.window.getBounds().x + 140,
+        y: child.window.getBounds().y + 40,
       });
-    } else if (data.name == '[window-reload-hard]') {
+      child.addressbarWindow.show();
+    }
+  });
+  child.electron.ipcMain.on('[edit-window]', (event, data) => {
+    if (data.tab_id && data.tab_child_id && data.tab_win_id) {
+      child.sendMessage({ type: '[edit-window]', data: data });
+    } else if (data.win_id) {
+      let win = child.electron.BrowserWindow.fromId(data.win_id);
+      win.webContents.executeJavaScript(
+        `
+                (function(){
+                  let b =  document.querySelector('html');
+                  if(b.contentEditable == "inherit"){
+                      b.contentEditable = true;
+                      b.style.border = '10px dashed green';
+                  }else{
+                      b.contentEditable = "inherit";
+                      b.style.border = '0px solid white';
+                  }
+                })()
+                `,
+        false
+      );
+    }
+  });
+
+  child.electron.ipcMain.on('[window-reload]', (event, data) => {
+    if (data.tab_id && data.tab_child_id && data.tab_win_id) {
+      child.sendMessage({ type: '[window-reload]', data: data });
+    } else if (data.win_id) {
+      let win = child.electron.BrowserWindow.fromId(data.win_id);
+      win.webContents.reload();
+    }
+  });
+
+  child.electron.ipcMain.on('[window-reload]', (event, data) => {
+    if (data.tab_id && data.tab_child_id && data.tab_win_id) {
+      child.sendMessage({ type: '[window-reload]', data: data });
+    } else if (data.win_id) {
+      let win = child.electron.BrowserWindow.fromId(data.win_id);
+      win.webContents.reload();
+    }
+  });
+
+  child.electron.ipcMain.on('[window-reload-hard]', (event, data) => {
+    if (data.tab_id && data.tab_child_id && data.tab_win_id) {
+      child.sendMessage({ type: '[window-reload-hard]', data: data });
+    } else if (data.win_id) {
       let win = child.electron.BrowserWindow.fromId(data.win_id);
       if (win && data.origin && data.origin !== 'null') {
         let ss = win.webContents.session;
@@ -449,41 +461,133 @@ module.exports = function init(child) {
           }
         }, 1000 * 3);
       }
+    }
+  });
+
+  child.electron.ipcMain.on('[toggle-window-audio]', (event, data) => {
+    if (data.tab_id && data.tab_child_id && data.tab_win_id) {
+      child.sendMessage({ type: '[toggle-window-audio]', data: data });
+    } else if (data.win_id) {
+      let win = child.electron.BrowserWindow.fromId(data.win_id);
+      win.webContents.setAudioMuted(!win.webContents.audioMuted);
+      child.updateTab(win);
+    }
+  });
+
+  child.electron.ipcMain.on('[window-go-back]', (event, data) => {
+    if (data.tab_id && data.tab_child_id && data.tab_win_id) {
+      child.sendMessage({ type: '[window-go-back]', data: data });
+    } else if (data.win_id) {
+      let win = child.electron.BrowserWindow.fromId(data.win_id);
+      if (win.webContents.canGoBack()) {
+        win.webContents.goBack();
+      }
+    }
+  });
+
+  child.electron.ipcMain.on('[window-go-forward]', (event, data) => {
+    if (data.tab_id && data.tab_child_id && data.tab_win_id) {
+      child.sendMessage({ type: '[window-go-forward]', data: data });
+    } else if (data.win_id) {
+      let win = child.electron.BrowserWindow.fromId(data.win_id);
+      if (win.webContents.canGoForward()) {
+        win.webContents.goForward();
+      }
+    }
+  });
+
+  child.electron.ipcMain.on('[window-zoom]', (event, data) => {
+    if (data.tab_id && data.tab_child_id && data.tab_win_id) {
+      child.sendMessage({ type: '[window-zoom]', data: data });
+    } else if (data.win_id) {
+      let win = child.electron.BrowserWindow.fromId(data.win_id);
+      win.webContents.zoomFactor = 1;
+    }
+  });
+
+  child.electron.ipcMain.on('[window-zoom-]', (event, data) => {
+    if (data.tab_id && data.tab_child_id && data.tab_win_id) {
+      child.sendMessage({ type: '[window-zoom-]', data: data });
+    } else if (data.win_id) {
+      let win = child.electron.BrowserWindow.fromId(data.win_id);
+      win.webContents.zoomFactor -= 0.2;
+    }
+  });
+
+  child.electron.ipcMain.on('[window-zoom+]', (event, data) => {
+    if (data.tab_id && data.tab_child_id && data.tab_win_id) {
+      child.sendMessage({ type: '[window-zoom+]', data: data });
+    } else if (data.win_id) {
+      let win = child.electron.BrowserWindow.fromId(data.win_id);
+      win.webContents.zoomFactor += 0.2;
+    }
+  });
+
+  child.electron.ipcMain.on('[add-to-bookmark]', (event, data) => {
+    if (data.tab_id && data.tab_child_id && data.tab_win_id) {
+      child.sendMessage({
+        type: '[add-to-bookmark]',
+        data: data,
+      });
+    }
+  });
+
+  child.electron.ipcMain.on('[show-window-dev-tools]', (event, data) => {
+    if (data.tab_id && data.tab_child_id && data.tab_win_id) {
+      child.sendMessage({ type: '[show-window-dev-tools]', data: data });
+    } else if (data.win_id) {
+      let win = child.electron.BrowserWindow.fromId(data.win_id);
+      win.openDevTools();
+    }
+  });
+
+  child.electron.ipcMain.on('[send-render-message]', (event, data) => {
+    data.partition = data.partition || child.parent.var.core.session.name;
+    data.user_name = data.user_name || child.parent.var.core.session.display;
+
+    if (data.tab_id && data.tab_child_id && data.tab_win_id) {
+      let name = data.name;
+      delete data.name;
+
+      child.sendMessage({
+        type: name,
+        data: data,
+      });
+    } else if (!child.speedMode && data.action) {
+      delete data.action;
+      child.sendMessage({
+        type: '[call-window-action]',
+        data: data,
+      });
+    } else if (data.name == '[run-window-update]') {
+      child.sendMessage({
+        type: '[run-window-update]',
+      });
+    } else if (data.name == '[show-browser-setting]') {
+      if (child.windowList.some((w) => w.__options.windowType == 'main')) {
+        child.windowList.forEach((w) => {
+          if (w.__options.windowType == 'main' && !w.window.isDestroyed()) {
+            w.window.webContents.send('[open new tab]', {
+              url: 'http://127.0.0.1:60080/setting',
+              partition: 'setting',
+              vip: true,
+            });
+          }
+        });
+      } else {
+        data.main_window_id = child.parent.options.main_window_id;
+        child.sendMessage({
+          type: '[open new tab]',
+          data: {
+            url: 'http://127.0.0.1:60080/setting',
+            partition: 'setting',
+            vip: true,
+          },
+        });
+      }
     } else if (data.name == '[toggle-fullscreen]') {
       let win = child.electron.BrowserWindow.fromId(data.win_id);
       win.setFullScreen(!win.isFullScreen());
-    } else if (data.name == '[window-zoom]') {
-      let win = child.electron.BrowserWindow.fromId(data.win_id);
-      win.webContents.zoomFactor = 1;
-    } else if (data.name == '[window-zoom+]') {
-      let win = child.electron.BrowserWindow.fromId(data.win_id);
-      win.webContents.zoomFactor += 0.2;
-    } else if (data.name == '[window-zoom-]') {
-      let win = child.electron.BrowserWindow.fromId(data.win_id);
-      win.webContents.zoomFactor -= 0.2;
-    } else if (data.name == '[window-reload]') {
-      let win = child.electron.BrowserWindow.fromId(data.win_id);
-      win.webContents.reload();
-    } else if (data.name == '[show-window-dev-tools]') {
-      let win = child.electron.BrowserWindow.fromId(data.win_id);
-      win.openDevTools();
-    } else if (data.name == '[edit-window]') {
-      let win = child.electron.BrowserWindow.fromId(data.win_id);
-      win.webContents.executeJavaScript(
-        `
-                  (function(){
-                    let b =  document.querySelector('html');
-                    if(b.contentEditable == "inherit"){
-                        b.contentEditable = true;
-                        b.style.border = '10px dashed green';
-                    }else{
-                        b.contentEditable = "inherit";
-                        b.style.border = '0px solid white';
-                    }
-                  })()
-                  `,
-        false
-      );
     } else if (data.name == '[window-go-forward]') {
       let win = child.electron.BrowserWindow.fromId(data.win_id);
       if (win.webContents.canGoForward()) {
@@ -494,9 +598,6 @@ module.exports = function init(child) {
       if (win.webContents.canGoForward()) {
         win.webContents.goForward();
       }
-    } else if (data.name == '[toggle-window-audio]') {
-      let win = child.electron.BrowserWindow.fromId(data.win_id);
-      win.webContents.setAudioMuted(!win.webContents.audioMuted);
     } else if (data.name == 'user_data') {
       child.parent.var.user_data = child.parent.var.user_data || [];
       let exists = false;
@@ -537,17 +638,6 @@ module.exports = function init(child) {
           data: data,
         });
       }
-    } else if (data.name == 'show addressbar') {
-      if (child.addressbarWindow && child.window && !child.window.isDestroyed() && !child.addressbarWindow.isDestroyed()) {
-        child.addressbarWindow.send('set-text-url', data);
-        child.addressbarWindow.setBounds({
-          width: child.window.getBounds().width - 200,
-          height: 500,
-          x: child.window.getBounds().x + 140,
-          y: child.window.getBounds().y + 40,
-        });
-        child.addressbarWindow.show();
-      }
     } else if (data.name == 'show profiles') {
       if (child.profilesWindow && child.window && !child.window.isDestroyed() && !child.profilesWindow.isDestroyed()) {
         child.profilesWindow.setBounds({
@@ -558,30 +648,6 @@ module.exports = function init(child) {
         });
         child.profilesWindow.show();
       }
-    } else if (data.name == 'add_to_bookmark') {
-      let win = child.electron.BrowserWindow.fromId(data.win_id);
-
-      let exists = false;
-      child.parent.var.bookmarks.forEach((b) => {
-        if (b.url == win.getURL()) {
-          b.title == win.getTitle();
-          exists = true;
-        }
-      });
-      if (!exists) {
-        child.parent.var.bookmarks.push({
-          title: win.getTitle(),
-          url: win.getURL(),
-          favicon: win.__options.favicon,
-        });
-      }
-      child.sendMessage({
-        type: '[update-browser-var]',
-        options: {
-          name: 'bookmarks',
-          data: child.parent.var.bookmarks,
-        },
-      });
     } else if (data.name == '[save-window-as-pdf]') {
       let win = child.electron.BrowserWindow.fromId(data.win_id);
 

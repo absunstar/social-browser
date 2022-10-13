@@ -1,7 +1,7 @@
 module.exports = function (child) {
-  const { app, session, dialog, ipcMain, protocol, BrowserWindow } = child.electron;
-
   child.session_name_list = [];
+  child.sessionBusy = false;
+  child.allowSessionHandle = false;
 
   child.addCookie = function (options) {
     if (!options) {
@@ -173,11 +173,18 @@ module.exports = function (child) {
   };
 
   child.handleSession = function (obj) {
-    let name = obj.name;
-
-    if (!name) {
+    if (child.sessionBusy) {
+      setTimeout(() => {
+        child.handleSession(obj);
+      }, 1000 * 5);
       return;
     }
+    child.sessionBusy = true;
+
+    if (!obj || !obj.name) {
+      return;
+    }
+    let name = obj.name;
 
     let user = child.parent.var.session_list.find((s) => s.name == name) ?? {};
     user.privacy = user.privacy || child.parent.var.blocking.privacy;
@@ -189,14 +196,15 @@ module.exports = function (child) {
     if (!user.user_agent.url || user.user_agent.edit) {
       user.user_agent = { url: child.parent.var.core.user_agent, edit: true };
     }
-    child.log(`\n [ Handle Session ${name} ] \n`);
 
     child.cookies[name] = child.cookies[name] || [];
     let ss = name === '_' ? child.electron.session.defaultSession : child.electron.session.fromPartition(name);
     ss.name = name;
     ss.allowNTLMCredentialsForDomains('*');
     ss.setUserAgent(user.user_agent.url);
-    if (child.session_name_list.some((s) => s.name == name)) {
+
+    if (child.session_name_list.some((s) => s.name === name)) {
+      child.allowSessionHandle = false;
       child.session_name_list.forEach((s, i) => {
         if (s.name === name) {
           child.session_name_list[i].user = user;
@@ -207,32 +215,6 @@ module.exports = function (child) {
       child.session_name_list.push({
         name: name,
         user: user,
-      });
-    }
-
-    if (false && child.allowSessionHandle) {
-      ss.cookies.on('changed', function (event, cookie, cause, removed) {
-        if (child.sessionBusy) {
-          return;
-        }
-        // if (cookie.domain.startsWith('.')) {
-        //   cookie.url = 'https://' + cookie.domain.substring(1);
-        // } else {
-        //   cookie.url = 'https://' + cookie.domain;
-        // }
-        child.sendMessage({
-          type: '[cookie-changed]',
-          partition: name,
-          cookie: cookie,
-          removed: removed,
-          cause: cause,
-        });
-
-        child.cookies[name].forEach((co, i) => {
-          if (co && co.domain === cookie.domain && co.name === cookie.name) {
-            child.cookies[name].splice(i, 1);
-          }
-        });
       });
     }
 
@@ -316,25 +298,20 @@ module.exports = function (child) {
       });
     }
 
-    ss.protocol.registerHttpProtocol('browser', (request, callback) => {
-      let url = request.url.substr(10);
-      url = `http://127.0.0.1:60080/${url}`;
-      request.url = url;
-      callback(request);
-    });
-    // ss.protocol.registerHttpProtocol('chrome-error', (request, callback) => {
-    //   let url = request.url.substr(10);
-    //   url = `http://127.0.0.1:60080/error?url=${url}`;
-    //   request.url = url;
-    //   callback(request);
-    //   child.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-    // });
-
     const filter = {
       urls: ['*://*/*'],
     };
 
-    if (child.allowSessionHandle) {
+    if (child.allowSessionHandle === true) {
+      child.log(`\n\n [ Handle Session ......  ( ${name} ) ]  / ${child.session_name_list.length} \n\n `);
+
+      ss.protocol.registerHttpProtocol('browser', (request, callback) => {
+        let url = request.url.substr(10);
+        url = `http://127.0.0.1:60080/${url}`;
+        request.url = url;
+        callback(request);
+      });
+
       ss.webRequest.onBeforeRequest(filter, function (details, callback) {
         if (child.parent.var.core.enginOFF) {
           callback({
@@ -854,18 +831,8 @@ module.exports = function (child) {
           return allow;
         }
       });
-      ss.on('will-download0', (event, item, webContents) => {
-        child.log(' Child Will Download : ' + item.getURL());
-        event.preventDefault();
-        child.sendMessage({
-          type: '[download-link]',
-          partition: name,
-          url: item.getURL(),
-        });
-      });
 
       ss.on('will-download', (event, item, webContents) => {
-        console.log('session will-download', item);
         let dl = {
           id: new Date().getTime(),
           date: new Date(),
@@ -881,7 +848,7 @@ module.exports = function (child) {
           item: item,
         };
         let ok = false;
-        if (child.parent.var.blocking.downloader.enabled && !item.getURL().like('*127.0.0.1*') && !item.getURL().like('blob*')) {
+        if (child.parent.var.blocking.downloader.enabled && dl.url.indexOf('127.0.0.1') === -1 && dl.url.indexOf('blob') !== 0) {
           child.parent.var.blocking.downloader.apps.forEach((app) => {
             if (ok) {
               return;
@@ -984,6 +951,34 @@ module.exports = function (child) {
         });
       });
     }
+
+    if (false && child.allowSessionHandle) {
+      ss.cookies.on('changed', function (event, cookie, cause, removed) {
+        if (child.sessionBusy) {
+          return;
+        }
+        // if (cookie.domain.startsWith('.')) {
+        //   cookie.url = 'https://' + cookie.domain.substring(1);
+        // } else {
+        //   cookie.url = 'https://' + cookie.domain;
+        // }
+        child.sendMessage({
+          type: '[cookie-changed]',
+          partition: name,
+          cookie: cookie,
+          removed: removed,
+          cause: cause,
+        });
+
+        child.cookies[name].forEach((co, i) => {
+          if (co && co.domain === cookie.domain && co.name === cookie.name) {
+            child.cookies[name].splice(i, 1);
+          }
+        });
+      });
+    }
+
+    child.sessionBusy = false;
 
     return ss;
   };

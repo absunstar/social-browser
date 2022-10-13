@@ -8,8 +8,7 @@ SOCIALBROWSER.jawaker = {
     document.querySelector('#_msg_').innerHTML = msg;
   },
   newWindow: function (partition) {
-    SOCIALBROWSER.ipc('[send-render-message]', {
-      name: '[open new popup]',
+    SOCIALBROWSER.ipc('[open new popup]',{
       alwaysOnTop: false,
       partition: partition || SOCIALBROWSER.partition,
       url: document.location.href,

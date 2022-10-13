@@ -111,7 +111,7 @@ module.exports = function (child) {
     });
   };
   child.isFileExistsSync = (path) => {
-    return fs.existsSync(path);
+    return child.fs.existsSync(path);
   };
   child.exe = function (app_path, args) {
     child.log('child.exe', app_path, args);
@@ -283,6 +283,7 @@ module.exports = function (child) {
     }
 
     setting.name = '[update-tab-properties]';
+    setting.win_id = win.id;
     setting.child_id = child.id;
     setting.url = win.getURL();
     setting.title = win.webContents.getTitle();
@@ -290,15 +291,11 @@ module.exports = function (child) {
     setting.back = win.webContents.canGoBack();
     setting.webaudio = !win.webContents.audioMuted;
 
-    if (child.speedMode) {
-      child.getMainWindow().webContents.send('[send-render-message]', setting);
-    } else {
-      child.sendMessage({
-        type: '[update-tab-properties]',
-        source: 'window',
-        data: setting,
-      });
-    }
+    child.sendMessage({
+      type: '[update-tab-properties]',
+      source: 'window',
+      data: setting,
+    });
   };
 
   child.isAllowURL = function (url) {

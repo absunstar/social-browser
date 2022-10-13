@@ -34,8 +34,7 @@ app.controller('mainController', ($scope, $http, $interval, $timeout) => {
         $scope.setting.core.session = se;
         $scope.saveSessions();
         $scope.session = {};
-        SOCIALBROWSER.call('[send-render-message]', {
-          name: '[open new tab]',
+        SOCIALBROWSER.ipc('[open new tab]', {
           referrer: document.location.href,
           url: $scope.setting.core.default_page,
           partition: se.name,

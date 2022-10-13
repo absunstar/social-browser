@@ -111,10 +111,7 @@ module.exports = function (SOCIALBROWSER) {
       if (!_path) {
         return null;
       }
-      return SOCIALBROWSER.electron.nativeImage.createFromPath(_path).resize({
-        width: 16,
-        height: 16,
-      });
+      return SOCIALBROWSER.electron.nativeImage.createFromPath(SOCIALBROWSER.path.resolve(_path));
     } catch (error) {
       SOCIALBROWSER.log('nativeImage', error);
       return null;

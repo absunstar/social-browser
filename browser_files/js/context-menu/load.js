@@ -249,7 +249,7 @@ module.exports = function (SOCIALBROWSER) {
     } else if (data.name == 'show-info') {
       SOCIALBROWSER.showInfo(data.msg);
     } else if (data.name == '[open new popup]') {
-      SOCIALBROWSER.ipc('[send-render-message]', data);
+      SOCIALBROWSER.ipc('[open new popup]', data);
     }
   });
 

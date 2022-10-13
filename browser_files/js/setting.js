@@ -1,8 +1,4 @@
-window.setting = {};
-
-setTimeout(() => {
-  $('.loaded').css('visibility', 'visible');
-}, 1000 * 1);
+window.setting = window.setting || {};
 
 var app = app || angular.module('myApp', []);
 
@@ -22,6 +18,9 @@ setTimeout(() => {
 
 app.controller('mainController', ($scope, $http, $timeout) => {
   $scope.proxy = {};
+  $scope.busy = true;
+  $scope.setting_busy = true;
+
   /*
   SOCIALBROWSER.on('setting.session_list', (e, info) => {
     console.log('from scope', info);
@@ -621,8 +620,11 @@ app.controller('mainController', ($scope, $http, $timeout) => {
       }
     });
 
-    $scope.busy = false;
-    $scope.setting_busy = false;
+    $timeout(() => {
+      $scope.busy = false;
+      $scope.setting_busy = false;
+      $scope.$applyAsync();
+    }, 500);
   };
 
   $scope.clearUserData = function () {
@@ -895,7 +897,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
   $scope.openURL = function (url) {
     SOCIALBROWSER.openWindow({
       url: url,
-      partition: 'ghost_' + Date.now(),
+      partition: 'x-ghost_' + Date.now(),
     });
   };
   $scope.copy = function (text) {

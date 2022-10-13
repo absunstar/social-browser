@@ -1,3 +1,5 @@
+const { unwatchFile } = require('original-fs');
+
 module.exports = function (SOCIALBROWSER) {
   if (SOCIALBROWSER.var.core.javaScriptOFF || SOCIALBROWSER.__options.windowType === 'main' || SOCIALBROWSER.is_white_site == true || !SOCIALBROWSER.var.blocking.core.block_ads || document.location.href.like('*http://127.0.0.1*')) {
     SOCIALBROWSER.log(' [AD Hacking] OFF : ' + document.location.href);
@@ -8,11 +10,61 @@ module.exports = function (SOCIALBROWSER) {
     return functionToCheck && {}.toString.call(functionToCheck) === '[object Function]';
   }
 
-  window.addEventListener('load', function (e) {
-    window['fuckAdBlock'] = window['FuckAdBlock'] = {
-      _var: { event: { notDetected: [window] } },
-    };
+  SOCIALBROWSER.__define(window, 'fuckAdBlock', {
+    fnList: [],
+    debug: {
+      set: function (bool) {
+        return window['fuckAdBlock'];
+      },
+    },
+
+    setOption: function (fn) {},
+    check: function () {
+      setTimeout(() => {
+        this.fnList.forEach((fn) => {
+          fn();
+        });
+      }, 100);
+    },
+    emitEvent: function (fn) {},
+    clearEvent: function () {
+      this.fnList = [];
+    },
+    on: function (detected, fn) {
+      if (!detected) {
+        this.onNotDetected(fn);
+      }
+      return this;
+    },
+    onNotDetected: function (fn) {
+      this.fnList.push(fn);
+      SOCIALBROWSER.onLoad(fn);
+      return this;
+    },
+    _var: { event: { notDetected: [window] } },
   });
+
+  SOCIALBROWSER.__define(window, 'FuckAdBlock', window['fuckAdBlock']);
+
+  if (document.location.href.indexOf('egybest') !== -1) {
+    SOCIALBROWSER.blockPopup = true;
+    // SOCIALBROWSER.copyPopupURL = true;
+    window._AdBlock_init = {};
+
+    SOCIALBROWSER.onLoad(() => {
+      setInterval(() => {
+        if ((el = document.querySelector('#GlobalFrame'))) {
+          el.style.display = 'none';
+        }
+        if ((el = document.querySelector('#Shadow'))) {
+          el.style.display = 'none';
+        }
+        if ((el = document.querySelector('#body'))) {
+          el.classList.remove('hide');
+        }
+      }, 1000);
+    });
+  }
 
   document.addEventListener('DOMNodeInserted', function (e) {
     if (e.target.tagName == 'SCRIPT' && e.target.innerHTML.like('*FuckAdBlock*')) {
@@ -20,7 +72,6 @@ module.exports = function (SOCIALBROWSER) {
   });
 
   document.addEventListener('DOMContentLoaded', () => {
-
     if (document.querySelector('body') && document.querySelector('body').innerHTML.like('*FuckAdBlock*')) {
       delete window['fuckAdBlock'];
       delete window['FuckAdBlock'];
@@ -80,10 +131,10 @@ module.exports = function (SOCIALBROWSER) {
       SOCIALBROWSER.log(options);
     };
     window.ExoLoader = window.ExoLoader || {
-      addZone : ()=>{},
-      serve : ()=>{}
-    }
-    window.TsInPagePush = ()=>{}
+      addZone: () => {},
+      serve: () => {},
+    };
+    window.TsInPagePush = () => {};
     window.ExoVideoSlider = {
       init: () => {},
     };

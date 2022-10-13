@@ -25,7 +25,6 @@ module.exports = function init(parent) {
       }
     });
     parent.var.$ad_string = parent.var.$ad_list.join('|');
-    parent.clientList = parent.clientList || [];
     parent.clientList.forEach((client) => {
       if (client.ws) {
         client.ws.send({

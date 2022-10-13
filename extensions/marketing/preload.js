@@ -6,8 +6,7 @@ module.exports = function (SOCIALBROWSER) {
             SOCIALBROWSER.menu_list.push({
                 label: ' ( Price Comparison ) ',
                 click: () => {
-                    SOCIALBROWSER.call('[send-render-message]', {
-                        name: '[open new popup]',
+                    SOCIALBROWSER.ipc('[open new popup]',{
                         url: 'https://www.kanbkam.com/eg/ar/search/l?q=' + document.location.href,
                         referrer: document.location.href,
                         partition: SOCIALBROWSER.partition,

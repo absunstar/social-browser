@@ -30,9 +30,10 @@ process.setMaxListeners(0);
 
 var child = {
   index: parseInt(process.argv[1].replace('--index=', '')),
-  dir: process.argv[2].replace('--dir=', ''),
-  data_dir: process.argv[3].replace('--data_dir=', ''),
-  speedMode: Boolean(process.argv[4].replace('--speed=', '')),
+  uuid: process.argv[2].replace('--uuid=', ''),
+  dir: process.argv[3].replace('--dir=', ''),
+  data_dir: process.argv[4].replace('--data_dir=', ''),
+  speedMode: Boolean(process.argv[5].replace('--speed=', '')),
   electron: require('electron'),
   remoteMain: require('@electron/remote/main'),
   fetch: require('node-fetch'),
@@ -47,6 +48,7 @@ var child = {
   WebSocket: require('ws'),
   id: process.pid,
   windowList: [],
+  option_list: [],
   assignWindows: [],
   log: (...args) => {
     console.log(...args);
@@ -138,11 +140,10 @@ app.on('ready', function () {
     // if (process.platform != 'darwin') {
     //   app.quit();
     // }
-    child.window = null;
-    child.parent.options = { windowType: 'popup' };
-    child.sendMessage({
-      type: '[un-attach-child]',
-    });
+    console.log('window-all-closed : ' + child.parent.options.partition);
+    if (!child.parent.options.partition.contains('persist:')) {
+      app.quit();
+    }
   });
 
   app.on('login', (event, webContents, authenticationResponseDetails, authInfo, callback) => {

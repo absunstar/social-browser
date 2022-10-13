@@ -22,11 +22,29 @@ window.addEventListener('offline', updateOnlineStatus);
 const { nativeImage } = SOCIALBROWSER.electron;
 const { Menu, MenuItem } = SOCIALBROWSER.remote;
 
+function ipc(name, obj) {
+  obj = obj || {};
+  obj.tab_id = obj.tab_id || currentTabId;
+  obj.tab_url = $('#' + obj.tab_id).attr('url');
+  obj.tab_title = $('#' + obj.tab_id).attr('title');
+  obj.tab_icon = $('#' + obj.tab_id).attr('icon');
+  obj.tab_win_id = $('#' + obj.tab_id).attr('win_id');
+  obj.tab_child_id = $('#' + obj.tab_id).attr('child_id');
+  obj.tab_main_window_id = $('#' + obj.tab_id).attr('main_window_id');
+  obj.win_id = obj.tab_win_id || SOCIALBROWSER.currentWindow.id;
+
+  SOCIALBROWSER.ipc(name, obj);
+}
+
 function sendToMain(obj) {
+  obj = obj || {};
   obj.tab_id = currentTabId;
   obj.tab_win_id = $('#' + currentTabId).attr('win_id');
+  obj.tab_child_id = $('#' + currentTabId).attr('child_id');
+  obj.tab_main_window_id = $('#' + currentTabId).attr('main_window_id');
   obj.win_id = obj.tab_win_id || SOCIALBROWSER.currentWindow.id;
-  SOCIALBROWSER.call('[send-render-message]', obj);
+
+  SOCIALBROWSER.ipc('[send-render-message]', obj);
 }
 
 function goURL(e) {
@@ -40,7 +58,7 @@ function goURL(e) {
       }
     }
 
-    SOCIALBROWSER.call('[update-view-url]', {
+    ipc('[update-view-url]', {
       url: url,
     });
   }
@@ -130,8 +148,6 @@ function add_input_menu(node, menu) {
   add_input_menu(node.parentNode, menu);
 }
 
-
-
 document.addEventListener(
   'keydown',
   (e) => {
@@ -162,9 +178,7 @@ document.addEventListener(
         name: 'service worker',
       });
     } else if (e.keyCode == 117 /*f6*/) {
-      sendToMain({
-        name: 'show addressbar',
-      });
+      ipc('[show-addressbar]');
     } else if (e.keyCode == 70 /*f*/) {
       if (e.ctrlKey == true) {
         sendToMain({
@@ -180,31 +194,19 @@ document.addEventListener(
       }
     } else if (e.keyCode == 107 /*+*/) {
       if (e.ctrlKey == true) {
-        sendToMain({
-          name: '[window-zoom+]',
-          action: true,
-        });
+        ipc('[window-zoom+]');
       }
     } else if (e.keyCode == 109 /*-*/) {
       if (e.ctrlKey == true) {
-        sendToMain({
-          name: '[window-zoom-]',
-          action: true,
-        });
+        ipc('[window-zoom-]');
       }
     } else if (e.keyCode == 48 /*0*/) {
       if (e.ctrlKey == true) {
-        sendToMain({
-          name: '[window-zoom]',
-          action: true,
-        });
+        ipc('[window-zoom]');
       }
     } else if (e.keyCode == 49 /*1*/) {
       if (e.ctrlKey == true) {
-        sendToMain({
-          name: '[toggle-window-audio]',
-          action: true,
-        });
+        ipc('[toggle-window-audio]');
       }
     } else if (e.keyCode == 74 /*j*/) {
       if (e.ctrlKey == true) {
@@ -220,31 +222,24 @@ document.addEventListener(
         });
       }
     } else if (e.keyCode == 69 && e.ctrlKey == true /*E*/) {
-      sendToMain({
-        name: '[edit-window]',
-        action: true,
-      });
+      ipc('[edit-window]');
     } else if (e.keyCode == 27 /*escape*/) {
       sendToMain({
         name: 'escape',
       });
     } else if (e.keyCode == 78 /*n*/ || e.keyCode == 84 /*t*/) {
       if (e.ctrlKey == true) {
-        sendToMain({
-          name: '[open new tab]',
+        ipc('[open new tab]', {
           main_window_id: SOCIALBROWSER.currentWindow.id,
         });
       }
     } else if (e.keyCode == 116 /*f5*/) {
       if (e.ctrlKey === true) {
-        sendToMain({
-          name: '[window-reload-hard]',
-          action: true,
-          origin: document.location.origin || document.location.href,
+        ipc('[window-reload-hard]', {
+          origin: new URL($('#' + currentTabId).attr('url')).origin,
         });
       } else {
-        sendToMain({
-          name: '[window-reload]',
+        ipc('[window-reload]', {
           action: true,
         });
       }
@@ -261,8 +256,10 @@ function showSettingMenu() {
   arr.push({
     label: 'Show Setting',
     click: () =>
-      sendToMain({
-        name: '[show-browser-setting]',
+      ipc('[open new tab]', {
+        url: 'http://127.0.0.1:60080/setting',
+        main_window_id: SOCIALBROWSER.currentWindow.id,
+        vip: true,
       }),
   });
   arr.push({
@@ -285,8 +282,7 @@ function showSettingMenu() {
   arr.push({
     label: 'Open Social Browser Site',
     click: () =>
-      sendToMain({
-        name: '[open new tab]',
+      ipc('[open new tab]', {
         url: 'https://social-browser.com',
         main_window_id: SOCIALBROWSER.currentWindow.id,
       }),
@@ -297,8 +293,7 @@ function showSettingMenu() {
   arr.push({
     label: 'Downloads',
     click: () =>
-      sendToMain({
-        name: '[open new tab]',
+      ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/downloads',
         main_window_id: SOCIALBROWSER.currentWindow.id,
         vip: true,
@@ -323,11 +318,7 @@ function showSettingMenu() {
   let bookmark_arr = [];
   bookmark_arr.push({
     label: 'Bookmark current tab',
-    click: () =>
-      sendToMain({
-        name: 'add_to_bookmark',
-        action: true,
-      }),
+    click: () => ipc('[add-to-bookmark]'),
   });
   bookmark_arr.push({
     type: 'separator',
@@ -335,11 +326,11 @@ function showSettingMenu() {
 
   bookmark_arr.push({
     label: 'Bookmark all tabs',
-    click: () =>
-      sendToMain({
-        name: 'add_all_to_bookmark',
-        action: true,
-      }),
+    click: () => {
+      document.querySelectorAll('.social-tab:not(#tabPlus)').forEach((el) => {
+        ipc('[add-to-bookmark]', { tab_id: el.id });
+      });
+    },
   });
   bookmark_arr.push({
     type: 'separator',
@@ -347,8 +338,7 @@ function showSettingMenu() {
   bookmark_arr.push({
     label: 'Bookmark manager',
     click: () =>
-      sendToMain({
-        name: '[open new tab]',
+      ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/setting?open=bookmarks',
         main_window_id: SOCIALBROWSER.currentWindow.id,
         vip: true,
@@ -363,10 +353,8 @@ function showSettingMenu() {
       sublabel: b.url,
       icon: SOCIALBROWSER.nativeImage(b.favicon),
       click: () =>
-        sendToMain({
-          name: '[open new tab]',
+        ipc('[open new tab]', {
           url: b.url,
-          main_window_id: SOCIALBROWSER.currentWindow.id,
         }),
     });
   });
@@ -381,8 +369,7 @@ function showSettingMenu() {
       visible: SOCIALBROWSER.var.bookmarks.length > 0,
       click: () => {
         SOCIALBROWSER.var.bookmarks.forEach((b) => {
-          sendToMain({
-            name: '[open new tab]',
+          ipc('[open new tab]', {
             url: b.url,
             main_window_id: SOCIALBROWSER.currentWindow.id,
           });
@@ -404,8 +391,7 @@ function showSettingMenu() {
     label: 'Reload Page',
     accelerator: 'F5',
     click: () =>
-      sendToMain({
-        name: '[window-reload]',
+      ipc('[window-reload]', {
         action: true,
       }),
   });
@@ -413,9 +399,8 @@ function showSettingMenu() {
     label: 'Hard Reload Page',
     accelerator: 'CommandOrControl+F5',
     click: () =>
-      sendToMain({
-        name: '[window-reload-hard]',
-        action: true,
+      ipc('[window-reload-hard]', {
+        origin: new URL($('#' + currentTabId).attr('url')).origin,
       }),
   });
 
@@ -425,31 +410,21 @@ function showSettingMenu() {
   arr.push({
     label: 'Zoom +',
     accelerator: 'CommandOrControl+numadd',
-    click: (event) => {
-      // console.log(event);
-      sendToMain({
-        name: '[window-zoom+]',
-        action: true,
-      });
+    click: () => {
+      ipc('[window-zoom+]');
     },
   });
   arr.push({
     label: 'Zoom',
     accelerator: 'CommandOrControl+0',
     click: () =>
-      sendToMain({
-        name: '[window-zoom]',
-        action: true,
-      }),
+      ipc('[window-zoom]'),
   });
   arr.push({
     label: 'Zoom -',
     accelerator: 'CommandOrControl+numsub',
     click: () =>
-      sendToMain({
-        name: '[window-zoom-]',
-        action: true,
-      }),
+      ipc('[window-zoom-]'),
   });
 
   arr.push({
@@ -458,11 +433,7 @@ function showSettingMenu() {
   arr.push({
     label: 'Edit Page Content',
     accelerator: 'CommandOrControl+E',
-    click: () =>
-      sendToMain({
-        name: '[edit-window]',
-        action: true,
-      }),
+    click: () => ipc('[edit-window]'),
   });
   arr.push({
     type: 'separator',
@@ -470,11 +441,7 @@ function showSettingMenu() {
   arr.push({
     label: 'Audio ON / OFF',
     accelerator: 'CommandOrControl+1',
-    click: () =>
-      sendToMain({
-        name: '[toggle-window-audio]',
-        action: true,
-      }),
+    click: () => ipc('[toggle-window-audio]'),
   });
 
   arr.push({
@@ -485,10 +452,7 @@ function showSettingMenu() {
     label: 'Developer Tools',
     accelerator: 'F12',
     click: () =>
-      sendToMain({
-        name: '[show-window-dev-tools]',
-        action: true,
-      }),
+      ipc('[show-window-dev-tools]'),
   });
   // arr.push({
   //   type: 'separator',
@@ -511,11 +475,7 @@ function showBookmarksMenu() {
   let bookmark_arr = [];
   bookmark_arr.push({
     label: 'Bookmark current tab',
-    click: () =>
-      sendToMain({
-        name: 'add_to_bookmark',
-        action: true,
-      }),
+    click: () => ipc('[add-to-bookmark]'),
   });
   bookmark_arr.push({
     type: 'separator',
@@ -523,11 +483,11 @@ function showBookmarksMenu() {
 
   bookmark_arr.push({
     label: 'Bookmark all tabs',
-    click: () =>
-      sendToMain({
-        name: 'add_all_to_bookmark',
-        action: true,
-      }),
+    click: () => {
+      document.querySelectorAll('.social-tab:not(#tabPlus)').forEach((el) => {
+        ipc('[add-to-bookmark]', { tab_id: el.id });
+      });
+    },
   });
   bookmark_arr.push({
     type: 'separator',
@@ -535,8 +495,7 @@ function showBookmarksMenu() {
   bookmark_arr.push({
     label: 'Bookmark manager',
     click: () =>
-      sendToMain({
-        name: '[open new tab]',
+      ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/setting?open=bookmarks',
         main_window_id: SOCIALBROWSER.currentWindow.id,
         vip: true,
@@ -551,10 +510,8 @@ function showBookmarksMenu() {
       sublabel: b.url,
       icon: SOCIALBROWSER.nativeImage(b.favicon),
       click: () =>
-        sendToMain({
-          name: '[open new tab]',
+        ipc('[open new tab]', {
           url: b.url,
-          main_window_id: SOCIALBROWSER.currentWindow.id,
         }),
     });
   });
@@ -569,8 +526,7 @@ function showBookmarksMenu() {
       visible: SOCIALBROWSER.var.bookmarks.length > 0,
       click: () => {
         SOCIALBROWSER.var.bookmarks.forEach((b) => {
-          sendToMain({
-            name: '[open new tab]',
+          ipc('[open new tab]', {
             url: b.url,
             main_window_id: SOCIALBROWSER.currentWindow.id,
           });
@@ -583,10 +539,6 @@ function showBookmarksMenu() {
 
   bookmarksMenu.popup();
 }
-
-SOCIALBROWSER.on('[send-render-message]', (event, data) => {
-  renderMessage(data);
-});
 
 socialTabs.init(socialTabsDom, {
   tabOverlapDistance: 14,
@@ -644,8 +596,7 @@ function handleURL(u) {
 
 function showURL(u) {
   u = u || $('#' + currentTabId).attr('url');
-  sendToMain({
-    name: 'show addressbar',
+  ipc('[show-addressbar]', {
     url: u,
   });
 }
@@ -834,13 +785,139 @@ function render_new_tab(op) {
   // console.log(tab);
 }
 
+SOCIALBROWSER.on('[open new tab]', (event, data) => {
+  render_new_tab(data);
+});
+SOCIALBROWSER.on('[send-render-message]', (event, data) => {
+  renderMessage(data);
+});
+SOCIALBROWSER.on('[update-tab-properties]', (event, data) => {
+  console.log('[update-tab-properties]', data);
+
+  if (data.tab_id && data.url) {
+    $('#' + data.tab_id).attr('url', data.url);
+  }
+  if (data.tab_id && data.icon) {
+    $('#' + data.tab_id).attr('icon', data.icon);
+    $('#' + data.tab_id + ' .social-tab-favicon').css('background-image', 'url(' + data.icon + ')');
+  }
+  if (data.user_name) {
+    $('#' + data.tab_id).attr('user_name', data.user_name);
+  }
+
+  if (data.win_id) {
+    $('#' + data.tab_id).attr('win_id', data.win_id);
+  }
+
+  if (data.child_id) {
+    $('#' + data.tab_id).attr('child_id', data.child_id);
+  }
+  if (data.main_window_id) {
+    $('#' + data.tab_id).attr('main_window_id', data.main_window_id);
+  }
+
+  if (data.forward) {
+    $('#' + data.tab_id).attr('forward', data.forward);
+  }
+  if (data.back) {
+    $('#' + data.tab_id).attr('back', data.back);
+  }
+  if (data.webaudio) {
+    $('#' + data.tab_id).attr('webaudio', data.webaudio);
+  }
+
+  if (data.title) {
+    $('#' + data.tab_id + ' .social-tab-title p').text(data.title);
+    $('#' + data.tab_id).attr('title', data.title);
+    let p = document.querySelector('#' + data.tab_id + ' .social-tab-title p');
+    if (p) {
+      if (data.title.test(/^[a-zA-Z\-\u0590-\u05FF\0-9\^@_:\?\[\]~<>\{\}\|\\ ]+$/)) {
+        p.style.direction = 'ltr';
+      } else {
+        p.style.direction = 'rtl';
+      }
+    }
+  }
+
+  if (data.tab_id && data.tab_id == currentTabId && data.url) {
+    if (!data.forward) {
+      $('.go-forward i').css('color', '#9E9E9E');
+    } else {
+      $('.go-forward i').css('color', '#4caf50');
+    }
+    if (!data.back) {
+      $('.go-back i').css('color', '#9E9E9E');
+    } else {
+      $('.go-back i').css('color', '#4caf50');
+    }
+
+    if (data.webaudio) {
+      $('.Page-audio i').css('color', '#4caf50');
+    } else {
+      $('.Page-audio i').css('color', '#f44336');
+    }
+
+    $('.address-input .http').css('display', 'none');
+    $('.address-input .https').css('display', 'none');
+    $('.address-input .file').css('display', 'none');
+    $('.address-input .ftp').css('display', 'none');
+    $('.address-input .browser').css('display', 'none');
+
+    $('.address-input .https').html('');
+    $('.address-input .http').html('');
+    $('.address-input .file').html('');
+    $('.address-input .ftp').html('');
+    $('.address-input .browser').html('');
+
+    if (data.url.like('http://127.0.0.1:60080*|browser*')) {
+      $('.address-input .protocol').html('');
+      setURL('');
+    } else {
+      let protocol = '';
+      let url = '';
+      try {
+        data.url = decodeURI(data.url);
+      } catch (error) {
+        console.log(error, data.url);
+      }
+      if (data.url.like('https*')) {
+        protocol = 'HTTPS';
+        // var parser = document.createElement('a')
+        // parser.href = data.url;
+        $('.address-input .https').html(protocol);
+        $('.address-input .https').css('display', 'inline-block');
+      } else if (data.url.like('http*')) {
+        protocol = 'http';
+        $('.address-input .http').html(protocol);
+        $('.address-input .http').css('display', 'inline-block');
+      } else if (data.url.like('ftp*')) {
+        protocol = 'ftp';
+        $('.address-input .ftp').html(protocol);
+        $('.address-input .ftp').css('display', 'inline-block');
+      } else if (data.url.like('file*')) {
+        protocol = 'file';
+        $('.address-input .file').html(protocol);
+        $('.address-input .file').css('display', 'inline-block');
+      } else if (data.url.like('browser*')) {
+        protocol = 'browser';
+        $('.address-input .browser').html(protocol);
+        $('.address-input .browser').css('display', 'inline-block');
+      }
+
+      if (protocol) {
+        url = data.url.replace(protocol + '://', '');
+      } else {
+        url = data.url;
+      }
+
+      $('.address-input .protocol').html(protocol);
+      handleUrlText();
+    }
+  }
+});
 function renderMessage(cm) {
   if (!cm) {
     return;
-  }
-
-  if (cm.name == '[open new tab]') {
-    render_new_tab(cm);
   } else if (cm.name == '[remove-tab]') {
     socialTabs.removeTab(socialTabs.removeTab(socialTabsDom.querySelector('#' + cm.tab_id)));
   } else if (cm.name == 'set-setting') {
@@ -860,126 +937,6 @@ function renderMessage(cm) {
     is_addressbar_busy = false;
   } else if (cm.name == 'close tab') {
     closeCurrentTab();
-  } else if (cm.name == '[update-tab-properties]') {
-    if (cm.tab_id && cm.url) {
-      $('#' + cm.tab_id).attr('url', cm.url);
-    }
-    if (cm.tab_id && cm.icon) {
-      $('#' + cm.tab_id + ' .social-tab-favicon').css('background-image', 'url(' + cm.icon + ')');
-    }
-    if (cm.user_name) {
-      $('#' + cm.tab_id).attr('user_name', cm.user_name);
-    }
-
-    if (cm.win_id) {
-      $('#' + cm.tab_id).attr('win_id', cm.win_id);
-    }
-
-    if (cm.child_id) {
-      $('#' + cm.tab_id).attr('child_id', cm.child_id);
-    }
-    if (cm.main_window_id) {
-      $('#' + cm.tab_id).attr('main_window_id', cm.main_window_id);
-    }
-
-    if (cm.forward) {
-      $('#' + cm.tab_id).attr('forward', cm.forward);
-    }
-    if (cm.back) {
-      $('#' + cm.tab_id).attr('back', cm.back);
-    }
-    if (cm.webaudio) {
-      $('#' + cm.tab_id).attr('webaudio', cm.webaudio);
-    }
-
-    if (cm.title) {
-      $('#' + cm.tab_id + ' .social-tab-title p').text(cm.title);
-      $('#' + cm.tab_id).attr('title', cm.title);
-      let p = document.querySelector('#' + cm.tab_id + ' .social-tab-title p');
-      if (p) {
-        if (cm.title.test(/^[a-zA-Z\-\u0590-\u05FF\0-9\^@_:\?\[\]~<>\{\}\|\\ ]+$/)) {
-          p.style.direction = 'ltr';
-        } else {
-          p.style.direction = 'rtl';
-        }
-      }
-    }
-
-    if (cm.tab_id && cm.tab_id == currentTabId && cm.url) {
-      if (!cm.forward) {
-        $('.go-forward i').css('color', '#9E9E9E');
-      } else {
-        $('.go-forward i').css('color', '#4caf50');
-      }
-      if (!cm.back) {
-        $('.go-back i').css('color', '#9E9E9E');
-      } else {
-        $('.go-back i').css('color', '#4caf50');
-      }
-
-      if (cm.webaudio) {
-        $('.Page-audio i').css('color', '#4caf50');
-      } else {
-        $('.Page-audio i').css('color', '#f44336');
-      }
-
-      $('.address-input .http').css('display', 'none');
-      $('.address-input .https').css('display', 'none');
-      $('.address-input .file').css('display', 'none');
-      $('.address-input .ftp').css('display', 'none');
-      $('.address-input .browser').css('display', 'none');
-
-      $('.address-input .https').html('');
-      $('.address-input .http').html('');
-      $('.address-input .file').html('');
-      $('.address-input .ftp').html('');
-      $('.address-input .browser').html('');
-
-      if (cm.url.like('http://127.0.0.1:60080*|browser*')) {
-        $('.address-input .protocol').html('');
-        setURL('');
-      } else {
-        let protocol = '';
-        let url = '';
-        try {
-          cm.url = decodeURI(cm.url);
-        } catch (error) {
-          console.log(error, cm.url);
-        }
-        if (cm.url.like('https*')) {
-          protocol = 'HTTPS';
-          // var parser = document.createElement('a')
-          // parser.href = cm.url;
-          $('.address-input .https').html(protocol);
-          $('.address-input .https').css('display', 'inline-block');
-        } else if (cm.url.like('http*')) {
-          protocol = 'http';
-          $('.address-input .http').html(protocol);
-          $('.address-input .http').css('display', 'inline-block');
-        } else if (cm.url.like('ftp*')) {
-          protocol = 'ftp';
-          $('.address-input .ftp').html(protocol);
-          $('.address-input .ftp').css('display', 'inline-block');
-        } else if (cm.url.like('file*')) {
-          protocol = 'file';
-          $('.address-input .file').html(protocol);
-          $('.address-input .file').css('display', 'inline-block');
-        } else if (cm.url.like('browser*')) {
-          protocol = 'browser';
-          $('.address-input .browser').html(protocol);
-          $('.address-input .browser').css('display', 'inline-block');
-        }
-
-        if (protocol) {
-          url = cm.url.replace(protocol + '://', '');
-        } else {
-          url = cm.url;
-        }
-
-        $('.address-input .protocol').html(protocol);
-        handleUrlText();
-      }
-    }
   } else if (cm.name == 'mini_iframe') {
     playMiniIframe(cm);
   } else if (cm.name == 'alert') {

@@ -75,6 +75,7 @@
   SOCIALBROWSER.require = require;
 
   SOCIALBROWSER.url = SOCIALBROWSER.require('url');
+  SOCIALBROWSER.path = SOCIALBROWSER.require('path');
   SOCIALBROWSER.md5 = SOCIALBROWSER.require('md5');
 
   SOCIALBROWSER.currentWindow = SOCIALBROWSER.remote.getCurrentWindow();
@@ -201,7 +202,7 @@
     SOCIALBROWSER.session = { ...SOCIALBROWSER.session, ...SOCIALBROWSER.browserData.session };
     SOCIALBROWSER.partition = SOCIALBROWSER.browserData.partition;
     if (!SOCIALBROWSER.partition && SOCIALBROWSER.isMemoryMode) {
-      SOCIALBROWSER.partition = 'ghost';
+      SOCIALBROWSER.partition = 'x-ghost';
     }
     if (!SOCIALBROWSER.session.privacy.enable_virtual_pc && SOCIALBROWSER.var.blocking.privacy.enable_virtual_pc) {
       SOCIALBROWSER.session.privacy.enable_virtual_pc = true

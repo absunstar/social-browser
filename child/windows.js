@@ -25,6 +25,8 @@ module.exports = function (child) {
   };
 
   child.createNewWindow = function (setting) {
+    delete setting.name;
+
     let parent = child.parent;
     setting.partition = setting.partition || parent.var.core.session.name;
     let defaultSetting = {
@@ -323,51 +325,51 @@ module.exports = function (child) {
       win.__options.user_agent = parent.var.core.user_agent;
     }
 
-    if (win.__options.proxy) {
-      if ((proxy = win.__options.proxy)) {
-        let ss = win.webContents.session;
+    if ((proxy = win.__options.proxy)) {
+      let ss = win.webContents.session;
 
-        proxy.url = proxy.url.replace('http://', '').replace('https://', '').replace('ftp://', '').replace('socks4://', '').replace('socks4://', '');
-        let arr = proxy.url.split(':');
-        if (arr.length > 1) {
-          proxy.ip = arr[0];
-          proxy.port = arr[1];
-        }
-        let proxyRules = '';
-        let startline = '';
-        if (proxy.socks4) {
-          proxyRules += startline + 'socks4://' + proxy.ip + ':' + proxy.port;
-          startline = ',';
-        }
-        if (proxy.socks5) {
-          proxyRules += startline + 'socks5://' + proxy.ip + ':' + proxy.port;
-          startline = ',';
-        }
-        if (proxy.ftp) {
-          proxyRules += startline + 'ftp://' + proxy.ip + ':' + proxy.port;
-          startline = ',';
-        }
-        if (proxy.http) {
-          proxyRules += startline + 'http://' + proxy.ip + ':' + proxy.port;
-          startline = ',';
-        }
-        if (proxy.https) {
-          proxyRules += startline + 'https://' + proxy.ip + ':' + proxy.port;
-          startline = ',';
-        }
-        if (proxyRules == '') {
-          proxyRules = proxy.ip + ':' + proxy.port;
-          startline = ',';
-        }
-
-        ss.setProxy({
-          mode: proxy.mode,
-          proxyRules: proxyRules,
-          proxyBypassRules: proxy.ignore || '127.0.0.1',
-        }).then(() => {
-          child.log('window Proxy Set : ' + proxyRules);
-        });
+      proxy.url = proxy.url.replace('http://', '').replace('https://', '').replace('ftp://', '').replace('socks4://', '').replace('socks4://', '');
+      let arr = proxy.url.split(':');
+      if (arr.length > 1) {
+        proxy.ip = arr[0];
+        proxy.port = arr[1];
       }
+      let proxyRules = '';
+      let startline = '';
+      if (proxy.socks4) {
+        proxyRules += startline + 'socks4://' + proxy.ip + ':' + proxy.port;
+        startline = ',';
+      }
+      if (proxy.socks5) {
+        proxyRules += startline + 'socks5://' + proxy.ip + ':' + proxy.port;
+        startline = ',';
+      }
+      if (proxy.ftp) {
+        proxyRules += startline + 'ftp://' + proxy.ip + ':' + proxy.port;
+        startline = ',';
+      }
+      if (proxy.http) {
+        proxyRules += startline + 'http://' + proxy.ip + ':' + proxy.port;
+        startline = ',';
+      }
+      if (proxy.https) {
+        proxyRules += startline + 'https://' + proxy.ip + ':' + proxy.port;
+        startline = ',';
+      }
+      if (proxyRules == '') {
+        proxyRules = proxy.ip + ':' + proxy.port;
+        startline = ',';
+      }
+
+      ss.setProxy({
+        mode: proxy.mode,
+        proxyRules: proxyRules,
+        proxyBypassRules: proxy.ignore || '127.0.0.1',
+      }).then(() => {
+        child.log('window Proxy Set : ' + proxyRules);
+      });
+    } else {
+      child.handleSession({ name: win.__options.partition });
     }
 
     win.on('blur', function () {
@@ -377,7 +379,7 @@ module.exports = function (child) {
     });
 
     child.sendCurrentDataLoop = function () {
-      if (child.sendCurrentDataAllow && child.mainWindow) {
+      if (child.sendCurrentDataAllow) {
         child.sendCurrentDataAllow = false;
 
         if (child.addressbarWindow && !child.addressbarWindow.isDestroyed()) {
@@ -387,51 +389,26 @@ module.exports = function (child) {
           child.profilesWindow.hide();
         }
 
-        if (child.mainWindow && !child.mainWindow.isDestroyed()) {
-          let data = {
-            type: '[send-window-status]',
-            //options: setting,
-            pid: child.id,
-            index: child.index,
-            mainWindow: {
-              id: child.mainWindow.id,
-              bounds: child.mainWindow.getBounds(),
-              isMaximized: child.mainWindow.isMaximized(),
-              hide: child.mainWindow.isMinimized() || !child.mainWindow.isVisible(),
-            },
-            screen: {
-              bounds: child.electron.screen.getPrimaryDisplay().bounds,
-            },
-          };
+        child.windowList.forEach((w) => {
+          if (w.__options.windowType === 'main' && !w.window.isDestroyed()) {
+            let data = {
+              type: '[send-window-status]',
+              mainWindow: {
+                id: w.window.id,
+                bounds: w.window.getBounds(),
+                isMaximized: w.window.isMaximized(),
+                hide: w.window.isMinimized() || !w.window.isVisible(),
+              },
+              screen: {
+                bounds: child.electron.screen.getPrimaryDisplay().bounds,
+              },
+            };
 
-          if (child.speedMode) {
-            parent.options.mainWindow = data.mainWindow;
-            parent.options.screen = data.screen;
-
-            if ((mainWindow = data.mainWindow)) {
-              let bounds = mainWindow.bounds;
-              let new_bounds = {
-                x: mainWindow.isMaximized ? bounds.x + 8 : bounds.x,
-                y: mainWindow.isMaximized ? bounds.y + 78 : bounds.y + 70,
-                width: mainWindow.isMaximized ? bounds.width - 15 : bounds.width - 2,
-                height: mainWindow.isMaximized ? bounds.height - 84 : bounds.height - 72,
-              };
-              child.windowList.forEach((w) => {
-                if (w.__options.windowType == 'view' && w.__options.main_window_id == mainWindow.id) {
-                  w.window.setBounds(new_bounds);
-                  if (!mainWindow.hide && w.__options.tab_id == child.currentView.tab_id) {
-                    w.window.show();
-                  } else {
-                    w.window.hide();
-                  }
-                }
-              });
-            }
-          } else {
             child.sendMessage(data);
           }
-        }
+        });
       }
+
       setTimeout(() => {
         child.sendCurrentDataLoop();
       }, 10);
@@ -909,9 +886,8 @@ module.exports = function (child) {
 
       if (allow) {
         child.sendMessage({
-          type: '[send-render-message]',
+          type: '[open new tab]',
           data: {
-            name: '[open new tab]',
             url: real_url,
             partition: win.__options.partition,
             user_name: win.__options.user_name,
@@ -929,9 +905,8 @@ module.exports = function (child) {
 
       if (allow) {
         child.sendMessage({
-          type: '[send-render-message]',
+          type: '[open new tab]',
           data: {
-            name: '[open new tab]',
             url: real_url,
             partition: win.__options.partition,
             user_name: win.__options.user_name,
@@ -943,9 +918,8 @@ module.exports = function (child) {
 
       if (parent.var.blocking.popup.allow_internal && url_parser.host.contains(current_url_parser.host)) {
         child.sendMessage({
-          type: '[send-render-message]',
+          type: '[open new tab]',
           data: {
-            name: '[open new tab]',
             url: real_url,
             partition: win.__options.partition,
             user_name: win.__options.user_name,
@@ -954,9 +928,8 @@ module.exports = function (child) {
         });
       } else if (parent.var.blocking.popup.allow_external && !url_parser.host.contains(current_url_parser.host)) {
         child.sendMessage({
-          type: '[send-render-message]',
+          type: '[open new tab]',
           data: {
-            name: '[open new tab]',
             url: real_url,
             partition: win.__options.partition,
             user_name: win.__options.user_name,

@@ -237,9 +237,8 @@ class SocialTabs {
     // console.log(tabProperties)
 
     if (!tabProperties.partition || !tabProperties.user_name) {
-      sendToMain({
+      SOCIALBROWSER.ipc('[open new tab]' , {
         ...tabProperties,
-        name: '[open new tab]',
         windowType: 'view',
         url: tabProperties.url || defaultTapProperties.url,
         source: 'session',

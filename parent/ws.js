@@ -17,7 +17,6 @@ module.exports = function init(parent) {
           if (!child) {
             return;
           }
-          child.is_attached = true;
           child.ws = ws_user;
           let m = {
             type: '[browser-core-data]',
@@ -67,18 +66,16 @@ module.exports = function init(parent) {
             }
           });
           break;
-        case '[un-attach-child]':
-          let ch2 = parent.clientList[message.index];
-          if (ch2) {
-            ch2.is_attached = false;
-          }
-
-          break;
         case '[send-render-message]':
           parent.clientList.forEach((client) => {
-            let index = message.data.__options ? message.data.__options.parent_index : 0;
-            let child_id = message.data.child_id;
-            if ((client.index == index || client.pid == child_id) && client.ws) {
+            if (client.uuid !== message.uuid && client.ws) {
+              client.ws.send(message);
+            }
+          });
+          break;
+        case '[open new tab]':
+          parent.clientList.forEach((client) => {
+            if (client.uuid !== message.uuid && client.ws) {
               client.ws.send(message);
             }
           });
@@ -90,9 +87,9 @@ module.exports = function init(parent) {
             }
           });
           break;
-          case '[create-new-window]':
-            parent.createChildProcess(message.options);
-            break;
+        case '[create-new-window]':
+          parent.createChildProcess(message.options);
+          break;
         case '[create-new-view]':
           parent.createChildProcess(message.options);
           break;
@@ -118,7 +115,77 @@ module.exports = function init(parent) {
           break;
         case '[update-view-url]':
           parent.clientList.forEach((client) => {
-            if (client.index !== message.index && client.ws && client.option_list.some((op) => op.tab_id === message.options.tab_id)) {
+            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tab_id === message.data.tab_id)) {
+              client.ws.send(message);
+            }
+          });
+          break;
+        case '[edit-window]':
+          parent.clientList.forEach((client) => {
+            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tab_id === message.data.tab_id)) {
+              client.ws.send(message);
+            }
+          });
+          break;
+        case '[window-reload]':
+          parent.clientList.forEach((client) => {
+            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tab_id === message.data.tab_id)) {
+              client.ws.send(message);
+            }
+          });
+          break;
+        case '[window-reload-hard]':
+          parent.clientList.forEach((client) => {
+            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tab_id === message.data.tab_id)) {
+              client.ws.send(message);
+            }
+          });
+          break;
+        case '[toggle-window-audio]':
+          parent.clientList.forEach((client) => {
+            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tab_id === message.data.tab_id)) {
+              client.ws.send(message);
+            }
+          });
+          break;
+        case '[window-zoom-]':
+          parent.clientList.forEach((client) => {
+            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tab_id === message.data.tab_id)) {
+              client.ws.send(message);
+            }
+          });
+          break;
+        case '[window-zoom]':
+          parent.clientList.forEach((client) => {
+            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tab_id === message.data.tab_id)) {
+              client.ws.send(message);
+            }
+          });
+          break;
+        case '[window-zoom+]':
+          parent.clientList.forEach((client) => {
+            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tab_id === message.data.tab_id)) {
+              client.ws.send(message);
+            }
+          });
+          break;
+        case '[window-go-back]':
+          parent.clientList.forEach((client) => {
+            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tab_id === message.data.tab_id)) {
+              client.ws.send(message);
+            }
+          });
+          break;
+        case '[window-go-forward]':
+          parent.clientList.forEach((client) => {
+            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tab_id === message.data.tab_id)) {
+              client.ws.send(message);
+            }
+          });
+          break;
+        case '[show-window-dev-tools]':
+          parent.clientList.forEach((client) => {
+            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tab_id === message.data.tab_id)) {
               client.ws.send(message);
             }
           });
@@ -126,11 +193,30 @@ module.exports = function init(parent) {
         case '[send-window-status]':
           parent.lastWindowStatus = message;
           parent.clientList.forEach((client) => {
-            if (client.index !== message.index && client.ws && client.windowType === 'view') {
+            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.windowType === 'view')) {
               client.ws.send(message);
             }
           });
           break;
+        case '[add-to-bookmark]':
+          parent.bookmarks_exists = false;
+          parent.var.bookmarks.forEach((b, i) => {
+            if (b.url == message.data.tab_url) {
+              parent.var.bookmarks[i].title == message.data.tab_title;
+              parent.var.bookmarks[i].favicon == message.data.tab_icon;
+              parent.bookmarks_exists = true;
+            }
+          });
+          if (!parent.bookmarks_exists) {
+            parent.var.bookmarks.push({
+              title: message.data.tab_title,
+              url: message.data.tab_url,
+              favicon: message.data.tab_icon,
+            });
+          }
+          parent.applay('bookmarks');
+          break;
+
         case '[request-window-status]':
           parent.clientList.forEach((client) => {
             if (parent.lastWindowStatus && client.windowType !== 'main' && client.ws) {
@@ -192,6 +278,13 @@ module.exports = function init(parent) {
             }
           });
           break;
+        case '$download_item':
+          parent.clientList.forEach((client) => {
+            if (client.ws) {
+              client.ws.send(message);
+            }
+          });
+          break;
         case '[to-all]':
           parent.clientList.forEach((client) => {
             if (client.ws) {
@@ -237,7 +330,6 @@ module.exports = function init(parent) {
 
           break;
         case '[cookie-changed]':
-          // console.log('[cookie-changed]', message.cookie);
           parent.clientList.forEach((client) => {
             if (client.index !== message.index && client.windowType !== 'main' && client.ws) {
               client.ws.send(message);
@@ -346,7 +438,6 @@ module.exports = function init(parent) {
     };
   });
 
-  parent.clientList = [];
   parent.sendToAll = function (message) {
     parent.clientList.forEach((client) => {
       if (client.ws) {

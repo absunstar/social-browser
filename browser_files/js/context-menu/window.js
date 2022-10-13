@@ -79,8 +79,16 @@ module.exports = function (SOCIALBROWSER) {
     if (url == 'about:blank') {
       return child_window;
     }
+
     url = SOCIALBROWSER.handle_url(url);
-    console.log('window.open : ' + url);
+
+    if (SOCIALBROWSER.copyPopupURL) {
+      alert('URL Copied');
+      SOCIALBROWSER.copy(url);
+    }
+    if (SOCIALBROWSER.blockPopup) {
+      return child_window;
+    }
 
     if (SOCIALBROWSER.windowOpenList.some((u) => u == url)) {
       return child_window;
@@ -88,8 +96,7 @@ module.exports = function (SOCIALBROWSER) {
     SOCIALBROWSER.windowOpenList.push(url);
 
     if (url.like('https://www.youtube.com/watch*')) {
-      SOCIALBROWSER.ip('[send-render-message]', {
-        name: '[open new popup]',
+      SOCIALBROWSER.ipc('[open new popup]',{
         url: 'https://www.youtube.com/embed/' + url.split('=')[1].split('&')[0],
         partition: SOCIALBROWSER.partition,
         referrer: document.location.href,

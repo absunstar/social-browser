@@ -386,8 +386,7 @@ module.exports = function (SOCIALBROWSER) {
       arr.push({
         label: ' in Trusted window',
         click() {
-          sendToMain({
-            name: '[open new popup]',
+          SOCIALBROWSER.ipc('[open new popup]', {
             partition: SOCIALBROWSER.partition,
             url: url,
             referrer: document.location.href,
@@ -400,8 +399,7 @@ module.exports = function (SOCIALBROWSER) {
     arr.push({
       label: ' in ( new tab )',
       click() {
-        sendToMain({
-          name: '[open new tab]',
+        SOCIALBROWSER.ipc('[open new tab]', {
           referrer: document.location.href,
           url: url,
           partition: SOCIALBROWSER.partition,
@@ -419,8 +417,7 @@ module.exports = function (SOCIALBROWSER) {
     arr.push({
       label: ' in ( window popup )',
       click() {
-        sendToMain({
-          name: '[open new popup]',
+        SOCIALBROWSER.ipc('[open new popup]', {
           url: url,
           referrer: document.location.href,
           partition: SOCIALBROWSER.partition,
@@ -432,8 +429,7 @@ module.exports = function (SOCIALBROWSER) {
     arr.push({
       label: ' in ( Insecure popup )',
       click() {
-        sendToMain({
-          name: '[open new popup]',
+        SOCIALBROWSER.ipc('[open new popup]', {
           url: url,
           referrer: document.location.href,
           partition: SOCIALBROWSER.partition,
@@ -446,12 +442,11 @@ module.exports = function (SOCIALBROWSER) {
     arr.push({
       label: ' in ( ghost popup )',
       click() {
-        sendToMain({
-          name: '[open new popup]',
+        SOCIALBROWSER.ipc('[open new popup]', {
           url: url,
           referrer: document.location.href,
-          partition: 'ghost_' + new Date().getTime() + Math.random(),
-          user_name: 'ghost_' + new Date().getTime() + Math.random(),
+          partition: 'x-ghost_' + new Date().getTime() + Math.random(),
+          user_name: 'x-ghost_' + new Date().getTime() + Math.random(),
           show: true,
         });
       },
@@ -466,8 +461,7 @@ module.exports = function (SOCIALBROWSER) {
         arr.push({
           label: ` As ( ${i + 1} ) [ ${ss.display} ] `,
           click() {
-            sendToMain({
-              name: '[open new tab]',
+            SOCIALBROWSER.ipc('[open new tab]', {
               referrer: document.location.href,
               url: url,
               partition: ss.name,
@@ -513,8 +507,7 @@ module.exports = function (SOCIALBROWSER) {
           new $menuItem({
             label: `Open link ${u_string} in ( new tab ) `,
             click() {
-              sendToMain({
-                name: '[open new tab]',
+              SOCIALBROWSER.ipc('[open new tab]', {
                 referrer: document.location.href,
                 url: u,
                 partition: SOCIALBROWSER.partition,
@@ -570,8 +563,7 @@ module.exports = function (SOCIALBROWSER) {
           new $menuItem({
             label: 'Play video ',
             click() {
-              sendToMain({
-                name: '[open new popup]',
+              SOCIALBROWSER.ipc('[open new popup]', {
                 url: 'https://www.youtube.com/embed/' + u.split('=')[1].split('&')[0],
                 partition: SOCIALBROWSER.partition,
                 referrer: document.location.href,
@@ -583,8 +575,7 @@ module.exports = function (SOCIALBROWSER) {
           new $menuItem({
             label: 'Download video ',
             click() {
-              sendToMain({
-                name: '[open new popup]',
+              SOCIALBROWSER.ipc('[open new popup]', {
                 url: u.replace('youtube', 'youtubepp'),
                 partition: SOCIALBROWSER.partition,
                 referrer: document.location.href,
@@ -621,8 +612,7 @@ module.exports = function (SOCIALBROWSER) {
         new $menuItem({
           label: `Open image ${u_string} in ( new tab ) `,
           click() {
-            sendToMain({
-              name: '[open new tab]',
+            SOCIALBROWSER.ipc('[open new tab]', {
               url: url,
               referrer: document.location.href,
               win_id: SOCIALBROWSER.currentWindow.id,
@@ -775,8 +765,7 @@ module.exports = function (SOCIALBROWSER) {
       label: 'Hard Refresh',
       accelerator: 'CommandOrControl+F5',
       click() {
-        sendToMain({
-          name: '[window-reload-hard]',
+        SOCIALBROWSER.ipc('[window-reload-hard]', {
           win_id: SOCIALBROWSER.currentWindow.id,
           origin: document.location.origin || document.location.href,
           partition: SOCIALBROWSER.partition,
@@ -847,8 +836,7 @@ module.exports = function (SOCIALBROWSER) {
       label: 'Clear Site Cache',
       accelerator: 'CommandOrControl+F5',
       click() {
-        sendToMain({
-          name: '[window-reload-hard]',
+        SOCIALBROWSER.ipc('[window-reload-hard]', {
           win_id: SOCIALBROWSER.currentWindow.id,
           origin: document.location.origin || document.location.href,
           storages: ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage'],
@@ -859,8 +847,7 @@ module.exports = function (SOCIALBROWSER) {
     arr.push({
       label: 'Clear Site Cookies',
       click() {
-        sendToMain({
-          name: '[window-reload-hard]',
+        SOCIALBROWSER.ipc('[window-reload-hard]', {
           win_id: SOCIALBROWSER.currentWindow.id,
           origin: document.location.origin || document.location.href,
           storages: ['cookies'],
@@ -871,8 +858,7 @@ module.exports = function (SOCIALBROWSER) {
     arr.push({
       label: 'Clear All Site Data',
       click() {
-        sendToMain({
-          name: '[window-reload-hard]',
+        SOCIALBROWSER.ipc('[window-reload-hard]', {
           win_id: SOCIALBROWSER.currentWindow.id,
           origin: document.location.origin || document.location.href,
           storages: ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage', 'cookies'],
@@ -993,8 +979,7 @@ module.exports = function (SOCIALBROWSER) {
         arr2.push({
           label: 'View  ' + f.src,
           click() {
-            sendToMain({
-              name: '[open new popup]',
+            SOCIALBROWSER.ipc('[open new popup]', {
               partition: SOCIALBROWSER.partition,
               url: 'http://127.0.0.1:60080/iframe?url=' + f.src,
               referrer: document.location.href,
@@ -1005,8 +990,7 @@ module.exports = function (SOCIALBROWSER) {
         arr2.push({
           label: 'Open in ( window popup )',
           click() {
-            sendToMain({
-              name: '[open new popup]',
+            SOCIALBROWSER.ipc('[open new popup]', {
               partition: SOCIALBROWSER.partition,
               url: f.src,
               referrer: document.location.href,
@@ -1016,8 +1000,7 @@ module.exports = function (SOCIALBROWSER) {
         arr2.push({
           label: 'Open in ( Insecure popup )',
           click() {
-            sendToMain({
-              name: '[open new popup]',
+            SOCIALBROWSER.ipc('[open new popup]', {
               partition: SOCIALBROWSER.partition,
               url: f.src,
               referrer: document.location.href,
@@ -1070,8 +1053,7 @@ module.exports = function (SOCIALBROWSER) {
       arr3.push({
         label: 'Play  ' + f.src,
         click() {
-          sendToMain({
-            name: '[open new popup]',
+          SOCIALBROWSER.ipc('[open new popup]', {
             alwaysOnTop: true,
             partition: SOCIALBROWSER.partition,
             url: 'http://127.0.0.1:60080/iframe?url=' + f.src,
@@ -1084,8 +1066,7 @@ module.exports = function (SOCIALBROWSER) {
       arr3.push({
         label: 'Open in ( window popup )',
         click() {
-          sendToMain({
-            name: '[open new popup]',
+          SOCIALBROWSER.ipc('[open new popup]', {
             alwaysOnTop: true,
             partition: SOCIALBROWSER.partition,
             url: f.src,
@@ -1096,10 +1077,9 @@ module.exports = function (SOCIALBROWSER) {
       arr3.push({
         label: 'Open in ( Ghost popup )',
         click() {
-          sendToMain({
-            name: '[open new popup]',
+          SOCIALBROWSER.ipc('[open new popup]', {
             alwaysOnTop: true,
-            partition: 'ghost_' + Date.now(),
+            partition: 'x-ghost_' + Date.now(),
             url: f.src,
             referrer: document.location.href,
           });
@@ -1108,8 +1088,7 @@ module.exports = function (SOCIALBROWSER) {
       arr3.push({
         label: 'Open in ( Insecure popup )',
         click() {
-          sendToMain({
-            name: '[open new popup]',
+          SOCIALBROWSER.ipc('[open new popup]', {
             alwaysOnTop: true,
             partition: SOCIALBROWSER.partition,
             url: f.src,
@@ -1144,8 +1123,7 @@ module.exports = function (SOCIALBROWSER) {
         arr3.push({
           label: 'Play video source  ' + f.src,
           click() {
-            sendToMain({
-              name: '[open new popup]',
+            SOCIALBROWSER.ipc('[open new popup]', {
               partition: SOCIALBROWSER.partition,
               url: f.src,
               referrer: document.location.href,
@@ -1155,8 +1133,7 @@ module.exports = function (SOCIALBROWSER) {
         arr3.push({
           label: 'Open in ( window popup )',
           click() {
-            sendToMain({
-              name: '[open new popup]',
+            SOCIALBROWSER.ipc('[open new popup]', {
               alwaysOnTop: true,
               partition: SOCIALBROWSER.partition,
               url: f.src,
@@ -1168,8 +1145,7 @@ module.exports = function (SOCIALBROWSER) {
         arr3.push({
           label: 'Open in ( Insecure popup )',
           click() {
-            sendToMain({
-              name: '[open new popup]',
+            SOCIALBROWSER.ipc('[open new popup]', {
               alwaysOnTop: true,
               partition: SOCIALBROWSER.partition,
               url: f.src,
@@ -1263,8 +1239,7 @@ module.exports = function (SOCIALBROWSER) {
         new $menuItem({
           label: 'Open current video',
           click() {
-            sendToMain({
-              name: '[open new popup]',
+            SOCIALBROWSER.ipc('[open new popup]', {
               partition: SOCIALBROWSER.partition,
               url: 'https://www.youtube.com/embed/' + document.location.href.split('=')[1].split('&')[0],
               referrer: document.location.href,
@@ -1277,8 +1252,7 @@ module.exports = function (SOCIALBROWSER) {
         new $menuItem({
           label: 'Download current video',
           click() {
-            sendToMain({
-              name: '[open new popup]',
+            SOCIALBROWSER.ipc('[open new popup]', {
               partition: SOCIALBROWSER.partition,
               referrer: document.location.href,
               url: document.location.href.replace('youtube', 'youtubepp'),
@@ -1328,8 +1302,7 @@ module.exports = function (SOCIALBROWSER) {
       click() {
         for (let index = 0; index < 5; index++) {
           setTimeout(() => {
-            sendToMain({
-              name: '[open new popup]',
+            SOCIALBROWSER.ipc('[open new popup]', {
               partition: SOCIALBROWSER.partition,
               url: url,
               referrer: document.location.href,
@@ -1345,8 +1318,7 @@ module.exports = function (SOCIALBROWSER) {
       click() {
         for (let index = 0; index < SOCIALBROWSER.var.session_list.length; index++) {
           setTimeout(() => {
-            sendToMain({
-              name: '[open new popup]',
+            SOCIALBROWSER.ipc('[open new popup]', {
               partition: SOCIALBROWSER.var.session_list[index].name,
               user_name: SOCIALBROWSER.var.session_list[index].display,
               url: url,
@@ -1363,8 +1335,7 @@ module.exports = function (SOCIALBROWSER) {
       click() {
         for (let index = 0; index < SOCIALBROWSER.var.user_agent_list.length; index++) {
           setTimeout(() => {
-            sendToMain({
-              name: '[open new popup]',
+            SOCIALBROWSER.ipc('[open new popup]', {
               partition: SOCIALBROWSER.partition,
               user_agent: SOCIALBROWSER.var.user_agent_list[index].url,
               url: url,
@@ -1381,10 +1352,9 @@ module.exports = function (SOCIALBROWSER) {
       click() {
         for (let index = 0; index < SOCIALBROWSER.var.user_agent_list.length; index++) {
           setTimeout(() => {
-            let partition2 = 'ghost_' + Date.now() + '_' + Math.random();
+            let partition2 = 'x-ghost_' + Date.now() + '_' + Math.random();
             SOCIALBROWSER.ipc('[handle-session]', { name: partition2 });
-            sendToMain({
-              name: '[open new popup]',
+            SOCIALBROWSER.ipc('[open new popup]', {
               partition: partition2,
               user_agent: SOCIALBROWSER.var.user_agent_list[index].url,
               url: url,
@@ -1407,9 +1377,8 @@ module.exports = function (SOCIALBROWSER) {
         SOCIALBROWSER.proxyIndex += 10;
         for (let index = 0; index < SOCIALBROWSER.proxy_list.length; index++) {
           setTimeout(() => {
-            let partition2 = 'ghost_' + Date.now();
-            SOCIALBROWSER.openWindow({
-              name: '[open new popup]',
+            let partition2 = 'x-ghost_' + Date.now();
+            SOCIALBROWSER.ipc('[open new popup]', {
               partition: partition2,
               user_agent: SOCIALBROWSER.userAgent,
               url: url,
@@ -1461,8 +1430,7 @@ module.exports = function (SOCIALBROWSER) {
         social_arr.push({
           label: ` ${document.location.host} ( Alexa Rank )`,
           click() {
-            sendToMain({
-              name: '[open new popup]',
+            SOCIALBROWSER.ipc('[open new popup]', {
               width: 500,
               height: 500,
               url: `https://www.alexa.com/minisiteinfo/${document.location.origin}?offset=5&version=alxg_20100607`,
@@ -1526,8 +1494,7 @@ module.exports = function (SOCIALBROWSER) {
           new $menuItem({
             label: `Translate [ ${stext} ] `,
             click() {
-              sendToMain({
-                name: '[open new popup]',
+              SOCIALBROWSER.ipc('[open new popup]', {
                 partition: SOCIALBROWSER.partition,
                 show: true,
                 url: 'https://translate.google.com/?num=100&newwindow=1&um=1&ie=UTF-8&hl=en&client=tw-ob#auto/ar/' + encodeURIComponent(SOCIALBROWSER.selectedText),
@@ -1540,8 +1507,7 @@ module.exports = function (SOCIALBROWSER) {
           new $menuItem({
             label: `Search  [ ${stext} ] `,
             click() {
-              sendToMain({
-                name: '[open new tab]',
+              SOCIALBROWSER.ipc('[open new tab]', {
                 referrer: document.location.href,
                 url: 'https://www.google.com/search?q=' + encodeURIComponent(SOCIALBROWSER.selectedText),
                 win_id: SOCIALBROWSER.currentWindow.id,
@@ -1609,8 +1575,7 @@ module.exports = function (SOCIALBROWSER) {
                 new $menuItem({
                   label: o.name,
                   click() {
-                    sendToMain({
-                      name: '[open new tab]',
+                    SOCIALBROWSER.ipc('[open new tab]', {
                       partition: SOCIALBROWSER.partition,
                       url: o.url || document.location.href,
                       referrer: document.location.href,
@@ -1637,8 +1602,7 @@ module.exports = function (SOCIALBROWSER) {
           arr.push({
             label: v.name,
             click() {
-              sendToMain({
-                name: '[open new popup]',
+              SOCIALBROWSER.ipc('[open new popup]', {
                 partition: SOCIALBROWSER.partition,
                 url: SOCIALBROWSER.var.vip.server_url + v.url,
                 referrer: document.location.href,
@@ -1697,12 +1661,11 @@ module.exports = function (SOCIALBROWSER) {
           arr.push({
             label: p.name || p.url,
             click() {
-              sendToMain({
-                name: '[open new popup]',
+              SOCIALBROWSER.ipc('[open new popup]', {
                 show: true,
                 url: document.location.href,
                 proxy: p,
-                partition: 'ghost_' + new Date().getTime(),
+                partition: 'x-ghost_' + new Date().getTime(),
               });
             },
           });
@@ -1761,12 +1724,12 @@ module.exports = function (SOCIALBROWSER) {
         let user_name = node.getAttribute('user_name');
         let user_agent = node.getAttribute('user_agent');
         let child_id = node.getAttribute('child_id');
-        let ghost = 'ghost_' + Math.random().toString().replace('.', '');
+        let ghost = 'x-ghost_' + Math.random().toString().replace('.', '');
         menu.append(
           new MenuItem({
             label: 'New tab',
             click() {
-              sendToMain({ name: '[open new tab]', main_window_id: SOCIALBROWSER.currentWindow.id });
+              SOCIALBROWSER.ipc('[open new tab]', { main_window_id: SOCIALBROWSER.currentWindow.id });
             },
           })
         );
@@ -1774,7 +1737,7 @@ module.exports = function (SOCIALBROWSER) {
           new MenuItem({
             label: 'Duplicate tab',
             click() {
-              sendToMain({ name: '[open new tab]', url: url, partition: partition, user_name: user_name, user_agent: user_agent, main_window_id: SOCIALBROWSER.currentWindow.id });
+              SOCIALBROWSER.ipc('[open new tab]', { url: url, partition: partition, user_name: user_name, user_agent: user_agent, main_window_id: SOCIALBROWSER.currentWindow.id });
             },
           })
         );
@@ -1814,7 +1777,7 @@ module.exports = function (SOCIALBROWSER) {
           new MenuItem({
             label: 'New Ghost tab',
             click() {
-              sendToMain({ name: '[open new tab]', partition: ghost, user_name: ghost, user_agent: user_agent, main_window_id: SOCIALBROWSER.currentWindow.id });
+              SOCIALBROWSER.ipc('[open new tab]', { partition: ghost, user_name: ghost, user_agent: user_agent, main_window_id: SOCIALBROWSER.currentWindow.id });
             },
           })
         );
@@ -1822,7 +1785,7 @@ module.exports = function (SOCIALBROWSER) {
           new MenuItem({
             label: 'Duplicate tab in Ghost tab',
             click() {
-              sendToMain({ name: '[open new tab]', url: url, partition: ghost, user_name: ghost, user_agent: user_agent, main_window_id: SOCIALBROWSER.currentWindow.id });
+              SOCIALBROWSER.ipc('[open new tab]', { url: url, partition: ghost, user_name: ghost, user_agent: user_agent, main_window_id: SOCIALBROWSER.currentWindow.id });
             },
           })
         );
@@ -1836,8 +1799,7 @@ module.exports = function (SOCIALBROWSER) {
           new MenuItem({
             label: 'Duplicate tab in Popup',
             click() {
-              sendToMain({
-                name: '[open new popup]',
+              SOCIALBROWSER.ipc('[open new popup]', {
                 child_id: child_id,
                 show: true,
                 url: url,
@@ -1853,8 +1815,7 @@ module.exports = function (SOCIALBROWSER) {
           new MenuItem({
             label: 'Duplicate tab in Ghost Popup',
             click() {
-              sendToMain({
-                name: '[open new popup]',
+              SOCIALBROWSER.ipc('[open new popup]', {
                 child_id: child_id,
                 show: true,
                 url: url,

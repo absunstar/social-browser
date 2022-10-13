@@ -100,8 +100,7 @@ module.exports = function (SOCIALBROWSER) {
                 if (document.location.href.like('https://www.youtube.com/embed*')) {
                     window.location.href = a.href;
                 } else {
-                    SOCIALBROWSER.call('[send-render-message]', {
-                        name: '[open new tab]',
+                    SOCIALBROWSER.ipc('[open new tab]',{
                         referrer: document.location.href,
                         url: a.href,
                         partition: SOCIALBROWSER.partition,

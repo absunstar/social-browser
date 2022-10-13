@@ -4,6 +4,7 @@ module.exports = function (child) {
     child._ws_ = new child.WebSocket('ws://127.0.0.1:60080/ws');
     child.sendMessage = function (message) {
       message.index = child.index;
+      message.uuid = child.uuid;
       message.id = child.id;
       message.pid = child.id;
       child._ws_.send(JSON.stringify(message));
@@ -39,25 +40,25 @@ module.exports = function (child) {
           });
         } else if (message.type == '[browser-core-data]') {
           child.parent = message;
+          child.option_list.push(message.options);
           child.cookies = {};
           child.electron.app.userAgentFallback = child.parent.var.core.user_agent;
           if (child.parent.windowType == 'none') {
-            child.window = null;
-            child.sendMessage({
-              type: '[un-attach-child]',
-            });
           } else if (child.parent.windowType == 'files') {
             child.window = null;
-            setInterval(() => {
-              if (child.save_var_quee.length > 0) {
-                child.save_var(child.save_var_quee.shift());
-              }
-            }, 1000 * 3);
+            setTimeout(() => {
+              setInterval(() => {
+                if (child.save_var_quee.length > 0) {
+                  child.save_var(child.save_var_quee.shift());
+                }
+              }, 1000 * 5);
+            }, 1000 * 60 * 10);
           } else {
             child.sessionConfig();
             child.createNewWindow({ ...child.parent.options });
           }
         } else if (message.type == '[re-browser-core-data]') {
+          child.option_list.push(message.options);
           child.createNewWindow({ ...message.options });
         } else if (message.type == '[update-browser-var]') {
           if (child.parent.windowType == 'files') {
@@ -127,6 +128,12 @@ module.exports = function (child) {
           });
         } else if (message.type == '[send-render-message]') {
           child.sendToWindow('[send-render-message]', message.data);
+        } else if (message.type == '[open new tab]') {
+          child.windowList.forEach((w) => {
+            if (w.__options.windowType == 'main' && !w.window.isDestroyed()) {
+              w.window.webContents.send('[open new tab]', message.data);
+            }
+          });
         } else if (message.type == 'pause-item') {
           child.parent.var.download_list.forEach((dl) => {
             if (dl.id == info.id) {
@@ -137,15 +144,15 @@ module.exports = function (child) {
             }
           });
         } else if (message.type == 'remove-item') {
-          child.parent.var.download_list.forEach((dl , i) => {
+          child.parent.var.download_list.forEach((dl, i) => {
             if (dl.id == info.id) {
               dl.item.cancel();
               dl.status = 'cancel';
               child.sendMessage({ type: '$download_item', data: dl });
             }
           });
-        }  else if (message.type == 'resume-item') {
-          child.parent.var.download_list.forEach((dl , i) => {
+        } else if (message.type == 'resume-item') {
+          child.parent.var.download_list.forEach((dl, i) => {
             if (dl.id == info.id) {
               if (dl.item.canResume()) {
                 dl.item.resume();
@@ -155,7 +162,7 @@ module.exports = function (child) {
               }
             }
           });
-        }else if (message.type == '[add-window-url]') {
+        } else if (message.type == '[add-window-url]') {
           let exists = false;
           child.parent.var.urls.forEach((u) => {
             if (u.url == message.url) {
@@ -190,13 +197,7 @@ module.exports = function (child) {
             }
           }
         } else if (message.type == '[call-window-action]') {
-          if (message.data.name == '[window-reload]') {
-            child.windowList.forEach((w) => {
-              if (w.window && !w.window.isDestroyed() && w.__options.tab_id == message.data.tab_id) {
-                w.window.reload();
-              }
-            });
-          } else if (message.data.name == '[window-reload-hard]') {
+          if (message.data.name == '[window-reload-hard]') {
             child.windowList.forEach((w) => {
               if (w.window && !w.window.isDestroyed() && w.__options.tab_id == message.data.tab_id) {
                 let info = message.data;
@@ -238,19 +239,6 @@ module.exports = function (child) {
                 }
               }
             });
-          } else if (message.data.name == '[show-window-dev-tools]') {
-            child.windowList.forEach((w) => {
-              if (w.window && !w.window.isDestroyed() && w.__options.tab_id == message.data.tab_id) {
-                w.window.webContents.openDevTools();
-              }
-            });
-          } else if (message.data.name == '[toggle-window-audio]') {
-            child.windowList.forEach((w) => {
-              if (w.window && !w.window.isDestroyed() && w.__options.tab_id == message.data.tab_id) {
-                w.window.webContents.setAudioMuted(!w.window.webContents.audioMuted);
-                child.updateTab(w.window);
-              }
-            });
           } else if (message.data.name == 'copy') {
             child.electron.clipboard.writeText(message.data.text.replace('#___new_tab___', '').replace('#___new_popup__', ''));
           } else if (message.data.name == 'full_screen') {
@@ -265,83 +253,92 @@ module.exports = function (child) {
                 w.window.setFullScreen(false);
               }
             });
-          } else if (message.data.name == '[window-zoom]') {
-            child.windowList.forEach((w) => {
-              if (w.window && !w.window.isDestroyed() && w.__options.tab_id == message.data.tab_id) {
-                w.window.webContents.zoomFactor = 1;
-              }
-            });
-          } else if (message.data.name == '[window-zoom+]') {
-            child.windowList.forEach((w) => {
-              if (w.window && !w.window.isDestroyed() && w.__options.tab_id == message.data.tab_id) {
-                w.window.webContents.zoomFactor += 0.2;
-              }
-            });
-          } else if (message.data.name == '[window-zoom-]') {
-            child.windowList.forEach((w) => {
-              if (w.window && !w.window.isDestroyed() && w.__options.tab_id == message.data.tab_id) {
-                w.window.webContents.zoomFactor -= 0.2;
-              }
-            });
-          } else if (message.data.name == '[window-go-back]') {
-            child.windowList.forEach((w) => {
-              if (w.window && !w.window.isDestroyed() && w.__options.tab_id == message.data.tab_id) {
-                if (w.window.webContents.canGoBack()) {
-                  w.window.webContents.goBack();
-                }
-              }
-            });
-          } else if (message.data.name == '[window-go-forward]') {
-            child.windowList.forEach((w) => {
-              if (w.window && !w.window.isDestroyed() && w.__options.tab_id == message.data.tab_id) {
-                if (w.window.webContents.canGoForward()) {
-                  w.window.webContents.goForward();
-                }
-              }
-            });
-          } else if (message.data.name == 'add_to_bookmark') {
-            child.windowList.forEach((w) => {
-              if (w.window && !w.window.isDestroyed() && w.window.isVisible()) {
-                let exists = false;
-                child.parent.var.bookmarks.forEach((b) => {
-                  if (b.url == w.window.getURL()) {
-                    b.title == w.window.getTitle();
-                    exists = true;
-                  }
-                });
-                if (!exists) {
-                  child.parent.var.bookmarks.push({
-                    title: w.window.getTitle(),
-                    url: w.window.getURL(),
-                    favicon: w.window.__options.favicon,
-                  });
-                }
-                child.sendMessage({
-                  type: '[update-browser-var]',
-                  options: {
-                    name: 'bookmarks',
-                    data: child.parent.var.bookmarks,
-                  },
-                });
-              }
-            });
-          } else if (message.data.name == '[edit-window]' && child.getWindow()) {
-            child.getWindow().webContents.executeJavaScript(
-              `
-                            (function(){
-                              let b =  document.querySelector('html');
-                              if(b.contentEditable == "inherit"){
-                                  b.contentEditable = true;
-                                  b.style.border = '10px dashed green';
-                              }else{
-                                  b.contentEditable = "inherit";
-                                  b.style.border = '0px solid white';
-                              }
-                            })()
-                            `,
-              false
-            );
+          } else {
+            console.log('[call-window-action]', message);
           }
+        } else if (message.type == '[window-reload]') {
+          child.windowList.forEach((w) => {
+            if (w.window && !w.window.isDestroyed() && w.__options.tab_id == message.data.tab_id) {
+              w.window.reload();
+            }
+          });
+        } else if (message.type == '[window-reload-hard]') {
+          child.windowList.forEach((w) => {
+            if (w.window && !w.window.isDestroyed() && w.__options.tab_id == message.data.tab_id) {
+              let win = w.window;
+              if (win && message.data.origin && message.data.origin !== 'null') {
+                let ss = win.webContents.session;
+                message.data.storages = message.data.storages || ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage'];
+                message.data.quotas = message.data.quotas || ['temporary', 'persistent', 'syncable'];
+                child.log(' will clear storage data ...');
+                let clear = false;
+                ss.clearStorageData({
+                  origin: message.data.origin,
+                  storages: message.data.storages,
+                  quotas: message.data.quotas,
+                }).finally(() => {
+                  child.log(' will clear cache ...');
+                  ss.clearCache().finally(() => {
+                    child.log(' will reload ...');
+                    clear = true;
+                    win.webContents.reload();
+                  });
+                });
+                setTimeout(() => {
+                  if (!clear) {
+                    win.webContents.reload();
+                  }
+                }, 1000 * 3);
+              }
+            }
+          });
+        } else if (message.type == '[toggle-window-audio]') {
+          child.windowList.forEach((w) => {
+            if (w.window && !w.window.isDestroyed() && w.__options.tab_id == message.data.tab_id) {
+              w.window.webContents.setAudioMuted(!w.window.webContents.audioMuted);
+              child.updateTab(w.window);
+            }
+          });
+        } else if (message.type == '[window-go-back]') {
+          child.windowList.forEach((w) => {
+            if (w.window && !w.window.isDestroyed() && w.__options.tab_id == message.data.tab_id) {
+              if (w.window.webContents.canGoBack()) {
+                w.window.webContents.goBack();
+              }
+            }
+          });
+        } else if (message.type == '[window-go-forward]') {
+          child.windowList.forEach((w) => {
+            if (w.window && !w.window.isDestroyed() && w.__options.tab_id == message.data.tab_id) {
+              if (w.window.webContents.canGoForward()) {
+                w.window.webContents.goForward();
+              }
+            }
+          });
+        } else if (message.type == '[window-zoom]') {
+          child.windowList.forEach((w) => {
+            if (w.window && !w.window.isDestroyed() && w.__options.tab_id == message.data.tab_id) {
+              w.window.webContents.zoomFactor = 1;
+            }
+          });
+        } else if (message.type == '[window-zoom+]') {
+          child.windowList.forEach((w) => {
+            if (w.window && !w.window.isDestroyed() && w.__options.tab_id == message.data.tab_id) {
+              w.window.webContents.zoomFactor += 0.2;
+            }
+          });
+        } else if (message.type == '[window-zoom-]') {
+          child.windowList.forEach((w) => {
+            if (w.window && !w.window.isDestroyed() && w.__options.tab_id == message.data.tab_id) {
+              w.window.webContents.zoomFactor -= 0.2;
+            }
+          });
+        } else if (message.type == '[show-window-dev-tools]') {
+          child.windowList.forEach((w) => {
+            if (w.window && !w.window.isDestroyed() && w.__options.tab_id == message.data.tab_id) {
+              w.window.webContents.openDevTools();
+            }
+          });
         } else if (message.type == '[set-window]' && child.getWindow()) {
           child.getWindow().setSkipTaskbar(false);
           child.getWindow().setMenuBarVisibility(true);
@@ -350,7 +347,7 @@ module.exports = function (child) {
         } else if (message.type == '[update-tab-properties]') {
           child.windowList.forEach((w) => {
             if (w.__options.windowType == 'main' && w.window && !w.window.isDestroyed()) {
-              w.window.webContents.send('[send-render-message]', message.data);
+              w.window.webContents.send('[update-tab-properties]', message.data);
             }
           });
         } else if (message.type == '[window-clicked]') {
@@ -363,6 +360,26 @@ module.exports = function (child) {
           if (child.profilesWindow && !child.profilesWindow.isDestroyed()) {
             child.profilesWindow.hide();
           }
+        } else if (message.type == '[edit-window]') {
+          child.windowList.forEach((w) => {
+            if (w.__options.tab_id == message.data.tab_id && w.window && !w.window.isDestroyed()) {
+              w.window.webContents.executeJavaScript(
+                `
+                        (function(){
+                          let b =  document.querySelector('html');
+                          if(b.contentEditable == "inherit"){
+                              b.contentEditable = true;
+                              b.style.border = '10px dashed green';
+                          }else{
+                              b.contentEditable = "inherit";
+                              b.style.border = '0px solid white';
+                          }
+                        })()
+                        `,
+                false
+              );
+            }
+          });
         } else if (message.type == '[show-view]') {
           child.is_hide = true;
 
@@ -396,22 +413,19 @@ module.exports = function (child) {
             }
           }
         } else if (message.type == '[update-view-url]') {
-          console.log(message);
-          if ((w = child.windowList.find((w) => w.__options.tab_id == message.options.tab_id))) {
+          if ((w = child.windowList.find((w) => w.__options.tab_id == message.data.tab_id))) {
             if (w && !w.window.isDestroyed()) {
-              // w.window.webContents.stop();
-              w.window.loadURL(message.options.url);
+              w.window.webContents.stop();
+              w.window.loadURL(message.data.url);
             }
           }
         } else if (message.type == '[remove-tab]' && child.getWindow()) {
           child.sendToWindow('[send-render-message]', { name: '[remove-tab]', tab_id: message.tab_id });
         } else if (message.type == '[send-window-status]') {
-          if ((w = child.windowList.find((w) => w.__options.windowType == 'view'))) {
-            if (message.screen && message.mainWindow) {
-              child.parent.options.screen = message.screen;
-              child.parent.options.mainWindow = message.mainWindow;
-              child.handleWindowBounds();
-            }
+          if (message.screen && message.mainWindow) {
+            child.parent.options.screen = message.screen;
+            child.parent.options.mainWindow = message.mainWindow;
+            child.handleWindowBounds();
           }
         } else if (message.type == '[cookie-changed]') {
           child.cookies[message.partition] = child.cookies[message.partition] || [];
