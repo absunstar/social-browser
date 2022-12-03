@@ -85,12 +85,13 @@ if (app.setUserTasks) {
   app.setUserTasks([]);
 }
 
+app.commandLine.appendSwitch('enable-experimental-web-platform-features');
 // app.commandLine.appendSwitch('disable-software-rasterizer');
 // app.commandLine.appendSwitch('enable-webgl');
 // app.commandLine.appendSwitch('disable-dev-shm-usage');
 app.commandLine.appendSwitch('no-sandbox');
 app.commandLine.appendSwitch('in-process-gpu');
-app.disableHardwareAcceleration();
+// app.disableHardwareAcceleration();
 
 //app.commandLine.appendSwitch('disable-web-security');
 // app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
@@ -98,7 +99,8 @@ app.disableHardwareAcceleration();
 //app.commandLine.appendSwitch('enable-features', 'PDFViewerUpdate');
 
 // child.allow_widevinecdm(app)
-app.setPath('userData', child.path.join(child.data_dir, 'default'));
+child.mkdirSync(child.path.join(child.data_dir, child.uuid));
+app.setPath('userData', child.path.join(child.data_dir, child.uuid));
 
 // child.mkdirSync(child.path.join(child.data_dir, 'sessionData', 'sessionData_' + 'default'));
 // app.setPath('userData', child.path.join(child.data_dir, 'sessionData', 'sessionData_' + 'default'));
@@ -141,9 +143,9 @@ app.on('ready', function () {
     //   app.quit();
     // }
     console.log('window-all-closed : ' + child.parent.options.partition);
-    if (!child.parent.options.partition.contains('persist:')) {
-      app.quit();
-    }
+    // if (!child.parent.options.partition.contains('persist:')) {
+    //   app.quit();
+    // }
   });
 
   app.on('login', (event, webContents, authenticationResponseDetails, authInfo, callback) => {

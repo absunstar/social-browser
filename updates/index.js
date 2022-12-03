@@ -37,7 +37,7 @@ app.on("ready", function () {
             nodeIntegration: true,
             nodeIntegrationInSubFrames: false,
             nodeIntegrationInWorker: true,
-            experimentalFeatures: false,
+            experimentalFeatures: true,
             sandbox: false,
             webSecurity: false,
             allowRunningInsecureContent: true,

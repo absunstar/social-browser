@@ -153,10 +153,10 @@ module.exports = function init(parent) {
     options.partition = options.partition || parent.var.core.session.name;
     options.user_name = options.user_name || options.partition;
 
-    options.uuid = !options.partition.contains('persist:') ? 'x-ghost' : options.partition;
+    options.uuid = !options.partition.contains('persist:') ? 'x-ghost' : 'user-' + options.partition.replace('persist:' , '');
 
     let index = parent.clientList.findIndex((cl) => cl && cl.uuid === options.uuid);
-    if (index !== -1 && parent.clientList[index]) {
+    if (index !== -1 && parent.clientList[index] && parent.clientList[index].ws) {
       parent.clientList[index].windowType = options.windowType || 'popup';
       parent.clientList[index].option_list.push(options);
       parent.clientList[index].options = options;
@@ -187,7 +187,7 @@ module.exports = function init(parent) {
       });
 
       child.stderr.on('data', (data) => {
-        //  parent.log(` [ child ${options.uuid} / ${parent.clientList.length} ] Error \n    ${data}`);
+          parent.log(` [ child ${options.uuid} / ${parent.clientList.length} ] Error \n    ${data}`);
       });
 
       child.on('close', (code, signal) => {
@@ -228,7 +228,7 @@ module.exports = function init(parent) {
       });
 
       child.on('error', (err) => {
-        //  parent.log(` [ child ${options.uuid} / ${parent.clientList.length} ] Error \n ${err}`);
+          parent.log(` [ child ${options.uuid} / ${parent.clientList.length} ] Error \n ${err}`);
       });
       child.on('disconnect', (err) => {
         //  parent.log(` [ child ${options.uuid} / ${parent.clientList.length} ] disconnect`, err);

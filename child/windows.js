@@ -24,6 +24,54 @@ module.exports = function (child) {
     return null;
   };
 
+  child.showAddressbarWindow = function (op) {
+    if (child.window && (!child.addressbarWindow || child.addressbarWindow.isDestroyed())) {
+      child.addressbarWindow = child.createNewWindow({
+        url: child.url.format({
+          pathname: child.path.join(child.parent.files_dir, 'html', 'address-bar.html'),
+          protocol: 'file:',
+          slashes: true,
+        }),
+        windowType: 'addressbar',
+        show: false,
+        width: child.window.getBounds().width - 200,
+        height: 500,
+        x: child.window.getBounds().x - 90,
+        y: child.window.getBounds().y - 70,
+        alwaysOnTop: false,
+        resizable: false,
+        fullscreenable: false,
+        title: 'Address-bar',
+        backgroundColor: '#ffffff',
+        frame: false,
+        skipTaskbar: true,
+        webPreferences: {
+          contextIsolation: false,
+          partition: 'addressbar',
+          preload: child.parent.files_dir + '/js/context-menu.js',
+          nativeWindowOpen: false,
+          nodeIntegration: true,
+          experimentalFeatures: true,
+          webSecurity: false,
+          allowRunningInsecureContent: true,
+          plugins: true,
+        },
+      });
+      child.remoteMain.enable(child.addressbarWindow.webContents);
+    }
+
+    if (child.addressbarWindow && child.window && !child.window.isDestroyed() && !child.addressbarWindow.isDestroyed()) {
+      child.addressbarWindow.send('[set-address-url]', op);
+      child.addressbarWindow.setBounds({
+        width: child.window.getBounds().width - 200,
+        height: 500,
+        x: child.window.getBounds().x + 140,
+        y: child.window.getBounds().y + 40,
+      });
+      child.addressbarWindow.show();
+    }
+  };
+
   child.createNewWindow = function (setting) {
     delete setting.name;
 
@@ -58,7 +106,8 @@ module.exports = function (child) {
         nodeIntegration: false,
         nodeIntegrationInSubFrames: true,
         nodeIntegrationInWorker: false,
-        experimentalFeatures: false,
+        experimentalFeatures: true,
+        experimentalCanvasFeatures: true,
         navigateOnDragDrop: true,
         webSecurity: true,
         allowRunningInsecureContent: false,
@@ -232,38 +281,7 @@ module.exports = function (child) {
       win.__options.title = win.__options.title || win.__options.url;
       if (win.__options.windowType === 'main') {
         win.show();
-        child.addressbarWindow = child.createNewWindow({
-          url: child.url.format({
-            pathname: child.path.join(child.parent.files_dir, 'html', 'address-bar.html'),
-            protocol: 'file:',
-            slashes: true,
-          }),
-          windowType: 'addressbar',
-          show: false,
-          width: win.getBounds().width - 200,
-          height: 500,
-          x: win.getBounds().x - 90,
-          y: win.getBounds().y - 70,
-          alwaysOnTop: false,
-          resizable: false,
-          fullscreenable: false,
-          title: 'Address-bar',
-          backgroundColor: '#ffffff',
-          frame: false,
-          skipTaskbar: true,
-          webPreferences: {
-            contextIsolation: false,
-            partition: 'addressbar',
-            preload: child.parent.files_dir + '/js/context-menu.js',
-            nativeWindowOpen: false,
-            nodeIntegration: true,
-            experimentalFeatures: false,
-            webSecurity: false,
-            allowRunningInsecureContent: true,
-            plugins: true,
-          },
-        });
-        child.remoteMain.enable(child.addressbarWindow.webContents);
+
         child.profilesWindow = child.createNewWindow({
           url: child.url.format({
             pathname: child.path.join(child.parent.files_dir, 'html', 'user-profiles.html'),
@@ -289,7 +307,7 @@ module.exports = function (child) {
             preload: child.parent.files_dir + '/js/context-menu.js',
             nativeWindowOpen: false,
             nodeIntegration: true,
-            experimentalFeatures: false,
+            experimentalFeatures: true,
             webSecurity: false,
             allowRunningInsecureContent: true,
             plugins: true,
@@ -753,19 +771,130 @@ module.exports = function (child) {
         return;
       }
     });
+
     if (win.webContents.setWindowOpenHandler) {
       win.webContents.setWindowOpenHandler(({ url, frameName }) => {
         child.log('setWindowOpenHandler', url);
-        if (url.like('*about:blank*')) {
-          return { action: 'deny' };
-        } else {
-          return {
-            action: 'allow',
-            overrideBrowserWindowOptions: {
-              modal: true,
-            },
-          };
+
+        if (url.like('https://www.youtube.com/watch*')) {
+          url = 'https://www.youtube.com/embed/' + url.split('=')[1].split('&')[0];
+
+          child.createNewWindow({
+            windowType: 'youtube',
+            title: 'YouTube',
+            width: 520,
+            height: 330,
+            x: parent.options.screen.bounds.width - 550,
+            y: parent.options.screen.bounds.height - 400,
+            backgroundColor: '#030303',
+            center: false,
+            url: url,
+            partition: win.__options.partition,
+            user_name: win.__options.user_name,
+          });
+
+          return;
+        } else if (url.like('https://www.youtube.com/embed*')) {
+          child.createNewWindow({
+            windowType: 'youtube',
+            title: 'YouTube',
+            width: 520,
+            height: 330,
+            x: parent.options.screen.bounds.width - 550,
+            y: parent.options.screen.bounds.height - 400,
+            backgroundColor: '#030303',
+            center: false,
+            url: url,
+            partition: win.__options.partition,
+            user_name: win.__options.user_name,
+          });
+          return;
         }
+
+        if (!child.isAllowURL(url) || url.like('*about:blank*')) {
+          child.log('Block-open-window', url);
+          return false;
+        }
+
+        if (true) {
+          let url_parser = child.url.parse(url);
+          let current_url_parser = child.url.parse(win.getURL());
+
+          let allow = false;
+
+          parent.var.blocking.white_list.forEach((d) => {
+            if (url_parser.host.like(d.url) || current_url_parser.host.like(d.url)) {
+              allow = true;
+            }
+          });
+
+          if (allow) {
+            child.sendMessage({
+              type: '[open new tab]',
+              data: {
+                url: url,
+                partition: win.__options.partition,
+                user_name: win.__options.user_name,
+                options: parent.options,
+              },
+            });
+            return;
+          }
+
+          parent.var.blocking.popup.white_list.forEach((d) => {
+            if (url_parser.host.like(d.url) || current_url_parser.host.like(d.url)) {
+              allow = true;
+            }
+          });
+
+          if (allow) {
+            child.sendMessage({
+              type: '[open new tab]',
+              data: {
+                url: url,
+                partition: win.__options.partition,
+                user_name: win.__options.user_name,
+                options: parent.options,
+              },
+            });
+            return;
+          }
+
+          if (parent.var.blocking.popup.allow_internal && url_parser.host.contains(current_url_parser.host)) {
+            child.sendMessage({
+              type: '[open new tab]',
+              data: {
+                url: url,
+                partition: win.__options.partition,
+                user_name: win.__options.user_name,
+                options: parent.options,
+              },
+            });
+          } else if (parent.var.blocking.popup.allow_external && !url_parser.host.contains(current_url_parser.host)) {
+            child.sendMessage({
+              type: '[open new tab]',
+              data: {
+                url: url,
+                partition: win.__options.partition,
+                user_name: win.__options.user_name,
+                options: parent.options,
+              },
+            });
+          }
+        }
+
+        return { action: 'deny' };
+
+        // if (url.like('*about:blank*')) {
+        //   return { action: 'deny' };
+        // } else {
+        //   return {
+        //     action: 'allow',
+        //     overrideBrowserWindowOptions: {
+        //       modal: true,
+        //     },
+        //   };
+        // }
       });
 
       win.webContents.on('did-create-window', (win, { url, frameName, options, disposition, referrer, postData }) => {
@@ -773,6 +902,7 @@ module.exports = function (child) {
       });
     }
     win.webContents.on('new-window', function (event, url, frameName, disposition, options, referrer, postBody) {
+      child.log('new-window xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
       event.preventDefault();
 
       if (!win || win.isDestroyed()) {

@@ -75,7 +75,7 @@ module.exports = function init(browser) {
                 preload: __dirname + "/preload/page-urls.js",
                 nodeIntegration: false,
                 nodeIntegrationInWorker: false,
-                experimentalFeatures: false,
+                experimentalFeatures: true,
                 sandbox: false,
                 webSecurity: false,
                 allowRunningInsecureContent: true,

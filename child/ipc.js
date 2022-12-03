@@ -380,16 +380,7 @@ module.exports = function init(child) {
   });
 
   child.electron.ipcMain.on('[show-addressbar]', (event, data) => {
-    if (child.addressbarWindow && child.window && !child.window.isDestroyed() && !child.addressbarWindow.isDestroyed()) {
-      child.addressbarWindow.send('set-text-url', data);
-      child.addressbarWindow.setBounds({
-        width: child.window.getBounds().width - 200,
-        height: 500,
-        x: child.window.getBounds().x + 140,
-        y: child.window.getBounds().y + 40,
-      });
-      child.addressbarWindow.show();
-    }
+    child.showAddressbarWindow(data);
   });
   child.electron.ipcMain.on('[edit-window]', (event, data) => {
     if (data.tab_id && data.tab_child_id && data.tab_win_id) {
@@ -541,6 +532,19 @@ module.exports = function init(child) {
     }
   });
 
+  child.electron.ipcMain.on('[show-profiles]', (event, data) => {
+    let w = child.windowList.find((w) => w.__options.windowType == 'main');
+    if (w && w.window && !w.window.isDestroyed() && child.profilesWindow && !child.profilesWindow.isDestroyed()) {
+      child.profilesWindow.setBounds({
+        width: 400,
+        height: 500,
+        x: w.window.getBounds().x + (w.window.getBounds().width - 500),
+        y: (w.window.getBounds().y == -8 ? 0 : w.window.getBounds().y - 5) + 30,
+      });
+      child.profilesWindow.show();
+    }
+  });
+
   child.electron.ipcMain.on('[send-render-message]', (event, data) => {
     data.partition = data.partition || child.parent.var.core.session.name;
     data.user_name = data.user_name || child.parent.var.core.session.display;
@@ -637,16 +641,6 @@ module.exports = function init(child) {
           type: '[update-browser-var][user_data_input][add]',
           data: data,
         });
-      }
-    } else if (data.name == 'show profiles') {
-      if (child.profilesWindow && child.window && !child.window.isDestroyed() && !child.profilesWindow.isDestroyed()) {
-        child.profilesWindow.setBounds({
-          width: 400,
-          height: 500,
-          x: child.window.getBounds().x + (child.window.getBounds().width - 500),
-          y: (child.window.getBounds().y == -8 ? 0 : child.window.getBounds().y - 5) + 30,
-        });
-        child.profilesWindow.show();
       }
     } else if (data.name == '[save-window-as-pdf]') {
       let win = child.electron.BrowserWindow.fromId(data.win_id);

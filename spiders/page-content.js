@@ -64,7 +64,7 @@ module.exports = function init(browser) {
                 nativeWindowOpen : false,
                 nodeIntegration: false,
                 nodeIntegrationInWorker: false,
-                experimentalFeatures: false,
+                experimentalFeatures: true,
                 sandbox: false,
                 webSecurity: false,
                 allowRunningInsecureContent: true,

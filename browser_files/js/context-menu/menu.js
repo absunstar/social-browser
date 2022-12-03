@@ -576,7 +576,7 @@ module.exports = function (SOCIALBROWSER) {
             label: 'Download video ',
             click() {
               SOCIALBROWSER.ipc('[open new popup]', {
-                url: u.replace('youtube', 'youtubepp'),
+                url: u.replace('youtube', 'ssyoutube'),
                 partition: SOCIALBROWSER.partition,
                 referrer: document.location.href,
               });
@@ -1255,7 +1255,7 @@ module.exports = function (SOCIALBROWSER) {
             SOCIALBROWSER.ipc('[open new popup]', {
               partition: SOCIALBROWSER.partition,
               referrer: document.location.href,
-              url: document.location.href.replace('youtube', 'youtubepp'),
+              url: document.location.href.replace('youtube', 'ssyoutube'),
             });
           },
         })
@@ -1752,9 +1752,21 @@ module.exports = function (SOCIALBROWSER) {
             label: 'Hide tab',
             click() {
               node.classList.add('display-none');
-              if ((t = document.querySelector('.social-tab:not(display-none)'))) {
+              if ((t = document.querySelector('.social-tab:not(.display-none)'))) {
                 t.click();
               }
+            },
+          })
+        );
+        menu.append(
+          new MenuItem({
+            label: '  Hide other tabs',
+            click() {
+              document.querySelectorAll('.social-tab:not(.plus)').forEach((el) => {
+                if (el.id !== node.id) {
+                  el.classList.add('display-none');
+                }
+              });
             },
           })
         );
@@ -1880,6 +1892,15 @@ module.exports = function (SOCIALBROWSER) {
               },
             })
           );
+
+          menu.append(
+            new $menuItem({
+              label: 'Exist Social Browser',
+              click() {
+                SOCIALBROWSER.ws({ type: '[close]' });
+              },
+            })
+          );
         }
       }
     }
@@ -1925,5 +1946,11 @@ module.exports = function (SOCIALBROWSER) {
 
   SOCIALBROWSER.on('context-menu', (e, data) => {
     SOCIALBROWSER.contextmenu(data);
+  });
+
+  window.addEventListener('dblclick', (event) => {
+    if(SOCIALBROWSER.var.blocking.javascript.auto_remove_html && !event.target.tagName.contains('body|input|video|embed')){
+      event.target.remove();
+    }
   });
 };

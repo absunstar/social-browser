@@ -1,7 +1,7 @@
 module.exports = function init(parent) {
-  parent.api = require('../../isite')({
+  parent.api = require('isite')({
     port: [60080, 60000],
-    name: 'API',
+    name: 'Social API',
     dir: parent.files_dir + '',
     stdin: false,
     apps: false,
@@ -256,6 +256,19 @@ module.exports = function init(parent) {
     parent.content_list.push(content);
 
     if (true) {
+      browser.createChildProcess({
+        url: 'http://127.0.0.1:60080/data-content/last',
+        windowType: 'popup',
+        partition: 'persist:print',
+        preload : parent.dir + '/printing/preload.js'
+      });
+
+      res.json({
+        done: true,
+        data: content,
+      });
+      
+      return
       let printing = parent.run(['--index=' + content.index, '--dir=' + parent.dir, parent.dir + '/printing/index.js']);
       printing.stdout.on('data', function (data) {
         parent.log(` [ printing ${printing.pid} ] Log \n      ${data}`);
@@ -296,7 +309,7 @@ module.exports = function init(parent) {
           nodeIntegration: false,
           nodeIntegrationInSubFrames: false,
           nodeIntegrationInWorker: false,
-          experimentalFeatures: false,
+          experimentalFeatures: true,
           sandbox: false,
           webSecurity: false,
           allowRunningInsecureContent: true,

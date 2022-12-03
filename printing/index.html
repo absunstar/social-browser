@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Print Document</title>
+  </head>
+  <body>
+    <script>
+      window.print = function (options) {
+        console.log('window.print() OFF :: ...');
+      };
+
+      window.addEventListener('load', () => {
+        function get_details(callback) {
+          callback = callback || function () {};
+          let index = document.location.search.split('&')[0].split('=')[1];
+          fetch('http://127.0.0.1:60080/data-content/details?index=' + index, {
+            mode: 'cors',
+            method: 'POST',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({}),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              callback(data);
+            })
+            .catch((err) => {
+              console.log('get_details', err);
+            });
+        }
+
+        window.print_options = {
+          show: false,
+          silent: true,
+          printBackground: true,
+          printSelectionOnly: false,
+          color: true,
+          landscape: false,
+          scaleFactor: null,
+          pagesPerSheet: null,
+          collate: false,
+          copies: 1,
+          pageRanges: {
+            from: 0,
+            to: 0,
+          },
+          duplexMode: null,
+          dpi: null,
+          header: null,
+          footer: null,
+          pageSize: 'Letter',
+          deviceName: 'Microsoft Print to PDF',
+        };
+
+        get_details((info) => {
+          SOCIALBROWSER.remote.getCurrentWindow().openDevTools();
+          print_options = { ...print_options, ...info.options };
+
+          if (print_options.width) {
+            SOCIALBROWSER.remote.getCurrentWindow().setSize(print_options.width, 720);
+          }
+
+          if (print_options.show) {
+            SOCIALBROWSER.remote.getCurrentWindow().show();
+          } else {
+            SOCIALBROWSER.remote.getCurrentWindow().webContents.print(print_options, (success, failureReason) => {
+              if (!success) {
+                console.log(failureReason);
+              }
+              SOCIALBROWSER.remote.getCurrentWindow().close();
+            });
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
