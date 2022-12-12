@@ -81,8 +81,8 @@
   SOCIALBROWSER.currentWindow = SOCIALBROWSER.remote.getCurrentWindow();
   SOCIALBROWSER.webContents = SOCIALBROWSER.currentWindow.webContents;
 
-  if (SOCIALBROWSER.currentWindow.__options && SOCIALBROWSER.currentWindow.__options.webPreferences) {
-    SOCIALBROWSER.webPreferences = SOCIALBROWSER.currentWindow.__options.webPreferences;
+  if (SOCIALBROWSER.currentWindow.customSetting && SOCIALBROWSER.currentWindow.customSetting.webPreferences) {
+    SOCIALBROWSER.webPreferences = SOCIALBROWSER.currentWindow.customSetting.webPreferences;
     SOCIALBROWSER.partition = SOCIALBROWSER.webPreferences.partition;
   } else {
     SOCIALBROWSER.webPreferences = SOCIALBROWSER.webContents.getLastWebPreferences();
@@ -114,7 +114,7 @@
   }
 
   SOCIALBROWSER.callSync = SOCIALBROWSER.ipcSync = function (channel, value) {
-    value.__options = SOCIALBROWSER.options;
+    value.parentSetting = SOCIALBROWSER.customSetting;
     return SOCIALBROWSER.electron.ipcRenderer.sendSync(channel, value);
   };
   SOCIALBROWSER.call = SOCIALBROWSER.ipc = function (channel, value) {
@@ -122,11 +122,11 @@
       return;
     }
     value = value || {};
-    value.__options = SOCIALBROWSER.options;
+    value.parentSetting = SOCIALBROWSER.customSetting;
     return SOCIALBROWSER.electron.ipcRenderer.send(channel, value);
   };
   SOCIALBROWSER.invoke = function (channel, value) {
-    value.__options = SOCIALBROWSER.options;
+    value.parentSetting = SOCIALBROWSER.customSetting;
     return SOCIALBROWSER.electron.ipcRenderer.invoke(channel, value);
   };
   SOCIALBROWSER.on = function (name, callback) {
@@ -189,15 +189,13 @@
     SOCIALBROWSER.is_main_data = true;
     SOCIALBROWSER.child_id = SOCIALBROWSER.browserData.child_id;
     SOCIALBROWSER.child_index = SOCIALBROWSER.browserData.child_index;
-    SOCIALBROWSER.options = SOCIALBROWSER.browserData.options;
-    SOCIALBROWSER.__options = SOCIALBROWSER.browserData.__options;
+    SOCIALBROWSER.customSetting = SOCIALBROWSER.browserData.customSetting;
     SOCIALBROWSER.var = SOCIALBROWSER.browserData.var;
     SOCIALBROWSER.files_dir = SOCIALBROWSER.browserData.files_dir;
     SOCIALBROWSER.dir = SOCIALBROWSER.browserData.dir;
     SOCIALBROWSER.injectHTML = SOCIALBROWSER.browserData.injectHTML;
     SOCIALBROWSER.injectCSS = SOCIALBROWSER.browserData.injectCSS;
     SOCIALBROWSER.windows = SOCIALBROWSER.browserData.windows;
-    SOCIALBROWSER.windowSetting = SOCIALBROWSER.browserData.windowSetting;
     SOCIALBROWSER.newTabData = SOCIALBROWSER.browserData.newTabData;
     SOCIALBROWSER.session = { ...SOCIALBROWSER.session, ...SOCIALBROWSER.browserData.session };
     SOCIALBROWSER.partition = SOCIALBROWSER.browserData.partition;

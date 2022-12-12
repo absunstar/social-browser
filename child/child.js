@@ -157,7 +157,7 @@ app.on('ready', function () {
       let proxy = null;
       child.windowList.forEach((w) => {
         if (w.id2 == webContents.id) {
-          proxy = w.__options.proxy;
+          proxy = w.customSetting.proxy;
         }
       });
       if (proxy) {
@@ -215,7 +215,7 @@ app.on('ready', function () {
     let screen = child.parent.options.screen;
 
     child.windowList.forEach((w) => {
-      if (w.__options.windowType == 'view' && w.window && !w.window.isDestroyed()) {
+      if (w.customSetting.windowType == 'view' && w.window && !w.window.isDestroyed()) {
         let win = w.window;
 
         if (mainWindow.hide) {

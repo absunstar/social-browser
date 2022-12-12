@@ -2,7 +2,7 @@ module.exports = function (SOCIALBROWSER) {
     if (SOCIALBROWSER.var.core.javaScriptOFF) {
         return false;
     }
-    SOCIALBROWSER.log(' >>> Nodes Script Activated : ' + document.location.href);
+    SOCIALBROWSER.log('.... [ HTML Elements Script Activated ].... ' + document.location.href);
 
     SOCIALBROWSER.onEvent('newDom', (node) => {
         if (node && node.tagName == 'A') {
@@ -66,7 +66,7 @@ module.exports = function (SOCIALBROWSER) {
             }
         });
 
-        if (SOCIALBROWSER.__options.windowType === 'main' || document.location.href.like('*127.0.0.1:60080*')) {
+        if (SOCIALBROWSER.customSetting.windowType === 'main' || document.location.href.like('*127.0.0.1:60080*')) {
             return;
         }
 

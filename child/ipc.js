@@ -25,7 +25,6 @@ module.exports = function init(child) {
     let data2 = {
       child_id: child.id,
       child_index: child.index,
-      options: child.parent.options,
       information: child.parent.information,
       var: child.get_dynamic_var(data),
       files_dir: child.parent.files_dir,
@@ -39,15 +38,13 @@ module.exports = function init(child) {
 
     let win = child.windowList.find((w) => w.id == data.win_id);
     if (win) {
-      data2.__options = win.__options || {};
-      data2.partition = data2.__options.partition || data.partition;
+      data2.customSetting = win.customSetting || {};
+      data2.partition = data2.customSetting.partition || data.partition;
       data2.session = child.parent.var.session_list.find((s) => s.name == data2.partition);
-      data2.windowSetting = win.setting || [];
     } else {
       data2.partition = data.partition;
       data2.session = child.parent.var.session_list.find((s) => s.name == data2.partition);
-      data2.windowSetting = [];
-      data2.__options = {};
+      data2.customSetting = {};
     }
     return data2;
   };
@@ -117,24 +114,29 @@ module.exports = function init(child) {
   child.electron.ipcMain.on('[add][window]', (e, data) => {
     let win = child.windowList.find((w) => w.id == data.win_id);
     if (win) {
-      win.__options = { ...win.__options, ...data.options };
+      win.customSetting = { ...win.customSetting, ...data.options };
     } else {
       child.windowList.push({
         id: data.win_id,
-        __options: data.options,
+        customSetting: data.options,
       });
     }
   });
 
   child.electron.ipcMain.on('[set][window][setting]', (e, data) => {
-    let win = child.windowList.find((w) => w.id == data.win_id);
-    if (win) {
-      win.setting = win.setting || [];
-      win.setting.push(data);
+    let w = child.windowList.find((w) => w.id == data.win_id);
+    if (w) {
+      w.customSetting.windowSetting = w.customSetting.windowSetting || [];
+      w.customSetting.windowSetting.push(data);
     } else {
+      let id = data.win_id;
+      let options = data.options;
+      delete data.win_id;
+      delete data.options;
+
       child.windowList.push({
-        id: data.win_id,
-        setting: [data],
+        id: id,
+        customSetting: { ...options, windowSetting: [data] },
       });
     }
   });
@@ -256,8 +258,8 @@ module.exports = function init(child) {
     if (child.speedMode) {
       child.currentView = options;
       child.windowList.forEach((w) => {
-        if (w.__options.windowType == 'view') {
-          if (w.__options.tab_id == child.currentView.tab_id) {
+        if (w.customSetting.windowType == 'view') {
+          if (w.customSetting.tab_id == child.currentView.tab_id) {
             w.window.show();
           } else {
             w.window.hide();
@@ -282,8 +284,8 @@ module.exports = function init(child) {
   child.electron.ipcMain.on('[close-view]', (e, options) => {
     if (child.speedMode) {
       child.windowList.forEach((w) => {
-        if (w.__options.windowType == 'view') {
-          if (w.__options.tab_id == options.tab_id) {
+        if (w.customSetting.windowType == 'view') {
+          if (w.customSetting.tab_id == options.tab_id) {
             w.window.close();
           }
         }
@@ -352,9 +354,9 @@ module.exports = function init(child) {
     data.partition = data.partition || child.parent.var.core.session.name;
     data.user_name = data.user_name || child.parent.var.core.session.display;
 
-    if (child.windowList.some((w) => w.__options.windowType == 'main')) {
+    if (child.windowList.some((w) => w.customSetting.windowType == 'main')) {
       child.windowList.forEach((w) => {
-        if (w.__options.windowType == 'main' && !w.window.isDestroyed()) {
+        if (w.customSetting.windowType == 'main' && !w.window.isDestroyed()) {
           w.window.webContents.send('[open new tab]', data);
         }
       });
@@ -533,16 +535,7 @@ module.exports = function init(child) {
   });
 
   child.electron.ipcMain.on('[show-profiles]', (event, data) => {
-    let w = child.windowList.find((w) => w.__options.windowType == 'main');
-    if (w && w.window && !w.window.isDestroyed() && child.profilesWindow && !child.profilesWindow.isDestroyed()) {
-      child.profilesWindow.setBounds({
-        width: 400,
-        height: 500,
-        x: w.window.getBounds().x + (w.window.getBounds().width - 500),
-        y: (w.window.getBounds().y == -8 ? 0 : w.window.getBounds().y - 5) + 30,
-      });
-      child.profilesWindow.show();
-    }
+    child.showProfilesWindow();
   });
 
   child.electron.ipcMain.on('[send-render-message]', (event, data) => {
@@ -568,9 +561,9 @@ module.exports = function init(child) {
         type: '[run-window-update]',
       });
     } else if (data.name == '[show-browser-setting]') {
-      if (child.windowList.some((w) => w.__options.windowType == 'main')) {
+      if (child.windowList.some((w) => w.customSetting.windowType == 'main')) {
         child.windowList.forEach((w) => {
-          if (w.__options.windowType == 'main' && !w.window.isDestroyed()) {
+          if (w.customSetting.windowType == 'main' && !w.window.isDestroyed()) {
             w.window.webContents.send('[open new tab]', {
               url: 'http://127.0.0.1:60080/setting',
               partition: 'setting',
@@ -694,7 +687,7 @@ module.exports = function init(child) {
     } else if (data.name == '[download-link]') {
       child.sendMessage({
         type: '[download-link]',
-        partition: data.partition || data.__options.partition || child.parent.partition,
+        partition: data.partition || data.customSetting.partition || child.parent.partition,
         url: data.url,
       });
     }

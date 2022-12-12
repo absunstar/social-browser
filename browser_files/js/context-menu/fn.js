@@ -61,25 +61,24 @@ module.exports = function (SOCIALBROWSER) {
   };
 
   SOCIALBROWSER.generateVPC = function () {
-    let width = SOCIALBROWSER.random(800, 1080);
-    let height = SOCIALBROWSER.random(720, 1080);
+    let screenSize = SOCIALBROWSER.scrrenSizeList[SOCIALBROWSER.random(0, SOCIALBROWSER.scrrenSizeList.length - 1)].split('x');
     return {
       hide_memory: true,
       memory_count: SOCIALBROWSER.random(1, 128),
       hide_cpu: true,
       cpu_count: SOCIALBROWSER.random(1, 64),
       hide_lang: true,
-      languages: 'abcdefghijklmnopqrstuvwxyz'[SOCIALBROWSER.random(0, 25)] + 'abcdefghijklmnopqrstuvwxyz'[SOCIALBROWSER.random(0, 25)],
+      languages: SOCIALBROWSER.languageList[SOCIALBROWSER.random(0, SOCIALBROWSER.languageList.length - 1)],
       mask_date: true,
       date_offset: SOCIALBROWSER.random(-300, 300),
       hide_webgl: true,
       hide_mimetypes: true,
       hide_plugins: true,
       hide_screen: true,
-      screen_width: width,
-      screen_height: height,
-      screen_availWidth: width,
-      screen_availHeight: height,
+      screen_width: screenSize[0],
+      screen_height: screenSize[1],
+      screen_availWidth: screenSize[0],
+      screen_availHeight: screenSize[1],
       set_window_active: true,
       block_rtc: true,
       hide_battery: true,
@@ -404,16 +403,15 @@ module.exports = function (SOCIALBROWSER) {
     if (SOCIALBROWSER.fs.existsSync(path)) {
       SOCIALBROWSER.require(path);
     } else {
-      SOCIALBROWSER.fs.writeFile(path, code, (err) => {
-        if (err) {
-          SOCIALBROWSER.log(err);
-        } else {
-          SOCIALBROWSER.require(path);
-        }
+      try {
+        SOCIALBROWSER.fs.writeFileSync(path, code);
+        SOCIALBROWSER.require(path);
         setTimeout(() => {
           SOCIALBROWSER.fs.unlinkSync(path);
         }, 1000 * 3);
-      });
+      } catch (error) {
+        SOCIALBROWSER.log(err);
+      }
     }
   };
 
@@ -450,7 +448,7 @@ module.exports = function (SOCIALBROWSER) {
         },
       });
       SOCIALBROWSER.ipc('[handle-session]', { ...options, name: options.partition });
-      SOCIALBROWSER.ipc('[add][window]', { win_id: win.id, options: { ...SOCIALBROWSER.__options, ...{ windowType: 'social-popup', win_id: win.id }, ...options } });
+      SOCIALBROWSER.ipc('[add][window]', { win_id: win.id, options: { ...SOCIALBROWSER.customSetting, ...{ windowType: 'social-popup', win_id: win.id }, ...options } });
       SOCIALBROWSER.ipc('[assign][window]', {
         parent_id: SOCIALBROWSER.currentWindow.id,
         child_id: win.id,
@@ -482,6 +480,7 @@ module.exports = function (SOCIALBROWSER) {
         }
         SOCIALBROWSER.ipc('[set][window][setting]', {
           win_id: win.id,
+          options: options,
           name: 'eval',
           code: code,
         });
@@ -518,10 +517,10 @@ module.exports = function (SOCIALBROWSER) {
               proxy: options.proxy,
             });
           }
-          if (SOCIALBROWSER.var.blocking.proxy_error_close_window && SOCIALBROWSER.__options.windowType.contains('popup') && win && !win.isDestroyed()) {
+          if (SOCIALBROWSER.var.blocking.proxy_error_close_window && SOCIALBROWSER.customSetting.windowType.contains('popup') && win && !win.isDestroyed()) {
             win.close();
           }
-          if (SOCIALBROWSER.__options.windowType == 'social-popup' && win && !win.isDestroyed()) {
+          if (SOCIALBROWSER.customSetting.windowType == 'social-popup' && win && !win.isDestroyed()) {
             win.close();
           }
         }

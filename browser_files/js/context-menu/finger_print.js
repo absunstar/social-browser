@@ -18,17 +18,15 @@ module.exports = function (SOCIALBROWSER) {
    *  browser permissions random
    */
 
-  if (SOCIALBROWSER.var.core.javaScriptOFF || SOCIALBROWSER.__options.windowType === 'main' || document.location.href.like('http://localhost*|https://localhost*|http://127.0.0.1*|https://127.0.0.1*|browser*')) {
-    SOCIALBROWSER.log(' [Finger Printing] OFF : ' + document.location.href);
+  if (SOCIALBROWSER.var.core.javaScriptOFF || SOCIALBROWSER.customSetting.windowType === 'main' || document.location.hostname.contains('localhost|127.0.0.1|browser')) {
+    SOCIALBROWSER.log('.... [ Finger Printing OFF ] .... ' + document.location.href);
     return;
   }
 
-  if (!(SOCIALBROWSER.session.privacy.enable_virtual_pc)) {
-    SOCIALBROWSER.log(' [Finger Printing] OFF (setting)');
+  if (!SOCIALBROWSER.session.privacy.enable_virtual_pc) {
+    SOCIALBROWSER.log('.... [ Finger Printing OFF ] .... ');
     return;
   }
-
-
 
   if (SOCIALBROWSER.session.privacy.vpc.hide_cpu) {
     SOCIALBROWSER.__define(navigator, 'hardwareConcurrency', SOCIALBROWSER.session.privacy.vpc.cpu_count);
@@ -36,14 +34,14 @@ module.exports = function (SOCIALBROWSER) {
   if (SOCIALBROWSER.session.privacy.vpc.hide_memory) {
     SOCIALBROWSER.__define(navigator, 'deviceMemory', SOCIALBROWSER.session.privacy.vpc.memory_count);
   }
-  if (SOCIALBROWSER.session.privacy.vpc.hide_screen ) {
+  if (SOCIALBROWSER.session.privacy.vpc.hide_screen) {
     SOCIALBROWSER.__define(screen, 'width', SOCIALBROWSER.session.privacy.vpc.screen_width);
     SOCIALBROWSER.__define(screen, 'height', SOCIALBROWSER.session.privacy.vpc.screen_height);
     SOCIALBROWSER.__define(screen, 'availWidth', SOCIALBROWSER.session.privacy.vpc.screen_availWidth);
     SOCIALBROWSER.__define(screen, 'availHeight', SOCIALBROWSER.session.privacy.vpc.screen_availHeight);
   }
-  if (SOCIALBROWSER.session.privacy.vpc.hide_lang ) {
-    SOCIALBROWSER.session.privacy.vpc.languages = SOCIALBROWSER.session.privacy.vpc.languages || navigator.languages;
+  if (SOCIALBROWSER.session.privacy.vpc.hide_lang) {
+    SOCIALBROWSER.session.privacy.vpc.languages = SOCIALBROWSER.session.privacy.vpc.languages || SOCIALBROWSER.languageList[0] || navigator.languages;
     if (Array.isArray(SOCIALBROWSER.session.privacy.vpc.languages)) {
       SOCIALBROWSER.__define(navigator, 'languages', SOCIALBROWSER.session.privacy.vpc.languages);
       SOCIALBROWSER.__define(navigator, 'language', SOCIALBROWSER.session.privacy.vpc.languages[0]);
@@ -499,5 +497,5 @@ module.exports = function (SOCIALBROWSER) {
       },
     };
   }
-  SOCIALBROWSER.log(' [Finger Printing] ON : ' + document.location.href);
+  SOCIALBROWSER.log('.... [ Finger Printing ON ] .... ' + document.location.href);
 };

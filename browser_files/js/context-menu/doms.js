@@ -1,11 +1,11 @@
 module.exports = function (SOCIALBROWSER) {
-    if (SOCIALBROWSER.var.core.javaScriptOFF || SOCIALBROWSER.__options.windowType === 'main' || document.location.href.like('*http://127.0.0.1*')) {
-        SOCIALBROWSER.log(' [DOM Blocking] OFF : ' + document.location.href);
+    if (SOCIALBROWSER.var.core.javaScriptOFF || SOCIALBROWSER.customSetting.windowType === 'main' || document.location.href.like('*http://127.0.0.1*')) {
+        SOCIALBROWSER.log('.... [ DOM Blocking OFF] .... ' + document.location.href);
         return;
     }
 
     if (SOCIALBROWSER.var.blocking.core.block_html_tags) {
-      SOCIALBROWSER.log(' [DOM Blocking] ON : ' + document.location.href);
+      SOCIALBROWSER.log('.... [ DOM Blocking ON] .... ' + document.location.href);
         document.addEventListener('DOMContentLoaded', () => {
             removeAdDoms();
         });
@@ -13,7 +13,7 @@ module.exports = function (SOCIALBROWSER) {
             removeAdDoms();
         });
     } else {
-        SOCIALBROWSER.log(' [DOM Blocking] OFF : ' + document.location.href);
+        SOCIALBROWSER.log('.... [ DOM Blocking OFF] .... ' + document.location.href);
     }
     function removeAdDoms() {
         let arr = SOCIALBROWSER.var.blocking.html_tags_selector_list;

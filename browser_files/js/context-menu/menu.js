@@ -63,7 +63,7 @@ module.exports = function (SOCIALBROWSER) {
       return menu;
     }
     if (node.nodeName === 'INPUT' || isContentEditable(node)) {
-      if (SOCIALBROWSER.__options.windowType !== 'main') {
+      if (SOCIALBROWSER.customSetting.windowType !== 'main') {
         let arr1 = [];
         let arr2 = [];
         SOCIALBROWSER.var.user_data_input.forEach((dd) => {
@@ -1474,7 +1474,7 @@ module.exports = function (SOCIALBROWSER) {
     let menu = new SOCIALBROWSER.remote.Menu();
     SOCIALBROWSER.selectedNode = node;
 
-    if (SOCIALBROWSER.__options.windowType !== 'main') {
+    if (SOCIALBROWSER.customSetting.windowType !== 'main') {
       if (node.tagName == 'Table') {
         add_table_menu(node, menu, doc);
       }
@@ -1949,7 +1949,7 @@ module.exports = function (SOCIALBROWSER) {
   });
 
   window.addEventListener('dblclick', (event) => {
-    if(SOCIALBROWSER.var.blocking.javascript.auto_remove_html && !event.target.tagName.contains('body|input|video|embed')){
+    if (SOCIALBROWSER.var.blocking.javascript.auto_remove_html && SOCIALBROWSER.customSetting.windowType !== 'main' && !event.target.tagName.contains('body|input|video|embed|progress') && !event.target.className.contains('progress')) {
       event.target.remove();
     }
   });

@@ -38,7 +38,6 @@ module.exports = function init(parent) {
             dir: parent.dir,
             injectHTML: parent.files[0].data,
             injectCSS: parent.files[1].data,
-            windowSetting: child.setting || [],
             windowType: child.windowType,
             information: parent.information,
           };

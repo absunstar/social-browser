@@ -1,6 +1,6 @@
 module.exports = function (SOCIALBROWSER) {
     SOCIALBROWSER.onLoad(() => {
-        if (document.location.hostname.contains('youtube.com') && SOCIALBROWSER.__options.windowType === 'window-popup') {
+        if (document.location.hostname.contains('youtube.com') && SOCIALBROWSER.customSetting.windowType === 'window-popup') {
             SOCIALBROWSER.subscribed_btn = null;
             SOCIALBROWSER.is_user_login = false;
             SOCIALBROWSER.channel_subscribed = false;

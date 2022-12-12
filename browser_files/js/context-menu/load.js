@@ -10,7 +10,7 @@ module.exports = function (SOCIALBROWSER) {
   require(SOCIALBROWSER.files_dir + '/js/context-menu/decode.js')(SOCIALBROWSER);
   require(SOCIALBROWSER.files_dir + '/js/context-menu/window.js')(SOCIALBROWSER);
 
-  require(SOCIALBROWSER.files_dir + '/js/context-menu/finger_print.js')(SOCIALBROWSER);
+
   require(SOCIALBROWSER.files_dir + '/js/context-menu/custom.js')(SOCIALBROWSER);
 
   require(SOCIALBROWSER.files_dir + '/js/context-menu/adblock_hacking.js')(SOCIALBROWSER);
@@ -69,6 +69,8 @@ module.exports = function (SOCIALBROWSER) {
     });
   }
 
+  require(SOCIALBROWSER.files_dir + '/js/context-menu/finger_print.js')(SOCIALBROWSER);
+  
   SOCIALBROWSER.onLoad(() => {
     document.querySelectorAll('*').forEach((el) => {
       SOCIALBROWSER.callEvent('newDom', el);
@@ -81,7 +83,7 @@ module.exports = function (SOCIALBROWSER) {
   });
 
   window.addEventListener('mousedown', (e) => {
-    if (SOCIALBROWSER.__options.windowType == 'view') {
+    if (SOCIALBROWSER.customSetting.windowType == 'view') {
       SOCIALBROWSER.call('[send-render-message]', {
         name: 'window_clicked',
         win_id: SOCIALBROWSER.remote.getCurrentWindow().id,

@@ -4,7 +4,7 @@ module.exports = function (child) {
   child.getMainWindow = function () {
     let mainWindow = null;
     child.windowList.forEach((w) => {
-      if (!mainWindow && w.__options && w.__options.windowType == 'main') {
+      if (!mainWindow && w.customSetting && w.customSetting.windowType == 'main') {
         mainWindow = w.window;
       }
     });
@@ -24,7 +24,7 @@ module.exports = function (child) {
     return null;
   };
 
-  child.showAddressbarWindow = function (op) {
+  child.showAddressbarWindow = function (op, show = true) {
     if (child.window && (!child.addressbarWindow || child.addressbarWindow.isDestroyed())) {
       child.addressbarWindow = child.createNewWindow({
         url: child.url.format({
@@ -60,7 +60,7 @@ module.exports = function (child) {
       child.remoteMain.enable(child.addressbarWindow.webContents);
     }
 
-    if (child.addressbarWindow && child.window && !child.window.isDestroyed() && !child.addressbarWindow.isDestroyed()) {
+    if (show && child.addressbarWindow && child.window && !child.window.isDestroyed() && !child.addressbarWindow.isDestroyed()) {
       child.addressbarWindow.send('[set-address-url]', op);
       child.addressbarWindow.setBounds({
         width: child.window.getBounds().width - 200,
@@ -69,6 +69,50 @@ module.exports = function (child) {
         y: child.window.getBounds().y + 40,
       });
       child.addressbarWindow.show();
+    }
+  };
+
+  child.showProfilesWindow = function (show = true) {
+    if (child.window && (!child.profilesWindow || child.profilesWindow.isDestroyed())) {
+      child.profilesWindow = child.createNewWindow({
+        url: child.url.format({
+          pathname: child.path.join(child.parent.files_dir, 'html', 'user-profiles.html'),
+          protocol: 'file:',
+          slashes: true,
+        }),
+        windowType: 'profiles',
+        show: false,
+        width: 400,
+        height: 500,
+        x: child.window.getBounds().x + (child.window.getBounds().width - 500),
+        y: (child.window.getBounds().y == -8 ? 0 : child.window.getBounds().y - 5) + 30,
+        alwaysOnTop: false,
+        resizable: false,
+        fullscreenable: false,
+        title: 'profiles',
+        backgroundColor: '#ffffff',
+        frame: false,
+        skipTaskbar: true,
+        webPreferences: {
+          contextIsolation: false,
+          partition: 'profiles',
+          preload: child.parent.files_dir + '/js/context-menu.js',
+          nativeWindowOpen: false,
+          nodeIntegration: true,
+          experimentalFeatures: true,
+          webSecurity: false,
+          allowRunningInsecureContent: true,
+          plugins: true,
+        },
+      });
+      child.remoteMain.enable(child.profilesWindow.webContents);
+    }
+    if (show && child.profilesWindow && child.window && !child.window.isDestroyed() && !child.profilesWindow.isDestroyed()) {
+      child.profilesWindow.setBounds({
+        x: child.window.getBounds().x + (child.window.getBounds().width - 500),
+        y: (child.window.getBounds().y == -8 ? 0 : child.window.getBounds().y - 5) + 30,
+      });
+      child.profilesWindow.show();
     }
   };
 
@@ -93,6 +137,10 @@ module.exports = function (child) {
       backgroundColor: '#e8eaed',
       frame: true,
       icon: parent.icon,
+      autoHideMenuBar :true,
+      enableLargerThanScreen :true,
+      hasShadow :false,
+      roundedCorners :false,
       webPreferences: {
         devTools: true,
         spellcheck: false,
@@ -172,6 +220,10 @@ module.exports = function (child) {
       defaultSetting.center = true;
     }
 
+    if (setting.show === false) {
+      defaultSetting.show = false;
+      // defaultSetting.paintWhenInitiallyHidden = false;
+    }
     if (setting.trusted === true) {
       defaultSetting.webPreferences.nodeIntegration = true;
       defaultSetting.webPreferences.nodeIntegrationInWorker = true;
@@ -187,54 +239,59 @@ module.exports = function (child) {
     defaultSetting = { ...defaultSetting, ...setting };
 
     let win = new child.electron.BrowserWindow(defaultSetting);
+    win.customSetting = defaultSetting;
+    win.customSetting.windowSetting = win.customSetting.windowSetting || [];
     child.remoteMain.enable(win.webContents);
 
-    win.__options = defaultSetting;
-    win.__options.userAgent = win.__options.user_agent = win.__options.userAgent || win.__options.user_agent;
-    if (win.__options.timeout) {
+    win.customSetting.userAgent = win.customSetting.userAgent || win.customSetting.user_agent;
+    delete win.customSetting.userAgent;
+    if (!win.customSetting.userAgent || win.customSetting.userAgent == 'undefined') {
+      win.customSetting.userAgent = parent.var.core.user_agent;
+    }
+
+    if (win.customSetting.timeout) {
       setTimeout(() => {
         if (win && !win.isDestroyed()) {
           child.sendToWindows('[window-event]', {
             win_id: win.id,
-            options: win.__options,
+            options: win.customSetting,
             name: 'close',
           });
           win.destroy();
         }
-      }, win.__options.timeout);
+      }, win.customSetting.timeout);
     }
     if (!child.window) {
       child.window = win;
     }
-    if (win.__options.eval) {
-      win.__options.setting = win.__options.setting || [];
-      win.__options.setting.push({
+    if (win.customSetting.eval) {
+      win.customSetting.setting = win.customSetting.setting || [];
+      win.customSetting.setting.push({
         name: 'eval',
-        code: win.__options.eval,
+        code: win.customSetting.eval,
       });
     }
     child.windowList.push({
       id: win.id,
       id2: win.webContents.id,
       window: win,
-      __options: win.__options,
-      setting: win.__options.setting || [],
+      customSetting: win.customSetting,
     });
 
-    if (win.__options.center) {
+    if (win.customSetting.center) {
       win.center();
     }
 
-    if (win.__options.windowType === 'main') {
+    if (win.customSetting.windowType === 'main') {
       child.mainWindow = win;
       win.center();
       // win.openDevTools({
       //   mode: 'detach',
       // });
-    } else if (win.__options.windowType === 'view') {
+    } else if (win.customSetting.windowType === 'view') {
       if (child.speedMode) {
         if (!child.currentView) {
-          child.currentView = win.__options;
+          child.currentView = win.customSetting;
         }
 
         if ((mainWindow = child.getMainWindow())) {
@@ -262,88 +319,54 @@ module.exports = function (child) {
       }
     }
 
-    if (win.__options.openDevTools) {
+    if (win.customSetting.openDevTools) {
       win.openDevTools();
     }
 
-    if (win.__options.url) {
-      win.loadURL(win.__options.url, {
-        referrer: win.__options.referrer,
-        userAgent: win.__options.user_agent || parent.var.core.user_agent,
+    if (win.customSetting.url) {
+      win.loadURL(win.customSetting.url, {
+        referrer: win.customSetting.referrer,
+        userAgent: win.customSetting.userAgent || parent.var.core.user_agent,
       });
     } else {
       win.loadURL(parent.var.core.default_page || 'http://127.0.0.1:60080/newTab', {
-        userAgent: win.__options.user_agent || parent.var.core.user_agent,
+        userAgent: win.customSetting.userAgent || parent.var.core.user_agent,
       });
     }
 
     win.once('ready-to-show', function () {
-      win.__options.title = win.__options.title || win.__options.url;
-      if (win.__options.windowType === 'main') {
+      win.customSetting.title = win.customSetting.title || win.customSetting.url;
+      if (win.customSetting.windowType === 'main') {
         win.show();
 
-        child.profilesWindow = child.createNewWindow({
-          url: child.url.format({
-            pathname: child.path.join(child.parent.files_dir, 'html', 'user-profiles.html'),
-            protocol: 'file:',
-            slashes: true,
-          }),
-          windowType: 'profiles',
-          show: false,
-          width: 400,
-          height: 500,
-          x: win.getBounds().x + (win.getBounds().width - 500),
-          y: (win.getBounds().y == -8 ? 0 : win.getBounds().y - 5) + 30,
-          alwaysOnTop: false,
-          resizable: false,
-          fullscreenable: false,
-          title: 'profiles',
-          backgroundColor: '#ffffff',
-          frame: false,
-          skipTaskbar: true,
-          webPreferences: {
-            contextIsolation: false,
-            partition: 'profiles',
-            preload: child.parent.files_dir + '/js/context-menu.js',
-            nativeWindowOpen: false,
-            nodeIntegration: true,
-            experimentalFeatures: true,
-            webSecurity: false,
-            allowRunningInsecureContent: true,
-            plugins: true,
-          },
-        });
-        child.remoteMain.enable(child.profilesWindow.webContents);
-      } else if (win.__options.windowType === 'view') {
+        child.showAddressbarWindow({}, false);
+        child.showProfilesWindow(false);
+      } else if (win.customSetting.windowType === 'view') {
         child.updateTab(win);
 
         child.sendMessage({
           type: '[request-window-status]',
         });
-        if (!win.__options.vip) {
+        if (!win.customSetting.vip) {
           child.sendMessage({
             type: '[add-window-url]',
             url: child.decodeURI(win.getURL()),
             title: win.getTitle(),
-            logo: win.__options.favicon,
+            logo: win.customSetting.favicon,
           });
         }
-      } else if (win.__options.windowType === 'none') {
+      } else if (win.customSetting.windowType === 'none') {
         win.close();
       }
     });
 
-    if (win.__options.webaudio === false) {
+    if (win.customSetting.webaudio === false) {
       win.webContents.audioMuted = true;
     }
 
     win.setMenuBarVisibility(false);
 
-    if (!win.__options.user_agent || win.__options.user_agent == 'undefined') {
-      win.__options.user_agent = parent.var.core.user_agent;
-    }
-
-    if ((proxy = win.__options.proxy)) {
+    if ((proxy = win.customSetting.proxy)) {
       let ss = win.webContents.session;
 
       proxy.url = proxy.url.replace('http://', '').replace('https://', '').replace('ftp://', '').replace('socks4://', '').replace('socks4://', '');
@@ -387,11 +410,11 @@ module.exports = function (child) {
         child.log('window Proxy Set : ' + proxyRules);
       });
     } else {
-      child.handleSession({ name: win.__options.partition });
+      child.handleSession({ name: win.customSetting.partition });
     }
 
     win.on('blur', function () {
-      // if (win.__options.windowType === 'addressbar' || win.__options.windowType === 'profiles') {
+      // if (win.customSetting.windowType === 'addressbar' || win.customSetting.windowType === 'profiles') {
       //   win.hide();
       // }
     });
@@ -408,7 +431,7 @@ module.exports = function (child) {
         }
 
         child.windowList.forEach((w) => {
-          if (w.__options.windowType === 'main' && !w.window.isDestroyed()) {
+          if (w.customSetting.windowType === 'main' && !w.window.isDestroyed()) {
             let data = {
               type: '[send-window-status]',
               mainWindow: {
@@ -432,12 +455,12 @@ module.exports = function (child) {
       }, 10);
     };
 
-    if (win.__options.windowType === 'main') {
+    if (win.customSetting.windowType === 'main') {
       child.sendCurrentDataLoop();
     }
 
     function sendCurrentData() {
-      if (win.__options.windowType === 'main') {
+      if (win.customSetting.windowType === 'main') {
         child.sendCurrentDataAllow = true;
       }
     }
@@ -468,7 +491,7 @@ module.exports = function (child) {
     });
     win.on('focus', function () {
       sendCurrentData();
-      if (win.__options.windowType !== 'addressbar') {
+      if (win.customSetting.windowType !== 'addressbar') {
         child.sendMessage({
           type: '[to-all]',
           name: 'hide-addressbar',
@@ -478,7 +501,7 @@ module.exports = function (child) {
     win.on('close', (e) => {
       child.sendToWindows('[window-event]', {
         win_id: win.id,
-        options: win.__options,
+        options: win.customSetting,
         name: 'close',
       });
       child.windowList.forEach((w, i) => {
@@ -525,7 +548,7 @@ module.exports = function (child) {
         child.handleWindowBounds();
         if (win && !win.isDestroyed()) {
           win.show();
-          if (!win.__options.windowType.like('*youtube*')) {
+          if (!win.customSetting.windowType.like('*youtube*')) {
             win.setAlwaysOnTop(false);
           }
         }
@@ -550,7 +573,7 @@ module.exports = function (child) {
       setTimeout(() => {
         child.handleWindowBounds();
         if (win && !win.isDestroyed()) {
-          if (!win.__options.windowType.like('*youtube*')) {
+          if (!win.customSetting.windowType.like('*youtube*')) {
             win.setAlwaysOnTop(false);
           }
           win.show();
@@ -617,29 +640,29 @@ module.exports = function (child) {
     });
 
     win.on('page-title-updated', (e, title) => {
-      win.__options.title = title;
+      win.customSetting.title = title;
       child.updateTab(win);
-      if (!win.__options.vip) {
+      if (!win.customSetting.vip) {
         child.sendMessage({
           type: '[add-window-url]',
           url: child.decodeURI(win.getURL()),
           title: title,
-          logo: win.__options.favicon,
+          logo: win.customSetting.favicon,
           ignoreCounted: true,
         });
       }
     });
 
     win.webContents.on('page-favicon-updated', (e, urls) => {
-      win.__options.icon = urls[0];
-      win.__options.favicon = urls[0];
+      win.customSetting.icon = urls[0];
+      win.customSetting.favicon = urls[0];
       child.updateTab(win);
-      if (!win.__options.vip) {
+      if (!win.customSetting.vip) {
         child.sendMessage({
           type: '[add-window-url]',
           url: child.decodeURI(win.getURL()),
           title: win.getTitle(),
-          logo: win.__options.favicon,
+          logo: win.customSetting.favicon,
           ignoreCounted: true,
         });
       }
@@ -648,32 +671,32 @@ module.exports = function (child) {
     let error_icon = 'http://127.0.0.1:60080/images/no.jpg';
 
     win.webContents.on('did-start-loading', (e, urls) => {
-      win.__options.icon = loading_icon;
+      win.customSetting.icon = loading_icon;
       child.updateTab(win);
     });
     win.webContents.on('did-stop-loading', (e) => {
-      win.__options.icon = win.__options.favicon;
+      win.customSetting.icon = win.customSetting.favicon;
       child.updateTab(win);
     });
     win.webContents.on('did-finish-load', (e) => {
-      win.__options.icon = win.__options.favicon;
+      win.customSetting.icon = win.customSetting.favicon;
       child.updateTab(win);
     });
     win.webContents.on('did-fail-load', (...callback) => {
       callback[0].preventDefault();
       if (callback[4]) {
-        if (child.parent.var.blocking.proxy_error_remove_proxy && win.__options.proxy) {
+        if (child.parent.var.blocking.proxy_error_remove_proxy && win.customSetting.proxy) {
           child.sendMessage({
             type: '[remove-proxy]',
-            proxy: win.__options.proxy,
+            proxy: win.customSetting.proxy,
           });
         }
-        if (win.__options.windowType.like('*popup*')) {
+        if (win.customSetting.windowType.like('*popup*')) {
           if (child.parent.var.blocking.proxy_error_close_window) {
             win.close();
           }
         } else {
-          win.__options.icon = error_icon;
+          win.customSetting.icon = error_icon;
           child.updateTab(win);
         }
       }
@@ -696,12 +719,12 @@ module.exports = function (child) {
         win.setBounds({ width: win.getBounds().width + 1 });
         win.setBounds({ width: win.getBounds().width - 1 });
 
-        if (!win.__options.vip) {
+        if (!win.customSetting.vip) {
           child.sendMessage({
             type: '[add-window-url]',
             url: child.decodeURI(win.getURL()),
             title: win.getTitle(),
-            logo: win.__options.favicon,
+            logo: win.customSetting.favicon,
           });
         }
       }
@@ -789,8 +812,8 @@ module.exports = function (child) {
             backgroundColor: '#030303',
             center: false,
             url: url,
-            partition: win.__options.partition,
-            user_name: win.__options.user_name,
+            partition: win.customSetting.partition,
+            user_name: win.customSetting.user_name,
           });
 
           return;
@@ -805,8 +828,8 @@ module.exports = function (child) {
             backgroundColor: '#030303',
             center: false,
             url: url,
-            partition: win.__options.partition,
-            user_name: win.__options.user_name,
+            partition: win.customSetting.partition,
+            user_name: win.customSetting.user_name,
           });
           return;
         }
@@ -833,8 +856,8 @@ module.exports = function (child) {
               type: '[open new tab]',
               data: {
                 url: url,
-                partition: win.__options.partition,
-                user_name: win.__options.user_name,
+                partition: win.customSetting.partition,
+                user_name: win.customSetting.user_name,
                 options: parent.options,
               },
             });
@@ -852,8 +875,8 @@ module.exports = function (child) {
               type: '[open new tab]',
               data: {
                 url: url,
-                partition: win.__options.partition,
-                user_name: win.__options.user_name,
+                partition: win.customSetting.partition,
+                user_name: win.customSetting.user_name,
                 options: parent.options,
               },
             });
@@ -865,8 +888,8 @@ module.exports = function (child) {
               type: '[open new tab]',
               data: {
                 url: url,
-                partition: win.__options.partition,
-                user_name: win.__options.user_name,
+                partition: win.customSetting.partition,
+                user_name: win.customSetting.user_name,
                 options: parent.options,
               },
             });
@@ -875,8 +898,8 @@ module.exports = function (child) {
               type: '[open new tab]',
               data: {
                 url: url,
-                partition: win.__options.partition,
-                user_name: win.__options.user_name,
+                partition: win.customSetting.partition,
+                user_name: win.customSetting.user_name,
                 options: parent.options,
               },
             });
@@ -902,7 +925,6 @@ module.exports = function (child) {
       });
     }
     win.webContents.on('new-window', function (event, url, frameName, disposition, options, referrer, postBody) {
-      child.log('new-window xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
       event.preventDefault();
 
       if (!win || win.isDestroyed()) {
@@ -924,8 +946,8 @@ module.exports = function (child) {
           backgroundColor: '#030303',
           center: false,
           url: real_url,
-          partition: win.__options.partition,
-          user_name: win.__options.user_name,
+          partition: win.customSetting.partition,
+          user_name: win.customSetting.user_name,
         });
 
         return;
@@ -940,8 +962,8 @@ module.exports = function (child) {
           backgroundColor: '#030303',
           center: false,
           url: real_url,
-          partition: win.__options.partition,
-          user_name: win.__options.user_name,
+          partition: win.customSetting.partition,
+          user_name: win.customSetting.user_name,
         });
         return;
       }
@@ -970,8 +992,8 @@ module.exports = function (child) {
         child.sendMessage({
           type: '[open new tab]',
           url: real_url.replace('#___new_tab___', '').replace('#___new_popup___', '').replace('#___trusted_window___', ''),
-          partition: win.__options.partition,
-          user_name: win.__options.user_name,
+          partition: win.customSetting.partition,
+          user_name: win.customSetting.user_name,
         });
         return;
       }
@@ -984,8 +1006,8 @@ module.exports = function (child) {
           center: true,
           trusted: true,
           url: real_url.replace('#___new_tab___', '').replace('#___new_popup___', '').replace('#___trusted_window___', ''),
-          partition: win.__options.partition,
-          user_name: win.__options.user_name,
+          partition: win.customSetting.partition,
+          user_name: win.customSetting.user_name,
         });
         return;
       }
@@ -997,8 +1019,8 @@ module.exports = function (child) {
           backgroundColor: '#ffffff',
           center: true,
           url: real_url.replace('#___new_tab___', '').replace('#___new_popup___', '').replace('#___trusted_window___', ''),
-          partition: win.__options.partition,
-          user_name: win.__options.user_name,
+          partition: win.customSetting.partition,
+          user_name: win.customSetting.user_name,
         });
         return;
       }
@@ -1019,8 +1041,8 @@ module.exports = function (child) {
           type: '[open new tab]',
           data: {
             url: real_url,
-            partition: win.__options.partition,
-            user_name: win.__options.user_name,
+            partition: win.customSetting.partition,
+            user_name: win.customSetting.user_name,
             options: parent.options,
           },
         });
@@ -1038,8 +1060,8 @@ module.exports = function (child) {
           type: '[open new tab]',
           data: {
             url: real_url,
-            partition: win.__options.partition,
-            user_name: win.__options.user_name,
+            partition: win.customSetting.partition,
+            user_name: win.customSetting.user_name,
             options: parent.options,
           },
         });
@@ -1051,8 +1073,8 @@ module.exports = function (child) {
           type: '[open new tab]',
           data: {
             url: real_url,
-            partition: win.__options.partition,
-            user_name: win.__options.user_name,
+            partition: win.customSetting.partition,
+            user_name: win.customSetting.user_name,
             options: parent.options,
           },
         });
@@ -1061,8 +1083,8 @@ module.exports = function (child) {
           type: '[open new tab]',
           data: {
             url: real_url,
-            partition: win.__options.partition,
-            user_name: win.__options.user_name,
+            partition: win.customSetting.partition,
+            user_name: win.customSetting.user_name,
             options: parent.options,
           },
         });

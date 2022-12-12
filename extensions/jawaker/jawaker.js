@@ -174,7 +174,7 @@ SOCIALBROWSER.jawaker.handlePanel = function () {
       panel2.classList.add('hide2');
       SOCIALBROWSER.jawaker.stopPlay();
     } else {
-      if (SOCIALBROWSER.__options.windowType.contains('popup')) {
+      if (SOCIALBROWSER.customSetting.windowType.contains('popup')) {
         panel.classList.remove('hide2');
         document.querySelector('#__sb_url').value = document.location.href;
         if (localStorage.getItem('autoPlay') === 'ok') {
@@ -192,7 +192,7 @@ SOCIALBROWSER.jawaker.handlePanel = function () {
 window.addEventListener('locationchange', function () {
   SOCIALBROWSER.jawaker.handlePanel();
 });
-if (SOCIALBROWSER.__options.windowType.contains('popup')) {
+if (SOCIALBROWSER.customSetting.windowType.contains('popup')) {
   setInterval(() => {
     let seat = document.querySelector('.seat.current');
     if (seat && seat.className.contains('active')) {
