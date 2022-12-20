@@ -320,6 +320,17 @@ module.exports = function (child) {
           return;
         }
 
+        if (details.webContents) {
+          if ((w = child.windowList.find((w) => w.id2 === details.webContents.id))) {
+            if (w.customSetting.allowAds) {
+              callback({
+                cancel: false,
+              });
+              return;
+            }
+          }
+        }
+
         let _ss = child.session_name_list.find((s) => s.name == name);
         details.requestHeaders = details.requestHeaders || {};
 
@@ -644,7 +655,15 @@ module.exports = function (child) {
           let cookies = details.responseHeaders['set-cookie'] || details.responseHeaders['Set-Cookie'];
           if (cookies) {
             cookies.forEach((co) => {
-              child.addCookie({ server: true, partition: name, cookie: co, url: urlObject.origin ?? urlObject.hostname, domain: urlObject.hostname, path: urlObject.path, protocol: urlObject.protocol });
+              child.addCookie({
+                server: true,
+                partition: name,
+                cookie: co,
+                url: urlObject.origin ?? urlObject.hostname,
+                domain: urlObject.hostname,
+                path: urlObject.path,
+                protocol: urlObject.protocol,
+              });
             });
           }
         }
@@ -730,7 +749,8 @@ module.exports = function (child) {
         details.responseHeaders['Access-Control-Allow-Private-Network'.toLowerCase()] = 'true';
         details.responseHeaders['Access-Control-Allow-Credentials'.toLowerCase()] = 'true';
         details.responseHeaders['Access-Control-Allow-Methods'.toLowerCase()] = a_Methods || 'POST,GET,DELETE,PUT,OPTIONS,VIEW,HEAD,CONNECT,TRACE';
-        details.responseHeaders['Access-Control-Allow-Headers'.toLowerCase()] = a_Headers || 'Authorization ,Access-Control-Allow-Headers, Access-Control-Request-Method, Access-Control-Request-Headers,Origin, X-Requested-With, Content-Type, Accept';
+        details.responseHeaders['Access-Control-Allow-Headers'.toLowerCase()] =
+          a_Headers || 'Authorization ,Access-Control-Allow-Headers, Access-Control-Request-Method, Access-Control-Request-Headers,Origin, X-Requested-With, Content-Type, Accept';
 
         if (a_orgin) {
           details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = a_orgin;
@@ -833,6 +853,12 @@ module.exports = function (child) {
       });
 
       ss.on('will-download', (event, item, webContents) => {
+        if ((w = child.windowList.find((w) => w.id2 === webContents.id))) {
+          if (w.customSetting.downloadOff) {
+            console.log('Download OFF');
+            return;
+          }
+        }
         let dl = {
           id: new Date().getTime(),
           date: new Date(),

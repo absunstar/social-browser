@@ -425,6 +425,42 @@ module.exports = function (SOCIALBROWSER) {
         });
       },
     });
+    arr.push({
+      label: ' in ( One window popup )',
+      click() {
+        SOCIALBROWSER.ipc('[open new popup]', {
+          url: url,
+          referrer: document.location.href,
+          partition: SOCIALBROWSER.partition,
+          show: true,
+          oneWindow: true,
+        });
+      },
+    });
+    arr.push({
+      label: ' in ( Just window popup )',
+      click() {
+        SOCIALBROWSER.ipc('[open new popup]', {
+          url: url,
+          referrer: document.location.href,
+          partition: SOCIALBROWSER.partition,
+          show: true,
+          newWindowOff: true,
+        });
+      },
+    });
+    arr.push({
+      label: ' in ( Allow ads window popup )',
+      click() {
+        SOCIALBROWSER.ipc('[open new popup]', {
+          url: url,
+          referrer: document.location.href,
+          partition: SOCIALBROWSER.partition,
+          show: true,
+          allowAds: true,
+        });
+      },
+    });
 
     arr.push({
       label: ' in ( Insecure popup )',
@@ -1949,7 +1985,12 @@ module.exports = function (SOCIALBROWSER) {
   });
 
   window.addEventListener('dblclick', (event) => {
-    if (SOCIALBROWSER.var.blocking.javascript.auto_remove_html && SOCIALBROWSER.customSetting.windowType !== 'main' && !event.target.tagName.contains('body|input|video|embed|progress') && !event.target.className.contains('progress')) {
+    if (
+      SOCIALBROWSER.var.blocking.javascript.auto_remove_html &&
+      SOCIALBROWSER.customSetting.windowType !== 'main' &&
+      !event.target.tagName.contains('body|input|video|embed|progress') &&
+      !event.target.className.contains('progress')
+    ) {
       event.target.remove();
     }
   });

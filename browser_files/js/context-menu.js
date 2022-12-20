@@ -1,7 +1,12 @@
 (function () {
   console.clear = function () {};
 
-  if (document.location.href.indexOf('about:') === 0 || document.location.href.indexOf('blob') === 0 || document.location.href.indexOf('chrome-error') === 0 || document.location.href.indexOf('https://stream.') === 0) {
+  if (
+    document.location.href.indexOf('about:') === 0 ||
+    document.location.href.indexOf('blob') === 0 ||
+    document.location.href.indexOf('chrome-error') === 0 ||
+    document.location.href.indexOf('https://stream.') === 0
+  ) {
     return;
   }
 
@@ -108,7 +113,8 @@
   SOCIALBROWSER.hostname = document.location.hostname;
   SOCIALBROWSER.href = document.location.href;
 
-  SOCIALBROWSER.selected_properties = 'scripts_files,user_data,user_data_input,sites,preload_list,ad_list,proxy_list,proxy,core,bookmarks,session_list,user_agent_list,blocking,video_quality_list,customHeaderList';
+  SOCIALBROWSER.selected_properties =
+    'scripts_files,user_data,user_data_input,sites,preload_list,ad_list,proxy_list,proxy,core,bookmarks,session_list,user_agent_list,blocking,video_quality_list,customHeaderList';
   if (SOCIALBROWSER.href.indexOf('127.0.0.1:60080') !== -1 || SOCIALBROWSER.href.indexOf('file://') == 0 || SOCIALBROWSER.href.indexOf('browser://') == 0) {
     SOCIALBROWSER.selected_properties = '*';
   }
@@ -185,7 +191,6 @@
   };
 
   SOCIALBROWSER.init2 = function () {
-    
     SOCIALBROWSER.is_main_data = true;
     SOCIALBROWSER.child_id = SOCIALBROWSER.browserData.child_id;
     SOCIALBROWSER.child_index = SOCIALBROWSER.browserData.child_index;
@@ -203,7 +208,7 @@
       SOCIALBROWSER.partition = 'x-ghost';
     }
     if (!SOCIALBROWSER.session.privacy.enable_virtual_pc && SOCIALBROWSER.var.blocking.privacy.enable_virtual_pc) {
-      SOCIALBROWSER.session.privacy.enable_virtual_pc = true
+      SOCIALBROWSER.session.privacy.enable_virtual_pc = true;
       SOCIALBROWSER.session.privacy.vpc = SOCIALBROWSER.var.blocking.privacy.vpc;
     }
     require(SOCIALBROWSER.files_dir + '/js/context-menu/init.js')(SOCIALBROWSER);
@@ -222,7 +227,6 @@
     require(SOCIALBROWSER.files_dir + '/js/context-menu/load.js')(SOCIALBROWSER);
     window.SOCIALBROWSER = SOCIALBROWSER;
   };
-
 
   SOCIALBROWSER.init = function () {
     if (true || SOCIALBROWSER.isIframe()) {

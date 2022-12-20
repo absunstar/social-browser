@@ -337,16 +337,19 @@ module.exports = function init(child) {
   });
 
   child.electron.ipcMain.on('[browser-message]', (event, data) => {
-    if (data.name == 'maxmize') {
-      if (child.getWindow().isMaximized()) {
-        child.getWindow().unmaximize();
-      } else {
-        child.getWindow().maximize();
+    let w = child.windowList.find((w) => w.id == data.win_id);
+    if (w && w.window && !w.window.isDestroyed()) {
+      if (data.name == 'maxmize') {
+        if (w.window.isMaximized()) {
+          w.window.unmaximize();
+        } else {
+          w.window.maximize();
+        }
+      } else if (data.name == 'minmize') {
+        w.window.minimize();
+      } else if (data.name == 'close') {
+        w.window.close();
       }
-    } else if (data.name == 'minmize') {
-      child.getWindow().minimize();
-    } else if (data.name == 'close') {
-      child.getWindow().close();
     }
   });
 

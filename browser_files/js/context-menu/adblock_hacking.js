@@ -1,7 +1,12 @@
-const { unwatchFile } = require('original-fs');
-
 module.exports = function (SOCIALBROWSER) {
-  if (SOCIALBROWSER.var.core.javaScriptOFF || SOCIALBROWSER.customSetting.windowType === 'main' || SOCIALBROWSER.is_white_site == true || !SOCIALBROWSER.var.blocking.core.block_ads || document.location.href.like('*http://127.0.0.1*')) {
+  if (
+    SOCIALBROWSER.var.core.javaScriptOFF ||
+    SOCIALBROWSER.customSetting.allowAds ||
+    SOCIALBROWSER.customSetting.windowType === 'main' ||
+    SOCIALBROWSER.is_white_site == true ||
+    !SOCIALBROWSER.var.blocking.core.block_ads ||
+    document.location.href.like('*http://127.0.0.1*')
+  ) {
     SOCIALBROWSER.log('.... [ AD Block OFF] .... ' + document.location.href);
     return;
   }

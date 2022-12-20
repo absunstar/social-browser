@@ -86,7 +86,7 @@ module.exports = function (SOCIALBROWSER) {
       alert('URL Copied');
       SOCIALBROWSER.copy(url);
     }
-    if (SOCIALBROWSER.blockPopup) {
+    if (SOCIALBROWSER.blockPopup || SOCIALBROWSER.customSetting.newWindowOff) {
       return child_window;
     }
 

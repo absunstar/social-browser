@@ -605,10 +605,10 @@ $('.social-close').click(() => {
   ExitSocialWindow();
 });
 $('.social-maxmize').click(() => {
-  SOCIALBROWSER.call('[browser-message]', { name: 'maxmize' });
+  SOCIALBROWSER.call('[browser-message]', { name: 'maxmize', win_id: SOCIALBROWSER.currentWindow.id  });
 });
 $('.social-minmize').click(() => {
-  SOCIALBROWSER.call('[browser-message]', { name: 'minmize' });
+  SOCIALBROWSER.call('[browser-message]', { name: 'minmize', win_id: SOCIALBROWSER.currentWindow.id  });
 });
 
 socialTabsDom.addEventListener('activeTabChange', ({ detail }) => {

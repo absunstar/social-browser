@@ -137,10 +137,10 @@ module.exports = function (child) {
       backgroundColor: '#e8eaed',
       frame: true,
       icon: parent.icon,
-      autoHideMenuBar :true,
-      enableLargerThanScreen :true,
-      hasShadow :false,
-      roundedCorners :false,
+      autoHideMenuBar: true,
+      enableLargerThanScreen: true,
+      hasShadow: false,
+      roundedCorners: false,
       webPreferences: {
         devTools: true,
         spellcheck: false,
@@ -798,6 +798,13 @@ module.exports = function (child) {
     if (win.webContents.setWindowOpenHandler) {
       win.webContents.setWindowOpenHandler(({ url, frameName }) => {
         child.log('setWindowOpenHandler', url);
+        if (win.customSetting.oneWindow) {
+          win.loadURL(url);
+          return { action: 'deny' };
+        }
+        if (win.customSetting.newWindowOff) {
+          return { action: 'deny' };
+        }
 
         if (url.like('https://www.youtube.com/watch*')) {
           url = 'https://www.youtube.com/embed/' + url.split('=')[1].split('&')[0];
@@ -836,71 +843,49 @@ module.exports = function (child) {
 
         if (!child.isAllowURL(url) || url.like('*about:blank*')) {
           child.log('Block-open-window', url);
-          return false;
+          return { action: 'deny' };
         }
 
-        if (true) {
-          let url_parser = child.url.parse(url);
-          let current_url_parser = child.url.parse(win.getURL());
+        let url_parser = child.url.parse(url);
+        let current_url_parser = child.url.parse(win.getURL());
 
-          let allow = false;
+        let allow = false;
 
-          parent.var.blocking.white_list.forEach((d) => {
-            if (url_parser.host.like(d.url) || current_url_parser.host.like(d.url)) {
-              allow = true;
-            }
-          });
-
-          if (allow) {
-            child.sendMessage({
-              type: '[open new tab]',
-              data: {
-                url: url,
-                partition: win.customSetting.partition,
-                user_name: win.customSetting.user_name,
-                options: parent.options,
-              },
-            });
-            return;
+        parent.var.blocking.white_list.forEach((d) => {
+          if (url_parser.host.like(d.url) || current_url_parser.host.like(d.url)) {
+            allow = true;
           }
-
+        });
+        if (!allow) {
           parent.var.blocking.popup.white_list.forEach((d) => {
             if (url_parser.host.like(d.url) || current_url_parser.host.like(d.url)) {
               allow = true;
             }
           });
-
-          if (allow) {
-            child.sendMessage({
-              type: '[open new tab]',
-              data: {
-                url: url,
-                partition: win.customSetting.partition,
-                user_name: win.customSetting.user_name,
-                options: parent.options,
-              },
-            });
-            return;
-          }
-
+        }
+        if (!allow) {
           if (parent.var.blocking.popup.allow_internal && url_parser.host.contains(current_url_parser.host)) {
+            allow = true;
+          } else if (parent.var.blocking.popup.allow_external && !url_parser.host.contains(current_url_parser.host)) {
+            allow = true;
+          }
+        }
+
+        if (allow) {
+          if (win.customSetting.windowType == 'view') {
             child.sendMessage({
               type: '[open new tab]',
               data: {
+                ...win.customSetting,
                 url: url,
-                partition: win.customSetting.partition,
-                user_name: win.customSetting.user_name,
-                options: parent.options,
               },
             });
-          } else if (parent.var.blocking.popup.allow_external && !url_parser.host.contains(current_url_parser.host)) {
+          } else {
             child.sendMessage({
-              type: '[open new tab]',
-              data: {
+              type: '[create-new-window]',
+              options: {
+                ...win.customSetting,
                 url: url,
-                partition: win.customSetting.partition,
-                user_name: win.customSetting.user_name,
-                options: parent.options,
               },
             });
           }
