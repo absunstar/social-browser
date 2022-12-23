@@ -284,20 +284,19 @@ module.exports = function (SOCIALBROWSER) {
       y: Math.round(rect.top * factor + (el.clientHeight / 4) * factor),
     };
   };
-  SOCIALBROWSER.click = function (selector) {
+  SOCIALBROWSER.click = function (selector, realPerson = true) {
     if (!selector) {
       return;
     }
     let dom = typeof selector === 'string' ? SOCIALBROWSER.$(selector) : selector;
     if (dom) {
-      dom.scrollIntoView();
-      if (window.scrollY == 0) {
-      } else if (window.innerHeight + window.scrollY >= document.body.scrollHeight) {
-      } else {
-        window.scroll(window.scrollX, window.scrollY - dom.clientHeight);
-      }
-
-      if (SOCIALBROWSER.currentWindow && SOCIALBROWSER.webContents && SOCIALBROWSER.currentWindow.isVisible()) {
+      if (realPerson && SOCIALBROWSER.currentWindow && SOCIALBROWSER.webContents && SOCIALBROWSER.currentWindow.isVisible()) {
+        dom.scrollIntoView();
+        if (window.scrollY == 0) {
+        } else if (window.innerHeight + window.scrollY >= document.body.scrollHeight) {
+        } else {
+          window.scroll(window.scrollX, window.scrollY - dom.clientHeight);
+        }
         let offset = SOCIALBROWSER.getOffset(dom);
         SOCIALBROWSER.currentWindow.focus();
         SOCIALBROWSER.webContents.sendInputEvent({ type: 'mouseDown', x: offset.x, y: offset.y, button: 'left', clickCount: 1 });
@@ -306,6 +305,7 @@ module.exports = function (SOCIALBROWSER) {
       } else {
         SOCIALBROWSER.triggerMouseEvent(dom, 'mousedown');
         SOCIALBROWSER.triggerMouseEvent(dom, 'mouseup');
+        dom.click();
         return dom;
       }
     }
@@ -502,7 +502,7 @@ module.exports = function (SOCIALBROWSER) {
       });
       win.webContents.on('context-menu', (event, params) => {
         if (win && !win.isDestroyed()) {
-          if (options.menuOFF !== false) {
+          if (options.allowMenu) {
             win.webContents.send('context-menu', params);
           }
         }

@@ -122,6 +122,15 @@ module.exports = function (child) {
     let parent = child.parent;
     setting.partition = setting.partition || parent.var.core.session.name;
     let defaultSetting = {
+      allowMenu: true,
+      allowDevTools: true,
+      allowDownload: true,
+      allowAds: false,
+      allowNewWindows: true,
+      allowFixedWindow: false,
+      allowSaveUserData: true,
+      allowSaveUrls: true,
+      allowSocialBrowser : true,
       show: setting.show === true ? true : false,
       alwaysOnTop: false,
       skipTaskbar: false,
@@ -582,7 +591,7 @@ module.exports = function (child) {
     });
 
     win.webContents.on('context-menu', (event, params) => {
-      if (win && !win.isDestroyed()) {
+      if (win && !win.isDestroyed() && win.customSetting.allowMenu) {
         win.webContents.send('context-menu', params);
         return;
       }
@@ -802,7 +811,7 @@ module.exports = function (child) {
           win.loadURL(url);
           return { action: 'deny' };
         }
-        if (win.customSetting.newWindowOff) {
+        if (!win.customSetting.allowNewWindows) {
           return { action: 'deny' };
         }
 
@@ -823,7 +832,7 @@ module.exports = function (child) {
             user_name: win.customSetting.user_name,
           });
 
-          return;
+          return { action: 'deny' };
         } else if (url.like('https://www.youtube.com/embed*')) {
           child.createNewWindow({
             windowType: 'youtube',
@@ -838,7 +847,7 @@ module.exports = function (child) {
             partition: win.customSetting.partition,
             user_name: win.customSetting.user_name,
           });
-          return;
+          return { action: 'deny' };
         }
 
         if (!child.isAllowURL(url) || url.like('*about:blank*')) {

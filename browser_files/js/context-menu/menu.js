@@ -445,7 +445,7 @@ module.exports = function (SOCIALBROWSER) {
           referrer: document.location.href,
           partition: SOCIALBROWSER.partition,
           show: true,
-          newWindowOff: true,
+          allowNewWindows: false,
         });
       },
     });
@@ -1721,7 +1721,7 @@ module.exports = function (SOCIALBROWSER) {
         get_options_menu(node, menu, doc);
       }
 
-      if (SOCIALBROWSER.var.blocking.context_menu.inspect && !SOCIALBROWSER.DevToolsOff) {
+      if (SOCIALBROWSER.var.blocking.context_menu.inspect && SOCIALBROWSER.customSetting.allowDevTools) {
         menu.append(
           new $menuItem({
             type: 'separator',
@@ -1738,7 +1738,7 @@ module.exports = function (SOCIALBROWSER) {
         );
       }
 
-      if (SOCIALBROWSER.var.blocking.context_menu.dev_tools && !SOCIALBROWSER.DevToolsOff) {
+      if (SOCIALBROWSER.var.blocking.context_menu.dev_tools && SOCIALBROWSER.customSetting.allowDevTools) {
         menu.append(
           new $menuItem({
             label: 'Developer Tools',
@@ -1946,7 +1946,7 @@ module.exports = function (SOCIALBROWSER) {
 
   SOCIALBROWSER.contextmenu = function (e) {
     try {
-      if (SOCIALBROWSER.menuOFF) {
+      if (!SOCIALBROWSER.customSetting.allowMenu) {
         SOCIALBROWSER.log('menu off');
         return null;
       }

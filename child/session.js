@@ -854,7 +854,7 @@ module.exports = function (child) {
 
       ss.on('will-download', (event, item, webContents) => {
         if ((w = child.windowList.find((w) => w.id2 === webContents.id))) {
-          if (w.customSetting.downloadOff) {
+          if (!w.customSetting.allowDownload) {
             console.log('Download OFF');
             return;
           }

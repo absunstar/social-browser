@@ -1,10 +1,10 @@
 module.exports = function (SOCIALBROWSER) {
   if (
-    SOCIALBROWSER.var.core.javaScriptOFF ||
     SOCIALBROWSER.customSetting.allowAds ||
+    SOCIALBROWSER.var.core.javaScriptOFF ||
+    !SOCIALBROWSER.var.blocking.core.block_ads ||
     SOCIALBROWSER.customSetting.windowType === 'main' ||
     SOCIALBROWSER.is_white_site == true ||
-    !SOCIALBROWSER.var.blocking.core.block_ads ||
     document.location.href.like('*http://127.0.0.1*')
   ) {
     SOCIALBROWSER.log('.... [ AD Block OFF] .... ' + document.location.href);

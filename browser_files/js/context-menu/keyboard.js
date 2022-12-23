@@ -27,16 +27,16 @@ module.exports = function (SOCIALBROWSER) {
     (e) => {
       //e.preventDefault();
       //e.stopPropagation();
-      if (e.key == 'F12' /*f12*/ && !SOCIALBROWSER.DevToolsOff && !SOCIALBROWSER.menuOFF) {
+      if (e.key == 'F12' /*f12*/ && SOCIALBROWSER.customSetting.allowDevTools && SOCIALBROWSER.customSetting.allowMenu) {
         SOCIALBROWSER.ipc('[show-window-dev-tools]' ,{
           win_id: SOCIALBROWSER.currentWindow.id,
         });
-      } else if (e.key == 'F11' /*f11*/ && !SOCIALBROWSER.DevToolsOff && !SOCIALBROWSER.menuOFF) {
+      } else if (e.key == 'F11' /*f11*/ && SOCIALBROWSER.customSetting.allowDevTools && SOCIALBROWSER.customSetting.allowMenu) {
         sendToMain({
           name: '[toggle-fullscreen]',
           win_id: SOCIALBROWSER.currentWindow.id,
         });
-      } else if (e.keyCode == 121 /*f10*/ && !SOCIALBROWSER.DevToolsOff && !SOCIALBROWSER.menuOFF) {
+      } else if (e.keyCode == 121 /*f10*/ && SOCIALBROWSER.customSetting.allowDevTools && SOCIALBROWSER.customSetting.allowMenu) {
         sendToMain({
           name: 'service worker',
         });
