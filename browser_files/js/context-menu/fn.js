@@ -410,7 +410,7 @@ module.exports = function (SOCIALBROWSER) {
           SOCIALBROWSER.fs.unlinkSync(path);
         }, 1000 * 3);
       } catch (error) {
-        SOCIALBROWSER.log(err);
+        SOCIALBROWSER.log(error);
       }
     }
   };

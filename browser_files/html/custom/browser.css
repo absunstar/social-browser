@@ -88,22 +88,25 @@ video0 {
 }
 
 #__targetUrl {
-  font-family: sans-serif;
+  font-family: monospace;
+  padding-left: 10px;
   display: none;
   position: fixed;
-  background: #ffffff;
-  color: #3a3838;
-  font-size: 10px;
+  background: #03a9f4;
+  color: #ffffff;
+  font-size: 14px;
   left: 0px;
   bottom: 0px;
   padding: 5px;
-  padding-left: 0px;
+  padding-left: 10px;
   z-index: 9999999;
   border-top: 1px solid #bbb;
   border-right: 1px solid #bbb;
   direction: ltr;
 }
-
+#__targetUrl:hover{
+  display: none;
+}
 #__downloads {
   padding: 5px;
   font-family: sans-serif;

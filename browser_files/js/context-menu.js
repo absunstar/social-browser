@@ -225,8 +225,8 @@
       SOCIALBROWSER.set('vpc', SOCIALBROWSER.session.privacy.vpc);
     }
     require(SOCIALBROWSER.files_dir + '/js/context-menu/load.js')(SOCIALBROWSER);
-    if (SOCIALBROWSER.customSetting.allowSocialBrowser) {
-      window.SOCIALBROWSER = SOCIALBROWSER;
+    if (!SOCIALBROWSER.customSetting.allowSocialBrowser) {
+      delete window.SOCIALBROWSER;
     }
   };
 
@@ -253,6 +253,6 @@
       SOCIALBROWSER.init2();
     }
   };
-
+  window.SOCIALBROWSER = SOCIALBROWSER;
   SOCIALBROWSER.init();
 })();
