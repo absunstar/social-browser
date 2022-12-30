@@ -1,26 +1,4 @@
 module.exports = function (SOCIALBROWSER) {
-  // window.location0 = window.location.ancestorOrigins;
-  // window.location = {
-  //   ancestorOrigins : window.location.ancestorOrigins,
-  //   host : window.location.host,
-  //   hostname : window.location.hostname,
-  //   origin : window.location.origin,
-  //   pathname : window.location.pathname,
-  //   port : window.location.port,
-  //   protocol : window.location.protocol,
-  //   search : window.location.search,
-  //   href : window.location.href
-  // }
-
-  // Object.defineProperty(window.location, 'href', {
-  //   configurable: true,
-  //   get() {
-  //     return 'mmmmmmmmmmmmmmmmmmm';
-  //   },
-  //   set(newValue) {
-  //     SOCIALBROWSER.log(' [href] ', newValue);
-  //   },
-  // });
 
   window.open = function (url, _name, _specs, _replace_in_history) {
     if (url.like('javascript:*|*.svg|*.png|*.ico|*.gif')) {
@@ -83,10 +61,13 @@ module.exports = function (SOCIALBROWSER) {
     url = SOCIALBROWSER.handle_url(url);
 
     if (SOCIALBROWSER.copyPopupURL) {
-      alert('URL Copied');
       SOCIALBROWSER.copy(url);
     }
     if (SOCIALBROWSER.blockPopup || !SOCIALBROWSER.customSetting.allowNewWindows) {
+      return child_window;
+    }
+    if (SOCIALBROWSER.customSetting.allowSelfWindow) {
+      document.location.href = url;
       return child_window;
     }
 
@@ -96,7 +77,7 @@ module.exports = function (SOCIALBROWSER) {
     SOCIALBROWSER.windowOpenList.push(url);
 
     if (url.like('https://www.youtube.com/watch*')) {
-      SOCIALBROWSER.ipc('[open new popup]',{
+      SOCIALBROWSER.ipc('[open new popup]', {
         url: 'https://www.youtube.com/embed/' + url.split('=')[1].split('&')[0],
         partition: SOCIALBROWSER.partition,
         referrer: document.location.href,
@@ -394,10 +375,24 @@ module.exports = function (SOCIALBROWSER) {
     return SOCIALBROWSER.ipcSync('[cookie-get-all]', { domain: p1 + '.' + p2, partition: SOCIALBROWSER.partition });
   };
   SOCIALBROWSER.getCookieRaw = function () {
-    return SOCIALBROWSER.ipcSync('[cookie-get-raw]', { name: '*', domain: document.location.hostname, partition: SOCIALBROWSER.partition, url: document.location.origin, path: document.location.pathname, protocol: document.location.protocol });
+    return SOCIALBROWSER.ipcSync('[cookie-get-raw]', {
+      name: '*',
+      domain: document.location.hostname,
+      partition: SOCIALBROWSER.partition,
+      url: document.location.origin,
+      path: document.location.pathname,
+      protocol: document.location.protocol,
+    });
   };
   SOCIALBROWSER.setCookieRaw = function (newValue) {
-    SOCIALBROWSER.ipcSync('[cookie-set-raw]', { cookie: newValue, partition: SOCIALBROWSER.partition, url: document.location.origin, domain: document.location.hostname, path: document.location.pathname, protocol: document.location.protocol });
+    SOCIALBROWSER.ipcSync('[cookie-set-raw]', {
+      cookie: newValue,
+      partition: SOCIALBROWSER.partition,
+      url: document.location.origin,
+      domain: document.location.hostname,
+      path: document.location.pathname,
+      protocol: document.location.protocol,
+    });
     SOCIALBROWSER.cookiesRaw = SOCIALBROWSER.getCookieRaw();
   };
   if (false) {

@@ -1950,6 +1950,7 @@ module.exports = function (SOCIALBROWSER) {
         SOCIALBROWSER.log('menu off');
         return null;
       }
+      e = e || { x: 0, y: 0 };
       SOCIALBROWSER.memoryText = SOCIALBROWSER.electron.clipboard.readText();
       SOCIALBROWSER.selectedText = getSelection().toString().trim();
       SOCIALBROWSER.selectedURL = null;

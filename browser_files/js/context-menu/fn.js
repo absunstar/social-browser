@@ -415,57 +415,57 @@ module.exports = function (SOCIALBROWSER) {
     }
   };
 
-  SOCIALBROWSER.openWindow = function (options) {
+  SOCIALBROWSER.openWindow = function (customSetting) {
     try {
-      options.partition = options.partition || SOCIALBROWSER.partition;
+      customSetting = { ...SOCIALBROWSER.customSetting, ...{ windowType: 'social-popup', win_id: win.id }, ...customSetting };
       let win = new SOCIALBROWSER.remote.BrowserWindow({
-        show: options.show ?? true,
-        alwaysOnTop: options.alwaysOnTop ?? false,
-        skipTaskbar: options.skipTaskbar ?? false,
-        width: options.width || 1200,
-        height: options.height || 720,
-        x: options.x || 200,
-        y: options.y || 200,
-        backgroundColor: options.backgroundColor || '#ffffff',
-        icon: options.icon ?? SOCIALBROWSER.var.core.icon,
-        frame: options.frame ?? true,
-        title: options.title ?? 'New Window',
-        resizable: options.resizable ?? true,
-        fullscreenable: options.fullscreenable ?? true,
+        show: customSetting.show ?? true,
+        alwaysOnTop: customSetting.alwaysOnTop ?? false,
+        skipTaskbar: customSetting.skipTaskbar ?? false,
+        width: customSetting.width || 1200,
+        height: customSetting.height || 720,
+        x: customSetting.x || 200,
+        y: customSetting.y || 200,
+        backgroundColor: customSetting.backgroundColor || '#ffffff',
+        icon: customSetting.icon ?? SOCIALBROWSER.var.core.icon,
+        frame: customSetting.frame ?? true,
+        title: customSetting.title ?? 'New Window',
+        resizable: customSetting.resizable ?? true,
+        fullscreenable: customSetting.fullscreenable ?? true,
         webPreferences: {
-          contextIsolation: options.contextIsolation ?? false,
-          enableRemoteModule: options.enableRemoteModule ?? true,
-          webaudio: !options.audioOFF,
+          contextIsolation: customSetting.contextIsolation ?? false,
+          enableRemoteModule: customSetting.enableRemoteModule ?? true,
+          webaudio: !customSetting.audioOFF,
           nativeWindowOpen: false,
-          nodeIntegration: options.node,
-          nodeIntegrationInWorker: options.node,
-          partition: options.partition,
-          sandbox: options.sandbox ?? false,
-          preload: options.preload || SOCIALBROWSER.files_dir + '/js/context-menu.js',
-          webSecurity: options.webSecurity ?? true,
-          allowRunningInsecureContent: options.allowRunningInsecureContent ?? false,
+          nodeIntegration: customSetting.node,
+          nodeIntegrationInWorker: customSetting.node,
+          partition: customSetting.partition,
+          sandbox: customSetting.sandbox ?? false,
+          preload: customSetting.preload || SOCIALBROWSER.files_dir + '/js/context-menu.js',
+          webSecurity: customSetting.webSecurity ?? true,
+          allowRunningInsecureContent: customSetting.allowRunningInsecureContent ?? false,
           plugins: true,
         },
       });
-      SOCIALBROWSER.ipc('[handle-session]', { ...options, name: options.partition });
-      SOCIALBROWSER.ipc('[add][window]', { win_id: win.id, options: { ...SOCIALBROWSER.customSetting, ...{ windowType: 'social-popup', win_id: win.id }, ...options } });
+      SOCIALBROWSER.ipc('[handle-session]', { ...customSetting, name: customSetting.partition });
+      SOCIALBROWSER.ipc('[add][window]', { win_id: win.id, customSetting: customSetting });
       SOCIALBROWSER.ipc('[assign][window]', {
         parent_id: SOCIALBROWSER.currentWindow.id,
         child_id: win.id,
       });
-      if (!options.x && !options.y) {
+      if (!customSetting.x && !customSetting.y) {
         win.center();
       }
 
       win.setMenuBarVisibility(false);
-      if (options.audioOFF) {
+      if (customSetting.audioOFF) {
         win.webContents.audioMuted = true;
       }
 
-      if (options.url) {
-        win.loadURL(SOCIALBROWSER.handleURL(options.url), {
-          referrer: options.referrer || document.location.href,
-          userAgent: options.user_agent || options.userAgent || SOCIALBROWSER.userAgent || navigator.userAgent,
+      if (customSetting.url) {
+        win.loadURL(SOCIALBROWSER.handleURL(customSetting.url), {
+          referrer: customSetting.referrer || document.location.href,
+          userAgent: customSetting.user_agent || customSetting.userAgent || SOCIALBROWSER.userAgent || navigator.userAgent,
         });
       }
 
@@ -480,7 +480,7 @@ module.exports = function (SOCIALBROWSER) {
         }
         SOCIALBROWSER.ipc('[set][window][setting]', {
           win_id: win.id,
-          options: options,
+          customSetting: customSetting,
           name: 'eval',
           code: code,
         });
@@ -493,16 +493,16 @@ module.exports = function (SOCIALBROWSER) {
       });
 
       win.once('ready-to-show', function () {
-        if (options.show && win && !win.isDestroyed()) {
+        if (customSetting.show && win && !win.isDestroyed()) {
           win.show();
-          if (options.maximize && win && !win.isDestroyed()) {
+          if (customSetting.maximize && win && !win.isDestroyed()) {
             win.maximize();
           }
         }
       });
       win.webContents.on('context-menu', (event, params) => {
         if (win && !win.isDestroyed()) {
-          if (options.allowMenu) {
+          if (customSetting.allowMenu) {
             win.webContents.send('context-menu', params);
           }
         }
@@ -511,10 +511,10 @@ module.exports = function (SOCIALBROWSER) {
       win.webContents.on('did-fail-load', (...callback) => {
         callback[0].preventDefault();
         if (callback[4]) {
-          if (SOCIALBROWSER.var.blocking.proxy_error_remove_proxy && options.proxy) {
+          if (SOCIALBROWSER.var.blocking.proxy_error_remove_proxy && customSetting.proxy) {
             SOCIALBROWSER.ws({
               type: '[remove-proxy]',
-              proxy: options.proxy,
+              proxy: customSetting.proxy,
             });
           }
           if (SOCIALBROWSER.var.blocking.proxy_error_close_window && SOCIALBROWSER.customSetting.windowType.contains('popup') && win && !win.isDestroyed()) {
@@ -539,7 +539,7 @@ module.exports = function (SOCIALBROWSER) {
           return false;
         }
 
-        SOCIALBROWSER.openWindow({ url: real_url });
+        SOCIALBROWSER.openWindow({ url: real_url, allowMenu: true });
       });
 
       win.onBeforeRequest = function (callback) {

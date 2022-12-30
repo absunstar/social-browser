@@ -7,80 +7,67 @@ module.exports = function (SOCIALBROWSER) {
 
   SOCIALBROWSER.var.session_list.sort((a, b) => (a.display > b.display ? 1 : -1));
 
+  require(SOCIALBROWSER.files_dir + '/js/context-menu/menu.js')(SOCIALBROWSER);
   require(SOCIALBROWSER.files_dir + '/js/context-menu/decode.js')(SOCIALBROWSER);
   require(SOCIALBROWSER.files_dir + '/js/context-menu/window.js')(SOCIALBROWSER);
-
+  require(SOCIALBROWSER.files_dir + '/js/context-menu/keyboard.js')(SOCIALBROWSER);
 
   require(SOCIALBROWSER.files_dir + '/js/context-menu/custom.js')(SOCIALBROWSER);
-
-  require(SOCIALBROWSER.files_dir + '/js/context-menu/adblock_hacking.js')(SOCIALBROWSER);
-
-  require(SOCIALBROWSER.files_dir + '/js/context-menu/keyboard.js')(SOCIALBROWSER);
 
   require(SOCIALBROWSER.files_dir + '/js/context-menu/doms.js')(SOCIALBROWSER);
 
   require(SOCIALBROWSER.files_dir + '/js/context-menu/nodes.js')(SOCIALBROWSER);
-
   require(SOCIALBROWSER.files_dir + '/js/context-menu/videos.js')(SOCIALBROWSER);
   require(SOCIALBROWSER.files_dir + '/js/context-menu/youtube.js')(SOCIALBROWSER);
   require(SOCIALBROWSER.files_dir + '/js/context-menu/facebook.com.js')(SOCIALBROWSER);
-  require(SOCIALBROWSER.files_dir + '/js/context-menu/menu.js')(SOCIALBROWSER);
 
   require(SOCIALBROWSER.files_dir + '/js/context-menu/safty.js')(SOCIALBROWSER);
-  require(SOCIALBROWSER.files_dir + '/js/context-menu/mongodb.js')(SOCIALBROWSER);
+  require(SOCIALBROWSER.files_dir + '/js/context-menu/adsManager.js')(SOCIALBROWSER);
 
   if (!SOCIALBROWSER.var.core.javaScriptOFF) {
     // Load Custom Scripts
-    SOCIALBROWSER.var.scripts_files.forEach((file) => {
-      require(file.path)(SOCIALBROWSER);
-    });
+    // SOCIALBROWSER.var.scripts_files.forEach((file) => {
+    //   require(file.path)(SOCIALBROWSER);
+    // });
 
-    // load user preload list
-    SOCIALBROWSER.var.preload_list.forEach((p) => {
-      try {
-        require(p.path.replace('{dir}', SOCIALBROWSER.dir))(SOCIALBROWSER);
-      } catch (error) {
-        SOCIALBROWSER.log(error);
-      }
-    });
-
-    document.addEventListener('DOMNodeInsertedIntoDocument', function (e) {
-      SOCIALBROWSER.callEvent('newDom', e.target);
-      if (e.target.querySelectorAll) {
-        let arr = e.target.querySelectorAll('*');
-        if (arr) {
-          arr.forEach((el) => {
-            SOCIALBROWSER.callEvent('newDom', el);
-          });
+    if (true) {
+      // load user preload list
+      SOCIALBROWSER.var.preload_list.forEach((p) => {
+        try {
+          require(p.path.replace('{dir}', SOCIALBROWSER.dir))(SOCIALBROWSER);
+        } catch (error) {
+          SOCIALBROWSER.log(error);
         }
-      }
-    });
-    document.addEventListener('DOMNodeInserted', function (e) {
-      SOCIALBROWSER.callEvent('newDom', e.target);
+      });
 
-      if (e.target.querySelectorAll) {
-        let arr = e.target.querySelectorAll('*');
-        if (arr) {
-          arr.forEach((el) => {
-            SOCIALBROWSER.callEvent('newDom', el);
-          });
+      document.addEventListener('DOMNodeInsertedIntoDocument', function (e) {
+        SOCIALBROWSER.callEvent('newDom', e.target);
+        if (e.target.querySelectorAll) {
+          let arr = e.target.querySelectorAll('*');
+          if (arr) {
+            arr.forEach((el) => {
+              SOCIALBROWSER.callEvent('newDom', el);
+            });
+          }
         }
-      }
-    });
+      });
+
+      document.addEventListener('DOMNodeInserted', function (e) {
+        SOCIALBROWSER.callEvent('newDom', e.target);
+
+        if (e.target.querySelectorAll) {
+          let arr = e.target.querySelectorAll('*');
+          if (arr) {
+            arr.forEach((el) => {
+              SOCIALBROWSER.callEvent('newDom', el);
+            });
+          }
+        }
+      });
+    }
   }
 
   require(SOCIALBROWSER.files_dir + '/js/context-menu/finger_print.js')(SOCIALBROWSER);
-  
-  SOCIALBROWSER.onLoad(() => {
-    document.querySelectorAll('*').forEach((el) => {
-      SOCIALBROWSER.callEvent('newDom', el);
-    });
-    // can download any lib
-    if (!SOCIALBROWSER.jqueryLoaded && SOCIALBROWSER.var.blocking.javascript.allow_jquery && !window.jQuery) {
-      SOCIALBROWSER.jqueryLoaded = true;
-      window.$ = window.jQuery = require(SOCIALBROWSER.files_dir + '/js/jquery.js');
-    }
-  });
 
   window.addEventListener('mousedown', (e) => {
     if (SOCIALBROWSER.customSetting.windowType == 'view') {
@@ -292,5 +279,18 @@ module.exports = function (SOCIALBROWSER) {
       SOCIALBROWSER.var.session_list.sort((a, b) => (a.display > b.display ? 1 : -1));
     }
     SOCIALBROWSER.callEvent('updated', { name: res.options.name });
+  });
+
+  SOCIALBROWSER.onLoad(() => {
+   
+
+    if (!SOCIALBROWSER.jqueryLoaded && SOCIALBROWSER.var.blocking.javascript.allow_jquery && !window.jQuery) {
+      SOCIALBROWSER.jqueryLoaded = true;
+      window.$ = window.jQuery = require(SOCIALBROWSER.files_dir + '/js/jquery.js');
+    }
+    return;
+    document.querySelectorAll('*').forEach((el) => {
+      SOCIALBROWSER.callEvent('newDom', el);
+    });
   });
 };

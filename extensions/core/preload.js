@@ -16,8 +16,4 @@ module.exports = function (SOCIALBROWSER) {
       }
     });
   }
-
-  if (document.location.href.contains('akwam')) {
-    SOCIALBROWSER.var.blocking.javascript.block_eval = true;
-  }
 };

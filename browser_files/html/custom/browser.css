@@ -103,6 +103,8 @@ video0 {
   border-top: 1px solid #bbb;
   border-right: 1px solid #bbb;
   direction: ltr;
+  max-height: 30px;
+  overflow: hidden;
 }
 #__targetUrl:hover{
   display: none;

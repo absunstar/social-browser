@@ -130,7 +130,10 @@ module.exports = function (child) {
       allowFixedWindow: false,
       allowSaveUserData: true,
       allowSaveUrls: true,
-      allowSocialBrowser : true,
+      allowSocialBrowser: true,
+      allowRedirect: true,
+      allowSelfRedirect: true,
+      allowSelfWindow: false,
       show: setting.show === true ? true : false,
       alwaysOnTop: false,
       skipTaskbar: false,
@@ -766,38 +769,41 @@ module.exports = function (child) {
     });
 
     win.webContents.on('will-redirect', (e, url) => {
-      child.log('will-redirect', url);
-      if (!child.isAllowURL(url)) {
-        e.preventDefault();
-        child.log('Block-redirect', url);
+      if (!win.customSetting.allowRedirect || !child.isAllowURL(url)) {
+        if (win.customSetting.allowSelfRedirect && (win.getURL().contains(child.url.parse(url).host) || url.contains(child.url.parse(win.getURL()).host))) {
+          return;
+        } else {
+          e.preventDefault();
+          child.log('Block-redirect', url);
+        }
+
         return;
       }
       let ok = false;
-      parent.var.overwrite.urls.forEach((data) => {
+      parent.var.overwrite.urls.forEach((_url) => {
         if (ok) {
           return;
         }
-        if (url.like(data.from)) {
-          if (data.time && new Date().getTime() - data.time < 3000) {
+        if (url.like(_url.from)) {
+          if (_url.time && new Date().getTime() - _url.time < 3000) {
             return;
           }
 
-          if (data.ignore && url.like(data.ignore)) {
+          if (_url.ignore && url.like(_url.ignore)) {
             return;
           }
 
           ok = true;
           e.preventDefault();
-          data.time = new Date().getTime();
+          _url.time = new Date().getTime();
           if (win && !win.isDestroyed()) {
-            win.loadURL(data.to);
+            win.loadURL(_url.to);
           }
         }
       });
     });
     win.webContents.on('will-navigate', (e, url) => {
-      child.log('will-navigate', url);
-      if (!child.isAllowURL(url)) {
+      if (!win.customSetting.allowRedirect || !child.isAllowURL(url)) {
         e.preventDefault();
         child.log('Block-navigate', url);
         return;
@@ -807,7 +813,7 @@ module.exports = function (child) {
     if (win.webContents.setWindowOpenHandler) {
       win.webContents.setWindowOpenHandler(({ url, frameName }) => {
         child.log('setWindowOpenHandler', url);
-        if (win.customSetting.oneWindow) {
+        if (win.customSetting.allowSelfWindow && win.customSetting.allowRedirect)  {
           win.loadURL(url);
           return { action: 'deny' };
         }

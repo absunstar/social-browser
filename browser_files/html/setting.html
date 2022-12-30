@@ -127,7 +127,7 @@
     </script>
   </head>
 
-  <body ng-controller="mainController" class="main-setting ">
+  <body ng-controller="mainController" class="main-setting">
     <div ng-show="busy" id="loading">
       <img src="/images/loading-white.gif" alt="" />
     </div>
@@ -159,17 +159,25 @@
               <a class="tab-link" onclick="site.showTabContent(event, '#passwords_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-key"></i> Passwords </a>
               <a class="tab-link" onclick="site.showTabContent(event, '#extension_list_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-list"></i> Extensions </a>
 
-              <a class="tab-link" id="safty_btn" onclick="site.showTabContent(event, '#safty_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-lock"></i> Children Safty Mode </a>
+              <a class="tab-link" id="safty_btn" onclick="site.showTabContent(event, '#safty_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                <i class="fa fa-lock"></i> Children Safty Mode
+              </a>
               <a class="tab-link" onclick="site.showTabContent(event, '#blocking_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-ban"></i> Blocking Engine</a>
-              <a class="tab-link" onclick="site.showTabContent(event, '#privacy_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-laptop"></i> Virtual PC [Browser FingerPrint]</a>
+              <a class="tab-link" onclick="site.showTabContent(event, '#privacy_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                <i class="fa fa-laptop"></i> Virtual PC [Browser FingerPrint]</a
+              >
               <a class="tab-link" onclick="site.showTabContent(event, '#javascript_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-code"></i> Java Script </a>
 
               <a class="tab-link" onclick="site.showTabContent(event, '#youtube_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fab fa-youtube"></i> Youtube </a>
               <a class="tab-link" onclick="site.showTabContent(event, '#user_data_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-file"></i> User Data </a>
 
-              <a class="tab-link" id="bookmarks_btn" onclick="site.showTabContent(event, '#bookmarks_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-bookmark"></i> Bookmarks </a>
+              <a class="tab-link" id="bookmarks_btn" onclick="site.showTabContent(event, '#bookmarks_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                <i class="fa fa-bookmark"></i> Bookmarks
+              </a>
               <a class="tab-link" onclick="site.showTabContent(event, '#urls_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-sitemap"></i> URLs </a>
-              <a ng-hide="true" class="tab-link" onclick="site.showTabContent(event, '#internet_speed_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-cloud-download"></i> Internet Speed </a>
+              <a ng-hide="true" class="tab-link" onclick="site.showTabContent(event, '#internet_speed_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                <i class="fa fa-cloud-download"></i> Internet Speed
+              </a>
               <a class="tab-link" onclick="site.showTabContent(event, '#proxy_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-desktop"></i> Proxy </a>
               <a class="tab-link" onclick="site.showTabContent(event, '#proxy_list_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-list"></i> Proxy List </a>
               <a class="tab-link" onclick="site.showTabContent(event, '#menu_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-bars"></i> Context Menu </a>
@@ -205,7 +213,15 @@
                       <i-control type="number" class="col3" label="Max Opend Tabs" ng-model="setting.core.max_tabs"></i-control>
                     </div>
 
-                    <i-list class="col3" ng-search="search.$user_agent" primary="name" items="setting.user_agent_list" ng-change="setting.core.user_agent = setting.core.selected_user_agent.url" ng-model="setting.core.selected_user_agent" label="Select User Agent"></i-list>
+                    <i-list
+                      class="col3"
+                      ng-search="search.$user_agent"
+                      primary="name"
+                      items="setting.user_agent_list"
+                      ng-change="setting.core.user_agent = setting.core.selected_user_agent.url"
+                      ng-model="setting.core.selected_user_agent"
+                      label="Select User Agent"
+                    ></i-list>
                     <i-control class="row" label="Custom User Agent" ng-model="setting.core.user_agent"></i-control>
                   </fieldset>
 
@@ -264,7 +280,10 @@
                         <i-checkbox class="" label="Allow External Popup" ng-model="setting.blocking.popup.allow_external"></i-checkbox>
                         <i-checkbox class="" label="Allow Internal Popup" ng-model="setting.blocking.popup.allow_internal"></i-checkbox>
                       </div>
-                      <div class="row"><i-button label="Popup White List" type="btn  " ng-click="showPopupIgnoreURLsModal()"></i-button> <i-button label="Popup Black List" type="btn  " ng-click="showPopupBlockURLsModal()"></i-button></div>
+                      <div class="row">
+                        <i-button label="Popup White List" type="btn  " ng-click="showPopupIgnoreURLsModal()"></i-button>
+                        <i-button label="Popup Black List" type="btn  " ng-click="showPopupBlockURLsModal()"></i-button>
+                      </div>
                     </div>
                   </fieldset>
 
@@ -273,16 +292,18 @@
 
                     <br />
                     <div class="row">
-                      <div class="col6">
-                        <i-checkbox class="row" label="Auto Skip Video Ads " ng-model="setting.blocking.core.skip_video_ads"> </i-checkbox>
-                        <i-checkbox class="row" label="Auto Remove External IFRAMES " ng-model="setting.blocking.core.remove_external_iframe"> </i-checkbox>
-                        <i-checkbox class="row" label="Auto Remove Empty IFRAMES " ng-model="setting.blocking.core.block_empty_iframe"> </i-checkbox>
-                        <i-checkbox class="" label="Enable Block Ads " ng-model="setting.blocking.core.block_ads"></i-checkbox>
-                        <i-checkbox class="" label="Enable Block HTML Tags " ng-model="setting.blocking.core.block_html_tags"></i-checkbox>
+                      <i-checkbox class="row" label="Auto Skip Video Ads " ng-model="setting.blocking.core.skip_video_ads"> </i-checkbox>
+                      <i-checkbox class="row" label="Auto Remove External IFRAMES " ng-model="setting.blocking.core.remove_external_iframe"> </i-checkbox>
+                      <i-checkbox class="row" label="Auto Remove Empty IFRAMES " ng-model="setting.blocking.core.block_empty_iframe"> </i-checkbox>
+                      <div class="row">
+                        <i-checkbox class="col4" label="Enable Block Ads Servers" ng-model="setting.blocking.core.block_ads_servers"></i-checkbox>
+                        <i-checkbox class="col4" label="Enable Block Ads Links" ng-model="setting.blocking.core.block_ads"></i-checkbox>
+                        <i-checkbox class="col4" label="Enable Block HTML Tags " ng-model="setting.blocking.core.block_html_tags"></i-checkbox>
                       </div>
+
                       <div class="row">
                         <i-button type="btn  " ng-click="showAdsModal()" label="Blocking Ads Links"></i-button>
-                        <i-button type="btn  " ng-click="showDomsModal()" label="Blocking Doms Selector"></i-button>
+                        <i-button type="btn  " ng-click="showDomsModal()" label="Blocking Block HTML Tags"></i-button>
                       </div>
                     </div>
                   </fieldset>
@@ -296,12 +317,28 @@
                     <i-checkbox class="row" label="Allow clipboard-read ( Request access to read from the clipboard )" ng-model="setting.blocking.permissions.allow_clipboard_read"></i-checkbox>
                     <i-checkbox class="row" label="Allow openExternal ( Request to open links in external applications ) " ng-model="setting.blocking.permissions.allow_openExternal"></i-checkbox>
                     <i-checkbox class="row" label="Allow geolocation ( Request access to user's current location ) " ng-model="setting.blocking.permissions.allow_geolocation"></i-checkbox>
-                    <i-checkbox class="row" label="Allow notifications ( Request notification creation and the ability to display them in the user's system tray ) " ng-model="setting.blocking.permissions.allow_notifications"></i-checkbox>
-                    <i-checkbox class="row" label="Allow Media ( Request access to media devices such as camera, microphone and speakers ) " ng-model="setting.blocking.permissions.allow_media"></i-checkbox>
+                    <i-checkbox
+                      class="row"
+                      label="Allow notifications ( Request notification creation and the ability to display them in the user's system tray ) "
+                      ng-model="setting.blocking.permissions.allow_notifications"
+                    ></i-checkbox>
+                    <i-checkbox
+                      class="row"
+                      label="Allow Media ( Request access to media devices such as camera, microphone and speakers ) "
+                      ng-model="setting.blocking.permissions.allow_media"
+                    ></i-checkbox>
                     <i-checkbox class="row" label="Allow midi ( Request MIDI access in the webmidi API ) " ng-model="setting.blocking.permissions.allow_midi"></i-checkbox>
-                    <i-checkbox class="row" label="Allow midiSysex ( Request the use of system exclusive messages in the webmidi API )" ng-model="setting.blocking.permissions.allow_midiSysex"></i-checkbox>
+                    <i-checkbox
+                      class="row"
+                      label="Allow midiSysex ( Request the use of system exclusive messages in the webmidi API )"
+                      ng-model="setting.blocking.permissions.allow_midiSysex"
+                    ></i-checkbox>
                     <i-checkbox class="row" label="Allow mediaKeySystem ( Request access to DRM protected content ) " ng-model="setting.blocking.permissions.allow_mediaKeySystem"></i-checkbox>
-                    <i-checkbox class="row" label="Allow pointerLock ( Request to directly interpret mouse movements as an input method ) " ng-model="setting.blocking.permissions.allow_pointerLock"></i-checkbox>
+                    <i-checkbox
+                      class="row"
+                      label="Allow pointerLock ( Request to directly interpret mouse movements as an input method ) "
+                      ng-model="setting.blocking.permissions.allow_pointerLock"
+                    ></i-checkbox>
                   </fieldset>
                 </div>
               </div>
@@ -323,7 +360,12 @@
                     <div class="row padding border2">
                       <div class="col3"><i-checkbox label="Hide Memory Size ( Custom )" ng-model="setting.blocking.privacy.vpc.hide_memory"></i-checkbox></div>
                       <div class="col6">
-                        <i-control type="number" ng-disabled="setting.blocking.privacy.vpc.hide_memory !== true" ng-model="setting.blocking.privacy.vpc.memory_count" label="Custom Memory Count"></i-control>
+                        <i-control
+                          type="number"
+                          ng-disabled="setting.blocking.privacy.vpc.hide_memory !== true"
+                          ng-model="setting.blocking.privacy.vpc.memory_count"
+                          label="Custom Memory Count"
+                        ></i-control>
                       </div>
                     </div>
 
@@ -337,7 +379,12 @@
                     <div class="row padding border2">
                       <div class="col3"><i-checkbox label="Hide Date TimeZone ( Custom )" ng-model="setting.blocking.privacy.vpc.mask_date"></i-checkbox></div>
                       <div class="col6">
-                        <i-control type="number" ng-disabled="setting.blocking.privacy.vpc.mask_date !== true" ng-model="setting.blocking.privacy.vpc.date_offset" label="Custom Date Offset"></i-control>
+                        <i-control
+                          type="number"
+                          ng-disabled="setting.blocking.privacy.vpc.mask_date !== true"
+                          ng-model="setting.blocking.privacy.vpc.date_offset"
+                          label="Custom Date Offset"
+                        ></i-control>
                       </div>
                     </div>
 
@@ -345,19 +392,53 @@
                       <div class="col3"><i-checkbox label="Hide Screen Size ( Custom )" ng-model="setting.blocking.privacy.vpc.hide_screen"></i-checkbox></div>
                       <div class="col6">
                         <i-control type="number" ng-disabled="setting.blocking.privacy.vpc.hide_screen !== true" ng-model="setting.blocking.privacy.vpc.screen_width" label="Screen Width"></i-control>
-                        <i-control type="number" ng-disabled="setting.blocking.privacy.vpc.hide_screen !== true" ng-model="setting.blocking.privacy.vpc.screen_height" label="Screen Height"></i-control>
-                        <i-control type="number" ng-disabled="setting.blocking.privacy.vpc.hide_screen !== true" ng-model="setting.blocking.privacy.vpc.screen_availWidth" label="Screen availbal Width"></i-control>
-                        <i-control type="number" ng-disabled="setting.blocking.privacy.vpc.hide_screen !== true" ng-model="setting.blocking.privacy.vpc.screen_availHeight" label="Screen availbal Height"></i-control>
+                        <i-control
+                          type="number"
+                          ng-disabled="setting.blocking.privacy.vpc.hide_screen !== true"
+                          ng-model="setting.blocking.privacy.vpc.screen_height"
+                          label="Screen Height"
+                        ></i-control>
+                        <i-control
+                          type="number"
+                          ng-disabled="setting.blocking.privacy.vpc.hide_screen !== true"
+                          ng-model="setting.blocking.privacy.vpc.screen_availWidth"
+                          label="Screen availbal Width"
+                        ></i-control>
+                        <i-control
+                          type="number"
+                          ng-disabled="setting.blocking.privacy.vpc.hide_screen !== true"
+                          ng-model="setting.blocking.privacy.vpc.screen_availHeight"
+                          label="Screen availbal Height"
+                        ></i-control>
                       </div>
                     </div>
 
                     <div class="row padding border2">
                       <div class="col3"><i-checkbox label="Hide Connection Information ( Custom )" ng-model="setting.blocking.privacy.vpc.hide_connection"></i-checkbox></div>
                       <div class="col6">
-                        <i-control ng-disabled="setting.blocking.privacy.vpc.hide_connection !== true" ng-model="setting.blocking.privacy.vpc.connection.effectiveType" label="Network Provider Type"></i-control>
-                        <i-control type="number" ng-disabled="setting.blocking.privacy.vpc.hide_connection !== true" ng-model="setting.blocking.privacy.vpc.connection.downlink" label="Download Speed (Mbit)"></i-control>
-                        <i-control type="number" ng-disabled="setting.blocking.privacy.vpc.hide_connection !== true" ng-model="setting.blocking.privacy.vpc.connection.downlinkMax" label="Download Max Speed (Mbit)"></i-control>
-                        <i-control type="number" ng-disabled="setting.blocking.privacy.vpc.hide_connection !== true" ng-model="setting.blocking.privacy.vpc.connection.rtt" label="Ping (low is fast)"></i-control>
+                        <i-control
+                          ng-disabled="setting.blocking.privacy.vpc.hide_connection !== true"
+                          ng-model="setting.blocking.privacy.vpc.connection.effectiveType"
+                          label="Network Provider Type"
+                        ></i-control>
+                        <i-control
+                          type="number"
+                          ng-disabled="setting.blocking.privacy.vpc.hide_connection !== true"
+                          ng-model="setting.blocking.privacy.vpc.connection.downlink"
+                          label="Download Speed (Mbit)"
+                        ></i-control>
+                        <i-control
+                          type="number"
+                          ng-disabled="setting.blocking.privacy.vpc.hide_connection !== true"
+                          ng-model="setting.blocking.privacy.vpc.connection.downlinkMax"
+                          label="Download Max Speed (Mbit)"
+                        ></i-control>
+                        <i-control
+                          type="number"
+                          ng-disabled="setting.blocking.privacy.vpc.hide_connection !== true"
+                          ng-model="setting.blocking.privacy.vpc.connection.rtt"
+                          label="Ping (low is fast)"
+                        ></i-control>
                         <i-control ng-disabled="setting.blocking.privacy.vpc.hide_connection !== true" ng-model="setting.blocking.privacy.vpc.connection.type" label="Network Source"></i-control>
                       </div>
                     </div>
@@ -407,7 +488,8 @@
                         <i-checkbox class="row" label="Double Click [ Auto Remove HTML Element ] " ng-model="setting.blocking.javascript.auto_remove_html"> </i-checkbox>
                       </div>
                       <div class="col6">
-                        <i-checkbox class="row" label="Custom Local Storage" ng-model="setting.blocking.javascript.custom_local_storage"> </i-checkbox><i-checkbox class="row" label="Custom Session Storage" ng-model="setting.blocking.javascript.custom_session_storage"> </i-checkbox>
+                        <i-checkbox class="row" label="Custom Local Storage" ng-model="setting.blocking.javascript.custom_local_storage"> </i-checkbox
+                        ><i-checkbox class="row" label="Custom Session Storage" ng-model="setting.blocking.javascript.custom_session_storage"> </i-checkbox>
                       </div>
                     </div>
                   </fieldset>
@@ -479,7 +561,15 @@
                     <i-checkbox class="col2" label="Enable" ng-model="setting.proxy.enabled"></i-checkbox>
                     <div class="row" ng-show="setting.proxy.enabled === true">
                       <div class="row padding">
-                        <i-list class="col6" items="setting.proxy_mode_list" display="name" label="Select Proxy Mode" ng-model="setting.proxy.selected_proxy_mode" ng-change="setting.proxy.mode = setting.proxy.selected_proxy_mode.value"> </i-list>
+                        <i-list
+                          class="col6"
+                          items="setting.proxy_mode_list"
+                          display="name"
+                          label="Select Proxy Mode"
+                          ng-model="setting.proxy.selected_proxy_mode"
+                          ng-change="setting.proxy.mode = setting.proxy.selected_proxy_mode.value"
+                        >
+                        </i-list>
                       </div>
 
                       <div class="row padding" ng-show="setting.proxy.mode == 'pac_script' ">
@@ -487,7 +577,16 @@
                       </div>
                       <div class="row padding" ng-show="setting.proxy.mode == 'fixed_servers' ">
                         <div class="row padding border">
-                          <i-list class="col4" ng-search="$selected_proxy" items="setting.proxy_list" display="url" label="Select Proxy" ng-model="setting.proxy.selected_proxy" ng-change="changeProxy()"> </i-list>
+                          <i-list
+                            class="col4"
+                            ng-search="$selected_proxy"
+                            items="setting.proxy_list"
+                            display="url"
+                            label="Select Proxy"
+                            ng-model="setting.proxy.selected_proxy"
+                            ng-change="changeProxy()"
+                          >
+                          </i-list>
                           <div class="row border">
                             <i-control class="row" label="Proxy URL" type="text" ng-model="setting.proxy.url"> </i-control>
                             <i-control class="col4" label="Proxy IP" type="text" ng-model="setting.proxy.ip"> </i-control>
@@ -636,7 +735,7 @@
                       <br />
                       <div class="row padding border">
                         <i-list ng-search="search.$user_agent" primary="name" items="setting.user_agent_list" ng-model="currentSession.user_agent" label="Select User Agent"></i-list>
-                        <i-control ng-disabled="true" class="row" label="Custom User Agent" ng-model="currentSession.user_agent.url"></i-control>
+                        <i-control class="row" label="Custom User Agent" ng-model="currentSession.user_agent.url"></i-control>
                       </div>
                       <br />
                       <br />
@@ -646,7 +745,15 @@
                         <i-checkbox class="col2" label="Enable" ng-model="currentSession.proxy.enabled"></i-checkbox>
                         <div ng-show="currentSession.proxy.enabled">
                           <div class="row">
-                            <i-list class="col7" items="setting.proxy_mode_list" display="name" label="Select Proxy Mode" ng-model="currentSession.selected_proxy_mode" ng-change="currentSession.proxy.mode = currentSession.selected_proxy_mode.value"> </i-list>
+                            <i-list
+                              class="col7"
+                              items="setting.proxy_mode_list"
+                              display="name"
+                              label="Select Proxy Mode"
+                              ng-model="currentSession.selected_proxy_mode"
+                              ng-change="currentSession.proxy.mode = currentSession.selected_proxy_mode.value"
+                            >
+                            </i-list>
                           </div>
 
                           <div class="row padding" ng-show="setting.proxy.mode == 'pac_script' ">
@@ -655,7 +762,16 @@
 
                           <div class="row" ng-show="currentSession.proxy.mode == 'fixed_servers' ">
                             <div class="row padding border">
-                              <i-list class="col4" ng-search="$selected_proxy" items="setting.proxy_list" display="url" label="Select Proxy" ng-model="currentSession.selected_proxy" ng-change="changeProxy(currentSession)"> </i-list>
+                              <i-list
+                                class="col4"
+                                ng-search="$selected_proxy"
+                                items="setting.proxy_list"
+                                display="url"
+                                label="Select Proxy"
+                                ng-model="currentSession.selected_proxy"
+                                ng-change="changeProxy(currentSession)"
+                              >
+                              </i-list>
                               <div class="row border">
                                 <i-control class="row" label="Proxy URL" type="text" ng-model="currentSession.proxy.url"> </i-control>
                                 <i-control class="col4" label="Proxy IP" type="text" ng-model="currentSession.proxy.ip"> </i-control>
@@ -690,7 +806,12 @@
                       <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border">
                         <div class="col6"><i-checkbox label="Hide Memory Count" ng-model="currentSession.privacy.vpc.hide_memory"></i-checkbox></div>
                         <div class="col6">
-                          <i-control type="number" ng-disabled="currentSession.privacy.vpc.hide_memory !== true" ng-model="currentSession.privacy.vpc.memory_count" label="Custom Memory Count"></i-control>
+                          <i-control
+                            type="number"
+                            ng-disabled="currentSession.privacy.vpc.hide_memory !== true"
+                            ng-model="currentSession.privacy.vpc.memory_count"
+                            label="Custom Memory Count"
+                          ></i-control>
                         </div>
                       </div>
 
@@ -713,18 +834,47 @@
                         <div class="col6">
                           <i-control type="number" ng-disabled="currentSession.privacy.vpc.hide_screen !== true" ng-model="currentSession.privacy.vpc.screen_width" label="Screen Width"></i-control>
                           <i-control type="number" ng-disabled="currentSession.privacy.vpc.hide_screen !== true" ng-model="currentSession.privacy.vpc.screen_height" label="Screen Height"></i-control>
-                          <i-control type="number" ng-disabled="currentSession.privacy.vpc.hide_screen !== true" ng-model="currentSession.privacy.vpc.screen_availWidth" label="Screen availbal Width"></i-control>
-                          <i-control type="number" ng-disabled="currentSession.privacy.vpc.hide_screen !== true" ng-model="currentSession.privacy.vpc.screen_availHeight" label="Screen availbal Height"></i-control>
+                          <i-control
+                            type="number"
+                            ng-disabled="currentSession.privacy.vpc.hide_screen !== true"
+                            ng-model="currentSession.privacy.vpc.screen_availWidth"
+                            label="Screen availbal Width"
+                          ></i-control>
+                          <i-control
+                            type="number"
+                            ng-disabled="currentSession.privacy.vpc.hide_screen !== true"
+                            ng-model="currentSession.privacy.vpc.screen_availHeight"
+                            label="Screen availbal Height"
+                          ></i-control>
                         </div>
                       </div>
 
                       <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border">
                         <div class="col6"><i-checkbox label="Hide Connection Information" ng-model="currentSession.privacy.vpc.hide_connection"></i-checkbox></div>
                         <div class="col6">
-                          <i-control ng-disabled="currentSession.privacy.vpc.hide_connection !== true" ng-model="currentSession.privacy.vpc.connection.effectiveType" label="Network Provider Type"></i-control>
-                          <i-control type="number" ng-disabled="currentSession.privacy.vpc.hide_connection !== true" ng-model="currentSession.privacy.vpc.connection.downlink" label="Download Speed (Mbit)"></i-control>
-                          <i-control type="number" ng-disabled="currentSession.privacy.vpc.hide_connection !== true" ng-model="currentSession.privacy.vpc.connection.downlinkMax" label="Download Max Speed (Mbit)"></i-control>
-                          <i-control type="number" ng-disabled="currentSession.privacy.vpc.hide_connection !== true" ng-model="currentSession.privacy.vpc.connection.rtt" label="Ping (low is fast)"></i-control>
+                          <i-control
+                            ng-disabled="currentSession.privacy.vpc.hide_connection !== true"
+                            ng-model="currentSession.privacy.vpc.connection.effectiveType"
+                            label="Network Provider Type"
+                          ></i-control>
+                          <i-control
+                            type="number"
+                            ng-disabled="currentSession.privacy.vpc.hide_connection !== true"
+                            ng-model="currentSession.privacy.vpc.connection.downlink"
+                            label="Download Speed (Mbit)"
+                          ></i-control>
+                          <i-control
+                            type="number"
+                            ng-disabled="currentSession.privacy.vpc.hide_connection !== true"
+                            ng-model="currentSession.privacy.vpc.connection.downlinkMax"
+                            label="Download Max Speed (Mbit)"
+                          ></i-control>
+                          <i-control
+                            type="number"
+                            ng-disabled="currentSession.privacy.vpc.hide_connection !== true"
+                            ng-model="currentSession.privacy.vpc.connection.rtt"
+                            label="Ping (low is fast)"
+                          ></i-control>
                           <i-control ng-disabled="currentSession.privacy.vpc.hide_connection !== true" ng-model="currentSession.privacy.vpc.connection.type" label="Network Source"></i-control>
                         </div>
                       </div>

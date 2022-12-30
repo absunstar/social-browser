@@ -381,96 +381,68 @@ module.exports = function (child) {
           return;
         }
 
-        let end = false;
-        child.parent.var.blocking.white_list.forEach((s) => {
-          if (end) {
-            return;
-          }
-          if (s.url.length > 2 && url.like(s.url)) {
+        if ((info = child.getOverwriteInfo(url))) {
+          if (info.overwrite) {
             callback({
               cancel: false,
+              redirectURL: info.new_url,
             });
-            end = true;
             return;
           }
-        });
-
-        if (end) {
-          return;
         }
 
-        let info = child.get_overwrite_info(url);
-        if (info.overwrite) {
+        if (child.parent.var.blocking.white_list.some((item) => item.url.length > 2 && url.like(item.url))) {
           callback({
             cancel: false,
-            redirectURL: info.new_url,
           });
           return;
         }
 
-        if (child.parent.var.blocking.black_list) {
-          child.parent.var.blocking.black_list.forEach((s) => {
-            if (url.like(s.url)) {
-              end = true;
-            }
+        if (child.parent.var.blocking.black_list.some((item) => url.like(item.url))) {
+          callback({
+            cancel: false,
+            redirectURL: `browser://block-site?url=${url}&msg=Site in Black List From Setting`,
           });
-
-          if (end) {
-            callback({
-              cancel: false,
-              redirectURL: `http://127.0.0.1:60080/block-site?url=${url}&msg=Site in Black List From Setting`,
-            });
-
-            return;
-          }
+          return;
         }
 
-        if (child.parent.var.blocking.allow_safty_mode) {
-          child.parent.var.blocking.un_safe_list.forEach((s) => {
-            if (url.like(s.url)) {
-              end = true;
-            }
+        if (child.parent.var.blocking.allow_safty_mode && child.parent.var.blocking.un_safe_list.some((item) => url.like(item.url))) {
+          callback({
+            cancel: false,
+            redirectURL: `browser://block-site?url=${url}&msg=Not Safe Site From Setting`,
           });
 
-          if (end) {
-            callback({
-              cancel: false,
-              redirectURL: `http://127.0.0.1:60080/block-site?url=${url}&msg=Not Safe Site From Setting`,
-            });
-
-            return;
-          }
+          return;
         }
 
-        if (child.parent.var.blocking.core.block_ads) {
-          if (url.like(child.parent.var.$ad_string)) {
-            end = true;
-          }
-
-          if (end) {
+        if (child.parent.var.blocking.core.block_ads_servers) {
+          if (child.adList.includes(child.url.parse(url).host)) {
             if (url.like('*.js*|*/js*')) {
-              if (url.like('https*')) {
-                callback({
-                  cancel: false,
-                  redirectURL: `https://127.0.0.1:60043/js/fake.js`,
-                });
-              } else {
-                callback({
-                  cancel: false,
-                  redirectURL: `http://127.0.0.1:60080/js/fake.js`,
-                });
-              }
+              callback({
+                cancel: false,
+                redirectURL: `browser://js/fake.js`,
+              });
             } else {
               callback({
                 cancel: true,
               });
             }
-
+            return;
+          } else if (child.parent.var.blocking.core.block_ads && url.like(child.parent.var.$ad_string)) {
+            if (url.like('*.js*|*/js*')) {
+              callback({
+                cancel: false,
+                redirectURL: `browser://js/fake.js`,
+              });
+            } else {
+              callback({
+                cancel: true,
+              });
+            }
             return;
           }
         }
 
-        // continue loading url
         callback({
           cancel: false,
         });
@@ -801,14 +773,13 @@ module.exports = function (child) {
 
         details.responseHeaders['Cross-Origin-Resource-Policy'.toLowerCase()] = 'cross-origin';
 
-        child.parent.var.overwrite.urls.forEach((data) => {
-          if (url.like(data.to)) {
-            if (data.rediect_from) {
-              // details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = [child.parent.url.parse(data.rediect_from, false).host];
-              details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = ['*'];
-            }
+        if ((info = child.getOverwriteInfo(url))) {
+          if (url.like(info.to) && info.rediect_from) {
+            // details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = [child.parent.url.parse(data.rediect_from, false).host];
+
+            details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = ['*'];
           }
-        });
+        }
 
         callback({
           cancel: false,

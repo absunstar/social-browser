@@ -1,5 +1,3 @@
-const { parse } = require('path');
-
 [('SIGTERM', 'SIGHUP', 'SIGINT', 'SIGBREAK')].forEach((signal) => {
   process.on(signal, () => {
     process.exit(1);
@@ -73,6 +71,7 @@ child.electron.nativeTheme.themeSource = 'light';
 
 require(child.path.join(child.dir, 'child', 'fn'))(child);
 require(child.path.join(child.dir, 'child', 'windows'))(child);
+require(child.path.join(child.dir, 'child', 'adsManager'))(child);
 require(child.path.join(child.dir, 'child', 'ipc'))(child);
 require(child.path.join(child.dir, 'child', 'session'))(child);
 require(child.path.join(child.dir, 'child', 'plugins'))(child);

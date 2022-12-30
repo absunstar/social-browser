@@ -53,6 +53,14 @@ module.exports = function init(parent) {
     path: parent.files_dir,
   });
   parent.api.onGET({
+    name: '/js',
+    path: parent.files_dir + '/js2',
+  });
+  parent.api.onALL({
+    name: '/txt',
+    path: parent.files_dir + '/txt',
+  });
+  parent.api.onGET({
     name: '/chat',
     path: parent.files_dir + '/html/chat.html',
     parser: 'html css js',

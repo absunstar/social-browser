@@ -114,11 +114,11 @@ module.exports = function init(child) {
   child.electron.ipcMain.on('[add][window]', (e, data) => {
     let win = child.windowList.find((w) => w.id == data.win_id);
     if (win) {
-      win.customSetting = { ...win.customSetting, ...data.options };
+      win.customSetting = { ...win.customSetting, ...data.customSetting };
     } else {
       child.windowList.push({
         id: data.win_id,
-        customSetting: data.options,
+        customSetting: data.customSetting,
       });
     }
   });
@@ -130,13 +130,13 @@ module.exports = function init(child) {
       w.customSetting.windowSetting.push(data);
     } else {
       let id = data.win_id;
-      let options = data.options;
+      let customSetting = data.customSetting;
       delete data.win_id;
-      delete data.options;
+      delete data.customSetting;
 
       child.windowList.push({
         id: id,
-        customSetting: { ...options, windowSetting: [data] },
+        customSetting: { ...customSetting, windowSetting: [data] },
       });
     }
   });

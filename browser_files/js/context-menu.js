@@ -11,6 +11,8 @@
   }
 
   var SOCIALBROWSER = {
+    module: require('module'),
+    path: require('path'),
     random: function (min, max) {
       max = max + 1;
       return Math.floor(Math.random() * (max - min) + min);
@@ -190,6 +192,36 @@
     return false;
   };
 
+  SOCIALBROWSER.requireFromString = function (code, filename, opts) {
+    if (typeof code !== 'string') {
+      console.log('code must be a string, not ' + typeof code);
+    }
+
+    if (typeof filename === 'object') {
+      opts = filename;
+      filename = undefined;
+    }
+
+    opts = opts || {};
+    filename = filename || '';
+
+    opts.appendPaths = opts.appendPaths || [];
+    opts.prependPaths = opts.prependPaths || [];
+
+    var paths = SOCIALBROWSER.module._nodeModulePaths(path.dirname(filename));
+
+    var parent = module.main;
+    var m = new SOCIALBROWSER.module(filename, parent);
+    m.filename = filename;
+    m.paths = [].concat(opts.prependPaths).concat(paths).concat(opts.appendPaths);
+    m._compile(code, filename);
+
+    var exports = m.exports;
+    parent && parent.children && parent.children.splice(parent.children.indexOf(m), 1);
+
+    return exports;
+  };
+
   SOCIALBROWSER.init2 = function () {
     SOCIALBROWSER.is_main_data = true;
     SOCIALBROWSER.child_id = SOCIALBROWSER.browserData.child_id;
@@ -211,6 +243,7 @@
       SOCIALBROWSER.session.privacy.enable_virtual_pc = true;
       SOCIALBROWSER.session.privacy.vpc = SOCIALBROWSER.var.blocking.privacy.vpc;
     }
+
     require(SOCIALBROWSER.files_dir + '/js/context-menu/init.js')(SOCIALBROWSER);
     require(SOCIALBROWSER.files_dir + '/js/context-menu/event.js')(SOCIALBROWSER);
     require(SOCIALBROWSER.files_dir + '/js/context-menu/fn.js')(SOCIALBROWSER);
@@ -224,6 +257,7 @@
       SOCIALBROWSER.session.privacy.vpc = SOCIALBROWSER.get('vpc') || SOCIALBROWSER.generateVPC();
       SOCIALBROWSER.set('vpc', SOCIALBROWSER.session.privacy.vpc);
     }
+   
     require(SOCIALBROWSER.files_dir + '/js/context-menu/load.js')(SOCIALBROWSER);
     if (!SOCIALBROWSER.customSetting.allowSocialBrowser) {
       delete window.SOCIALBROWSER;
@@ -231,7 +265,7 @@
   };
 
   SOCIALBROWSER.init = function () {
-    if (true || SOCIALBROWSER.isIframe()) {
+    if (SOCIALBROWSER.isIframe()) {
       SOCIALBROWSER.invoke('[browser][data]', {
         hostname: SOCIALBROWSER.hostname,
         url: SOCIALBROWSER.href,
@@ -240,7 +274,7 @@
         partition: SOCIALBROWSER.partition,
       }).then((data) => {
         SOCIALBROWSER.browserData = data;
-        SOCIALBROWSER.init2();
+         SOCIALBROWSER.init2();
       });
     } else {
       SOCIALBROWSER.browserData = SOCIALBROWSER.ipcSync('[browser][data]', {

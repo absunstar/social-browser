@@ -35,10 +35,15 @@ module.exports = function (SOCIALBROWSER) {
     SOCIALBROWSER.__define(navigator, 'deviceMemory', SOCIALBROWSER.session.privacy.vpc.memory_count);
   }
   if (SOCIALBROWSER.session.privacy.vpc.hide_screen) {
+    SOCIALBROWSER.__define(window, 'innerWidth', SOCIALBROWSER.session.privacy.vpc.screen_width);
+    SOCIALBROWSER.__define(window, 'innerHeight', SOCIALBROWSER.session.privacy.vpc.screen_height);
+    SOCIALBROWSER.__define(window, 'outerWidth', SOCIALBROWSER.session.privacy.vpc.screen_width);
+    SOCIALBROWSER.__define(window, 'outerHeight', SOCIALBROWSER.session.privacy.vpc.screen_height);
     SOCIALBROWSER.__define(screen, 'width', SOCIALBROWSER.session.privacy.vpc.screen_width);
     SOCIALBROWSER.__define(screen, 'height', SOCIALBROWSER.session.privacy.vpc.screen_height);
     SOCIALBROWSER.__define(screen, 'availWidth', SOCIALBROWSER.session.privacy.vpc.screen_availWidth);
     SOCIALBROWSER.__define(screen, 'availHeight', SOCIALBROWSER.session.privacy.vpc.screen_availHeight);
+    SOCIALBROWSER.screenHidden = true;
   }
   if (SOCIALBROWSER.session.privacy.vpc.hide_lang) {
     SOCIALBROWSER.session.privacy.vpc.languages = SOCIALBROWSER.session.privacy.vpc.languages || SOCIALBROWSER.languageList[0] || navigator.languages;

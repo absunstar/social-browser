@@ -898,6 +898,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     SOCIALBROWSER.openWindow({
       url: url,
       partition: 'x-ghost_' + Date.now(),
+      allowMenu : true
     });
   };
   $scope.copy = function (text) {
