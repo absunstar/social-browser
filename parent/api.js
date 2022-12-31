@@ -241,7 +241,6 @@ module.exports = function init(parent) {
         marginType: 'none',
       };
     }
-    // req.data.view = true
 
     if (req.data.view) {
       print_options.silent = false;
@@ -263,81 +262,22 @@ module.exports = function init(parent) {
 
     parent.content_list.push(content);
 
-    if (true) {
-      browser.createChildProcess({
-        url: 'http://127.0.0.1:60080/data-content/last',
-        windowType: 'popup',
-        partition: 'persist:print',
-        preload : parent.dir + '/printing/preload.js'
-      });
-
-      res.json({
-        done: true,
-        data: content,
-      });
-      
-      return
-      let printing = parent.run(['--index=' + content.index, '--dir=' + parent.dir, parent.dir + '/printing/index.js']);
-      printing.stdout.on('data', function (data) {
-        parent.log(` [ printing ${printing.pid} ] Log \n      ${data}`);
-      });
-
-      printing.stderr.on('data', (data) => {
-        parent.log(` [ printing ${printing.pid} ] Error \n    ${data}`);
-      });
-
-      printing.on('error', (err) => {
-        parent.log(` [ printing ${printing.pid} ] Error \n ${err}`);
-      });
-      printing.on('disconnect', (err) => {
-        parent.log(` [ printing ${printing.pid} ] disconnect`);
-      });
-      printing.on('spawn', (err) => {
-        parent.log(` [ printing ${printing.pid} ] spawn`);
-      });
-      printing.on('message', (msg) => {
-        parent.log(msg);
-      });
-      printing.on('close', (code, signal) => {
-        parent.log(` [printing ${printing.pid} ] close with code ( ${code} ) and signal ( ${signal} )`);
-      });
-    } else {
-      let w = new parent.electron.BrowserWindow({
-        show: false,
-        title: 'Print Viewer',
-        icon: parent.icons[process.platform],
-        width: 850,
-        height: 720,
-        alwaysOnTop: true,
-        webPreferences: {
-          preload: parent.dir + '/printing/preload.js',
-          javascript: true,
-          enableRemoteModule: true,
-          contextIsolation: false,
-          nodeIntegration: false,
-          nodeIntegrationInSubFrames: false,
-          nodeIntegrationInWorker: false,
-          experimentalFeatures: true,
-          sandbox: false,
-          webSecurity: false,
-          allowRunningInsecureContent: true,
-          plugins: true,
-        },
-      });
-      parent.remoteMain.enable(w.webContents);
-      w.setMenuBarVisibility(false);
-      w.loadURL('http://127.0.0.1:60080/data-content/last');
-    }
+    parent.createChildProcess({
+      url: 'http://127.0.0.1:60080/print-content/' + content.id,
+      windowType: 'popup',
+      show: false,
+      partition: 'persist:print',
+      preload: parent.dir + '/printing/preload.js',
+      allowAudio: false,
+    });
 
     res.json({
       done: true,
-      data: content,
     });
   });
 
-  parent.api.onGET('/data-content', (req, res) => {
-    let pdf = parent.content_list[req.query.index];
-    if (pdf) {
+  parent.api.onGET('/print-content/:id', (req, res) => {
+    if ((pdf = parent.content_list.find((p) => p.id == req.params.id))) {
       if (pdf.type == 'html') {
         res.set('Content-Type', 'text/html; charset=utf-8');
         res.end(pdf.data, 'utf8');
@@ -347,16 +287,14 @@ module.exports = function init(parent) {
       }
     } else {
       res.json({
-        error: 'pdf id not exists',
-        query: req.query,
-        index: req.query.index,
+        error: 'pdf id not exists : ' + req.params.id,
         length: parent.content_list.length,
       });
     }
   });
 
-  parent.api.onPOST('/data-content/details', (req, res) => {
-    let content = parent.content_list[req.query.index] || {};
+  parent.api.onPOST('/data-content/:id', (req, res) => {
+    let content = parent.content_list.find((p) => p.id == req.params.id) || {};
     res.json({
       options: content.options,
     });

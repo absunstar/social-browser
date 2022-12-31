@@ -335,6 +335,16 @@ module.exports = function (child) {
         details.requestHeaders = details.requestHeaders || {};
 
         let url = details.url.toLowerCase();
+
+        if ((info = child.getOverwriteInfo(url))) {
+          if (info.overwrite) {
+            callback({
+              cancel: false,
+              redirectURL: info.new_url,
+            });
+            return;
+          }
+        }
         let source_url = '';
 
         if (!source_url) {
@@ -379,16 +389,6 @@ module.exports = function (child) {
             cancel: true,
           });
           return;
-        }
-
-        if ((info = child.getOverwriteInfo(url))) {
-          if (info.overwrite) {
-            callback({
-              cancel: false,
-              redirectURL: info.new_url,
-            });
-            return;
-          }
         }
 
         if (child.parent.var.blocking.white_list.some((item) => item.url.length > 2 && url.like(item.url))) {

@@ -1,7 +1,7 @@
 module.exports = function (SOCIALBROWSER) {
-
   window.open = function (url, _name, _specs, _replace_in_history) {
     if (url.like('javascript:*|*.svg|*.png|*.ico|*.gif')) {
+      console.log('unSupported URL : ' + url);
       return;
     }
 
@@ -64,6 +64,7 @@ module.exports = function (SOCIALBROWSER) {
       SOCIALBROWSER.copy(url);
     }
     if (SOCIALBROWSER.blockPopup || !SOCIALBROWSER.customSetting.allowNewWindows) {
+      SOCIALBROWSER.log('block Popup : ' + url);
       return child_window;
     }
     if (SOCIALBROWSER.customSetting.allowSelfWindow) {
@@ -71,10 +72,10 @@ module.exports = function (SOCIALBROWSER) {
       return child_window;
     }
 
-    if (SOCIALBROWSER.windowOpenList.some((u) => u == url)) {
-      return child_window;
-    }
-    SOCIALBROWSER.windowOpenList.push(url);
+    // if (SOCIALBROWSER.windowOpenList.some((u) => u == url)) {
+    //   return child_window;
+    // }
+    // SOCIALBROWSER.windowOpenList.push(url);
 
     if (url.like('https://www.youtube.com/watch*')) {
       SOCIALBROWSER.ipc('[open new popup]', {
@@ -88,6 +89,7 @@ module.exports = function (SOCIALBROWSER) {
 
     if (!SOCIALBROWSER.var.core.javaScriptOFF) {
       if (!SOCIALBROWSER.isAllowURL(url)) {
+        SOCIALBROWSER.log('Not Allow URL : ' + url);
         return child_window;
       }
       let allow = true;
@@ -98,6 +100,7 @@ module.exports = function (SOCIALBROWSER) {
         }
       });
       if (!allow) {
+        SOCIALBROWSER.log('black list : ' + url);
         return child_window;
       }
       allow = false;
@@ -117,56 +120,61 @@ module.exports = function (SOCIALBROWSER) {
       }
 
       if (!allow) {
+        SOCIALBROWSER.log('Not Allow : ' + url);
         return child_window;
       }
     }
     _specs = _specs || {};
-    let win = new SOCIALBROWSER.openWindow({
-      width: _specs.width,
-      height: _specs.height,
-      url: url,
-      windowType: 'client-popup',
-    });
-
-    child_window.postMessage = function (...args) {
-      SOCIALBROWSER.call('window.message', { child_id: win.id, data: args[0], origin: args[1] || '*', transfer: args[2] });
-    };
-
-    win.on('close', () => {
-      win.destroy();
-    });
-
-    win.on('closed', (e) => {
-      child_window.postMessage = () => {};
-      child_window.eval = () => {};
-      child_window.closed = true;
-    });
-
-    win.webContents.once('dom-ready', () => {
-      child_window.eval = function (code, userGesture = true) {
-        code = `window.eval(${code})`;
-        win.webContents
-          .executeJavaScript(code, userGesture)
-          .then((result) => {
-            SOCIALBROWSER.log(result);
-          })
-          .catch((err) => {
-            SOCIALBROWSER.log(err);
-          });
+    if (
+      (win = new SOCIALBROWSER.openWindow({
+        width: _specs.width,
+        height: _specs.height,
+        url: url,
+        show: true,
+        windowType: 'client-popup',
+      }))
+    ) {
+      child_window.postMessage = function (...args) {
+        SOCIALBROWSER.call('window.message', { child_id: win.id, data: args[0], origin: args[1] || '*', transfer: args[2] });
       };
-    });
 
-    child_window.close = function () {
-      if (win && !win.isDestroyed()) {
-        win.close();
-        setTimeout(() => {
-          if (win && !win.isDestroyed()) {
-            win.destroy();
-          }
-        }, 1000);
-      }
-    };
+      win.on('close', () => {
+        win.destroy();
+      });
 
+      win.on('closed', (e) => {
+        child_window.postMessage = () => {};
+        child_window.eval = () => {};
+        child_window.closed = true;
+      });
+
+      win.webContents.once('dom-ready', () => {
+        child_window.eval = function (code, userGesture = true) {
+          code = `window.eval(${code})`;
+          win.webContents
+            .executeJavaScript(code, userGesture)
+            .then((result) => {
+              SOCIALBROWSER.log(result);
+            })
+            .catch((err) => {
+              SOCIALBROWSER.log(err);
+            });
+        };
+      });
+
+      child_window.close = function () {
+        if (win && !win.isDestroyed()) {
+          win.close();
+          setTimeout(() => {
+            if (win && !win.isDestroyed()) {
+              win.destroy();
+            }
+          }, 1000);
+        }
+      };
+
+      child_window.win = win;
+    }
     return child_window;
   };
 
@@ -239,8 +247,7 @@ module.exports = function (SOCIALBROWSER) {
     };
   }
 
-  window.print0 = window.print;
-  window.print = function (options) {
+  window.print2 = function (options) {
     document.querySelectorAll('[href]').forEach((el) => {
       el.href = SOCIALBROWSER.handle_url(el.href);
     });
@@ -256,21 +263,21 @@ module.exports = function (SOCIALBROWSER) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
+        ...options,
         name: 'print',
         win_id: SOCIALBROWSER.currentWindow.id,
         type: 'html',
         html: document.querySelector('html').outerHTML,
-        options: options,
         origin: document.location.origin,
         url: document.location.href,
       }),
     })
       .then((res) => res.json())
       .then((data) => {
-        //  SOCIALBROWSER.log(data);
+        SOCIALBROWSER.log(data);
       })
       .catch((err) => {
-        //  SOCIALBROWSER.log(err);
+        SOCIALBROWSER.log(err);
       });
   };
 

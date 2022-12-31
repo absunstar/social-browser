@@ -156,14 +156,7 @@ module.exports = function (parent) {
         return;
       }
 
-      let info = parent.get_overwrite_info(url);
-      if (info.overwrite) {
-        callback({
-          cancel: false,
-          redirectURL: info.new_url,
-        });
-        return;
-      }
+      
 
       let end = false;
       parent.var.blocking.white_list.forEach((s) => {
@@ -460,14 +453,7 @@ module.exports = function (parent) {
       }
       // details.responseHeaders['Cross-Origin-Resource-Policy'.toLowerCase()] = 'cross-origin';
 
-      parent.var.overwrite.urls.forEach((data) => {
-        if (details.url.like(data.to)) {
-          if (data.rediect_from) {
-            // details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = [parent.var.url.parse(data.rediect_from, false).host];
-            details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = ['*'];
-          }
-        }
-      });
+      p
 
       callback({
         cancel: false,

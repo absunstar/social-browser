@@ -4,14 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <link rel="stylesheet" href="http://127.0.0.1:60080/x-css/site.css" />
+    <link rel="stylesheet" href="http://127.0.0.1:60080/x-css/bootstrap-5-support.css" />
     <title>Setting</title>
     <style>
       :root {
         --theme-color: #2196f3;
-        --input-color: #2196f3;
-        --input-font-size: 18px;
-        --input-font-wight: bold;
+        --form-color: #2196f3;
+        --input-color: #795548;
+        --input-font-size: 14px;
+        --input-font-wight: normal;
         --fieldset-border: 1px solid #bbb;
         --modal-color: #000000;
         --modal-background: #00000026;
@@ -30,6 +31,7 @@
         --tabs-header-width: 25%;
         --tabs-content-width: 75%;
         --table-hover-background-color: #4caf5070;
+        --tabs-header-link-border-bottom: 1px solid #000;
       }
       html,
       body {
@@ -99,8 +101,8 @@
         text-align: left !important;
       }
       .row.border2 {
-        border: 1px solid #118011;
-        box-shadow: 1px 1px 1px 2px #118011;
+        border: 1px solid #bbb;
+        margin: 5px !important;
       }
       .table input {
         font-size: 16px !important;
@@ -118,7 +120,7 @@
         color: #6a6969;
       }
     </style>
-    <script src="http://127.0.0.1:60080/x-js/all.js"></script>
+    <script src="http://127.0.0.1:60080/x-js/bootstrap-5-support.js"></script>
     <script src="http://127.0.0.1:60080/js/setting.js"></script>
     <script>
       SOCIALBROWSER.onLoad(() => {
@@ -133,24 +135,18 @@
     </div>
 
     <div ng-hide="setting_busy" class="content loaded">
-      <br />
-      <br />
       <h1 class="text-center bold"><i class="fa fa-cog"></i> Browser Setting</h1>
-      <br />
-      <br />
+
       <div class="">
         <h2 class="red" id="settingError"></h2>
 
-        <form ng-show="knowPassword === false">
+        <div class="container" ng-show="knowPassword === false">
           <div class="row">
-            <div class="control">
-              <label> Write Password </label>
-              <input type="password" ng-model="password" />
-            </div>
+            <i-control ng-model="password" label="Write Password"></i-control>
           </div>
-        </form>
+        </div>
 
-        <form ng-show="knowPassword === true" class="form">
+        <div ng-show="knowPassword === true" class="container">
           <div class="tabs">
             <div class="tabs-header">
               <a class="tab-link" onclick="site.showTabContent(event, '#basic_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-info-circle"></i> Basic </a>
@@ -190,18 +186,18 @@
                 <div class="row">
                   <div class="row padding">
                     <div class="row">
-                      <h2>Browser Version <span class="red bold"> {{setting.core.version}} </span></h2>
+                      <h3>Browser Version <span class="red bold"> {{setting.core.version}} </span></h3>
                     </div>
                     <div class="row">
-                      <h2>Browser ID <span class="bold blue"> {{setting.core.id}} </span> <i-button label="copy" ng-click="copy(setting.core.id)"></i-button></h2>
+                      <h4>Browser ID <span class="bold blue"> {{setting.core.id}} </span> <i-button label="copy" ng-click="copy(setting.core.id)"></i-button></h4>
                     </div>
                   </div>
 
                   <div class="row padding">
                     <i-checkbox class="" label="I'm Using Social Browser" ng-model="setting.blocking.core.send_browser_id"></i-checkbox>
-                    <i-checkbox class="" label="Disabled New Browser Engine " ng-model="setting.core.enginOFF"></i-checkbox>
-                    <i-checkbox class="" label="Disabled New JavaScript Engine " ng-model="setting.core.javaScriptOFF"></i-checkbox>
-                    <i-checkbox class="hidden" label="Disabled New Share Sessions Engine " ng-model="setting.core.cookiesOFF"></i-checkbox>
+                    <i-checkbox class="" label="Disabled ALL Browser Engines " ng-model="setting.core.enginOFF"></i-checkbox>
+                    <i-checkbox class="" label="Disabled ALL JavaScript Engines " ng-model="setting.core.javaScriptOFF"></i-checkbox>
+                    <i-checkbox class="hidden" label="Disabled ALL Sessions Engine " ng-model="setting.core.cookiesOFF"></i-checkbox>
                   </div>
 
                   <fieldset>
@@ -275,11 +271,11 @@
                     <legend>Popup window</legend>
 
                     <br />
+
                     <div class="row">
-                      <div class="row">
-                        <i-checkbox class="" label="Allow External Popup" ng-model="setting.blocking.popup.allow_external"></i-checkbox>
-                        <i-checkbox class="" label="Allow Internal Popup" ng-model="setting.blocking.popup.allow_internal"></i-checkbox>
-                      </div>
+                      <i-checkbox class="" label="Allow External Popup" ng-model="setting.blocking.popup.allow_external"></i-checkbox>
+                      <i-checkbox class="" label="Allow Internal Popup" ng-model="setting.blocking.popup.allow_internal"></i-checkbox>
+
                       <div class="row">
                         <i-button label="Popup White List" type="btn  " ng-click="showPopupIgnoreURLsModal()"></i-button>
                         <i-button label="Popup Black List" type="btn  " ng-click="showPopupBlockURLsModal()"></i-button>
@@ -296,14 +292,14 @@
                       <i-checkbox class="row" label="Auto Remove External IFRAMES " ng-model="setting.blocking.core.remove_external_iframe"> </i-checkbox>
                       <i-checkbox class="row" label="Auto Remove Empty IFRAMES " ng-model="setting.blocking.core.block_empty_iframe"> </i-checkbox>
                       <div class="row">
-                        <i-checkbox class="col4" label="Enable Block Ads Servers" ng-model="setting.blocking.core.block_ads_servers"></i-checkbox>
-                        <i-checkbox class="col4" label="Enable Block Ads Links" ng-model="setting.blocking.core.block_ads"></i-checkbox>
-                        <i-checkbox class="col4" label="Enable Block HTML Tags " ng-model="setting.blocking.core.block_html_tags"></i-checkbox>
+                        <i-checkbox class="col4" label="Block Public Ads Servers" ng-model="setting.blocking.core.block_ads_servers"></i-checkbox>
+                        <i-checkbox class="col4" label="Block Ads Links" ng-model="setting.blocking.core.block_ads"></i-checkbox>
+                        <i-checkbox class="col4" label="Block HTML Tags " ng-model="setting.blocking.core.block_html_tags"></i-checkbox>
                       </div>
 
                       <div class="row">
                         <i-button type="btn  " ng-click="showAdsModal()" label="Blocking Ads Links"></i-button>
-                        <i-button type="btn  " ng-click="showDomsModal()" label="Blocking Block HTML Tags"></i-button>
+                        <i-button type="btn  " ng-click="showDomsModal()" label="Blocking HTML Tags"></i-button>
                       </div>
                     </div>
                   </fieldset>
@@ -391,25 +387,34 @@
                     <div class="row padding border2">
                       <div class="col3"><i-checkbox label="Hide Screen Size ( Custom )" ng-model="setting.blocking.privacy.vpc.hide_screen"></i-checkbox></div>
                       <div class="col6">
-                        <i-control type="number" ng-disabled="setting.blocking.privacy.vpc.hide_screen !== true" ng-model="setting.blocking.privacy.vpc.screen_width" label="Screen Width"></i-control>
-                        <i-control
-                          type="number"
-                          ng-disabled="setting.blocking.privacy.vpc.hide_screen !== true"
-                          ng-model="setting.blocking.privacy.vpc.screen_height"
-                          label="Screen Height"
-                        ></i-control>
-                        <i-control
-                          type="number"
-                          ng-disabled="setting.blocking.privacy.vpc.hide_screen !== true"
-                          ng-model="setting.blocking.privacy.vpc.screen_availWidth"
-                          label="Screen availbal Width"
-                        ></i-control>
-                        <i-control
-                          type="number"
-                          ng-disabled="setting.blocking.privacy.vpc.hide_screen !== true"
-                          ng-model="setting.blocking.privacy.vpc.screen_availHeight"
-                          label="Screen availbal Height"
-                        ></i-control>
+                        <div class="row">
+                          <i-control
+                            type="number"
+                            ng-disabled="setting.blocking.privacy.vpc.hide_screen !== true"
+                            ng-model="setting.blocking.privacy.vpc.screen_width"
+                            label="Screen Width"
+                          ></i-control>
+                          <i-control
+                            type="number"
+                            ng-disabled="setting.blocking.privacy.vpc.hide_screen !== true"
+                            ng-model="setting.blocking.privacy.vpc.screen_height"
+                            label="Screen Height"
+                          ></i-control>
+                        </div>
+                        <div class="row">
+                          <i-control
+                            type="number"
+                            ng-disabled="setting.blocking.privacy.vpc.hide_screen !== true"
+                            ng-model="setting.blocking.privacy.vpc.screen_availWidth"
+                            label="Screen availbal Width"
+                          ></i-control>
+                          <i-control
+                            type="number"
+                            ng-disabled="setting.blocking.privacy.vpc.hide_screen !== true"
+                            ng-model="setting.blocking.privacy.vpc.screen_availHeight"
+                            label="Screen availbal Height"
+                          ></i-control>
+                        </div>
                       </div>
                     </div>
 
@@ -674,6 +679,7 @@
                       <fieldset>
                         <legend>New Profile</legend>
                         <i-control label="Name" ng-model="session.display"></i-control>
+                        <i-control label="ID" ng-model="session.name"></i-control>
                         <i-button type="add" ng-click="addSession()" label="Add to profiles"></i-button>
                       </fieldset>
                     </div>
@@ -704,13 +710,15 @@
                       <tr>
                         <th>Index</th>
                         <th>ID</th>
-                        <th>Name <input type="text" ng-model="session.display" /></th>
+                        <th>Name <i-control ng-model="session.display"></i-control></th>
                         <th>Actions</th>
                       </tr>
                       <tr ng-repeat="_se in setting.session_list | filter:session track by $index">
                         <td>{{$index}}</td>
-                        <td>{{_se.name}}</td>
-                        <td><input class="block full-width" type="text" ng-model="_se.display" /></td>
+                        <td>
+                          <i-control ng-model="_se.name"></i-control>
+                        </td>
+                        <td><i-control ng-model="_se.display"></i-control></td>
                         <td>
                           <a class="btn" ng-click="showSession(_se)"> Options </a>
                           <i-button type="bg-black white bold" label="Generate Virual PC" ng-click="generateVPC(_se)"></i-button>
@@ -945,8 +953,12 @@
                     <table class="table hover">
                       <tr>
                         <th>Index</th>
-                        <th>search <input class="block full-width" type="text" ng-model="_userAgent" /></th>
+                        <th>
+                          search
+                          <i-control ng-model="_userAgent"></i-control>
+                        </th>
                       </tr>
+
                       <tr ng-repeat="_se in setting.user_agent_list | filter:_userAgent track by $index ">
                         <td class="center">
                           {{$index + 1}} <a class="btn red" ng-click="removeUserAgent(_se)"> <i class="fa fa-trash"></i> Remove </a>
@@ -1015,9 +1027,9 @@
                         <th>
                           Index ({{setting.proxy_list.length}}) Actions <a class="btn red" ng-click="setting.proxy_list = []"> <i class="fa fa-trash"></i> Remove All</a>
                         </th>
-                        <th>URL <input type="text" ng-model="$proxy.url" /></th>
-                        <th>IP <input type="text" ng-model="$proxy.ip" /></th>
-                        <th>Port <input type="text" ng-model="$proxy.port" /></th>
+                        <th>URL <i-control ng-model="$proxy.url"></i-control></th>
+                        <th>IP <i-control ng-model="$proxy.ip"></i-control></th>
+                        <th>Port <i-control ng-model="$proxy.port"></i-control></th>
                       </tr>
                       <tr ng-repeat="_se in setting.proxy_list | limitTo : 100 | filter:$proxy | orderBy : 'name' track by $index">
                         <td>
@@ -1025,20 +1037,22 @@
                         </td>
                         <td>
                           <div class="row">
-                            <input class="block full-width" type="text" label="URL" ng-model="_se.url" />
-                            <input class="col6" type="text" ng-model="_se.username" />
-                            <input class="col6" type="text" ng-model="_se.password" />
+                            <i-control class="row" ng-model="_se.url"></i-control>
+                            <div class="row">
+                              <i-control ng-model="_se.username"></i-control>
+                              <i-control ng-model="_se.password"></i-control>
+                            </div>
                           </div>
                           <div class="row">
-                            <i-checkbox class="" label="Socks 5" ng-model="_se.socks5"></i-checkbox>
-                            <i-checkbox class="" label="Socks 4" ng-model="_se.socks4"></i-checkbox>
-                            <i-checkbox class="" label="FTP" ng-model="_se.ftp"></i-checkbox>
-                            <i-checkbox class="" label="HTTP" ng-model="_se.http"></i-checkbox>
-                            <i-checkbox class="" label="HTTPS" ng-model="_se.https"></i-checkbox>
+                            <i-checkbox class="col2" label="Socks 5" ng-model="_se.socks5"></i-checkbox>
+                            <i-checkbox class="col2" label="Socks 4" ng-model="_se.socks4"></i-checkbox>
+                            <i-checkbox class="col2" label="FTP" ng-model="_se.ftp"></i-checkbox>
+                            <i-checkbox class="col2" label="HTTP" ng-model="_se.http"></i-checkbox>
+                            <i-checkbox class="col2" label="HTTPS" ng-model="_se.https"></i-checkbox>
                           </div>
                         </td>
-                        <td><input class="block full-width" type="text" ng-model="_se.ip" /></td>
-                        <td><input class="block full-width" type="text" ng-model="_se.port" /></td>
+                        <td><i-control ng-model="_se.ip"></i-control></td>
+                        <td><i-control ng-model="_se.port"></i-control></td>
                       </tr>
                     </table>
                   </div>
@@ -1091,9 +1105,9 @@
                 <table class="table hover">
                   <tr>
                     <th>( {{setting.user_data_input.length}} ) Index</th>
-                    <th>Host Name <input ng-model="site2.hostname" /></th>
-                    <th>User Name <input ng-model="site2.username" /></th>
-                    <th>Password <input ng-model="site2.password" /></th>
+                    <th>Host Name <i-control ng-model="site2.hostname"></i-control></th>
+                    <th>User Name <i-control ng-model="site2.username"></i-control></th>
+                    <th>Password <i-control ng-model="site2.password"></i-control></th>
                   </tr>
                   <tr ng-repeat="site in setting.user_data_input | filter : site2 | limitTo:500 track by $index">
                     <td>{{$index +1 }} <i-button type="remove" ng-click="remove_user_data_input(site)"></i-button></td>
@@ -1134,7 +1148,7 @@
                 <table class="table hover">
                   <tr>
                     <th>Index ( {{setting.user_data.length}} )</th>
-                    <th>Host Name <input ng-model="user_data_host" /></th>
+                    <th>Host Name <i-control ng-model="user_data_host"></i-control></th>
                     <th>Data</th>
                   </tr>
                   <tr ng-repeat="site in setting.user_data  | filter : {hostname : user_data_host} | limitTo:200 track by $index">
@@ -1151,7 +1165,7 @@
                 <table class="table hover">
                   <tr>
                     <th>Index ( {{setting.urls.length}} )</th>
-                    <th>URL <input ng-model="url" /> <i-button type="remove" label="Delete Match URLs" ng-click="remove_url(null , url)"></i-button></th>
+                    <th>URL <i-control ng-model="url"></i-control> <i-button type="remove" label="Delete Match URLs" ng-click="remove_url(null , url)"></i-button></th>
                     <th>Count</th>
                   </tr>
                   <tr ng-repeat="site in setting.urls | filter : {url : url} | limitTo:500 track by $index">
@@ -1187,7 +1201,7 @@
               <div id="empty_tab" class="tab-content"></div>
             </div>
           </div>
-        </form>
+        </div>
       </div>
 
       <div class="center">
@@ -1196,442 +1210,444 @@
         <a ng-show="knowPassword === false" class="btn btn-save" ng-click="checkPassword()"> <i class="fa fa-save" aria-hidden="true"></i> Next </a>
       </div>
 
-      <div id="openListModal" class="modal" fixed>
-        <div class="modal-content">
-          <div class="modal-header">
-            <span class="close">&times;</span>
-            <h2>Fast Open List</h2>
-          </div>
-          <div class="modal-body">
-            <h2 class="padding margin center">Custom Your Open List</h2>
-            <div class="row padding">
-              <fieldset>
-                <legend>New Menu</legend>
-                <div class="row">
-                  <div class="col5">
-                    <i-control label="Menu Name" ng-model="open_menu.name"></i-control>
-                    <i-control label="Menu URL" ng-model="open_menu.url"></i-control>
-                    <i-checkbox label="Multi User" ng-model="open_menu.multi"></i-checkbox>
-                    <i-checkbox label="Enabled" ng-model="open_menu.enabled"></i-checkbox>
-                  </div>
-                  <div class="col5">
-                    <i-button type="add" ng-click="addOpenMenu()" label="Add to Menu"></i-button>
-                  </div>
-                </div>
-              </fieldset>
+      <div class="modales">
+        <div id="openListModal" class="modal" fixed>
+          <div class="modal-content">
+            <div class="modal-header">
+              <span class="close">&times;</span>
+              <h2>Fast Open List</h2>
             </div>
-
-            <table class="table hove">
-              <tr>
-                <th>Name</th>
-                <th>URL</th>
-                <th>Options</th>
-                <th>Actions</th>
-              </tr>
-              <tr ng-repeat="_open_menu in setting.blocking.open_list track by $index">
-                <td>
-                  <i-control label="Menu URL" ng-model="_open_menu.name"></i-control>
-                </td>
-                <td>
-                  <i-control label="Menu URL" ng-model="_open_menu.url"></i-control>
-                </td>
-                <td class="center">
-                  <i-checkbox label="Multi User" ng-model="_open_menu.multi"></i-checkbox>
-                  <i-checkbox label="Enabled" ng-model="_open_menu.enabled"></i-checkbox>
-                </td>
-                <td class="center">
-                  <i-button ng-click="removeOpenMenu(_open_menu)" type="remove" label="Remove"></i-button>
-                </td>
-              </tr>
-            </table>
-          </div>
-
-          <div class="modal-footer center">
-            <a id="saveBtn" class="btn" ng-click="hideOpenListModal()"> <i class="fa fa-save" aria-hidden="true"></i> Close </a>
-          </div>
-        </div>
-      </div>
-
-      <div id="adsModal" class="modal" fixed>
-        <div class="modal-content">
-          <div class="modal-header">
-            <span class="close">&times;</span>
-            <h2>Blocking Ads List</h2>
-          </div>
-          <div class="modal-body">
-            <h2 class="padding margin center">Set Here Ads Site List Using Simple URL or Regex Text</h2>
-            <div class="row padding">
-              <fieldset>
-                <legend>New Link</legend>
-                <div class="row">
-                  <i-control class="col5" ng-model="ad.name" label="Name"></i-control>
-                  <i-control class="col5" ng-model="ad.url" label="URL"></i-control>
-                  <i-checkbox class="col2" ng-model="ad.enabled" label="Enable"></i-checkbox>
-                </div>
-                <i-button ng-click="addAd()" type="add" label="Add to Links"></i-button>
-              </fieldset>
-            </div>
-
-            <table class="table hover">
-              <tr>
-                <th class="width-200">Index</th>
-                <th class="width-200">Name</th>
-                <th>URL</th>
-              </tr>
-              <tr ng-repeat="_ad in setting.ad_list | filter:ad track by $index">
-                <td>{{$index + 1}}<i-button type="remove default" ng-click="removeAd(_ad)" label="Remove"></i-button></td>
-                <td class="center">
-                  <i-control ng-model="_ad.name"></i-control>
-                  <i-checkbox ng-model="_ad.enabled" label="Enable"></i-checkbox>
-                </td>
-                <td>
-                  <i-control ng-model="_ad.url"></i-control>
-                </td>
-              </tr>
-            </table>
-          </div>
-
-          <div class="modal-footer center">
-            <a id="saveBtn" class="btn" ng-click="hideAdsModal()"> <i class="fa fa-save" aria-hidden="true"></i> Close </a>
-          </div>
-        </div>
-      </div>
-
-      <div id="popupIgnoreURLsModal" class="modal" fixed>
-        <div class="modal-content">
-          <div class="modal-header">
-            <span class="close">&times;</span>
-            <h2>Popup White List</h2>
-          </div>
-          <div class="modal-body">
-            <div class="row padding">
-              <fieldset>
-                <legend>New Link</legend>
-                <div class="row">
-                  <i-control ng-model="popupIgnoreURL.url" label="link"></i-control>
-                  <i-button ng-click="addPopupIgnoreURL()" type="add" label="Add to Links"></i-button>
-                </div>
-              </fieldset>
-            </div>
-
-            <table class="table hover">
-              <tr>
-                <th>Link</th>
-                <th>Action</th>
-              </tr>
-              <tr ng-repeat="_d in setting.blocking.popup.white_list | filter:popupIgnoreURL track by $index">
-                <td>
-                  <i-control ng-model="_d.url"></i-control>
-                </td>
-                <td class="center">
-                  <i-button type="remove" ng-click="removePopupIgnoreURL(_d)" label="Remove"></i-button>
-                </td>
-              </tr>
-            </table>
-          </div>
-
-          <div class="modal-footer center">
-            <a id="saveBtn" class="btn" ng-click="hidePopupIgnoreURLsModal()"> <i class="fa fa-save" aria-hidden="true"></i> Close </a>
-          </div>
-        </div>
-      </div>
-
-      <div id="popupBlockURLsModal" class="modal" fixed>
-        <div class="modal-content">
-          <div class="modal-header">
-            <span class="close">&times;</span>
-            <h2>Popup black List</h2>
-          </div>
-          <div class="modal-body">
-            <div class="row padding">
-              <fieldset>
-                <legend>New Link</legend>
-                <div class="row">
-                  <i-control ng-model="popupBlockURL.url" label="link"></i-control>
-                  <i-button ng-click="addPopupBlockURL()" type="add" label="Add to Links"></i-button>
-                </div>
-              </fieldset>
-            </div>
-
-            <table class="table hover">
-              <tr>
-                <th>Link</th>
-                <th>Action</th>
-              </tr>
-              <tr ng-repeat="_d in setting.blocking.popup.black_list | filter:popupBlockURL track by $index">
-                <td>
-                  <i-control ng-model="_d.url"></i-control>
-                </td>
-                <td class="center">
-                  <i-button type="remove" ng-click="removePopupBlockURL(_d)" label="Remove"></i-button>
-                </td>
-              </tr>
-            </table>
-          </div>
-
-          <div class="modal-footer center">
-            <a id="saveBtn" class="btn" ng-click="hidePopupBlockURLsModal()"> <i class="fa fa-save" aria-hidden="true"></i> Close </a>
-          </div>
-        </div>
-      </div>
-
-      <div id="domsModal" class="modal" fixed>
-        <div class="modal-content">
-          <div class="modal-header">
-            <span class="close">&times;</span>
-            <h2>Blocking doms List</h2>
-          </div>
-          <div class="modal-body">
-            <h2 class="padding margin center">Set Here doms Site List Using Simple URL or Regex Text</h2>
-
-            <div class="row padding">
-              <div class="row">
-                <form>
-                  <i-control ng-model="dom.url" label="URL"></i-control>
-                  <i-control ng-model="dom.select" label="Dom Selector"></i-control>
-                  <i-control ng-model="dom.ex_url" label="Ignore URL"></i-control>
-
+            <div class="modal-body">
+              <h2 class="padding margin center">Custom Your Open List</h2>
+              <div class="row padding">
+                <fieldset>
+                  <legend>New Menu</legend>
                   <div class="row">
-                    <i-checkbox ng-model="dom.remove" label="Delete Selector"></i-checkbox>
-                    <i-checkbox ng-model="dom.hide" label="Hide Selector"></i-checkbox>
-                    <i-checkbox ng-model="dom.empty" label="Clear Selector"></i-checkbox>
+                    <div class="col5">
+                      <i-control label="Menu Name" ng-model="open_menu.name"></i-control>
+                      <i-control label="Menu URL" ng-model="open_menu.url"></i-control>
+                      <i-checkbox label="Multi User" ng-model="open_menu.multi"></i-checkbox>
+                      <i-checkbox label="Enabled" ng-model="open_menu.enabled"></i-checkbox>
+                    </div>
+                    <div class="col5">
+                      <i-button type="add" ng-click="addOpenMenu()" label="Add to Menu"></i-button>
+                    </div>
                   </div>
-
-                  <div class="row center">
-                    <a ng-click="addDom()" class="btn"> Add New </a>
-                  </div>
-                </form>
+                </fieldset>
               </div>
+
+              <table class="table hove">
+                <tr>
+                  <th>Name</th>
+                  <th>URL</th>
+                  <th>Options</th>
+                  <th>Actions</th>
+                </tr>
+                <tr ng-repeat="_open_menu in setting.blocking.open_list track by $index">
+                  <td>
+                    <i-control label="Menu URL" ng-model="_open_menu.name"></i-control>
+                  </td>
+                  <td>
+                    <i-control label="Menu URL" ng-model="_open_menu.url"></i-control>
+                  </td>
+                  <td class="center">
+                    <i-checkbox label="Multi User" ng-model="_open_menu.multi"></i-checkbox>
+                    <i-checkbox label="Enabled" ng-model="_open_menu.enabled"></i-checkbox>
+                  </td>
+                  <td class="center">
+                    <i-button ng-click="removeOpenMenu(_open_menu)" type="remove" label="Remove"></i-button>
+                  </td>
+                </tr>
+              </table>
             </div>
-            <br />
-            <br />
-            <br />
-            <div class="row padding" ng-repeat="_dom in setting.blocking.html_tags_selector_list | filter:dom track by $index">
-              <fieldset>
-                <legend></legend>
-                <div class="row">
-                  <div class="col10">
-                    <form>
-                      <i-control ng-model="_dom.url" label="URL"></i-control>
-                      <i-control ng-model="_dom.select" label="Dom Selector"></i-control>
-                      <i-control ng-model="_dom.ex_url" label="Ignore URL"></i-control>
-                      <div class="row">
-                        <i-checkbox ng-model="_dom.remove" label="Delete Selector"></i-checkbox>
-                        <i-checkbox ng-model="_dom.hide" label="Hide Selector"></i-checkbox>
-                        <i-checkbox ng-model="_dom.empty" label="Clear Selector"></i-checkbox>
-                      </div>
-                    </form>
-                  </div>
-                  <div class="col2 center">
-                    <a class="btn red" ng-click="removeDom(_dom , $index)"> Remove </a>
-                  </div>
-                </div>
-              </fieldset>
-            </div>
-          </div>
-
-          <div class="modal-footer center">
-            <a id="saveBtn" class="btn" ng-click="hideDomsModal()"> <i class="fa fa-save" aria-hidden="true"></i> Close </a>
-          </div>
-        </div>
-      </div>
-
-      <div id="unsafeLinksModal" class="modal" fixed>
-        <div class="modal-content">
-          <div class="modal-header">
-            <span class="close">&times;</span>
-            <h2>Blocking ( un Safty ) Links</h2>
-          </div>
-          <div class="modal-body">
-            <h2 class="padding margin center">Set Here ( un Safty ) Site List Using Simple URL or Regex Text</h2>
-            <div class="row padding">
-              <fieldset>
-                <legend>New Link</legend>
-                <div class="row">
-                  <i-control ng-model="un_safe_link.url"></i-control>
-                  <i-button type="add" ng-click="addUnsafeLink()" label="add to links"></i-button>
-                </div>
-              </fieldset>
-            </div>
-
-            <table class="table hover">
-              <tr>
-                <th>Index</th>
-                <th>Links</th>
-              </tr>
-              <tr ng-repeat="_un_safe_link in setting.blocking.un_safe_list | filter:un_safe_link track by $index">
-                <td class="width-200">{{$index}} <i-button ng-click="removeUnsafeLink(_un_safe_link)" type="remove default" label="Remove"></i-button></td>
-                <td>
-                  <i-control ng-model="_un_safe_link.url"></i-control>
-                </td>
-              </tr>
-            </table>
-          </div>
-
-          <div class="modal-footer center">
-            <a id="saveBtn" class="btn" ng-click="hideUnsafeLinksModal()"> <i class="fa fa-save" aria-hidden="true"></i> Close </a>
-          </div>
-        </div>
-      </div>
-
-      <div id="unsafeWordsModal" class="modal" fixed>
-        <div class="modal-content">
-          <div class="modal-header">
-            <span class="close">&times;</span>
-            <h2>Blocking ( un Safty ) Words</h2>
-          </div>
-          <div class="modal-body">
-            <h2 class="padding margin center">Write Here ( Any Words) Any Page Title Contains these words will block</h2>
-            <div class="row padding">
-              <fieldset>
-                <legend>New Word</legend>
-                <i-control ng-model="un_safe_word.text" label="word"></i-control>
-                <i-button type="add" label="Add to words" ng-click="addUnsafeWord()"></i-button>
-              </fieldset>
-            </div>
-            <table class="table">
-              <tr>
-                <th class="width-200">Index</th>
-                <th>Word</th>
-              </tr>
-              <tr ng-repeat="_un_safe_word in setting.blocking.un_safe_words_list | filter:un_safe_word track by $index">
-                <td>{{$index}} <i-button type="remove default" ng-click="removeUnsafeWord(_un_safe_word)" label="Remove"></i-button></td>
-                <td>
-                  <i-control ng-model="_un_safe_word.text"></i-control>
-                </td>
-              </tr>
-            </table>
-          </div>
-
-          <div class="modal-footer center">
-            <a id="saveBtn" class="btn" ng-click="hideUnsafeWordsModal()"> <i class="fa fa-save" aria-hidden="true"></i> Close </a>
-          </div>
-        </div>
-      </div>
-
-      <div id="youtubeWordsModal" class="modal" fixed>
-        <div class="modal-content">
-          <div class="modal-header">
-            <span class="close">&times;</span>
-            <h2>Blocking ( un Safty ) Words</h2>
-          </div>
-          <div class="modal-body">
-            <h2 class="padding margin center">Write Here ( Any Words) Any Video Contains these words will block</h2>
-            <div class="row padding">
-              <fieldset>
-                <legend>New Word</legend>
-                <div class="row">
-                  <div class="col4">
-                    <i-control label="word" ng-model="un_safe_word.text"></i-control>
-                  </div>
-                  <div class="col4">
-                    <i-button type="add" label="Add to words" ng-click="addYoutubeWord()"></i-button>
-                  </div>
-                </div>
-              </fieldset>
-            </div>
-            <table class="table">
-              <tr>
-                <th>Word</th>
-                <th>Actions</th>
-              </tr>
-              <tr ng-repeat="_un_safe_word in setting.blocking.youtube.safty_mode.words_list | filter:un_safe_word track by $index">
-                <td>
-                  <i-control ng-model="_un_safe_word.text"></i-control>
-                </td>
-                <td class="center">
-                  <i-button type="remove" ng-click="removeYoutubeWord(_un_safe_word)" label="Remove"></i-button>
-                </td>
-              </tr>
-            </table>
-          </div>
-
-          <div class="modal-footer center">
-            <a id="saveBtn" class="btn" ng-click="hideYoutubeWordsModal()"> <i class="fa fa-save" aria-hidden="true"></i> Close </a>
-          </div>
-        </div>
-      </div>
-
-      <div id="whiteListModal" class="modal small" fixed>
-        <div class="modal-content">
-          <div class="modal-header">
-            <span class="close">&times;</span>
-            <h2>White List</h2>
-          </div>
-          <div class="modal-body">
-            <h2 class="padding margin center">These Sites Can Display [ Ads , popup , un safty content , iframes ]</h2>
-            <br />
-            <br />
-            <div class="row padding border">
-              <div class="col2">
-                <a ng-click="addWhiteSite()" class="btn"> Add New </a>
-              </div>
-              <div class="col10">
-                <input class="block" type="text" ng-model="whiteSite.url" />
-              </div>
-            </div>
-            <br />
-            <br />
-            <table class="table">
-              <tr>
-                <th class="w200">Action</th>
-                <th>URL</th>
-              </tr>
-
-              <tr ng-repeat="_ws in setting.blocking.white_list | filter:whiteSite track by $index">
-                <td>
-                  <a class="btn red" ng-click="removeWhiteSite(_ws)"> Remove </a>
-                </td>
-                <td>
-                  <input class="block" type="text" ng-model="_ws.url" />
-                </td>
-              </tr>
-            </table>
 
             <div class="modal-footer center">
-              <a id="saveBtn" class="btn" ng-click="hideWhiteListModal()"> <i class="fa fa-save" aria-hidden="true"></i> Close </a>
+              <a id="saveBtn" class="btn" ng-click="hideOpenListModal()"> <i class="fa fa-save" aria-hidden="true"></i> Close </a>
             </div>
           </div>
         </div>
-      </div>
-      <div id="blackListModal" class="modal small" fixed>
-        <div class="modal-content">
-          <div class="modal-header">
-            <span class="close">&times;</span>
-            <h2>Black List</h2>
-          </div>
-          <div class="modal-body">
-            <h2 class="padding margin center">This Sites Can't loaded</h2>
-            <br />
-            <br />
-            <div class="row padding border">
-              <div class="col2">
-                <a ng-click="addBlackSite()" class="btn"> Add New </a>
+
+        <div id="adsModal" class="modal" fixed>
+          <div class="modal-content">
+            <div class="modal-header">
+              <span class="close">&times;</span>
+              <h2>Blocking Ads List</h2>
+            </div>
+            <div class="modal-body">
+              <h2 class="padding margin center">Set Here Ads Site List Using Simple URL or Regex Text</h2>
+              <div class="row padding">
+                <fieldset>
+                  <legend>New Link</legend>
+                  <div class="row">
+                    <i-control class="col5" ng-model="ad.name" label="Name"></i-control>
+                    <i-control class="col5" ng-model="ad.url" label="URL"></i-control>
+                    <i-checkbox class="col2" ng-model="ad.enabled" label="Enable"></i-checkbox>
+                  </div>
+                  <i-button ng-click="addAd()" type="add" label="Add to Links"></i-button>
+                </fieldset>
               </div>
-              <div class="col10">
-                <input class="block" type="text" ng-model="blackSite.url" />
+
+              <table class="table hover">
+                <tr>
+                  <th class="width-200">Index</th>
+                  <th class="width-200">Name</th>
+                  <th>URL</th>
+                </tr>
+                <tr ng-repeat="_ad in setting.ad_list | filter:ad track by $index">
+                  <td>{{$index + 1}}<i-button type="remove default" ng-click="removeAd(_ad)" label="Remove"></i-button></td>
+                  <td class="center">
+                    <i-control ng-model="_ad.name"></i-control>
+                    <i-checkbox ng-model="_ad.enabled" label="Enable"></i-checkbox>
+                  </td>
+                  <td>
+                    <i-control ng-model="_ad.url"></i-control>
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+            <div class="modal-footer center">
+              <a id="saveBtn" class="btn" ng-click="hideAdsModal()"> <i class="fa fa-save" aria-hidden="true"></i> Close </a>
+            </div>
+          </div>
+        </div>
+
+        <div id="popupIgnoreURLsModal" class="modal" fixed>
+          <div class="modal-content">
+            <div class="modal-header">
+              <span class="close">&times;</span>
+              <h2>Popup White List</h2>
+            </div>
+            <div class="modal-body">
+              <div class="row padding">
+                <fieldset>
+                  <legend>New Link</legend>
+                  <div class="row">
+                    <i-control ng-model="popupIgnoreURL.url" label="link"></i-control>
+                    <i-button ng-click="addPopupIgnoreURL()" type="add" label="Add to Links"></i-button>
+                  </div>
+                </fieldset>
+              </div>
+
+              <table class="table hover">
+                <tr>
+                  <th>Link</th>
+                  <th>Action</th>
+                </tr>
+                <tr ng-repeat="_d in setting.blocking.popup.white_list | filter:popupIgnoreURL track by $index">
+                  <td>
+                    <i-control ng-model="_d.url"></i-control>
+                  </td>
+                  <td class="center">
+                    <i-button type="remove" ng-click="removePopupIgnoreURL(_d)" label="Remove"></i-button>
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+            <div class="modal-footer center">
+              <a id="saveBtn" class="btn" ng-click="hidePopupIgnoreURLsModal()"> <i class="fa fa-save" aria-hidden="true"></i> Close </a>
+            </div>
+          </div>
+        </div>
+
+        <div id="popupBlockURLsModal" class="modal" fixed>
+          <div class="modal-content">
+            <div class="modal-header">
+              <span class="close">&times;</span>
+              <h2>Popup black List</h2>
+            </div>
+            <div class="modal-body">
+              <div class="row padding">
+                <fieldset>
+                  <legend>New Link</legend>
+                  <div class="row">
+                    <i-control ng-model="popupBlockURL.url" label="link"></i-control>
+                    <i-button ng-click="addPopupBlockURL()" type="add" label="Add to Links"></i-button>
+                  </div>
+                </fieldset>
+              </div>
+
+              <table class="table hover">
+                <tr>
+                  <th>Link</th>
+                  <th>Action</th>
+                </tr>
+                <tr ng-repeat="_d in setting.blocking.popup.black_list | filter:popupBlockURL track by $index">
+                  <td>
+                    <i-control ng-model="_d.url"></i-control>
+                  </td>
+                  <td class="center">
+                    <i-button type="remove" ng-click="removePopupBlockURL(_d)" label="Remove"></i-button>
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+            <div class="modal-footer center">
+              <a id="saveBtn" class="btn" ng-click="hidePopupBlockURLsModal()"> <i class="fa fa-save" aria-hidden="true"></i> Close </a>
+            </div>
+          </div>
+        </div>
+
+        <div id="domsModal" class="modal" fixed>
+          <div class="modal-content">
+            <div class="modal-header">
+              <span class="close">&times;</span>
+              <h2>Blocking doms List</h2>
+            </div>
+            <div class="modal-body">
+              <h2 class="padding margin center">Set Here doms Site List Using Simple URL or Regex Text</h2>
+
+              <div class="row padding">
+                <div class="row">
+                  <form>
+                    <i-control ng-model="dom.url" label="URL"></i-control>
+                    <i-control ng-model="dom.select" label="Dom Selector"></i-control>
+                    <i-control ng-model="dom.ex_url" label="Ignore URL"></i-control>
+
+                    <div class="row">
+                      <i-checkbox ng-model="dom.remove" label="Delete Selector"></i-checkbox>
+                      <i-checkbox ng-model="dom.hide" label="Hide Selector"></i-checkbox>
+                      <i-checkbox ng-model="dom.empty" label="Clear Selector"></i-checkbox>
+                    </div>
+
+                    <div class="row center">
+                      <a ng-click="addDom()" class="btn"> Add New </a>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <br />
+              <br />
+              <br />
+              <div class="row padding" ng-repeat="_dom in setting.blocking.html_tags_selector_list | filter:dom track by $index">
+                <fieldset>
+                  <legend></legend>
+                  <div class="row">
+                    <div class="col10">
+                      <form>
+                        <i-control ng-model="_dom.url" label="URL"></i-control>
+                        <i-control ng-model="_dom.select" label="Dom Selector"></i-control>
+                        <i-control ng-model="_dom.ex_url" label="Ignore URL"></i-control>
+                        <div class="row">
+                          <i-checkbox ng-model="_dom.remove" label="Delete Selector"></i-checkbox>
+                          <i-checkbox ng-model="_dom.hide" label="Hide Selector"></i-checkbox>
+                          <i-checkbox ng-model="_dom.empty" label="Clear Selector"></i-checkbox>
+                        </div>
+                      </form>
+                    </div>
+                    <div class="col2 center">
+                      <a class="btn red" ng-click="removeDom(_dom , $index)"> Remove </a>
+                    </div>
+                  </div>
+                </fieldset>
               </div>
             </div>
-            <br />
-            <br />
-            <table class="table">
-              <tr>
-                <th class="w200">Action</th>
-                <th>URL</th>
-              </tr>
-              <tr ng-repeat="_ws in setting.blocking.black_list | filter:blackSite track by $index">
-                <td>
-                  <a class="btn red" ng-click="removeBlackSite(_ws)"> Remove </a>
-                </td>
-                <td>
-                  <input class="block" type="text" ng-model="_ws.url" />
-                </td>
-              </tr>
-            </table>
-          </div>
 
-          <div class="modal-footer center">
-            <a id="saveBtn" class="btn" ng-click="hideBlackListModal()"> <i class="fa fa-save" aria-hidden="true"></i> Close </a>
+            <div class="modal-footer center">
+              <a id="saveBtn" class="btn" ng-click="hideDomsModal()"> <i class="fa fa-save" aria-hidden="true"></i> Close </a>
+            </div>
+          </div>
+        </div>
+
+        <div id="unsafeLinksModal" class="modal" fixed>
+          <div class="modal-content">
+            <div class="modal-header">
+              <span class="close">&times;</span>
+              <h2>Blocking ( un Safty ) Links</h2>
+            </div>
+            <div class="modal-body">
+              <h2 class="padding margin center">Set Here ( un Safty ) Site List Using Simple URL or Regex Text</h2>
+              <div class="row padding">
+                <fieldset>
+                  <legend>New Link</legend>
+                  <div class="row">
+                    <i-control ng-model="un_safe_link.url"></i-control>
+                    <i-button type="add" ng-click="addUnsafeLink()" label="add to links"></i-button>
+                  </div>
+                </fieldset>
+              </div>
+
+              <table class="table hover">
+                <tr>
+                  <th>Index</th>
+                  <th>Links</th>
+                </tr>
+                <tr ng-repeat="_un_safe_link in setting.blocking.un_safe_list | filter:un_safe_link track by $index">
+                  <td class="width-200">{{$index}} <i-button ng-click="removeUnsafeLink(_un_safe_link)" type="remove default" label="Remove"></i-button></td>
+                  <td>
+                    <i-control ng-model="_un_safe_link.url"></i-control>
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+            <div class="modal-footer center">
+              <a id="saveBtn" class="btn" ng-click="hideUnsafeLinksModal()"> <i class="fa fa-save" aria-hidden="true"></i> Close </a>
+            </div>
+          </div>
+        </div>
+
+        <div id="unsafeWordsModal" class="modal" fixed>
+          <div class="modal-content">
+            <div class="modal-header">
+              <span class="close">&times;</span>
+              <h2>Blocking ( un Safty ) Words</h2>
+            </div>
+            <div class="modal-body">
+              <h2 class="padding margin center">Write Here ( Any Words) Any Page Title Contains these words will block</h2>
+              <div class="row padding">
+                <fieldset>
+                  <legend>New Word</legend>
+                  <i-control ng-model="un_safe_word.text" label="word"></i-control>
+                  <i-button type="add" label="Add to words" ng-click="addUnsafeWord()"></i-button>
+                </fieldset>
+              </div>
+              <table class="table">
+                <tr>
+                  <th class="width-200">Index</th>
+                  <th>Word</th>
+                </tr>
+                <tr ng-repeat="_un_safe_word in setting.blocking.un_safe_words_list | filter:un_safe_word track by $index">
+                  <td>{{$index}} <i-button type="remove default" ng-click="removeUnsafeWord(_un_safe_word)" label="Remove"></i-button></td>
+                  <td>
+                    <i-control ng-model="_un_safe_word.text"></i-control>
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+            <div class="modal-footer center">
+              <a id="saveBtn" class="btn" ng-click="hideUnsafeWordsModal()"> <i class="fa fa-save" aria-hidden="true"></i> Close </a>
+            </div>
+          </div>
+        </div>
+
+        <div id="youtubeWordsModal" class="modal" fixed>
+          <div class="modal-content">
+            <div class="modal-header">
+              <span class="close">&times;</span>
+              <h2>Blocking ( un Safty ) Words</h2>
+            </div>
+            <div class="modal-body">
+              <h2 class="padding margin center">Write Here ( Any Words) Any Video Contains these words will block</h2>
+              <div class="row padding">
+                <fieldset>
+                  <legend>New Word</legend>
+                  <div class="row">
+                    <div class="col4">
+                      <i-control label="word" ng-model="un_safe_word.text"></i-control>
+                    </div>
+                    <div class="col4">
+                      <i-button type="add" label="Add to words" ng-click="addYoutubeWord()"></i-button>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+              <table class="table">
+                <tr>
+                  <th>Word</th>
+                  <th>Actions</th>
+                </tr>
+                <tr ng-repeat="_un_safe_word in setting.blocking.youtube.safty_mode.words_list | filter:un_safe_word track by $index">
+                  <td>
+                    <i-control ng-model="_un_safe_word.text"></i-control>
+                  </td>
+                  <td class="center">
+                    <i-button type="remove" ng-click="removeYoutubeWord(_un_safe_word)" label="Remove"></i-button>
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+            <div class="modal-footer center">
+              <a id="saveBtn" class="btn" ng-click="hideYoutubeWordsModal()"> <i class="fa fa-save" aria-hidden="true"></i> Close </a>
+            </div>
+          </div>
+        </div>
+
+        <div id="whiteListModal" class="modal small" fixed>
+          <div class="modal-content">
+            <div class="modal-header">
+              <span class="close">&times;</span>
+              <h2>White List</h2>
+            </div>
+            <div class="modal-body">
+              <h2 class="padding margin center">These Sites Can Display [ Ads , popup , un safty content , iframes ]</h2>
+              <br />
+              <br />
+              <div class="row padding border">
+                <div class="col2">
+                  <a ng-click="addWhiteSite()" class="btn"> Add New </a>
+                </div>
+                <div class="col10">
+                  <i-control ng-model="whiteSite.url"></i-control>
+                </div>
+              </div>
+              <br />
+              <br />
+              <table class="table">
+                <tr>
+                  <th class="w200">Action</th>
+                  <th>URL</th>
+                </tr>
+
+                <tr ng-repeat="_ws in setting.blocking.white_list | filter:whiteSite track by $index">
+                  <td>
+                    <a class="btn red" ng-click="removeWhiteSite(_ws)"> Remove </a>
+                  </td>
+                  <td>
+                    <i-control ng-model="_ws.url"></i-control>
+                  </td>
+                </tr>
+              </table>
+
+              <div class="modal-footer center">
+                <a id="saveBtn" class="btn" ng-click="hideWhiteListModal()"> <i class="fa fa-save" aria-hidden="true"></i> Close </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="blackListModal" class="modal small" fixed>
+          <div class="modal-content">
+            <div class="modal-header">
+              <span class="close">&times;</span>
+              <h2>Black List</h2>
+            </div>
+            <div class="modal-body">
+              <h2 class="padding margin center">This Sites Can't loaded</h2>
+              <br />
+              <br />
+              <div class="row padding border">
+                <div class="col2">
+                  <a ng-click="addBlackSite()" class="btn"> Add New </a>
+                </div>
+                <div class="col10">
+                  <i-control ng-model="blackSite.url"></i-control>
+                </div>
+              </div>
+              <br />
+              <br />
+              <table class="table">
+                <tr>
+                  <th class="w200">Action</th>
+                  <th>URL</th>
+                </tr>
+                <tr ng-repeat="_ws in setting.blocking.black_list | filter:blackSite track by $index">
+                  <td>
+                    <a class="btn red" ng-click="removeBlackSite(_ws)"> Remove </a>
+                  </td>
+                  <td>
+                    <i-control ng-model="_ws.url"></i-control>
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+            <div class="modal-footer center">
+              <a id="saveBtn" class="btn" ng-click="hideBlackListModal()"> <i class="fa fa-save" aria-hidden="true"></i> Close </a>
+            </div>
           </div>
         </div>
       </div>

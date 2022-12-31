@@ -75,10 +75,10 @@ module.exports = function (SOCIALBROWSER) {
       hide_mimetypes: true,
       hide_plugins: true,
       hide_screen: true,
-      screen_width: screenSize[0],
-      screen_height: screenSize[1],
-      screen_availWidth: screenSize[0],
-      screen_availHeight: screenSize[1],
+      screen_width: parseInt(screenSize[0] || '1200'),
+      screen_height: parseInt(screenSize[1] || '720'),
+      screen_availWidth: parseInt(screenSize[0] || '1200'),
+      screen_availHeight: parseInt(screenSize[1] || '720'),
       set_window_active: true,
       block_rtc: true,
       hide_battery: true,
@@ -373,7 +373,7 @@ module.exports = function (SOCIALBROWSER) {
       u = u;
     }
     u = u.trim();
-    if (u.like('http*') || u.indexOf('//') === 0 || u.indexOf('data:') === 0 || u.indexOf('blob:') === 0) {
+    if (u.indexOf('http') === 0 || u.indexOf('//') === 0 || u.indexOf('data:') === 0 || u.indexOf('blob:') === 0) {
       u = u;
     } else if (u.indexOf('/') === 0) {
       u = window.location.origin + u;
@@ -417,7 +417,7 @@ module.exports = function (SOCIALBROWSER) {
 
   SOCIALBROWSER.openWindow = function (customSetting) {
     try {
-      customSetting = { ...SOCIALBROWSER.customSetting, ...{ windowType: 'social-popup', win_id: win.id }, ...customSetting };
+      customSetting = { ...SOCIALBROWSER.customSetting, ...{ windowType: 'social-popup' }, ...customSetting };
       let win = new SOCIALBROWSER.remote.BrowserWindow({
         show: customSetting.show ?? true,
         alwaysOnTop: customSetting.alwaysOnTop ?? false,
@@ -428,14 +428,14 @@ module.exports = function (SOCIALBROWSER) {
         y: customSetting.y || 200,
         backgroundColor: customSetting.backgroundColor || '#ffffff',
         icon: customSetting.icon ?? SOCIALBROWSER.var.core.icon,
-        frame: customSetting.frame ?? true,
+        frame: true,
         title: customSetting.title ?? 'New Window',
         resizable: customSetting.resizable ?? true,
         fullscreenable: customSetting.fullscreenable ?? true,
         webPreferences: {
           contextIsolation: customSetting.contextIsolation ?? false,
           enableRemoteModule: customSetting.enableRemoteModule ?? true,
-          webaudio: !customSetting.audioOFF,
+          webaudio: customSetting.allowAudio,
           nativeWindowOpen: false,
           nodeIntegration: customSetting.node,
           nodeIntegrationInWorker: customSetting.node,
@@ -447,6 +447,8 @@ module.exports = function (SOCIALBROWSER) {
           plugins: true,
         },
       });
+      customSetting.win_id = win.id;
+
       SOCIALBROWSER.ipc('[handle-session]', { ...customSetting, name: customSetting.partition });
       SOCIALBROWSER.ipc('[add][window]', { win_id: win.id, customSetting: customSetting });
       SOCIALBROWSER.ipc('[assign][window]', {
@@ -458,9 +460,8 @@ module.exports = function (SOCIALBROWSER) {
       }
 
       win.setMenuBarVisibility(false);
-      if (customSetting.audioOFF) {
-        win.webContents.audioMuted = true;
-      }
+
+      win.webContents.audioMuted = !customSetting.allowAudio;
 
       if (customSetting.url) {
         win.loadURL(SOCIALBROWSER.handleURL(customSetting.url), {
@@ -560,6 +561,7 @@ module.exports = function (SOCIALBROWSER) {
         );
       };
 
+      win.customSetting = customSetting;
       return win;
     } catch (error) {
       SOCIALBROWSER.log(error);

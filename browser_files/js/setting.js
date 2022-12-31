@@ -369,7 +369,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
 
   $scope.addSession = function () {
     if ($scope.session.display.length > 0) {
-      $scope.session.name = new Date().getTime();
+      $scope.session.name = $scope.session.name || new Date().getTime();
       if (!$scope.session.memory) {
         $scope.session.name = 'persist:' + $scope.session.name;
       }

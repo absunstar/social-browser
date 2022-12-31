@@ -144,8 +144,8 @@ module.exports = function init(child) {
   child.electron.ipcMain.on('[get][window][setting]', (e, data) => {
     let win = child.windowList.find((w) => w.id == data.win_id);
     if (win) {
-      e.returnValue = win.setting;
-      e.reply('[get][window][setting][data]', win.setting);
+      e.returnValue = win.customSetting.windowSetting || [];
+      e.reply('[get][window][setting][data]', win.customSetting.windowSetting || []);
     } else {
       e.returnValue = [];
       e.reply('[get][window][setting][data]', []);

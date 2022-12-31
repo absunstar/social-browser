@@ -6,8 +6,7 @@ module.exports = function (SOCIALBROWSER) {
   SOCIALBROWSER.log(' >>> wintub script activated ...');
 
   SOCIALBROWSER.var.blocking.core.block_empty_iframe = true;
-
-  document.addEventListener('DOMContentLoaded', () => {
+  SOCIALBROWSER.onLoad(() => {
     SOCIALBROWSER.__showBotImage();
 
     if (document.getElementById('skipdiv')) {

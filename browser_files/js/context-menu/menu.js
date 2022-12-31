@@ -397,7 +397,7 @@ module.exports = function (SOCIALBROWSER) {
       });
     }
     arr.push({
-      label: ' in ( new tab )',
+      label: ' in ( New tab )',
       click() {
         SOCIALBROWSER.ipc('[open new tab]', {
           referrer: document.location.href,
@@ -409,13 +409,13 @@ module.exports = function (SOCIALBROWSER) {
       },
     });
     arr.push({
-      label: ' in ( current window )',
+      label: ' in ( Current window )',
       click() {
         document.location.href = url;
       },
     });
     arr.push({
-      label: ' in ( window popup )',
+      label: ' in ( New window )',
       click() {
         SOCIALBROWSER.ipc('[open new popup]', {
           url: url,
@@ -426,19 +426,19 @@ module.exports = function (SOCIALBROWSER) {
       },
     });
     arr.push({
-      label: ' in ( One window popup )',
+      label: ' in ( Self window )',
       click() {
         SOCIALBROWSER.ipc('[open new popup]', {
           url: url,
           referrer: document.location.href,
           partition: SOCIALBROWSER.partition,
           show: true,
-          oneWindow: true,
+          allowSelfWindow: true,
         });
       },
     });
     arr.push({
-      label: ' in ( Just window popup )',
+      label: ' in ( Just window  )',
       click() {
         SOCIALBROWSER.ipc('[open new popup]', {
           url: url,
@@ -450,7 +450,7 @@ module.exports = function (SOCIALBROWSER) {
       },
     });
     arr.push({
-      label: ' in ( Allow ads window popup )',
+      label: ' in ( Allow ads window )',
       click() {
         SOCIALBROWSER.ipc('[open new popup]', {
           url: url,
@@ -463,7 +463,7 @@ module.exports = function (SOCIALBROWSER) {
     });
 
     arr.push({
-      label: ' in ( Insecure popup )',
+      label: ' in ( Insecure window )',
       click() {
         SOCIALBROWSER.ipc('[open new popup]', {
           url: url,
@@ -476,7 +476,7 @@ module.exports = function (SOCIALBROWSER) {
     });
 
     arr.push({
-      label: ' in ( ghost popup )',
+      label: ' in ( Ghost window )',
       click() {
         SOCIALBROWSER.ipc('[open new popup]', {
           url: url,
@@ -790,7 +790,7 @@ module.exports = function (SOCIALBROWSER) {
       label: 'Print page',
       accelerator: 'CommandOrControl+p',
       click() {
-        window.print0();
+        window.print();
       },
     });
 
@@ -1024,7 +1024,7 @@ module.exports = function (SOCIALBROWSER) {
           },
         });
         arr2.push({
-          label: 'Open in ( window popup )',
+          label: 'Open in ( New window  )',
           click() {
             SOCIALBROWSER.ipc('[open new popup]', {
               partition: SOCIALBROWSER.partition,
@@ -1034,7 +1034,7 @@ module.exports = function (SOCIALBROWSER) {
           },
         });
         arr2.push({
-          label: 'Open in ( Insecure popup )',
+          label: 'Open in ( Insecure window )',
           click() {
             SOCIALBROWSER.ipc('[open new popup]', {
               partition: SOCIALBROWSER.partition,
@@ -1100,7 +1100,7 @@ module.exports = function (SOCIALBROWSER) {
       });
 
       arr3.push({
-        label: 'Open in ( window popup )',
+        label: 'Open in ( New window )',
         click() {
           SOCIALBROWSER.ipc('[open new popup]', {
             alwaysOnTop: true,
@@ -1111,7 +1111,7 @@ module.exports = function (SOCIALBROWSER) {
         },
       });
       arr3.push({
-        label: 'Open in ( Ghost popup )',
+        label: 'Open in ( Ghost window )',
         click() {
           SOCIALBROWSER.ipc('[open new popup]', {
             alwaysOnTop: true,
@@ -1122,7 +1122,7 @@ module.exports = function (SOCIALBROWSER) {
         },
       });
       arr3.push({
-        label: 'Open in ( Insecure popup )',
+        label: 'Open in ( Insecure window )',
         click() {
           SOCIALBROWSER.ipc('[open new popup]', {
             alwaysOnTop: true,
@@ -1167,7 +1167,7 @@ module.exports = function (SOCIALBROWSER) {
           },
         });
         arr3.push({
-          label: 'Open in ( window popup )',
+          label: 'Open in ( New window )',
           click() {
             SOCIALBROWSER.ipc('[open new popup]', {
               alwaysOnTop: true,
@@ -1179,7 +1179,7 @@ module.exports = function (SOCIALBROWSER) {
         });
 
         arr3.push({
-          label: 'Open in ( Insecure popup )',
+          label: 'Open in ( Insecure window )',
           click() {
             SOCIALBROWSER.ipc('[open new popup]', {
               alwaysOnTop: true,
@@ -1334,7 +1334,7 @@ module.exports = function (SOCIALBROWSER) {
       return menu;
     }
     social_arr.push({
-      label: ` Open  [ ${title} ] in 5 new Popup [Audio Muted]`,
+      label: ` Open  [ ${title} ] in 5 new window [Audio Muted]`,
       click() {
         for (let index = 0; index < 5; index++) {
           setTimeout(() => {
@@ -1342,7 +1342,7 @@ module.exports = function (SOCIALBROWSER) {
               partition: SOCIALBROWSER.partition,
               url: url,
               referrer: document.location.href,
-              webaudio: false,
+              allowAudio: false,
               show: true,
             });
           }, 1000 * 2 * index);
@@ -1350,7 +1350,7 @@ module.exports = function (SOCIALBROWSER) {
       },
     });
     social_arr.push({
-      label: ` Open [ ${title} ] in Many Popup [ All Profiles (${SOCIALBROWSER.var.session_list.length}) ] [Audio Muted]`,
+      label: ` Open [ ${title} ] in Many window [ All Profiles (${SOCIALBROWSER.var.session_list.length}) ] [Audio Muted]`,
       click() {
         for (let index = 0; index < SOCIALBROWSER.var.session_list.length; index++) {
           setTimeout(() => {
@@ -1359,7 +1359,7 @@ module.exports = function (SOCIALBROWSER) {
               user_name: SOCIALBROWSER.var.session_list[index].display,
               url: url,
               referrer: document.location.href,
-              webaudio: false,
+              allowAudio: false,
               show: true,
             });
           }, 1000 * index * 2);
@@ -1367,7 +1367,7 @@ module.exports = function (SOCIALBROWSER) {
       },
     });
     social_arr.push({
-      label: ` Open [ ${title} ] in Many Popup [ All User Agents (${SOCIALBROWSER.var.user_agent_list.length}) ] [Audio Muted]`,
+      label: ` Open [ ${title} ] in Many window [ All User Agents (${SOCIALBROWSER.var.user_agent_list.length}) ] [Audio Muted]`,
       click() {
         for (let index = 0; index < SOCIALBROWSER.var.user_agent_list.length; index++) {
           setTimeout(() => {
@@ -1376,7 +1376,7 @@ module.exports = function (SOCIALBROWSER) {
               user_agent: SOCIALBROWSER.var.user_agent_list[index].url,
               url: url,
               referrer: document.location.href,
-              webaudio: false,
+              allowAudio: false,
               show: true,
             });
           }, 1000 * index * 2);
@@ -1384,7 +1384,7 @@ module.exports = function (SOCIALBROWSER) {
       },
     });
     social_arr.push({
-      label: ` Open [ ${title} ] in Many Popup [ All User Agents (${SOCIALBROWSER.var.user_agent_list.length}) ] [Audio Muted] + Ghosts Profiles `,
+      label: ` Open [ ${title} ] in Many window [ All User Agents (${SOCIALBROWSER.var.user_agent_list.length}) ] [Audio Muted] + Ghosts Profiles `,
       click() {
         for (let index = 0; index < SOCIALBROWSER.var.user_agent_list.length; index++) {
           setTimeout(() => {
@@ -1395,7 +1395,7 @@ module.exports = function (SOCIALBROWSER) {
               user_agent: SOCIALBROWSER.var.user_agent_list[index].url,
               url: url,
               referrer: document.location.href,
-              webaudio: false,
+              allowAudio: false,
               show: true,
             });
           }, 1000 * index * 1);
@@ -1404,7 +1404,7 @@ module.exports = function (SOCIALBROWSER) {
     });
 
     social_arr.push({
-      label: ` Open [ ${title} ] in Many Popup [ Proxy List ( 10 ) ] [Audio Muted] + Ghosts Profiles `,
+      label: ` Open [ ${title} ] in Many window [ Proxy List ( 10 ) ] [Audio Muted] + Ghosts Profiles `,
       click() {
         if (!SOCIALBROWSER.proxyIndex) {
           SOCIALBROWSER.proxyIndex = 0;
@@ -1419,7 +1419,7 @@ module.exports = function (SOCIALBROWSER) {
               user_agent: SOCIALBROWSER.userAgent,
               url: url,
               referrer: document.location.href,
-              audioOFF: true,
+              allowAudio: false,
               show: true,
               proxy: SOCIALBROWSER.var.proxy_list[index],
             });
@@ -1845,7 +1845,7 @@ module.exports = function (SOCIALBROWSER) {
 
         menu.append(
           new MenuItem({
-            label: 'Duplicate tab in Popup',
+            label: 'Duplicate tab in window',
             click() {
               SOCIALBROWSER.ipc('[open new popup]', {
                 child_id: child_id,
@@ -1861,7 +1861,7 @@ module.exports = function (SOCIALBROWSER) {
         );
         menu.append(
           new MenuItem({
-            label: 'Duplicate tab in Ghost Popup',
+            label: 'Duplicate tab in Ghost window',
             click() {
               SOCIALBROWSER.ipc('[open new popup]', {
                 child_id: child_id,

@@ -1,5 +1,63 @@
 module.exports = function (child) {
+  child.getOverwriteInfo = function (url) {
+    let info = {
+      url: url,
+      overwrite: false,
+      new_url: url,
+    };
+
+    if ((index = child.overwriteList.findIndex((item) => info.url.like(item.from)))) {
+      if (index < 0) {
+        return info;
+      }
+      let info2 = child.overwriteList[index];
+      info2.time = info2.time || new Date().getTime();
+      info.break = new Date().getTime() - info2.time;
+      if (info2.timing && info.break < 1000 * 60) {
+        return info;
+      }
+      if (info2.ignore && info.url.like(info2.ignore)) {
+        return info;
+      }
+
+      info.new_url = info2.to;
+      info2.rediect_from = info.url;
+
+      if (info2.query) {
+        let q = url.split('?')[1];
+        if (q) {
+          q = '?' + q;
+        } else {
+          q = '';
+        }
+        info.new_url = info2.to + q;
+      }
+
+      info.overwrite = true;
+      child.overwriteList[index].time = new Date().getTime();
+      child.log('Auto overwrite redirect', info);
+    }
+
+    return info;
+  };
+  child.addOverwriteList = function (list) {
+    if (Array.isArray(list)) {
+      list.forEach((item) => {
+        if (child.overwriteList.some((item2) => item2.from == item.from)) {
+          let index = child.overwriteList.findIndex((item2) => item2.from == item.from);
+          child.overwriteList[index] = item;
+        } else {
+          item.timing = true;
+          child.overwriteList.push(item);
+        }
+      });
+    }
+  };
   child.overwriteList = [
+    {
+      from: '*images/bot.gif*',
+      to: 'browser://images/bot.gif',
+    },
     {
       from: '*pagead2.googlesyndication.com/pagead/js/adsbygoogle.js*',
       to: 'browser://js/googlesyndication_adsbygoogle.js',
@@ -14,94 +72,11 @@ module.exports = function (child) {
       from: '*googletagmanager.com/gtm.js*',
       to: 'browser://js/googletagmanager_gtm.js',
       query: true,
-    },  {
+    },
+    {
       from: 'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png',
       to: 'browser://images/background.png',
       query: true,
-    },
-    
-    {
-      from: 'https://fpa.fingerprint.com*',
-      to: 'browser://txt/fingerprint.txt',
-      query: true,
-    },
-    {
-      from: 'https://www.swagbucks.com|https://www.swagbucks.com/',
-      to: 'https://www.swagbucks.com/p/register?rb=110986255',
-      ignore: '*110986255*',
-    },
-
-    {
-      from: 'https://www.adsterra.com|https://www.adsterra.com/',
-      to: 'https://publishers.adsterra.com/referral/iaUDDznnSB',
-      ignore: '*iaUDDznnSB*',
-    },
-
-    {
-      from: 'https://www.propellerads.com|https://www.propellerads.com/',
-      to: 'https://propellerads.com/publishers/?ref_id=mAlX',
-      ignore: '*ref_id=mAlX*',
-    },
-    {
-      from: 'https://m.do.co/c*|https://www.digitalocean.com/|https://try.digitalocean.com*',
-      to: 'https://m.do.co/c/f192b51fbbf7',
-      ignore: '*f192b51fbbf7*',
-    },
-    {
-      from: 'https://www.expressvpn.com/?gclid=*|https://www.expressvpn.com/',
-      to: 'https://www.expressrefer.com/refer-friend?referrer_id=41888111&utm_campaign=referrals&utm_medium=copy_link&utm_source=referral_dashboard',
-      ignore: '*41888111*',
-    },
-    {
-      from: 'https://youlikehits.com/|https://www.youlikehits.com/?x=*|http://ylkhts.cc/?id=*',
-      to: 'http://ylkhts.cc/?id=2773499',
-      ignore: '*2773499*|*referral*|*referals*',
-    },
-    {
-      from: 'https://www.10khits.com/|https://www.10khits.com*ref*',
-      to: 'https://www.10khits.com/?ref=581369',
-      ignore: '*581369*|*referal*|*referrals*',
-    },
-    {
-      from: 'https://www.hitleap.com/|https://www.hitleap.com*by*',
-      to: 'https://hitleap.com/by/kamally356',
-      ignore: '*kamally356*|*referal*|*referrals*',
-    },
-    {
-      from: 'https://www.otohits.net/|https://www.otohits.net*ref=*',
-      to: 'https://www.otohits.net/?ref=267830',
-      ignore: '*267830*|*referal*|*referrals*',
-    },
-    {
-      from: 'https://linkatcom.com/|https://linkatcom.com/ref/*',
-      to: 'https://linkatcom.com/ref/kamally356',
-      ignore: '*kamally356*|*referal*',
-      query: true,
-    },
-    {
-      from: 'http*wintub.com/|http*wintub.com/?r=*',
-      to: 'https://wintub.com/?r=4986083',
-      ignore: '*4986083*',
-    },
-    {
-      from: 'https://rankboostup.com|https://rankboostup.com/|https://rankboostup.com*refid=*',
-      to: 'https://rankboostup.com/?refid=341684',
-      ignore: '*341684*|*referrals*',
-    },
-    {
-      from: 'https://traficads.com|https://traficads.com/|https://traficads.com*refid=*',
-      to: 'https://traficads.com/?ref=11393',
-      ignore: '*11393*|*referrals*',
-    },
-    {
-      from: '*watchhours.com|*watchhours.com/|*watchhours.com*ref=*',
-      to: 'https://watchhours.com/?ref=19750',
-      ignore: '*19750*|*referrals*',
-    },
-    {
-      from: 'https://exe.io|https://exe.io/|https://exe.io/ref*',
-      to: 'https://exe.io/ref/kamally356',
-      ignore: '*kamally356*|*referrals*',
     },
   ];
 

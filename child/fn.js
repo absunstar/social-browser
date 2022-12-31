@@ -235,40 +235,7 @@ module.exports = function (child) {
     return out;
   };
 
-  child.getOverwriteInfo = function (url) {
-    let info = {
-      url: url,
-      overwrite: false,
-      new_url: url,
-    };
-    if ((info2 = child.overwriteList.find((item) => info.url.like(item.from)))) {
-      if (info2.time && new Date().getTime() - info2.time < 3000) {
-        return info;
-      }
-      if (info2.ignore && info.url.like(info2.ignore)) {
-        return info;
-      }
-
-      info.new_url = info2.to;
-      info2.rediect_from = info.url;
-
-      child.log(`\n Auto overwrite redirect from \n   ${info.url} \n to \n   ${info.new_url} \n`);
-      info2.time = new Date().getTime();
-      if (info2.query) {
-        let q = url.split('?')[1];
-        if (q) {
-          q = '?' + q;
-        } else {
-          q = '';
-        }
-        info.new_url = info2.to + q;
-      }
-
-      info.overwrite = true;
-    }
-
-    return info;
-  };
+  
 
   child.updateTab = function (win) {
     let setting = win.customSetting;

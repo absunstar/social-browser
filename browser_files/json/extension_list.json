@@ -34,14 +34,6 @@
     "isEnabled": false
   },
   {
-    "id": "df1a5745d89b73e1f5becfd40765fc99",
-    "path": "{dir}/extensions/hitleap/index.js",
-    "name": "HitLeap Integration",
-    "description": "hitleap.com site integration",
-    "canDelete": false,
-    "isEnabled": false
-  },
-  {
     "id": "7b45f7ac2220fccb0d9cd8a51e4de030",
     "path": "{dir}/extensions/rankboostup/index.js",
     "name": "RankBoosUp",

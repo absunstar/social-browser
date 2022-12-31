@@ -7,20 +7,7 @@
             "query": false
         },
 
-        
-        {
-            "from": "https://www.adsterra.com|https://www.adsterra.com/",
-            "to": "https://publishers.adsterra.com/referral/iaUDDznnSB",
-            "ignore": "*iaUDDznnSB*",
-            "query": false
-        },
-
-        {
-            "from": "https://www.propellerads.com|https://www.propellerads.com/",
-            "to": "https://propellerads.com/publishers/?ref_id=mAlX",
-            "ignore": "*ref_id=mAlX*",
-            "query": false
-        },
+       
         {
             "from": "https://m.do.co/c*|https://www.digitalocean.com/|https://try.digitalocean.com*",
             "to": "https://m.do.co/c/f192b51fbbf7",
@@ -46,21 +33,10 @@
             "query": false
         },
         {
-            "from": "https://www.hitleap.com/|https://www.hitleap.com*by*",
-            "to": "https://hitleap.com/by/kamally356",
-            "ignore": "*kamally356*|*referal*|*referrals*",
-            "query": false
-        },
-        {
             "from": "https://www.otohits.net/|https://www.otohits.net*ref=*",
             "to": "https://www.otohits.net/?ref=267830",
             "ignore": "*267830*|*referal*|*referrals*",
             "query": false
-        },
-        {
-            "from": "https://linkatcom.com/|https://linkatcom.com/ref/*",
-            "to": "https://linkatcom.com/ref/kamally356",
-            "ignore": "*kamally356*|*referal*"
         },
         {
             "from": "http*wintub.com/|http*wintub.com/?r=*",

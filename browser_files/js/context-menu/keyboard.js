@@ -92,7 +92,7 @@ module.exports = function (SOCIALBROWSER) {
         }
       } else if (e.keyCode == 80 /*p*/) {
         if (e.ctrlKey == true) {
-          window.print0();
+          window.print();
         }
       } else if (e.keyCode == 46 /*delete*/) {
         if (e.ctrlKey == true && mousemove) {

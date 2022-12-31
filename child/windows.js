@@ -127,13 +127,14 @@ module.exports = function (child) {
       allowDownload: true,
       allowAds: false,
       allowNewWindows: true,
-      allowFixedWindow: false,
       allowSaveUserData: true,
       allowSaveUrls: true,
       allowSocialBrowser: true,
       allowRedirect: true,
       allowSelfRedirect: true,
       allowSelfWindow: false,
+      allowJavascript: true,
+      allowAudio: true,
       show: setting.show === true ? true : false,
       alwaysOnTop: false,
       skipTaskbar: false,
@@ -157,7 +158,6 @@ module.exports = function (child) {
         devTools: true,
         spellcheck: false,
         sandbox: false,
-        webaudio: typeof setting.webaudio !== undefined ? setting.webaudio : true,
         contextIsolation: false, // false -> can access preload window functions
         partition: setting.partition,
         preload: setting.preload || child.parent.files_dir + '/js/context-menu.js',
@@ -204,7 +204,7 @@ module.exports = function (child) {
       defaultSetting.resizable = false;
       defaultSetting.frame = false;
       defaultSetting.fullscreenable = false;
-      defaultSetting.webPreferences.webaudio = false;
+      defaultSetting.allowAudio = false;
     } else if (setting.windowType === 'profiles') {
       defaultSetting.show = false;
       defaultSetting.alwaysOnTop = false;
@@ -212,14 +212,14 @@ module.exports = function (child) {
       defaultSetting.resizable = false;
       defaultSetting.fullscreenable = false;
       defaultSetting.frame = false;
-      defaultSetting.webPreferences.webaudio = false;
+      defaultSetting.allowAudio = false;
     } else if (setting.windowType === 'updates') {
       defaultSetting.show = false;
       defaultSetting.alwaysOnTop = false;
       defaultSetting.skipTaskbar = true;
       defaultSetting.resizable = true;
       defaultSetting.frame = true;
-      defaultSetting.webPreferences.webaudio = false;
+      defaultSetting.allowAudio = false;
       defaultSetting.center = true;
     } else if (setting.windowType === 'none') {
       setting.url = 'https://www.google.com';
@@ -228,7 +228,7 @@ module.exports = function (child) {
       defaultSetting.skipTaskbar = true;
       defaultSetting.resizable = true;
       defaultSetting.frame = true;
-      defaultSetting.webPreferences.webaudio = false;
+      defaultSetting.allowAudio = false;
       defaultSetting.center = true;
     }
 
@@ -248,10 +248,14 @@ module.exports = function (child) {
       defaultSetting.webPreferences.allowRunningInsecureContent = true;
     }
 
-    defaultSetting = { ...defaultSetting, ...setting };
+    let customSetting = { ...defaultSetting, ...setting };
 
-    let win = new child.electron.BrowserWindow(defaultSetting);
-    win.customSetting = defaultSetting;
+    customSetting.webPreferences.javascript = customSetting.allowJavascript;
+    customSetting.webPreferences.webaudio = customSetting.allowAudio;
+
+    let win = new child.electron.BrowserWindow(customSetting);
+
+    win.customSetting = customSetting;
     win.customSetting.windowSetting = win.customSetting.windowSetting || [];
     child.remoteMain.enable(win.webContents);
 
@@ -277,8 +281,8 @@ module.exports = function (child) {
       child.window = win;
     }
     if (win.customSetting.eval) {
-      win.customSetting.setting = win.customSetting.setting || [];
-      win.customSetting.setting.push({
+      win.customSetting.windowSetting = win.customSetting.windowSetting || [];
+      win.customSetting.windowSetting.push({
         name: 'eval',
         code: win.customSetting.eval,
       });
@@ -347,6 +351,7 @@ module.exports = function (child) {
     }
 
     win.once('ready-to-show', function () {
+      win.webContents.audioMuted = !win.customSetting.allowAudio;
       win.customSetting.title = win.customSetting.title || win.customSetting.url;
       if (win.customSetting.windowType === 'main') {
         win.show();
@@ -371,10 +376,6 @@ module.exports = function (child) {
         win.close();
       }
     });
-
-    if (win.customSetting.webaudio === false) {
-      win.webContents.audioMuted = true;
-    }
 
     win.setMenuBarVisibility(false);
 
@@ -594,7 +595,10 @@ module.exports = function (child) {
     });
 
     win.webContents.on('context-menu', (event, params) => {
-      if (win && !win.isDestroyed() && win.customSetting.allowMenu) {
+      if (!win.customSetting.allowMenu) {
+        return;
+      }
+      if (win && !win.isDestroyed()) {
         win.webContents.send('context-menu', params);
         return;
       }
@@ -779,28 +783,14 @@ module.exports = function (child) {
 
         return;
       }
-      let ok = false;
-      parent.var.overwrite.urls.forEach((_url) => {
-        if (ok) {
-          return;
-        }
-        if (url.like(_url.from)) {
-          if (_url.time && new Date().getTime() - _url.time < 3000) {
-            return;
-          }
-
-          if (_url.ignore && url.like(_url.ignore)) {
-            return;
-          }
-
-          ok = true;
-          e.preventDefault();
-          _url.time = new Date().getTime();
+      if ((info = child.getOverwriteInfo(url))) {
+        if (info.overwrite) {
           if (win && !win.isDestroyed()) {
-            win.loadURL(_url.to);
+            e.preventDefault();
+            win.loadURL(info.new_url);
           }
         }
-      });
+      }
     });
     win.webContents.on('will-navigate', (e, url) => {
       if (!win.customSetting.allowRedirect || !child.isAllowURL(url)) {
@@ -813,7 +803,7 @@ module.exports = function (child) {
     if (win.webContents.setWindowOpenHandler) {
       win.webContents.setWindowOpenHandler(({ url, frameName }) => {
         child.log('setWindowOpenHandler', url);
-        if (win.customSetting.allowSelfWindow && win.customSetting.allowRedirect)  {
+        if (win.customSetting.allowSelfWindow && win.customSetting.allowRedirect) {
           win.loadURL(url);
           return { action: 'deny' };
         }
