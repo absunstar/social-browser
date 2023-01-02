@@ -684,11 +684,11 @@ module.exports = function (SOCIALBROWSER) {
 
   SOCIALBROWSER.injectDefault = function () {
     try {
-      if ((document.body || document.head || document.documentElement) && !document.querySelector('#social_browser_html')) {
+      if (document.body && !document.querySelector('#social_browser_html')) {
         let social_browser_html = document.createElement('div');
         social_browser_html.id = 'social_browser_html';
         social_browser_html.innerHTML = Buffer.from(SOCIALBROWSER.injectHTML).toString();
-        (document.body || document.head || document.documentElement).appendChild(social_browser_html);
+        document.body.appendChild(social_browser_html);
       }
       if ((document.body || document.head || document.documentElement) && !document.querySelector('#social_browser_css')) {
         let social_browser_css = document.createElement('style');

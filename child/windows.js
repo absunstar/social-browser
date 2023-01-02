@@ -234,7 +234,9 @@ module.exports = function (child) {
 
     if (setting.show === false) {
       defaultSetting.show = false;
-      // defaultSetting.paintWhenInitiallyHidden = false;
+    }
+    if (setting.alwaysOnTop === false) {
+      defaultSetting.alwaysOnTop = false;
     }
     if (setting.trusted === true) {
       defaultSetting.webPreferences.nodeIntegration = true;
