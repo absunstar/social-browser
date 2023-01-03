@@ -185,12 +185,13 @@ module.exports = function (child) {
     } else if (setting.windowType === 'youtube') {
       defaultSetting.show = true;
       defaultSetting.alwaysOnTop = true;
-      defaultSetting.center = true;
       defaultSetting.webPreferences.webSecurity = false;
       defaultSetting.webPreferences.allowRunningInsecureContent = true;
+      defaultSetting.width = 520;
+      defaultSetting.height = 330;
+      defaultSetting.x = parent.options.screen.bounds.width - 550;
+      defaultSetting.y = parent.options.screen.bounds.height - 400;
     } else if (setting.windowType.contains('popup')) {
-      defaultSetting.show = true;
-      defaultSetting.center = true;
       defaultSetting.alwaysOnTop = true;
     } else if (setting.windowType === 'view') {
       defaultSetting.show = false;

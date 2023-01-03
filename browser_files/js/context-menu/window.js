@@ -82,6 +82,7 @@ module.exports = function (SOCIALBROWSER) {
         url: 'https://www.youtube.com/embed/' + url.split('=')[1].split('&')[0],
         partition: SOCIALBROWSER.partition,
         referrer: document.location.href,
+        show : true
       });
 
       return child_window;

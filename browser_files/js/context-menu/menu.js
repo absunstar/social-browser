@@ -603,6 +603,8 @@ module.exports = function (SOCIALBROWSER) {
                 url: 'https://www.youtube.com/embed/' + u.split('=')[1].split('&')[0],
                 partition: SOCIALBROWSER.partition,
                 referrer: document.location.href,
+                show: true,
+                windowType : 'youtube'
               });
             },
           })
@@ -615,6 +617,7 @@ module.exports = function (SOCIALBROWSER) {
                 url: u.replace('youtube', 'ssyoutube'),
                 partition: SOCIALBROWSER.partition,
                 referrer: document.location.href,
+                show: true,
               });
             },
           })
@@ -1019,6 +1022,7 @@ module.exports = function (SOCIALBROWSER) {
               partition: SOCIALBROWSER.partition,
               url: 'http://127.0.0.1:60080/iframe?url=' + f.src,
               referrer: document.location.href,
+              show: true,
               vip: true,
             });
           },
@@ -1030,6 +1034,7 @@ module.exports = function (SOCIALBROWSER) {
               partition: SOCIALBROWSER.partition,
               url: f.src,
               referrer: document.location.href,
+              show: true,
             });
           },
         });
@@ -1041,6 +1046,7 @@ module.exports = function (SOCIALBROWSER) {
               url: f.src,
               referrer: document.location.href,
               security: false,
+              show: true,
             });
           },
         });
@@ -1094,6 +1100,7 @@ module.exports = function (SOCIALBROWSER) {
             partition: SOCIALBROWSER.partition,
             url: 'http://127.0.0.1:60080/iframe?url=' + f.src,
             referrer: document.location.href,
+            show: true,
             vip: true,
           });
         },
@@ -1107,6 +1114,7 @@ module.exports = function (SOCIALBROWSER) {
             partition: SOCIALBROWSER.partition,
             url: f.src,
             referrer: document.location.href,
+            show: true,
           });
         },
       });
@@ -1118,6 +1126,7 @@ module.exports = function (SOCIALBROWSER) {
             partition: 'x-ghost_' + Date.now(),
             url: f.src,
             referrer: document.location.href,
+            show: true,
           });
         },
       });
@@ -1130,6 +1139,7 @@ module.exports = function (SOCIALBROWSER) {
             url: f.src,
             referrer: document.location.href,
             security: false,
+            show: true,
           });
         },
       });
@@ -1163,6 +1173,7 @@ module.exports = function (SOCIALBROWSER) {
               partition: SOCIALBROWSER.partition,
               url: f.src,
               referrer: document.location.href,
+              show: true,
             });
           },
         });
@@ -1174,6 +1185,7 @@ module.exports = function (SOCIALBROWSER) {
               partition: SOCIALBROWSER.partition,
               url: f.src,
               referrer: document.location.href,
+              show: true,
             });
           },
         });
@@ -1187,6 +1199,7 @@ module.exports = function (SOCIALBROWSER) {
               url: f.src,
               referrer: document.location.href,
               security: false,
+              show: true,
             });
           },
         });
@@ -1279,6 +1292,7 @@ module.exports = function (SOCIALBROWSER) {
               partition: SOCIALBROWSER.partition,
               url: 'https://www.youtube.com/embed/' + document.location.href.split('=')[1].split('&')[0],
               referrer: document.location.href,
+              show: true,
             });
           },
         })
@@ -1292,6 +1306,7 @@ module.exports = function (SOCIALBROWSER) {
               partition: SOCIALBROWSER.partition,
               referrer: document.location.href,
               url: document.location.href.replace('youtube', 'ssyoutube'),
+              show: true,
             });
           },
         })

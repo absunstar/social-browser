@@ -377,7 +377,7 @@ module.exports = function init(child) {
     data.user_name = data.user_name || child.parent.var.core.session.display;
 
     delete data.name;
-    data.windowType = 'popup';
+    data.windowType = data.windowType || 'popup';
     child.sendMessage({
       type: '[create-new-window]',
       options: data,
