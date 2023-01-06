@@ -97,14 +97,13 @@ video0 {
   font-size: 14px;
   left: 0px;
   bottom: 0px;
-  padding: 5px;
-  padding-left: 10px;
+  padding: 2px;
   z-index: 9999999;
   border-top: 1px solid #bbb;
   border-right: 1px solid #bbb;
   direction: ltr;
-  max-height: 30px;
   overflow: hidden;
+  white-space: nowrap;
 }
 #__targetUrl:hover{
   display: none;

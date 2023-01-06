@@ -222,14 +222,17 @@ module.exports = function init(child) {
 
   child.electron.ipcMain.on('[translate]', (e, info) => {
     info.text = encodeURIComponent(info.text);
+    info.from = info.from || 'auto';
+    info.from = info.from || 'en';
     child
-      .fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=en&dt=t&dt=bd&dj=1&q=${info.text}`, {
+      .fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${info.from}&tl=${info.to}&dt=t&dt=bd&dj=1&q=${info.text}`, {
         method: 'get',
         headers: { 'Content-Type': 'application/json' },
       })
       .then((res) => res.json())
       .then((data) => {
-        e.reply('[translate][data]', data);
+        info.data = data;
+        e.reply('[translate][data]', info);
       })
       .catch((err) => {
         child.log('[translate]', err);

@@ -606,42 +606,51 @@ module.exports = function (SOCIALBROWSER) {
     return false;
   };
 
-  let translate_busy = false;
-  SOCIALBROWSER.translate = function (text, callback) {
-    callback =
+  SOCIALBROWSER.translateBusy = false;
+  SOCIALBROWSER.translateList = [];
+  SOCIALBROWSER.translate = function (info, callback) {
+    if (!info) {
+      callback('');
+      return;
+    }
+    if (typeof info === 'string') {
+      info = { text: info };
+    }
+    info.id = Math.random();
+    info.callback =
       callback ||
       function (trans) {
         SOCIALBROWSER.log(trans);
       };
-    if (text.test(/^[a-zA-Z\-\u0590-\u05FF\0-9^@_:?;!\[\]~<>{}|\\]+$/)) {
-      callback(text);
+    if (info.text.test(/^[a-zA-Z\-\u0590-\u05FF\0-9^@_:?;!\[\]~<>{}|\\]+$/)) {
+      callback(info.text);
       return;
     }
-    if (!text) {
-      callback(text);
-      return;
-    }
-    if (translate_busy) {
+
+    if (SOCIALBROWSER.translateBusy) {
       setTimeout(() => {
-        SOCIALBROWSER.translate(text, callback);
+        SOCIALBROWSER.translate(info, callback);
       }, 250);
       return;
     }
-    translate_busy = true;
+    SOCIALBROWSER.translateBusy = true;
 
-    SOCIALBROWSER.on('[translate][data]', (e, data) => {
-      translate_busy = false;
-      translated_text = '';
-      if (data && data.sentences && data.sentences.length > 0) {
-        data.sentences.forEach((t) => {
-          translated_text += t.trans;
-        });
-        callback(translated_text || text);
-      }
-    });
-
-    SOCIALBROWSER.call('[translate]', { text: text });
+    SOCIALBROWSER.translateList.push(info);
+    SOCIALBROWSER.call('[translate]', { id: info.id, text: info.text, from: info.from, to: info.to });
   };
+
+  SOCIALBROWSER.on('[translate][data]', (e, info) => {
+    SOCIALBROWSER.translateBusy = false;
+    info.translatedText = '';
+    if (info.data && info.data.sentences && info.data.sentences.length > 0) {
+      info.data.sentences.forEach((t) => {
+        info.translatedText += t.trans;
+      });
+      if ((_info = SOCIALBROWSER.translateList.find((t) => t.id == info.id))) {
+        _info.callback(info);
+      }
+    }
+  });
 
   SOCIALBROWSER.printerList = [];
   SOCIALBROWSER.getPrinters = function () {
