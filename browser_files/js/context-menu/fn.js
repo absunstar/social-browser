@@ -291,12 +291,15 @@ module.exports = function (SOCIALBROWSER) {
     let dom = typeof selector === 'string' ? SOCIALBROWSER.$(selector) : selector;
     if (dom) {
       if (realPerson && SOCIALBROWSER.currentWindow && SOCIALBROWSER.webContents && SOCIALBROWSER.currentWindow.isVisible()) {
-        dom.scrollIntoView();
-        if (window.scrollY == 0) {
-        } else if (window.innerHeight + window.scrollY >= document.body.scrollHeight) {
-        } else {
-          window.scroll(window.scrollX, window.scrollY - dom.clientHeight);
+        if (!SOCIALBROWSER.isViewable(dom)) {
+          dom.scrollIntoView();
+          if (window.scrollY == 0) {
+          } else if (window.innerHeight + window.scrollY >= document.body.scrollHeight) {
+          } else {
+            window.scroll(window.scrollX, window.scrollY - dom.clientHeight);
+          }
         }
+
         let offset = SOCIALBROWSER.getOffset(dom);
         SOCIALBROWSER.currentWindow.focus();
         SOCIALBROWSER.webContents.sendInputEvent({ type: 'mouseDown', x: offset.x, y: offset.y, button: 'left', clickCount: 1 });

@@ -223,7 +223,7 @@ module.exports = function init(child) {
   child.electron.ipcMain.on('[translate]', (e, info) => {
     info.text = encodeURIComponent(info.text);
     info.from = info.from || 'auto';
-    info.from = info.from || 'en';
+    info.to = info.to || 'en';
     child
       .fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${info.from}&tl=${info.to}&dt=t&dt=bd&dj=1&q=${info.text}`, {
         method: 'get',

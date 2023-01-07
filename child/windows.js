@@ -137,7 +137,7 @@ module.exports = function (child) {
       allowAudio: true,
       show: setting.show === true ? true : false,
       alwaysOnTop: false,
-      skipTaskbar: false,
+      skipTaskbar: setting.skipTaskbar || false,
       resizable: true,
       width: 1200,
       height: 720,
