@@ -181,9 +181,9 @@ module.exports = function (SOCIALBROWSER) {
             SOCIALBROWSER.youtubeMaster.blockPlayer();
           }
         });
-        SOCIALBROWSER.translate(txt, (txt2) => {
+        SOCIALBROWSER.translate(txt, (info) => {
           SOCIALBROWSER.var.blocking.youtube.safty_mode.words_list.forEach((w) => {
-            if (txt2.toLowerCase().like(w.text)) {
+            if (info.translatedText.toLowerCase().like(w.text)) {
               SOCIALBROWSER.youtubeMaster.blockPlayer();
             }
           });

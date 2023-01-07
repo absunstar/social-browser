@@ -1,5 +1,9 @@
 module.exports = function (SOCIALBROWSER) {
-  if (SOCIALBROWSER.var.core.javaScriptOFF || !SOCIALBROWSER.var.blocking.allow_safty_mode || document.location.href.like('http://localhost*|https://localhost*|http://127.0.0.1*|https://127.0.0.1*|browser://*|chrome://*')) {
+  if (
+    SOCIALBROWSER.var.core.javaScriptOFF ||
+    !SOCIALBROWSER.var.blocking.allow_safty_mode ||
+    document.location.href.like('http://localhost*|https://localhost*|http://127.0.0.1*|https://127.0.0.1*|browser://*|chrome://*')
+  ) {
     return;
   }
 
@@ -19,8 +23,8 @@ module.exports = function (SOCIALBROWSER) {
     }
 
     translated = true;
-    SOCIALBROWSER.translate(text, (trans) => {
-      translated_text += trans;
+    SOCIALBROWSER.translate(text, (info) => {
+      translated_text += info.translatedText;
       check_unsafe_words();
     });
   };

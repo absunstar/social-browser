@@ -55,7 +55,7 @@ module.exports = function (child) {
   };
   child.overwriteList = [
     {
-      from: '*images/bot.gif*',
+      from: '*images/bot.gif',
       to: 'browser://images/bot.gif',
     },
     {
