@@ -252,7 +252,7 @@ module.exports = function (parent) {
         details.requestHeaders['User-Agent'] = parent.var.core.user_agent;
       }
 
-      if (parent.var.blocking.privacy.enable_virtual_pc && parent.var.blocking.privacy.vpc.mask_user_agent) {
+      if (parent.var.blocking.privacy.enable_virtual_pc && parent.var.blocking.privacy.vpc && parent.var.blocking.privacy.vpc.mask_user_agent) {
         if (!details.requestHeaders['User-Agent'].like('*[xx-*')) {
           let code = name;
           code += new URL(url).hostname;

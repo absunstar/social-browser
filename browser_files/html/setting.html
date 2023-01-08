@@ -32,6 +32,7 @@
         --tabs-content-width: 75%;
         --table-hover-background-color: #4caf5070;
         --tabs-header-link-border-bottom: 1px solid #000;
+        --bs-body-font-family: var(--font-family);
       }
       html,
       body {
@@ -118,6 +119,9 @@
         background: #bbb;
         border: none;
         color: #6a6969;
+      }
+      i-button:hover {
+        transform: scale(1.1);
       }
     </style>
     <script src="http://127.0.0.1:60080/x-js/bootstrap-5-support.js"></script>
@@ -345,7 +349,7 @@
                   <br />
                   <br />
                   <div class="row padding" ng-show="setting.blocking.privacy.enable_virtual_pc">
-                    <i-button type="bg-black white bold" label="Generate Virual PC" ng-click="generateVPC()"></i-button>
+                    <i-button type="add" label="Generate Virual PC" ng-click="generateVPC()"></i-button>
                     <div class="row padding border2">
                       <div class="col3"><i-checkbox label="Hide CPU Count" ng-model="setting.blocking.privacy.vpc.hide_cpu"></i-checkbox></div>
                       <div class="col6">
@@ -702,8 +706,9 @@
                   <br />
                   <br />
                   <div class="row">
-                    <i-button type="bg-black white bold" label="Generate Virual PC for all users" ng-click="generateVPC('*')"></i-button>
-                    <i-button type="" onclick="SOCIALBROWSER.call('check_sessions')" label="Checking Sessions"></i-button>
+                    <i-button type="add" label="Generate Virual PC for all users" ng-click="generateVPC('*')"></i-button>
+                    <i-button type="" label="Stop Virual PC for all users" ng-click="stopVPC('*')"></i-button>
+                    <i-button type="" label="Clear All user agent" ng-click="clearUserAgent('*')"></i-button>
                   </div>
                   <div class="row">
                     <table class="table hover">
@@ -720,9 +725,9 @@
                         </td>
                         <td><i-control ng-model="_se.display"></i-control></td>
                         <td>
-                          <a class="btn" ng-click="showSession(_se)"> Options </a>
-                          <i-button type="bg-black white bold" label="Generate Virual PC" ng-click="generateVPC(_se)"></i-button>
-                          <a class="btn red" ng-click="removeSession(_se)"> <i class="fa fa-trash"></i> Remove </a>
+                          <i-button type="view" label="Setting" ng-click="showSession(_se)"></i-button>
+                          <i-button type="add" label="Generate Virual PC" ng-click="generateVPC(_se)"></i-button>
+                          <i-button type="delete" label="Delete " ng-click="removeSession(_se)"></i-button>
                         </td>
                       </tr>
                     </table>
@@ -804,7 +809,9 @@
                       <i-checkbox label="Enable Virtual PC" ng-model="currentSession.privacy.enable_virtual_pc"></i-checkbox>
                       <br />
                       <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border">
-                        <i-button type="bg-black white bold" label="Generate Virual PC" ng-click="generateVPC(currentSession)"></i-button>
+                        <div class="row">
+                          <i-button type="add" label="Generate Virual PC" ng-click="generateVPC(currentSession)"></i-button>
+                        </div>
                         <div class="col6"><i-checkbox label="Hide CPU Count" ng-model="currentSession.privacy.vpc.hide_cpu"></i-checkbox></div>
                         <div class="col6">
                           <i-control type="number" ng-disabled="currentSession.privacy.vpc.hide_cpu !== true" ng-model="currentSession.privacy.vpc.cpu_count" label="Custom CPU Count"></i-control>
@@ -916,7 +923,7 @@
                     </form>
                   </div>
                   <div class="modal-footer center">
-                    <a class="btn" onclick="site.hideModal('#usersOptionsModal')"> <i class="fa fa-close" aria-hidden="true"></i> Close </a>
+                    <i-button type="close" onclick="site.hideModal('#usersOptionsModal')" label="Close"></i-button>
                   </div>
                 </div>
               </div>

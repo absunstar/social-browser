@@ -189,14 +189,14 @@ module.exports = function init(parent) {
         } else if (name == 'user_agent_list') {
           default_content.forEach((d) => {
             let exists = false;
-            currentContent.forEach((d2) => {
+            currentContent.forEach((d2, i) => {
               if (d.name == d2.name) {
                 exists = true;
-                d2.url = d.url;
-                d2.platform = d.platform;
-                d2.oscpu = d.oscpu;
-                d2.vendor = d.vendor;
-                d2.engine = d.engine;
+                currentContent[i].url = d.url;
+                currentContent[i].platform = d.platform;
+                currentContent[i].oscpu = d.oscpu;
+                currentContent[i].vendor = d.vendor;
+                currentContent[i].engine = d.engine;
               }
             });
             if (!exists) {

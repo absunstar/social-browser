@@ -17,12 +17,15 @@ module.exports = function init(parent) {
       enabled: false,
     },
     mongodb: {
-      enabled: true,
+      enabled: false,
       db: 'social-browser-db',
       limit: 100000,
       identity: {
         enabled: true,
       },
+    },
+    session:{
+      enabled: false,
     },
     security: {
       enabled: true,

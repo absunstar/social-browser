@@ -188,6 +188,7 @@ module.exports = function (child) {
 
     let user = child.parent.var.session_list.find((s) => s.name == name) ?? {};
     user.privacy = user.privacy || child.parent.var.blocking.privacy;
+    user.privacy.vpc = user.privacy.vpc || {};
     if (!user.privacy.enable_virtual_pc) {
       user.privacy = child.parent.var.blocking.privacy;
     }
@@ -332,6 +333,7 @@ module.exports = function (child) {
         }
 
         let _ss = child.session_name_list.find((s) => s.name == name);
+        _ss.user.privacy.vpc = _ss.user.privacy.vpc || {};
         details.requestHeaders = details.requestHeaders || {};
 
         let url = details.url.toLowerCase();
@@ -452,6 +454,7 @@ module.exports = function (child) {
         details.requestHeaders = details.requestHeaders || {};
 
         let _ss = child.session_name_list.find((s) => s.name == name);
+        _ss.user.privacy.vpc = _ss.user.privacy.vpc || {};
         details.requestHeaders['User-Agent'] = _ss.user.user_agent.url;
         if (child.parent.var.core.enginOFF) {
           callback({
@@ -489,7 +492,7 @@ module.exports = function (child) {
 
         let isSameSite = domain1 === domain2;
 
-        if (_ss.user.privacy.enable_virtual_pc && _ss.user.privacy.vpc.mask_user_agent) {
+        if (_ss.user.privacy.enable_virtual_pc && _ss.user.privacy.vpc && _ss.user.privacy.vpc.mask_user_agent) {
           if (!details.requestHeaders['User-Agent'].like('*[xx-*')) {
             let code = name;
             code += new URL(url).hostname;
@@ -621,7 +624,7 @@ module.exports = function (child) {
         let url = details.url;
         let urlObject = child.url.parse(url);
         let _ss = child.session_name_list.find((s) => s.name == name);
-
+        _ss.user.privacy.vpc = _ss.user.privacy.vpc || {};
         if (false) {
           // cookies now save to my own json ^_^
           let cookies = details.responseHeaders['set-cookie'] || details.responseHeaders['Set-Cookie'];

@@ -46,17 +46,49 @@ app.controller('mainController', ($scope, $http, $timeout) => {
   };
   $scope.generateVPC = function (session) {
     if (typeof session == 'string' && session == '*') {
-      $scope.setting.session_list.forEach((s) => {
-        s.privacy.vpc = SOCIALBROWSER.generateVPC();
-        s.privacy.enable_virtual_pc = true;
+      $scope.setting.session_list.forEach((s, i) => {
+        $scope.setting.session_list[i].privacy.vpc = SOCIALBROWSER.generateVPC();
+        $scope.setting.session_list[i].privacy.enable_virtual_pc = true;
+        $scope.setting.session_list[i].user_agent = $scope.setting.user_agent_list[SOCIALBROWSER.random(0, $scope.setting.user_agent_list.length - 1)];
       });
     } else {
       if (session) {
         session.privacy.vpc = SOCIALBROWSER.generateVPC();
         session.privacy.enable_virtual_pc = true;
+        session.user_agent = $scope.setting.user_agent_list[SOCIALBROWSER.random(0, $scope.setting.user_agent_list.length - 1)];
       } else {
         SOCIALBROWSER.var.blocking.privacy.vpc = SOCIALBROWSER.generateVPC();
         $scope.setting.blocking.privacy.vpc = SOCIALBROWSER.var.blocking.privacy.vpc;
+      }
+    }
+
+    $scope.$applyAsync();
+  };
+  $scope.stopVPC = function (session) {
+    if (typeof session == 'string' && session == '*') {
+      $scope.setting.session_list.forEach((s) => {
+        s.privacy.enable_virtual_pc = false;
+      });
+    } else {
+      if (session) {
+        session.privacy.enable_virtual_pc = false;
+      } else {
+        $scope.setting.blocking.privacy.vpc = SOCIALBROWSER.var.blocking.privacy.vpc;
+      }
+    }
+
+    $scope.$applyAsync();
+  };
+  $scope.clearUserAgent = function (session) {
+    if (typeof session == 'string' && session == '*') {
+      $scope.setting.session_list.forEach((s) => {
+        s.user_agent = null;
+      });
+    } else {
+      if (session) {
+        session.user_agent = null;
+      } else {
+        $scope.setting.core.user_agent = null;
       }
     }
 
@@ -356,6 +388,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
   };
 
   $scope.showSession = function (_se) {
+    console.log(_se);
     $scope.currentSession = _se;
     site.showModal('#usersOptionsModal');
   };
@@ -898,7 +931,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     SOCIALBROWSER.openWindow({
       url: url,
       partition: 'x-ghost_' + Date.now(),
-      allowMenu : true
+      allowMenu: true,
     });
   };
   $scope.copy = function (text) {
