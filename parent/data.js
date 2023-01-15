@@ -78,7 +78,6 @@ module.exports = function init(parent) {
             }
           });
           parent.var[name] = currentContent;
-          parent.set_var(name, parent.var[name]);
         } else if (name == 'user_data') {
           default_content.forEach((d) => {
             let exists = false;
@@ -93,7 +92,6 @@ module.exports = function init(parent) {
             }
           });
           parent.var[name] = currentContent;
-          parent.set_var(name, parent.var[name]);
         } else if (name == 'urls') {
           default_content.forEach((d) => {
             let exists = false;
@@ -108,7 +106,6 @@ module.exports = function init(parent) {
             }
           });
           parent.var[name] = currentContent;
-          parent.set_var(name, parent.var[name]);
         } else if (name == 'download_list') {
           default_content.forEach((d) => {
             let exists = false;
@@ -123,7 +120,6 @@ module.exports = function init(parent) {
             }
           });
           parent.var[name] = currentContent;
-          parent.set_var(name, parent.var[name]);
         } else if (name == 'proxy_list') {
           default_content.forEach((d) => {
             let exists = false;
@@ -138,7 +134,6 @@ module.exports = function init(parent) {
             }
           });
           parent.var[name] = currentContent;
-          parent.set_var(name, parent.var[name]);
         } else if (name == 'bookmarks') {
           default_content.forEach((d) => {
             let exists = false;
@@ -152,7 +147,6 @@ module.exports = function init(parent) {
             }
           });
           parent.var[name] = currentContent;
-          parent.set_var(name, parent.var[name]);
         } else if (name == 'open_list') {
           default_content.forEach((d) => {
             let exists = false;
@@ -167,7 +161,6 @@ module.exports = function init(parent) {
             }
           });
           parent.var[name] = currentContent;
-          parent.set_var(name, parent.var[name]);
         } else if (name == 'session_list') {
           if (currentContent.length == 0) {
             default_content.forEach((d) => {
@@ -185,7 +178,6 @@ module.exports = function init(parent) {
           }
 
           parent.var[name] = currentContent;
-          parent.set_var(name, parent.var[name]);
         } else if (name == 'user_agent_list') {
           default_content.forEach((d) => {
             let exists = false;
@@ -205,7 +197,6 @@ module.exports = function init(parent) {
           });
 
           parent.var[name] = currentContent;
-          parent.set_var(name, parent.var[name]);
         } else if (name == 'extension_list') {
           default_content.forEach((d) => {
             let exists = false;
@@ -220,7 +211,6 @@ module.exports = function init(parent) {
           });
 
           parent.var[name] = currentContent;
-          parent.set_var(name, parent.var[name]);
         } else if (name == 'ad_list') {
           default_content.forEach((d) => {
             let exists = false;
@@ -236,7 +226,6 @@ module.exports = function init(parent) {
           });
 
           parent.var[name] = currentContent;
-          parent.set_var(name, parent.var[name]);
         } else if (name == 'blocking') {
           currentContent.core = default_content.core || {};
           currentContent.javascript = default_content.javascript || {};
@@ -330,14 +319,11 @@ module.exports = function init(parent) {
           });
 
           parent.var[name] = currentContent;
-          parent.set_var(name, parent.var[name]);
         } else {
           parent.var[name] = default_content;
-          parent.set_var(name, parent.var[name]);
         }
       } else {
         parent.var[name] = default_content;
-        parent.set_var(name, parent.var[name]);
       }
     } else if (noContent) {
       parent.var[name] = default_content;
@@ -347,11 +333,8 @@ module.exports = function init(parent) {
           s.name = s.name.replace('{random}', 'random_' + Math.random());
         });
       }
-
-      parent.set_var(name, parent.var[name]);
     } else {
       parent.var[name] = currentContent || default_content;
-      parent.set_var(name, parent.var[name]);
     }
 
     if (name == 'core') {
@@ -359,13 +342,11 @@ module.exports = function init(parent) {
         parent.var.core = default_content;
         parent.var.core.id = null;
         parent.versionUpdating = true;
-        parent.set_var('core', parent.var.core);
       }
 
       if (parent.var.core.version !== default_content.version) {
         parent.versionUpdating = true;
         parent.var.core = { ...parent.var.core, ...default_content };
-        parent.set_var('core', parent.var.core);
         parent.var.core.user_agent = null;
       }
 
@@ -376,7 +357,6 @@ module.exports = function init(parent) {
         }
         parent.var.core.id = parent.var.id;
         parent.var.core.started_date = Date.now();
-        parent.set_var('core', parent.var.core);
       } else {
         if (parent.var.core.prefix && !parent.var.core.id.contains(parent.var.core.prefix)) {
           parent.var.core.id = parent.var.core.prefix + parent.var.core.id;
@@ -386,10 +366,8 @@ module.exports = function init(parent) {
 
       if (!parent.var.core.user_agent && process.platform === 'win32') {
         parent.var.core.user_agent = parent.var.core.windows_user_agent;
-        parent.set_var('core', parent.var.core);
       } else if (!parent.var.core.user_agent) {
         parent.var.core.user_agent = parent.var.core.linux_user_agent;
-        parent.set_var('core', parent.var.core);
       }
 
       if (parent.var.core.user_agent) {
@@ -403,9 +381,29 @@ module.exports = function init(parent) {
 
     if (name == 'user_data_input') {
       parent.var.user_data_input = parent.var.user_data_input.filter((v, i, a) => a.findIndex((t) => t.hostname === v.hostname && t.password === v.password && t.username === v.username) === i);
+      parent.var.user_data_input.forEach((d, i) => {
+        delete parent.var.user_data_input[i].options;
+        delete parent.var.user_data_input[i].__options;
+        delete parent.var.user_data_input[i].parentSetting;
+        parent.var.user_data_input[i].hostname = parent.var.user_data_input[i].hostname || parent.var.user_data_input[i].host;
+
+        if (!parent.var.user_data_input[i].hostname) {
+          parent.var.user_data_input.splice(i, 1);
+        }
+      });
     }
     if (name == 'user_data') {
       parent.var.user_data = parent.var.user_data.filter((v, i, a) => a.findIndex((t) => t.hostname === v.hostname && JSON.stringify(t.data || {}) === JSON.stringify(v.data || {})) === i);
+      parent.var.user_data.forEach((d, i) => {
+        delete parent.var.user_data[i].options;
+        delete parent.var.user_data[i].__options;
+        delete parent.var.user_data[i].parentSetting;
+        parent.var.user_data[i].hostname = parent.var.user_data[i].hostname || parent.var.user_data[i].host;
+
+        if (!parent.var.user_data[i].hostname) {
+          parent.var.user_data.splice(i, 1);
+        }
+      });
     }
 
     if (name == 'proxy_mode_list') {
@@ -453,6 +451,9 @@ module.exports = function init(parent) {
         },
       ];
     }
+
+    parent.set_var(name, parent.var[name]);
+
     return parent.var[name];
   };
 

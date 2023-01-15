@@ -73,7 +73,7 @@ module.exports = function (SOCIALBROWSER) {
     }
   }
 
-  SOCIALBROWSER.onEvent('newDom', (node) => {
+  SOCIALBROWSER.onEvent('html-added', (node) => {
     if (node && node.tagName == 'VIDEO') {
       if (node.src && !node.src.startsWith('blob:')) {
         SOCIALBROWSER.currentWindow.webContents.send('new-video-exists', {

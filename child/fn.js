@@ -154,9 +154,7 @@ module.exports = function (child) {
         if ((k == 'user_data' || k == 'user_data_input') && info.hostname) {
           obj[k] = [];
           child.parent.var[k].forEach((dd) => {
-            dd.hostname = dd.hostname || dd.host || '';
-            dd.url = dd.url || '';
-            if (dd.hostname.contains(info.hostname) || info.hostname.contains(dd.hostname)) {
+            if (dd.hostname && (dd.hostname.contains(info.hostname) || info.hostname.contains(dd.hostname))) {
               obj[k].push(dd);
             }
           });
@@ -234,8 +232,6 @@ module.exports = function (child) {
     }
     return out;
   };
-
-  
 
   child.updateTab = function (win) {
     let setting = win.customSetting;

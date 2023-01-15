@@ -131,12 +131,12 @@
     });
   }
 
-  setTimeout(() => {
+
     browser.createChildProcess({
       windowType: 'files',
       partition: 'persist:file',
     });
-  }, 1000 * 5);
+ 
 
   browser.electron.app.setAppUserModelId('Social.Browser');
   browser.electron.Menu.setApplicationMenu(null);

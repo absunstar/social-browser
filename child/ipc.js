@@ -544,6 +544,53 @@ module.exports = function init(child) {
     child.showProfilesWindow();
   });
 
+  child.electron.ipcMain.on('user_data', (event, data) => {
+    child.parent.var.user_data = child.parent.var.user_data || [];
+      let exists = false;
+      child.parent.var.user_data.forEach((u) => {
+        if (u.id === data.id) {
+          exists = true;
+          u.data = data.data;
+          child.sendMessage({
+            type: '[update-browser-var][user_data][update]',
+            data: data,
+          });
+        }
+      });
+      if (!exists) {
+        delete data.__options;
+        delete data.parentSetting;
+        
+        child.parent.var.user_data.push(data);
+        child.sendMessage({
+          type: '[update-browser-var][user_data][add]',
+          data: data,
+        });
+      }
+  });
+
+  child.electron.ipcMain.on('user_data_input', (event, data) => {
+    child.parent.var.user_data_input = child.parent.var.user_data_input || [];
+    let exists = false;
+    child.parent.var.user_data_input.forEach((u) => {
+      if (u.id === data.id) {
+        exists = true;
+        u.data = data.data;
+        child.sendMessage({
+          type: '[update-browser-var][user_data_input][update]',
+          data: data,
+        });
+      }
+    });
+    if (!exists) {
+      child.parent.var.user_data_input.push(data);
+      child.sendMessage({
+        type: '[update-browser-var][user_data_input][add]',
+        data: data,
+      });
+    }
+  });
+
   child.electron.ipcMain.on('[send-render-message]', (event, data) => {
     data.partition = data.partition || child.parent.var.core.session.name;
     data.user_name = data.user_name || child.parent.var.core.session.display;
@@ -600,46 +647,6 @@ module.exports = function init(child) {
       let win = child.electron.BrowserWindow.fromId(data.win_id);
       if (win.webContents.canGoForward()) {
         win.webContents.goForward();
-      }
-    } else if (data.name == 'user_data') {
-      child.parent.var.user_data = child.parent.var.user_data || [];
-      let exists = false;
-      child.parent.var.user_data.forEach((u) => {
-        if (u.id === data.id) {
-          exists = true;
-          u.data = data.data;
-          child.sendMessage({
-            type: '[update-browser-var][user_data][update]',
-            data: data,
-          });
-        }
-      });
-      if (!exists) {
-        child.parent.var.user_data.push(data);
-        child.sendMessage({
-          type: '[update-browser-var][user_data][add]',
-          data: data,
-        });
-      }
-    } else if (data.name == 'user_data_input') {
-      child.parent.var.user_data_input = child.parent.var.user_data_input || [];
-      let exists = false;
-      child.parent.var.user_data_input.forEach((u) => {
-        if (u.id === data.id) {
-          exists = true;
-          u.data = data.data;
-          child.sendMessage({
-            type: '[update-browser-var][user_data_input][update]',
-            data: data,
-          });
-        }
-      });
-      if (!exists) {
-        child.parent.var.user_data_input.push(data);
-        child.sendMessage({
-          type: '[update-browser-var][user_data_input][add]',
-          data: data,
-        });
       }
     } else if (data.name == '[save-window-as-pdf]') {
       let win = child.electron.BrowserWindow.fromId(data.win_id);

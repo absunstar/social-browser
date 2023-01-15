@@ -67,29 +67,21 @@ module.exports = function (SOCIALBROWSER) {
         let arr1 = [];
         let arr2 = [];
         SOCIALBROWSER.var.user_data_input.forEach((dd) => {
-          if (!dd.data) {
+          if (!dd.data || !Array.isArray(dd.data) || dd.data.length == 0) {
             return;
           }
           dd.data.forEach((d) => {
             if (node.id && node.id == d.id) {
-              let exists = false;
-              arr1.forEach((a) => {
-                if (a.label.trim() == d.value.trim()) {
-                  exists = true;
-                }
-              });
-              if (!exists) {
+              if (!arr1.some((a) => a.label.trim() == d.value.trim())) {
                 arr1.push({
                   label: d.value,
                   click() {
                     node.nodeName === 'INPUT' ? (node.value = '') : (node.innerHTML = '');
                     SOCIALBROWSER.electron.clipboard.writeText(d.value);
                     SOCIALBROWSER.webContents.paste();
-                    /*node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
-                                        node.dispatchEvent(inputEvent);
-                                        node.dispatchEvent(changeEvent);*/
                   },
                 });
+
                 arr2.push({
                   label: d.value,
                   click() {
@@ -160,7 +152,7 @@ module.exports = function (SOCIALBROWSER) {
                   },
                 });
               }
-            } else if (!node.id && !node.name) {
+            } else {
               let exists = false;
               arr1.forEach((a) => {
                 if (a.label.trim() == d.value.trim()) {
@@ -184,107 +176,102 @@ module.exports = function (SOCIALBROWSER) {
           });
         });
 
-        if (arr1.length === 0) {
-          SOCIALBROWSER.var.user_data.forEach((dd) => {
-            if (!dd.data) {
+        SOCIALBROWSER.var.user_data.forEach((dd) => {
+          if (!dd.data) {
+            return;
+          }
+          dd.data.forEach((d) => {
+            if (arr1.some((a) => a.label.trim() == d.value.trim())) {
               return;
             }
-            dd.data.forEach((d) => {
-              if (arr1.some((a) => a.label.trim() == d.value.trim())) {
-                return;
-              }
 
-              if (node.id && node.id == d.id) {
-                arr1.push({
-                  label: d.value,
-                  click() {
-                    node.nodeName === 'INPUT' ? (node.value = '') : (node.innerHTML = '');
-                    SOCIALBROWSER.electron.clipboard.writeText(d.value);
-                    SOCIALBROWSER.webContents.paste();
-                    /*node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
+            if (node.id && node.id == d.id) {
+              arr1.push({
+                label: d.value,
+                click() {
+                  node.nodeName === 'INPUT' ? (node.value = '') : (node.innerHTML = '');
+                  SOCIALBROWSER.electron.clipboard.writeText(d.value);
+                  SOCIALBROWSER.webContents.paste();
+                },
+              });
+
+              arr2.push({
+                label: d.value,
+                click() {
+                  node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
+                  dd.data.forEach((d2) => {
+                    if (d2.type == 'hidden' || d2.type == 'submit') {
+                      return;
+                    }
+                    let e1 = null;
+                    if (d2.id) {
+                      e1 = doc.getElementById(d2.id);
+                    }
+                    if (!e1 && d2.name) {
+                      e1 = doc.getElementsByName(d2.name);
+                    }
+
+                    if (e1) {
+                      e1.nodeName === 'INPUT' ? (e1.value = d2.value) : (e1.innerHTML = d2.value);
+                      e1.dispatchEvent(inputEvent);
+                      e1.dispatchEvent(changeEvent);
+                    }
+                  });
+                },
+              });
+            } else if (node.name && node.name == d.name) {
+              arr1.push({
+                label: d.value,
+                click() {
+                  node.nodeName === 'INPUT' ? (node.value = '') : (node.innerHTML = '');
+                  SOCIALBROWSER.electron.clipboard.writeText(d.value);
+                  SOCIALBROWSER.webContents.paste();
+                  /*node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
                                         node.dispatchEvent(inputEvent);
                                         node.dispatchEvent(changeEvent);*/
-                  },
-                });
+                },
+              });
 
-                arr2.push({
-                  label: d.value,
-                  click() {
-                    node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
-                    dd.data.forEach((d2) => {
-                      if (d2.type == 'hidden' || d2.type == 'submit') {
-                        return;
-                      }
-                      let e1 = null;
-                      if (d2.id) {
-                        e1 = doc.getElementById(d2.id);
-                      }
-                      if (!e1 && d2.name) {
-                        e1 = doc.getElementsByName(d2.name);
-                      }
+              arr2.push({
+                label: d.value,
+                click() {
+                  node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
 
-                      if (e1) {
-                        e1.nodeName === 'INPUT' ? (e1.value = d2.value) : (e1.innerHTML = d2.value);
-                        e1.dispatchEvent(inputEvent);
-                        e1.dispatchEvent(changeEvent);
-                      }
-                    });
-                  },
-                });
-              } else if (node.name && node.name == d.name) {
-                arr1.push({
-                  label: d.value,
-                  click() {
-                    node.nodeName === 'INPUT' ? (node.value = '') : (node.innerHTML = '');
-                    SOCIALBROWSER.electron.clipboard.writeText(d.value);
-                    SOCIALBROWSER.webContents.paste();
-                    /*node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
+                  dd.data.forEach((d2) => {
+                    if (d2.type == 'hidden' || d2.type == 'submit') {
+                      return;
+                    }
+                    let e1 = null;
+                    if (d2.id) {
+                      e1 = doc.getElementById(d2.id);
+                    }
+                    if (!e1 && d2.name) {
+                      e1 = doc.getElementsByName(d2.name);
+                    }
+
+                    if (e1) {
+                      e1.nodeName === 'INPUT' ? (e1.value = d2.value) : (e1.innerHTML = d2.value);
+                      e1.dispatchEvent(inputEvent);
+                      e1.dispatchEvent(changeEvent);
+                    }
+                  });
+                },
+              });
+            } else {
+              arr1.push({
+                label: d.value,
+                click() {
+                  node.nodeName === 'INPUT' ? (node.value = '') : (node.innerHTML = '');
+                  SOCIALBROWSER.electron.clipboard.writeText(d.value);
+                  SOCIALBROWSER.webContents.paste();
+                  /*node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
                                         node.dispatchEvent(inputEvent);
                                         node.dispatchEvent(changeEvent);*/
-                  },
-                });
-
-                arr2.push({
-                  label: d.value,
-                  click() {
-                    node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
-
-                    dd.data.forEach((d2) => {
-                      if (d2.type == 'hidden' || d2.type == 'submit') {
-                        return;
-                      }
-                      let e1 = null;
-                      if (d2.id) {
-                        e1 = doc.getElementById(d2.id);
-                      }
-                      if (!e1 && d2.name) {
-                        e1 = doc.getElementsByName(d2.name);
-                      }
-
-                      if (e1) {
-                        e1.nodeName === 'INPUT' ? (e1.value = d2.value) : (e1.innerHTML = d2.value);
-                        e1.dispatchEvent(inputEvent);
-                        e1.dispatchEvent(changeEvent);
-                      }
-                    });
-                  },
-                });
-              } else if (!node.id && !node.name) {
-                arr1.push({
-                  label: d.value,
-                  click() {
-                    node.nodeName === 'INPUT' ? (node.value = '') : (node.innerHTML = '');
-                    SOCIALBROWSER.electron.clipboard.writeText(d.value);
-                    SOCIALBROWSER.webContents.paste();
-                    /*node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
-                                        node.dispatchEvent(inputEvent);
-                                        node.dispatchEvent(changeEvent);*/
-                  },
-                });
-              }
-            });
+                },
+              });
+            }
           });
-        }
+        });
 
         if (arr1.length > 0) {
           arr1.sort((a, b) => (a.label > b.label ? 1 : -1));
@@ -392,6 +379,7 @@ module.exports = function (SOCIALBROWSER) {
             referrer: document.location.href,
             show: true,
             trusted: true,
+            center : true
           });
         },
       });
@@ -405,6 +393,7 @@ module.exports = function (SOCIALBROWSER) {
           partition: SOCIALBROWSER.partition,
           user_name: SOCIALBROWSER.session.display,
           win_id: SOCIALBROWSER.currentWindow.id,
+          center : true
         });
       },
     });
@@ -422,6 +411,7 @@ module.exports = function (SOCIALBROWSER) {
           referrer: document.location.href,
           partition: SOCIALBROWSER.partition,
           show: true,
+          center : true
         });
       },
     });
@@ -434,6 +424,7 @@ module.exports = function (SOCIALBROWSER) {
           partition: SOCIALBROWSER.partition,
           show: true,
           allowSelfWindow: true,
+          center : true
         });
       },
     });
@@ -446,6 +437,7 @@ module.exports = function (SOCIALBROWSER) {
           partition: SOCIALBROWSER.partition,
           show: true,
           allowNewWindows: false,
+          center : true
         });
       },
     });
@@ -458,6 +450,7 @@ module.exports = function (SOCIALBROWSER) {
           partition: SOCIALBROWSER.partition,
           show: true,
           allowAds: true,
+          center : true
         });
       },
     });
@@ -471,6 +464,7 @@ module.exports = function (SOCIALBROWSER) {
           partition: SOCIALBROWSER.partition,
           show: true,
           security: false,
+          center : true
         });
       },
     });
@@ -484,6 +478,7 @@ module.exports = function (SOCIALBROWSER) {
           partition: 'x-ghost_' + new Date().getTime() + Math.random(),
           user_name: 'x-ghost_' + new Date().getTime() + Math.random(),
           show: true,
+          center : true
         });
       },
     });
@@ -549,6 +544,7 @@ module.exports = function (SOCIALBROWSER) {
                 partition: SOCIALBROWSER.partition,
                 user_name: SOCIALBROWSER.session.display,
                 win_id: SOCIALBROWSER.currentWindow.id,
+                center : true
               });
             },
           })
@@ -604,7 +600,7 @@ module.exports = function (SOCIALBROWSER) {
                 partition: SOCIALBROWSER.partition,
                 referrer: document.location.href,
                 show: true,
-                windowType : 'youtube'
+                windowType: 'youtube',
               });
             },
           })
@@ -618,6 +614,7 @@ module.exports = function (SOCIALBROWSER) {
                 partition: SOCIALBROWSER.partition,
                 referrer: document.location.href,
                 show: true,
+                center : true
               });
             },
           })
@@ -1024,6 +1021,7 @@ module.exports = function (SOCIALBROWSER) {
               referrer: document.location.href,
               show: true,
               vip: true,
+              center : true
             });
           },
         });
@@ -1035,6 +1033,7 @@ module.exports = function (SOCIALBROWSER) {
               url: f.src,
               referrer: document.location.href,
               show: true,
+              center : true
             });
           },
         });
@@ -1047,6 +1046,7 @@ module.exports = function (SOCIALBROWSER) {
               referrer: document.location.href,
               security: false,
               show: true,
+              center : true
             });
           },
         });
@@ -1102,6 +1102,7 @@ module.exports = function (SOCIALBROWSER) {
             referrer: document.location.href,
             show: true,
             vip: true,
+            center : true
           });
         },
       });
@@ -1115,6 +1116,7 @@ module.exports = function (SOCIALBROWSER) {
             url: f.src,
             referrer: document.location.href,
             show: true,
+            center : true
           });
         },
       });
@@ -1127,6 +1129,7 @@ module.exports = function (SOCIALBROWSER) {
             url: f.src,
             referrer: document.location.href,
             show: true,
+            center : true
           });
         },
       });
@@ -1140,6 +1143,7 @@ module.exports = function (SOCIALBROWSER) {
             referrer: document.location.href,
             security: false,
             show: true,
+            center : true
           });
         },
       });
@@ -1174,6 +1178,7 @@ module.exports = function (SOCIALBROWSER) {
               url: f.src,
               referrer: document.location.href,
               show: true,
+              center : true
             });
           },
         });
@@ -1186,6 +1191,7 @@ module.exports = function (SOCIALBROWSER) {
               url: f.src,
               referrer: document.location.href,
               show: true,
+              center : true
             });
           },
         });
@@ -1200,6 +1206,7 @@ module.exports = function (SOCIALBROWSER) {
               referrer: document.location.href,
               security: false,
               show: true,
+              center : true
             });
           },
         });
@@ -1307,6 +1314,7 @@ module.exports = function (SOCIALBROWSER) {
               referrer: document.location.href,
               url: document.location.href.replace('youtube', 'ssyoutube'),
               show: true,
+              center : true
             });
           },
         })
@@ -1359,6 +1367,7 @@ module.exports = function (SOCIALBROWSER) {
               referrer: document.location.href,
               allowAudio: false,
               show: true,
+              center : true
             });
           }, 1000 * 2 * index);
         }
@@ -1376,6 +1385,7 @@ module.exports = function (SOCIALBROWSER) {
               referrer: document.location.href,
               allowAudio: false,
               show: true,
+              center : true
             });
           }, 1000 * index * 2);
         }
@@ -1393,6 +1403,7 @@ module.exports = function (SOCIALBROWSER) {
               referrer: document.location.href,
               allowAudio: false,
               show: true,
+              center : true
             });
           }, 1000 * index * 2);
         }
@@ -1404,7 +1415,6 @@ module.exports = function (SOCIALBROWSER) {
         for (let index = 0; index < SOCIALBROWSER.var.user_agent_list.length; index++) {
           setTimeout(() => {
             let partition2 = 'x-ghost_' + Date.now() + '_' + Math.random();
-            SOCIALBROWSER.ipc('[handle-session]', { name: partition2 });
             SOCIALBROWSER.ipc('[open new popup]', {
               partition: partition2,
               user_agent: SOCIALBROWSER.var.user_agent_list[index].url,
@@ -1412,6 +1422,7 @@ module.exports = function (SOCIALBROWSER) {
               referrer: document.location.href,
               allowAudio: false,
               show: true,
+              center : true
             });
           }, 1000 * index * 1);
         }
@@ -1436,7 +1447,8 @@ module.exports = function (SOCIALBROWSER) {
               referrer: document.location.href,
               allowAudio: false,
               show: true,
-              proxy: SOCIALBROWSER.var.proxy_list[index],
+              proxy: SOCIALBROWSER.var.proxy_list[index], 
+              center : true
             });
           }, 1000 * index * 2);
         }
@@ -1487,6 +1499,7 @@ module.exports = function (SOCIALBROWSER) {
               url: `https://www.alexa.com/minisiteinfo/${document.location.origin}?offset=5&version=alxg_20100607`,
               referrer: document.location.href,
               show: true,
+              center : true
             });
           },
         });
@@ -1548,6 +1561,7 @@ module.exports = function (SOCIALBROWSER) {
               SOCIALBROWSER.ipc('[open new popup]', {
                 partition: SOCIALBROWSER.partition,
                 show: true,
+                center : true,
                 url: 'https://translate.google.com/?num=100&newwindow=1&um=1&ie=UTF-8&hl=en&client=tw-ob#auto/ar/' + encodeURIComponent(SOCIALBROWSER.selectedText),
               });
             },
@@ -1659,6 +1673,7 @@ module.exports = function (SOCIALBROWSER) {
                 referrer: document.location.href,
                 show: true,
                 trusted: true,
+                center : true
               });
             },
           });
@@ -1717,6 +1732,7 @@ module.exports = function (SOCIALBROWSER) {
                 url: document.location.href,
                 proxy: p,
                 partition: 'x-ghost_' + new Date().getTime(),
+                center : true
               });
             },
           });
@@ -1865,6 +1881,7 @@ module.exports = function (SOCIALBROWSER) {
               SOCIALBROWSER.ipc('[open new popup]', {
                 child_id: child_id,
                 show: true,
+                center : true,
                 url: url,
                 partition: partition,
                 user_name: user_name,
@@ -1881,6 +1898,7 @@ module.exports = function (SOCIALBROWSER) {
               SOCIALBROWSER.ipc('[open new popup]', {
                 child_id: child_id,
                 show: true,
+                center : true,
                 url: url,
                 partition: ghost,
                 user_name: ghost,

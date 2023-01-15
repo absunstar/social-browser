@@ -129,7 +129,7 @@
     if (!channel) {
       return;
     }
-    value = value || {};
+    value = { ...value };
     value.parentSetting = SOCIALBROWSER.customSetting;
     return SOCIALBROWSER.electron.ipcRenderer.send(channel, value);
   };
@@ -257,7 +257,7 @@
       SOCIALBROWSER.session.privacy.vpc = SOCIALBROWSER.get('vpc') || SOCIALBROWSER.generateVPC();
       SOCIALBROWSER.set('vpc', SOCIALBROWSER.session.privacy.vpc);
     }
-   
+
     require(SOCIALBROWSER.files_dir + '/js/context-menu/load.js')(SOCIALBROWSER);
     if (!SOCIALBROWSER.customSetting.allowSocialBrowser) {
       delete window.SOCIALBROWSER;
@@ -274,7 +274,7 @@
         partition: SOCIALBROWSER.partition,
       }).then((data) => {
         SOCIALBROWSER.browserData = data;
-         SOCIALBROWSER.init2();
+        SOCIALBROWSER.init2();
       });
     } else {
       SOCIALBROWSER.browserData = SOCIALBROWSER.ipcSync('[browser][data]', {

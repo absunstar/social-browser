@@ -40,29 +40,24 @@ module.exports = function (SOCIALBROWSER) {
         }
       });
 
-      document.addEventListener('DOMNodeInsertedIntoDocument', function (e) {
-        SOCIALBROWSER.callEvent('newDom', e.target);
+      document.addEventListener('DOMSubtreeModified', function (e) {
+        SOCIALBROWSER.callEvent('html-edited', e.target);
+      });
+
+      document.addEventListener('DOMNodeInserted', function (e) {
+        SOCIALBROWSER.callEvent('html-added', e.target);
+
         if (e.target.querySelectorAll) {
           let arr = e.target.querySelectorAll('*');
           if (arr) {
             arr.forEach((el) => {
-              SOCIALBROWSER.callEvent('newDom', el);
+              SOCIALBROWSER.callEvent('html-added', el);
             });
           }
         }
       });
-
-      document.addEventListener('DOMNodeInserted', function (e) {
-        SOCIALBROWSER.callEvent('newDom', e.target);
-
-        if (e.target.querySelectorAll) {
-          let arr = e.target.querySelectorAll('*');
-          if (arr) {
-            arr.forEach((el) => {
-              SOCIALBROWSER.callEvent('newDom', el);
-            });
-          }
-        }
+      document.addEventListener('DOMNodeRemoved', function (e) {
+        SOCIALBROWSER.callEvent('html-removed', e.target);
       });
     }
   }
@@ -282,15 +277,13 @@ module.exports = function (SOCIALBROWSER) {
   });
 
   SOCIALBROWSER.onLoad(() => {
-   
-
     if (!SOCIALBROWSER.jqueryLoaded && SOCIALBROWSER.var.blocking.javascript.allow_jquery && !window.jQuery) {
       SOCIALBROWSER.jqueryLoaded = true;
       window.$ = window.jQuery = require(SOCIALBROWSER.files_dir + '/js/jquery.js');
     }
     return;
     document.querySelectorAll('*').forEach((el) => {
-      SOCIALBROWSER.callEvent('newDom', el);
+      SOCIALBROWSER.callEvent('html-added', el);
     });
   });
 };
