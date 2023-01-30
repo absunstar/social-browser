@@ -22,9 +22,10 @@ module.exports = function (SOCIALBROWSER) {
     })();
 
     SOCIALBROWSER.onLoad(() => {
-      SOCIALBROWSER.addJS(SOCIALBROWSER.readFile(__dirname + '/jawaker.js'));
-      SOCIALBROWSER.addHTML(SOCIALBROWSER.readFile(__dirname + '/jawaker.html'));
-      SOCIALBROWSER.jawaker.handlePanel();
+     SOCIALBROWSER.addJS(SOCIALBROWSER.readFile(__dirname + '/jawaker.js'));
+     SOCIALBROWSER.addHTML(SOCIALBROWSER.readFile(__dirname + '/jawaker.html'));
+     SOCIALBROWSER.__showBotImage();
+     SOCIALBROWSER.jawaker.handlePanel();
     });
   }
 };

@@ -4,7 +4,7 @@ module.exports = function (browser) {
   extension.name = 'jawaker Bot';
   extension.description = ' .................... ';
   extension.paid = false;
-  extension.version = '2.0.0';
+  extension.version = '3.0.0';
   extension.canDelete = true;
   extension.init = () => {};
   extension.enable = () => {

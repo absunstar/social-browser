@@ -10,6 +10,9 @@ SOCIALBROWSER.jawaker = {
   newWindow: function (partition) {
     SOCIALBROWSER.ipc('[open new popup]', {
       alwaysOnTop: false,
+      width : 1200,
+      height : 900,
+      center : true,
       partition: partition || SOCIALBROWSER.partition,
       url: document.location.href,
       referrer: document.referrer,
@@ -190,9 +193,7 @@ SOCIALBROWSER.jawaker.handlePanel = function () {
     }
   }
 };
-window.addEventListener('locationchange', function () {
-  SOCIALBROWSER.jawaker.handlePanel();
-});
+
 if (SOCIALBROWSER.customSetting.windowType.contains('popup')) {
   setInterval(() => {
     let seat = document.querySelector('.seat.current');
@@ -209,3 +210,6 @@ if (SOCIALBROWSER.customSetting.windowType.contains('popup')) {
     document.location.reload();
   }, 1000 * 60 * 15);
 }
+window.addEventListener('locationchange', function () {
+  SOCIALBROWSER.jawaker.handlePanel();
+});

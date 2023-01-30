@@ -333,6 +333,7 @@ module.exports = function init(child) {
   });
 
   child.electron.ipcMain.on('[update-browser-var]', (e, options) => {
+    child.parent.var[options.name] = options.data
     child.sendMessage({
       type: '[update-browser-var]',
       options: options,

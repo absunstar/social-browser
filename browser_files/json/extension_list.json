@@ -73,5 +73,13 @@
     "description": "10khits.com site Integration",
     "canDelete": false,
     "isEnabled": false
+  },
+  {
+    "id": "221b6ec6c066e58159969baa6e5acb66",
+    "path": "{dir}/extensions/Jawaker/index.js",
+    "name": "Jawaker Bot Version 3",
+    "description": "_____________________________",
+    "canDelete": false,
+    "isEnabled": true
   }
 ]

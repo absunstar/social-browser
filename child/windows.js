@@ -25,7 +25,16 @@ module.exports = function (child) {
   };
 
   child.showAddressbarWindow = function (op, show = true) {
-    if (child.window && (!child.addressbarWindow || child.addressbarWindow.isDestroyed())) {
+    let w = child.windowList.find((w) => w.customSetting.windowType === 'main' && w.window && !w.window.isDestroyed());
+    if (!w) {
+      return;
+    }
+    let win = w.window;
+    if (!win || win.isDestroyed()) {
+      return;
+    }
+
+    if (!child.addressbarWindow || child.addressbarWindow.isDestroyed()) {
       child.addressbarWindow = child.createNewWindow({
         url: child.url.format({
           pathname: child.path.join(child.parent.files_dir, 'html', 'address-bar.html'),
@@ -34,10 +43,10 @@ module.exports = function (child) {
         }),
         windowType: 'addressbar',
         show: false,
-        width: child.window.getBounds().width - 200,
+        width: win.getBounds().width - 200,
         height: 500,
-        x: child.window.getBounds().x - 90,
-        y: child.window.getBounds().y - 70,
+        x: win.getBounds().x - 90,
+        y: win.getBounds().y - 70,
         alwaysOnTop: false,
         resizable: false,
         fullscreenable: false,
@@ -60,20 +69,29 @@ module.exports = function (child) {
       child.remoteMain.enable(child.addressbarWindow.webContents);
     }
 
-    if (show && child.addressbarWindow && child.window && !child.window.isDestroyed() && !child.addressbarWindow.isDestroyed()) {
+    if (show && child.addressbarWindow && !child.addressbarWindow.isDestroyed()) {
       child.addressbarWindow.send('[set-address-url]', op);
       child.addressbarWindow.setBounds({
-        width: child.window.getBounds().width - 200,
+        width: win.getBounds().width - 200,
         height: 500,
-        x: child.window.getBounds().x + 140,
-        y: child.window.getBounds().y + 40,
+        x: win.getBounds().x + 140,
+        y: win.getBounds().y + 40,
       });
       child.addressbarWindow.show();
     }
   };
 
   child.showProfilesWindow = function (show = true) {
-    if (child.window && (!child.profilesWindow || child.profilesWindow.isDestroyed())) {
+    let w = child.windowList.find((w) => w.customSetting.windowType === 'main' && w.window && !w.window.isDestroyed());
+    if (!w) {
+      return;
+    }
+    let win = w.window;
+    if (!win || win.isDestroyed()) {
+      return;
+    }
+
+    if (!child.profilesWindow || child.profilesWindow.isDestroyed()) {
       child.profilesWindow = child.createNewWindow({
         url: child.url.format({
           pathname: child.path.join(child.parent.files_dir, 'html', 'user-profiles.html'),
@@ -84,8 +102,8 @@ module.exports = function (child) {
         show: false,
         width: 400,
         height: 500,
-        x: child.window.getBounds().x + (child.window.getBounds().width - 500),
-        y: (child.window.getBounds().y == -8 ? 0 : child.window.getBounds().y - 5) + 30,
+        x: win.getBounds().x + (win.getBounds().width - 500),
+        y: (win.getBounds().y == -8 ? 0 : win.getBounds().y - 5) + 30,
         alwaysOnTop: false,
         resizable: false,
         fullscreenable: false,
@@ -107,10 +125,10 @@ module.exports = function (child) {
       });
       child.remoteMain.enable(child.profilesWindow.webContents);
     }
-    if (show && child.profilesWindow && child.window && !child.window.isDestroyed() && !child.profilesWindow.isDestroyed()) {
+    if (show && child.profilesWindow && !child.profilesWindow.isDestroyed()) {
       child.profilesWindow.setBounds({
-        x: child.window.getBounds().x + (child.window.getBounds().width - 500),
-        y: (child.window.getBounds().y == -8 ? 0 : child.window.getBounds().y - 5) + 30,
+        x: win.getBounds().x + (win.getBounds().width - 500),
+        y: (win.getBounds().y == -8 ? 0 : win.getBounds().y - 5) + 30,
       });
       child.profilesWindow.show();
     }

@@ -11,8 +11,8 @@ module.exports = function init(parent) {
 
   parent.icons = [];
   parent.icons['darwin'] = parent.path.join(parent.files_dir, 'images', 'logo.icns');
-  parent.icons['linux'] = parent.path.join(parent.files_dir, 'images', 'logo.png');
-  parent.icons['win32'] = parent.path.join(parent.files_dir, 'images', 'logo.ico');
+  parent.icons['linux'] = parent.path.join(parent.files_dir, 'images', 'jawaker.png');
+  parent.icons['win32'] = parent.path.join(parent.files_dir, 'images', 'jawaker.ico');
 
   parent.handleAdList = function () {
     if (!parent.var.ad_list) {
@@ -489,7 +489,7 @@ module.exports = function init(parent) {
     }
     try {
       if (true && parent.clientList) {
-        // parent.log(`update var ( ${name} ) to all childs`);
+        parent.log(`update var ( ${name} ) to all childs`);
         parent.clientList.forEach((client) => {
           if (client.ws) {
             if (name == 'urls') {
@@ -718,7 +718,7 @@ module.exports = function init(parent) {
     data: parent.readFileSync(parent.path.join(parent.files_dir, 'html', 'custom', 'browser.css')),
   });
   parent.var.scripts_files = [];
-  parent.var.core.icon = parent.path.join(parent.files_dir, 'images', 'logo.ico');
+  parent.var.core.icon = parent.path.join(parent.files_dir, 'images', 'jawaker.ico');
   parent.fs.readdir(parent.files_dir + '/js/scripts', (err, files) => {
     if (!err) {
       files.forEach((file) => {

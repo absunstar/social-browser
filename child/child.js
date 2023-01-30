@@ -88,9 +88,9 @@ app.commandLine.appendSwitch('enable-experimental-web-platform-features');
 // app.commandLine.appendSwitch('disable-software-rasterizer');
 // app.commandLine.appendSwitch('enable-webgl');
 // app.commandLine.appendSwitch('disable-dev-shm-usage');
-app.commandLine.appendSwitch('no-sandbox');
-app.commandLine.appendSwitch('in-process-gpu');
-// app.disableHardwareAcceleration();
+// app.commandLine.appendSwitch('no-sandbox');
+// app.commandLine.appendSwitch('in-process-gpu');
+ app.disableHardwareAcceleration();
 
 //app.commandLine.appendSwitch('disable-web-security');
 // app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');

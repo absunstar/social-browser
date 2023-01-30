@@ -210,8 +210,6 @@ module.exports = function (SOCIALBROWSER) {
     SOCIALBROWSER.log(error);
   }
 
-  SOCIALBROWSER.getPrinters();
-
   if (SOCIALBROWSER.var.blocking.javascript.block_eval) {
     window.eval = function (code) {
       SOCIALBROWSER.log('eval block', code);

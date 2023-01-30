@@ -1,6 +1,6 @@
 {
   "name": "social_browser",
-  "productName": "Social Browser",
+  "productName": "Jawaker",
   "homepage": "https://social-browser.com",
   "version": "2023.01.15",
   "description": "Browsing Any Site with Multi Users And without Ads",
@@ -30,7 +30,7 @@
   },
   "build": {
     "appId": "com.social.browser",
-    "productName": "Social Browser",
+    "productName": "Jawaker",
     "copyright": "Copyright © 2022",
     "target": "NSIS",
     "files": [
@@ -45,7 +45,7 @@
     ],
     "protocols": [
       {
-        "name": "Social Browser Explorer File URL",
+        "name": "Jawaker Explorer File URL",
         "schemes": [
           "HTTP",
           "HTTPS"
@@ -58,7 +58,7 @@
     },
     "win": {
       "target": "NSIS",
-      "icon": "browser_files/images/logo.ico",
+      "icon": "browser_files/images/jawaker.ico",
       "fileAssociations": [
         {
           "ext": "html",
@@ -80,7 +80,7 @@
       "createStartMenuShortcut": true,
       "menuCategory": true,
       "shortcutName": "${productName}",
-      "installerIcon": "browser_files/images/logo.ico",
+      "installerIcon": "browser_files/images/jawaker.ico",
       "allowToChangeInstallationDirectory": true
     },
     "squirrelWindows": {
@@ -96,7 +96,7 @@
     },
     "linux": {
       "category": "Web",
-      "icon": "browser_files/images/logo.png",
+      "icon": "browser_files/images/jawaker.png",
       "target": [
         "deb",
         "AppImage"
@@ -113,7 +113,7 @@
     "node-fetch": "^2.6.6"
   },
   "devDependencies": {
-    "electron": "^22.0.2",
+    "electron": "^22.0.3",
     "electron-builder": "^23.3.3",
     "gulp": "*"
   }
