@@ -35,7 +35,7 @@ SOCIALBROWSER.jawaker.autoPlay = function () {
   SOCIALBROWSER.jawaker.Play();
   SOCIALBROWSER.jawaker.autoPlayInterval = setInterval(() => {
     SOCIALBROWSER.jawaker.Play();
-  }, 1000 * 5);
+  }, 1000 * 4);
 };
 SOCIALBROWSER.jawaker.stopPlay = function () {
   let playbtn = document.querySelector('#play_btn');
@@ -166,7 +166,7 @@ SOCIALBROWSER.jawaker.PlayCard = function () {
   setTimeout(() => {
     SOCIALBROWSER.jawaker.busy = false;
     SOCIALBROWSER.jawaker.log('.....................');
-  }, 1000 * 2);
+  }, 200);
 };
 
 SOCIALBROWSER.jawaker.handlePanel = function () {

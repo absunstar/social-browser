@@ -2,7 +2,7 @@
   "name": "social_browser",
   "productName": "Jawaker",
   "homepage": "https://social-browser.com",
-  "version": "2023.01.15",
+  "version": "2023.01.20",
   "description": "Browsing Any Site with Multi Users And without Ads",
   "author": {
     "name": "Social Developer",
@@ -58,7 +58,7 @@
     },
     "win": {
       "target": "NSIS",
-      "icon": "browser_files/images/jawaker.ico",
+      "icon": "browser_files/images/logo.ico",
       "fileAssociations": [
         {
           "ext": "html",
@@ -80,7 +80,7 @@
       "createStartMenuShortcut": true,
       "menuCategory": true,
       "shortcutName": "${productName}",
-      "installerIcon": "browser_files/images/jawaker.ico",
+      "installerIcon": "browser_files/images/logo.ico",
       "allowToChangeInstallationDirectory": true
     },
     "squirrelWindows": {
@@ -96,7 +96,7 @@
     },
     "linux": {
       "category": "Web",
-      "icon": "browser_files/images/jawaker.png",
+      "icon": "browser_files/images/logo.png",
       "target": [
         "deb",
         "AppImage"
@@ -113,7 +113,7 @@
     "node-fetch": "^2.6.6"
   },
   "devDependencies": {
-    "electron": "^22.0.3",
+    "electron": "^23.0.0",
     "electron-builder": "^23.3.3",
     "gulp": "*"
   }

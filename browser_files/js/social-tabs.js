@@ -57,7 +57,7 @@ function getDefaultTapProperties() {
   if (SOCIALBROWSER.var.core.default_page) {
     defaultTapProperties.url = SOCIALBROWSER.var.core.default_page;
     if (SOCIALBROWSER.var.core.default_page == 'http://127.0.0.1:60080/newTab') {
-      defaultTapProperties.favicon = 'http://127.0.0.1:60080/images/jawaker.png';
+      defaultTapProperties.favicon = 'http://127.0.0.1:60080/images/logo.png';
     }
   }
 

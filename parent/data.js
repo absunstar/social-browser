@@ -11,8 +11,8 @@ module.exports = function init(parent) {
 
   parent.icons = [];
   parent.icons['darwin'] = parent.path.join(parent.files_dir, 'images', 'logo.icns');
-  parent.icons['linux'] = parent.path.join(parent.files_dir, 'images', 'jawaker.png');
-  parent.icons['win32'] = parent.path.join(parent.files_dir, 'images', 'jawaker.ico');
+  parent.icons['linux'] = parent.path.join(parent.files_dir, 'images', 'logo.png');
+  parent.icons['win32'] = parent.path.join(parent.files_dir, 'images', 'logo.ico');
 
   parent.handleAdList = function () {
     if (!parent.var.ad_list) {
@@ -531,6 +531,7 @@ module.exports = function init(parent) {
 
   setInterval(() => {
     let update_proxy_list = false;
+    let update_proxy = false;
     let update_extension_list = false;
     let update_session_list = false;
     let update_ad_list = false;
@@ -541,6 +542,9 @@ module.exports = function init(parent) {
       if (q === 'proxy_list') {
         save_var_quee.splice(i, 1);
         update_proxy_list = true;
+      }else if (q === 'proxy') {
+        save_var_quee.splice(i, 1);
+        update_proxy = true;
       } else if (q === 'session_list') {
         save_var_quee.splice(i, 1);
         update_session_list = true;
@@ -563,6 +567,9 @@ module.exports = function init(parent) {
     });
     if (update_proxy_list) {
       parent.save_var('proxy_list');
+    }
+    if (update_proxy) {
+      parent.save_var('proxy');
     }
     if (update_extension_list) {
       parent.save_var('extension_list');
@@ -718,7 +725,7 @@ module.exports = function init(parent) {
     data: parent.readFileSync(parent.path.join(parent.files_dir, 'html', 'custom', 'browser.css')),
   });
   parent.var.scripts_files = [];
-  parent.var.core.icon = parent.path.join(parent.files_dir, 'images', 'jawaker.ico');
+  parent.var.core.icon = parent.path.join(parent.files_dir, 'images', 'logo.ico');
   parent.fs.readdir(parent.files_dir + '/js/scripts', (err, files) => {
     if (!err) {
       files.forEach((file) => {

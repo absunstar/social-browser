@@ -3,7 +3,7 @@
   // });
 
   parent.setupTray = function () {
-    parent.appIcon = new parent.electron.Tray(parent.files_dir + '/images/jawaker.png');
+    parent.appIcon = new parent.electron.Tray(parent.files_dir + '/images/logo.png');
     parent.appIcon.setToolTip('Social Browser');
     var trayContextMenu = parent.electron.Menu.buildFromTemplate([
       {
