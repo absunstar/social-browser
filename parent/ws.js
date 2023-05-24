@@ -92,19 +92,7 @@ module.exports = function init(parent) {
         case '[create-new-view]':
           parent.createChildProcess(message.options);
           break;
-        case '[show-view]':
-          parent.clientList.forEach((client) => {
-            if (client.index != message.index && client.ws) {
-              if (client.option_list.some((op) => op.tab_id === message.options.tab_id)) {
-                message.is_current_view = true;
-                client.ws.send(message);
-              } else {
-                message.is_current_view = false;
-                client.ws.send(message);
-              }
-            }
-          });
-          break;
+
         case '[close-view]':
           parent.clientList.forEach((client) => {
             if (client.index != message.index && client.ws && client.option_list.some((op) => op.tab_id === message.options.tab_id)) {
@@ -189,14 +177,7 @@ module.exports = function init(parent) {
             }
           });
           break;
-        case '[send-window-status]':
-          parent.lastWindowStatus = message;
-          parent.clientList.forEach((client) => {
-            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.windowType === 'view')) {
-              client.ws.send(message);
-            }
-          });
-          break;
+
         case '[add-to-bookmark]':
           parent.bookmarks_exists = false;
           parent.var.bookmarks.forEach((b, i) => {
@@ -239,30 +220,33 @@ module.exports = function init(parent) {
         case '[update-browser-var]':
           parent.set_var(message.options.name, message.options.data);
           break;
-        case '[update-browser-var][user_data_input][add]':
-          parent.var.user_data_input.push(message.data);
-          parent.set_var('user_data_input', parent.var.user_data_input);
-          break;
-        case '[update-browser-var][user_data][add]':
-          parent.var.user_data.push(message.data);
-          parent.set_var('user_data', parent.var.user_data);
-          break;
-        case '[update-browser-var][user_data_input][update]':
-          parent.var.user_data_input.forEach((u) => {
-            if (u.id === message.data.id) {
-              u.data = message.data.data;
+        case '[user_data_input][changed]':
+          let index1 = parent.var.user_data_input.findIndex((u) => u.id === message.data.id);
+          if (index1 > -1) {
+            parent.var.user_data_input[index1].data = message.data.data;
+          } else {
+            parent.var.user_data_input.push(message.data);
+          }
+          parent.clientList.forEach((client) => {
+            if (client.index !== message.index && client.ws) {
+              client.ws.send(message);
             }
           });
-          parent.set_var('user_data_input', parent.var.user_data_input);
           break;
-        case '[update-browser-var][user_data][update]':
-          parent.var.user_data.forEach((u) => {
-            if (u.id === message.data.id) {
-              u.data = message.data.data;
+        case '[user_data][changed]':
+          let index2 = parent.var.user_data.findIndex((u) => u.id === message.data.id);
+          if (index2 > -1) {
+            parent.var.user_data[index2].data = message.data.data;
+          } else {
+            parent.var.user_data.push(message.data);
+          }
+          parent.clientList.forEach((client) => {
+            if (client.index !== message.index && client.ws) {
+              client.ws.send(message);
             }
           });
-          parent.set_var('user_data', parent.var.user_data);
           break;
+
         case '[update-tab-properties]':
           parent.clientList.forEach((client) => {
             if (client.option_list.some((op) => op.windowType == 'main') && client.ws) {
@@ -406,7 +390,7 @@ module.exports = function init(parent) {
           if (message.url && !message.url.contains('60080')) {
             parent.addURL(message);
             parent.clientList.forEach((client) => {
-              if (client.windowType === 'main' && client.ws) {
+              if ((client.windowType === 'main' || client.windowType === 'files') && client.ws) {
                 client.ws.send(message);
               }
             });
@@ -430,6 +414,55 @@ module.exports = function init(parent) {
           break;
         case '[add-mongodb-doc]':
           parent.log(message);
+          break;
+        default:
+          break;
+      }
+    };
+  });
+
+  parent.api.onWS('/window', (ws_window) => {
+    ws_window.onMessage = function (message) {
+      switch (message.type) {
+        case 'connected':
+          ws_window.send({ type: 'connected' });
+          break;
+        case '[connected]':
+          let client = parent.clientList[message.index];
+          if (!client) {
+            return;
+          }
+          client.ws2 = ws_window;
+          client.sendMessage2 = function (msg2) {
+            if (client.ws2) {
+              client.ws2.send(msg2);
+            }
+          };
+          break;
+        case '[send-window-status]':
+          parent.lastWindowStatus = message;
+          parent.clientList.forEach((client) => {
+            if (client.sendMessage2 && client.uuid !== message.uuid && client.option_list.some((op) => op.windowType === 'view')) {
+              client.sendMessage2(message);
+            }
+          });
+          break;
+        case '[show-view]':
+          parent.clientList.forEach((client) => {
+            if (client.index != message.index && client.ws2) {
+              if (client.option_list.some((op) => op.tab_id === message.options.tab_id)) {
+                message.is_current_view = true;
+                client.sendMessage2(message);
+              } else {
+                message.is_current_view = false;
+                client.sendMessage2(message);
+              }
+            }
+          });
+          break;
+        case '[test]':
+          console.log('[test ws 2 ok ...]');
+
           break;
         default:
           break;

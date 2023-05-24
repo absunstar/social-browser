@@ -1,9 +1,5 @@
 module.exports = function (SOCIALBROWSER) {
-  SOCIALBROWSER.var.blocking.white_list.forEach((site) => {
-    if (site.url.length > 2 && document.location.href.like(site.url)) {
-      SOCIALBROWSER.is_white_site = true;
-    }
-  });
+  SOCIALBROWSER.is_white_site = SOCIALBROWSER.var.blocking.white_list.some((site) => site.url.length > 2 && document.location.href.like(site.url));
 
   SOCIALBROWSER.var.session_list.sort((a, b) => (a.display > b.display ? 1 : -1));
 

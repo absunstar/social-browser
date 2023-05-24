@@ -277,7 +277,7 @@ module.exports = function init(child) {
         child.profilesWindow.hide();
       }
     } else {
-      child.sendMessage({
+      child.sendMessage2({
         type: '[show-view]',
         options: options,
       });
@@ -333,7 +333,7 @@ module.exports = function init(child) {
   });
 
   child.electron.ipcMain.on('[update-browser-var]', (e, options) => {
-    child.parent.var[options.name] = options.data
+    child.parent.var[options.name] = options.data;
     child.sendMessage({
       type: '[update-browser-var]',
       options: options,
@@ -546,50 +546,42 @@ module.exports = function init(child) {
   });
 
   child.electron.ipcMain.on('user_data', (event, data) => {
+    if (!Array.isArray(data.data) || data.data.length === 0) {
+      return;
+    }
     child.parent.var.user_data = child.parent.var.user_data || [];
-      let exists = false;
-      child.parent.var.user_data.forEach((u) => {
-        if (u.id === data.id) {
-          exists = true;
-          u.data = data.data;
-          child.sendMessage({
-            type: '[update-browser-var][user_data][update]',
-            data: data,
-          });
-        }
-      });
-      if (!exists) {
-        delete data.__options;
-        delete data.parentSetting;
-        
-        child.parent.var.user_data.push(data);
-        child.sendMessage({
-          type: '[update-browser-var][user_data][add]',
-          data: data,
-        });
-      }
+    let index = child.parent.var.user_data.findIndex((u) => u.id === data.id);
+    if (index > -1) {
+      child.parent.var.user_data[index].data = data.data;
+    } else {
+      child.parent.var.user_data.push(data);
+    }
+    delete data.__options;
+    delete data.parentSetting;
+    child.sendMessage({
+      type: '[user_data][changed]',
+      data: data,
+    });
   });
 
   child.electron.ipcMain.on('user_data_input', (event, data) => {
-    child.parent.var.user_data_input = child.parent.var.user_data_input || [];
-    let exists = false;
-    child.parent.var.user_data_input.forEach((u) => {
-      if (u.id === data.id) {
-        exists = true;
-        u.data = data.data;
-        child.sendMessage({
-          type: '[update-browser-var][user_data_input][update]',
-          data: data,
-        });
-      }
-    });
-    if (!exists) {
-      child.parent.var.user_data_input.push(data);
-      child.sendMessage({
-        type: '[update-browser-var][user_data_input][add]',
-        data: data,
-      });
+    if (!Array.isArray(data.data) || data.data.length === 0) {
+      return;
     }
+
+    child.parent.var.user_data_input = child.parent.var.user_data_input || [];
+    let index = child.parent.var.user_data_input.findIndex((u) => u.id === data.id);
+    if (index > -1) {
+      child.parent.var.user_data_input[index].data = data.data;
+    } else {
+      child.parent.var.user_data_input.push(data);
+    }
+    delete data.__options;
+    delete data.parentSetting;
+    child.sendMessage({
+      type: '[user_data_input][changed]',
+      data: data,
+    });
   });
 
   child.electron.ipcMain.on('[send-render-message]', (event, data) => {

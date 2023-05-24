@@ -24,7 +24,9 @@ process.on('warning', (warning) => {
   console.warn(warning.stack);
 });
 
-process.setMaxListeners(0);
+process.setMaxListeners(100);
+require('events').EventEmitter.defaultMaxListeners = 0
+require('events').EventEmitter.prototype._maxListeners = 100;
 
 var child = {
   index: parseInt(process.argv[1].replace('--index=', '')),
@@ -84,13 +86,13 @@ if (app.setUserTasks) {
   app.setUserTasks([]);
 }
 
-app.commandLine.appendSwitch('enable-experimental-web-platform-features');
+//app.commandLine.appendSwitch('enable-experimental-web-platform-features');
 // app.commandLine.appendSwitch('disable-software-rasterizer');
 // app.commandLine.appendSwitch('enable-webgl');
 // app.commandLine.appendSwitch('disable-dev-shm-usage');
 // app.commandLine.appendSwitch('no-sandbox');
 // app.commandLine.appendSwitch('in-process-gpu');
- app.disableHardwareAcceleration();
+app.disableHardwareAcceleration();
 
 //app.commandLine.appendSwitch('disable-web-security');
 // app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');

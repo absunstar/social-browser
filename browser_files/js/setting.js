@@ -536,128 +536,129 @@ app.controller('mainController', ($scope, $http, $timeout) => {
   $scope.loadSetting = function () {
     $scope.busy = true;
     $scope.setting_busy = true;
-    $scope.setting = SOCIALBROWSER.ipcSync('[browser][data]', {
+    SOCIALBROWSER.invoke('[browser][data]', {
       hostname: document.location.hostname,
       url: document.location.href,
       name: '*',
       win_id: SOCIALBROWSER.currentWindow.id,
       partition: SOCIALBROWSER.partition,
-    }).var;
-
-    $scope.$applyAsync();
-
-    $scope.setting.blocking.popup = $scope.setting.blocking.popup || {};
-    $scope.setting.blocking.privacy = $scope.setting.blocking.privacy || {};
-    $scope.setting.blocking.privacy, (vpc = $scope.setting.blocking.privacy.vpc || {});
-    $scope.setting.blocking.popup.black_list = $scope.setting.blocking.popup.black_list || [];
-    $scope.setting.blocking.popup.white_list = $scope.setting.blocking.popup.white_list || [];
-
-    if ($scope.setting.blocking.privacy.vpc.hide_lang !== true) {
-      $scope.setting.blocking.privacy.vpc.languages = SOCIALBROWSER.navigator.languages.toString();
-    }
-    if ($scope.setting.blocking.privacy.vpc.hide_cpu !== true) {
-      $scope.setting.blocking.privacy.vpc.cpu_count = SOCIALBROWSER.navigator.hardwareConcurrency;
-    }
-    if ($scope.setting.blocking.privacy.vpc.hide_memory !== true) {
-      $scope.setting.blocking.privacy.vpc.memory_count = SOCIALBROWSER.navigator.deviceMemory;
-    }
-
-    if ($scope.setting.blocking.privacy.vpc.mask_date !== true) {
-      $scope.setting.blocking.privacy.vpc.date_offset = [null, -300, -240, -180, -120, -60, 0, 60, 120, 180, 240, 300][SOCIALBROWSER.maxOf(SOCIALBROWSER.sessionId(), 11)];
-    }
-
-    if ($scope.setting.blocking.privacy.vpc.hide_screen !== true) {
-      $scope.setting.blocking.privacy.vpc.screen_width = SOCIALBROWSER.screen.width;
-      $scope.setting.blocking.privacy.vpc.screen_height = SOCIALBROWSER.screen.height;
-      $scope.setting.blocking.privacy.vpc.screen_availWidth = SOCIALBROWSER.screen.availWidth;
-      $scope.setting.blocking.privacy.vpc.screen_availHeight = SOCIALBROWSER.screen.availHeight;
-    }
-
-    if ($scope.setting.blocking.privacy.vpc.hide_connection !== true) {
-      $scope.setting.blocking.privacy.vpc.connection = $scope.setting.blocking.privacy.vpc.connection || {};
-      $scope.setting.blocking.privacy.vpc.connection.effectiveType = SOCIALBROWSER.navigator.connection.effectiveType || '4g';
-      $scope.setting.blocking.privacy.vpc.connection.downlink = SOCIALBROWSER.navigator.connection.downlink || 1;
-      $scope.setting.blocking.privacy.vpc.connection.rtt = SOCIALBROWSER.navigator.connection.rtt || 100;
-      $scope.setting.blocking.privacy.vpc.connection.type = SOCIALBROWSER.navigator.connection.type || 'wifi';
-    }
-
-    $scope.setting.session_list.forEach((s, i) => {
-      s.privacy = s.privacy || {};
-      s.privacy.vpc = s.privacy.vpc || {};
-      if (s.privacy.vpc.hide_connection !== true) {
-        s.privacy.vpc.connection = s.privacy.vpc.connection || {};
-        s.privacy.vpc.connection.effectiveType = $scope.setting.blocking.privacy.vpc.connection.effectiveType;
-        s.privacy.vpc.connection.downlink = $scope.setting.blocking.privacy.vpc.connection.downlink;
-        s.privacy.vpc.connection.rtt = $scope.setting.blocking.privacy.vpc.connection.rtt;
-        s.privacy.vpc.connection.type = $scope.setting.blocking.privacy.vpc.connection.type;
-      }
-      if (s.privacy.vpc.hide_memory !== true) {
-        s.privacy.vpc.memory_count = $scope.setting.blocking.privacy.vpc.memory_count;
-      }
-      if (s.privacy.vpc.hide_cpu !== true) {
-        s.privacy.vpc.cpu_count = $scope.setting.blocking.privacy.vpc.cpu_count;
-      }
-      if (s.privacy.vpc.hide_lang !== true) {
-        s.privacy.vpc.languages = $scope.setting.blocking.privacy.vpc.languages;
-      }
-      if (s.privacy.vpc.mask_date !== true) {
-        s.privacy.vpc.date_offset = [null, -300, -240, -180, -120, -60, 0, 60, 120, 180, 240, 300][SOCIALBROWSER.maxOf(i, 11)];
-      }
-      if (s.privacy.vpc.hide_screen !== true) {
-        s.privacy.vpc.screen_width = $scope.setting.blocking.privacy.vpc.screen_width;
-        s.privacy.vpc.screen_height = $scope.setting.blocking.privacy.vpc.screen_height;
-        s.privacy.vpc.screen_availWidth = $scope.setting.blocking.privacy.vpc.screen_availWidth;
-        s.privacy.vpc.screen_availHeight = $scope.setting.blocking.privacy.vpc.screen_availHeight;
-        s.privacy.screen_pixelDepth = $scope.setting.blocking.privacy.screen_pixelDepth;
-        s.privacy.screen_MaxTouchPoints = $scope.setting.blocking.privacy.screen_MaxTouchPoints;
-      }
-    });
-
-    if ($scope.setting.core.password) {
-      $scope.knowPassword = false;
-      $scope.password = '';
-    } else {
-      $scope.knowPassword = true;
-    }
-
-    $scope.setting.user_data_input.forEach((site) => {
-      site.data = site.data || [];
-      if (!site.password) {
-        site.data.forEach((d, i) => {
-          if (d.type == 'password') {
-            site.password = d.value;
-            site.p_index = i;
-          }
-        });
-      }
-
-      if (!site.username) {
-        site.data.forEach((d, i) => {
-          if (d.name == 'username') {
-            site.username = d.value;
-          }
-        });
-      }
-      if (!site.username) {
-        site.data.forEach((d, i) => {
-          if (d.name == 'email') {
-            site.username = d.value;
-          }
-        });
-      }
-      if (!site.username) {
-        let index = site.p_index == 0 ? 1 : site.p_index - 1;
-        if (site.data.length > index) {
-          site.username = site.data[index].value;
-        }
-      }
-    });
-
-    $timeout(() => {
-      $scope.busy = false;
-      $scope.setting_busy = false;
+    }).then((data) => {
+      $scope.setting = data.var;
       $scope.$applyAsync();
-    }, 500);
+
+      $scope.setting.blocking.popup = $scope.setting.blocking.popup || {};
+      $scope.setting.blocking.privacy = $scope.setting.blocking.privacy || {};
+      $scope.setting.blocking.privacy, (vpc = $scope.setting.blocking.privacy.vpc || {});
+      $scope.setting.blocking.popup.black_list = $scope.setting.blocking.popup.black_list || [];
+      $scope.setting.blocking.popup.white_list = $scope.setting.blocking.popup.white_list || [];
+
+      if ($scope.setting.blocking.privacy.vpc.hide_lang !== true) {
+        $scope.setting.blocking.privacy.vpc.languages = SOCIALBROWSER.navigator.languages.toString();
+      }
+      if ($scope.setting.blocking.privacy.vpc.hide_cpu !== true) {
+        $scope.setting.blocking.privacy.vpc.cpu_count = SOCIALBROWSER.navigator.hardwareConcurrency;
+      }
+      if ($scope.setting.blocking.privacy.vpc.hide_memory !== true) {
+        $scope.setting.blocking.privacy.vpc.memory_count = SOCIALBROWSER.navigator.deviceMemory;
+      }
+
+      if ($scope.setting.blocking.privacy.vpc.mask_date !== true) {
+        $scope.setting.blocking.privacy.vpc.date_offset = [null, -300, -240, -180, -120, -60, 0, 60, 120, 180, 240, 300][SOCIALBROWSER.maxOf(SOCIALBROWSER.sessionId(), 11)];
+      }
+
+      if ($scope.setting.blocking.privacy.vpc.hide_screen !== true) {
+        $scope.setting.blocking.privacy.vpc.screen_width = SOCIALBROWSER.screen.width;
+        $scope.setting.blocking.privacy.vpc.screen_height = SOCIALBROWSER.screen.height;
+        $scope.setting.blocking.privacy.vpc.screen_availWidth = SOCIALBROWSER.screen.availWidth;
+        $scope.setting.blocking.privacy.vpc.screen_availHeight = SOCIALBROWSER.screen.availHeight;
+      }
+
+      if ($scope.setting.blocking.privacy.vpc.hide_connection !== true) {
+        $scope.setting.blocking.privacy.vpc.connection = $scope.setting.blocking.privacy.vpc.connection || {};
+        $scope.setting.blocking.privacy.vpc.connection.effectiveType = SOCIALBROWSER.navigator.connection.effectiveType || '4g';
+        $scope.setting.blocking.privacy.vpc.connection.downlink = SOCIALBROWSER.navigator.connection.downlink || 1;
+        $scope.setting.blocking.privacy.vpc.connection.rtt = SOCIALBROWSER.navigator.connection.rtt || 100;
+        $scope.setting.blocking.privacy.vpc.connection.type = SOCIALBROWSER.navigator.connection.type || 'wifi';
+      }
+
+      $scope.setting.session_list.forEach((s, i) => {
+        s.privacy = s.privacy || {};
+        s.privacy.vpc = s.privacy.vpc || {};
+        if (s.privacy.vpc.hide_connection !== true) {
+          s.privacy.vpc.connection = s.privacy.vpc.connection || {};
+          s.privacy.vpc.connection.effectiveType = $scope.setting.blocking.privacy.vpc.connection.effectiveType;
+          s.privacy.vpc.connection.downlink = $scope.setting.blocking.privacy.vpc.connection.downlink;
+          s.privacy.vpc.connection.rtt = $scope.setting.blocking.privacy.vpc.connection.rtt;
+          s.privacy.vpc.connection.type = $scope.setting.blocking.privacy.vpc.connection.type;
+        }
+        if (s.privacy.vpc.hide_memory !== true) {
+          s.privacy.vpc.memory_count = $scope.setting.blocking.privacy.vpc.memory_count;
+        }
+        if (s.privacy.vpc.hide_cpu !== true) {
+          s.privacy.vpc.cpu_count = $scope.setting.blocking.privacy.vpc.cpu_count;
+        }
+        if (s.privacy.vpc.hide_lang !== true) {
+          s.privacy.vpc.languages = $scope.setting.blocking.privacy.vpc.languages;
+        }
+        if (s.privacy.vpc.mask_date !== true) {
+          s.privacy.vpc.date_offset = [null, -300, -240, -180, -120, -60, 0, 60, 120, 180, 240, 300][SOCIALBROWSER.maxOf(i, 11)];
+        }
+        if (s.privacy.vpc.hide_screen !== true) {
+          s.privacy.vpc.screen_width = $scope.setting.blocking.privacy.vpc.screen_width;
+          s.privacy.vpc.screen_height = $scope.setting.blocking.privacy.vpc.screen_height;
+          s.privacy.vpc.screen_availWidth = $scope.setting.blocking.privacy.vpc.screen_availWidth;
+          s.privacy.vpc.screen_availHeight = $scope.setting.blocking.privacy.vpc.screen_availHeight;
+          s.privacy.screen_pixelDepth = $scope.setting.blocking.privacy.screen_pixelDepth;
+          s.privacy.screen_MaxTouchPoints = $scope.setting.blocking.privacy.screen_MaxTouchPoints;
+        }
+      });
+
+      if ($scope.setting.core.password) {
+        $scope.knowPassword = false;
+        $scope.password = '';
+      } else {
+        $scope.knowPassword = true;
+      }
+
+      $scope.setting.user_data_input.forEach((site) => {
+        site.data = site.data || [];
+        if (!site.password) {
+          site.data.forEach((d, i) => {
+            if (d.type == 'password') {
+              site.password = d.value;
+              site.p_index = i;
+            }
+          });
+        }
+
+        if (!site.username) {
+          site.data.forEach((d, i) => {
+            if (d.name == 'username') {
+              site.username = d.value;
+            }
+          });
+        }
+        if (!site.username) {
+          site.data.forEach((d, i) => {
+            if (d.name == 'email') {
+              site.username = d.value;
+            }
+          });
+        }
+        if (!site.username) {
+          let index = site.p_index == 0 ? 1 : site.p_index - 1;
+          if (site.data.length > index) {
+            site.username = site.data[index].value;
+          }
+        }
+      });
+
+      $timeout(() => {
+        $scope.busy = false;
+        $scope.setting_busy = false;
+        $scope.$applyAsync();
+      }, 500);
+    });
   };
 
   $scope.clearUserData = function () {

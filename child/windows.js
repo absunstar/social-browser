@@ -2,13 +2,7 @@ module.exports = function (child) {
   child.assignWindows = [];
 
   child.getMainWindow = function () {
-    let mainWindow = null;
-    child.windowList.forEach((w) => {
-      if (!mainWindow && w.customSetting && w.customSetting.windowType == 'main') {
-        mainWindow = w.window;
-      }
-    });
-    return mainWindow;
+    return child.windowList.find((w) => w.customSetting && w.customSetting.windowType == 'main');
   };
 
   child.getWindow = function () {
@@ -479,7 +473,7 @@ module.exports = function (child) {
               },
             };
 
-            child.sendMessage(data);
+            child.sendMessage2(data);
           }
         });
       }
@@ -877,17 +871,9 @@ module.exports = function (child) {
 
         let allow = false;
 
-        parent.var.blocking.white_list.forEach((d) => {
-          if (url_parser.host.like(d.url) || current_url_parser.host.like(d.url)) {
-            allow = true;
-          }
-        });
+        allow = parent.var.blocking.white_list.find((d) => url_parser.host.like(d.url) || current_url_parser.host.like(d.url));
         if (!allow) {
-          parent.var.blocking.popup.white_list.forEach((d) => {
-            if (url_parser.host.like(d.url) || current_url_parser.host.like(d.url)) {
-              allow = true;
-            }
-          });
+          allow = parent.var.blocking.popup.white_list.find((d) => url_parser.host.like(d.url) || current_url_parser.host.like(d.url));
         }
         if (!allow) {
           if (parent.var.blocking.popup.allow_internal && url_parser.host.contains(current_url_parser.host)) {
@@ -1041,11 +1027,7 @@ module.exports = function (child) {
 
       let allow = false;
 
-      parent.var.blocking.white_list.forEach((d) => {
-        if (url_parser.host.like(d.url) || current_url_parser.host.like(d.url)) {
-          allow = true;
-        }
-      });
+      allow = parent.var.blocking.white_list.find((d) => url_parser.host.like(d.url) || current_url_parser.host.like(d.url));
 
       if (allow) {
         child.sendMessage({
@@ -1060,11 +1042,7 @@ module.exports = function (child) {
         return;
       }
 
-      parent.var.blocking.popup.white_list.forEach((d) => {
-        if (url_parser.host.like(d.url) || current_url_parser.host.like(d.url)) {
-          allow = true;
-        }
-      });
+      allow = parent.var.blocking.popup.white_list.find((d) => url_parser.host.like(d.url) || current_url_parser.host.like(d.url));
 
       if (allow) {
         child.sendMessage({

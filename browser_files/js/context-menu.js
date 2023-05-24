@@ -265,7 +265,7 @@
   };
 
   SOCIALBROWSER.init = function () {
-    if (SOCIALBROWSER.isIframe()) {
+    if (true || SOCIALBROWSER.isIframe()) {
       SOCIALBROWSER.invoke('[browser][data]', {
         hostname: SOCIALBROWSER.hostname,
         url: SOCIALBROWSER.href,

@@ -82,7 +82,7 @@ module.exports = function (SOCIALBROWSER) {
         url: 'https://www.youtube.com/embed/' + url.split('=')[1].split('&')[0],
         partition: SOCIALBROWSER.partition,
         referrer: document.location.href,
-        show : true
+        show: true,
       });
 
       return child_window;
@@ -93,13 +93,8 @@ module.exports = function (SOCIALBROWSER) {
         SOCIALBROWSER.log('Not Allow URL : ' + url);
         return child_window;
       }
-      let allow = true;
+      let allow = !SOCIALBROWSER.var.blocking.popup.black_list.some((d) => url.like(d.url));
 
-      SOCIALBROWSER.var.blocking.popup.black_list.forEach((d) => {
-        if (url.like(d.url)) {
-          allow = false;
-        }
-      });
       if (!allow) {
         SOCIALBROWSER.log('black list : ' + url);
         return child_window;
@@ -113,11 +108,7 @@ module.exports = function (SOCIALBROWSER) {
       } else if (toUrlParser.host !== fromUrlParser.host && SOCIALBROWSER.var.blocking.popup.allow_external) {
         allow = true;
       } else {
-        SOCIALBROWSER.var.blocking.popup.white_list.forEach((d) => {
-          if (toUrlParser.host.like(d.url) || fromUrlParser.host.like(d.url)) {
-            allow = true;
-          }
-        });
+        allow = SOCIALBROWSER.var.blocking.popup.white_list.some((d) => toUrlParser.host.like(d.url) || fromUrlParser.host.like(d.url));
       }
 
       if (!allow) {

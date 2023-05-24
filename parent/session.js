@@ -156,33 +156,17 @@ module.exports = function (parent) {
         return;
       }
 
-      
-
-      let end = false;
-      parent.var.blocking.white_list.forEach((s) => {
-        if (end) {
-          return;
-        }
-        if (s.url.length > 2 && (source_url.like(s.url) || url.like(s.url))) {
-          callback({
-            cancel: false,
-          });
-          end = true;
-          return;
-        }
-      });
+      let end = parent.var.blocking.white_list.some((s) => s.url.length > 2 && (source_url.like(s.url) || url.like(s.url)));
 
       if (end) {
+        callback({
+          cancel: false,
+        });
         return;
       }
 
       if (parent.var.blocking.black_list) {
-        parent.var.blocking.black_list.forEach((s) => {
-          if (url.like(s.url)) {
-            end = true;
-            //  parent.log(`\n Block black_list :  ${s.url} \n`);
-          }
-        });
+        end = parent.var.blocking.black_list.some((s) => url.like(s.url));
 
         if (end) {
           callback({
@@ -195,12 +179,7 @@ module.exports = function (parent) {
       }
 
       if (parent.var.blocking.allow_safty_mode) {
-        parent.var.blocking.un_safe_list.forEach((s) => {
-          if (url.like(s.url)) {
-            end = true;
-            // parent.log(`\n Block un_safe_list : ${s.url} \n ${url} \n`);
-          }
-        });
+        end = parent.var.blocking.un_safe_list.some((s) => url.like(s.url));
 
         if (end) {
           callback({
@@ -440,7 +419,8 @@ module.exports = function (parent) {
 
       details.responseHeaders['Access-Control-Allow-Credentials'.toLowerCase()] = 'true';
       details.responseHeaders['Access-Control-Allow-Methods'.toLowerCase()] = a_Methods || 'POST,GET,DELETE,PUT,OPTIONS,VIEW,HEAD,CONNECT,TRACE';
-      details.responseHeaders['Access-Control-Allow-Headers'.toLowerCase()] = a_Headers || 'Authorization ,Access-Control-Allow-Headers, Access-Control-Request-Method, Access-Control-Request-Headers,Origin, X-Requested-With, Content-Type, Accept';
+      details.responseHeaders['Access-Control-Allow-Headers'.toLowerCase()] =
+        a_Headers || 'Authorization ,Access-Control-Allow-Headers, Access-Control-Request-Method, Access-Control-Request-Headers,Origin, X-Requested-With, Content-Type, Accept';
 
       if (a_orgin) {
         details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = [a_orgin[0]];
@@ -453,7 +433,7 @@ module.exports = function (parent) {
       }
       // details.responseHeaders['Cross-Origin-Resource-Policy'.toLowerCase()] = 'cross-origin';
 
-      p
+      p;
 
       callback({
         cancel: false,

@@ -164,11 +164,8 @@ module.exports = function (SOCIALBROWSER) {
     if (SOCIALBROWSER.session_id) {
       return SOCIALBROWSER.session_id;
     }
-    SOCIALBROWSER.var.session_list.forEach((s, i) => {
-      if (s.name == SOCIALBROWSER.partition) {
-        SOCIALBROWSER.session_id = i + 1;
-      }
-    });
+   
+    SOCIALBROWSER.session_id = SOCIALBROWSER.var.session_list.findIndex(s=> s.name == SOCIALBROWSER.partition) + 1
     return SOCIALBROWSER.session_id;
   };
 

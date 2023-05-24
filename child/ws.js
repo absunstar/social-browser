@@ -39,6 +39,7 @@ module.exports = function (child) {
             type: '[re-request-browser-core-data]',
           });
         } else if (message.type == '[browser-core-data]') {
+          connect2();
           child.parent = message;
           child.addOverwriteList(child.parent.var.overwrite.urls);
           child.option_list.push(message.options);
@@ -78,8 +79,13 @@ module.exports = function (child) {
 
             child.sendToWindows('[update-browser-var]', message);
           }
-        } else if (message.type == '[update-browser-var][user_data_input][add]') {
-          child.parent.var.user_data_input.push(message.data);
+        } else if (message.type == '[user_data_input][changed]') {
+          let index = child.parent.var.user_data_input.findIndex((u) => u.id === message.data.id);
+          if (index > -1) {
+            child.parent.var.user_data_input[index].data = message.data.data;
+          } else {
+            child.parent.var.user_data_input.push(message.data);
+          }
           child.sendToWindows('[update-browser-var]', {
             type: '[update-browser-var]',
             options: {
@@ -87,34 +93,13 @@ module.exports = function (child) {
               data: child.parent.var.user_data_input,
             },
           });
-        } else if (message.type == '[update-browser-var][user_data][add]') {
-          child.parent.var.user_data.push(message.data);
-          child.sendToWindows('[update-browser-var]', {
-            type: '[update-browser-var]',
-            options: {
-              name: 'user_data',
-              data: child.parent.var.user_data,
-            },
-          });
-        } else if (message.type == '[update-browser-var][user_data_input][update]') {
-          child.parent.var.user_data_input.forEach((u) => {
-            if (u.id === message.data.id) {
-              u.data = message.data.data;
-            }
-          });
-          child.sendToWindows('[update-browser-var]', {
-            type: '[update-browser-var]',
-            options: {
-              name: 'user_data_input',
-              data: child.parent.var.user_data_input,
-            },
-          });
-        } else if (message.type == '[update-browser-var][user_data][update]') {
-          child.parent.var.user_data.forEach((u) => {
-            if (u.id === message.data.id) {
-              u.data = message.data.data;
-            }
-          });
+        } else if (message.type == '[user_data][changed]') {
+          let index = child.parent.var.user_data.findIndex((u) => u.id === message.data.id);
+          if (index > -1) {
+            child.parent.var.user_data[index].data = message.data.data;
+          } else {
+            child.parent.var.user_data.push(message.data);
+          }
           child.sendToWindows('[update-browser-var]', {
             type: '[update-browser-var]',
             options: {
@@ -167,19 +152,15 @@ module.exports = function (child) {
             }
           });
         } else if (message.type == '[add-window-url]') {
-          let exists = false;
-          child.parent.var.urls.forEach((u) => {
-            if (u.url == message.url) {
-              exists = true;
-              if (!message.ignoreCounted) {
-                u.count++;
-              }
-              u.title = message.title || u.title;
-              u.logo = message.logo || u.logo;
-              u.last_visit = new Date().getTime();
+          let index = child.parent.var.urls.findIndex((u) => u.url == message.url);
+          if (index > -1) {
+            child.parent.var.urls[index].title = message.title || child.parent.var.urls[index].title;
+            child.parent.var.urls[index].logo = message.logo || child.parent.var.urls[index].logo;
+            child.parent.var.urls[index].last_visit = new Date().getTime();
+            if (!message.ignoreCounted) {
+              child.parent.var.urls[index].count++;
             }
-          });
-          if (!exists) {
+          } else {
             child.parent.var.urls.push({
               url: message.url,
               logo: message.logo,
@@ -384,32 +365,6 @@ module.exports = function (child) {
               );
             }
           });
-        } else if (message.type == '[show-view]') {
-          child.is_hide = true;
-
-          if (child.addressbarWindow && !child.addressbarWindow.isDestroyed()) {
-            child.addressbarWindow.hide();
-          }
-          if (child.profilesWindow && !child.profilesWindow.isDestroyed()) {
-            child.profilesWindow.hide();
-          }
-
-          child.windowList.forEach((w) => {
-            if (w.customSetting && w.customSetting.windowType == 'view' && w.window && !w.window.isDestroyed()) {
-              if (w.customSetting.tab_id == message.options.tab_id) {
-                if (message.is_current_view) {
-                  child.is_hide = false;
-                  w.window.show();
-                  w.window.setAlwaysOnTop(true);
-                  w.window.setAlwaysOnTop(false);
-                } else {
-                  w.window.hide();
-                }
-              } else {
-                w.window.hide();
-              }
-            }
-          });
         } else if (message.type == '[close-view]') {
           if ((w = child.windowList.find((w) => w.customSetting.tab_id == message.options.tab_id))) {
             if (w && !w.window.isDestroyed()) {
@@ -425,12 +380,6 @@ module.exports = function (child) {
           }
         } else if (message.type == '[remove-tab]' && child.getWindow()) {
           child.sendToWindow('[send-render-message]', { name: '[remove-tab]', tab_id: message.tab_id });
-        } else if (message.type == '[send-window-status]') {
-          if (message.screen && message.mainWindow) {
-            child.parent.options.screen = message.screen;
-            child.parent.options.mainWindow = message.mainWindow;
-            child.handleWindowBounds();
-          }
         } else if (message.type == '[cookie-changed]') {
           child.cookies[message.partition] = child.cookies[message.partition] || [];
           let ss = child.electron.session.fromPartition(message.partition);
@@ -459,5 +408,80 @@ module.exports = function (child) {
     });
   }
 
-  connect();
+  function connect2() {
+    if (child._ws_2 && child._ws_2.readyState === child.WebSocket.OPEN) {
+      return child._ws_2;
+    }
+    child._ws_2 = new child.WebSocket('ws://127.0.0.1:60080/window');
+    child.sendMessage2 = function (message) {
+      message.index = child.index;
+      message.uuid = child.uuid;
+      message.id = child.id;
+      message.pid = child.id;
+      if (child._ws_2 && child._ws_2.readyState === child.WebSocket.OPEN) {
+        child._ws_2.send(JSON.stringify(message));
+      }
+    };
+    child._ws_2.on('open', function () {});
+    child._ws_2.on('ping', function () {});
+    child._ws_2.on('close', function (e) {
+      child.log('Child Socket 2 is closed. Reconnect will be attempted in 1 second.', e);
+      setTimeout(function () {
+        connect2();
+      }, 1000);
+    });
+    child._ws_2.on('error', function (err) {
+      child.log('Socket encountered error: ', err);
+      child._ws_2.close();
+    });
+
+    child._ws_2.on('message', function (event) {
+      try {
+        let message = JSON.parse(event.data || event);
+
+        if (message.type == 'connected') {
+          child.sendMessage2({
+            type: '[connected]',
+          });
+        } else if (message.type == '[send-window-status]') {
+          if (message.screen && message.mainWindow) {
+            child.parent.options.screen = message.screen;
+            child.parent.options.mainWindow = message.mainWindow;
+            child.handleWindowBounds();
+          }
+        } else if (message.type == '[show-view]') {
+          child.is_hide = true;
+
+          if (child.addressbarWindow && !child.addressbarWindow.isDestroyed()) {
+            child.addressbarWindow.hide();
+          }
+          if (child.profilesWindow && !child.profilesWindow.isDestroyed()) {
+            child.profilesWindow.hide();
+          }
+
+          child.windowList.forEach((w) => {
+            if (w.customSetting && w.customSetting.windowType == 'view' && w.window && !w.window.isDestroyed()) {
+              if (w.customSetting.tab_id == message.options.tab_id) {
+                if (message.is_current_view) {
+                  child.is_hide = false;
+                  w.window.show();
+                  w.window.setAlwaysOnTop(true);
+                  w.window.setAlwaysOnTop(false);
+                } else {
+                  w.window.hide();
+                }
+              } else {
+                w.window.hide();
+              }
+            }
+          });
+        }
+      } catch (ex) {
+        console.log(ex, event.data || event);
+      }
+    });
+  }
+  setTimeout(() => {
+    connect();
+  }, 1000);
 };

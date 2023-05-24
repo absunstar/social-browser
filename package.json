@@ -1,6 +1,6 @@
 {
   "name": "social_browser",
-  "productName": "Jawaker",
+  "productName": "Social Browser",
   "homepage": "https://social-browser.com",
   "version": "2023.01.20",
   "description": "Browsing Any Site with Multi Users And without Ads",
@@ -30,7 +30,7 @@
   },
   "build": {
     "appId": "com.social.browser",
-    "productName": "Jawaker",
+    "productName": "Social Browser",
     "copyright": "Copyright © 2022",
     "target": "NSIS",
     "files": [
@@ -45,7 +45,7 @@
     ],
     "protocols": [
       {
-        "name": "Jawaker Explorer File URL",
+        "name": "Social Browser Explorer File URL",
         "schemes": [
           "HTTP",
           "HTTPS"
@@ -108,12 +108,12 @@
     }
   },
   "dependencies": {
-    "@electron/remote": "^2.0.8",
-    "isite": "^2023.1.1",
+    "@electron/remote": "^2.0.9",
+    "isite": "^2023.1.6",
     "node-fetch": "^2.6.6"
   },
   "devDependencies": {
-    "electron": "^23.0.0",
+    "electron": "^24.3.1",
     "electron-builder": "^23.3.3",
     "gulp": "*"
   }

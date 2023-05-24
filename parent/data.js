@@ -451,9 +451,6 @@ module.exports = function init(parent) {
         },
       ];
     }
-
-    parent.set_var(name, parent.var[name]);
-
     return parent.var[name];
   };
 
@@ -489,11 +486,11 @@ module.exports = function init(parent) {
     }
     try {
       if (true && parent.clientList) {
-        parent.log(`update var ( ${name} ) to all childs`);
         parent.clientList.forEach((client) => {
           if (client.ws) {
             if (name == 'urls') {
               if (client.windowType == 'main' || client.windowType == 'files') {
+                parent.log(`update private var ( ${name} ) to client : ${client.uuid}`);
                 client.ws.send({
                   type: '[update-browser-var]',
                   options: {
@@ -513,6 +510,7 @@ module.exports = function init(parent) {
                 });
               }
             } else {
+              parent.log(`update public var ( ${name} ) to client : ${client.uuid}`);
               client.ws.send({
                 type: '[update-browser-var]',
                 options: {
@@ -542,7 +540,7 @@ module.exports = function init(parent) {
       if (q === 'proxy_list') {
         save_var_quee.splice(i, 1);
         update_proxy_list = true;
-      }else if (q === 'proxy') {
+      } else if (q === 'proxy') {
         save_var_quee.splice(i, 1);
         update_proxy = true;
       } else if (q === 'session_list') {
@@ -602,26 +600,36 @@ module.exports = function init(parent) {
     if (nitm.url.contains('60080')) {
       return;
     }
-    let exists = false;
-    let index = null;
-
-    parent.var.urls.forEach((itm, i) => {
-      if (itm.url === nitm.url) {
-        exists = true;
-        index = i;
-        if (!nitm.ignoreCounted) {
-          itm.count++;
-        } else {
-          itm.busy = false;
-        }
-
-        itm.title = nitm.title || itm.title;
-        itm.logo = nitm.logo || itm.logo;
-        itm.last_visit = new Date().getTime();
+    let index = parent.var.urls.findIndex((u) => u.url == nitm.url);
+    if (index > -1) {
+      parent.var.urls[index].title = nitm.title || parent.var.urls[index].title;
+      parent.var.urls[index].logo = nitm.logo || parent.var.urls[index].logo;
+      parent.var.urls[index].last_visit = new Date().getTime();
+      if (!nitm.ignoreCounted) {
+        parent.var.urls[index].count++;
       }
-    });
-
-    if (!exists) {
+      if (!parent.var.urls[index].busy && parent.var.urls[index].logo && (!parent.var.urls[index].logo2 || !parent.api.isFileExistsSync(parent.var.urls[index].logo2))) {
+        parent.var.urls[index].busy = true;
+        let path = parent.path.join(parent.data_dir, 'favicons', parent.md5(parent.var.urls[index].logo) + '.' + parent.var.urls[index].logo.split('?')[0].split('.').pop());
+        if (parent.api.isFileExistsSync(path)) {
+          parent.var.urls[index].logo2 = path;
+          parent.clientList.forEach((client) => {
+            if ((client.windowType === 'main' || client.windowType === 'files') && client.ws) {
+              client.ws.send({ ...nitm, ...parent.var.urls[index] });
+            }
+          });
+        } else {
+          parent.download({ url: parent.var.urls[index].logo, path: path }, (options) => {
+            parent.var.urls[index].logo2 = path;
+            parent.clientList.forEach((client) => {
+              if ((client.windowType === 'main' || client.windowType === 'files') && client.ws) {
+                client.ws.send({ ...nitm, ...parent.var.urls[index] });
+              }
+            });
+          });
+        }
+      }
+    } else {
       parent.var.urls.push({
         url: nitm.url,
         logo: nitm.logo,
@@ -631,28 +639,11 @@ module.exports = function init(parent) {
         first_visit: new Date().getTime(),
         last_visit: new Date().getTime(),
       });
-      index = parent.var.urls.length - 1;
     }
 
     parent.var.urls.sort((a, b) => {
       return b.count - a.count;
     });
-
-    parent.set_var('urls', parent.var.urls, true);
-
-    if (parent.var.urls[index] && !parent.var.urls[index].busy && parent.var.urls[index].logo && (!parent.var.urls[index].logo2 || !parent.api.isFileExistsSync(parent.var.urls[index].logo2))) {
-      parent.var.urls[index].busy = true;
-      let path = parent.path.join(parent.data_dir, 'favicons', parent.md5(parent.var.urls[index].logo) + '.' + parent.var.urls[index].logo.split('?')[0].split('.').pop());
-      if (parent.api.isFileExistsSync(path)) {
-        parent.var.urls[index].logo2 = path;
-        parent.set_var('urls', parent.var.urls);
-      } else {
-        parent.download({ url: parent.var.urls[index].logo, path: path }, (options) => {
-          parent.var.urls[index].logo2 = path;
-          parent.set_var('urls', parent.var.urls);
-        });
-      }
-    }
   };
 
   parent.var['package'] = require(parent.dir + '/package.json');
