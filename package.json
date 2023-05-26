@@ -2,7 +2,7 @@
   "name": "social_browser",
   "productName": "Social Browser",
   "homepage": "https://social-browser.com",
-  "version": "2023.01.20",
+  "version": "2023.06.01",
   "description": "Browsing Any Site with Multi Users And without Ads",
   "author": {
     "name": "Social Developer",
@@ -109,11 +109,11 @@
   },
   "dependencies": {
     "@electron/remote": "^2.0.9",
-    "isite": "^2023.1.6",
+    "isite": "^2023.1.7",
     "node-fetch": "^2.6.6"
   },
   "devDependencies": {
-    "electron": "^24.3.1",
+    "electron": "^24.4.0",
     "electron-builder": "^23.3.3",
     "gulp": "*"
   }
