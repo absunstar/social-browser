@@ -55,13 +55,36 @@ module.exports = function (child) {
                 }
               }, 1000 * 5);
             }, 1000 * 60 * 10);
+          } else if (child.parent.windowType == 'main') {
+            if (child.mainWindow && !child.mainWindow.isDestroyed()) {
+              child.mainWindow.show();
+              w.window.webContents.send('[open new tab]', message.newTabData);
+            } else {
+              child.sessionConfig();
+              child.createNewWindow({ ...child.parent.options });
+            }
           } else {
             child.sessionConfig();
             child.createNewWindow({ ...child.parent.options });
           }
         } else if (message.type == '[re-browser-core-data]') {
           child.option_list.push(message.options);
-          child.createNewWindow({ ...message.options });
+          
+          if (message.options.windowType == 'main') {
+            if (child.mainWindow && !child.mainWindow.isDestroyed()) {
+              child.mainWindow.show();
+              w.window.webContents.send('[open new tab]', message.newTabData);
+            } else {
+              child.sessionConfig();
+              child.createNewWindow({ ...message.options });
+            }
+          } else {
+            child.sessionConfig();
+            child.createNewWindow({ ...message.options });
+          }
+
+         
+          
         } else if (message.type == '[update-browser-var]') {
           if (child.parent.windowType == 'files') {
             child.set_var(message.options.name, message.options.data);

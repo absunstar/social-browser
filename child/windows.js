@@ -373,6 +373,7 @@ module.exports = function (child) {
 
         child.showAddressbarWindow({}, false);
         child.showProfilesWindow(false);
+        win.webContents.send('[open new tab]', win.customSetting.newTabData);
       } else if (win.customSetting.windowType === 'view') {
         child.updateTab(win);
 
@@ -435,7 +436,7 @@ module.exports = function (child) {
         proxyRules: proxyRules,
         proxyBypassRules: proxy.ignore || '127.0.0.1',
       }).then(() => {
-        child.log('window Proxy Set : ' + proxyRules);
+        // child.log('window Proxy Set : ' + proxyRules);
       });
     } else {
       child.handleSession({ name: win.customSetting.partition });
@@ -788,6 +789,7 @@ module.exports = function (child) {
     });
 
     win.webContents.on('will-redirect', (e, url) => {
+      child.log('try-redirect', url);
       if (!win.customSetting.allowRedirect || !child.isAllowURL(url)) {
         if (win.customSetting.allowSelfRedirect && (win.getURL().contains(child.url.parse(url).host) || url.contains(child.url.parse(win.getURL()).host))) {
           return;
@@ -817,7 +819,7 @@ module.exports = function (child) {
 
     if (win.webContents.setWindowOpenHandler) {
       win.webContents.setWindowOpenHandler(({ url, frameName }) => {
-        child.log('setWindowOpenHandler', url);
+        // child.log('setWindowOpenHandler', url);
         if (win.customSetting.allowSelfWindow && win.customSetting.allowRedirect) {
           win.loadURL(url);
           return { action: 'deny' };

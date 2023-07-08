@@ -144,6 +144,37 @@ module.exports = function (SOCIALBROWSER) {
 
   SOCIALBROWSER.__define(navigator, 'userAgent', SOCIALBROWSER.user_agent_url);
   SOCIALBROWSER.userAgent = navigator.userAgent;
+  SOCIALBROWSER.__define(navigator, 'userAgentData', {
+    brands: [
+      {
+        brand: 'Google Chrome',
+        version: '113',
+      },
+      {
+        brand: 'Chromium',
+        version: '113',
+      },
+      {
+        brand: 'Not-A.Brand',
+        version: '24',
+      },
+    ],
+    mobile: false,
+    platform: 'windows',
+    getHighEntropyValues: function (arr) {
+      return new Promise((resolve, reject) => {
+        let obj = { ...navigator.userAgentData };
+        if (Array.isArray(arr)) {
+          arr.forEach((a) => {
+            if (!obj[a]) {
+              obj[a] = '';
+            }
+          });
+        }
+        resolve(obj);
+      });
+    },
+  });
 
   try {
     if (SOCIALBROWSER.var.blocking.javascript.custom_local_storage && localStorage) {

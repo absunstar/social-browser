@@ -35,7 +35,7 @@ module.exports = function (child) {
 
       info.overwrite = true;
       child.overwriteList[index].time = new Date().getTime();
-      child.log('Auto overwrite redirect', info);
+     // child.log('Auto overwrite redirect', info);
     }
 
     return info;

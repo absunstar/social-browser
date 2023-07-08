@@ -275,27 +275,27 @@ module.exports = function (child) {
           proxyRules: proxyRules,
           proxyBypassRules: proxy.ignore || '127.0.0.1',
         }).then(() => {
-          child.log(`session ${name} Proxy Set : ${proxyRules}`);
+         // child.log(`session ${name} Proxy Set : ${proxyRules}`);
         });
       } else if (proxy.mode == 'pac_script' && proxy.pacScript) {
         ss.setProxy({
           mode: proxy.mode,
           pacScript: proxy.pacScript,
         }).then(() => {
-          child.log(`session ${name} Proxy Set : ${proxy.mode}`);
+         // child.log(`session ${name} Proxy Set : ${proxy.mode}`);
         });
       } else {
         ss.setProxy({
           mode: proxy.mode,
         }).then(() => {
-          child.log(`session ${name} Proxy Set Default : ${proxy.mode}`);
+        //  child.log(`session ${name} Proxy Set Default : ${proxy.mode}`);
         });
       }
     } else {
       ss.setProxy({
         mode: 'system',
       }).then(() => {
-        child.log(`session ${name} Proxy Set : System`);
+       // child.log(`session ${name} Proxy Set : System`);
       });
     }
 
@@ -516,7 +516,7 @@ module.exports = function (child) {
               let co_list = child.cookies[name].filter((c) => c && (urlObject.hostname.indexOf(c.domain) > -1 || c.domain.indexOf(urlObject.hostname) > -1) && urlObject.path.indexOf(c.path) > -1);
               co_list.forEach((co) => {
                 if (false && co.expirationDate && co.expirationDate <= new Date().getTime()) {
-                  console.log(`\n\n Block Cookie expires`, co, new Date(co.expirationDate));
+                  // console.log(`\n\n Block Cookie expires`, co, new Date(co.expirationDate));
                 } else if (!co.value) {
                   // console.log(`\n\n Block Cookie !value`, co);
                 } else if (co.secure && (urlObject.protocol === 'http:' || urlObject.protocol !== urlObject2.protocol)) {
@@ -569,7 +569,7 @@ module.exports = function (child) {
           }
           details.requestHeaders['Cookie'] = child.cookieStringify(cookie_obj);
         } else {
-          console.log('!cookie_obj', details.requestHeaders);
+         // console.log('!cookie_obj', details.requestHeaders);
         }
 
         // custom header request

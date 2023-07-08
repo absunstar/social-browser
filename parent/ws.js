@@ -53,6 +53,14 @@ module.exports = function init(parent) {
           let m2 = {
             type: '[re-browser-core-data]',
             options: child2.options,
+            newTabData: parent.newTabData || {
+              name: '[open new tab]',
+              url: parent.var.core.home_page,
+              partition: parent.var.core.session.partition,
+              user_name: parent.var.core.session.user_name,
+              active: true,
+              main_window_id: child2.id,
+            },
           };
 
           child2.ws.send(m2);

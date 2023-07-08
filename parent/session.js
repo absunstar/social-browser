@@ -95,27 +95,27 @@ module.exports = function (parent) {
           proxyRules: proxyRules,
           proxyBypassRules: proxy.ignore || '127.0.0.1',
         }).then(() => {
-          parent.log('Proxy Set : ' + proxyRules);
+         // parent.log('Proxy Set : ' + proxyRules);
         });
       } else if (proxy.mode == 'pac_script' && proxy.pacScript) {
         ss.setProxy({
           mode: proxy.mode,
           pacScript: proxy.pacScript,
         }).then(() => {
-          parent.log('Proxy Set : ' + proxy.mode);
+         // parent.log('Proxy Set : ' + proxy.mode);
         });
       } else {
         ss.setProxy({
           mode: proxy.mode,
         }).then(() => {
-          parent.log('Proxy Set to default : ' + proxy.mode);
+          // parent.log('Proxy Set to default : ' + proxy.mode);
         });
       }
     } else {
       ss.setProxy({
         mode: 'system',
       }).then(() => {
-        parent.log('Default Proxy Set :system ');
+       // parent.log('Default Proxy Set :system ');
       });
     }
 
