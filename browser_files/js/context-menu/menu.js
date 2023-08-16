@@ -411,6 +411,7 @@ module.exports = function (SOCIALBROWSER) {
           referrer: document.location.href,
           partition: SOCIALBROWSER.partition,
           show: true,
+          iframe : true,
           center : true
         });
       },
@@ -424,6 +425,7 @@ module.exports = function (SOCIALBROWSER) {
           partition: SOCIALBROWSER.partition,
           show: true,
           allowSelfWindow: true,
+          iframe : true,
           center : true
         });
       },
@@ -436,6 +438,7 @@ module.exports = function (SOCIALBROWSER) {
           referrer: document.location.href,
           partition: SOCIALBROWSER.partition,
           show: true,
+          iframe : true,
           allowNewWindows: false,
           center : true
         });
@@ -449,6 +452,7 @@ module.exports = function (SOCIALBROWSER) {
           referrer: document.location.href,
           partition: SOCIALBROWSER.partition,
           show: true,
+          iframe : true,
           allowAds: true,
           center : true
         });
@@ -463,6 +467,7 @@ module.exports = function (SOCIALBROWSER) {
           referrer: document.location.href,
           partition: SOCIALBROWSER.partition,
           show: true,
+          iframe : true,
           security: false,
           center : true
         });
@@ -478,6 +483,8 @@ module.exports = function (SOCIALBROWSER) {
           partition: 'x-ghost_' + new Date().getTime() + Math.random(),
           user_name: 'x-ghost_' + new Date().getTime() + Math.random(),
           show: true,
+          iframe : true,
+          iframe : true,
           center : true
         });
       },
@@ -1129,6 +1136,7 @@ module.exports = function (SOCIALBROWSER) {
             url: f.src,
             referrer: document.location.href,
             show: true,
+            iframe : true,
             center : true
           });
         },
@@ -1422,6 +1430,7 @@ module.exports = function (SOCIALBROWSER) {
               referrer: document.location.href,
               allowAudio: false,
               show: true,
+              iframe : true,
               center : true
             });
           }, 1000 * index * 1);
@@ -1447,6 +1456,7 @@ module.exports = function (SOCIALBROWSER) {
               referrer: document.location.href,
               allowAudio: false,
               show: true,
+              iframe : true,
               proxy: SOCIALBROWSER.var.proxy_list[index], 
               center : true
             });
@@ -1732,6 +1742,7 @@ module.exports = function (SOCIALBROWSER) {
                 url: document.location.href,
                 proxy: p,
                 partition: 'x-ghost_' + new Date().getTime(),
+                iframe : true,
                 center : true
               });
             },
@@ -1856,7 +1867,7 @@ module.exports = function (SOCIALBROWSER) {
           new MenuItem({
             label: 'New Ghost tab',
             click() {
-              SOCIALBROWSER.ipc('[open new tab]', { partition: ghost, user_name: ghost, user_agent: user_agent, main_window_id: SOCIALBROWSER.currentWindow.id });
+              SOCIALBROWSER.ipc('[open new tab]', { partition: ghost, iframe : true, user_name: ghost, user_agent: user_agent, main_window_id: SOCIALBROWSER.currentWindow.id });
             },
           })
         );

@@ -48,7 +48,7 @@
     },
     screen: window.screen,
     connectionTypeList: [
-      { name: '', value: '' },
+      { name: 'wifi', value: 'wifi' },
       { name: 'wifi', value: 'wifi' },
       { name: 'ethernet', value: 'ethernet' },
       { name: 'mixed', value: 'mixed' },
@@ -243,11 +243,14 @@
       SOCIALBROWSER.session.privacy.enable_virtual_pc = true;
       SOCIALBROWSER.session.privacy.vpc = SOCIALBROWSER.var.blocking.privacy.vpc;
     }
-
+  
     require(SOCIALBROWSER.files_dir + '/js/context-menu/init.js')(SOCIALBROWSER);
+
+
     require(SOCIALBROWSER.files_dir + '/js/context-menu/event.js')(SOCIALBROWSER);
     require(SOCIALBROWSER.files_dir + '/js/context-menu/fn.js')(SOCIALBROWSER);
-
+    SOCIALBROWSER.isWhiteSite = SOCIALBROWSER.var.blocking.white_list.some((site) => site.url.length > 2 && document.location.href.like(site.url));
+    
     if (SOCIALBROWSER.var.core.id.like('*test*')) {
       SOCIALBROWSER.developerMode = true;
     }
@@ -265,7 +268,7 @@
   };
 
   SOCIALBROWSER.init = function () {
-    if (true || SOCIALBROWSER.isIframe()) {
+    if (SOCIALBROWSER.isIframe()) {
       SOCIALBROWSER.invoke('[browser][data]', {
         hostname: SOCIALBROWSER.hostname,
         url: SOCIALBROWSER.href,

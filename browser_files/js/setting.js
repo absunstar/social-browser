@@ -548,7 +548,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
 
       $scope.setting.blocking.popup = $scope.setting.blocking.popup || {};
       $scope.setting.blocking.privacy = $scope.setting.blocking.privacy || {};
-      $scope.setting.blocking.privacy, (vpc = $scope.setting.blocking.privacy.vpc || {});
+      $scope.setting.blocking.privacy.vpc = $scope.setting.blocking.privacy.vpc || {};
       $scope.setting.blocking.popup.black_list = $scope.setting.blocking.popup.black_list || [];
       $scope.setting.blocking.popup.white_list = $scope.setting.blocking.popup.white_list || [];
 
@@ -567,10 +567,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
       }
 
       if ($scope.setting.blocking.privacy.vpc.hide_screen !== true) {
-        $scope.setting.blocking.privacy.vpc.screen_width = SOCIALBROWSER.screen.width;
-        $scope.setting.blocking.privacy.vpc.screen_height = SOCIALBROWSER.screen.height;
-        $scope.setting.blocking.privacy.vpc.screen_availWidth = SOCIALBROWSER.screen.availWidth;
-        $scope.setting.blocking.privacy.vpc.screen_availHeight = SOCIALBROWSER.screen.availHeight;
+        $scope.setting.blocking.privacy.vpc.screen = SOCIALBROWSER.screen;
       }
 
       if ($scope.setting.blocking.privacy.vpc.hide_connection !== true) {
@@ -604,10 +601,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
           s.privacy.vpc.date_offset = [null, -300, -240, -180, -120, -60, 0, 60, 120, 180, 240, 300][SOCIALBROWSER.maxOf(i, 11)];
         }
         if (s.privacy.vpc.hide_screen !== true) {
-          s.privacy.vpc.screen_width = $scope.setting.blocking.privacy.vpc.screen_width;
-          s.privacy.vpc.screen_height = $scope.setting.blocking.privacy.vpc.screen_height;
-          s.privacy.vpc.screen_availWidth = $scope.setting.blocking.privacy.vpc.screen_availWidth;
-          s.privacy.vpc.screen_availHeight = $scope.setting.blocking.privacy.vpc.screen_availHeight;
+          s.privacy.vpc.screen = $scope.setting.blocking.privacy.vpc.screen;
           s.privacy.screen_pixelDepth = $scope.setting.blocking.privacy.screen_pixelDepth;
           s.privacy.screen_MaxTouchPoints = $scope.setting.blocking.privacy.screen_MaxTouchPoints;
         }
@@ -695,10 +689,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         s.privacy.vpc.cpu_count = $scope.setting.blocking.privacy.vpc.cpu_count;
       }
       if (s.privacy.vpc.hide_screen !== true) {
-        s.privacy.vpc.screen_width = $scope.setting.blocking.privacy.vpc.screen_width;
-        s.privacy.vpc.screen_height = $scope.setting.blocking.privacy.vpc.screen_height;
-        s.privacy.vpc.screen_availWidth = $scope.setting.blocking.privacy.vpc.screen_availWidth;
-        s.privacy.vpc.screen_availHeight = $scope.setting.blocking.privacy.vpc.screen_availHeight;
+        s.privacy.vpc.screen = $scope.setting.blocking.privacy.vpc.screen;
         s.privacy.screen_pixelDepth = $scope.setting.blocking.privacy.screen_pixelDepth;
         s.privacy.screen_MaxTouchPoints = $scope.setting.blocking.privacy.screen_MaxTouchPoints;
       }
@@ -932,6 +923,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     SOCIALBROWSER.openWindow({
       url: url,
       partition: 'x-ghost_' + Date.now(),
+      iframe : true,
       allowMenu: true,
     });
   };

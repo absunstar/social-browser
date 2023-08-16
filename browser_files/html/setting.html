@@ -351,15 +351,15 @@
                   <div class="row padding" ng-show="setting.blocking.privacy.enable_virtual_pc">
                     <i-button type="add" label="Generate Virual PC" ng-click="generateVPC()"></i-button>
                     <div class="row padding border2">
-                      <div class="col3"><i-checkbox label="Hide CPU Count" ng-model="setting.blocking.privacy.vpc.hide_cpu"></i-checkbox></div>
-                      <div class="col6">
+                      <div class="col5"><i-checkbox label="Hide CPU Count" ng-model="setting.blocking.privacy.vpc.hide_cpu"></i-checkbox></div>
+                      <div class="col7">
                         <i-control type="number" ng-disabled="setting.blocking.privacy.vpc.hide_cpu !== true" ng-model="setting.blocking.privacy.vpc.cpu_count" label="Custom CPU Count"></i-control>
                       </div>
                     </div>
 
                     <div class="row padding border2">
-                      <div class="col3"><i-checkbox label="Hide Memory Size ( Custom )" ng-model="setting.blocking.privacy.vpc.hide_memory"></i-checkbox></div>
-                      <div class="col6">
+                      <div class="col5"><i-checkbox label="Hide Memory Size ( Custom )" ng-model="setting.blocking.privacy.vpc.hide_memory"></i-checkbox></div>
+                      <div class="col7">
                         <i-control
                           type="number"
                           ng-disabled="setting.blocking.privacy.vpc.hide_memory !== true"
@@ -370,8 +370,8 @@
                     </div>
 
                     <div class="row padding border2">
-                      <div class="col3"><i-checkbox label="Hide Languages Information ( Custom )" ng-model="setting.blocking.privacy.vpc.hide_lang"></i-checkbox></div>
-                      <div class="col6">
+                      <div class="col5"><i-checkbox label="Hide Languages Information ( Custom )" ng-model="setting.blocking.privacy.vpc.hide_lang"></i-checkbox></div>
+                      <div class="col7">
                         <i-control ng-disabled="setting.blocking.privacy.vpc.hide_lang !== true" ng-model="setting.blocking.privacy.vpc.languages" label="Custom Languages"></i-control>
                       </div>
                     </div>
@@ -389,19 +389,19 @@
                     </div>
 
                     <div class="row padding border2">
-                      <div class="col3"><i-checkbox label="Hide Screen Size ( Custom )" ng-model="setting.blocking.privacy.vpc.hide_screen"></i-checkbox></div>
-                      <div class="col6">
+                      <div class="col5"><i-checkbox label="Hide Screen Size ( Custom )" ng-model="setting.blocking.privacy.vpc.hide_screen"></i-checkbox></div>
+                      <div class="col7">
                         <div class="row">
                           <i-control
                             type="number"
                             ng-disabled="setting.blocking.privacy.vpc.hide_screen !== true"
-                            ng-model="setting.blocking.privacy.vpc.screen_width"
+                            ng-model="setting.blocking.privacy.vpc.screen.width"
                             label="Screen Width"
                           ></i-control>
                           <i-control
                             type="number"
                             ng-disabled="setting.blocking.privacy.vpc.hide_screen !== true"
-                            ng-model="setting.blocking.privacy.vpc.screen_height"
+                            ng-model="setting.blocking.privacy.vpc.screen.height"
                             label="Screen Height"
                           ></i-control>
                         </div>
@@ -409,13 +409,13 @@
                           <i-control
                             type="number"
                             ng-disabled="setting.blocking.privacy.vpc.hide_screen !== true"
-                            ng-model="setting.blocking.privacy.vpc.screen_availWidth"
+                            ng-model="setting.blocking.privacy.vpc.screen.availWidth"
                             label="Screen availbal Width"
                           ></i-control>
                           <i-control
                             type="number"
                             ng-disabled="setting.blocking.privacy.vpc.hide_screen !== true"
-                            ng-model="setting.blocking.privacy.vpc.screen_availHeight"
+                            ng-model="setting.blocking.privacy.vpc.screen.availHeight"
                             label="Screen availbal Height"
                           ></i-control>
                         </div>
@@ -423,8 +423,8 @@
                     </div>
 
                     <div class="row padding border2">
-                      <div class="col3"><i-checkbox label="Hide Connection Information ( Custom )" ng-model="setting.blocking.privacy.vpc.hide_connection"></i-checkbox></div>
-                      <div class="col6">
+                      <div class="col5"><i-checkbox label="Hide Connection Information ( Custom )" ng-model="setting.blocking.privacy.vpc.hide_connection"></i-checkbox></div>
+                      <div class="col7">
                         <i-control
                           ng-disabled="setting.blocking.privacy.vpc.hide_connection !== true"
                           ng-model="setting.blocking.privacy.vpc.connection.effectiveType"
@@ -451,6 +451,15 @@
                         <i-control ng-disabled="setting.blocking.privacy.vpc.hide_connection !== true" ng-model="setting.blocking.privacy.vpc.connection.type" label="Network Source"></i-control>
                       </div>
                     </div>
+
+                    <div class="row padding border2">
+                      <div class="col5"><i-checkbox label="Hide Current Location( Custom )" ng-model="setting.blocking.privacy.vpc.hide_location"></i-checkbox></div>
+                      <div class="col7">
+                        <i-control ng-disabled="setting.blocking.privacy.vpc.hide_location !== true" ng-model="setting.blocking.privacy.vpc.location.latitude" label="Latitude"></i-control>
+                        <i-control ng-disabled="setting.blocking.privacy.vpc.hide_location !== true" ng-model="setting.blocking.privacy.vpc.location.longitude" label="Longitude"></i-control>
+                      </div>
+                    </div>
+
                     <div class="row padding border2">
                       <i-checkbox class="col6" label="Set Window Alawys Active" ng-model="setting.blocking.privacy.vpc.set_window_active"></i-checkbox>
                       <i-checkbox class="col6" label="Mask User Agent (profile + host) [some Sites not work] " ng-model="setting.blocking.privacy.vpc.mask_user_agent"></i-checkbox>
@@ -847,18 +856,18 @@
                       <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border">
                         <div class="col6"><i-checkbox label="Hide Screen Size " ng-model="currentSession.privacy.vpc.hide_screen"></i-checkbox></div>
                         <div class="col6">
-                          <i-control type="number" ng-disabled="currentSession.privacy.vpc.hide_screen !== true" ng-model="currentSession.privacy.vpc.screen_width" label="Screen Width"></i-control>
-                          <i-control type="number" ng-disabled="currentSession.privacy.vpc.hide_screen !== true" ng-model="currentSession.privacy.vpc.screen_height" label="Screen Height"></i-control>
+                          <i-control type="number" ng-disabled="currentSession.privacy.vpc.hide_screen !== true" ng-model="currentSession.privacy.vpc.screen.width" label="Screen Width"></i-control>
+                          <i-control type="number" ng-disabled="currentSession.privacy.vpc.hide_screen !== true" ng-model="currentSession.privacy.vpc.screen.height" label="Screen Height"></i-control>
                           <i-control
                             type="number"
                             ng-disabled="currentSession.privacy.vpc.hide_screen !== true"
-                            ng-model="currentSession.privacy.vpc.screen_availWidth"
+                            ng-model="currentSession.privacy.vpc.screen.availWidth"
                             label="Screen availbal Width"
                           ></i-control>
                           <i-control
                             type="number"
                             ng-disabled="currentSession.privacy.vpc.hide_screen !== true"
-                            ng-model="currentSession.privacy.vpc.screen_availHeight"
+                            ng-model="currentSession.privacy.vpc.screen.availHeight"
                             label="Screen availbal Height"
                           ></i-control>
                         </div>
@@ -891,6 +900,13 @@
                             label="Ping (low is fast)"
                           ></i-control>
                           <i-control ng-disabled="currentSession.privacy.vpc.hide_connection !== true" ng-model="currentSession.privacy.vpc.connection.type" label="Network Source"></i-control>
+                        </div>
+                      </div>
+                      <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border2">
+                        <div class="col5"><i-checkbox label="Hide Current Location( Custom )" ng-model="currentSession.privacy.vpc.hide_location"></i-checkbox></div>
+                        <div class="col7">
+                          <i-control ng-disabled="currentSession.privacy.vpc.hide_location !== true" ng-model="currentSession.privacy.vpc.location.latitude" label="Latitude"></i-control>
+                          <i-control ng-disabled="currentSession.privacy.vpc.hide_location !== true" ng-model="currentSession.privacy.vpc.location.longitude" label="Longitude"></i-control>
                         </div>
                       </div>
                       <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border2">

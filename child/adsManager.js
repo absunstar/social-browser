@@ -6,20 +6,26 @@ module.exports = function (child) {
       new_url: url,
     };
 
+    if (url.indexOf('browser://') === 0) {
+      return info;
+    }
+
     if ((index = child.overwriteList.findIndex((item) => info.url.like(item.from)))) {
       if (index < 0) {
         return info;
       }
       let info2 = child.overwriteList[index];
-      info2.time = info2.time || new Date().getTime();
-      info.break = new Date().getTime() - info2.time;
-      if (info2.timing && info.break < 1000 * 60) {
-        return info;
+      if (!info2.any) {
+        info2.time = info2.time || new Date().getTime();
+        info.break = new Date().getTime() - info2.time;
+        if (info2.timing && info.break < 1000 * 60) {
+          return info;
+        }
+        if (info2.ignore && info.url.like(info2.ignore)) {
+          return info;
+        }
+        child.overwriteList[index].time = new Date().getTime();
       }
-      if (info2.ignore && info.url.like(info2.ignore)) {
-        return info;
-      }
-
       info.new_url = info2.to;
       info2.rediect_from = info.url;
 
@@ -34,7 +40,7 @@ module.exports = function (child) {
       }
 
       info.overwrite = true;
-      child.overwriteList[index].time = new Date().getTime();
+
      // child.log('Auto overwrite redirect', info);
     }
 
@@ -55,27 +61,37 @@ module.exports = function (child) {
   };
   child.overwriteList = [
     {
-      from: '*images/bot.gif',
-      to: 'browser://images/bot.gif',
+      from: '*x-images/loading.gif',
+      to: 'browser://images/loading.gif',
+      any: true,
+    },
+    {
+      from: '*x-images/warning.gif',
+      to: 'browser://images/warning.gif',
+      any: true,
     },
     {
       from: '*pagead2.googlesyndication.com/pagead/js/adsbygoogle.js*',
       to: 'browser://js/googlesyndication_adsbygoogle.js',
+      any: true,
       query: true,
     },
     {
       from: '*googletagmanager.com/gtag/js*',
       to: 'browser://js/google-analytics_analytics.js',
+      any: true,
       query: true,
     },
     {
       from: '*googletagmanager.com/gtm.js*',
       to: 'browser://js/googletagmanager_gtm.js',
+      any: true,
       query: true,
     },
     {
       from: 'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png',
       to: 'browser://images/background.png',
+      any: true,
       query: true,
     },
   ];

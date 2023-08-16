@@ -275,27 +275,27 @@ module.exports = function (child) {
           proxyRules: proxyRules,
           proxyBypassRules: proxy.ignore || '127.0.0.1',
         }).then(() => {
-         // child.log(`session ${name} Proxy Set : ${proxyRules}`);
+          // child.log(`session ${name} Proxy Set : ${proxyRules}`);
         });
       } else if (proxy.mode == 'pac_script' && proxy.pacScript) {
         ss.setProxy({
           mode: proxy.mode,
           pacScript: proxy.pacScript,
         }).then(() => {
-         // child.log(`session ${name} Proxy Set : ${proxy.mode}`);
+          // child.log(`session ${name} Proxy Set : ${proxy.mode}`);
         });
       } else {
         ss.setProxy({
           mode: proxy.mode,
         }).then(() => {
-        //  child.log(`session ${name} Proxy Set Default : ${proxy.mode}`);
+          //  child.log(`session ${name} Proxy Set Default : ${proxy.mode}`);
         });
       }
     } else {
       ss.setProxy({
         mode: 'system',
       }).then(() => {
-       // child.log(`session ${name} Proxy Set : System`);
+        // child.log(`session ${name} Proxy Set : System`);
       });
     }
 
@@ -501,7 +501,8 @@ module.exports = function (child) {
           }
         }
         // Must For Login Problem ^_^
-        if (domain1.like('*google*|*youtube*')) {
+
+        if (child.parent.var.blocking.white_list.some((item) => item.url.length > 2 && url.like(item.url))) {
           callback({
             cancel: false,
             requestHeaders: details.requestHeaders,
@@ -569,7 +570,7 @@ module.exports = function (child) {
           }
           details.requestHeaders['Cookie'] = child.cookieStringify(cookie_obj);
         } else {
-         // console.log('!cookie_obj', details.requestHeaders);
+          // console.log('!cookie_obj', details.requestHeaders);
         }
 
         // custom header request
@@ -654,6 +655,17 @@ module.exports = function (child) {
           return;
         }
 
+        if (child.parent.var.blocking.white_list.some((item) => item.url.length > 2 && url.like(item.url))) {
+          callback({
+            cancel: false,
+            responseHeaders: {
+              ...details.responseHeaders,
+            },
+            statusLine: details.statusLine,
+          });
+          return;
+        }
+        
         // custom header request
         child.parent.var.customHeaderList.forEach((r) => {
           if (r.type == 'response' && url.like(r.url)) {
@@ -674,23 +686,7 @@ module.exports = function (child) {
           }
         });
 
-        let is_white = false;
-        child.parent.var.blocking.white_list.forEach((w) => {
-          if (url.like(w.url)) {
-            is_white = true;
-          }
-        });
 
-        if (is_white) {
-          callback({
-            cancel: false,
-            responseHeaders: {
-              ...details.responseHeaders,
-            },
-            statusLine: details.statusLine,
-          });
-          return;
-        }
 
         // must delete values before re set
 
@@ -736,42 +732,35 @@ module.exports = function (child) {
           details.responseHeaders['Access-Control-Expose-Headers'.toLowerCase()] = a_expose;
         }
 
-        if (s_policy) {
-          s_policy = JSON.stringify(s_policy);
+        if (s_policy && Array.isArray(s_policy)) {
+          for (var key in s_policy) {
+            s_policy[key] = s_policy[key].replaceAll('data:  ', 'data:  http://127.0.0.1:60080 browser://* ');
+          }
 
-          s_policy = s_policy.replace('data: ', 'data: http://127.0.0.1:60080 ');
+          // s_policy = JSON.stringify(s_policy);
 
-          s_policy = s_policy.replace('mediastream: ', 'mediastream: http://127.0.0.1:60080 ');
+          // s_policy = s_policy.replaceAll('data: ', 'data: http://127.0.0.1:60080 browser://* ');
 
-          s_policy = s_policy.replace('blob: ', 'blob: http://127.0.0.1:60080 ');
+          // s_policy = s_policy.replace('mediastream: ', 'mediastream: http://127.0.0.1:60080 ');
 
-          s_policy = s_policy.replace('filesystem: ', 'filesystem: http://127.0.0.1:60080 ');
+          // s_policy = s_policy.replace('blob: ', 'blob: http://127.0.0.1:60080 ');
 
-          s_policy = s_policy.replace('img-src ', 'img-src http://127.0.0.1:60080 ');
+          // s_policy = s_policy.replace('filesystem: ', 'filesystem: http://127.0.0.1:60080 ');
 
-          s_policy = s_policy.replace('default-src ', "default-src 'self' http://127.0.0.1:60080 ");
-          s_policy = s_policy.replace('script-src ', "script-src 'self' http://127.0.0.1:60080 ");
+          // s_policy = s_policy.replace('img-src ', 'img-src http://127.0.0.1:60080 ');
 
-          details.responseHeaders['Content-Security-Policy'.toLowerCase()] = JSON.parse(s_policy);
+          // s_policy = s_policy.replace('default-src ', "default-src 'self' http://127.0.0.1:60080 ");
+          // s_policy = s_policy.replace('script-src ', "script-src 'self' http://127.0.0.1:60080 ");
+
+          details.responseHeaders['Content-Security-Policy'.toLowerCase()] = s_policy;
         }
 
-        if (s_policy_report) {
-          s_policy_report = JSON.stringify(s_policy_report);
+        if (s_policy_report && Array.isArray(s_policy_report)) {
+          for (var key in s_policy_report) {
+            s_policy_report[key] = s_policy_report[key].replaceAll('data:  ', 'data:  http://127.0.0.1:60080 browser://* ');
+          }
 
-          s_policy_report = s_policy_report.replace('data: ', 'data: http://127.0.0.1:60080 ');
-
-          s_policy_report = s_policy_report.replace('mediastream: ', 'mediastream: http://127.0.0.1:60080 ');
-
-          s_policy_report = s_policy_report.replace('blob: ', 'blob: http://127.0.0.1:60080 ');
-
-          s_policy_report = s_policy_report.replace('filesystem: ', 'filesystem: http://127.0.0.1:60080 ');
-
-          s_policy_report = s_policy_report.replace('img-src ', 'img-src http://127.0.0.1:60080 ');
-
-          s_policy_report = s_policy_report.replace('default-src ', 'default-src http://127.0.0.1:60080 ');
-          s_policy_report = s_policy_report.replace('script-src ', 'script-src http://127.0.0.1:60080 ');
-
-          details.responseHeaders['Content-Security-Policy-Report-Only'.toLowerCase()] = JSON.parse(s_policy_report);
+          details.responseHeaders['Content-Security-Policy-Report-Only'.toLowerCase()] = s_policy_report;
         }
 
         details.responseHeaders['Cross-Origin-Resource-Policy'.toLowerCase()] = 'cross-origin';
@@ -799,18 +788,20 @@ module.exports = function (child) {
       ss.webRequest.onCompleted(filter, function (details) {});
       ss.webRequest.onErrorOccurred(filter, function (details) {});
 
+      ss.setCertificateVerifyProc((request, callback) => {
+        callback(0);
+      });
+
       ss.setPermissionRequestHandler((webContents, permission, callback) => {
         // https://www.electronjs.org/docs/api/session
         if (!child.parent.var.blocking.permissions) {
-          callback(false);
-          return;
+          return callback(false);
         }
         if (webContents.getURL().like('http://127.0.0.1*|https://127.0.0.1*|http://localhost*|https://localhost*')) {
-          callback(true);
+          return callback(true);
         } else {
           let allow = child.parent.var.blocking.permissions['allow_' + permission.replace('-', '_')] || false;
-          // child.log(` \n  <<< setPermissionRequestHandler ${permission} ( ${allow} )  ${webContents.getURL()} \n `);
-          callback(allow);
+          return callback(allow);
         }
       });
       ss.setPermissionCheckHandler((webContents, permission) => {

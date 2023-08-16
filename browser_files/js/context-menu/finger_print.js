@@ -16,15 +16,11 @@ module.exports = function (SOCIALBROWSER) {
    *  rtc off
    *  language en
    *  browser permissions random
+   *  current location hide
    */
 
-  if (SOCIALBROWSER.var.core.javaScriptOFF || SOCIALBROWSER.customSetting.windowType === 'main' || document.location.hostname.contains('localhost|127.0.0.1|browser')) {
+  if (SOCIALBROWSER.var.core.javaScriptOFF || SOCIALBROWSER.customSetting.windowType === 'main' || !SOCIALBROWSER.session.privacy.enable_virtual_pc) {
     SOCIALBROWSER.log('.... [ Finger Printing OFF ] .... ' + document.location.href);
-    return;
-  }
-
-  if (!SOCIALBROWSER.session.privacy.enable_virtual_pc) {
-    SOCIALBROWSER.log('.... [ Finger Printing OFF ] .... ');
     return;
   }
 
@@ -34,15 +30,15 @@ module.exports = function (SOCIALBROWSER) {
   if (SOCIALBROWSER.session.privacy.vpc.hide_memory) {
     SOCIALBROWSER.__define(navigator, 'deviceMemory', SOCIALBROWSER.session.privacy.vpc.memory_count);
   }
-  if (SOCIALBROWSER.session.privacy.vpc.hide_screen) {
-    SOCIALBROWSER.__define(window, 'innerWidth', SOCIALBROWSER.session.privacy.vpc.screen_width);
-    SOCIALBROWSER.__define(window, 'innerHeight', SOCIALBROWSER.session.privacy.vpc.screen_height);
-    SOCIALBROWSER.__define(window, 'outerWidth', SOCIALBROWSER.session.privacy.vpc.screen_width);
-    SOCIALBROWSER.__define(window, 'outerHeight', SOCIALBROWSER.session.privacy.vpc.screen_height);
-    SOCIALBROWSER.__define(screen, 'width', SOCIALBROWSER.session.privacy.vpc.screen_width);
-    SOCIALBROWSER.__define(screen, 'height', SOCIALBROWSER.session.privacy.vpc.screen_height);
-    SOCIALBROWSER.__define(screen, 'availWidth', SOCIALBROWSER.session.privacy.vpc.screen_availWidth);
-    SOCIALBROWSER.__define(screen, 'availHeight', SOCIALBROWSER.session.privacy.vpc.screen_availHeight);
+  if (SOCIALBROWSER.session.privacy.vpc.hide_screen && SOCIALBROWSER.session.privacy.vpc.screen) {
+    SOCIALBROWSER.__define(window, 'innerWidth', SOCIALBROWSER.session.privacy.vpc.screen.width);
+    SOCIALBROWSER.__define(window, 'innerHeight', SOCIALBROWSER.session.privacy.vpc.screen.height);
+    SOCIALBROWSER.__define(window, 'outerWidth', SOCIALBROWSER.session.privacy.vpc.screen.width);
+    SOCIALBROWSER.__define(window, 'outerHeight', SOCIALBROWSER.session.privacy.vpc.screen.height);
+    SOCIALBROWSER.__define(screen, 'width', SOCIALBROWSER.session.privacy.vpc.screen.width);
+    SOCIALBROWSER.__define(screen, 'height', SOCIALBROWSER.session.privacy.vpc.screen.height);
+    SOCIALBROWSER.__define(screen, 'availWidth', SOCIALBROWSER.session.privacy.vpc.screen.availWidth);
+    SOCIALBROWSER.__define(screen, 'availHeight', SOCIALBROWSER.session.privacy.vpc.screen.availHeight);
     SOCIALBROWSER.screenHidden = true;
   }
   if (SOCIALBROWSER.session.privacy.vpc.hide_lang) {
@@ -461,6 +457,27 @@ module.exports = function (SOCIALBROWSER) {
     SOCIALBROWSER.__define(navigator, 'doNotTrack', '1');
   } else {
     SOCIALBROWSER.__define(navigator, 'doNotTrack', '0');
+  }
+
+  if (SOCIALBROWSER.session.privacy.vpc.hide_location) {
+    SOCIALBROWSER.__define(navigator.geolocation, 'getCurrentPosition', function (callback, error) {
+      if (callback) {
+        callback({
+          timestamp: new Date().getTime(),
+          coords: {
+            latitude: SOCIALBROWSER.session.privacy.vpc.location.latitude,
+            longitude: SOCIALBROWSER.session.privacy.vpc.location.longitude,
+            altitude: null,
+            accuracy: 49,
+            altitudeAccuracy: null,
+            heading: null,
+            speed: null,
+          },
+        });
+      }
+      if (error) {
+      }
+    });
   }
 
   if (SOCIALBROWSER.isMemoryMode) {

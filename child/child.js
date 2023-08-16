@@ -25,7 +25,7 @@ process.on('warning', (warning) => {
 });
 
 process.setMaxListeners(100);
-require('events').EventEmitter.defaultMaxListeners = 0
+require('events').EventEmitter.defaultMaxListeners = 0;
 require('events').EventEmitter.prototype._maxListeners = 100;
 
 var child = {
@@ -68,7 +68,6 @@ child.remoteMain.initialize();
 child.shell = child.electron.shell;
 child.dialog = child.electron.dialog;
 
-const { app, BrowserWindow, globalShortcut } = child.electron;
 child.electron.nativeTheme.themeSource = 'light';
 
 require(child.path.join(child.dir, 'child', 'fn'))(child);
@@ -79,59 +78,59 @@ require(child.path.join(child.dir, 'child', 'session'))(child);
 require(child.path.join(child.dir, 'child', 'plugins'))(child);
 require(child.path.join(child.dir, 'child', 'proxy_check'))(child);
 
-app.setAppUserModelId('Social.Browser');
-app.clearRecentDocuments();
+child.electron.app.setAppUserModelId('Social.Browser');
+child.electron.app.clearRecentDocuments();
 
-if (app.setUserTasks) {
-  app.setUserTasks([]);
+if (child.electron.app.setUserTasks) {
+  child.electron.app.setUserTasks([]);
 }
 
-//app.commandLine.appendSwitch('enable-experimental-web-platform-features');
-// app.commandLine.appendSwitch('disable-software-rasterizer');
-// app.commandLine.appendSwitch('enable-webgl');
-// app.commandLine.appendSwitch('disable-dev-shm-usage');
-// app.commandLine.appendSwitch('no-sandbox');
-// app.commandLine.appendSwitch('in-process-gpu');
-app.disableHardwareAcceleration();
+//child.electron.app.commandLine.appendSwitch('enable-experimental-web-platform-features');
+// child.electron.app.commandLine.appendSwitch('disable-software-rasterizer');
+// child.electron.app.commandLine.appendSwitch('enable-webgl');
+// child.electron.app.commandLine.appendSwitch('disable-dev-shm-usage');
+// child.electron.app.commandLine.appendSwitch('no-sandbox');
+// child.electron.app.commandLine.appendSwitch('in-process-gpu');
+// child.electron.app.disableHardwareAcceleration();
 
-//app.commandLine.appendSwitch('disable-web-security');
-// app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
-//app.commandLine.appendSwitch('disable-site-isolation-trials');
-//app.commandLine.appendSwitch('enable-features', 'PDFViewerUpdate');
+//child.electron.app.commandLine.appendSwitch('disable-web-security');
+// child.electron.app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
+//child.electron.app.commandLine.appendSwitch('disable-site-isolation-trials');
+//child.electron.app.commandLine.appendSwitch('enable-features', 'PDFViewerUpdate');
 
 // child.allow_widevinecdm(app)
 child.mkdirSync(child.path.join(child.data_dir, child.uuid));
-app.setPath('userData', child.path.join(child.data_dir, child.uuid));
+child.electron.app.setPath('userData', child.path.join(child.data_dir, child.uuid));
 
 // child.mkdirSync(child.path.join(child.data_dir, 'sessionData', 'sessionData_' + 'default'));
-// app.setPath('userData', child.path.join(child.data_dir, 'sessionData', 'sessionData_' + 'default'));
-app.on('ready', function () {
-  globalShortcut.unregisterAll();
-  app.setAccessibilitySupportEnabled(false);
+// child.electron.app.setPath('userData', child.path.join(child.data_dir, 'sessionData', 'sessionData_' + 'default'));
+child.electron.app.on('ready', function () {
+  child.electron.globalShortcut.unregisterAll();
+  child.electron.app.setAccessibilitySupportEnabled(false);
 
-  // app.on('session-created', (session) => {
+  // child.electron.app.on('session-created', (session) => {
   //   child.log(`session-created`);
   // });
 
-  app.on('certificate-error', (event, webContents, url, error, certificate, callback) => {
+  child.electron.app.on('certificate-error', (event, webContents, url, error, certificate, callback) => {
     event.preventDefault();
     callback(true);
   });
 
-  app.on('crashed', (event, session) => {
-    app.exit(0);
+  child.electron.app.on('crashed', (event, session) => {
+    child.electron.app.exit(0);
   });
 
-  app.on('render-process-gone', (event, webContents, details) => {
+  child.electron.app.on('render-process-gone', (event, webContents, details) => {
     if (details.reason == 'crashed') {
       webContents.stop();
       // webContents.reload()
     }
 
-    // app.exit(0);
+    // child.electron.app.exit(0);
   });
 
-  app.on('web-contents-created', (event, contents) => {
+  child.electron.app.on('web-contents-created', (event, contents) => {
     child.remoteMain.enable(contents);
     contents.on('will-attach-webview', (event, webPreferences, params) => {
       webPreferences.preload = child.parent.files_dir + '/js/context-menu.js';
@@ -139,17 +138,17 @@ app.on('ready', function () {
     });
   });
 
-  app.on('window-all-closed', () => {
+  child.electron.app.on('window-all-closed', () => {
     // if (process.platform != 'darwin') {
-    //   app.quit();
+    //   child.electron.app.quit();
     // }
     console.log('window-all-closed : ' + child.parent.options.partition);
     // if (!child.parent.options.partition.contains('persist:')) {
-    //   app.quit();
+    //   child.electron.app.quit();
     // }
   });
 
-  app.on('login', (event, webContents, authenticationResponseDetails, authInfo, callback) => {
+  child.electron.app.on('login', (event, webContents, authenticationResponseDetails, authInfo, callback) => {
     child.log(`App on Login`, authInfo);
 
     event.preventDefault();

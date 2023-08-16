@@ -7,7 +7,7 @@ module.exports = function (SOCIALBROWSER) {
     return;
   }
 
-  if (SOCIALBROWSER.is_white_site || document.location.href.like('*youtube.com*')) {
+  if (SOCIALBROWSER.isWhiteSite) {
     SOCIALBROWSER.log(' [Safty] OFF : ' + document.location.href);
     return;
   }

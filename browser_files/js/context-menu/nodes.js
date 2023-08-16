@@ -142,7 +142,7 @@ module.exports = function (SOCIALBROWSER) {
     }
     iframe.setAttribute('x-handled', 'true');
 
-    if (!SOCIALBROWSER.is_white_site) {
+    if (!SOCIALBROWSER.isWhiteSite) {
       if (SOCIALBROWSER.var.blocking.core.block_empty_iframe && (!iframe.src || iframe.src == 'about:blank')) {
         SOCIALBROWSER.log('[[ Remove ]]', iframe);
         iframe.remove();

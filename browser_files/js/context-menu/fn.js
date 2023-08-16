@@ -68,6 +68,11 @@ module.exports = function (SOCIALBROWSER) {
       hide_cpu: true,
       cpu_count: SOCIALBROWSER.random(1, 64),
       hide_lang: true,
+      hide_location: true,
+      location: {
+        latitude: SOCIALBROWSER.random(1 , 49) + Math.random(),
+        longitude: SOCIALBROWSER.random(1 , 49) + Math.random(),
+      },
       languages: SOCIALBROWSER.languageList[SOCIALBROWSER.random(0, SOCIALBROWSER.languageList.length - 1)],
       mask_date: true,
       date_offset: SOCIALBROWSER.random(-300, 300),
@@ -75,10 +80,12 @@ module.exports = function (SOCIALBROWSER) {
       hide_mimetypes: true,
       hide_plugins: true,
       hide_screen: true,
-      screen_width: parseInt(screenSize[0] || '1200'),
-      screen_height: parseInt(screenSize[1] || '720'),
-      screen_availWidth: parseInt(screenSize[0] || '1200'),
-      screen_availHeight: parseInt(screenSize[1] || '720'),
+      screen: {
+        width: parseInt(screenSize[0] || '1200'),
+        height: parseInt(screenSize[1] || '720'),
+        availWidth: parseInt(screenSize[0] || '1200'),
+        availHeight: parseInt(screenSize[1] || '720'),
+      },
       set_window_active: true,
       block_rtc: true,
       hide_battery: true,
@@ -164,8 +171,8 @@ module.exports = function (SOCIALBROWSER) {
     if (SOCIALBROWSER.session_id) {
       return SOCIALBROWSER.session_id;
     }
-   
-    SOCIALBROWSER.session_id = SOCIALBROWSER.var.session_list.findIndex(s=> s.name == SOCIALBROWSER.partition) + 1
+
+    SOCIALBROWSER.session_id = SOCIALBROWSER.var.session_list.findIndex((s) => s.name == SOCIALBROWSER.partition) + 1;
     return SOCIALBROWSER.session_id;
   };
 
@@ -658,8 +665,6 @@ module.exports = function (SOCIALBROWSER) {
       SOCIALBROWSER.currentWindow.webContents.getPrintersAsync().then((arr0) => {
         SOCIALBROWSER.printerList = arr0;
       });
-    } else if (SOCIALBROWSER.currentWindow.webContents.getPrinters) {
-      SOCIALBROWSER.printerList = SOCIALBROWSER.currentWindow.webContents.getPrinters();
     } else {
       SOCIALBROWSER.printerList = [];
     }

@@ -176,7 +176,7 @@ module.exports = function (child) {
         javascript: true,
         nativeWindowOpen: false,
         nodeIntegration: false,
-        nodeIntegrationInSubFrames: true,
+        nodeIntegrationInSubFrames: false, // google login error
         nodeIntegrationInWorker: false,
         experimentalFeatures: true,
         experimentalCanvasFeatures: true,
@@ -262,7 +262,9 @@ module.exports = function (child) {
       defaultSetting.webPreferences.webSecurity = false;
       defaultSetting.webPreferences.allowRunningInsecureContent = true;
     }
-
+    if (setting.iframe === true) {
+      defaultSetting.webPreferences.nodeIntegrationInSubFrames = true;
+    }
     let customSetting = { ...defaultSetting, ...setting };
 
     customSetting.webPreferences.javascript = customSetting.allowJavascript;
@@ -789,7 +791,6 @@ module.exports = function (child) {
     });
 
     win.webContents.on('will-redirect', (e, url) => {
-      child.log('try-redirect', url);
       if (!win.customSetting.allowRedirect || !child.isAllowURL(url)) {
         if (win.customSetting.allowSelfRedirect && (win.getURL().contains(child.url.parse(url).host) || url.contains(child.url.parse(win.getURL()).host))) {
           return;

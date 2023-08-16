@@ -21,7 +21,7 @@ module.exports = function init(child) {
     });
   };
 
-  child.handleBrowserData = function (event, data) {
+  child.handleBrowserData = function (data) {
     let data2 = {
       child_id: child.id,
       child_index: child.index,
@@ -49,13 +49,30 @@ module.exports = function init(child) {
     return data2;
   };
 
-  child.electron.ipcMain.on('[browser][data]', async (event, data) => {
-    let data2 = child.handleBrowserData(event, data);
-    event.returnValue = data2;
-    return data2;
+  child.electron.ipcMain.on('[browser][data]', async (event , data) => {
+    try {
+      let data2 = child.handleBrowserData(data);
+      event.returnValue = data2;
+      return data2;
+    } catch (ex) {
+      event.returnValue = {
+        child_id: child.id,
+        child_index: child.index,
+        information: child.parent.information,
+        var: child.parent.var,
+        files_dir: child.parent.files_dir,
+        dir: child.parent.dir,
+        data_dir: child.parent.data_dir,
+        injectHTML: child.parent.injectHTML,
+        injectCSS: child.parent.injectCSS,
+        newTabData: child.parent.newTabData,
+        windows: null,
+      };
+      return event.returnValue;
+    }
   });
   child.electron.ipcMain.handle('[browser][data]', async (event, data) => {
-    let data2 = child.handleBrowserData(event, data);
+    let data2 = child.handleBrowserData(data);
     event.returnValue = data2;
     return data2;
   });

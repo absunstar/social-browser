@@ -4,7 +4,7 @@ module.exports = function (SOCIALBROWSER) {
     SOCIALBROWSER.var.core.javaScriptOFF ||
     !SOCIALBROWSER.var.blocking.core.block_ads ||
     SOCIALBROWSER.customSetting.windowType === 'main' ||
-    SOCIALBROWSER.is_white_site == true ||
+    SOCIALBROWSER.isWhiteSite ||
     document.location.href.like('*http://127.0.0.1*')
   ) {
     SOCIALBROWSER.log('.... [ UBlock Block OFF] .... ' + document.location.href);
@@ -12,11 +12,7 @@ module.exports = function (SOCIALBROWSER) {
   }
   SOCIALBROWSER.log('.... [ UBlock Block ON] .... ' + document.location.href);
 
-
-
-
   SOCIALBROWSER.onLoad(() => {
-
     (function () {
       'use strict';
       delete window.PopAds;
@@ -26,7 +22,7 @@ module.exports = function (SOCIALBROWSER) {
         popns: { value: {} },
       });
     })();
-    
+
     (function () {
       'use strict';
       window.canRunAds = true;
