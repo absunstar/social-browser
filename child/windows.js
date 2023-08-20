@@ -765,42 +765,42 @@ module.exports = function (child) {
     });
 
     win.on('unresponsive', async () => {
-      // const options = {
-      //     type: 'info',
-      //     title: 'Window unresponsive',
-      //     message: 'This Window has been suspended',
-      //     buttons: ['[window-reload]', 'Close'],
-      // };
-      // if (win && !win.isDestroyed()) {
-      //     child.electron.dialog.showMessageBox(options, function (index) {
-      //         if (index === 0) {
-      //             win.webContents.forcefullyCrashRenderer();
-      //             win.webContents.reload();
-      //         } else {
-      //             win.close();
-      //         }
-      //     });
-      // }
+      const options = {
+        type: 'info',
+        title: 'Window unresponsive',
+        message: 'This Window has been suspended',
+        buttons: ['[window-reload]', 'Close'],
+      };
+      if (win && !win.isDestroyed()) {
+        child.electron.dialog.showMessageBox(options).then((index) => {
+          if (index === 0) {
+            win.webContents.reload();
+          } else {
+            win.close();
+          }
+        });
+      }
     });
 
-    win.webContents.on('crashed', (e) => {
-      if (win && !win.isDestroyed()) {
-        win.webContents.forcefullyCrashRenderer();
-        win.webContents.reload();
-      }
+    win.webContents.on('render-process-gone', (e, details) => {
+      setTimeout(() => {
+        if (win && !win.isDestroyed()) {
+          win.webContents.reload();
+        }
+      }, 500);
     });
 
     win.webContents.on('will-redirect', (e, url) => {
-      if (!win.customSetting.allowRedirect || !child.isAllowURL(url)) {
-        if (win.customSetting.allowSelfRedirect && (win.getURL().contains(child.url.parse(url).host) || url.contains(child.url.parse(win.getURL()).host))) {
-          return;
-        } else {
-          e.preventDefault();
-          child.log('Block-redirect', url);
-        }
+      // console.log('try redirect : ', url);
+      if (!child.isAllowURL(url) || !win.customSetting.allowRedirect) {
+        e.preventDefault();
+        child.log('Block-redirect', url);
+      }
 
+      if (win.customSetting.allowSelfRedirect && (win.getURL().contains(child.url.parse(url).host) || url.contains(child.url.parse(win.getURL()).host))) {
         return;
       }
+
       if ((info = child.getOverwriteInfo(url))) {
         if (info.overwrite) {
           if (win && !win.isDestroyed()) {
@@ -820,12 +820,16 @@ module.exports = function (child) {
 
     if (win.webContents.setWindowOpenHandler) {
       win.webContents.setWindowOpenHandler(({ url, frameName }) => {
-        // child.log('setWindowOpenHandler', url);
-        if (win.customSetting.allowSelfWindow && win.customSetting.allowRedirect) {
-          win.loadURL(url);
+        if (!win.customSetting.allowNewWindows) {
           return { action: 'deny' };
         }
-        if (!win.customSetting.allowNewWindows) {
+        if (!child.isAllowURL(url) || url.like('*about:blank*')) {
+          child.log('Block-open-window', url);
+          return { action: 'deny' };
+        }
+
+        if (win.customSetting.allowSelfWindow && win.customSetting.allowRedirect) {
+          win.loadURL(url);
           return { action: 'deny' };
         }
 
@@ -861,11 +865,6 @@ module.exports = function (child) {
             partition: win.customSetting.partition,
             user_name: win.customSetting.user_name,
           });
-          return { action: 'deny' };
-        }
-
-        if (!child.isAllowURL(url) || url.like('*about:blank*')) {
-          child.log('Block-open-window', url);
           return { action: 'deny' };
         }
 

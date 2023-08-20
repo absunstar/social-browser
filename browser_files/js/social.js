@@ -251,6 +251,7 @@ document.addEventListener(
 );
 
 function showSettingMenu() {
+  SOCIALBROWSER.currentWindow.show();
   let arr = [];
 
   arr.push({
@@ -417,14 +418,12 @@ function showSettingMenu() {
   arr.push({
     label: 'Zoom',
     accelerator: 'CommandOrControl+0',
-    click: () =>
-      ipc('[window-zoom]'),
+    click: () => ipc('[window-zoom]'),
   });
   arr.push({
     label: 'Zoom -',
     accelerator: 'CommandOrControl+numsub',
-    click: () =>
-      ipc('[window-zoom-]'),
+    click: () => ipc('[window-zoom-]'),
   });
 
   arr.push({
@@ -451,8 +450,7 @@ function showSettingMenu() {
   arr.push({
     label: 'Developer Tools',
     accelerator: 'F12',
-    click: () =>
-      ipc('[show-window-dev-tools]'),
+    click: () => ipc('[show-window-dev-tools]'),
   });
   // arr.push({
   //   type: 'separator',
@@ -472,6 +470,7 @@ function showSettingMenu() {
 }
 
 function showBookmarksMenu() {
+  SOCIALBROWSER.currentWindow.show();
   let bookmark_arr = [];
   bookmark_arr.push({
     label: 'Bookmark current tab',
@@ -605,10 +604,10 @@ $('.social-close').click(() => {
   ExitSocialWindow();
 });
 $('.social-maxmize').click(() => {
-  SOCIALBROWSER.call('[browser-message]', { name: 'maxmize', win_id: SOCIALBROWSER.currentWindow.id  });
+  SOCIALBROWSER.call('[browser-message]', { name: 'maxmize', win_id: SOCIALBROWSER.currentWindow.id });
 });
 $('.social-minmize').click(() => {
-  SOCIALBROWSER.call('[browser-message]', { name: 'minmize', win_id: SOCIALBROWSER.currentWindow.id  });
+  SOCIALBROWSER.call('[browser-message]', { name: 'minmize', win_id: SOCIALBROWSER.currentWindow.id });
 });
 
 socialTabsDom.addEventListener('activeTabChange', ({ detail }) => {

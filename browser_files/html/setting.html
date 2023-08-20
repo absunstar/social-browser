@@ -49,6 +49,9 @@
         font-size: 18px;
         font-weight: normal;
       }
+      .modal-content{
+        height: auto;
+      }
       .modal-body {
         overflow-y: auto;
       }
@@ -107,6 +110,9 @@
       }
       .table input {
         font-size: 16px !important;
+      }
+      fieldset legend {
+        float: none;
       }
       i-checkbox .selector.selected {
         background: #4caf50;
@@ -261,11 +267,8 @@
                       <i-button ng-hide="setting.login.is_login" ng-click="register()" label="Regisiter"></i-button>
                     </h2>
                   </fieldset>
-                  <br />
+
                   <p class="bold red text-center">{{login_error}}</p>
-                  <br />
-                  <br />
-                  <br />
                 </div>
               </div>
 
@@ -273,8 +276,6 @@
                 <div class="row">
                   <fieldset>
                     <legend>Popup window</legend>
-
-                    <br />
 
                     <div class="row">
                       <i-checkbox class="" label="Allow External Popup" ng-model="setting.blocking.popup.allow_external"></i-checkbox>
@@ -290,7 +291,6 @@
                   <fieldset>
                     <legend>Blocking</legend>
 
-                    <br />
                     <div class="row">
                       <i-checkbox class="row" label="Auto Skip Video Ads " ng-model="setting.blocking.core.skip_video_ads"> </i-checkbox>
                       <i-checkbox class="row" label="Auto Remove External IFRAMES " ng-model="setting.blocking.core.remove_external_iframe"> </i-checkbox>
@@ -310,8 +310,6 @@
 
                   <fieldset>
                     <legend>Browser Permissions</legend>
-
-                    <br />
 
                     <i-checkbox class="row" label="Allow fullscreen ( Request for the app to enter fullscreen mode ) " ng-model="setting.blocking.permissions.allow_fullscreen"></i-checkbox>
                     <i-checkbox class="row" label="Allow clipboard-read ( Request access to read from the clipboard )" ng-model="setting.blocking.permissions.allow_clipboard_read"></i-checkbox>
@@ -345,9 +343,7 @@
               <div id="privacy_tab" class="tab-content">
                 <div class="row padding">
                   <i-checkbox label="Enable Virtual PC" ng-model="setting.blocking.privacy.enable_virtual_pc"></i-checkbox>
-                  <br />
-                  <br />
-                  <br />
+
                   <div class="row padding" ng-show="setting.blocking.privacy.enable_virtual_pc">
                     <i-button type="add" label="Generate Virual PC" ng-click="generateVPC()"></i-button>
                     <div class="row padding border2">
@@ -466,7 +462,7 @@
                       <i-checkbox class="col6" label="Block HTML Canvas" ng-model="setting.blocking.privacy.vpc.hide_canvas"></i-checkbox>
 
                       <i-checkbox class="col6" label="Block Media Devices [camera , mic , ...]" ng-model="setting.blocking.privacy.vpc.hide_media_devices"></i-checkbox>
-                      <br />
+
                       <i-checkbox class="col6" label="Hide Audio" ng-model="setting.blocking.privacy.vpc.hide_audio"></i-checkbox>
                       <i-checkbox class="col6" label="Hide WebGL" ng-model="setting.blocking.privacy.vpc.hide_webgl"></i-checkbox>
                       <i-checkbox class="col6" label="Block RTC Connections" ng-model="setting.blocking.privacy.vpc.block_rtc"></i-checkbox>
@@ -556,8 +552,6 @@
                   <fieldset>
                     <legend>Children Safty Mode</legend>
 
-                    <br />
-
                     <div class="row">
                       <div class="col6"><i-checkbox class="row" label="Enable" ng-model="setting.blocking.allow_safty_mode"></i-checkbox></div>
                       <div class="col6">
@@ -607,10 +601,10 @@
                           </i-list>
                           <div class="row border">
                             <i-control class="row" label="Proxy URL" type="text" ng-model="setting.proxy.url"> </i-control>
-                            <i-control class="col4" label="Proxy IP" type="text" ng-model="setting.proxy.ip"> </i-control>
-                            <i-control class="col2" label="Proxy Port" type="text" ng-model="setting.proxy.port"> </i-control>
-                            <i-control class="col3" label="User Name" type="text" ng-model="setting.proxy.username"> </i-control>
-                            <i-control class="col3" label="Password" type="text" ng-model="setting.proxy.password"> </i-control>
+                            <i-control class="col8" label="Proxy IP" type="text" ng-model="setting.proxy.ip"> </i-control>
+                            <i-control class="col4" label="Proxy Port" type="text" ng-model="setting.proxy.port"> </i-control>
+                            <i-control class="col6" label="User Name" type="text" ng-model="setting.proxy.username"> </i-control>
+                            <i-control class="col6" label="Password" type="text" ng-model="setting.proxy.password"> </i-control>
                           </div>
 
                           <i-control class="row" label="No Proxy For URLs" type="text" ng-model="setting.proxy.ignore"> </i-control>
@@ -664,7 +658,6 @@
                           <i-control type="text" ng-model="app.params" label="App Params"></i-control>
                         </div>
                         <div class="col2">
-                          <br /><br />
                           <i-button type="delete default" ng-click="setting.blocking.downloader.apps.splice($index ,1)"></i-button>
                         </div>
                       </div>
@@ -684,8 +677,6 @@
                       <p>Every Profile Has Own [ Sessions , Cache , Storage , Logins , ... ]</p>
                     </li>
                   </ul>
-
-                  <br />
 
                   <div class="row padding margin">
                     <div class="col5">
@@ -712,8 +703,6 @@
                     </div>
                   </div>
 
-                  <br />
-                  <br />
                   <div class="row">
                     <i-button type="add" label="Generate Virual PC for all users" ng-click="generateVPC('*')"></i-button>
                     <i-button type="" label="Stop Virual PC for all users" ng-click="stopVPC('*')"></i-button>
@@ -753,14 +742,12 @@
                   <div class="modal-body black">
                     <form class="form">
                       <i-control ng-model="currentSession.display" label="Name"></i-control>
-                      <br />
-                      <br />
+
                       <div class="row padding border">
                         <i-list ng-search="search.$user_agent" primary="name" items="setting.user_agent_list" ng-model="currentSession.user_agent" label="Select User Agent"></i-list>
                         <i-control class="row" label="Custom User Agent" ng-model="currentSession.user_agent.url"></i-control>
                       </div>
-                      <br />
-                      <br />
+
                       <fieldset>
                         <legend>Proxy</legend>
 
@@ -796,10 +783,10 @@
                               </i-list>
                               <div class="row border">
                                 <i-control class="row" label="Proxy URL" type="text" ng-model="currentSession.proxy.url"> </i-control>
-                                <i-control class="col4" label="Proxy IP" type="text" ng-model="currentSession.proxy.ip"> </i-control>
-                                <i-control class="col2" label="Proxy Port" type="text" ng-model="currentSession.proxy.port"> </i-control>
-                                <i-control class="col3" label="User Name" type="text" ng-model="currentSession.proxy.username"> </i-control>
-                                <i-control class="col3" label="Password" type="text" ng-model="currentSession.proxy.password"> </i-control>
+                                <i-control class="col8" label="Proxy IP" type="text" ng-model="currentSession.proxy.ip"> </i-control>
+                                <i-control class="col4" label="Proxy Port" type="text" ng-model="currentSession.proxy.port"> </i-control>
+                                <i-control class="col6" label="User Name" type="text" ng-model="currentSession.proxy.username"> </i-control>
+                                <i-control class="col6" label="Password" type="text" ng-model="currentSession.proxy.password"> </i-control>
                               </div>
 
                               <i-control class="row" label="No Proxy For URLs" type="text" ng-model="currentSession.proxy.ignore"> </i-control>
@@ -816,7 +803,7 @@
                       </fieldset>
 
                       <i-checkbox label="Enable Virtual PC" ng-model="currentSession.privacy.enable_virtual_pc"></i-checkbox>
-                      <br />
+
                       <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border">
                         <div class="row">
                           <i-button type="add" label="Generate Virual PC" ng-click="generateVPC(currentSession)"></i-button>
@@ -915,7 +902,7 @@
                         <i-checkbox class="col6" label="Block HTML Canvas" ng-model="currentSession.privacy.vpc.hide_canvas"></i-checkbox>
 
                         <i-checkbox class="col6" label="Block Media Devices [camera , mic , ...]" ng-model="currentSession.privacy.vpc.hide_media_devices"></i-checkbox>
-                        <br />
+
                         <i-checkbox class="col6" label="Hide Audio" ng-model="currentSession.privacy.vpc.hide_audio"></i-checkbox>
                         <i-checkbox class="col6" label="Hide WebGL" ng-model="currentSession.privacy.vpc.hide_webgl"></i-checkbox>
                         <i-checkbox class="col6" label="Block RTC Connections" ng-model="currentSession.privacy.vpc.block_rtc"></i-checkbox>
@@ -948,8 +935,6 @@
                 <div class="row">
                   <h2>Manage User Agent [ Add , Edit , Delete]</h2>
 
-                  <br />
-
                   <div class="row padding margin">
                     <fieldset>
                       <legend>New User Agent</legend>
@@ -968,9 +953,6 @@
                       <i-button type="add" ng-click="addUserAgent()" label="Add to List"></i-button>
                     </fieldset>
                   </div>
-
-                  <br />
-                  <br />
 
                   <div class="row">
                     <table class="table hover">
@@ -1010,7 +992,7 @@
                     <i-button type="bg-blue white font-18" fa="cloud-upload-alt" ng-click="do_click(proxy)" label="Import Proxy List ( CSV or XLSX or JSON) File"></i-button>
                     <p class="bold green">{{proxy.uploadStatus}}</p>
                   </form>
-                  <br />
+
                   <i-checkbox class="row" label="Show proxy options" ng-model="setting.blocking.context_menu.proxy_options"></i-checkbox>
                   <i-checkbox class="row" label="Close Window on Proxy Error Loading" ng-model="setting.blocking.proxy_error_close_window"></i-checkbox>
                   <i-checkbox class="row" label="Remove Proxy on Error Loading" ng-model="setting.blocking.proxy_error_remove_proxy"></i-checkbox>
@@ -1021,10 +1003,10 @@
                         <legend>New Proxy</legend>
                         <div class="row padding">
                           <i-control class="row" label="URL" ng-model="$proxy.url"></i-control>
-                          <i-control class="col4" label="Server IP" ng-model="$proxy.ip"></i-control>
-                          <i-control class="col2" type="text" label="Server Port" ng-model="$proxy.port"></i-control>
-                          <i-control class="col3" type="text" label="User Name" ng-model="$proxy.username"></i-control>
-                          <i-control class="col3" type="text" label="Password" ng-model="$proxy.password"></i-control>
+                          <i-control class="col8" label="Server IP" ng-model="$proxy.ip"></i-control>
+                          <i-control class="col4" type="text" label="Server Port" ng-model="$proxy.port"></i-control>
+                          <i-control class="col6" type="text" label="User Name" ng-model="$proxy.username"></i-control>
+                          <i-control class="col6" type="text" label="Password" ng-model="$proxy.password"></i-control>
                           <i-control class="row" label="No Proxy For URLs" ng-model="$proxy.ignore"></i-control>
                         </div>
 
@@ -1041,14 +1023,12 @@
                     </div>
                   </div>
 
-                  <br />
-                  <br />
-
                   <div class="row">
                     <table class="table hover">
                       <tr>
                         <th>
-                          Index ({{setting.proxy_list.length}}) Actions <a class="btn red" ng-click="setting.proxy_list = []"> <i class="fa fa-trash"></i> Remove All</a>
+                          <span> Count : ({{setting.proxy_list.length}})</span>
+                          <i-button type="delete" ng-click="setting.proxy_list = []" label="Remove All"></i-button>
                         </th>
                         <th>URL <i-control ng-model="$proxy.url"></i-control></th>
                         <th>IP <i-control ng-model="$proxy.ip"></i-control></th>
@@ -1056,26 +1036,27 @@
                       </tr>
                       <tr ng-repeat="_se in setting.proxy_list | limitTo : 100 | filter:$proxy | orderBy : 'name' track by $index">
                         <td>
-                          {{$index + 1}} <a class="btn red" ng-click="removeProxy(_se)"> <i class="fa fa-trash"></i> Remove </a>
+                          <span class="bold"> ( {{$index + 1}} ) </span>
+                          <i-button type="delete" ng-click="removeProxy(_se)"></i-button>
                         </td>
                         <td>
                           <div class="row">
                             <i-control class="row" ng-model="_se.url"></i-control>
                             <div class="row">
-                              <i-control ng-model="_se.username"></i-control>
-                              <i-control ng-model="_se.password"></i-control>
+                              <i-control class="col6" label="User Name" ng-model="_se.username"></i-control>
+                              <i-control class="col6" label="Password" ng-model="_se.password"></i-control>
                             </div>
                           </div>
                           <div class="row">
-                            <i-checkbox class="col2" label="Socks 5" ng-model="_se.socks5"></i-checkbox>
-                            <i-checkbox class="col2" label="Socks 4" ng-model="_se.socks4"></i-checkbox>
-                            <i-checkbox class="col2" label="FTP" ng-model="_se.ftp"></i-checkbox>
-                            <i-checkbox class="col2" label="HTTP" ng-model="_se.http"></i-checkbox>
-                            <i-checkbox class="col2" label="HTTPS" ng-model="_se.https"></i-checkbox>
+                            <i-checkbox class="col4" label="Socks 5" ng-model="_se.socks5"></i-checkbox>
+                            <i-checkbox class="col4" label="Socks 4" ng-model="_se.socks4"></i-checkbox>
+                            <i-checkbox class="col4" label="FTP" ng-model="_se.ftp"></i-checkbox>
+                            <i-checkbox class="col4" label="HTTP" ng-model="_se.http"></i-checkbox>
+                            <i-checkbox class="col4" label="HTTPS" ng-model="_se.https"></i-checkbox>
                           </div>
                         </td>
-                        <td><i-control ng-model="_se.ip"></i-control></td>
-                        <td><i-control ng-model="_se.port"></i-control></td>
+                        <td><i-control label="Server IP" ng-model="_se.ip"></i-control></td>
+                        <td><i-control label="Server Port" ng-model="_se.port"></i-control></td>
                       </tr>
                     </table>
                   </div>
@@ -1084,13 +1065,9 @@
 
               <div id="extension_list_tab" class="tab-content">
                 <i-checkbox class="row" label="Allow Social Menu" ng-model="setting.blocking.social.allow_menu"></i-checkbox>
-                <br />
-                <br />
+
                 <div class="row">
                   <i-button type="add" ng-click="addExtension()" label="Import Extension"></i-button>
-
-                  <br />
-                  <br />
 
                   <div class="row">
                     <table class="table hover">
@@ -1441,9 +1418,7 @@
                   </form>
                 </div>
               </div>
-              <br />
-              <br />
-              <br />
+
               <div class="row padding" ng-repeat="_dom in setting.blocking.html_tags_selector_list | filter:dom track by $index">
                 <fieldset>
                   <legend></legend>
@@ -1598,8 +1573,7 @@
             </div>
             <div class="modal-body">
               <h2 class="padding margin center">These Sites Can Display [ Ads , popup , un safty content , iframes ]</h2>
-              <br />
-              <br />
+
               <div class="row padding border">
                 <div class="col2">
                   <a ng-click="addWhiteSite()" class="btn"> Add New </a>
@@ -1608,8 +1582,7 @@
                   <i-control ng-model="whiteSite.url"></i-control>
                 </div>
               </div>
-              <br />
-              <br />
+
               <table class="table">
                 <tr>
                   <th class="w200">Action</th>
@@ -1640,8 +1613,7 @@
             </div>
             <div class="modal-body">
               <h2 class="padding margin center">This Sites Can't loaded</h2>
-              <br />
-              <br />
+
               <div class="row padding border">
                 <div class="col2">
                   <a ng-click="addBlackSite()" class="btn"> Add New </a>
@@ -1650,8 +1622,7 @@
                   <i-control ng-model="blackSite.url"></i-control>
                 </div>
               </div>
-              <br />
-              <br />
+
               <table class="table">
                 <tr>
                   <th class="w200">Action</th>

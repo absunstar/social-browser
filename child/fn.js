@@ -259,13 +259,8 @@ module.exports = function (child) {
   child.isAllowURL = function (url) {
     let allow = true;
     if (child.parent.var.blocking.core.block_ads) {
-      child.parent.var.ad_list.forEach((ad) => {
-        if (url.like(ad.url)) {
-          allow = false;
-        }
-      });
+      allow = !child.parent.var.ad_list.some((ad) => url.like(ad.url));
     }
-
     return allow;
   };
 };

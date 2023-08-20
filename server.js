@@ -147,7 +147,7 @@
   }
 
   browser.electron.app.clearRecentDocuments();
-  browser.electron.app.commandLine.appendSwitch('no-sandbox');
+  // browser.electron.app.commandLine.appendSwitch('no-sandbox');
   // browser.electron.app.commandLine.appendSwitch('in-process-gpu');
   browser.electron.app.disableHardwareAcceleration();
   /* App Ready */

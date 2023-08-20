@@ -86,12 +86,12 @@ if (child.electron.app.setUserTasks) {
 }
 
 //child.electron.app.commandLine.appendSwitch('enable-experimental-web-platform-features');
-// child.electron.app.commandLine.appendSwitch('disable-software-rasterizer');
-// child.electron.app.commandLine.appendSwitch('enable-webgl');
+//child.electron.app.commandLine.appendSwitch('disable-software-rasterizer');
+//child.electron.app.commandLine.appendSwitch('enable-webgl');
 // child.electron.app.commandLine.appendSwitch('disable-dev-shm-usage');
 // child.electron.app.commandLine.appendSwitch('no-sandbox');
-// child.electron.app.commandLine.appendSwitch('in-process-gpu');
-// child.electron.app.disableHardwareAcceleration();
+// child.electron.app.commandLine.appendSwitch('disable-gpu');
+ child.electron.app.disableHardwareAcceleration();
 
 //child.electron.app.commandLine.appendSwitch('disable-web-security');
 // child.electron.app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
@@ -121,15 +121,6 @@ child.electron.app.on('ready', function () {
     child.electron.app.exit(0);
   });
 
-  child.electron.app.on('render-process-gone', (event, webContents, details) => {
-    if (details.reason == 'crashed') {
-      webContents.stop();
-      // webContents.reload()
-    }
-
-    // child.electron.app.exit(0);
-  });
-
   child.electron.app.on('web-contents-created', (event, contents) => {
     child.remoteMain.enable(contents);
     contents.on('will-attach-webview', (event, webPreferences, params) => {
@@ -148,12 +139,10 @@ child.electron.app.on('ready', function () {
     // }
   });
 
-  child.electron.app.on('login', (event, webContents, authenticationResponseDetails, authInfo, callback) => {
-    child.log(`App on Login`, authInfo);
-
-    event.preventDefault();
+  child.electron.app.on('login', (event, webContents, details, authInfo, callback) => {
 
     if (authInfo.isProxy) {
+       event.preventDefault();
       let proxy = null;
       child.windowList.forEach((w) => {
         if (w.id2 == webContents.id) {
@@ -187,6 +176,8 @@ child.electron.app.on('ready', function () {
         child.log(proxy);
         return;
       }
+    }else{
+
     }
   });
 
