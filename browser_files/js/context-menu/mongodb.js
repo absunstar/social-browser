@@ -1,4 +1,3 @@
-module.exports = function (SOCIALBROWSER) {
     SOCIALBROWSER.collections = [];
     SOCIALBROWSER.connectCollection = function (info) {
         let collection = {
@@ -40,4 +39,4 @@ module.exports = function (SOCIALBROWSER) {
         SOCIALBROWSER.collections.push(collection);
         return SOCIALBROWSER.collections[SOCIALBROWSER.collections.length - 1];
     };
-};
+

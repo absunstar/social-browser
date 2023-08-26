@@ -1,4 +1,3 @@
-module.exports = function (SOCIALBROWSER) {
     SOCIALBROWSER.$base64Letter = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
     SOCIALBROWSER.$base64Numbers = [];
     for (let $i = 11; $i < 99; $i++) {
@@ -69,4 +68,4 @@ module.exports = function (SOCIALBROWSER) {
     SOCIALBROWSER.typeOf = SOCIALBROWSER.typeof = function type(elem) {
         return Object.prototype.toString.call(elem).slice(8, -1);
     };
-};
+

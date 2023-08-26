@@ -1,4 +1,3 @@
-module.exports = function (SOCIALBROWSER) {
   if (!document.location.hostname.contains('watchhours.com')) {
     return;
   }
@@ -184,4 +183,4 @@ module.exports = function (SOCIALBROWSER) {
       onContentLoaded();
     });
   }
-};
+

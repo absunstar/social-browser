@@ -1,4 +1,3 @@
-module.exports = function (SOCIALBROWSER) {
   if (document.location.hostname.like('*jawaker.com*')) {
     (function () {
       let pushState = history.pushState;
@@ -28,4 +27,4 @@ module.exports = function (SOCIALBROWSER) {
      SOCIALBROWSER.jawaker.handlePanel();
     });
   }
-};
+

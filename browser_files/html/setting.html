@@ -49,7 +49,7 @@
         font-size: 18px;
         font-weight: normal;
       }
-      .modal-content{
+      .modal-content {
         height: auto;
       }
       .modal-body {
@@ -373,14 +373,16 @@
                     </div>
 
                     <div class="row padding border2">
-                      <div class="col3"><i-checkbox label="Hide Date TimeZone ( Custom )" ng-model="setting.blocking.privacy.vpc.mask_date"></i-checkbox></div>
-                      <div class="col6">
-                        <i-control
-                          type="number"
+                      <div class="col5"><i-checkbox label="Hide Date TimeZone ( Custom )" ng-model="setting.blocking.privacy.vpc.mask_date"></i-checkbox></div>
+                      <div class="col7">
+                        <i-list
                           ng-disabled="setting.blocking.privacy.vpc.mask_date !== true"
-                          ng-model="setting.blocking.privacy.vpc.date_offset"
-                          label="Custom Date Offset"
-                        ></i-control>
+                          items="timezones"
+                          primary="offset"
+                          display="text"
+                          label="Select Time Zone"
+                          ng-model="setting.blocking.privacy.vpc.timeZone"
+                        ></i-list>
                       </div>
                     </div>
 
@@ -836,7 +838,14 @@
                       <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border">
                         <div class="col6"><i-checkbox label="Hide Date TimeZone" ng-model="currentSession.privacy.vpc.mask_date"></i-checkbox></div>
                         <div class="col6">
-                          <i-control type="number" ng-disabled="currentSession.privacy.vpc.mask_date !== true" ng-model="currentSession.privacy.vpc.date_offset" label="Custom Date Offset"></i-control>
+                          <i-list
+                          ng-disabled="currentSession.privacy.vpc.mask_date !== true"
+                          items="timezones2"
+                          primary="value"
+                          display="text"
+                          label="Select Time Zone"
+                          ng-model="currentSession.privacy.vpc.timeZone"
+                        ></i-list>
                         </div>
                       </div>
 
@@ -1117,8 +1126,11 @@
                     </td>
                     <td>
                       <div class="row">
-                        <div class="col6"><i-control type="password" ng-model="site.password"></i-control></div>
-                        <div class="col6"><i-button label="copy" ng-click="copy(site.password)"></i-button></div>
+                        <div class="col6"><i-control id="pass_{{site.id}}" type="password" ng-model="site.password"></i-control></div>
+                        <div class="col6">
+                          <i-button label="copy" ng-click="copy(site.password)"></i-button>
+                          <i-button label="show" ng-click="showPassword(site)"></i-button>
+                        </div>
                       </div>
                     </td>
                   </tr>

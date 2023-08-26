@@ -1,4 +1,3 @@
-module.exports = function (SOCIALBROWSER) {
 
   if (SOCIALBROWSER.var.core.javaScriptOFF || !SOCIALBROWSER.var.blocking.social.allow_egybest) {
     return;
@@ -52,4 +51,4 @@ module.exports = function (SOCIALBROWSER) {
   //       });
   //     });
   //   });
-};
+

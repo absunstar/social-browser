@@ -38,6 +38,14 @@
         width: 100%;
         opacity: 0.1;
       }
+      .footer{
+        position: fixed;
+        bottom: 0;
+        bottom: 0;
+        right: 0;
+        height: 30px;
+        background: #313131;
+      }
     </style>
   </head>
 
@@ -91,9 +99,6 @@
         <a class="xzoom" title="Zoom Out" onclick="ipc('[window-zoom-]')">
           <i class="fa fa-search-minus"></i>
         </a>
-        <a class="xzoom" title="Zoom" onclick="ipc('[window-zoom]')">
-          <i class="fa fa-search"></i>
-        </a>
         <a class="xzoom" title="Zoom In" onclick="ipc('[window-zoom+]')">
           <i class="fa fa-search-plus"></i>
         </a>
@@ -108,6 +113,12 @@
           <i class="fa fa-bars"></i>
         </a>
       </div>
+    </div>
+
+    <div class="footer">
+      <a title="Bookmarks" class="bookmarks" onclick="showBookmarksMenu();">
+        <i class="fa fa-star"></i>
+      </a>
     </div>
 
     <div id="img"></div>

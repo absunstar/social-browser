@@ -241,16 +241,15 @@
     }
     if (!SOCIALBROWSER.session.privacy.enable_virtual_pc && SOCIALBROWSER.var.blocking.privacy.enable_virtual_pc) {
       SOCIALBROWSER.session.privacy.enable_virtual_pc = true;
-      SOCIALBROWSER.session.privacy.vpc = SOCIALBROWSER.var.blocking.privacy.vpc;
+      SOCIALBROWSER.session.privacy.vpc = { ...SOCIALBROWSER.var.blocking.privacy.vpc };
     }
-  
-    require(SOCIALBROWSER.files_dir + '/js/context-menu/init.js')(SOCIALBROWSER);
 
+    require(SOCIALBROWSER.files_dir + '/js/context-menu/init.js');
+    require(SOCIALBROWSER.files_dir + '/js/context-menu/event.js');
+    require(SOCIALBROWSER.files_dir + '/js/context-menu/fn.js');
 
-    require(SOCIALBROWSER.files_dir + '/js/context-menu/event.js')(SOCIALBROWSER);
-    require(SOCIALBROWSER.files_dir + '/js/context-menu/fn.js')(SOCIALBROWSER);
     SOCIALBROWSER.isWhiteSite = SOCIALBROWSER.var.blocking.white_list.some((site) => site.url.length > 2 && document.location.href.like(site.url));
-    
+
     if (SOCIALBROWSER.var.core.id.like('*test*')) {
       SOCIALBROWSER.developerMode = true;
     }
@@ -261,7 +260,7 @@
       SOCIALBROWSER.set('vpc', SOCIALBROWSER.session.privacy.vpc);
     }
 
-    require(SOCIALBROWSER.files_dir + '/js/context-menu/load.js')(SOCIALBROWSER);
+    require(SOCIALBROWSER.files_dir + '/js/context-menu/load.js');
     if (!SOCIALBROWSER.customSetting.allowSocialBrowser) {
       delete window.SOCIALBROWSER;
     }

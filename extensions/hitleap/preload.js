@@ -1,4 +1,3 @@
-module.exports = function (SOCIALBROWSER) {
 
   if (!document.location.hostname.like('*hitleap.com*')) {
     return;
@@ -151,4 +150,4 @@ module.exports = function (SOCIALBROWSER) {
 
 
   });
-};
+

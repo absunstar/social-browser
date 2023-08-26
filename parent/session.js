@@ -122,13 +122,6 @@ module.exports = function (parent) {
     ss.allowNTLMCredentialsForDomains('*');
     ss.userAgent = parent.var.core.user_agent;
 
-    ss.protocol.registerHttpProtocol('browser', (request, callback) => {
-      let url = request.url.substr(10);
-      url = `http://127.0.0.1:60080/${url}`;
-      request.url = url;
-      callback(request);
-    });
-
     const filter = {
       urls: ['*://*/*'],
     };

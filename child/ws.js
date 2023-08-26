@@ -324,18 +324,23 @@ module.exports = function (child) {
           child.windowList.forEach((w) => {
             if (w.window && !w.window.isDestroyed() && w.customSetting.tab_id == message.data.tab_id) {
               w.window.webContents.zoomFactor = 1;
+              w.window.show();
             }
           });
         } else if (message.type == '[window-zoom+]') {
           child.windowList.forEach((w) => {
             if (w.window && !w.window.isDestroyed() && w.customSetting.tab_id == message.data.tab_id) {
               w.window.webContents.zoomFactor += 0.2;
+              w.window.show();
             }
           });
         } else if (message.type == '[window-zoom-]') {
           child.windowList.forEach((w) => {
             if (w.window && !w.window.isDestroyed() && w.customSetting.tab_id == message.data.tab_id) {
-              w.window.webContents.zoomFactor -= 0.2;
+              if (w.window.webContents.zoomFactor - 0.3 > 0.0) {
+                w.window.webContents.zoomFactor -= 0.2;
+                w.window.show();
+              }
             }
           });
         } else if (message.type == '[show-window-dev-tools]') {

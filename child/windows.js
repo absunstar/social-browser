@@ -1,6 +1,15 @@
 module.exports = function (child) {
   child.assignWindows = [];
+  child.offset = {
+    x : 8,
+    y : 78,
+    y2 : 70,
+    width : 15,
+    width2 : 2 ,
+    height : 84 ,
+    height2 : 72 
 
+  }
   child.getMainWindow = function () {
     return child.windowList.find((w) => w.customSetting && w.customSetting.windowType == 'main');
   };
@@ -60,7 +69,6 @@ module.exports = function (child) {
           plugins: true,
         },
       });
-      child.remoteMain.enable(child.addressbarWindow.webContents);
     }
 
     if (show && child.addressbarWindow && !child.addressbarWindow.isDestroyed()) {
@@ -117,7 +125,6 @@ module.exports = function (child) {
           plugins: true,
         },
       });
-      child.remoteMain.enable(child.profilesWindow.webContents);
     }
     if (show && child.profilesWindow && !child.profilesWindow.isDestroyed()) {
       child.profilesWindow.setBounds({
@@ -274,7 +281,6 @@ module.exports = function (child) {
 
     win.customSetting = customSetting;
     win.customSetting.windowSetting = win.customSetting.windowSetting || [];
-    child.remoteMain.enable(win.webContents);
 
     win.customSetting.userAgent = win.customSetting.userAgent || win.customSetting.user_agent;
     delete win.customSetting.userAgent;
@@ -330,10 +336,10 @@ module.exports = function (child) {
         if ((mainWindow = child.getMainWindow())) {
           let bounds = mainWindow.getBounds();
           let new_bounds = {
-            x: mainWindow.isMaximized() ? bounds.x + 8 : bounds.x,
-            y: mainWindow.isMaximized() ? bounds.y + 78 : bounds.y + 70,
-            width: mainWindow.isMaximized() ? bounds.width - 15 : bounds.width - 2,
-            height: mainWindow.isMaximized() ? bounds.height - 84 : bounds.height - 72,
+            x: mainWindow.isMaximized() ? bounds.x + child.offset.x : bounds.x,
+            y: mainWindow.isMaximized() ? bounds.y + child.offset.y : bounds.y + child.offset.y2,
+            width: mainWindow.isMaximized() ? bounds.width - child.offset.width : bounds.width - child.offset.width2,
+            height: mainWindow.isMaximized() ? bounds.height - child.offset.height : bounds.height - child.offset.height2,
           };
           win.setBounds(new_bounds);
         }
@@ -341,10 +347,10 @@ module.exports = function (child) {
         if ((mainWindow = child.parent.lastWindowStatus)) {
           let bounds = mainWindow.bounds;
           let new_bounds = {
-            x: mainWindow.isMaximized ? bounds.x + 8 : bounds.x,
-            y: mainWindow.isMaximized ? bounds.y + 78 : bounds.y + 70,
-            width: mainWindow.isMaximized ? bounds.width - 15 : bounds.width - 2,
-            height: mainWindow.isMaximized ? bounds.height - 84 : bounds.height - 72,
+            x: mainWindow.isMaximized ? bounds.x + child.offset.x : bounds.x,
+            y: mainWindow.isMaximized ? bounds.y + child.offset.y : bounds.y + child.offset.y2,
+            width: mainWindow.isMaximized ? bounds.width - child.offset.width : bounds.width - child.offset.width2,
+            height: mainWindow.isMaximized ? bounds.height - child.offset.height : bounds.height - child.offset.height2,
           };
 
           win.setBounds(new_bounds);
@@ -701,8 +707,8 @@ module.exports = function (child) {
         });
       }
     });
-    let loading_icon = 'http://127.0.0.1:60080/images/loading-white.gif';
-    let error_icon = 'http://127.0.0.1:60080/images/no.jpg';
+    let loading_icon = 'browser://images/loading-white.gif';
+    let error_icon = 'browser://images/no.jpg';
 
     win.webContents.on('did-start-loading', (e, urls) => {
       win.customSetting.icon = loading_icon;
@@ -750,8 +756,8 @@ module.exports = function (child) {
 
     win.webContents.on('dom-ready', (e) => {
       if (win && !win.isDestroyed()) {
-        win.setBounds({ width: win.getBounds().width + 1 });
-        win.setBounds({ width: win.getBounds().width - 1 });
+        // win.setBounds({ width: win.getBounds().width + 1 });
+        // win.setBounds({ width: win.getBounds().width - 1 });
 
         if (!win.customSetting.vip) {
           child.sendMessage({
@@ -765,21 +771,27 @@ module.exports = function (child) {
     });
 
     win.on('unresponsive', async () => {
-      const options = {
-        type: 'info',
-        title: 'Window unresponsive',
-        message: 'This Window has been suspended',
-        buttons: ['[window-reload]', 'Close'],
-      };
-      if (win && !win.isDestroyed()) {
-        child.electron.dialog.showMessageBox(options).then((index) => {
-          if (index === 0) {
-            win.webContents.reload();
-          } else {
-            win.close();
-          }
-        });
-      }
+      setTimeout(() => {
+        if (win && !win.isDestroyed()) {
+          win.webContents.reload();
+        }
+      }, 500);
+
+      // const options = {
+      //   type: 'info',
+      //   title: 'Window unresponsive',
+      //   message: 'This Window has been suspended',
+      //   buttons: ['[window-reload]', 'Close'],
+      // };
+      // if (win && !win.isDestroyed()) {
+      //   child.electron.dialog.showMessageBox(options).then((index) => {
+      //     if (index === 0) {
+      //       win.webContents.reload();
+      //     } else {
+      //       win.close();
+      //     }
+      //   });
+      // }
     });
 
     win.webContents.on('render-process-gone', (e, details) => {

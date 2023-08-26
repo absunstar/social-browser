@@ -1,85 +1,84 @@
-module.exports = function (SOCIALBROWSER) {
-  function escape(s) {
-    if (!s) {
-      return '';
+function escape(s) {
+  if (!s) {
+    return '';
+  }
+  if (typeof s !== 'string') {
+    s = s.toString();
+  }
+  return s.replace(/[\/\\^$*+?.()\[\]{}]/g, '\\$&');
+}
+
+if (!String.prototype.test) {
+  String.prototype.test = function (reg, flag = 'gium') {
+    try {
+      return new RegExp(reg, flag).test(this);
+    } catch (error) {
+      return false;
     }
-    if (typeof s !== 'string') {
-      s = s.toString();
+  };
+}
+
+if (!String.prototype.like) {
+  String.prototype.like = function (name) {
+    if (typeof name === 'number') {
+      name = name.toString();
+    } else if (typeof name !== 'string') {
+      return false;
     }
-    return s.replace(/[\/\\^$*+?.()\[\]{}]/g, '\\$&');
-  }
-
-  if (!String.prototype.test) {
-    String.prototype.test = function (reg, flag = 'gium') {
-      try {
-        return new RegExp(reg, flag).test(this);
-      } catch (error) {
-        return false;
-      }
-    };
-  }
-
-  if (!String.prototype.like) {
-    String.prototype.like = function (name) {
-      if (typeof name === 'number') {
-        name = name.toString();
-      } else if (typeof name !== 'string') {
-        return false;
-      }
-      let r = false;
-      name.split('|').forEach((n) => {
-        n = n.split('*');
-        n.forEach((w, i) => {
-          n[i] = escape(w);
-        });
-        n = n.join('.*');
-        if (this.test('^' + n + '$', 'gium')) {
-          r = true;
-        }
+    let r = false;
+    name.split('|').forEach((n) => {
+      n = n.split('*');
+      n.forEach((w, i) => {
+        n[i] = escape(w);
       });
-      return r;
-    };
-  }
-
-  if (!String.prototype.contains) {
-    String.prototype.contains = function (name) {
-      let r = false;
-      if (!name) {
-        return r;
+      n = n.join('.*');
+      if (this.test('^' + n + '$', 'gium')) {
+        r = true;
       }
-      name.split('|').forEach((n) => {
-        if (n && this.test('^.*' + escape(n) + '.*$', 'gium')) {
-          r = true;
-        }
-      });
+    });
+    return r;
+  };
+}
+
+if (!String.prototype.contains) {
+  String.prototype.contains = function (name) {
+    let r = false;
+    if (!name) {
       return r;
-    };
-  }
-  SOCIALBROWSER.scrrenSizeList= [
-    '2560x1440',
-    '1920x1080',
-    '1792x1120',
-    '1680x1050',
-    '1600x900',
-    '1536x864',
-    '1440x900',
-    '1366x768',
-    '1280x800',
-    '1280x720',
-    '1024x768',
-    '1024x600',
-    '962x601',
-    '810x1080',
-    '800x1280',
-    '768x1024',
-    '601x962',
-    '600x1024',
-    '414x896',
-    '390x844',
-    '360x800',
-    '360x640',
-  ],
-  SOCIALBROWSER.languageList = [
+    }
+    name.split('|').forEach((n) => {
+      if (n && this.test('^.*' + escape(n) + '.*$', 'gium')) {
+        r = true;
+      }
+    });
+    return r;
+  };
+}
+(SOCIALBROWSER.scrrenSizeList = [
+  '2560x1440',
+  '1920x1080',
+  '1792x1120',
+  '1680x1050',
+  '1600x900',
+  '1536x864',
+  '1440x900',
+  '1366x768',
+  '1280x800',
+  '1280x720',
+  '1024x768',
+  '1024x600',
+  '962x601',
+  '810x1080',
+  '800x1280',
+  '768x1024',
+  '601x962',
+  '600x1024',
+  '414x896',
+  '390x844',
+  '360x800',
+  '360x640',
+]),
+  (SOCIALBROWSER.languageList = [
     'af',
     'af-NA',
     'af-ZA',
@@ -802,5 +801,4 @@ module.exports = function (SOCIALBROWSER) {
     'zh-Hant-TW',
     'zu',
     'zu-ZA',
-  ];
-};
+  ]);

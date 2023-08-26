@@ -1,4 +1,3 @@
-module.exports = function (SOCIALBROWSER) {
 
 
   if (!document.location.hostname.contains('youlikehits.com')) {
@@ -198,4 +197,4 @@ module.exports = function (SOCIALBROWSER) {
       });
     }, 1000);
   }
-};
+

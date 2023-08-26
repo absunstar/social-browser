@@ -1,4 +1,3 @@
-module.exports = function (SOCIALBROWSER) {
 
   // if (!SOCIALBROWSER.var.blocking.social.allow_traficads) {
   //   return;
@@ -114,4 +113,4 @@ module.exports = function (SOCIALBROWSER) {
       onYouTubePlayerStateChange({ data: YT.PlayerState.PLAYING });
     } 
   });
-};
+

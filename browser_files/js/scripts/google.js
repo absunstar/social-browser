@@ -1,4 +1,3 @@
-module.exports = function (SOCIALBROWSER) {
   if(SOCIALBROWSER.var.core.javaScriptOFF){
     return false
   }
@@ -20,4 +19,4 @@ module.exports = function (SOCIALBROWSER) {
   SOCIALBROWSER.eventOff = 'DIV.HD8Pae luh4tb cUezCb xpd O9g5cc uUPGi';
   // SOCIALBROWSER.eventOn = '*window*';
   // SOCIALBROWSER.jqueryOff = '*mouseover*';
-};
+

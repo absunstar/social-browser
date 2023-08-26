@@ -1,3 +1,25 @@
+ 
+  Date.prototype.getTimezoneOffset = function () {
+    return SOCIALBROWSER.session.privacy.vpc.timeZone.offset * 60;
+  };
+  Date.prototype.toString0 = Date.prototype.toString;
+  Date.prototype.toString = function () {
+    return this.toString0()
+      .replace(/GMT*/, 'GMT' + SOCIALBROWSER.session.privacy.vpc.timeZone.offset)
+      .replace(/\((.*)\)/, ` ( ${SOCIALBROWSER.session.privacy.vpc.timeZone.offset} )`);
+  };
+
+  window.Intl.DateTimeFormat.prototype.resolvedOptions = function () {
+    return {
+      calendar: 'gregory',
+      day: 'numeric',
+      locale: navigator.language,
+      month: 'numeric',
+      numberingSystem: 'latn',
+      timeZone: SOCIALBROWSER.session.privacy.vpc.timeZone.text,
+      year: 'numeric',
+    };
+  };
  // Video Recording
  const { desktopCapturer, remote } = SOCIALBROWSER.electron;
 

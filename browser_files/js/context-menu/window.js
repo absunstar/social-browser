@@ -1,4 +1,3 @@
-module.exports = function (SOCIALBROWSER) {
   window.open = function (url, _name, _specs, _replace_in_history) {
     if (url.like('javascript:*|*.svg|*.png|*.ico|*.gif')) {
       console.log('unSupported URL : ' + url);
@@ -408,4 +407,4 @@ module.exports = function (SOCIALBROWSER) {
       },
     });
   }
-};
+

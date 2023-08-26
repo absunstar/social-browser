@@ -1,4 +1,3 @@
-module.exports = function (SOCIALBROWSER) {
   if (SOCIALBROWSER.var.core.javaScriptOFF || !document.location.host.like('*youtube.com*')) {
     return;
   }
@@ -252,4 +251,4 @@ module.exports = function (SOCIALBROWSER) {
   window.addEventListener('video-status-changed', () => {
     SOCIALBROWSER.youtubeMaster.resetQuality();
   });
-};
+

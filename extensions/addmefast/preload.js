@@ -1,4 +1,3 @@
-module.exports = function (SOCIALBROWSER) {
     SOCIALBROWSER.onLoad(() => {
         if (document.location.hostname.contains('youtube.com') && SOCIALBROWSER.customSetting.windowType === 'window-popup') {
             SOCIALBROWSER.subscribed_btn = null;
@@ -282,4 +281,4 @@ module.exports = function (SOCIALBROWSER) {
             });
         }
     });
-};
+

@@ -242,18 +242,8 @@ module.exports = function init(parent) {
           currentContent.popup.allow_external = default_content.popup.allow_external;
           currentContent.popup.allow_internal = default_content.popup.allow_internal;
 
-          default_content.white_list.forEach((d) => {
-            let exists = false;
-            currentContent.white_list.forEach((d2, i2) => {
-              if (d.url == d2.url) {
-                currentContent.white_list[i2] = d;
-                exists = true;
-              }
-            });
-            if (!exists) {
-              currentContent.white_list.push(d);
-            }
-          });
+          currentContent.white_list = default_content.white_list || [];
+
           default_content.black_list.forEach((d) => {
             let exists = false;
             currentContent.black_list.forEach((d2, i2) => {

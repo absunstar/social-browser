@@ -11,7 +11,7 @@
   if (res.logo) {
     res.logo = res.logo.getAttribute("href")
   } else {
-    res.logo = "http://127.0.0.1:60080/images/no.png"
+    res.logo = "browser://images/no.png"
   }
 
 

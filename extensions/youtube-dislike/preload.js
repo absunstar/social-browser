@@ -1,4 +1,3 @@
-module.exports = function (SOCIALBROWSER) {
   if (!document.location.hostname.like('*youtube.com*')) {
     return;
   }
@@ -12,4 +11,4 @@ module.exports = function (SOCIALBROWSER) {
       }
     }
   }, 1000 * 5);
-};
+

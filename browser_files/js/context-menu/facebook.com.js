@@ -1,4 +1,3 @@
-module.exports = function (SOCIALBROWSER) {
   if (SOCIALBROWSER.var.core.javaScriptOFF || !document.location.hostname.like('*facebook.com*')) {
     return;
   }
@@ -63,4 +62,4 @@ module.exports = function (SOCIALBROWSER) {
       init();
     });
   }
-};
+

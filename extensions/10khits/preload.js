@@ -1,4 +1,3 @@
-module.exports = function (SOCIALBROWSER) {
   if (!document.location.hostname.contains('10khits.com')) {
     return;
   }
@@ -69,4 +68,3 @@ module.exports = function (SOCIALBROWSER) {
       fake_hit(link);
     }
   });
-};

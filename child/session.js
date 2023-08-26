@@ -306,11 +306,15 @@ module.exports = function (child) {
     if (child.allowSessionHandle === true) {
       child.log(`\n\n [ Handle Session ......  ( ${name} ) ]  / ${child.session_name_list.length} \n\n `);
 
-      ss.protocol.registerHttpProtocol('browser', (request, callback) => {
-        let url = request.url.substr(10);
+  
+      ss.protocol.handle('browser', (req) => {
+        let url = req.url.substr(10);
         url = `http://127.0.0.1:60080/${url}`;
-        request.url = url;
-        callback(request);
+        return child.electron.net.fetch(url, {
+          method: req.method,
+          headers: req.headers,
+          body: req.body,
+        });
       });
 
       ss.webRequest.onBeforeRequest(filter, function (details, callback) {
@@ -422,7 +426,7 @@ module.exports = function (child) {
             if (url.like('*.js*|*/js*')) {
               callback({
                 cancel: false,
-                redirectURL: `browser://js/fake.js`,
+                redirectURL: 'browser://js/fake.js',
               });
             } else {
               callback({
@@ -434,7 +438,7 @@ module.exports = function (child) {
             if (url.like('*.js*|*/js*')) {
               callback({
                 cancel: false,
-                redirectURL: `browser://js/fake.js`,
+                redirectURL: 'browser://js/fake.js',
               });
             } else {
               callback({
@@ -665,7 +669,7 @@ module.exports = function (child) {
           });
           return;
         }
-        
+
         // custom header request
         child.parent.var.customHeaderList.forEach((r) => {
           if (r.type == 'response' && url.like(r.url)) {
@@ -685,8 +689,6 @@ module.exports = function (child) {
             });
           }
         });
-
-
 
         // must delete values before re set
 
@@ -734,7 +736,8 @@ module.exports = function (child) {
 
         if (s_policy && Array.isArray(s_policy)) {
           for (var key in s_policy) {
-            s_policy[key] = s_policy[key].replaceAll('data:  ', 'data:  http://127.0.0.1:60080 browser://* ');
+            s_policy[key] = s_policy[key].replaceAll('data:  ', 'data:  browser://* ');
+            s_policy[key] = s_policy[key].replaceAll('script-src ', 'script-src browser://* ');
           }
 
           // s_policy = JSON.stringify(s_policy);

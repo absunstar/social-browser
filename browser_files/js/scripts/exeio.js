@@ -1,4 +1,3 @@
-module.exports = function (SOCIALBROWSER) {
   if (SOCIALBROWSER.var.core.javaScriptOFF || !SOCIALBROWSER.var.blocking.social.allow_exeio) {
     return;
   }
@@ -83,4 +82,4 @@ module.exports = function (SOCIALBROWSER) {
       }, 1000 * 5);
     }
   });
-};
+

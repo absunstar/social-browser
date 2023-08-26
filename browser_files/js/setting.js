@@ -20,13 +20,9 @@ app.controller('mainController', ($scope, $http, $timeout) => {
   $scope.proxy = {};
   $scope.busy = true;
   $scope.setting_busy = true;
+  $scope.timezones = [...SOCIALBROWSER.timeZones];
+  $scope.timezones2 = [...SOCIALBROWSER.timeZones];
 
-  /*
-  SOCIALBROWSER.on('setting.session_list', (e, info) => {
-    console.log('from scope', info);
-    $scope.setting.session_list = info.data;
-  });
-*/
   SOCIALBROWSER.onVarUpdated = function (name, data) {
     if (name == 'proxy_list' || name == 'extension_list') {
       $scope.setting[name] = data;
@@ -58,7 +54,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         session.user_agent = $scope.setting.user_agent_list[SOCIALBROWSER.random(0, $scope.setting.user_agent_list.length - 1)];
       } else {
         SOCIALBROWSER.var.blocking.privacy.vpc = SOCIALBROWSER.generateVPC();
-        $scope.setting.blocking.privacy.vpc = SOCIALBROWSER.var.blocking.privacy.vpc;
+        $scope.setting.blocking.privacy.vpc = {...SOCIALBROWSER.var.blocking.privacy.vpc};
       }
     }
 
@@ -73,7 +69,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
       if (session) {
         session.privacy.enable_virtual_pc = false;
       } else {
-        $scope.setting.blocking.privacy.vpc = SOCIALBROWSER.var.blocking.privacy.vpc;
+        $scope.setting.blocking.privacy.vpc = {...SOCIALBROWSER.var.blocking.privacy.vpc};
       }
     }
 
@@ -388,8 +384,8 @@ app.controller('mainController', ($scope, $http, $timeout) => {
   };
 
   $scope.showSession = function (_se) {
-    console.log(_se);
     $scope.currentSession = _se;
+    $scope.$applyAsync();
     site.showModal('#usersOptionsModal');
   };
   $scope.showSessionsModal = function () {
@@ -562,10 +558,6 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         $scope.setting.blocking.privacy.vpc.memory_count = SOCIALBROWSER.navigator.deviceMemory;
       }
 
-      if ($scope.setting.blocking.privacy.vpc.mask_date !== true) {
-        $scope.setting.blocking.privacy.vpc.date_offset = [null, -300, -240, -180, -120, -60, 0, 60, 120, 180, 240, 300][SOCIALBROWSER.maxOf(SOCIALBROWSER.sessionId(), 11)];
-      }
-
       if ($scope.setting.blocking.privacy.vpc.hide_screen !== true) {
         $scope.setting.blocking.privacy.vpc.screen = SOCIALBROWSER.screen;
       }
@@ -597,9 +589,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         if (s.privacy.vpc.hide_lang !== true) {
           s.privacy.vpc.languages = $scope.setting.blocking.privacy.vpc.languages;
         }
-        if (s.privacy.vpc.mask_date !== true) {
-          s.privacy.vpc.date_offset = [null, -300, -240, -180, -120, -60, 0, 60, 120, 180, 240, 300][SOCIALBROWSER.maxOf(i, 11)];
-        }
+
         if (s.privacy.vpc.hide_screen !== true) {
           s.privacy.vpc.screen = $scope.setting.blocking.privacy.vpc.screen;
           s.privacy.screen_pixelDepth = $scope.setting.blocking.privacy.screen_pixelDepth;
@@ -635,6 +625,13 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         if (!site.username) {
           site.data.forEach((d, i) => {
             if (d.name == 'email') {
+              site.username = d.value;
+            }
+          });
+        }
+        if (!site.username) {
+          site.data.forEach((d, i) => {
+            if (d.name == 'identity') {
               site.username = d.value;
             }
           });
@@ -695,9 +692,6 @@ app.controller('mainController', ($scope, $http, $timeout) => {
       }
       if (s.privacy.vpc.hide_lang !== true) {
         s.privacy.vpc.languages = $scope.setting.blocking.privacy.vpc.languages;
-      }
-      if (s.privacy.vpc.mask_date !== true) {
-        s.privacy.vpc.date_offset = [-300, -240, -180, -120, -60, 0, 60, 120, 180, 240, 300][SOCIALBROWSER.maxOf(i, 10)];
       }
     });
 
@@ -923,12 +917,17 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     SOCIALBROWSER.openWindow({
       url: url,
       partition: 'x-ghost_' + Date.now(),
-      iframe : true,
+      iframe: true,
       allowMenu: true,
     });
   };
   $scope.copy = function (text) {
     SOCIALBROWSER.electron.clipboard.writeText(text);
+  };
+  $scope.showPassword = function (site) {
+    if ((elem = document.querySelector('#pass_' + site.id + ' input[type=password]'))) {
+      elem.setAttribute('type', 'text');
+    }
   };
   $scope.loadSetting();
 });

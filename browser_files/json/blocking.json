@@ -86,7 +86,6 @@
             "memory_count": 10,
             "cpu_count": 10,
             "languages": "en",
-            "date_offset": 0,
             "hide_touch_screen": false,
             "hide_plugins": true,
             "hide_mimetypes": true,
@@ -216,9 +215,6 @@
             },
             {
                 "url": "*linkedin.com*"
-            },
-            {
-                "url": "*127.0.0.1*"
             }
         ],
         "black_list": [],

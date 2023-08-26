@@ -50,14 +50,14 @@ let defaultTapProperties = {
   id: '',
   url: 'http://127.0.0.1:60080/newTab',
   title: null,
-  favicon: 'http://127.0.0.1:60080/images/loading-white.gif',
+  favicon: 'browser://images/loading-white.gif',
 };
 
 function getDefaultTapProperties() {
   if (SOCIALBROWSER.var.core.default_page) {
     defaultTapProperties.url = SOCIALBROWSER.var.core.default_page;
     if (SOCIALBROWSER.var.core.default_page == 'http://127.0.0.1:60080/newTab') {
-      defaultTapProperties.favicon = 'http://127.0.0.1:60080/images/logo.png';
+      defaultTapProperties.favicon = 'browser://images/logo.png';
     }
   }
 

@@ -49,7 +49,7 @@ module.exports = function init(child) {
     return data2;
   };
 
-  child.electron.ipcMain.on('[browser][data]', async (event , data) => {
+  child.electron.ipcMain.on('[browser][data]', async (event, data) => {
     try {
       let data2 = child.handleBrowserData(data);
       event.returnValue = data2;
@@ -519,6 +519,7 @@ module.exports = function init(child) {
     } else if (data.win_id) {
       let win = child.electron.BrowserWindow.fromId(data.win_id);
       win.webContents.zoomFactor = 1;
+      win.show();
     }
   });
 
@@ -527,7 +528,10 @@ module.exports = function init(child) {
       child.sendMessage({ type: '[window-zoom-]', data: data });
     } else if (data.win_id) {
       let win = child.electron.BrowserWindow.fromId(data.win_id);
-      win.webContents.zoomFactor -= 0.2;
+      if (win && win.webContents.zoomFactor - 0.3 > 0.0) {
+        win.webContents.zoomFactor -= 0.2;
+        win.show();
+      }
     }
   });
 
@@ -537,6 +541,7 @@ module.exports = function init(child) {
     } else if (data.win_id) {
       let win = child.electron.BrowserWindow.fromId(data.win_id);
       win.webContents.zoomFactor += 0.2;
+      win.show();
     }
   });
 

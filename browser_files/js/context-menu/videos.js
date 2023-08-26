@@ -1,4 +1,3 @@
-module.exports = function (SOCIALBROWSER) {
   if (SOCIALBROWSER.var.core.javaScriptOFF || !SOCIALBROWSER.var.blocking.core.skip_video_ads || document.location.host.like('*youtube.com*')) {
     return;
   }
@@ -86,4 +85,4 @@ module.exports = function (SOCIALBROWSER) {
       }
     }
   });
-};
+

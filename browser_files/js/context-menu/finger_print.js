@@ -1,4 +1,3 @@
-module.exports = function (SOCIALBROWSER) {
   // change readonly properties
   // https://hidester.com/browser-fingerprint/
 
@@ -116,28 +115,135 @@ module.exports = function (SOCIALBROWSER) {
       },
     });
   }
-  if (SOCIALBROWSER.session.privacy.vpc.mask_date) {
-    Date.prototype.getTimezoneOffset = function () {
-      return SOCIALBROWSER.session.privacy.vpc.date_offset;
-    };
-    Date.prototype.toString0 = Date.prototype.toString;
-    Date.prototype.toString = function () {
-      return this.toString0()
-        .replace('GMT+0200', 'GMT' + SOCIALBROWSER.session.privacy.vpc.date_offset)
-        .replace(/\((.*)\)/, ` ( ${SOCIALBROWSER.session.privacy.vpc.date_offset} )`);
-    };
-
-    window.Intl.DateTimeFormat.prototype.resolvedOptions = function () {
-      return {
-        calendar: 'gregory',
-        day: 'numeric',
-        locale: navigator.language,
-        month: 'numeric',
-        numberingSystem: 'latn',
-        timeZone: SOCIALBROWSER.session.privacy.vpc.date_offset.toString(),
-        year: 'numeric',
+  if (SOCIALBROWSER.session.privacy.vpc.mask_date && SOCIALBROWSER.session.privacy.vpc.timeZone) {
+    (function (o, acOffset) {
+      const gmtNeg = function (n) {
+        const _format = function (v) {
+          return (v < 10 ? '0' : '') + v;
+        };
+        return (n <= 0 ? '+' : '-') + _format((Math.abs(n) / 60) | 0) + _format(Math.abs(n) % 60);
       };
-    };
+
+      const GMT = function (n) {
+        const _format = function (v) {
+          return (v < 10 ? '0' : '') + v;
+        };
+        return (n <= 0 ? '-' : '+') + _format((Math.abs(n) / 60) | 0) + _format(Math.abs(n) % 60);
+      };
+
+      const resolvedOptions = Intl.DateTimeFormat().resolvedOptions();
+      const {
+        getDay,
+        getDate,
+        getYear,
+        getMonth,
+        getHours,
+        toString,
+        getMinutes,
+        getSeconds,
+        getFullYear,
+        toLocaleString,
+        getMilliseconds,
+        getTimezoneOffset,
+        toLocaleTimeString,
+        toLocaleDateString,
+      } = Date.prototype;
+
+      Object.defineProperty(Date.prototype, '_offset', {
+        configurable: true,
+        get() {
+          return getTimezoneOffset.call(this);
+        },
+      });
+      Object.defineProperty(Date.prototype, '_date', {
+        configurable: true,
+        get() {
+          return this._nd === undefined ? new Date(this.getTime() + (this._offset + o.offset * 60) * 60 * 1000) : this._nd;
+        },
+      });
+
+      Object.defineProperty(Date.prototype, 'getDay', {
+        value: function () {
+          return getDay.call(this._date);
+        },
+      });
+
+      Object.defineProperty(Date.prototype, 'getDate', {
+        value: function () {
+          return getDate.call(this._date);
+        },
+      });
+      Object.defineProperty(Date.prototype, 'getYear', {
+        value: function () {
+          return getYear.call(this._date);
+        },
+      });
+      Object.defineProperty(Date.prototype, 'getTimezoneOffset', {
+        value: function () {
+          return Number(o.offset * 60);
+        },
+      });
+      Object.defineProperty(Date.prototype, 'getMonth', {
+        value: function () {
+          return getMonth.call(this._date);
+        },
+      });
+      Object.defineProperty(Date.prototype, 'getHours', {
+        value: function () {
+          return getHours.call(this._date);
+        },
+      });
+      Object.defineProperty(Date.prototype, 'getMinutes', {
+        value: function () {
+          return getMinutes.call(this._date);
+        },
+      });
+      Object.defineProperty(Date.prototype, 'getSeconds', {
+        value: function () {
+          return getSeconds.call(this._date);
+        },
+      });
+      Object.defineProperty(Date.prototype, 'getFullYear', {
+        value: function () {
+          return getFullYear.call(this._date);
+        },
+      });
+
+      Object.defineProperty(Date.prototype, 'getMilliseconds', {
+        value: function () {
+          return getMilliseconds.call(this._date);
+        },
+      });
+      Object.defineProperty(Date.prototype, 'toLocaleString', {
+        value: function () {
+          return toLocaleString.call(this._date);
+        },
+      });
+      Object.defineProperty(Date.prototype, 'toLocaleTimeString', {
+        value: function () {
+          return toLocaleTimeString.call(this._date);
+        },
+      });
+      Object.defineProperty(Date.prototype, 'toLocaleDateString', {
+        value: function () {
+          return toLocaleDateString.call(this._date);
+        },
+      });
+
+      Object.defineProperty(Intl.DateTimeFormat.prototype, 'resolvedOptions', {
+        value: function () {
+          return Object.assign(resolvedOptions, { timeZone: o.text, locale: SOCIALBROWSER.session.privacy.vpc.languages });
+        },
+      });
+      Object.defineProperty(Date.prototype, 'toString', {
+        value: function () {
+          return toString
+            .call(this._date)
+            .replace(gmtNeg(acOffset), GMT(o.offset * 60))
+            .replace(/\(.*\)/, '(' + o.value + ')');
+        },
+      });
+    })(SOCIALBROWSER.session.privacy.vpc.timeZone, new Date().getTimezoneOffset());
   }
 
   if (SOCIALBROWSER.session.privacy.vpc.set_window_active) {
@@ -166,8 +272,22 @@ module.exports = function (SOCIALBROWSER) {
   }
 
   if (SOCIALBROWSER.session.privacy.vpc.block_rtc) {
-    window.webkitRTCPeerConnection = null;
-    window.RTCPeerConnection = null;
+    SOCIALBROWSER.webContents.setWebRTCIPHandlingPolicy('disable_non_proxied_udp');
+
+    navigator.getUserMedia = undefined;
+    window.MediaStreamTrack = undefined;
+    window.RTCPeerConnection = undefined;
+    window.RTCSessionDescription = undefined;
+
+    navigator.mozGetUserMedia = undefined;
+    window.mozMediaStreamTrack = undefined;
+    window.mozRTCPeerConnection = undefined;
+    window.mozRTCSessionDescription = undefined;
+
+    navigator.webkitGetUserMedia = undefined;
+    window.webkitMediaStreamTrack = undefined;
+    window.webkitRTCPeerConnection = undefined;
+    window.webkitRTCSessionDescription = undefined;
   }
   if (SOCIALBROWSER.session.privacy.vpc.hide_media_devices) {
     SOCIALBROWSER.navigator.mediaDevices = navigator.mediaDevices;
@@ -468,7 +588,7 @@ module.exports = function (SOCIALBROWSER) {
             latitude: SOCIALBROWSER.session.privacy.vpc.location.latitude,
             longitude: SOCIALBROWSER.session.privacy.vpc.location.longitude,
             altitude: null,
-            accuracy: 49,
+            accuracy: SOCIALBROWSER.random(50, 500),
             altitudeAccuracy: null,
             heading: null,
             speed: null,
@@ -520,4 +640,3 @@ module.exports = function (SOCIALBROWSER) {
     };
   }
   SOCIALBROWSER.log('.... [ Finger Printing ON ] .... ' + document.location.href);
-};

@@ -1,4 +1,3 @@
-module.exports = function (SOCIALBROWSER) {
   let mousemove = null;
 
   window.addEventListener('mousemove', (e) => {
@@ -130,4 +129,4 @@ module.exports = function (SOCIALBROWSER) {
     },
     true
   );
-};
+

@@ -1,4 +1,3 @@
-module.exports = function (SOCIALBROWSER) {
   if (!document.location.hostname.like('*wintub.com*')) {
     return;
   }
@@ -17,4 +16,4 @@ module.exports = function (SOCIALBROWSER) {
       }
     }
   });
-};
+

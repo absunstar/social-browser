@@ -1,4 +1,3 @@
-module.exports = function (SOCIALBROWSER) {
   if (!document.location.hostname.like('*rankboostup*')) {
     return;
   }
@@ -85,4 +84,4 @@ module.exports = function (SOCIALBROWSER) {
       }, 500);
     }
   });
-};
+

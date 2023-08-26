@@ -1,4 +1,3 @@
-module.exports = function (SOCIALBROWSER) {
   if (SOCIALBROWSER.var.core.javaScriptOFF) {
     return false;
   }
@@ -157,4 +156,4 @@ module.exports = function (SOCIALBROWSER) {
       }
     }
   }
-};
+

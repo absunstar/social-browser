@@ -1,4 +1,3 @@
-module.exports = function (SOCIALBROWSER) {
     if (document.location.hostname.like('*amazon.eg*')) {
         SOCIALBROWSER.log(' >>> marketing Extention activated : ' + document.location.href);
         SOCIALBROWSER.onLoad(() => {
@@ -17,4 +16,4 @@ module.exports = function (SOCIALBROWSER) {
             });
         });
     }
-};
+

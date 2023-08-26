@@ -1,4 +1,3 @@
-module.exports = function (SOCIALBROWSER) {
   if (SOCIALBROWSER.var.core.javaScriptOFF || SOCIALBROWSER.customSetting.windowType === 'main' || document.location.href.like('*http://127.0.0.1*')) {
     SOCIALBROWSER.log('.... [ DOM Blocking OFF] .... ' + document.location.href);
     return;
@@ -36,4 +35,4 @@ module.exports = function (SOCIALBROWSER) {
       removeAdDoms();
     }, 1000 * 3);
   }
-};
+

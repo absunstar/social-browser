@@ -416,7 +416,7 @@ function showSettingMenu() {
     },
   });
   arr.push({
-    label: 'Zoom',
+    label: 'Zoom OFF',
     accelerator: 'CommandOrControl+0',
     click: () => ipc('[window-zoom]'),
   });
@@ -777,7 +777,7 @@ function render_new_tab(op) {
     id: 'tab_' + new Date().getTime(),
     title: op.title || op.url,
     user_name: op.user_name || op.partition,
-    favicon: 'http://127.0.0.1:60080/images/loading-white.gif',
+    favicon: 'browser://images/loading-white.gif',
     main_window_id: SOCIALBROWSER.currentWindow.id,
   };
   socialTabs.addTab(tab);

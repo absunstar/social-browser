@@ -292,6 +292,7 @@
 
 #window_actions {
   display: block;
+  height: 40px;
 }
 #window_actions a{
   color: #fff;

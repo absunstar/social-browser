@@ -1,4 +1,3 @@
-module.exports = function (SOCIALBROWSER) {
   if (
     SOCIALBROWSER.var.core.javaScriptOFF ||
     !SOCIALBROWSER.var.blocking.allow_safty_mode ||
@@ -75,4 +74,4 @@ module.exports = function (SOCIALBROWSER) {
   document.addEventListener('DOMContentLoaded', () => {
     check_unsafe_words();
   });
-};
+

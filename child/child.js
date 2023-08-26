@@ -91,7 +91,7 @@ if (child.electron.app.setUserTasks) {
 // child.electron.app.commandLine.appendSwitch('disable-dev-shm-usage');
 // child.electron.app.commandLine.appendSwitch('no-sandbox');
 // child.electron.app.commandLine.appendSwitch('disable-gpu');
- child.electron.app.disableHardwareAcceleration();
+child.electron.app.disableHardwareAcceleration();
 
 //child.electron.app.commandLine.appendSwitch('disable-web-security');
 // child.electron.app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
@@ -101,12 +101,24 @@ if (child.electron.app.setUserTasks) {
 // child.allow_widevinecdm(app)
 child.mkdirSync(child.path.join(child.data_dir, child.uuid));
 child.electron.app.setPath('userData', child.path.join(child.data_dir, child.uuid));
-
+child.electron.protocol.registerSchemesAsPrivileged([
+  { scheme: 'browser', privileges: { bypassCSP: true, standard: true, secure: true, supportFetchAPI: true, allowServiceWorkers: true, corsEnabled: true, stream: true } },
+]);
 // child.mkdirSync(child.path.join(child.data_dir, 'sessionData', 'sessionData_' + 'default'));
 // child.electron.app.setPath('userData', child.path.join(child.data_dir, 'sessionData', 'sessionData_' + 'default'));
 child.electron.app.on('ready', function () {
   child.electron.globalShortcut.unregisterAll();
   child.electron.app.setAccessibilitySupportEnabled(false);
+
+  child.electron.protocol.handle('browser', (req) => {
+    let url = req.url.substr(10);
+    url = `http://127.0.0.1:60080/${url}`;
+    return child.electron.net.fetch(url, {
+      method: req.method,
+      headers: req.headers,
+      body: req.body,
+    });
+  });
 
   // child.electron.app.on('session-created', (session) => {
   //   child.log(`session-created`);
@@ -140,9 +152,8 @@ child.electron.app.on('ready', function () {
   });
 
   child.electron.app.on('login', (event, webContents, details, authInfo, callback) => {
-
     if (authInfo.isProxy) {
-       event.preventDefault();
+      event.preventDefault();
       let proxy = null;
       child.windowList.forEach((w) => {
         if (w.id2 == webContents.id) {
@@ -176,8 +187,7 @@ child.electron.app.on('ready', function () {
         child.log(proxy);
         return;
       }
-    }else{
-
+    } else {
     }
   });
 
@@ -224,11 +234,12 @@ child.electron.app.on('ready', function () {
             height: height,
           });
         } else {
+          let bounds = mainWindow.bounds;
           let new_bounds = {
-            x: mainWindow.isMaximized ? mainWindow.bounds.x + 8 : mainWindow.bounds.x,
-            y: mainWindow.isMaximized ? mainWindow.bounds.y + 78 : mainWindow.bounds.y + 70,
-            width: mainWindow.isMaximized ? mainWindow.bounds.width - 15 : mainWindow.bounds.width - 2,
-            height: mainWindow.isMaximized ? mainWindow.bounds.height - 84 : mainWindow.bounds.height - 72,
+            x: mainWindow.isMaximized ? bounds.x + child.offset.x : bounds.x,
+            y: mainWindow.isMaximized ? bounds.y + child.offset.y : bounds.y + child.offset.y2,
+            width: mainWindow.isMaximized ? bounds.width - child.offset.width : bounds.width - child.offset.width2,
+            height: mainWindow.isMaximized ? bounds.height - child.offset.height : bounds.height - child.offset.height2,
           };
           let old_bounds = win.getBounds();
           if (old_bounds.width != new_bounds.width || old_bounds.height != new_bounds.height || old_bounds.y != new_bounds.y || old_bounds.x != new_bounds.x) {

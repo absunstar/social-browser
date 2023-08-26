@@ -1,4 +1,3 @@
-module.exports = function (SOCIALBROWSER) {
   SOCIALBROWSER.log('.... [ Core Extention activated ] .... ' + document.location.href);
 
   if (SOCIALBROWSER.customSetting.windowSetting) {
@@ -16,4 +15,4 @@ module.exports = function (SOCIALBROWSER) {
       }
     });
   }
-};
+

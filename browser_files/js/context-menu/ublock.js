@@ -1,4 +1,3 @@
-module.exports = function (SOCIALBROWSER) {
   if (
     SOCIALBROWSER.customSetting.allowAds ||
     SOCIALBROWSER.var.core.javaScriptOFF ||
@@ -1248,4 +1247,4 @@ module.exports = function (SOCIALBROWSER) {
       window.google.ima = ima;
     }
   });
-};
+
