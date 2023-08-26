@@ -4,12 +4,7 @@ var currentTabId = null;
 var opendTabList = [];
 let $addressbar = $('.address-input .url');
 
-SOCIALBROWSER.on('user_downloads', (event, data) => {
-  if (typeof data.progress != 'undefined') {
-    data.progress = parseFloat(data.progress || 0);
-    SOCIALBROWSER.currentWindow.setProgressBar(data.progress || 0);
-  }
-});
+
 
 const updateOnlineStatus = () => {
   // console.log('Internet Status ' + navigator.onLine);

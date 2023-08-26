@@ -95,14 +95,14 @@ module.exports = function (parent) {
           proxyRules: proxyRules,
           proxyBypassRules: proxy.ignore || '127.0.0.1',
         }).then(() => {
-         // parent.log('Proxy Set : ' + proxyRules);
+          // parent.log('Proxy Set : ' + proxyRules);
         });
       } else if (proxy.mode == 'pac_script' && proxy.pacScript) {
         ss.setProxy({
           mode: proxy.mode,
           pacScript: proxy.pacScript,
         }).then(() => {
-         // parent.log('Proxy Set : ' + proxy.mode);
+          // parent.log('Proxy Set : ' + proxy.mode);
         });
       } else {
         ss.setProxy({
@@ -115,7 +115,7 @@ module.exports = function (parent) {
       ss.setProxy({
         mode: 'system',
       }).then(() => {
-       // parent.log('Default Proxy Set :system ');
+        // parent.log('Default Proxy Set :system ');
       });
     }
 
@@ -509,22 +509,19 @@ module.exports = function (parent) {
       }
 
       parent.var.download_list.push(dl);
-      parent.set_var('download_list', parent.var.download_list);
 
       parent.api.on('pause-item', (info) => {
         if (item.id == info.id) {
           item.pause();
           dl.status = 'paused';
           dl.path = item.getSavePath();
-          parent.sendToAll({ type: '$download_item', data: dl });
         }
       });
 
       parent.api.on('remove-item', (info) => {
+        info.status = 'delete';
         if (item.id === info.id) {
           item.cancel();
-          dl.status = 'cancel';
-          parent.sendToAll({ type: '$download_item', data: dl });
         }
       });
 
@@ -534,7 +531,6 @@ module.exports = function (parent) {
             item.resume();
             dl.status = 'downloading';
             dl.path = item.getSavePath();
-            parent.sendToAll({ type: '$download_item', data: dl });
           }
         }
       });
@@ -567,7 +563,6 @@ module.exports = function (parent) {
             dl.status = 'downloading';
           }
         }
-        parent.sendToAll({ type: '$download_item', data: dl });
       });
 
       item.once('done', (event, state) => {
@@ -583,8 +578,6 @@ module.exports = function (parent) {
           dl.status = 'completed';
           dl.path = item.getSavePath();
 
-          parent.set_var('download_list', parent.var.download_list);
-          parent.sendToAll({ type: '$download_item', data: dl });
 
           let _path = item.getSavePath();
           let _url = item.getURL().replace('#___new_tab___', '').replace('#___new_popup__', '').replace('#___trusted_window___', '');
@@ -615,8 +608,6 @@ module.exports = function (parent) {
           dl.status = state;
           dl.path = item.getSavePath();
 
-          parent.set_var('download_list', parent.var.download_list);
-          parent.sendToAll({ type: '$download_item', data: dl });
         }
       });
     });

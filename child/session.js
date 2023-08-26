@@ -306,7 +306,6 @@ module.exports = function (child) {
     if (child.allowSessionHandle === true) {
       child.log(`\n\n [ Handle Session ......  ( ${name} ) ]  / ${child.session_name_list.length} \n\n `);
 
-  
       ss.protocol.handle('browser', (req) => {
         let url = req.url.substr(10);
         url = `http://127.0.0.1:60080/${url}`;
@@ -821,26 +820,32 @@ module.exports = function (child) {
       });
 
       ss.on('will-download', (event, item, webContents) => {
-        if ((w = child.windowList.find((w) => w.id2 === webContents.id))) {
-          if (!w.customSetting.allowDownload) {
-            console.log('Download OFF');
-            return;
+        if (webContents) {
+          if ((w = child.windowList.find((w) => w.id2 === webContents.id))) {
+            if (!w.customSetting.allowDownload) {
+              console.log('Download OFF');
+              return;
+            }
           }
         }
+
         let dl = {
           id: new Date().getTime(),
           date: new Date(),
-          total: item.getTotalBytes(),
-          received: item.getReceivedBytes(),
-          name: item.getFilename().replace('#___new_tab___', '').replace('#___new_popup__', '').replace('#___trusted_window___', ''),
-          path: item.getSavePath(),
-          url: item.getURL().replace('#___new_tab___', '').replace('#___new_popup__', '').replace('#___trusted_window___', ''),
-          canResume: item.canResume(),
-          type: item.getMimeType(),
           status: 'waiting',
           Partition: name,
           item: item,
+          canResume: item.canResume(),
+          urlChain: item.getURLChain(),
+          path: item.getSavePath(),
+          name: item.getFilename(),
+          mimeType: item.getMimeType(),
+          length: item.getTotalBytes(),
+          eTag: item.getETag(),
+          startTime: item.getStartTime(),
+          lastModified: item.getLastModifiedTime(),
         };
+
         let ok = false;
         if (child.parent.var.blocking.downloader.enabled && dl.url.indexOf('127.0.0.1') === -1 && dl.url.indexOf('blob') !== 0) {
           child.parent.var.blocking.downloader.apps.forEach((app) => {
@@ -865,82 +870,86 @@ module.exports = function (child) {
         }
 
         child.parent.var.download_list.push(dl);
+        child.sendMessage({ type: '$download_item', data: dl });
 
         item.on('updated', (event, state) => {
           if (!item.getSavePath()) {
             return;
           }
+          let index = child.parent.var.download_list.findIndex((d) => d.id == dl.id);
+          if (index !== -1) {
+            child.parent.var.download_list[index].canResume = item.canResume();
+            child.parent.var.download_list[index].urlChain = item.getURLChain();
+            child.parent.var.download_list[index].path = item.getSavePath();
+            child.parent.var.download_list[index].name = item.getFilename();
+            child.parent.var.download_list[index].mimeType = item.getMimeType();
+            child.parent.var.download_list[index].length = item.getTotalBytes();
+            child.parent.var.download_list[index].eTag = item.getETag();
+            child.parent.var.download_list[index].startTime = item.getStartTime();
+            child.parent.var.download_list[index].lastModified = item.getLastModifiedTime();
 
-          if (state === 'interrupted') {
-            dl.status = 'error';
-            dl.canResume = item.canResume();
-            dl.type = item.getMimeType();
-            dl.path = item.getSavePath();
-            dl.name = item.getFilename();
-          } else if (state === 'progressing') {
-            if (item.isPaused()) {
-              dl.status = 'paused';
-              dl.type = item.getMimeType();
-              dl.path = item.getSavePath();
-              dl.name = item.getFilename();
-              dl.canResume = item.canResume();
-            } else {
-              dl.type = item.getMimeType();
-              dl.path = item.getSavePath();
-              dl.name = item.getFilename();
-              dl.canResume = item.canResume();
-              dl.total = item.getTotalBytes();
-              dl.received = item.getReceivedBytes();
-              dl.status = 'downloading';
+            if (state === 'interrupted') {
+              child.parent.var.download_list[index].status = 'error';
+            } else if (state === 'progressing') {
+              child.parent.var.download_list[index].total = item.getTotalBytes();
+              child.parent.var.download_list[index].received = item.getReceivedBytes();
+              if (item.isPaused()) {
+                child.parent.var.download_list[index].status = 'paused';
+              } else {
+                child.parent.var.download_list[index].status = 'downloading';
+              }
             }
+            child.sendMessage({ type: '$download_item', data: child.parent.var.download_list[index] });
           }
-          child.sendMessage({ type: '$download_item', data: dl });
         });
 
         item.once('done', (event, state) => {
           if (!item.getSavePath()) {
             return;
           }
-          if (state === 'completed') {
-            dl.name = item.getFilename();
-            dl.type = item.getMimeType();
-            dl.total = item.getTotalBytes();
-            dl.canResume = item.canResume();
-            dl.received = item.getReceivedBytes();
-            dl.status = 'completed';
-            dl.path = item.getSavePath();
+          let index = child.parent.var.download_list.findIndex((d) => d.id == dl.id);
+          if (index !== -1) {
+            if (state === 'completed') {
+              child.parent.var.download_list[index].name = item.getFilename();
+              child.parent.var.download_list[index].type = item.getMimeType();
+              child.parent.var.download_list[index].total = item.getTotalBytes();
+              child.parent.var.download_list[index].canResume = item.canResume();
+              child.parent.var.download_list[index].received = item.getReceivedBytes();
+              child.parent.var.download_list[index].status = 'completed';
+              child.parent.var.download_list[index].path = item.getSavePath();
 
-            child.sendMessage({ type: '$download_item', data: dl });
+              child.sendMessage({ type: '$download_item', data: child.parent.var.download_list[index] });
 
-            let _path = item.getSavePath();
-            let _url = item.getURL().replace('#___new_tab___', '').replace('#___new_popup__', '').replace('#___trusted_window___', '');
+              let _path = item.getSavePath();
+              let _url = item.getURL();
 
-            child.dialog
-              .showMessageBox({
-                title: 'Download Complete',
-                type: 'info',
-                buttons: ['Open File', 'Open Folder', 'Close'],
-                message: `Saved URL \n ${_url} \n To \n ${_path} `,
-              })
-              .then((result) => {
-                child.shell.beep();
-                if (result.response == 1) {
-                  child.shell.showItemInFolder(_path);
-                }
-                if (result.response == 0) {
-                  child.shell.openPath(_path);
-                }
-              });
-          } else {
-            dl.name = item.getFilename();
-            dl.type = item.getMimeType();
-            dl.total = item.getTotalBytes();
-            dl.canResume = item.canResume();
-            dl.received = item.getReceivedBytes();
-            dl.status = state;
-            dl.path = item.getSavePath();
+              child.dialog
+                .showMessageBox({
+                  title: 'Download Complete',
+                  type: 'info',
+                  buttons: ['Open File', 'Open Folder', 'Close'],
+                  message: `Saved URL \n ${_url} \n To \n ${_path} `,
+                })
+                .then((result) => {
+                  child.shell.beep();
+                  if (result.response == 1) {
+                    child.shell.showItemInFolder(_path);
+                  }
+                  if (result.response == 0) {
+                    child.shell.openPath(_path);
+                  }
+                });
+            } else {
+              child.parent.var.download_list[index].name = item.getFilename();
+              child.parent.var.download_list[index].type = item.getMimeType();
+              child.parent.var.download_list[index].total = item.getTotalBytes();
+              child.parent.var.download_list[index].canResume = item.canResume();
+              child.parent.var.download_list[index].received = item.getReceivedBytes();
+              child.parent.var.download_list[index].status = state;
+              child.parent.var.download_list[index].path = item.getSavePath();
 
-            child.sendMessage({ type: '$download_item', data: dl });
+              child.sendMessage({ type: '$download_item', data: child.parent.var.download_list[index] });
+            }
           }
         });
       });

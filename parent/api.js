@@ -24,7 +24,7 @@ module.exports = function init(parent) {
         enabled: true,
       },
     },
-    session:{
+    session: {
       enabled: false,
     },
     security: {
@@ -368,32 +368,70 @@ module.exports = function init(parent) {
   parent.api.onGET('/api/download_list', (req, res) => {
     res.json({
       done: true,
-      list: parent.handleObject([...parent.var.download_list]),
+      list: parent.var.download_list,
     });
   });
   parent.api.onPOST('/api/download_list/pause-item', (req, res) => {
-    parent.api.call('pause-item', req.data);
-    res.json({ done: true });
+    let index = parent.var.download_list.findIndex((d) => d.id == req.data.id);
+    if (index !== -1) {
+      parent.var.download_list[index].status = 'pause';
+      parent.sendToAll({ type: '$download_item', data: parent.var.download_list[index] });
+      parent.var.download_list.splice(index, 1);
+      res.json({ done: true });
+    } else {
+      req.data.status = 'pause';
+      parent.var.download_list.push(req.data);
+      parent.sendToAll({ type: '$download_item', data: req.data });
+      res.json({ done: false });
+    }
+    parent.set_var('download_list', parent.var.download_list);
   });
 
   parent.api.onPOST('/api/download_list/remove-item', (req, res) => {
-    parent.api.call('remove-item', req.data);
-    parent.var.download_list.forEach((d, i) => {
-      if (d.id == req.data.id) {
-        parent.var.download_list.splice(i, 1);
-        parent.set_var('download_list', parent.var.download_list);
-      }
-    });
-    res.json({ done: true });
+    let index = parent.var.download_list.findIndex((d) => d.id == req.data.id);
+    if (index !== -1) {
+      parent.var.download_list[index].status = 'delete';
+      parent.sendToAll({ type: '$download_item', data: parent.var.download_list[index] });
+      parent.var.download_list.splice(index, 1);
+      res.json({ done: true });
+    } else {
+      req.data.status = 'delete';
+      parent.var.download_list.push(req.data);
+      parent.sendToAll({ type: '$download_item', data: req.data });
+      res.json({ done: false });
+    }
+    parent.set_var('download_list', parent.var.download_list);
   });
   parent.api.onPOST('/api/download_list/redownload-item', (req, res) => {
-    parent.electron.session.fromPartition(req.data.Partition).createInterruptedDownload(req.data);
-    res.json({ done: true });
+    let index = parent.var.download_list.findIndex((d) => d.id == req.data.id);
+    if (index !== -1) {
+      parent.var.download_list[index].status = 're-download';
+      parent.sendToAll({ type: '$download_item', data: parent.var.download_list[index] });
+      parent.var.download_list.splice(index, 1);
+      res.json({ done: true });
+    } else {
+      req.data.status = 're-download';
+      parent.var.download_list.push(req.data);
+      parent.sendToAll({ type: '$download_item', data: req.data });
+      res.json({ done: false });
+    }
+    parent.set_var('download_list', parent.var.download_list);
   });
 
   parent.api.onPOST('/api/download_list/resume-item', (req, res) => {
-    parent.api.call('resume-item', req.data);
-    res.json({ done: true });
+    let index = parent.var.download_list.findIndex((d) => d.id == req.data.id);
+    if (index !== -1) {
+      parent.var.download_list[index].status = 'resume';
+      parent.sendToAll({ type: '$download_item', data: parent.var.download_list[index] });
+      parent.var.download_list.splice(index, 1);
+      res.json({ done: true });
+    } else {
+      req.data.status = 'resume';
+      parent.var.download_list.push(req.data);
+      parent.sendToAll({ type: '$download_item', data: req.data });
+      res.json({ done: false });
+    }
+    parent.set_var('download_list', parent.var.download_list);
   });
 
   let export_busy = false;

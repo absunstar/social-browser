@@ -5,33 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Downloads</title>
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/font-awesome.css" />
+    <link rel="stylesheet" href="http://127.0.0.1:60080/x-css/bootstrap-5-support.css" />
     <link rel="stylesheet" href="http://127.0.0.1:60080/css/downloads.css" />
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/color.css" />
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/effect.css" />
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/layout.css" />
   </head>
 
   <body ng-controller="mainController">
     <h1 class="center">Downloads</h1>
-
+    <a ng-show="download_list.length > 2" class="btn bg-red white" ng-click="deleteAll(d)"> Delete All </a>
     <div class="downloads">
       <div class="item" ng-repeat="d in download_list | orderBy:'-date'">
         <div class="row">
-          <a class="btn" ng-click="redownload(d)"> Re-Download </a>
-          <a class="btn" ng-click="copyLink(d)"> Copy Link </a>
+          <a class="btn" ng-click="copyLink(d)"> Copy Downloading Link </a>
           <a class="btn bg-red white bold" ng-click="remove(d)"> <i class="fa fa-trash"></i> Delete </a>
           <span class="item-date"> {{d.date | date:' yyyy-MM-dd HH:mm:ss '}} </span>
           <a ng-show="d.status === 'completed'" class="btn" ng-click="openFolder(d)"> Open Folder </a>
           <a ng-show="d.status === 'completed'" class="btn" ng-click="openFile(d)"> Open File </a>
           <a ng-show="d.status === 'downloading'" class="btn" ng-click="pause(d)"> Pause </a>
-          <a ng-show="d.status === 'paused'" class="btn" ng-click="resume(d)"> Resume </a>
+          <a ng-show="d.status === 'paused' || d.status === 'pause'" class="btn" ng-click="resume(d)"> Resume </a>
         </div>
         <div class="row">
           <p title="{{d.url}}" class="item-name">
             {{d.name}}
-            <small class=""> [ {{d.type}} ] </small>
-            <small class=""> ( {{d.status}} ) </small>
+            <small class="bold blue"> [ {{d.mimeType}} ] </small>
+            <small class="bold green"> ( {{d.status}} ) </small>
           </p>
 
           <p class="item-path">
@@ -45,7 +41,7 @@
         </div>
       </div>
     </div>
-    <script src="http://127.0.0.1:60080/js/an.min.js"></script>
+    <script src="http://127.0.0.1:60080/x-js/bootstrap-5-support.js"></script>
     <script>
       var app = angular.module('myApp', []);
       app.controller('mainController', function ($scope, $http, $interval) {
@@ -84,7 +80,11 @@
             data: item,
           });
         };
-
+        $scope.deleteAll = function () {
+          $scope.download_list.forEach((dl) => {
+            $scope.remove(dl);
+          });
+        };
         $scope.openFile = function (item) {
           if (item.path) {
             SOCIALBROWSER.electron.shell.openExternal(item.path);
@@ -113,13 +113,18 @@
         $scope.loadDownloads();
 
         SOCIALBROWSER.on('$download_item', (e, dl) => {
-          $scope.download_list.forEach((d) => {
-            if (d.id == dl.id) {
-              d.status = dl.status;
-              d.received = dl.received;
-              d.total = dl.total;
+          let index = $scope.download_list.findIndex((d) => d.id == dl.id);
+          if (index !== -1) {
+            if (dl.status == 'delete') {
+              $scope.download_list.splice(index, 1);
+            } else {
+              $scope.download_list[index] = { ...$scope.download_list[index], ...dl };
             }
-          });
+            $scope.$applyAsync();
+          } else {
+            $scope.download_list.push(dl);
+          }
+          $scope.$applyAsync();
         });
       });
     </script>

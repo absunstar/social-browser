@@ -489,6 +489,17 @@ module.exports = function init(parent) {
                   },
                 });
               }
+            } else if (name == 'download_list') {
+              if (client.windowType == 'files') {
+                parent.log(`update private var ( ${name} ) to client : ${client.uuid}`);
+                client.ws.send({
+                  type: '[update-browser-var]',
+                  options: {
+                    name: name,
+                    data: parent.var[name],
+                  },
+                });
+              }
             } else if (name.contains('__cookies_')) {
               if (client.windowType == 'files') {
                 client.ws.send({

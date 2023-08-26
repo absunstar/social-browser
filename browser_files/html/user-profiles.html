@@ -11,6 +11,7 @@
     <style>
       :root {
         --input-focus-border-color: #030303;
+        --btn-min-width : 50px;
       }
       body {
         font-size: 12px;
@@ -75,22 +76,28 @@
         </div>
       </fieldset>
     </div>
-
+    <br />
     <div class="row">
       <div class="row" ng-repeat="_se in setting.session_list | filter:session track by $index ">
+       <div class="col-10">
         <div class="user-box" ng-click="selectSession(_se)">
-          <img ng-src="browser://images/user.png" />
+          <img src="http://127.0.0.1:60080/images/user.png" />
           <p><span class="blue"> ( {{$index + 1}} ) </span> {{_se.display}}</p>
         </div>
+       </div>
+       <div class="col-2">
+        <i-button type="delete" ng-click="removeSession(_se)"></i-button>
+       </div>
+        
       </div>
     </div>
-
+    <br />
     <div class="row padding margin">
       <fieldset>
         <legend>New Profile Name</legend>
         <div class="row">
           <input class="block" type="text" ng-model="session.display" />
-          <a ng-click="addSession()" class="btn white"> <i class="fa fa-plus"></i> Create </a>
+          <i-button type="add" ng-click="addSession()" label="Create"></i-button>
         </div>
       </fieldset>
     </div>

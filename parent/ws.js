@@ -270,6 +270,14 @@ module.exports = function init(parent) {
           });
           break;
         case '$download_item':
+          let index = parent.var.download_list.findIndex((d) => d.id == message.data.id);
+          if (index !== -1) {
+            parent.var.download_list[index] = { ...parent.var.download_list[index], ...message.data };
+          } else {
+            parent.var.download_list.push(message.data);
+          }
+          parent.set_var('download_list', parent.var.download_list);
+          
           parent.clientList.forEach((client) => {
             if (client.ws) {
               client.ws.send(message);

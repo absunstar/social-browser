@@ -54,7 +54,6 @@ app.controller('mainController', ($scope, $http, $interval, $timeout) => {
       }
       $scope.session.can_delete = true;
       $scope.setting.session_list.push($scope.session);
-      $scope.session = {};
       $scope.saveSessions();
     }
   };
@@ -65,6 +64,7 @@ app.controller('mainController', ($scope, $http, $interval, $timeout) => {
         $scope.setting.session_list.splice(i, 1);
       }
     });
+    $scope.saveSetting();
   };
 
   $scope.loadSetting = function () {
@@ -79,7 +79,7 @@ app.controller('mainController', ($scope, $http, $interval, $timeout) => {
     $scope.saveSetting();
   };
 
-  $scope.saveSetting = function (close) {
+  $scope.saveSetting = function () {
     SOCIALBROWSER.call('[update-browser-var]', {
       name: 'core',
       data: $scope.setting.core,
@@ -88,10 +88,6 @@ app.controller('mainController', ($scope, $http, $interval, $timeout) => {
       name: 'session_list',
       data: $scope.setting.session_list,
     });
-    if (close) {
-      window.close();
-      return false;
-    }
   };
 
   $scope.loadSetting();

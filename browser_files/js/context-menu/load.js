@@ -241,7 +241,15 @@ if (SOCIALBROWSER.var.blocking.javascript.block_eval) {
 }
 
 SOCIALBROWSER.on('$download_item', (e, dl) => {
-  SOCIALBROWSER.showDownloads(` ${dl.status} ${((dl.received / dl.total) * 100).toFixed(2)} %  ${dl.name} ( ${(dl.received / 1000000).toFixed(2)} MB / ${(dl.total / 1000000).toFixed(2)} MB )`);
+  if (dl.status === 'delete') {
+    SOCIALBROWSER.showDownloads();
+  } else {
+    SOCIALBROWSER.showDownloads(` ${dl.status} ${((dl.received / dl.total) * 100).toFixed(2)} %  ${dl.name} ( ${(dl.received / 1000000).toFixed(2)} MB / ${(dl.total / 1000000).toFixed(2)} MB )`);
+    if (typeof dl.progress != 'undefined') {
+      dl.progress = parseFloat(dl.progress || 0);
+      SOCIALBROWSER.currentWindow.setProgressBar(dl.progress || 0);
+    }
+  }
 });
 SOCIALBROWSER.on('found-in-page', (event, data) => {
   if (data.win_id == SOCIALBROWSER.currentWindow.id) {
@@ -259,9 +267,6 @@ SOCIALBROWSER.on('[send-render-message]', (event, data) => {
   }
 });
 
-SOCIALBROWSER.on('user_downloads', (event, data) => {
-  showDownloads(data.message, data.class);
-});
 SOCIALBROWSER.on('show_message', (event, data) => {
   alert(data.message);
 });

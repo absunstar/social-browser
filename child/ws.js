@@ -54,7 +54,7 @@ module.exports = function (child) {
                   child.save_var(child.save_var_quee.shift());
                 }
               }, 1000 * 5);
-            }, 1000 * 60 * 10);
+            }, 1000 * 60 * 1);
           } else if (child.parent.windowType == 'main') {
             if (child.mainWindow && !child.mainWindow.isDestroyed()) {
               child.mainWindow.show();
@@ -143,34 +143,52 @@ module.exports = function (child) {
               w.window.webContents.send('[open new tab]', message.data);
             }
           });
-        } else if (message.type == 'pause-item') {
-          child.parent.var.download_list.forEach((dl) => {
-            if (dl.id == info.id) {
-              dl.item.pause();
-              dl.status = 'paused';
-              dl.path = item.getSavePath();
-              child.sendMessage({ type: '$download_item', data: dl });
-            }
-          });
-        } else if (message.type == 'remove-item') {
-          child.parent.var.download_list.forEach((dl, i) => {
-            if (dl.id == info.id) {
-              dl.item.cancel();
-              dl.status = 'cancel';
-              child.sendMessage({ type: '$download_item', data: dl });
-            }
-          });
-        } else if (message.type == 'resume-item') {
-          child.parent.var.download_list.forEach((dl, i) => {
-            if (dl.id == info.id) {
-              if (dl.item.canResume()) {
-                dl.item.resume();
-                dl.status = 'downloading';
-                dl.path = item.getSavePath();
-                child.sendMessage({ type: '$download_item', data: dl });
+        } else if (message.type == '$download_item') {
+          let index = child.parent.var.download_list.findIndex((dl) => dl.id == message.data.id);
+          if (index !== -1) {
+            if (message.data.status == 'delete') {
+              if (child.parent.var.download_list[index].item && child.parent.var.download_list[index].item.cancel) {
+                child.parent.var.download_list[index].item.cancel();
               }
+              child.windowList.forEach((w) => {
+                w.window.webContents.send('$download_item', message.data);
+              });
+              child.parent.var.download_list.splice(index, 1);
+            } else if (message.data.status == 'pause') {
+              if (child.session_name_list.some((s) => s.name === message.data.Partition) && child.parent.var.download_list[index].item && child.parent.var.download_list[index].item.pause) {
+                child.parent.var.download_list[index].item.pause();
+              }
+              child.windowList.forEach((w) => {
+                w.window.webContents.send('$download_item', message.data);
+              });
+              child.parent.var.download_list.splice(index, 1);
+            } else if (message.data.status == 'resume') {
+              if (child.session_name_list.some((s) => s.name === message.data.Partition) && child.parent.var.download_list[index].item && child.parent.var.download_list[index].item.canResume()) {
+                child.parent.var.download_list[index].item.resume();
+              }
+              child.windowList.forEach((w) => {
+                w.window.webContents.send('$download_item', message.data);
+              });
+              child.parent.var.download_list.splice(index, 1);
+            } else if (message.data.status == 're-download') {
+              if (child.session_name_list.some((s) => s.name === message.data.Partition)) {
+                if (message.data.url) {
+                  child.electron.session.fromPartition(message.data.Partition).downloadURL(message.data.url);
+                }
+              }
+              child.windowList.forEach((w) => {
+                w.window.webContents.send('$download_item', message.data);
+              });
+              child.parent.var.download_list.splice(index, 1);
+            } else {
+              child.parent.var.download_list[index] = { ...child.parent.var.download_list[index], ...message.data };
+              child.windowList.forEach((w) => {
+                w.window.webContents.send('$download_item', child.parent.var.download_list[index]);
+              });
             }
-          });
+          } else {
+            child.parent.var.download_list.push(message.data);
+          }
         } else if (message.type == '[add-window-url]') {
           let index = child.parent.var.urls.findIndex((u) => u.url == message.url);
           if (index > -1) {
