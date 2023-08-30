@@ -1104,7 +1104,7 @@
                 <div class="row">
                   <fieldset>
                     <legend>New Site Password</legend>
-                    <i-control label="Host Name" ng-model="userDataInput.hostname"></i-control>
+                    <i-control label="Site Name" ng-model="userDataInput.hostname"></i-control>
                     <i-control label="User Name" ng-model="userDataInput.username"></i-control>
                     <i-control label="User Password" ng-model="userDataInput.password"></i-control>
                     <i-button type="add" ng-click="add_user_data_input(userDataInput)" label="Add to Passwords"></i-button>
@@ -1114,7 +1114,7 @@
                 <table class="table hover">
                   <tr>
                     <th>( {{setting.user_data_input.length}} ) Index</th>
-                    <th>Host Name <i-control ng-model="site2.hostname"></i-control></th>
+                    <th>Site Name <i-control ng-model="site2.hostname"></i-control></th>
                     <th>User Name <i-control ng-model="site2.username"></i-control></th>
                     <th>Password <i-control ng-model="site2.password"></i-control></th>
                   </tr>
@@ -1160,7 +1160,7 @@
                 <table class="table hover">
                   <tr>
                     <th>Index ( {{setting.user_data.length}} )</th>
-                    <th>Host Name <i-control ng-model="user_data_host"></i-control></th>
+                    <th>Site Name <i-control ng-model="user_data_host"></i-control></th>
                     <th>Data</th>
                   </tr>
                   <tr ng-repeat="site in setting.user_data  | filter : {hostname : user_data_host} | limitTo:200 track by $index">
