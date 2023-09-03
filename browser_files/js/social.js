@@ -4,8 +4,6 @@ var currentTabId = null;
 var opendTabList = [];
 let $addressbar = $('.address-input .url');
 
-
-
 const updateOnlineStatus = () => {
   // console.log('Internet Status ' + navigator.onLine);
   SOCIALBROWSER.call('online-status', navigator.onLine ? { status: true } : { status: false });
@@ -786,8 +784,6 @@ SOCIALBROWSER.on('[send-render-message]', (event, data) => {
   renderMessage(data);
 });
 SOCIALBROWSER.on('[update-tab-properties]', (event, data) => {
-  console.log('[update-tab-properties]', data);
-
   if (data.tab_id && data.url) {
     $('#' + data.tab_id).attr('url', data.url);
   }
@@ -1040,14 +1036,24 @@ SOCIALBROWSER.on('show-tab-view', (data) => {
 SOCIALBROWSER.currentWindow.maximize();
 SOCIALBROWSER.currentWindow.show();
 
-document.querySelector('#img').addEventListener('click', () => {
-  $('#' + currentTabId).click();
+SOCIALBROWSER.tabBusy = false;
+SOCIALBROWSER.clickCurrentTab = function () {
+  if (!SOCIALBROWSER.tabBusy) {
+    SOCIALBROWSER.tabBusy = true;
+    $('#' + currentTabId).click();
+    setTimeout(() => {
+      SOCIALBROWSER.tabBusy = false;
+    }, 500);
+  }
+};
+document.querySelector('#body').addEventListener('click', () => {
+  SOCIALBROWSER.clickCurrentTab();
 });
-document.querySelector('#img').addEventListener('mouseover', () => {
-  $('#' + currentTabId).click();
+document.querySelector('#body').addEventListener('mouseover', () => {
+  SOCIALBROWSER.clickCurrentTab();
 });
-document.querySelector('#img').addEventListener('mousemove', () => {
-  $('#' + currentTabId).click();
+document.querySelector('#body').addEventListener('mousemove', () => {
+  SOCIALBROWSER.clickCurrentTab();
 });
 
 if (SOCIALBROWSER.var.core.id.like('*test*')) {

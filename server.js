@@ -121,22 +121,16 @@
     });
   } else {
     browser.createChildProcess({
-      url: browser.url.format({
-        pathname: browser.path.join(browser.files_dir, 'html', 'main-window.html'),
-        protocol: 'file:',
-        slashes: true,
-      }),
+      url: 'http://127.0.0.1:60080/home',
       windowType: 'main',
       partition: 'persist:social',
     });
   }
 
-
-    browser.createChildProcess({
-      windowType: 'files',
-      partition: 'persist:file',
-    });
- 
+  browser.createChildProcess({
+    windowType: 'files',
+    partition: 'persist:file',
+  });
 
   browser.electron.app.setAppUserModelId('Social.Browser');
   browser.electron.Menu.setApplicationMenu(null);
@@ -150,10 +144,22 @@
   // browser.electron.app.commandLine.appendSwitch('no-sandbox');
   // browser.electron.app.commandLine.appendSwitch('in-process-gpu');
   browser.electron.app.disableHardwareAcceleration();
+  browser.electron.protocol.registerSchemesAsPrivileged([
+    { scheme: 'browser', privileges: { bypassCSP: true, standard: true, secure: true, supportFetchAPI: true, allowServiceWorkers: true, corsEnabled: true, stream: true } },
+  ]);
   /* App Ready */
   browser.electron.app.on('ready', function () {
     browser.webContent = browser.electron.webContents.create({
       contextIsolation: false,
+    });
+    browser.electron.protocol.handle('browser', (req) => {
+      let url = req.url.substr(10);
+      url = url.replace('browser://', 'http://127.0.0.1:60080/');
+      return browser.electron.net.fetch(url, {
+        method: req.method,
+        headers: req.headers,
+        body: req.body,
+      });
     });
     // browser.webContentList = [];
     // for (let index = 0; index < 100; index++) {
@@ -227,11 +233,7 @@
     };
 
     browser.createChildProcess({
-      url: browser.url.format({
-        pathname: browser.path.join(browser.files_dir, 'html', 'main-window.html'),
-        protocol: 'file:',
-        slashes: true,
-      }),
+      url: 'http://127.0.0.1:60080/home',
       windowType: 'main',
       partition: 'persist:social',
     });

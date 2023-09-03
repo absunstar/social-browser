@@ -1,12 +1,60 @@
-const electron = require('electron');
-const remote = require('@electron/remote');
+window.electron = require('electron');
+window.remote = require('@electron/remote');
 
 window.print = function (options) {
   console.log('window.print() OFF :: ...');
 };
 
+window.print_options = {
+  show: false,
+  silent: true,
+  printBackground: true,
+  printSelectionOnly: false,
+  color: true,
+  landscape: false,
+  scaleFactor: null,
+  pagesPerSheet: null,
+  collate: false,
+  copies: 1,
+  pageRanges: {
+    from: 0,
+    to: 0,
+  },
+  duplexMode: null,
+  dpi: { horizontal: 600, vertical: 600 },
+  header: null,
+  footer: null,
+  pageSize: 'A4',
+  deviceName: 'Microsoft Print to PDF',
+};
+
+window.loadPrintOptions = function (info) {
+  window.print_options = {
+    ...window.print_options,
+    ...info.options,
+  };
+
+  if (window.print_options.width) {
+    window.remote.getCurrentWindow().setSize(window.print_options.width, 720);
+  }
+
+  if (window.print_options.show) {
+    window.remote.getCurrentWindow().show();
+  } else {
+    window.remote.getCurrentWindow().webContents.print(window.print_options, (success, failureReason) => {
+      if (!success) {
+        console.log(failureReason);
+        window.remote.getCurrentWindow().show();
+        window.remote.getCurrentWindow().openDevTools();
+      } else {
+         window.remote.getCurrentWindow().close();
+      }
+    });
+  }
+};
+
 window.addEventListener('load', () => {
-  function get_details(callback) {
+  window.loadPrintOptions((callback) => {
     callback = callback || function () {};
     let id = document.location.href.split('/').pop();
     fetch('http://127.0.0.1:60080/data-content/' + id, {
@@ -23,52 +71,7 @@ window.addEventListener('load', () => {
         callback(data);
       })
       .catch((err) => {
-        console.log('get_details', err);
+        console.log('loadPrintOptions', err);
       });
-  }
-
-  window.print_options = {
-    show: false,
-    silent: true,
-    printBackground: true,
-    printSelectionOnly: false,
-    color: true,
-    landscape: false,
-    scaleFactor: null,
-    pagesPerSheet: null,
-    collate: false,
-    copies: 1,
-    pageRanges: {
-      from: 0,
-      to: 0,
-    },
-    duplexMode: null,
-    dpi: null,
-    header: null,
-    footer: null,
-    pageSize: 'Letter',
-    deviceName: 'Microsoft Print to PDF',
-  };
-
-  get_details((info) => {
-    print_options = { ...print_options, ...info.options };
-
-    if (print_options.width) {
-      remote.getCurrentWindow().setSize(print_options.width, 720);
-    }
-
-    if (print_options.show) {
-      remote.getCurrentWindow().show();
-    } else {
-      remote.getCurrentWindow().webContents.print(print_options, (success, failureReason) => {
-        if (!success) {
-          console.log(failureReason);
-          remote.getCurrentWindow().show();
-          remote.getCurrentWindow().openDevTools();
-        } else {
-          remote.getCurrentWindow().close();
-        }
-      });
-    }
   });
 });

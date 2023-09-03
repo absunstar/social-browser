@@ -1,15 +1,14 @@
 module.exports = function (child) {
   child.assignWindows = [];
   child.offset = {
-    x : 8,
-    y : 78,
-    y2 : 70,
-    width : 15,
-    width2 : 2 ,
-    height : 84 ,
-    height2 : 72 
-
-  }
+    x: 8,
+    y: 78,
+    y2: 70,
+    width: 15,
+    width2: 2,
+    height: 84,
+    height2: 72,
+  };
   child.getMainWindow = function () {
     return child.windowList.find((w) => w.customSetting && w.customSetting.windowType == 'main');
   };
@@ -321,12 +320,12 @@ module.exports = function (child) {
       win.center();
     }
 
+    if (win.customSetting.showDevTools) {
+      win.openDevTools();
+    }
     if (win.customSetting.windowType === 'main') {
       child.mainWindow = win;
       win.center();
-      // win.openDevTools({
-      //   mode: 'detach',
-      // });
     } else if (win.customSetting.windowType === 'view') {
       if (child.speedMode) {
         if (!child.currentView) {

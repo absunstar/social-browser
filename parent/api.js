@@ -92,8 +92,8 @@ module.exports = function init(parent) {
   });
 
   parent.api.onGET({
-    name: '/home*',
-    path: parent.files_dir + '/html/default.html',
+    name: '/home',
+    path: parent.files_dir + '/html/main-window.html',
     parser: 'html',
   });
 
@@ -225,10 +225,10 @@ module.exports = function init(parent) {
         to: 0,
       },
       duplexMode: null,
-      dpi: {},
+      dpi: req.data.dpi || {},
       header: null,
       footer: null,
-      pageSize: req.data.pageSize || 'Letter',
+      pageSize: req.data.pageSize || 'A4',
       width: null,
       margins: req.data.margins,
     };
@@ -272,6 +272,7 @@ module.exports = function init(parent) {
       partition: 'persist:print',
       preload: parent.dir + '/printing/preload.js',
       allowAudio: false,
+      showDevTools : false
     });
 
     res.json({

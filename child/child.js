@@ -111,7 +111,7 @@ child.electron.app.on('ready', function () {
   child.electron.app.setAccessibilitySupportEnabled(false);
 
   child.electron.protocol.handle('browser', (req) => {
-    let url = req.url.substr(10);
+    url = url.replace('browser://', 'http://127.0.0.1:60080/');
     url = `http://127.0.0.1:60080/${url}`;
     return child.electron.net.fetch(url, {
       method: req.method,
