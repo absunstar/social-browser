@@ -147,6 +147,16 @@
   browser.electron.protocol.registerSchemesAsPrivileged([
     { scheme: 'browser', privileges: { bypassCSP: true, standard: true, secure: true, supportFetchAPI: true, allowServiceWorkers: true, corsEnabled: true, stream: true } },
   ]);
+
+  browser.electron.app.on('open-url', function (event, url) {
+    event.preventDefault();
+    browser.createChildProcess({
+      url: url,
+      windowType: 'popup',
+      partition: browser.var.core.session.name,
+    });
+  });
+
   /* App Ready */
   browser.electron.app.on('ready', function () {
     browser.webContent = browser.electron.webContents.create({
@@ -161,6 +171,9 @@
         body: req.body,
       });
     });
+    if (!browser.electron.app.isDefaultProtocolClient('browser')) {
+      browser.electron.app.setAsDefaultProtocolClient('browser');
+    }
     // browser.webContentList = [];
     // for (let index = 0; index < 100; index++) {
     //   browser.webContentList.push(
@@ -220,15 +233,25 @@
       return;
     }
 
-    if (url && !url.like('http*') && !url.like('file*')) {
+    if (url && !url.like('http*') && !url.like('file*') && !url.like('browser*')) {
       url = 'file://' + url;
     }
+
+    if (url.like('browser*')) {
+      url = url.replace('browser://', 'http://127.0.0.1:60080/');
+      if (url.endsWith('/')) {
+        url = url.substring(0, url.length - 1);
+      }
+    }
+
+    let partition = browser.var.core.session.partition;
+    let user_name = browser.var.core.session.user_name;
 
     browser.newTabData = {
       name: '[open new tab]',
       url: url,
-      partition: browser.var.core.session.partition,
-      user_name: browser.var.core.session.user_name,
+      partition: partition,
+      user_name: user_name,
       active: true,
     };
 

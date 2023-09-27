@@ -48,7 +48,8 @@
         "name": "Social Browser Explorer File URL",
         "schemes": [
           "HTTP",
-          "HTTPS"
+          "HTTPS",
+          "BROWSER"
         ],
         "role": "Viewer"
       }
@@ -58,6 +59,7 @@
     },
     "win": {
       "target": "NSIS",
+      "legalTrademarks" : "Social Browser",
       "icon": "browser_files/images/logo.ico",
       "fileAssociations": [
         {
@@ -71,17 +73,18 @@
       ]
     },
     "nsis": {
+      "guid": "sbrowser-0000-0000-0000-freesbrowser",
+      "perMachine": true,
       "artifactName": "${productName} Setup.${ext}",
       "uninstallDisplayName": "${productName}",
       "allowElevation": true,
-      "oneClick": false,
-      "perMachine": false,
       "createDesktopShortcut": "always",
       "createStartMenuShortcut": true,
       "menuCategory": true,
       "shortcutName": "${productName}",
       "installerIcon": "browser_files/images/logo.ico",
-      "allowToChangeInstallationDirectory": true
+      "allowToChangeInstallationDirectory": true,
+      "oneClick": false
     },
     "squirrelWindows": {
       "msi": true

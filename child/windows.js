@@ -831,10 +831,8 @@ module.exports = function (child) {
 
     if (win.webContents.setWindowOpenHandler) {
       win.webContents.setWindowOpenHandler(({ url, frameName }) => {
-        if (!win.customSetting.allowNewWindows) {
-          return { action: 'deny' };
-        }
-        if (!child.isAllowURL(url) || url.like('*about:blank*')) {
+       
+        if (!win.customSetting.allowNewWindows || !child.isAllowURL(url) || url.like('*about:blank*')) {
           child.log('Block-open-window', url);
           return { action: 'deny' };
         }
@@ -884,9 +882,9 @@ module.exports = function (child) {
 
         let allow = false;
 
-        allow = parent.var.blocking.white_list.find((d) => url_parser.host.like(d.url) || current_url_parser.host.like(d.url));
+        allow = parent.var.blocking.white_list.some((d) => url_parser.host.like(d.url) || current_url_parser.host.like(d.url));
         if (!allow) {
-          allow = parent.var.blocking.popup.white_list.find((d) => url_parser.host.like(d.url) || current_url_parser.host.like(d.url));
+          allow = parent.var.blocking.popup.white_list.some((d) => url_parser.host.like(d.url) || current_url_parser.host.like(d.url));
         }
         if (!allow) {
           if (parent.var.blocking.popup.allow_internal && url_parser.host.contains(current_url_parser.host)) {
@@ -918,16 +916,6 @@ module.exports = function (child) {
 
         return { action: 'deny' };
 
-        // if (url.like('*about:blank*')) {
-        //   return { action: 'deny' };
-        // } else {
-        //   return {
-        //     action: 'allow',
-        //     overrideBrowserWindowOptions: {
-        //       modal: true,
-        //     },
-        //   };
-        // }
       });
 
       win.webContents.on('did-create-window', (win, { url, frameName, options, disposition, referrer, postData }) => {

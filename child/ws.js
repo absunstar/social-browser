@@ -58,7 +58,7 @@ module.exports = function (child) {
           } else if (child.parent.windowType == 'main') {
             if (child.mainWindow && !child.mainWindow.isDestroyed()) {
               child.mainWindow.show();
-              w.window.webContents.send('[open new tab]', message.newTabData);
+              child.mainWindow.webContents.send('[open new tab]', message.newTabData);
             } else {
               child.sessionConfig();
               child.createNewWindow({ ...child.parent.options, ...message.options });
@@ -73,7 +73,7 @@ module.exports = function (child) {
           if (message.options.windowType == 'main') {
             if (child.mainWindow && !child.mainWindow.isDestroyed()) {
               child.mainWindow.show();
-              w.window.webContents.send('[open new tab]', message.newTabData);
+              child.mainWindow.webContents.send('[open new tab]', message.newTabData);
             } else {
               child.sessionConfig();
               child.createNewWindow({ ...child.parent.options, ...message.options });
@@ -151,7 +151,9 @@ module.exports = function (child) {
                 child.parent.var.download_list[index].item.cancel();
               }
               child.windowList.forEach((w) => {
-                w.window.webContents.send('$download_item', message.data);
+                if (w.window && !w.window.isDestroyed()) {
+                  w.window.webContents.send('$download_item', message.data);
+                }
               });
               child.parent.var.download_list.splice(index, 1);
             } else if (message.data.status == 'pause') {
@@ -159,7 +161,9 @@ module.exports = function (child) {
                 child.parent.var.download_list[index].item.pause();
               }
               child.windowList.forEach((w) => {
-                w.window.webContents.send('$download_item', message.data);
+                if (w.window && !w.window.isDestroyed()) {
+                  w.window.webContents.send('$download_item', message.data);
+                }
               });
               child.parent.var.download_list.splice(index, 1);
             } else if (message.data.status == 'resume') {
@@ -167,7 +171,9 @@ module.exports = function (child) {
                 child.parent.var.download_list[index].item.resume();
               }
               child.windowList.forEach((w) => {
-                w.window.webContents.send('$download_item', message.data);
+                if (w.window && !w.window.isDestroyed()) {
+                  w.window.webContents.send('$download_item', message.data);
+                }
               });
               child.parent.var.download_list.splice(index, 1);
             } else if (message.data.status == 're-download') {
@@ -177,13 +183,17 @@ module.exports = function (child) {
                 }
               }
               child.windowList.forEach((w) => {
-                w.window.webContents.send('$download_item', message.data);
+                if (w.window && !w.window.isDestroyed()) {
+                  w.window.webContents.send('$download_item', message.data);
+                }
               });
               child.parent.var.download_list.splice(index, 1);
             } else {
               child.parent.var.download_list[index] = { ...child.parent.var.download_list[index], ...message.data };
               child.windowList.forEach((w) => {
-                w.window.webContents.send('$download_item', child.parent.var.download_list[index]);
+                if (w.window && !w.window.isDestroyed()) {
+                  w.window.webContents.send('$download_item', child.parent.var.download_list[index]);
+                }
               });
             }
           } else {

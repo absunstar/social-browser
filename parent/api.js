@@ -126,7 +126,7 @@ module.exports = function init(parent) {
 
     if (parent.api.isFileExistsSync(response.file.filepath)) {
       let docs = [];
-      if (response.file.originalFilename.like('*.xlsx')) {
+      if (response.file.originalFilename.like('*.xlsx') || response.file.originalFilename.like('*.xls')) {
         let workbook = parent.api.XLSX.readFile(response.file.filepath);
         docs = parent.api.XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
       } else if (response.file.originalFilename.like('*.csv')) {
@@ -166,6 +166,15 @@ module.exports = function init(parent) {
         parent.var.proxy_list = [];
         docs.forEach((doc) => {
           console.log('Importing Proxy : ', doc);
+          if (typeof doc === 'string') {
+            doc = { url: doc };
+          }
+
+          doc.ip = doc.ip || doc.IP || doc['IP Address'];
+          doc.port = doc.port || doc.Port || doc.PORT;
+          doc.username = doc.username || doc.Username || doc.USERNAME;
+          doc.password = doc.password || doc.Password || doc.PASSWORD;
+
           if (!doc.url && doc.ip && doc.port) {
             doc.url = doc.ip + ':' + doc.port;
           } else if (doc.url && (!doc.ip || !doc.port)) {
@@ -179,9 +188,8 @@ module.exports = function init(parent) {
               doc.username = arr[2];
               doc.password = arr[3];
             }
-          } else {
-            return false;
           }
+
           parent.var.proxy_list.push({
             mode: 'fixed_servers',
             url: doc.url,
@@ -272,7 +280,7 @@ module.exports = function init(parent) {
       partition: 'persist:print',
       preload: parent.dir + '/printing/preload.js',
       allowAudio: false,
-      showDevTools : false
+      showDevTools: false,
     });
 
     res.json({

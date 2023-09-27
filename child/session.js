@@ -835,6 +835,7 @@ module.exports = function (child) {
           status: 'waiting',
           Partition: name,
           item: item,
+          url : item.getURL(),
           canResume: item.canResume(),
           urlChain: item.getURLChain(),
           path: item.getSavePath(),

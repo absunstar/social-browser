@@ -61,7 +61,7 @@ function add_input_menu(node, menu, doc) {
   if (SOCIALBROWSER.menuInputOFF) {
     return menu;
   }
-  if (node.nodeName === 'INPUT' || isContentEditable(node)) {
+  if (node.nodeName === 'INPUT' || node.nodeName === 'TEXTAREA' || isContentEditable(node)) {
     if (SOCIALBROWSER.customSetting.windowType !== 'main') {
       let arr1 = [];
       let arr2 = [];
@@ -75,7 +75,8 @@ function add_input_menu(node, menu, doc) {
               arr1.push({
                 label: d.value,
                 click() {
-                  node.nodeName === 'INPUT' ? (node.value = '') : (node.innerHTML = '');
+                  node.value = '';
+                  node.innerHTML = '';
                   SOCIALBROWSER.electron.clipboard.writeText(d.value);
                   SOCIALBROWSER.webContents.paste();
                 },
@@ -84,7 +85,8 @@ function add_input_menu(node, menu, doc) {
               arr2.push({
                 label: d.value,
                 click() {
-                  node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
+                  node.value = d.value;
+                  node.innerHTML = d.value;
                   dd.data.forEach((d2) => {
                     if (d2.type == 'hidden' || d2.type == 'submit') {
                       return;
@@ -98,7 +100,8 @@ function add_input_menu(node, menu, doc) {
                     }
 
                     if (e1) {
-                      e1.nodeName === 'INPUT' ? (e1.value = d2.value) : (e1.innerHTML = d2.value);
+                      e1.value = d2.value;
+                      e1.innerHTML = d2.value;
                       e1.dispatchEvent(inputEvent);
                       e1.dispatchEvent(changeEvent);
                     }
@@ -117,19 +120,18 @@ function add_input_menu(node, menu, doc) {
               arr1.push({
                 label: d.value,
                 click() {
-                  node.nodeName === 'INPUT' ? (node.value = '') : (node.innerHTML = '');
+                  node.value = '';
+                  node.innerHTML = '';
                   SOCIALBROWSER.electron.clipboard.writeText(d.value);
                   SOCIALBROWSER.webContents.paste();
-                  /*node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
-                                        node.dispatchEvent(inputEvent);
-                                        node.dispatchEvent(changeEvent);*/
                 },
               });
 
               arr2.push({
                 label: d.value,
                 click() {
-                  node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
+                  node.value = d.value;
+                  node.innerHTML = d.value;
                   dd.data.forEach((d2) => {
                     if (d2.type == 'hidden' || d2.type == 'submit') {
                       return;
@@ -143,7 +145,8 @@ function add_input_menu(node, menu, doc) {
                     }
 
                     if (e1) {
-                      e1.nodeName === 'INPUT' ? (e1.value = d2.value) : (e1.innerHTML = d2.value);
+                      e1.value = d2.value;
+                      e1.innerHTML = d2.value;
                       e1.dispatchEvent(inputEvent);
                       e1.dispatchEvent(changeEvent);
                     }
@@ -162,12 +165,10 @@ function add_input_menu(node, menu, doc) {
               arr1.push({
                 label: d.value,
                 click() {
-                  node.nodeName === 'INPUT' ? (node.value = '') : (node.innerHTML = '');
+                  node.value = '';
+                  node.innerHTML = '';
                   SOCIALBROWSER.electron.clipboard.writeText(d.value);
                   SOCIALBROWSER.webContents.paste();
-                  /* node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
-                                        node.dispatchEvent(inputEvent);
-                                        node.dispatchEvent(changeEvent);*/
                 },
               });
             }
@@ -188,7 +189,8 @@ function add_input_menu(node, menu, doc) {
             arr1.push({
               label: d.value,
               click() {
-                node.nodeName === 'INPUT' ? (node.value = '') : (node.innerHTML = '');
+                node.value = '';
+                node.innerHTML = '';
                 SOCIALBROWSER.electron.clipboard.writeText(d.value);
                 SOCIALBROWSER.webContents.paste();
               },
@@ -197,7 +199,8 @@ function add_input_menu(node, menu, doc) {
             arr2.push({
               label: d.value,
               click() {
-                node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
+                node.value = d.value;
+                node.innerHTML = d.value;
                 dd.data.forEach((d2) => {
                   if (d2.type == 'hidden' || d2.type == 'submit') {
                     return;
@@ -211,7 +214,8 @@ function add_input_menu(node, menu, doc) {
                   }
 
                   if (e1) {
-                    e1.nodeName === 'INPUT' ? (e1.value = d2.value) : (e1.innerHTML = d2.value);
+                    e1.value = d2.value;
+                    e1.innerHTML = d2.value;
                     e1.dispatchEvent(inputEvent);
                     e1.dispatchEvent(changeEvent);
                   }
@@ -222,19 +226,18 @@ function add_input_menu(node, menu, doc) {
             arr1.push({
               label: d.value,
               click() {
-                node.nodeName === 'INPUT' ? (node.value = '') : (node.innerHTML = '');
+                node.value = '';
+                node.innerHTML = '';
                 SOCIALBROWSER.electron.clipboard.writeText(d.value);
                 SOCIALBROWSER.webContents.paste();
-                /*node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
-                                        node.dispatchEvent(inputEvent);
-                                        node.dispatchEvent(changeEvent);*/
               },
             });
 
             arr2.push({
               label: d.value,
               click() {
-                node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
+                node.value = d.value;
+                node.innerHTML = d.value;
 
                 dd.data.forEach((d2) => {
                   if (d2.type == 'hidden' || d2.type == 'submit') {
@@ -249,7 +252,8 @@ function add_input_menu(node, menu, doc) {
                   }
 
                   if (e1) {
-                    e1.nodeName === 'INPUT' ? (e1.value = d2.value) : (e1.innerHTML = d2.value);
+                    e1.value = d2.value;
+                    e1.innerHTML = d2.value;
                     e1.dispatchEvent(inputEvent);
                     e1.dispatchEvent(changeEvent);
                   }
@@ -260,12 +264,10 @@ function add_input_menu(node, menu, doc) {
             arr1.push({
               label: d.value,
               click() {
-                node.nodeName === 'INPUT' ? (node.value = '') : (node.innerHTML = '');
+                node.value = '';
+                node.innerHTML = '';
                 SOCIALBROWSER.electron.clipboard.writeText(d.value);
                 SOCIALBROWSER.webContents.paste();
-                /*node.nodeName === 'INPUT' ? (node.value = d.value) : (node.innerHTML = d.value);
-                                        node.dispatchEvent(inputEvent);
-                                        node.dispatchEvent(changeEvent);*/
               },
             });
           }
@@ -535,9 +537,6 @@ function add_a_menu(node, menu, doc) {
         })
       );
     } else {
-      if (!SOCIALBROWSER.isURL(u)) {
-        return menu;
-      }
       SOCIALBROWSER.selectedURL = u;
 
       menu.append(
@@ -1516,9 +1515,7 @@ function get_social_menu(node, menu, doc, social_arr) {
 
     if (node.nodeName === 'A' && node.getAttribute('href') && !node.getAttribute('href').like('*#*|*mailto*')) {
       let u = node.getAttribute('href');
-      if (!SOCIALBROWSER.isURL(u)) {
-        return menu;
-      }
+
       u = SOCIALBROWSER.handleURL(u);
 
       social_arr.push({
