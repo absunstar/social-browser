@@ -59,7 +59,7 @@
     },
     "win": {
       "target": "NSIS",
-      "legalTrademarks" : "Social Browser",
+      "legalTrademarks": "Social Browser",
       "icon": "browser_files/images/logo.ico",
       "fileAssociations": [
         {
@@ -112,7 +112,7 @@
   },
   "dependencies": {
     "@electron/remote": "^2.0.10",
-    "isite": "^2023.8.11",
+    "isite": "^2023.9.30",
     "node-fetch": "^2.6.6"
   },
   "devDependencies": {
