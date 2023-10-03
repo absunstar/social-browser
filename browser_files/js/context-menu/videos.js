@@ -31,11 +31,11 @@
       let ads = false;
       let videos = document.querySelectorAll('video');
       if (videos.length > 0) {
-        document.querySelectorAll('*').forEach((el) => {
-          if (el.className && typeof el.className == 'string' && color_list.includes(getComputedStyle(el)['backgroundColor'])) {
-            ads = true;
-          }
-        });
+        // document.querySelectorAll('*').forEach((el) => {
+        //   if (el.className && typeof el.className == 'string' && color_list.includes(getComputedStyle(el)['backgroundColor'])) {
+        //     ads = true;
+        //   }
+        // });
         document.querySelectorAll(skip_buttons).forEach((b) => {
           b.click();
         });
