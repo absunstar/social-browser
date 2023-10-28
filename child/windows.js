@@ -802,7 +802,7 @@ module.exports = function (child) {
     });
 
     win.webContents.on('will-redirect', (e, url) => {
-      // console.log('try redirect : ', url);
+       console.log('will-redirect : ', url);
       if (!child.isAllowURL(url) || !win.customSetting.allowRedirect) {
         e.preventDefault();
         child.log('Block-redirect', url);
@@ -822,6 +822,7 @@ module.exports = function (child) {
       }
     });
     win.webContents.on('will-navigate', (e, url) => {
+      console.log('will-navigate : ', url);
       if (!win.customSetting.allowRedirect || !child.isAllowURL(url)) {
         e.preventDefault();
         child.log('Block-navigate', url);

@@ -561,9 +561,12 @@ SOCIALBROWSER.eval = function (code) {
   }
 };
 
-SOCIALBROWSER.openWindow = function (customSetting) {
+SOCIALBROWSER.openWindow = function (_customSetting) {
   try {
-    customSetting = { ...SOCIALBROWSER.customSetting, ...{ windowType: 'social-popup' }, ...customSetting };
+    let customSetting = { ...SOCIALBROWSER.customSetting, ...{ windowType: 'social-popup' }, ..._customSetting };
+    if (typeof _customSetting.resizable == 'undefined') {
+      customSetting.resizable = true;
+    }
     let win = new SOCIALBROWSER.remote.BrowserWindow({
       show: customSetting.show ?? true,
       alwaysOnTop: customSetting.alwaysOnTop ?? false,
@@ -576,7 +579,7 @@ SOCIALBROWSER.openWindow = function (customSetting) {
       icon: customSetting.icon ?? SOCIALBROWSER.var.core.icon,
       frame: true,
       title: customSetting.title ?? 'New Window',
-      resizable: customSetting.resizable ?? true,
+      resizable: customSetting.resizable,
       fullscreenable: customSetting.fullscreenable ?? true,
       webPreferences: {
         contextIsolation: customSetting.contextIsolation ?? false,
