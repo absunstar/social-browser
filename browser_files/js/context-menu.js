@@ -14,8 +14,9 @@
     module: require('module'),
     path: require('path'),
     random: function (min, max) {
-      max = max + 1;
-      return Math.floor(Math.random() * (max - min) + min);
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min + 1) + min);
     },
     var: {
       core: { id: '', user_agent: '' },

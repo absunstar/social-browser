@@ -823,6 +823,7 @@ module.exports = function (child) {
         if (webContents) {
           if ((w = child.windowList.find((w) => w.id2 === webContents.id))) {
             if (!w.customSetting.allowDownload) {
+              event.preventDefault();
               console.log('Download OFF');
               return;
             }
@@ -835,7 +836,7 @@ module.exports = function (child) {
           status: 'waiting',
           Partition: name,
           item: item,
-          url : item.getURL(),
+          url: item.getURL(),
           canResume: item.canResume(),
           urlChain: item.getURLChain(),
           path: item.getSavePath(),

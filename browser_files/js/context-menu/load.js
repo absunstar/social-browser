@@ -139,6 +139,15 @@ if (SOCIALBROWSER.var.blocking.privacy.enable_virtual_pc && SOCIALBROWSER.var.bl
   }
 }
 
+document.hasPrivateStateToken =
+  document.hasTrustToken =
+  document.hasPrivateToken =
+    function () {
+      return new Promise((resolve, reject) => {
+        resolve(true);
+      });
+    };
+
 SOCIALBROWSER.__define(navigator, 'userAgent', SOCIALBROWSER.user_agent_url);
 SOCIALBROWSER.userAgent = navigator.userAgent;
 SOCIALBROWSER.__define(navigator, 'userAgentData', {

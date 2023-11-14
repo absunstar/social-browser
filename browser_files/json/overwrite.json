@@ -6,8 +6,6 @@
             "ignore": "*110986255*",
             "query": false
         },
-
-       
         {
             "from": "https://m.do.co/c*|https://www.digitalocean.com/|https://try.digitalocean.com*",
             "to": "https://m.do.co/c/f192b51fbbf7",
@@ -66,6 +64,12 @@
             "from": "https://exe.io|https://exe.io/|https://exe.io/ref*",
             "to": "https://exe.io/ref/kamally356",
             "ignore": "*kamally356*|*referrals*",
+            "query": false
+        },
+        {
+            "from": "https://monetag.com|https://monetag.com/|https://monetag.com/?ref*",
+            "to": "https://monetag.com/?ref_id=72G",
+            "ignore": "*72G*|*referralProgram*",
             "query": false
         }
     ]

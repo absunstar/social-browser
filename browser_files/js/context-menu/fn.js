@@ -445,10 +445,12 @@ SOCIALBROWSER.click = function (selector, realPerson = true) {
 
       let offset = SOCIALBROWSER.getOffset(dom);
       SOCIALBROWSER.currentWindow.focus();
+      SOCIALBROWSER.webContents.sendInputEvent({ type: 'mouseMove', x: offset.x, y: offset.y });
       SOCIALBROWSER.webContents.sendInputEvent({ type: 'mouseDown', x: offset.x, y: offset.y, button: 'left', clickCount: 1 });
       SOCIALBROWSER.webContents.sendInputEvent({ type: 'mouseUp', x: offset.x, y: offset.y, button: 'left', clickCount: 1 });
       return dom;
     } else {
+      SOCIALBROWSER.triggerMouseEvent(dom, 'mousemove');
       SOCIALBROWSER.triggerMouseEvent(dom, 'mousedown');
       SOCIALBROWSER.triggerMouseEvent(dom, 'mouseup');
       dom.click();

@@ -273,7 +273,7 @@ window.print2 = function (options) {
 };
 
 let alert_idle = null;
-window.alert =
+SOCIALBROWSER.alert = window.alert =
   window.prompt =
   window.confirm =
     function (msg, time) {
