@@ -320,6 +320,13 @@ module.exports = function (child) {
       win.center();
     }
 
+    if (win.customSetting.parentSetting && win.customSetting.parentSetting.win_id) {
+      child.assignWindows.push({
+        parent_id: win.customSetting.parentSetting.win_id,
+        child_id: win.id,
+      });
+    }
+
     if (win.customSetting.showDevTools) {
       win.openDevTools();
     }
@@ -673,9 +680,9 @@ module.exports = function (child) {
     win.webContents.on('before-input-event', (event, input) => {
       // For example, only enable application menu keyboard shortcuts when
       // Ctrl/Cmd are down.
-      if (win && !win.isDestroyed()) {
-        win.webContents.setIgnoreMenuShortcuts(!input.control && !input.meta);
-      }
+      // if (win && !win.isDestroyed()) {
+      //   win.webContents.setIgnoreMenuShortcuts(!input.control && !input.meta);
+      // }
     });
 
     win.on('page-title-updated', (e, title) => {
@@ -802,7 +809,7 @@ module.exports = function (child) {
     });
 
     win.webContents.on('will-redirect', (e, url) => {
-       console.log('will-redirect : ', url);
+      console.log('will-redirect : ', url);
       if (!child.isAllowURL(url) || !win.customSetting.allowRedirect) {
         e.preventDefault();
         child.log('Block-redirect', url);
@@ -832,7 +839,6 @@ module.exports = function (child) {
 
     if (win.webContents.setWindowOpenHandler) {
       win.webContents.setWindowOpenHandler(({ url, frameName }) => {
-       
         if (!win.customSetting.allowNewWindows || !child.isAllowURL(url) || url.like('*about:blank*')) {
           child.log('Block-open-window', url);
           return { action: 'deny' };
@@ -916,7 +922,6 @@ module.exports = function (child) {
         }
 
         return { action: 'deny' };
-
       });
 
       win.webContents.on('did-create-window', (win, { url, frameName, options, disposition, referrer, postData }) => {

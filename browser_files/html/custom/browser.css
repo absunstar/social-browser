@@ -85,6 +85,9 @@ video0 {
   border: 5px solid #2196f3;
   top: 200px;
   z-index: 9999999;
+  word-wrap: break-word;
+  word-break: break-all;
+  
 }
 
 #__targetUrl {
@@ -105,7 +108,7 @@ video0 {
   overflow: hidden;
   white-space: nowrap;
 }
-#__targetUrl:hover{
+#__targetUrl:hover {
   display: none;
 }
 #__downloads {

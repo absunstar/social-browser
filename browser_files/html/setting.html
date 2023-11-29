@@ -337,6 +337,11 @@
                       label="Allow pointerLock ( Request to directly interpret mouse movements as an input method ) "
                       ng-model="setting.blocking.permissions.allow_pointerLock"
                     ></i-checkbox>
+                    <i-checkbox
+                      class="row"
+                      label="Allow keyboardLock ( Request to Lock Keyboard Keys ) "
+                      ng-model="setting.blocking.permissions.allow_keyboardLock"
+                    ></i-checkbox>
                   </fieldset>
                 </div>
               </div>
@@ -839,13 +844,13 @@
                         <div class="col6"><i-checkbox label="Hide Date TimeZone" ng-model="currentSession.privacy.vpc.mask_date"></i-checkbox></div>
                         <div class="col6">
                           <i-list
-                          ng-disabled="currentSession.privacy.vpc.mask_date !== true"
-                          items="timezones2"
-                          primary="value"
-                          display="text"
-                          label="Select Time Zone"
-                          ng-model="currentSession.privacy.vpc.timeZone"
-                        ></i-list>
+                            ng-disabled="currentSession.privacy.vpc.mask_date !== true"
+                            items="timezones2"
+                            primary="value"
+                            display="text"
+                            label="Select Time Zone"
+                            ng-model="currentSession.privacy.vpc.timeZone"
+                          ></i-list>
                         </div>
                       </div>
 

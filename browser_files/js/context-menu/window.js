@@ -209,6 +209,7 @@ if (SOCIALBROWSER.var.blocking.javascript.block_window_post_message) {
 }
 
 SOCIALBROWSER.on('window.message', (e, obj) => {
+  obj.origin = obj.origin || '*';
   window.postMessage(obj.data, obj.origin, obj.transfer);
 });
 
@@ -273,7 +274,8 @@ window.print2 = function (options) {
 };
 
 let alert_idle = null;
-SOCIALBROWSER.alert = window.alert =
+SOCIALBROWSER.alert =
+  window.alert =
   window.prompt =
   window.confirm =
     function (msg, time) {
