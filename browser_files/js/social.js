@@ -440,7 +440,13 @@ function showSettingMenu() {
   });
 
   SOCIALBROWSER.ipc('[show-menu]', {
-    list: SOCIALBROWSER.menuList.map((m) => ({ label: m.label, sublabel: m.sublabel, visible: m.visible, type: m.type, submenu: m.submenu?.map((s) => ({ label: s.label, type: s.type })) })),
+    list: SOCIALBROWSER.menuList.map((m) => ({
+      label: m.label,
+      sublabel: m.sublabel,
+      visible: m.visible,
+      type: m.type,
+      submenu: m.submenu?.map((s) => ({ label: s.label, type: s.type, sublabel: s.sublabel, visible: s.visible })),
+    })),
     win_id: SOCIALBROWSER.currentWindow.id,
   });
 }
@@ -511,7 +517,13 @@ function showBookmarksMenu() {
   }
 
   SOCIALBROWSER.ipc('[show-menu]', {
-    list: SOCIALBROWSER.menuList.map((m) => ({ label: m.label, sublabel: m.sublabel, visible: m.visible, type: m.type, submenu: m.submenu?.map((s) => ({ label: s.label, type: s.type })) })),
+    list: SOCIALBROWSER.menuList.map((m) => ({
+      label: m.label,
+      sublabel: m.sublabel,
+      visible: m.visible,
+      type: m.type,
+      submenu: m.submenu?.map((s) => ({ label: s.label, type: s.type, sublabel: s.sublabel, visible: s.visible })),
+    })),
     win_id: SOCIALBROWSER.currentWindow.id,
   });
 }
