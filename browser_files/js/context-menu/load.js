@@ -32,8 +32,6 @@ if (!SOCIALBROWSER.var.core.javaScriptOFF) {
         SOCIALBROWSER.log(error);
       }
     });
-
-
   }
 }
 
@@ -75,7 +73,7 @@ if (!SOCIALBROWSER.user_agent_url) {
 if (!SOCIALBROWSER.user_agent_info) {
   SOCIALBROWSER.user_agent_info = SOCIALBROWSER.var.user_agent_list.find((u) => u.url == SOCIALBROWSER.user_agent_url);
   if (SOCIALBROWSER.user_agent_info) {
-    if (SOCIALBROWSER.user_agent_info.vendor) {
+    if (false && SOCIALBROWSER.user_agent_info.vendor) {
       SOCIALBROWSER.__define(navigator, 'vendor', SOCIALBROWSER.user_agent_info.vendor);
       if (SOCIALBROWSER.user_agent_info.engine && SOCIALBROWSER.user_agent_info.engine.name === 'Chrome') {
         let chrome = JSON.parse(
@@ -136,11 +134,11 @@ SOCIALBROWSER.__define(navigator, 'userAgentData', {
   brands: [
     {
       brand: 'Google Chrome',
-      version: '113',
+      version: '120',
     },
     {
       brand: 'Chromium',
-      version: '113',
+      version: '120',
     },
     {
       brand: 'Not-A.Brand',

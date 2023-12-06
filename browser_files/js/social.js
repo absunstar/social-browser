@@ -57,30 +57,30 @@ function goURL(e) {
   }
 }
 
-function add_input_menu(node, menu) {
+function add_input_menu(node) {
   if (!node) return;
 
   if (node.nodeName === 'INPUT' || node.contentEditable == true) {
     let text = getSelection().toString();
 
-    menu.append(
+    SOCIALBROWSER.menuList.push(
       new MenuItem({
         label: 'Undo',
         role: 'undo',
       })
     );
-    menu.append(
+    SOCIALBROWSER.menuList.push(
       new MenuItem({
         label: 'Redo',
         role: 'redo',
       })
     );
-    menu.append(
+    SOCIALBROWSER.menuList.push(
       new MenuItem({
         type: 'separator',
       })
     );
-    menu.append(
+    SOCIALBROWSER.menuList.push(
       new MenuItem({
         label: 'Cut',
         role: 'cut',
@@ -88,7 +88,7 @@ function add_input_menu(node, menu) {
       })
     );
 
-    menu.append(
+    SOCIALBROWSER.menuList.push(
       new MenuItem({
         label: 'Copy',
         role: 'copy',
@@ -96,13 +96,13 @@ function add_input_menu(node, menu) {
       })
     );
 
-    menu.append(
+    SOCIALBROWSER.menuList.push(
       new MenuItem({
         label: 'Paste',
         role: 'paste',
       })
     );
-    menu.append(
+    SOCIALBROWSER.menuList.push(
       new MenuItem({
         label: 'Paste and Go',
         click() {
@@ -111,34 +111,34 @@ function add_input_menu(node, menu) {
         },
       })
     );
-    menu.append(
+    SOCIALBROWSER.menuList.push(
       new MenuItem({
         label: 'Delete',
         role: 'delete',
       })
     );
-    menu.append(
+    SOCIALBROWSER.menuList.push(
       new MenuItem({
         type: 'separator',
       })
     );
-    menu.append(
+    SOCIALBROWSER.menuList.push(
       new MenuItem({
         label: 'Select All',
         role: 'selectall',
       })
     );
 
-    menu.append(
+    SOCIALBROWSER.menuList.push(
       new MenuItem({
         type: 'separator',
       })
     );
 
     return;
+  } else {
+    add_input_menu(node.parentNode);
   }
-
-  add_input_menu(node.parentNode, menu);
 }
 
 document.addEventListener(

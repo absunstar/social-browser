@@ -1,5 +1,5 @@
-let $menuItem = SOCIALBROWSER.remote.MenuItem;
 let full_screen = false;
+SOCIALBROWSER.menuList = [];
 
 // var change_event = document.createEvent("HTMLEvents");
 // change_event.initEvent("change", false, true);
@@ -1672,147 +1672,117 @@ function createMenuList(node) {
       let user_agent = node.getAttribute('user_agent');
       let child_id = node.getAttribute('child_id');
       let ghost = 'x-ghost_' + Math.random().toString().replace('.', '');
-      SOCIALBROWSER.menuList.push(
-        new MenuItem({
-          label: 'New tab',
-          click() {
-            SOCIALBROWSER.ipc('[open new tab]', { main_window_id: SOCIALBROWSER.currentWindow.id });
-          },
-        })
-      );
-      SOCIALBROWSER.menuList.push(
-        new MenuItem({
-          label: 'Duplicate tab',
-          click() {
-            SOCIALBROWSER.ipc('[open new tab]', { url: url, partition: partition, user_name: user_name, user_agent: user_agent, main_window_id: SOCIALBROWSER.currentWindow.id });
-          },
-        })
-      );
-      SOCIALBROWSER.menuList.push(
-        new MenuItem({
-          type: 'separator',
-        })
-      );
+      SOCIALBROWSER.menuList.push({
+        label: 'New tab',
+        click() {
+          SOCIALBROWSER.ipc('[open new tab]', { main_window_id: SOCIALBROWSER.currentWindow.id });
+        },
+      });
+      SOCIALBROWSER.menuList.push({
+        label: 'Duplicate tab',
+        click() {
+          SOCIALBROWSER.ipc('[open new tab]', { url: url, partition: partition, user_name: user_name, user_agent: user_agent, main_window_id: SOCIALBROWSER.currentWindow.id });
+        },
+      });
+      SOCIALBROWSER.menuList.push({
+        type: 'separator',
+      });
 
-      SOCIALBROWSER.menuList.push(
-        new MenuItem({
-          label: 'Hide tab',
-          click() {
-            node.classList.add('display-none');
-            if ((t = document.querySelector('.social-tab:not(.display-none)'))) {
-              t.click();
+      SOCIALBROWSER.menuList.push({
+        label: 'Hide tab',
+        click() {
+          node.classList.add('display-none');
+          if ((t = document.querySelector('.social-tab:not(.display-none)'))) {
+            t.click();
+          }
+        },
+      });
+      SOCIALBROWSER.menuList.push({
+        label: '  Hide other tabs',
+        click() {
+          document.querySelectorAll('.social-tab:not(.plus)').forEach((el) => {
+            if (el.id !== node.id) {
+              el.classList.add('display-none');
             }
-          },
-        })
-      );
-      SOCIALBROWSER.menuList.push(
-        new MenuItem({
-          label: '  Hide other tabs',
-          click() {
-            document.querySelectorAll('.social-tab:not(.plus)').forEach((el) => {
-              if (el.id !== node.id) {
-                el.classList.add('display-none');
-              }
-            });
-          },
-        })
-      );
-      SOCIALBROWSER.menuList.push(
-        new MenuItem({
-          label: 'Show hidden tabs',
-          click() {
-            document.querySelectorAll('.social-tab').forEach((t) => {
-              t.classList.remove('display-none');
-            });
-          },
-        })
-      );
-      SOCIALBROWSER.menuList.push(
-        new MenuItem({
-          type: 'separator',
-        })
-      );
-      SOCIALBROWSER.menuList.push(
-        new MenuItem({
-          label: 'New Ghost tab',
-          click() {
-            SOCIALBROWSER.ipc('[open new tab]', { partition: ghost, iframe: true, user_name: ghost, user_agent: user_agent, main_window_id: SOCIALBROWSER.currentWindow.id });
-          },
-        })
-      );
-      SOCIALBROWSER.menuList.push(
-        new MenuItem({
-          label: 'Duplicate tab in Ghost tab',
-          click() {
-            SOCIALBROWSER.ipc('[open new tab]', { url: url, partition: ghost, user_name: ghost, user_agent: user_agent, main_window_id: SOCIALBROWSER.currentWindow.id });
-          },
-        })
-      );
-      SOCIALBROWSER.menuList.push(
-        new MenuItem({
-          type: 'separator',
-        })
-      );
+          });
+        },
+      });
+      SOCIALBROWSER.menuList.push({
+        label: 'Show hidden tabs',
+        click() {
+          document.querySelectorAll('.social-tab').forEach((t) => {
+            t.classList.remove('display-none');
+          });
+        },
+      });
+      SOCIALBROWSER.menuList.push({
+        type: 'separator',
+      });
+      SOCIALBROWSER.menuList.push({
+        label: 'New Ghost tab',
+        click() {
+          SOCIALBROWSER.ipc('[open new tab]', { partition: ghost, iframe: true, user_name: ghost, user_agent: user_agent, main_window_id: SOCIALBROWSER.currentWindow.id });
+        },
+      });
+      SOCIALBROWSER.menuList.push({
+        label: 'Duplicate tab in Ghost tab',
+        click() {
+          SOCIALBROWSER.ipc('[open new tab]', { url: url, partition: ghost, user_name: ghost, user_agent: user_agent, main_window_id: SOCIALBROWSER.currentWindow.id });
+        },
+      });
+      SOCIALBROWSER.menuList.push({
+        type: 'separator',
+      });
 
-      SOCIALBROWSER.menuList.push(
-        new MenuItem({
-          label: 'Duplicate tab in window',
-          click() {
-            SOCIALBROWSER.ipc('[open new popup]', {
-              child_id: child_id,
-              show: true,
-              center: true,
-              url: url,
-              partition: partition,
-              user_name: user_name,
-              user_agent: user_agent,
-              main_window_id: SOCIALBROWSER.currentWindow.id,
-            });
-          },
-        })
-      );
-      SOCIALBROWSER.menuList.push(
-        new MenuItem({
-          label: 'Duplicate tab in Ghost window',
-          click() {
-            SOCIALBROWSER.ipc('[open new popup]', {
-              child_id: child_id,
-              show: true,
-              center: true,
-              url: url,
-              partition: ghost,
-              user_name: ghost,
-              user_agent: user_agent,
-              main_window_id: SOCIALBROWSER.currentWindow.id,
-            });
-          },
-        })
-      );
-      SOCIALBROWSER.menuList.push(
-        new MenuItem({
-          type: 'separator',
-        })
-      );
-      SOCIALBROWSER.menuList.push(
-        new MenuItem({
-          label: 'Close',
-          click() {
-            client.call('remove-tab', node);
-          },
-        })
-      );
-      SOCIALBROWSER.menuList.push(
-        new MenuItem({
-          label: 'Close other tabs',
-          click() {
-            document.querySelectorAll('.social-tab').forEach((node2) => {
-              if (!node2.classList.contains('plus') && node.id !== node2.id) {
-                client.call('remove-tab', node2);
-              }
-            });
-          },
-        })
-      );
+      SOCIALBROWSER.menuList.push({
+        label: 'Duplicate tab in window',
+        click() {
+          SOCIALBROWSER.ipc('[open new popup]', {
+            child_id: child_id,
+            show: true,
+            center: true,
+            url: url,
+            partition: partition,
+            user_name: user_name,
+            user_agent: user_agent,
+            main_window_id: SOCIALBROWSER.currentWindow.id,
+          });
+        },
+      });
+      SOCIALBROWSER.menuList.push({
+        label: 'Duplicate tab in Ghost window',
+        click() {
+          SOCIALBROWSER.ipc('[open new popup]', {
+            child_id: child_id,
+            show: true,
+            center: true,
+            url: url,
+            partition: ghost,
+            user_name: ghost,
+            user_agent: user_agent,
+            main_window_id: SOCIALBROWSER.currentWindow.id,
+          });
+        },
+      });
+      SOCIALBROWSER.menuList.push({
+        type: 'separator',
+      });
+      SOCIALBROWSER.menuList.push({
+        label: 'Close',
+        click() {
+          client.call('remove-tab', node);
+        },
+      });
+      SOCIALBROWSER.menuList.push({
+        label: 'Close other tabs',
+        click() {
+          document.querySelectorAll('.social-tab').forEach((node2) => {
+            if (!node2.classList.contains('plus') && node.id !== node2.id) {
+              client.call('remove-tab', node2);
+            }
+          });
+        },
+      });
 
       if (SOCIALBROWSER.var.core.id.contains('test')) {
         SOCIALBROWSER.menuList.push({
