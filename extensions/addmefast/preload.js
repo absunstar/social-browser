@@ -160,13 +160,13 @@
                             userAgent: navigator.userAgent,
                         });
 
-                        SOCIALBROWSER.call('[assign][window]', {
+                        SOCIALBROWSER.ipc('[assign][window]', {
                             parent_id: SOCIALBROWSER.currentWindow.id,
                             child_id: win.id,
                         });
 
                         childWindow.postMessage = function (data, origin) {
-                            SOCIALBROWSER.call('window.message', { child_id: win.id, data: data, origin: origin || '*' });
+                            SOCIALBROWSER.ipc('window.message', { child_id: win.id, data: data, origin: origin || '*' });
                         };
 
                         win.webContents.on('dom-ready', () => {

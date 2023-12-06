@@ -377,7 +377,7 @@
     //   return window.setTimeout0(...args);
     // };
 
-            // SOCIALBROWSER.call('[send-render-message]', {
+            // SOCIALBROWSER.ipc('[send-render-message]', {
         //   name: 'get_pdf',
         //   options: options || {},
         //   win_id: SOCIALBROWSER.currentWindow.id,

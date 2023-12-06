@@ -126,15 +126,8 @@
     value.parentSetting = SOCIALBROWSER.customSetting;
     return SOCIALBROWSER.electron.ipcRenderer.sendSync(channel, value);
   };
-  SOCIALBROWSER.call = SOCIALBROWSER.ipc = function (channel, value) {
-    if (!channel) {
-      return;
-    }
-    value = { ...value };
-    value.parentSetting = SOCIALBROWSER.customSetting;
-    return SOCIALBROWSER.electron.ipcRenderer.send(channel, value);
-  };
-  SOCIALBROWSER.invoke = function (channel, value) {
+
+  SOCIALBROWSER.invoke = SOCIALBROWSER.ipc = function (channel, value) {
     value.parentSetting = SOCIALBROWSER.customSetting;
     return SOCIALBROWSER.electron.ipcRenderer.invoke(channel, value);
   };
@@ -268,27 +261,16 @@
   };
 
   SOCIALBROWSER.init = function () {
-    if (SOCIALBROWSER.isIframe()) {
-      SOCIALBROWSER.invoke('[browser][data]', {
-        hostname: SOCIALBROWSER.hostname,
-        url: SOCIALBROWSER.href,
-        name: SOCIALBROWSER.selected_properties,
-        win_id: SOCIALBROWSER.currentWindow.id,
-        partition: SOCIALBROWSER.partition,
-      }).then((data) => {
-        SOCIALBROWSER.browserData = data;
-        SOCIALBROWSER.init2();
-      });
-    } else {
-      SOCIALBROWSER.browserData = SOCIALBROWSER.ipcSync('[browser][data]', {
-        hostname: SOCIALBROWSER.hostname,
-        url: SOCIALBROWSER.href,
-        name: SOCIALBROWSER.selected_properties,
-        win_id: SOCIALBROWSER.currentWindow.id,
-        partition: SOCIALBROWSER.partition,
-      });
+    SOCIALBROWSER.ipc('[browser][data]', {
+      hostname: SOCIALBROWSER.hostname,
+      url: SOCIALBROWSER.href,
+      name: SOCIALBROWSER.selected_properties,
+      win_id: SOCIALBROWSER.currentWindow.id,
+      partition: SOCIALBROWSER.partition,
+    }).then((data) => {
+      SOCIALBROWSER.browserData = data;
       SOCIALBROWSER.init2();
-    }
+    });
   };
   window.SOCIALBROWSER = SOCIALBROWSER;
   SOCIALBROWSER.init();

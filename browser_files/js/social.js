@@ -6,7 +6,7 @@ let $addressbar = $('.address-input .url');
 
 const updateOnlineStatus = () => {
   // console.log('Internet Status ' + navigator.onLine);
-  SOCIALBROWSER.call('online-status', navigator.onLine ? { status: true } : { status: false });
+  SOCIALBROWSER.ipc('online-status', navigator.onLine ? { status: true } : { status: false });
 };
 
 window.addEventListener('online', updateOnlineStatus);
@@ -245,9 +245,9 @@ document.addEventListener(
 
 function showSettingMenu() {
   SOCIALBROWSER.currentWindow.show();
-  let arr = [];
+  SOCIALBROWSER.menuList = [];
 
-  arr.push({
+  SOCIALBROWSER.menuList.push({
     label: 'Show Setting',
     click: () =>
       ipc('[open new tab]', {
@@ -256,24 +256,25 @@ function showSettingMenu() {
         vip: true,
       }),
   });
-  arr.push({
+
+  SOCIALBROWSER.menuList.push({
     type: 'separator',
   });
 
   if (SOCIALBROWSER.var.core.id.like('*test*')) {
-    arr.push({
+    SOCIALBROWSER.menuList.push({
       label: 'Check Update',
       click: () =>
         sendToMain({
           name: '[run-window-update]',
         }),
     });
-    arr.push({
+    SOCIALBROWSER.menuList.push({
       type: 'separator',
     });
   }
 
-  arr.push({
+  SOCIALBROWSER.menuList.push({
     label: 'Open Social Browser Site',
     click: () =>
       ipc('[open new tab]', {
@@ -281,10 +282,10 @@ function showSettingMenu() {
         main_window_id: SOCIALBROWSER.currentWindow.id,
       }),
   });
-  arr.push({
+  SOCIALBROWSER.menuList.push({
     type: 'separator',
   });
-  arr.push({
+  SOCIALBROWSER.menuList.push({
     label: 'Downloads',
     click: () =>
       ipc('[open new tab]', {
@@ -294,31 +295,22 @@ function showSettingMenu() {
       }),
   });
 
-  arr.push({
+  SOCIALBROWSER.menuList.push({
     type: 'separator',
   });
-  // arr.push({
-  //   label: 'PDF Reader',
-  //   click: () =>
-  //     sendToMain({
-  //       name: 'show-pdf-reader',
-  //       action : true
-  //     }),
-  // });
-  // arr.push({
-  //   type: 'separator',
-  // });
 
-  let bookmark_arr = [];
-  bookmark_arr.push({
+  let arr2 = [];
+
+  arr2.push({
     label: 'Bookmark current tab',
     click: () => ipc('[add-to-bookmark]'),
   });
-  bookmark_arr.push({
+
+  arr2.push({
     type: 'separator',
   });
 
-  bookmark_arr.push({
+  arr2.push({
     label: 'Bookmark all tabs',
     click: () => {
       document.querySelectorAll('.social-tab:not(#tabPlus)').forEach((el) => {
@@ -326,10 +318,10 @@ function showSettingMenu() {
       });
     },
   });
-  bookmark_arr.push({
+  arr2.push({
     type: 'separator',
   });
-  bookmark_arr.push({
+  arr2.push({
     label: 'Bookmark manager',
     click: () =>
       ipc('[open new tab]', {
@@ -338,11 +330,11 @@ function showSettingMenu() {
         vip: true,
       }),
   });
-  bookmark_arr.push({
+  arr2.push({
     type: 'separator',
   });
   SOCIALBROWSER.var.bookmarks.forEach((b) => {
-    bookmark_arr.push({
+    arr2.push({
       label: b.title,
       sublabel: b.url,
       icon: SOCIALBROWSER.nativeImage(b.favicon),
@@ -354,11 +346,11 @@ function showSettingMenu() {
   });
 
   if (SOCIALBROWSER.var.bookmarks.length > 0) {
-    bookmark_arr.push({
+    arr2.push({
       type: 'separator',
     });
 
-    bookmark_arr.push({
+    arr2.push({
       label: 'Open all bookmarks',
       visible: SOCIALBROWSER.var.bookmarks.length > 0,
       click: () => {
@@ -372,16 +364,17 @@ function showSettingMenu() {
     });
   }
 
-  let bookmark = new MenuItem({
+  let bookmark = {
     label: 'Bookmarks',
     type: 'submenu',
-    submenu: bookmark_arr,
-  });
-  arr.push(bookmark);
-  arr.push({
+    submenu: arr2,
+  };
+
+  SOCIALBROWSER.menuList.push(bookmark);
+  SOCIALBROWSER.menuList.push({
     type: 'separator',
   });
-  arr.push({
+  SOCIALBROWSER.menuList.push({
     label: 'Reload Page',
     accelerator: 'F5',
     click: () =>
@@ -389,7 +382,7 @@ function showSettingMenu() {
         action: true,
       }),
   });
-  arr.push({
+  SOCIALBROWSER.menuList.push({
     label: 'Hard Reload Page',
     accelerator: 'CommandOrControl+F5',
     click: () =>
@@ -398,82 +391,72 @@ function showSettingMenu() {
       }),
   });
 
-  arr.push({
+  SOCIALBROWSER.menuList.push({
     type: 'separator',
   });
-  arr.push({
+  SOCIALBROWSER.menuList.push({
     label: 'Zoom +',
     accelerator: 'CommandOrControl+numadd',
     click: () => {
       ipc('[window-zoom+]');
     },
   });
-  arr.push({
+  SOCIALBROWSER.menuList.push({
     label: 'Zoom OFF',
     accelerator: 'CommandOrControl+0',
     click: () => ipc('[window-zoom]'),
   });
-  arr.push({
+  SOCIALBROWSER.menuList.push({
     label: 'Zoom -',
     accelerator: 'CommandOrControl+numsub',
     click: () => ipc('[window-zoom-]'),
   });
 
-  arr.push({
+  SOCIALBROWSER.menuList.push({
     type: 'separator',
   });
-  arr.push({
+  SOCIALBROWSER.menuList.push({
     label: 'Edit Page Content',
     accelerator: 'CommandOrControl+E',
     click: () => ipc('[edit-window]'),
   });
-  arr.push({
+  SOCIALBROWSER.menuList.push({
     type: 'separator',
   });
-  arr.push({
+  SOCIALBROWSER.menuList.push({
     label: 'Audio ON / OFF',
     accelerator: 'CommandOrControl+1',
     click: () => ipc('[toggle-window-audio]'),
   });
 
-  arr.push({
+  SOCIALBROWSER.menuList.push({
     type: 'separator',
   });
 
-  arr.push({
+  SOCIALBROWSER.menuList.push({
     label: 'Developer Tools',
     accelerator: 'F12',
     click: () => ipc('[show-window-dev-tools]'),
   });
-  // arr.push({
-  //   type: 'separator',
-  // });
-  // arr.push({
-  //   label: 'Restart App',
-  //   click: () => SOCIALBROWSER.call('restart-app', {}),
-  // });
-  // arr.push({
-  //   label: 'Close App',
-  //   click: () => SOCIALBROWSER.call('close-app', {}),
-  // });
 
-  const settingMenu = Menu.buildFromTemplate(arr);
-
-  settingMenu.popup();
+  SOCIALBROWSER.ipc('[show-menu]', {
+    list: SOCIALBROWSER.menuList.map((m) => ({ label: m.label, sublabel: m.sublabel, visible: m.visible, type: m.type, submenu: m.submenu?.map((s) => ({ label: s.label, type: s.type })) })),
+    win_id: SOCIALBROWSER.currentWindow.id,
+  });
 }
 
 function showBookmarksMenu() {
   SOCIALBROWSER.currentWindow.show();
-  let bookmark_arr = [];
-  bookmark_arr.push({
+  SOCIALBROWSER.menuList = [];
+  SOCIALBROWSER.menuList.push({
     label: 'Bookmark current tab',
     click: () => ipc('[add-to-bookmark]'),
   });
-  bookmark_arr.push({
+  SOCIALBROWSER.menuList.push({
     type: 'separator',
   });
 
-  bookmark_arr.push({
+  SOCIALBROWSER.menuList.push({
     label: 'Bookmark all tabs',
     click: () => {
       document.querySelectorAll('.social-tab:not(#tabPlus)').forEach((el) => {
@@ -481,10 +464,10 @@ function showBookmarksMenu() {
       });
     },
   });
-  bookmark_arr.push({
+  SOCIALBROWSER.menuList.push({
     type: 'separator',
   });
-  bookmark_arr.push({
+  SOCIALBROWSER.menuList.push({
     label: 'Bookmark manager',
     click: () =>
       ipc('[open new tab]', {
@@ -493,11 +476,11 @@ function showBookmarksMenu() {
         vip: true,
       }),
   });
-  bookmark_arr.push({
+  SOCIALBROWSER.menuList.push({
     type: 'separator',
   });
   SOCIALBROWSER.var.bookmarks.forEach((b) => {
-    bookmark_arr.push({
+    SOCIALBROWSER.menuList.push({
       label: b.title,
       sublabel: b.url,
       icon: SOCIALBROWSER.nativeImage(b.favicon),
@@ -509,11 +492,11 @@ function showBookmarksMenu() {
   });
 
   if (SOCIALBROWSER.var.bookmarks.length > 0) {
-    bookmark_arr.push({
+    SOCIALBROWSER.menuList.push({
       type: 'separator',
     });
 
-    bookmark_arr.push({
+    SOCIALBROWSER.menuList.push({
       label: 'Open all bookmarks',
       visible: SOCIALBROWSER.var.bookmarks.length > 0,
       click: () => {
@@ -527,9 +510,10 @@ function showBookmarksMenu() {
     });
   }
 
-  let bookmarksMenu = Menu.buildFromTemplate(bookmark_arr);
-
-  bookmarksMenu.popup();
+  SOCIALBROWSER.ipc('[show-menu]', {
+    list: SOCIALBROWSER.menuList.map((m) => ({ label: m.label, sublabel: m.sublabel, visible: m.visible, type: m.type, submenu: m.submenu?.map((s) => ({ label: s.label, type: s.type })) })),
+    win_id: SOCIALBROWSER.currentWindow.id,
+  });
 }
 
 socialTabs.init(socialTabsDom, {
@@ -597,16 +581,16 @@ $('.social-close').click(() => {
   ExitSocialWindow();
 });
 $('.social-maxmize').click(() => {
-  SOCIALBROWSER.call('[browser-message]', { name: 'maxmize', win_id: SOCIALBROWSER.currentWindow.id });
+  SOCIALBROWSER.ipc('[browser-message]', { name: 'maxmize', win_id: SOCIALBROWSER.currentWindow.id });
 });
 $('.social-minmize').click(() => {
-  SOCIALBROWSER.call('[browser-message]', { name: 'minmize', win_id: SOCIALBROWSER.currentWindow.id });
+  SOCIALBROWSER.ipc('[browser-message]', { name: 'minmize', win_id: SOCIALBROWSER.currentWindow.id });
 });
 
 socialTabsDom.addEventListener('activeTabChange', ({ detail }) => {
   currentTabId = detail.tabEl.id;
 
-  SOCIALBROWSER.call('[show-view]', {
+  SOCIALBROWSER.ipc('[show-view]', {
     x: 0,
     y: 0,
     width: document.width,
@@ -720,7 +704,7 @@ socialTabsDom.addEventListener('tabAdd', ({ detail }) => {
       id: currentTabId,
     });
     const $id = $('#' + currentTabId);
-    SOCIALBROWSER.call('[create-new-view]', {
+    SOCIALBROWSER.ipc('[create-new-view]', {
       ...detail.tabProperties,
       x: window.screenLeft,
       y: window.screenTop + 70,
@@ -738,7 +722,7 @@ socialTabsDom.addEventListener('tabAdd', ({ detail }) => {
 socialTabsDom.addEventListener('tabRemove', ({ detail }) => {
   currentTabId = detail.id;
 
-  SOCIALBROWSER.call('[close-view]', {
+  SOCIALBROWSER.ipc('[close-view]', {
     tab_id: detail.id,
   });
 });
@@ -920,7 +904,7 @@ function renderMessage(cm) {
       vip: true,
     });
   } else if (cm.name == '[download-link]') {
-    SOCIALBROWSER.call('[download-link]', cm.url);
+    SOCIALBROWSER.ipc('[download-link]', cm.url);
   } else if (cm.name == 'downloads') {
     showDownloads();
   } else if (cm.name == 'escape') {
@@ -943,23 +927,23 @@ function renderMessage(cm) {
 }
 
 function playMiniVideo(cm) {
-  return SOCIALBROWSER.call('new-video-window', cm);
+  return SOCIALBROWSER.ipc('new-video-window', cm);
 }
 
 function playMiniYoutube(cm) {
-  return SOCIALBROWSER.call('new-youtube-window', cm);
+  return SOCIALBROWSER.ipc('new-youtube-window', cm);
 }
 
 function playTrustedWindow(cm) {
-  return SOCIALBROWSER.call('new-trusted-window', cm);
+  return SOCIALBROWSER.ipc('new-trusted-window', cm);
 }
 
 function playWindow(cm) {
-  return SOCIALBROWSER.call('new-window', cm);
+  return SOCIALBROWSER.ipc('new-window', cm);
 }
 
 function playMiniIframe(cm) {
-  return SOCIALBROWSER.call('new-iframe-window', cm);
+  return SOCIALBROWSER.ipc('new-iframe-window', cm);
 }
 
 function closeCurrentTab() {
@@ -972,7 +956,7 @@ function closeTab(id) {
 
 function ExitSocialWindow(noTabs = false) {
   if (noTabs) {
-    SOCIALBROWSER.call('[browser-message]', { name: 'close', win_id: SOCIALBROWSER.currentWindow.id });
+    SOCIALBROWSER.ipc('[browser-message]', { name: 'close', win_id: SOCIALBROWSER.currentWindow.id });
     return;
   }
   $('.address-input .http').css('display', 'none');
@@ -993,7 +977,7 @@ function ExitSocialWindow(noTabs = false) {
   });
 
   setTimeout(() => {
-    SOCIALBROWSER.call('[browser-message]', { name: 'close', win_id: SOCIALBROWSER.currentWindow.id });
+    SOCIALBROWSER.ipc('[browser-message]', { name: 'close', win_id: SOCIALBROWSER.currentWindow.id });
   }, 250);
 }
 

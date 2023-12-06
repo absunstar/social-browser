@@ -1,6 +1,6 @@
 module.exports = function init(child) {
   child.on = function (name, callback) {
-    child.electron.ipcMain.on(name, callback);
+    child.electron.ipcMain.handle(name, callback);
   };
 
   child.call = function (channel, value) {
@@ -49,10 +49,9 @@ module.exports = function init(child) {
     return data2;
   };
 
-  child.electron.ipcMain.on('[browser][data]', async (event, data) => {
+  child.electron.ipcMain.handle('[browser][data]', async (event, data) => {
     try {
       let data2 = child.handleBrowserData(data);
-      event.returnValue = data2;
       return data2;
     } catch (ex) {
       event.returnValue = {
@@ -68,32 +67,27 @@ module.exports = function init(child) {
         newTabData: child.parent.newTabData,
         windows: null,
       };
-      return event.returnValue;
+      return data2;
     }
   });
-  child.electron.ipcMain.handle('[browser][data]', async (event, data) => {
-    let data2 = child.handleBrowserData(data);
-    event.returnValue = data2;
-    return data2;
-  });
 
-  child.electron.ipcMain.on('[handle-session]', (e, obj) => {
+  child.electron.ipcMain.handle('[handle-session]', (e, obj) => {
     child.handleSession(obj);
   });
-  child.electron.ipcMain.on('[cookie-set-raw]', (e, obj) => {
+  child.electron.ipcMain.handle('[cookie-set-raw]', (e, obj) => {
     child.addCookie(obj);
-    e.returnValue = true;
+    return true;
   });
-  child.electron.ipcMain.on('[cookie-get-raw]', (e, obj) => {
-    e.returnValue = child.getCookiesRaw(obj);
+  child.electron.ipcMain.handle('[cookie-get-raw]', (e, obj) => {
+    return child.getCookiesRaw(obj);
   });
-  child.electron.ipcMain.on('[cookie-get-all]', (e, obj) => {
-    e.returnValue = child.getAllCookies(obj);
+  child.electron.ipcMain.handle('[cookie-get-all]', (e, obj) => {
+    return child.getAllCookies(obj);
   });
-  child.electron.ipcMain.on('[cookies-clear]', (e, obj) => {
-    e.returnValue = child.clearCookies(obj);
+  child.electron.ipcMain.handle('[cookies-clear]', (e, obj) => {
+    return child.clearCookies(obj);
   });
-  child.electron.ipcMain.on('window.message', (e, obj) => {
+  child.electron.ipcMain.handle('window.message', (e, obj) => {
     child.assignWindows.forEach((a) => {
       if (obj.parent_id && obj.parent_id == a.parent_id) {
         child.electron.BrowserWindow.fromId(obj.parent_id).send('window.message', obj);
@@ -103,16 +97,16 @@ module.exports = function init(child) {
     });
   });
 
-  child.electron.ipcMain.on('share', (e, message) => {
+  child.electron.ipcMain.handle('share', (e, message) => {
     child.sendMessage({
       type: 'share',
       message: message,
     });
   });
-  child.electron.ipcMain.on('[proxy-check-request]', (e, message) => {
+  child.electron.ipcMain.handle('[proxy-check-request]', (e, message) => {
     child.proxy_check(message.proxy);
   });
-  child.electron.ipcMain.on('getBlobData', (e, message) => {
+  child.electron.ipcMain.handle('getBlobData', (e, message) => {
     child.log('getBlobData', message);
     let ses = child.electron.session.fromPartition(message.partition);
     ses
@@ -124,11 +118,11 @@ module.exports = function init(child) {
         child.log(err);
       });
   });
-  child.electron.ipcMain.on('ws', (e, message) => {
+  child.electron.ipcMain.handle('ws', (e, message) => {
     child.sendMessage(message);
   });
 
-  child.electron.ipcMain.on('[add][window]', (e, data) => {
+  child.electron.ipcMain.handle('[add][window]', (e, data) => {
     let win = child.windowList.find((w) => w.id == data.win_id);
     if (win) {
       win.customSetting = { ...win.customSetting, ...data.customSetting };
@@ -140,7 +134,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.on('[set][window][setting]', (e, data) => {
+  child.electron.ipcMain.handle('[set][window][setting]', (e, data) => {
     let w = child.windowList.find((w) => w.id == data.win_id);
     if (w) {
       w.customSetting.windowSetting = w.customSetting.windowSetting || [];
@@ -158,105 +152,92 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.on('[get][window][setting]', (e, data) => {
+  child.electron.ipcMain.handle('[get][window][setting]', (e, data) => {
     let win = child.windowList.find((w) => w.id == data.win_id);
     if (win) {
-      e.returnValue = win.customSetting.windowSetting || [];
-      e.reply('[get][window][setting][data]', win.customSetting.windowSetting || []);
+      return win.customSetting.windowSetting || [];
     } else {
-      e.returnValue = [];
-      e.reply('[get][window][setting][data]', []);
+      return [];
     }
   });
 
-  child.electron.ipcMain.on('[assign][window]', (e, info) => {
+  child.electron.ipcMain.handle('[assign][window]', (e, info) => {
     child.assignWindows.push({
       parent_id: info.parent_id,
       child_id: info.child_id,
     });
   });
 
-  child.electron.ipcMain.on('[get][assign][window]', (e, info) => {
-    let w = null;
-    child.assignWindows.forEach((a) => {
-      if (a.child_id == info.child_id) {
-        w = a;
-      }
-    });
-    e.returnValue = w;
+  child.electron.ipcMain.handle('[get][assign][window]', (e, info) => {
+    return child.assignWindows.find((w) => w.child_id == info.child_id);
   });
 
-  child.electron.ipcMain.on('[fetch-json]', (e, options) => {
+  child.electron.ipcMain.handle('[fetch-json]', async (e, options) => {
     options.body = options.body || options.data || options.payload;
     if (options.body && typeof options.body != 'string') {
       options.body = JSON.stringify(options.body);
     }
     options.return = options.return || 'json';
-    child
-      .fetch(options.url, {
-        mode: 'cors',
-        method: options.method || 'get',
-        headers: options.headers || {
-          'Content-Type': 'application/json',
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36',
-        },
-        body: options.body,
-        redirect: options.redirect || 'follow',
-        agent: function (_parsedURL) {
-          if (_parsedURL.protocol == 'http:') {
-            return new child.http.Agent({
-              keepAlive: true,
-            });
-          } else {
-            return new child.https.Agent({
-              keepAlive: true,
-            });
-          }
-        },
-      })
-      .then((res) => {
-        if (options.return == 'json') {
-          return res.json();
+    let data = await child.fetch(options.url, {
+      mode: 'cors',
+      method: options.method || 'get',
+      headers: options.headers || {
+        'Content-Type': 'application/json',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36',
+      },
+      body: options.body,
+      redirect: options.redirect || 'follow',
+      agent: function (_parsedURL) {
+        if (_parsedURL.protocol == 'http:') {
+          return new child.http.Agent({
+            keepAlive: true,
+          });
         } else {
-          return res.text();
+          return new child.https.Agent({
+            keepAlive: true,
+          });
         }
-      })
-      .then((data) => {
-        e.reply('[fetch-json-callback]', {
-          options: options,
-          data: data,
-        });
-        e.returnValue = data;
-      })
-      .catch((err) => {
-        e.reply('[fetch-json-callback]', {
-          options: options,
-          error: err.message,
-        });
-        child.log('[fetch-json]', err.message);
-      });
+      },
+    });
+
+    if (options.return == 'json') {
+      return data.json();
+    } else {
+      return data.text();
+    }
   });
 
-  child.electron.ipcMain.on('[translate]', (e, info) => {
+  child.electron.ipcMain.handle('[translate]', async (e, info) => {
     info.text = encodeURIComponent(info.text);
     info.from = info.from || 'auto';
     info.to = info.to || 'en';
-    child
-      .fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${info.from}&tl=${info.to}&dt=t&dt=bd&dj=1&q=${info.text}`, {
-        method: 'get',
-        headers: { 'Content-Type': 'application/json' },
-      })
-      .then((res) => res.json())
-      .then((data) => {
-        info.data = data;
-        e.reply('[translate][data]', info);
-      })
-      .catch((err) => {
-        child.log('[translate]', err);
-      });
+    info.data = await child.fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${info.from}&tl=${info.to}&dt=t&dt=bd&dj=1&q=${info.text}`, {
+      method: 'get',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (info.data) {
+      info.data = info.data.json();
+    }
+    return info;
   });
-
-  child.electron.ipcMain.on('[create-new-view]', (event, options) => {
+  child.electron.ipcMain.handle('[show-menu]', (e, data) => {
+    let win = child.electron.BrowserWindow.fromId(data.win_id);
+    data.list.forEach((m, i) => {
+      m.click = function () {
+        win.webContents.send('[run-menu]', { index: i });
+      };
+      if (m.submenu) {
+        m.submenu.forEach((m2, i2) => {
+          m2.click = function () {
+            win.webContents.send('[run-menu]', {index: i , index2: i2 });
+          };
+        });
+      }
+    });
+    const menu = child.electron.Menu.buildFromTemplate(data.list);
+    menu.popup(win);
+  });
+  child.electron.ipcMain.handle('[create-new-view]', (event, options) => {
     options.url = options.url || child.parent.var.core.default_page;
     options.windowType = 'view';
     options.parent_id = child.id;
@@ -274,7 +255,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.on('[show-view]', (e, options) => {
+  child.electron.ipcMain.handle('[show-view]', (e, options) => {
     if (child.speedMode) {
       child.currentView = options;
       child.windowList.forEach((w) => {
@@ -301,7 +282,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.on('[close-view]', (e, options) => {
+  child.electron.ipcMain.handle('[close-view]', (e, options) => {
     if (child.speedMode) {
       child.windowList.forEach((w) => {
         if (w.customSetting.windowType == 'view') {
@@ -318,38 +299,38 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.on('[update-view-url]', (e, data) => {
+  child.electron.ipcMain.handle('[update-view-url]', (e, data) => {
     child.sendMessage({
       type: '[update-view-url]',
       data: data,
     });
   });
 
-  child.electron.ipcMain.on('[import-extension]', (e, options) => {
+  child.electron.ipcMain.handle('[import-extension]', (e, options) => {
     child.sendMessage({
       type: '[import-extension]',
     });
   });
-  child.electron.ipcMain.on('[enable-extension]', (e, options) => {
+  child.electron.ipcMain.handle('[enable-extension]', (e, options) => {
     child.sendMessage({
       type: '[enable-extension]',
       extension: options,
     });
   });
-  child.electron.ipcMain.on('[disable-extension]', (e, options) => {
+  child.electron.ipcMain.handle('[disable-extension]', (e, options) => {
     child.sendMessage({
       type: '[disable-extension]',
       extension: options,
     });
   });
-  child.electron.ipcMain.on('[remove-extension]', (e, options) => {
+  child.electron.ipcMain.handle('[remove-extension]', (e, options) => {
     child.sendMessage({
       type: '[remove-extension]',
       extension: options,
     });
   });
 
-  child.electron.ipcMain.on('[update-browser-var]', (e, options) => {
+  child.electron.ipcMain.handle('[update-browser-var]', (e, options) => {
     child.parent.var[options.name] = options.data;
     child.sendMessage({
       type: '[update-browser-var]',
@@ -357,7 +338,7 @@ module.exports = function init(child) {
     });
   });
 
-  child.electron.ipcMain.on('[browser-message]', (event, data) => {
+  child.electron.ipcMain.handle('[browser-message]', (event, data) => {
     let w = child.windowList.find((w) => w.id == data.win_id);
     if (w && w.window && !w.window.isDestroyed()) {
       if (data.name == 'maxmize') {
@@ -374,7 +355,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.on('[open new tab]', (event, data) => {
+  child.electron.ipcMain.handle('[open new tab]', (event, data) => {
     data.partition = data.partition || child.parent.var.core.session.name;
     data.user_name = data.user_name || child.parent.var.core.session.display;
 
@@ -393,7 +374,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.on('[open new popup]', (event, data) => {
+  child.electron.ipcMain.handle('[open new popup]', (event, data) => {
     data.partition = data.partition || child.parent.var.core.session.name;
     data.user_name = data.user_name || child.parent.var.core.session.display;
 
@@ -405,10 +386,10 @@ module.exports = function init(child) {
     });
   });
 
-  child.electron.ipcMain.on('[show-addressbar]', (event, data) => {
+  child.electron.ipcMain.handle('[show-addressbar]', (event, data) => {
     child.showAddressbarWindow(data);
   });
-  child.electron.ipcMain.on('[edit-window]', (event, data) => {
+  child.electron.ipcMain.handle('[edit-window]', (event, data) => {
     if (data.tab_id && data.tab_child_id && data.tab_win_id) {
       child.sendMessage({ type: '[edit-window]', data: data });
     } else if (data.win_id) {
@@ -431,7 +412,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.on('[window-reload]', (event, data) => {
+  child.electron.ipcMain.handle('[window-reload]', (event, data) => {
     if (data.tab_id && data.tab_child_id && data.tab_win_id) {
       child.sendMessage({ type: '[window-reload]', data: data });
     } else if (data.win_id) {
@@ -440,16 +421,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.on('[window-reload]', (event, data) => {
-    if (data.tab_id && data.tab_child_id && data.tab_win_id) {
-      child.sendMessage({ type: '[window-reload]', data: data });
-    } else if (data.win_id) {
-      let win = child.electron.BrowserWindow.fromId(data.win_id);
-      win.webContents.reload();
-    }
-  });
-
-  child.electron.ipcMain.on('[window-reload-hard]', (event, data) => {
+  child.electron.ipcMain.handle('[window-reload-hard]', (event, data) => {
     if (data.tab_id && data.tab_child_id && data.tab_win_id) {
       child.sendMessage({ type: '[window-reload-hard]', data: data });
     } else if (data.win_id) {
@@ -481,7 +453,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.on('[toggle-window-audio]', (event, data) => {
+  child.electron.ipcMain.handle('[toggle-window-audio]', (event, data) => {
     if (data.tab_id && data.tab_child_id && data.tab_win_id) {
       child.sendMessage({ type: '[toggle-window-audio]', data: data });
     } else if (data.win_id) {
@@ -491,7 +463,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.on('[window-go-back]', (event, data) => {
+  child.electron.ipcMain.handle('[window-go-back]', (event, data) => {
     if (data.tab_id && data.tab_child_id && data.tab_win_id) {
       child.sendMessage({ type: '[window-go-back]', data: data });
     } else if (data.win_id) {
@@ -502,7 +474,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.on('[window-go-forward]', (event, data) => {
+  child.electron.ipcMain.handle('[window-go-forward]', (event, data) => {
     if (data.tab_id && data.tab_child_id && data.tab_win_id) {
       child.sendMessage({ type: '[window-go-forward]', data: data });
     } else if (data.win_id) {
@@ -513,7 +485,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.on('[window-zoom]', (event, data) => {
+  child.electron.ipcMain.handle('[window-zoom]', (event, data) => {
     if (data.tab_id && data.tab_child_id && data.tab_win_id) {
       child.sendMessage({ type: '[window-zoom]', data: data });
     } else if (data.win_id) {
@@ -523,7 +495,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.on('[window-zoom-]', (event, data) => {
+  child.electron.ipcMain.handle('[window-zoom-]', (event, data) => {
     if (data.tab_id && data.tab_child_id && data.tab_win_id) {
       child.sendMessage({ type: '[window-zoom-]', data: data });
     } else if (data.win_id) {
@@ -535,7 +507,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.on('[window-zoom+]', (event, data) => {
+  child.electron.ipcMain.handle('[window-zoom+]', (event, data) => {
     if (data.tab_id && data.tab_child_id && data.tab_win_id) {
       child.sendMessage({ type: '[window-zoom+]', data: data });
     } else if (data.win_id) {
@@ -545,7 +517,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.on('[add-to-bookmark]', (event, data) => {
+  child.electron.ipcMain.handle('[add-to-bookmark]', (event, data) => {
     if (data.tab_id && data.tab_child_id && data.tab_win_id) {
       child.sendMessage({
         type: '[add-to-bookmark]',
@@ -554,7 +526,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.on('[show-window-dev-tools]', (event, data) => {
+  child.electron.ipcMain.handle('[show-window-dev-tools]', (event, data) => {
     if (data.tab_id && data.tab_child_id && data.tab_win_id) {
       child.sendMessage({ type: '[show-window-dev-tools]', data: data });
     } else if (data.win_id) {
@@ -563,13 +535,13 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.on('[show-profiles]', (event, data) => {
+  child.electron.ipcMain.handle('[show-profiles]', (event, data) => {
     child.showProfilesWindow();
   });
 
-  child.electron.ipcMain.on('user_data', (event, data) => {
+  child.electron.ipcMain.handle('user_data', (event, data) => {
     if (!Array.isArray(data.data) || data.data.length === 0) {
-      return;
+      return null;
     }
     child.parent.var.user_data = child.parent.var.user_data || [];
     let index = child.parent.var.user_data.findIndex((u) => u.id === data.id);
@@ -586,9 +558,9 @@ module.exports = function init(child) {
     });
   });
 
-  child.electron.ipcMain.on('user_data_input', (event, data) => {
+  child.electron.ipcMain.handle('user_data_input', (event, data) => {
     if (!Array.isArray(data.data) || data.data.length === 0) {
-      return;
+      return null;
     }
 
     child.parent.var.user_data_input = child.parent.var.user_data_input || [];
@@ -606,7 +578,7 @@ module.exports = function init(child) {
     });
   });
 
-  child.electron.ipcMain.on('[send-render-message]', (event, data) => {
+  child.electron.ipcMain.handle('[send-render-message]', (event, data) => {
     data.partition = data.partition || child.parent.var.core.session.name;
     data.user_name = data.user_name || child.parent.var.core.session.display;
 
@@ -719,5 +691,6 @@ module.exports = function init(child) {
         url: data.url,
       });
     }
+    return true;
   });
 };

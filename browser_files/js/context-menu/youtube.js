@@ -109,7 +109,7 @@
       }
     },
     blockPlayer: function () {
-      SOCIALBROWSER.call('[send-render-message]', { name: 'mute-audio', win_id: SOCIALBROWSER.currentWindow.id });
+      SOCIALBROWSER.ipc('[send-render-message]', { name: 'mute-audio', win_id: SOCIALBROWSER.currentWindow.id });
       if ((v = SOCIALBROWSER.youtubeMaster.player.querySelector('video'))) {
         if (v && v.currentTime > 0 && !v.paused && !v.ended && v.readyState > 2) {
           v.pause();

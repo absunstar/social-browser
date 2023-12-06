@@ -123,12 +123,12 @@ app.controller('mainController', ($scope, $http, $timeout) => {
   };
 
   $scope.goBack = function () {
-    SOCIALBROWSER.call('[send-render-message]', {
+    SOCIALBROWSER.ipc('[send-render-message]', {
       name: '[window-go-back]',
     });
   };
   $scope.goForward = function () {
-    SOCIALBROWSER.call('[send-render-message]', {
+    SOCIALBROWSER.ipc('[send-render-message]', {
       name: '[window-go-forward]',
     });
   };
@@ -516,16 +516,16 @@ app.controller('mainController', ($scope, $http, $timeout) => {
   };
 
   $scope.addExtension = function () {
-    SOCIALBROWSER.call('[import-extension]');
+    SOCIALBROWSER.ipc('[import-extension]');
   };
   $scope.enableExtension = function (_ex) {
-    SOCIALBROWSER.call('[enable-extension]', { id: _ex.id });
+    SOCIALBROWSER.ipc('[enable-extension]', { id: _ex.id });
   };
   $scope.disableExtension = function (_ex) {
-    SOCIALBROWSER.call('[disable-extension]', { id: _ex.id });
+    SOCIALBROWSER.ipc('[disable-extension]', { id: _ex.id });
   };
   $scope.removeExtension = function (_ex) {
-    SOCIALBROWSER.call('[remove-extension]', { id: _ex.id });
+    SOCIALBROWSER.ipc('[remove-extension]', { id: _ex.id });
     $scope.disableExtension(_ex);
   };
 
@@ -697,7 +697,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
 
     for (const key in $scope.setting) {
       if (key.indexOf('$') === -1) {
-        SOCIALBROWSER.call('[update-browser-var]', {
+        SOCIALBROWSER.ipc('[update-browser-var]', {
           name: key,
           data: $scope.setting[key],
         });
@@ -787,7 +787,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
 
     const $id = $('#' + currentTabId);
     $id.attr('url', $scope.url);
-    SOCIALBROWSER.call('update-view', {
+    SOCIALBROWSER.ipc('update-view', {
       _id: currentTabId,
       url: $id.attr('url'),
       partition: $id.attr('partition'),

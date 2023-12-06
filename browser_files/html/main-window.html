@@ -119,7 +119,7 @@
         module = undefined;
       }
       function showMessage(msg) {
-        SOCIALBROWSER.call('show_message', { message: msg });
+        SOCIALBROWSER.ipc('show_message', { message: msg });
       }
     </script>
 

@@ -80,11 +80,11 @@ app.controller('mainController', ($scope, $http, $interval, $timeout) => {
   };
 
   $scope.saveSetting = function () {
-    SOCIALBROWSER.call('[update-browser-var]', {
+    SOCIALBROWSER.ipc('[update-browser-var]', {
       name: 'core',
       data: $scope.setting.core,
     });
-    SOCIALBROWSER.call('[update-browser-var]', {
+    SOCIALBROWSER.ipc('[update-browser-var]', {
       name: 'session_list',
       data: $scope.setting.session_list,
     });

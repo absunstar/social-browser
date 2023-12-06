@@ -17,7 +17,7 @@ if (false) {
           }
         } else {
           img.classList.add('__waiting');
-          SOCIALBROWSER.call('set_data', {
+          SOCIALBROWSER.ipc('set_data', {
             id: id,
             click_count: 0,
           });
@@ -26,7 +26,7 @@ if (false) {
           let click_count = img.getAttribute('click_count') || 0;
           click_count++;
           img.setAttribute('click_count', click_count);
-          SOCIALBROWSER.call('set_data', {
+          SOCIALBROWSER.ipc('set_data', {
             id: id,
             click_count: click_count,
           });

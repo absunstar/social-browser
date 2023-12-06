@@ -126,7 +126,7 @@ window.open = function (url, _name, _specs, _replace_in_history) {
     }))
   ) {
     child_window.postMessage = function (...args) {
-      SOCIALBROWSER.call('window.message', { child_id: win.id, data: args[0], origin: args[1] || '*', transfer: args[2] });
+      SOCIALBROWSER.ipc('window.message', { child_id: win.id, data: args[0], origin: args[1] || '*', transfer: args[2] });
     };
 
     win.on('close', () => {
@@ -229,7 +229,7 @@ window.addEventListener('message', (e) => {
 if (SOCIALBROWSER.windows) {
   window.opener = {
     postMessage: (...args) => {
-      SOCIALBROWSER.call('window.message', {
+      SOCIALBROWSER.ipc('window.message', {
         parent_id: SOCIALBROWSER.windows.parent_id,
         data: args[0],
         origin: args[1] || '*',

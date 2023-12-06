@@ -1,7 +1,7 @@
 let $menuItem = SOCIALBROWSER.remote.MenuItem;
 let full_screen = false;
 
-// var change_event = doc.createEvent("HTMLEvents");
+// var change_event = document.createEvent("HTMLEvents");
 // change_event.initEvent("change", false, true);
 
 let changeEvent = new Event('change', {
@@ -54,13 +54,11 @@ function isContentEditable(node) {
   return false;
 }
 
-function add_input_menu(node, menu, doc) {
-  if (!node) {
-    return menu;
+function add_input_menu(node) {
+  if (!node || SOCIALBROWSER.menuInputOFF) {
+    return;
   }
-  if (SOCIALBROWSER.menuInputOFF) {
-    return menu;
-  }
+
   if (node.nodeName === 'INPUT' || node.nodeName === 'TEXTAREA' || isContentEditable(node)) {
     if (SOCIALBROWSER.customSetting.windowType !== 'main') {
       let arr1 = [];
@@ -93,10 +91,10 @@ function add_input_menu(node, menu, doc) {
                     }
                     let e1 = null;
                     if (d2.id) {
-                      e1 = doc.getElementById(d2.id);
+                      e1 = document.getElementById(d2.id);
                     }
                     if (!e1 && d2.name) {
-                      e1 = doc.getElementsByName(d2.name);
+                      e1 = document.getElementsByName(d2.name);
                     }
 
                     if (e1) {
@@ -138,10 +136,10 @@ function add_input_menu(node, menu, doc) {
                     }
                     let e1 = null;
                     if (d2.id) {
-                      e1 = doc.getElementById(d2.id);
+                      e1 = document.getElementById(d2.id);
                     }
                     if (!e1 && d2.name) {
-                      e1 = doc.getElementsByName(d2.name);
+                      e1 = document.getElementsByName(d2.name);
                     }
 
                     if (e1) {
@@ -207,10 +205,10 @@ function add_input_menu(node, menu, doc) {
                   }
                   let e1 = null;
                   if (d2.id) {
-                    e1 = doc.getElementById(d2.id);
+                    e1 = document.getElementById(d2.id);
                   }
                   if (!e1 && d2.name) {
-                    e1 = doc.getElementsByName(d2.name);
+                    e1 = document.getElementsByName(d2.name);
                   }
 
                   if (e1) {
@@ -245,10 +243,10 @@ function add_input_menu(node, menu, doc) {
                   }
                   let e1 = null;
                   if (d2.id) {
-                    e1 = doc.getElementById(d2.id);
+                    e1 = document.getElementById(d2.id);
                   }
                   if (!e1 && d2.name) {
-                    e1 = doc.getElementsByName(d2.name);
+                    e1 = document.getElementsByName(d2.name);
                   }
 
                   if (e1) {
@@ -277,95 +275,77 @@ function add_input_menu(node, menu, doc) {
       if (arr1.length > 0) {
         arr1.sort((a, b) => (a.label > b.label ? 1 : -1));
 
-        menu.append(
-          new $menuItem({
-            label: 'Fill',
-            type: 'submenu',
-            submenu: arr1,
-          })
-        );
+        SOCIALBROWSER.menuList.push({
+          label: 'Fill',
+          type: 'submenu',
+          submenu: arr1,
+        });
       }
       if (arr2.length > 0) {
         arr2.sort((a, b) => (a.label > b.label ? 1 : -1));
-        menu.append(
-          new $menuItem({
-            label: 'Auto Fill All',
-            type: 'submenu',
-            submenu: arr2,
-          })
-        );
+        SOCIALBROWSER.menuList.push({
+          label: 'Auto Fill All',
+          type: 'submenu',
+          submenu: arr2,
+        });
       }
     }
 
     if (node.nodeName === 'INPUT' && (node.getAttribute('type') || '').toLowerCase() == 'password' && node.value.length > 0) {
-      menu.append(
-        new $menuItem({
-          label: 'Show Password',
-          click() {
-            alert(node.value);
-          },
-        })
-      );
+      SOCIALBROWSER.menuList.push({
+        label: 'Show Password',
+        click() {
+          alert(node.value);
+        },
+      });
     }
 
-    menu.append(
-      new $menuItem({
-        label: 'Cut',
+    SOCIALBROWSER.menuList.push({
+      label: 'Cut',
 
-        click() {
-          SOCIALBROWSER.currentWindow.webContents.cut();
-        },
-        enabled: SOCIALBROWSER.selectedText.length > 0,
-      })
-    );
+      click() {
+        SOCIALBROWSER.currentWindow.webContents.cut();
+      },
+      enabled: SOCIALBROWSER.selectedText.length > 0,
+    });
 
-    menu.append(
-      new $menuItem({
-        label: 'Copy',
-        click() {
-          SOCIALBROWSER.currentWindow.webContents.copy();
-        },
-        enabled: SOCIALBROWSER.selectedText.length > 0,
-      })
-    );
+    SOCIALBROWSER.menuList.push({
+      label: 'Copy',
+      click() {
+        SOCIALBROWSER.currentWindow.webContents.copy();
+      },
+      enabled: SOCIALBROWSER.selectedText.length > 0,
+    });
 
-    menu.append(
-      new $menuItem({
-        label: 'Paste',
-        click() {
-          SOCIALBROWSER.currentWindow.webContents.paste();
-        },
-      })
-    );
+    SOCIALBROWSER.menuList.push({
+      label: 'Paste',
+      click() {
+        SOCIALBROWSER.currentWindow.webContents.paste();
+      },
+    });
 
-    menu.append(
-      new $menuItem({
-        label: 'Delete',
-        click() {
-          SOCIALBROWSER.currentWindow.webContents.delete();
-        },
-      })
-    );
+    SOCIALBROWSER.menuList.push({
+      label: 'Delete',
+      click() {
+        SOCIALBROWSER.currentWindow.webContents.delete();
+      },
+    });
 
-    menu.append(
-      new $menuItem({
-        label: 'Select All',
-        click() {
-          SOCIALBROWSER.currentWindow.webContents.selectall();
-        },
-      })
-    );
+    SOCIALBROWSER.menuList.push({
+      label: 'Select All',
+      click() {
+        SOCIALBROWSER.currentWindow.webContents.selectall();
+      },
+    });
 
-    menu.append(
-      new $menuItem({
-        type: 'separator',
-      })
-    );
+    SOCIALBROWSER.menuList.push({
+      type: 'separator',
+    });
 
-    return menu;
+    return;
   }
 
-  add_input_menu(node.parentNode, menu, doc);
+  add_input_menu(node.parentNode);
 }
 
 function get_url_menu_list(url) {
@@ -514,13 +494,11 @@ function get_url_menu_list(url) {
     return arr;
   }
 }
-function add_a_menu(node, menu, doc) {
-  if (!node) {
-    return menu;
+function add_a_menu(node) {
+  if (!node || SOCIALBROWSER.menuAOFF) {
+    return;
   }
-  if (SOCIALBROWSER.menuAOFF) {
-    return menu;
-  }
+
   if (node.nodeName === 'A' && node.getAttribute('href') && !node.getAttribute('href').startsWith('#')) {
     let u = node.getAttribute('href');
     u = SOCIALBROWSER.handleURL(u);
@@ -528,212 +506,172 @@ function add_a_menu(node, menu, doc) {
     u_string = ' [ ' + u.substring(0, 70) + ' ] ';
     if (u.like('mailto:*')) {
       let mail = u.replace('mailto:', '');
-      menu.append(
-        new $menuItem({
-          label: `Copy Email ${u_string}`,
-          click() {
-            SOCIALBROWSER.electron.clipboard.writeText(mail);
-          },
-        })
-      );
+      SOCIALBROWSER.menuList.push({
+        label: `Copy Email ${u_string}`,
+        click() {
+          SOCIALBROWSER.electron.clipboard.writeText(mail);
+        },
+      });
     } else {
       SOCIALBROWSER.selectedURL = u;
 
-      menu.append(
-        new $menuItem({
-          label: `Open link ${u_string} in ( new tab ) `,
-          click() {
-            SOCIALBROWSER.ipc('[open new tab]', {
-              referrer: document.location.href,
-              url: u,
-              partition: SOCIALBROWSER.partition,
-              user_name: SOCIALBROWSER.session.display,
-              win_id: SOCIALBROWSER.currentWindow.id,
-              center: true,
-            });
-          },
-        })
-      );
+      SOCIALBROWSER.menuList.push({
+        label: `Open link ${u_string} in ( new tab ) `,
+        click() {
+          SOCIALBROWSER.ipc('[open new tab]', {
+            referrer: document.location.href,
+            url: u,
+            partition: SOCIALBROWSER.partition,
+            user_name: SOCIALBROWSER.session.display,
+            win_id: SOCIALBROWSER.currentWindow.id,
+            center: true,
+          });
+        },
+      });
 
-      menu.append(
-        new $menuItem({
-          label: `Open link ${u_string} in ( current window ) `,
-          click() {
-            document.location.href = u;
-          },
-        })
-      );
+      SOCIALBROWSER.menuList.push({
+        label: `Open link ${u_string} in ( current window ) `,
+        click() {
+          document.location.href = u;
+        },
+      });
 
-      menu.append(
-        new $menuItem({
-          type: 'separator',
-        })
-      );
+      SOCIALBROWSER.menuList.push({
+        type: 'separator',
+      });
 
-      menu.append(
-        new $menuItem({
-          label: `Copy link ${u_string}`,
-          click() {
-            SOCIALBROWSER.electron.clipboard.writeText(u);
-          },
-        })
-      );
+      SOCIALBROWSER.menuList.push({
+        label: `Copy link ${u_string}`,
+        click() {
+          SOCIALBROWSER.electron.clipboard.writeText(u);
+        },
+      });
 
       let arr = get_url_menu_list(u);
-      menu.append(
-        new $menuItem({
-          label: `Open link ${u_string} `,
-          type: 'submenu',
-          submenu: arr,
-        })
-      );
+      SOCIALBROWSER.menuList.push({
+        label: `Open link ${u_string} `,
+        type: 'submenu',
+        submenu: arr,
+      });
     }
 
     if (u.like('https://www.youtube.com/watch*')) {
-      menu.append(
-        new $menuItem({
-          type: 'separator',
-        })
-      );
+      SOCIALBROWSER.menuList.push({
+        type: 'separator',
+      });
 
-      menu.append(
-        new $menuItem({
-          label: 'Play video ',
-          click() {
-            SOCIALBROWSER.ipc('[open new popup]', {
-              url: 'https://www.youtube.com/embed/' + u.split('=')[1].split('&')[0],
-              partition: SOCIALBROWSER.partition,
-              referrer: document.location.href,
-              show: true,
-              windowType: 'youtube',
-            });
-          },
-        })
-      );
-      menu.append(
-        new $menuItem({
-          label: 'Download video ',
-          click() {
-            SOCIALBROWSER.ipc('[open new popup]', {
-              url: u.replace('youtube', 'ssyoutube'),
-              partition: SOCIALBROWSER.partition,
-              referrer: document.location.href,
-              show: true,
-              center: true,
-            });
-          },
-        })
-      );
+      SOCIALBROWSER.menuList.push({
+        label: 'Play video ',
+        click() {
+          SOCIALBROWSER.ipc('[open new popup]', {
+            url: 'https://www.youtube.com/embed/' + u.split('=')[1].split('&')[0],
+            partition: SOCIALBROWSER.partition,
+            referrer: document.location.href,
+            show: true,
+            windowType: 'youtube',
+          });
+        },
+      });
+      SOCIALBROWSER.menuList.push({
+        label: 'Download video ',
+        click() {
+          SOCIALBROWSER.ipc('[open new popup]', {
+            url: u.replace('youtube', 'ssyoutube'),
+            partition: SOCIALBROWSER.partition,
+            referrer: document.location.href,
+            show: true,
+            center: true,
+          });
+        },
+      });
 
-      menu.append(
-        new $menuItem({
-          type: 'separator',
-        })
-      );
+      SOCIALBROWSER.menuList.push({
+        type: 'separator',
+      });
     }
 
-    return menu;
+    return;
   }
 
-  add_a_menu(node.parentNode, menu, doc);
+  add_a_menu(node.parentNode);
 }
 
-function get_img_menu(node, menu, doc) {
-  if (!node) {
-    return menu;
+function get_img_menu(node) {
+  if (!node || SOCIALBROWSER.menuImgOFF) {
+    return;
   }
-  if (SOCIALBROWSER.menuImgOFF) {
-    return menu;
-  }
+
   if (node.nodeName == 'IMG' && node.getAttribute('src')) {
     let url = node.getAttribute('src');
     url = SOCIALBROWSER.handleURL(url);
     u_string = ' [ ' + url.substring(0, 70) + ' ] ';
-    menu.append(
-      new $menuItem({
-        label: `Open image ${u_string} in ( new tab ) `,
-        click() {
-          SOCIALBROWSER.ipc('[open new tab]', {
-            url: url,
-            referrer: document.location.href,
-            win_id: SOCIALBROWSER.currentWindow.id,
-          });
-        },
-      })
-    );
+    SOCIALBROWSER.menuList.push({
+      label: `Open image ${u_string} in ( new tab ) `,
+      click() {
+        SOCIALBROWSER.ipc('[open new tab]', {
+          url: url,
+          referrer: document.location.href,
+          win_id: SOCIALBROWSER.currentWindow.id,
+        });
+      },
+    });
 
     let arr = get_url_menu_list(url);
-    menu.append(
-      new $menuItem({
-        label: `Open Image link ${u_string} `,
-        type: 'submenu',
-        submenu: arr,
-      })
-    );
+    SOCIALBROWSER.menuList.push({
+      label: `Open Image link ${u_string} `,
+      type: 'submenu',
+      submenu: arr,
+    });
 
-    menu.append(
-      new $menuItem({
-        label: `Copy image address ${u_string} `,
-        click() {
-          SOCIALBROWSER.electron.clipboard.writeText(url);
-        },
-      })
-    );
+    SOCIALBROWSER.menuList.push({
+      label: `Copy image address ${u_string} `,
+      click() {
+        SOCIALBROWSER.electron.clipboard.writeText(url);
+      },
+    });
 
-    menu.append(
-      new $menuItem({
-        label: `Save image ${u_string} `,
-        click() {
-          sendToMain({
-            name: '[download-link]',
-            url: url,
-          });
-        },
-      })
-    );
+    SOCIALBROWSER.menuList.push({
+      label: `Save image ${u_string} `,
+      click() {
+        sendToMain({
+          name: '[download-link]',
+          url: url,
+        });
+      },
+    });
 
-    menu.append(
-      new $menuItem({
-        type: 'separator',
-      })
-    );
-    return menu;
+    SOCIALBROWSER.menuList.push({
+      type: 'separator',
+    });
+    return;
   }
-  get_img_menu(node.parentNode, menu, doc);
+  get_img_menu(node.parentNode);
 }
 
-function add_div_menu(node, menu) {
-  if (!node) {
-    return menu;
+function add_div_menu(node) {
+  if (!node || SOCIALBROWSER.menuDivOFF) {
+    return;
   }
-  if (SOCIALBROWSER.menuDivOFF) {
-    return menu;
-  }
+
   if (node.nodeName === 'DIV') {
-    menu.append(
-      new $menuItem({
-        label: 'Copy inner text',
-        click() {
-          SOCIALBROWSER.electron.clipboard.writeText(node.innerText);
-        },
-      })
-    );
-    menu.append(
-      new $menuItem({
-        label: 'Copy inner html',
-        click() {
-          SOCIALBROWSER.electron.clipboard.writeText(node.innerText);
-        },
-      })
-    );
-    menu.append(
-      new $menuItem({
-        type: 'separator',
-      })
-    );
-    return menu;
+    SOCIALBROWSER.menuList.push({
+      label: 'Copy inner text',
+      click() {
+        SOCIALBROWSER.electron.clipboard.writeText(node.innerText);
+      },
+    });
+    SOCIALBROWSER.menuList.push({
+      label: 'Copy inner html',
+      click() {
+        SOCIALBROWSER.electron.clipboard.writeText(node.innerText);
+      },
+    });
+    SOCIALBROWSER.menuList.push({
+      type: 'separator',
+    });
+    return;
   }
-  add_div_menu(node.parentNode, menu);
+  add_div_menu(node.parentNode);
 }
 
 let isImageHidden = false;
@@ -745,16 +683,17 @@ let iframe_interval = null;
 function removeIframes() {
   isIframesDeleted = true;
   iframe_interval = setInterval(() => {
-    doc.querySelectorAll('iframe').forEach((frm) => {
+    document.querySelectorAll('iframe').forEach((frm) => {
       frm.remove();
     });
   }, 1000);
 }
 
-function get_options_menu(node, menu, doc) {
+function get_options_menu(node) {
   if (SOCIALBROWSER.menuOptionsOFF) {
-    return menu;
+    return;
   }
+
   let arr = [];
 
   arr.push({
@@ -964,7 +903,7 @@ function get_options_menu(node, menu, doc) {
       click() {
         isImageHidden = false;
         clearInterval(image_interval);
-        doc.querySelectorAll('img').forEach((img) => {
+        document.querySelectorAll('img').forEach((img) => {
           img.style.visibility = 'visible';
         });
       },
@@ -975,7 +914,7 @@ function get_options_menu(node, menu, doc) {
       click() {
         isImageHidden = true;
         image_interval = setInterval(() => {
-          doc.querySelectorAll('img').forEach((img) => {
+          document.querySelectorAll('img').forEach((img) => {
             img.style.visibility = 'hidden';
           });
         }, 1000);
@@ -1000,19 +939,17 @@ function get_options_menu(node, menu, doc) {
     });
   }
 
-  let m = new $menuItem({
+  let m = {
     label: 'Page',
     type: 'submenu',
     submenu: arr,
-  });
+  };
 
-  if (menu) {
-    menu.append(m);
-  }
+  SOCIALBROWSER.menuList.push(m);
 
   let arr2 = [];
 
-  doc.querySelectorAll('iframe').forEach((f, i) => {
+  document.querySelectorAll('iframe').forEach((f, i) => {
     if (i > 10) {
       return;
     }
@@ -1077,12 +1014,12 @@ function get_options_menu(node, menu, doc) {
   });
 
   if (arr2.length > 0) {
-    let m2 = new $menuItem({
+    let m2 = {
       label: 'Page Frames',
       type: 'submenu',
       submenu: arr2,
-    });
-    menu.append(m2);
+    };
+    SOCIALBROWSER.menuList.push(m2);
   }
 
   let arr3 = [];
@@ -1174,7 +1111,7 @@ function get_options_menu(node, menu, doc) {
     });
   });
 
-  doc.querySelectorAll('video , video source').forEach((f) => {
+  document.querySelectorAll('video , video source').forEach((f) => {
     if (f.src && f.src.startsWith('http')) {
       arr3.push({
         label: 'Play video source  ' + f.src,
@@ -1240,103 +1177,89 @@ function get_options_menu(node, menu, doc) {
   });
 
   if (arr3.length > 0) {
-    let m3 = new $menuItem({
+    let m3 = {
       label: 'Page Videos',
       type: 'submenu',
       submenu: arr3,
+    };
+    SOCIALBROWSER.menuList.push(m3);
+    SOCIALBROWSER.menuList.push({
+      type: 'separator',
     });
-    menu.append(m3);
-    menu.append(
-      new $menuItem({
-        type: 'separator',
-      })
-    );
   }
 
-  return m;
+  return;
 }
 
-function get_custom_menu(menu, doc) {
+function get_custom_menu() {
   if (SOCIALBROWSER.menuCustomOFF) {
-    return menu;
+    return;
   }
 
-  let vids = doc.querySelectorAll('video');
+  let vids = document.querySelectorAll('video');
   if (vids.length > 0) {
     vids.forEach((v) => {
       if (v.currentTime != v.duration && v.currentTime > 0 && !v.paused && !v.ended && v.readyState > 2) {
-        menu.append(
-          new $menuItem({
-            label: 'Skip playing video ',
-            click() {
-              v.currentTime = v.duration;
-            },
-          })
-        );
+        SOCIALBROWSER.menuList.push({
+          label: 'Skip playing video ',
+          click() {
+            v.currentTime = v.duration;
+          },
+        });
         if (v.src.like('http*')) {
-          menu.append(
-            new $menuItem({
-              label: 'Download playing video ',
-              click() {
-                sendToMain({
-                  name: '[download-link]',
-                  url: v.src,
-                });
-              },
-            })
-          );
+          SOCIALBROWSER.menuList.push({
+            label: 'Download playing video ',
+            click() {
+              sendToMain({
+                name: '[download-link]',
+                url: v.src,
+              });
+            },
+          });
         }
 
-        menu.append(
-          new $menuItem({
-            type: 'separator',
-          })
-        );
+        SOCIALBROWSER.menuList.push({
+          type: 'separator',
+        });
       }
     });
   }
 
   if (document.location.href.like('*youtube.com/watch*v=*')) {
-    menu.append(
-      new $menuItem({
-        label: 'Open current video',
-        click() {
-          SOCIALBROWSER.ipc('[open new popup]', {
-            partition: SOCIALBROWSER.partition,
-            url: 'https://www.youtube.com/embed/' + document.location.href.split('=')[1].split('&')[0],
-            referrer: document.location.href,
-            show: true,
-          });
-        },
-      })
-    );
+    SOCIALBROWSER.menuList.push({
+      label: 'Open current video',
+      click() {
+        SOCIALBROWSER.ipc('[open new popup]', {
+          partition: SOCIALBROWSER.partition,
+          url: 'https://www.youtube.com/embed/' + document.location.href.split('=')[1].split('&')[0],
+          referrer: document.location.href,
+          show: true,
+        });
+      },
+    });
 
-    menu.append(
-      new $menuItem({
-        label: 'Download current video',
-        click() {
-          SOCIALBROWSER.ipc('[open new popup]', {
-            partition: SOCIALBROWSER.partition,
-            referrer: document.location.href,
-            url: document.location.href.replace('youtube', 'ssyoutube'),
-            show: true,
-            center: true,
-          });
-        },
-      })
-    );
+    SOCIALBROWSER.menuList.push({
+      label: 'Download current video',
+      click() {
+        SOCIALBROWSER.ipc('[open new popup]', {
+          partition: SOCIALBROWSER.partition,
+          referrer: document.location.href,
+          url: document.location.href.replace('youtube', 'ssyoutube'),
+          show: true,
+          center: true,
+        });
+      },
+    });
 
-    menu.append(
-      new $menuItem({
-        type: 'separator',
-      })
-    );
+    SOCIALBROWSER.menuList.push({
+      type: 'separator',
+    });
   }
 }
 
-function createTestMenu(menu) {
+function createTestMenu() {
   if (SOCIALBROWSER.menuTestOFF) {
-    return menu;
+    return;
   }
   let arr = [];
 
@@ -1348,19 +1271,17 @@ function createTestMenu(menu) {
   });
 
   if (arr.length > 0) {
-    menu.append(
-      new $menuItem({
-        label: 'Test',
-        type: 'submenu',
-        submenu: arr,
-      })
-    );
+    SOCIALBROWSER.menuList.push({
+      label: 'Test',
+      type: 'submenu',
+      submenu: arr,
+    });
   }
 }
 
 function url_to_social(url, social_arr, title) {
   if (SOCIALBROWSER.menuSocialOFF) {
-    return menu;
+    return;
   }
   social_arr.push({
     label: ` Open  [ ${title} ] in 5 new window [Audio Muted]`,
@@ -1465,10 +1386,11 @@ function url_to_social(url, social_arr, title) {
   return social_arr;
 }
 
-function get_social_menu(node, menu, doc, social_arr) {
+function get_social_menu(node, social_arr) {
   if (SOCIALBROWSER.menuSocialOFF) {
-    return menu;
+    return;
   }
+
   social_arr = social_arr || [];
 
   if (!node) {
@@ -1479,21 +1401,17 @@ function get_social_menu(node, menu, doc, social_arr) {
     }
     social_arr = url_to_social(document.location.href, social_arr, 'Current Page');
     if (social_arr.length > 0) {
-      menu.append(
-        new $menuItem({
-          label: ' Social Tools ',
-          type: 'submenu',
-          submenu: social_arr,
-        })
-      );
+      SOCIALBROWSER.menuList.push({
+        label: ' Social Tools ',
+        type: 'submenu',
+        submenu: social_arr,
+      });
 
-      menu.append(
-        new $menuItem({
-          type: 'separator',
-        })
-      );
+      SOCIALBROWSER.menuList.push({
+        type: 'separator',
+      });
     }
-    return menu;
+    return;
   }
 
   if (SOCIALBROWSER.var.blocking.social.allow_menu) {
@@ -1526,107 +1444,84 @@ function get_social_menu(node, menu, doc, social_arr) {
       social_arr.push({
         type: 'separator',
       });
-      get_social_menu(null, menu, doc, social_arr);
+      get_social_menu(null, social_arr);
     } else if (node.nodeName !== 'A') {
-      get_social_menu(node.parentNode, menu, doc, social_arr);
+      get_social_menu(node.parentNode, social_arr);
     }
   }
 }
 
-function add_table_menu(node, menu, doc) {}
-
 SOCIALBROWSER.addMenu = function (_menuItem) {
   SOCIALBROWSER.menu_list.push(_menuItem);
 };
-function createMenu(node, doc) {
-  doc = doc || document;
-
-  let menu = new SOCIALBROWSER.remote.Menu();
-  SOCIALBROWSER.selectedNode = node;
-
+function createMenuList(node) {
   if (SOCIALBROWSER.customSetting.windowType !== 'main') {
-    if (node.tagName == 'Table') {
-      add_table_menu(node, menu, doc);
-    }
-
     if (SOCIALBROWSER.selectedText.length > 0) {
       let stext = SOCIALBROWSER.selectedText.substring(0, 70);
-      menu.append(
-        new $menuItem({
-          label: `Copy [ ${stext} ] `,
-          click() {
-            SOCIALBROWSER.electron.clipboard.writeText(SOCIALBROWSER.selectedText);
-          },
-        })
-      );
+      SOCIALBROWSER.menuList.push({
+        label: `Copy [ ${stext} ] `,
+        click() {
+          SOCIALBROWSER.electron.clipboard.writeText(SOCIALBROWSER.selectedText);
+        },
+      });
 
-      menu.append(
-        new $menuItem({
-          label: `Translate [ ${stext} ] `,
-          click() {
-            SOCIALBROWSER.ipc('[open new popup]', {
-              partition: SOCIALBROWSER.partition,
-              show: true,
-              center: true,
-              url: 'https://translate.google.com/?num=100&newwindow=1&um=1&ie=UTF-8&hl=en&client=tw-ob#auto/ar/' + encodeURIComponent(SOCIALBROWSER.selectedText),
-            });
-          },
-        })
-      );
+      SOCIALBROWSER.menuList.push({
+        label: `Translate [ ${stext} ] `,
+        click() {
+          SOCIALBROWSER.ipc('[open new popup]', {
+            partition: SOCIALBROWSER.partition,
+            show: true,
+            center: true,
+            url: 'https://translate.google.com/?num=100&newwindow=1&um=1&ie=UTF-8&hl=en&client=tw-ob#auto/ar/' + encodeURIComponent(SOCIALBROWSER.selectedText),
+          });
+        },
+      });
 
-      menu.append(
-        new $menuItem({
-          label: `Search  [ ${stext} ] `,
-          click() {
-            SOCIALBROWSER.ipc('[open new tab]', {
-              referrer: document.location.href,
-              url: 'https://www.google.com/search?q=' + encodeURIComponent(SOCIALBROWSER.selectedText),
-              win_id: SOCIALBROWSER.currentWindow.id,
-            });
-          },
-        })
-      );
+      SOCIALBROWSER.menuList.push({
+        label: `Search  [ ${stext} ] `,
+        click() {
+          SOCIALBROWSER.ipc('[open new tab]', {
+            referrer: document.location.href,
+            url: 'https://www.google.com/search?q=' + encodeURIComponent(SOCIALBROWSER.selectedText),
+            win_id: SOCIALBROWSER.currentWindow.id,
+          });
+        },
+      });
 
-      menu.append(
-        new $menuItem({
-          type: 'separator',
-        })
-      );
+      SOCIALBROWSER.menuList.push({
+        type: 'separator',
+      });
     }
 
-    add_input_menu(node, menu, doc);
-    add_a_menu(node, menu, doc);
+    add_input_menu(node);
+    add_a_menu(node);
 
     if (SOCIALBROWSER.memoryText && SOCIALBROWSER.isValidURL(SOCIALBROWSER.memoryText)) {
       let arr = get_url_menu_list(SOCIALBROWSER.memoryText);
-      menu.append(
-        new $menuItem({
-          label: `Open link [ ${SOCIALBROWSER.memoryText.substring(0, 70)} ] `,
-          type: 'submenu',
-          submenu: arr,
-        })
-      );
+      SOCIALBROWSER.menuList.push({
+        label: `Open link [ ${SOCIALBROWSER.memoryText.substring(0, 70)} ] `,
+        type: 'submenu',
+        submenu: arr,
+      });
 
-      menu.append(new $menuItem({ type: 'separator' }));
+      SOCIALBROWSER.menuList.push({ type: 'separator' });
     }
     if (SOCIALBROWSER.selectedText && SOCIALBROWSER.isValidURL(SOCIALBROWSER.selectedText)) {
       let arr = get_url_menu_list(SOCIALBROWSER.selectedText);
-      menu.append(
-        new $menuItem({
-          label: `Open link [ ${SOCIALBROWSER.selectedText.substring(0, 70)} ] `,
-          type: 'submenu',
-          submenu: arr,
-        })
-      );
+      SOCIALBROWSER.menuList.push({
+        label: `Open link [ ${SOCIALBROWSER.selectedText.substring(0, 70)} ] `,
+        type: 'submenu',
+        submenu: arr,
+      });
 
-      menu.append(new $menuItem({ type: 'separator' }));
+      SOCIALBROWSER.menuList.push({ type: 'separator' });
     }
 
-    get_img_menu(node, menu, doc);
+    get_img_menu(node);
 
-    get_social_menu(node, menu, doc, null);
+    get_social_menu(node, null);
     SOCIALBROWSER.menu_list.forEach((m) => {
-      menu.append(new $menuItem(m));
+      SOCIALBROWSER.menuList.push(m);
     });
 
     if (SOCIALBROWSER.var.blocking.open_list.length > 0) {
@@ -1634,35 +1529,29 @@ function createMenu(node, doc) {
         if (o.enabled) {
           if (o.multi) {
             let arr = get_url_menu_list(o.url || document.location.href);
-            menu.append(
-              new $menuItem({
-                label: o.name,
-                type: 'submenu',
-                submenu: arr,
-              })
-            );
+            SOCIALBROWSER.menuList.push({
+              label: o.name,
+              type: 'submenu',
+              submenu: arr,
+            });
           } else {
-            menu.append(
-              new $menuItem({
-                label: o.name,
-                click() {
-                  SOCIALBROWSER.ipc('[open new tab]', {
-                    partition: SOCIALBROWSER.partition,
-                    url: o.url || document.location.href,
-                    referrer: document.location.href,
-                    show: true,
-                    win_id: SOCIALBROWSER.currentWindow.id,
-                  });
-                },
-              })
-            );
+            SOCIALBROWSER.menuList.push({
+              label: o.name,
+              click() {
+                SOCIALBROWSER.ipc('[open new tab]', {
+                  partition: SOCIALBROWSER.partition,
+                  url: o.url || document.location.href,
+                  referrer: document.location.href,
+                  show: true,
+                  win_id: SOCIALBROWSER.currentWindow.id,
+                });
+              },
+            });
           }
 
-          menu.append(
-            new $menuItem({
-              type: 'separator',
-            })
-          );
+          SOCIALBROWSER.menuList.push({
+            type: 'separator',
+          });
         }
       });
     }
@@ -1686,42 +1575,34 @@ function createMenu(node, doc) {
       });
 
       if (arr.length > 0) {
-        menu.append(
-          new $menuItem({
-            label: ' VIP ',
-            type: 'submenu',
-            submenu: arr,
-          })
-        );
+        SOCIALBROWSER.menuList.push({
+          label: ' VIP ',
+          type: 'submenu',
+          submenu: arr,
+        });
       }
 
-      menu.append(
-        new $menuItem({
-          type: 'separator',
-        })
-      );
-    }
-
-    get_custom_menu(menu, doc);
-    if (SOCIALBROWSER.var.blocking.context_menu.copy_div_content) {
-      add_div_menu(node, menu);
-    }
-
-    menu.append(
-      new $menuItem({
-        label: 'Refresh',
-        accelerator: 'F5',
-        click() {
-          SOCIALBROWSER.currentWindow.webContents.reload();
-        },
-      })
-    );
-
-    menu.append(
-      new $menuItem({
+      SOCIALBROWSER.menuList.push({
         type: 'separator',
-      })
-    );
+      });
+    }
+
+    get_custom_menu();
+    if (SOCIALBROWSER.var.blocking.context_menu.copy_div_content) {
+      add_div_menu(node);
+    }
+
+    SOCIALBROWSER.menuList.push({
+      label: 'Refresh',
+      accelerator: 'F5',
+      click: function () {
+        SOCIALBROWSER.currentWindow.webContents.reload();
+      },
+    });
+
+    SOCIALBROWSER.menuList.push({
+      type: 'separator',
+    });
 
     if (SOCIALBROWSER.var.blocking.context_menu.proxy_options) {
       let arr = [];
@@ -1746,50 +1627,42 @@ function createMenu(node, doc) {
       });
 
       if (arr.length > 0) {
-        menu.append(
-          new $menuItem({
-            label: 'Open current page with proxy + ghost user',
-            type: 'submenu',
-            submenu: arr,
-          })
-        );
+        SOCIALBROWSER.menuList.push({
+          label: 'Open current page with proxy + ghost user',
+          type: 'submenu',
+          submenu: arr,
+        });
       }
     }
     if (SOCIALBROWSER.var.blocking.context_menu.page_options) {
-      get_options_menu(node, menu, doc);
+      get_options_menu(node);
     }
 
     if (SOCIALBROWSER.var.blocking.context_menu.inspect && SOCIALBROWSER.customSetting.allowDevTools) {
-      menu.append(
-        new $menuItem({
-          type: 'separator',
-        })
-      );
+      SOCIALBROWSER.menuList.push({
+        type: 'separator',
+      });
 
-      menu.append(
-        new $menuItem({
-          label: 'Inspect Element',
-          click() {
-            SOCIALBROWSER.currentWindow.webContents.inspectElement(SOCIALBROWSER.rightClickPosition.x2, SOCIALBROWSER.rightClickPosition.y2);
-          },
-        })
-      );
+      SOCIALBROWSER.menuList.push({
+        label: 'Inspect Element',
+        click() {
+          SOCIALBROWSER.currentWindow.webContents.inspectElement(SOCIALBROWSER.rightClickPosition.x2, SOCIALBROWSER.rightClickPosition.y2);
+        },
+      });
     }
 
     if (SOCIALBROWSER.var.blocking.context_menu.dev_tools && SOCIALBROWSER.customSetting.allowDevTools) {
-      menu.append(
-        new $menuItem({
-          label: 'Developer Tools',
-          accelerator: 'F12',
-          click() {
-            SOCIALBROWSER.currentWindow.webContents.openDevTools();
-          },
-        })
-      );
+      SOCIALBROWSER.menuList.push({
+        label: 'Developer Tools',
+        accelerator: 'F12',
+        click() {
+          SOCIALBROWSER.currentWindow.webContents.openDevTools();
+        },
+      });
     }
 
     if (SOCIALBROWSER.var.core.id.like('*test*')) {
-      createTestMenu(menu);
+      createTestMenu();
     }
   } else {
     if (node.classList.contains('social-tab')) {
@@ -1799,7 +1672,7 @@ function createMenu(node, doc) {
       let user_agent = node.getAttribute('user_agent');
       let child_id = node.getAttribute('child_id');
       let ghost = 'x-ghost_' + Math.random().toString().replace('.', '');
-      menu.append(
+      SOCIALBROWSER.menuList.push(
         new MenuItem({
           label: 'New tab',
           click() {
@@ -1807,7 +1680,7 @@ function createMenu(node, doc) {
           },
         })
       );
-      menu.append(
+      SOCIALBROWSER.menuList.push(
         new MenuItem({
           label: 'Duplicate tab',
           click() {
@@ -1815,13 +1688,13 @@ function createMenu(node, doc) {
           },
         })
       );
-      menu.append(
+      SOCIALBROWSER.menuList.push(
         new MenuItem({
           type: 'separator',
         })
       );
 
-      menu.append(
+      SOCIALBROWSER.menuList.push(
         new MenuItem({
           label: 'Hide tab',
           click() {
@@ -1832,7 +1705,7 @@ function createMenu(node, doc) {
           },
         })
       );
-      menu.append(
+      SOCIALBROWSER.menuList.push(
         new MenuItem({
           label: '  Hide other tabs',
           click() {
@@ -1844,7 +1717,7 @@ function createMenu(node, doc) {
           },
         })
       );
-      menu.append(
+      SOCIALBROWSER.menuList.push(
         new MenuItem({
           label: 'Show hidden tabs',
           click() {
@@ -1854,12 +1727,12 @@ function createMenu(node, doc) {
           },
         })
       );
-      menu.append(
+      SOCIALBROWSER.menuList.push(
         new MenuItem({
           type: 'separator',
         })
       );
-      menu.append(
+      SOCIALBROWSER.menuList.push(
         new MenuItem({
           label: 'New Ghost tab',
           click() {
@@ -1867,7 +1740,7 @@ function createMenu(node, doc) {
           },
         })
       );
-      menu.append(
+      SOCIALBROWSER.menuList.push(
         new MenuItem({
           label: 'Duplicate tab in Ghost tab',
           click() {
@@ -1875,13 +1748,13 @@ function createMenu(node, doc) {
           },
         })
       );
-      menu.append(
+      SOCIALBROWSER.menuList.push(
         new MenuItem({
           type: 'separator',
         })
       );
 
-      menu.append(
+      SOCIALBROWSER.menuList.push(
         new MenuItem({
           label: 'Duplicate tab in window',
           click() {
@@ -1898,7 +1771,7 @@ function createMenu(node, doc) {
           },
         })
       );
-      menu.append(
+      SOCIALBROWSER.menuList.push(
         new MenuItem({
           label: 'Duplicate tab in Ghost window',
           click() {
@@ -1915,12 +1788,12 @@ function createMenu(node, doc) {
           },
         })
       );
-      menu.append(
+      SOCIALBROWSER.menuList.push(
         new MenuItem({
           type: 'separator',
         })
       );
-      menu.append(
+      SOCIALBROWSER.menuList.push(
         new MenuItem({
           label: 'Close',
           click() {
@@ -1928,7 +1801,7 @@ function createMenu(node, doc) {
           },
         })
       );
-      menu.append(
+      SOCIALBROWSER.menuList.push(
         new MenuItem({
           label: 'Close other tabs',
           click() {
@@ -1942,46 +1815,38 @@ function createMenu(node, doc) {
       );
 
       if (SOCIALBROWSER.var.core.id.contains('test')) {
-        menu.append(
-          new $menuItem({
-            type: 'separator',
-          })
-        );
+        SOCIALBROWSER.menuList.push({
+          type: 'separator',
+        });
 
-        menu.append(
-          new $menuItem({
-            label: 'Inspect Element',
-            click() {
-              SOCIALBROWSER.currentWindow.webContents.inspectElement(SOCIALBROWSER.rightClickPosition.x2, SOCIALBROWSER.rightClickPosition.y2);
-            },
-          })
-        );
+        SOCIALBROWSER.menuList.push({
+          label: 'Inspect Element',
+          click() {
+            SOCIALBROWSER.currentWindow.webContents.inspectElement(SOCIALBROWSER.rightClickPosition.x2, SOCIALBROWSER.rightClickPosition.y2);
+          },
+        });
 
-        menu.append(
-          new $menuItem({
-            label: 'Developer Tools',
-            accelerator: 'F12',
-            click() {
-              SOCIALBROWSER.currentWindow.webContents.openDevTools({
-                mode: 'detach',
-              });
-            },
-          })
-        );
+        SOCIALBROWSER.menuList.push({
+          label: 'Developer Tools',
+          accelerator: 'F12',
+          click() {
+            SOCIALBROWSER.currentWindow.webContents.openDevTools({
+              mode: 'detach',
+            });
+          },
+        });
 
-        menu.append(
-          new $menuItem({
-            label: 'Exist Social Browser',
-            click() {
-              SOCIALBROWSER.ws({ type: '[close]' });
-            },
-          })
-        );
+        SOCIALBROWSER.menuList.push({
+          label: 'Exist Social Browser',
+          click() {
+            SOCIALBROWSER.ws({ type: '[close]' });
+          },
+        });
       }
     }
   }
 
-  return menu;
+  return;
 }
 
 SOCIALBROWSER.contextmenu = function (e) {
@@ -2010,13 +1875,14 @@ SOCIALBROWSER.contextmenu = function (e) {
       return null;
     }
 
-    let m = createMenu(node, document);
+    SOCIALBROWSER.menuList = [];
 
-    if (m) {
-      m.popup({
-        window: SOCIALBROWSER.currentWindow,
-      });
-    }
+    createMenuList(node);
+
+    SOCIALBROWSER.ipc('[show-menu]', {
+      list: SOCIALBROWSER.menuList.map((m) => ({ label: m.label, type: m.type, submenu: m.submenu?.map((s) => ({ label: s.label, type: s.type })) })),
+      win_id: SOCIALBROWSER.currentWindow.id,
+    });
   } catch (error) {
     SOCIALBROWSER.log(error);
   }
@@ -2025,7 +1891,22 @@ SOCIALBROWSER.contextmenu = function (e) {
 SOCIALBROWSER.on('context-menu', (e, data) => {
   SOCIALBROWSER.contextmenu(data);
 });
-
+SOCIALBROWSER.on('[run-menu]', (e, data) => {
+  if (typeof data.index !== 'undefined' && typeof data.index2 !== 'undefined') {
+    let m = SOCIALBROWSER.menuList[data.index];
+    if (m && m.submenu) {
+      let m2 = m.submenu[data.index2];
+      if (m2) {
+        m2.click();
+      }
+    }
+  } else if (typeof data.index !== 'undefined') {
+    let m = SOCIALBROWSER.menuList[data.index];
+    if (m) {
+      m.click();
+    }
+  }
+});
 window.addEventListener('dblclick', (event) => {
   if (
     SOCIALBROWSER.var.blocking.javascript.auto_remove_html &&

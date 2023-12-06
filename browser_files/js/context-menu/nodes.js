@@ -13,15 +13,6 @@ SOCIALBROWSER.dataInputPost = {
   data: [],
 };
 
-SOCIALBROWSER.onEvent('html-edited', (node) => {
-  if (node && node.tagName == 'A') {
-    a_handle(node);
-  } else if (node && node.tagName == 'INPUT') {
-    input_handle(node);
-  } else if (node && node.tagName == 'IFRAME') {
-    iframe_handle(node);
-  }
-});
 
 SOCIALBROWSER.onEvent('html-added', (node) => {
   if (node && node.tagName == 'A') {

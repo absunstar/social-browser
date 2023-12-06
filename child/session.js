@@ -988,10 +988,6 @@ module.exports = function (child) {
     return ss;
   };
 
-  child.on('[handle-session]', (e, obj) => {
-    child.handleSession(obj);
-  });
-
   child.sessionConfig = () => {
     child.handleSession({ name: child.parent.options.partition });
     // child.handleSession('_');

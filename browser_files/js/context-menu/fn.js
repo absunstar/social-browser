@@ -28,7 +28,7 @@ SOCIALBROWSER.fetchJson = function (options, callback) {
         }
       }
     });
-    SOCIALBROWSER.call('[fetch-json]', options);
+    SOCIALBROWSER.ipc('[fetch-json]', options);
   });
 };
 SOCIALBROWSER.rand = {
@@ -273,7 +273,7 @@ SOCIALBROWSER.onLoad = function (fn) {
   }
 };
 SOCIALBROWSER.sendMessage = function (cm) {
-  SOCIALBROWSER.call('renderMessage', cm);
+  SOCIALBROWSER.ipc('renderMessage', cm);
 };
 
 SOCIALBROWSER.__define = function (o, p, v, op) {
@@ -787,7 +787,7 @@ SOCIALBROWSER.translate = function (info, callback) {
   SOCIALBROWSER.translateBusy = true;
 
   SOCIALBROWSER.translateList.push(info);
-  SOCIALBROWSER.call('[translate]', { id: info.id, text: info.text, from: info.from, to: info.to });
+  SOCIALBROWSER.ipc('[translate]', { id: info.id, text: info.text, from: info.from, to: info.to });
 };
 
 SOCIALBROWSER.on('[translate][data]', (e, info) => {

@@ -33,38 +33,20 @@ if (!SOCIALBROWSER.var.core.javaScriptOFF) {
       }
     });
 
-    document.addEventListener('DOMSubtreeModified', function (e) {
-      SOCIALBROWSER.callEvent('html-edited', e.target);
-    });
 
-    document.addEventListener('DOMNodeInserted', function (e) {
-      SOCIALBROWSER.callEvent('html-added', e.target);
-
-      if (e.target.querySelectorAll) {
-        let arr = e.target.querySelectorAll('*');
-        if (arr) {
-          arr.forEach((el) => {
-            SOCIALBROWSER.callEvent('html-added', el);
-          });
-        }
-      }
-    });
-    document.addEventListener('DOMNodeRemoved', function (e) {
-      SOCIALBROWSER.callEvent('html-removed', e.target);
-    });
   }
 }
 
 require(SOCIALBROWSER.files_dir + '/js/context-menu/finger_print.js');
 
-window.addEventListener('mousedown', (e) => {
+/*window.addEventListener('mousedown', (e) => {
   if (SOCIALBROWSER.customSetting.windowType == 'view') {
-    SOCIALBROWSER.call('[send-render-message]', {
+    SOCIALBROWSER.ipc('[send-render-message]', {
       name: 'window_clicked',
       win_id: SOCIALBROWSER.remote.getCurrentWindow().id,
     });
   }
-});
+});*/
 
 // user agent
 
