@@ -1692,9 +1692,7 @@ function createMenuList(node) {
         label: 'Hide tab',
         click() {
           node.classList.add('display-none');
-          if ((t = document.querySelector('.social-tab:not(.display-none)'))) {
-            t.click();
-          }
+          socialTabs.layoutTabs();
         },
       });
       SOCIALBROWSER.menuList.push({
@@ -1705,6 +1703,7 @@ function createMenuList(node) {
               el.classList.add('display-none');
             }
           });
+          socialTabs.layoutTabs();
         },
       });
       SOCIALBROWSER.menuList.push({
@@ -1713,6 +1712,7 @@ function createMenuList(node) {
           document.querySelectorAll('.social-tab').forEach((t) => {
             t.classList.remove('display-none');
           });
+          socialTabs.layoutTabs();
         },
       });
       SOCIALBROWSER.menuList.push({

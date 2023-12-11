@@ -561,11 +561,17 @@ function hideAddressBar() {
 function showSocialTabs() {
   $('.social-tabs').show();
   $('.social-address-bar').show();
+  socialTabs.layoutTabs();
+  socialTabs.fixZIndexes();
+  socialTabs.setupDraggabilly();
 }
 
 function hideSocialTabs() {
   $('.social-tabs').hide();
   $('.social-address-bar').hide();
+  socialTabs.layoutTabs();
+  socialTabs.fixZIndexes();
+  socialTabs.setupDraggabilly();
 }
 
 function handleURL(u) {

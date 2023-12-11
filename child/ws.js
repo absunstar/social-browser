@@ -39,7 +39,6 @@ module.exports = function (child) {
             type: '[re-request-browser-core-data]',
           });
         } else if (message.type == '[browser-core-data]') {
-          connect2();
           child.parent = message;
           child.addOverwriteList(child.parent.var.overwrite.urls);
           child.option_list.push(message.options);
@@ -424,6 +423,32 @@ module.exports = function (child) {
               w.window.close();
             }
           }
+        } else if (message.type == '[show-view]') {
+          child.is_hide = true;
+
+          if (child.addressbarWindow && !child.addressbarWindow.isDestroyed()) {
+            child.addressbarWindow.hide();
+          }
+          if (child.profilesWindow && !child.profilesWindow.isDestroyed()) {
+            child.profilesWindow.hide();
+          }
+
+          child.windowList.forEach((w) => {
+            if (w.customSetting && w.customSetting.windowType == 'view' && w.window && !w.window.isDestroyed()) {
+              if (w.customSetting.tab_id == message.options.tab_id) {
+                if (message.is_current_view) {
+                  child.is_hide = false;
+                  w.window.show();
+                  w.window.setAlwaysOnTop(true);
+                  w.window.setAlwaysOnTop(false);
+                } else {
+                  w.window.hide();
+                }
+              } else {
+                w.window.hide();
+              }
+            }
+          });
         } else if (message.type == '[update-view-url]') {
           if ((w = child.windowList.find((w) => w.customSetting.tab_id == message.data.tab_id))) {
             if (w && !w.window.isDestroyed()) {
@@ -454,83 +479,15 @@ module.exports = function (child) {
               }
             });
           }
-        }
-      } catch (error) {
-        child.log('onmessage Error', error);
-      }
-    });
-  }
-
-  function connect2() {
-    if (child._ws_2 && child._ws_2.readyState === child.WebSocket.OPEN) {
-      return child._ws_2;
-    }
-    child._ws_2 = new child.WebSocket('ws://127.0.0.1:60080/window');
-    child.sendMessage2 = function (message) {
-      message.index = child.index;
-      message.uuid = child.uuid;
-      message.id = child.id;
-      message.pid = child.id;
-      if (child._ws_2 && child._ws_2.readyState === child.WebSocket.OPEN) {
-        child._ws_2.send(JSON.stringify(message));
-      }
-    };
-    child._ws_2.on('open', function () {});
-    child._ws_2.on('ping', function () {});
-    child._ws_2.on('close', function (e) {
-      child.log('Child Socket 2 is closed. Reconnect will be attempted in 1 second.', e);
-      setTimeout(function () {
-        connect2();
-      }, 1000);
-    });
-    child._ws_2.on('error', function (err) {
-      child.log('Socket encountered error: ', err);
-      child._ws_2.close();
-    });
-
-    child._ws_2.on('message', function (event) {
-      try {
-        let message = JSON.parse(event.data || event);
-
-        if (message.type == 'connected') {
-          child.sendMessage2({
-            type: '[connected]',
-          });
         } else if (message.type == '[send-window-status]') {
           if (message.screen && message.mainWindow) {
             child.parent.options.screen = message.screen;
             child.parent.options.mainWindow = message.mainWindow;
             child.handleWindowBounds();
           }
-        } else if (message.type == '[show-view]') {
-          child.is_hide = true;
-
-          if (child.addressbarWindow && !child.addressbarWindow.isDestroyed()) {
-            child.addressbarWindow.hide();
-          }
-          if (child.profilesWindow && !child.profilesWindow.isDestroyed()) {
-            child.profilesWindow.hide();
-          }
-
-          child.windowList.forEach((w) => {
-            if (w.customSetting && w.customSetting.windowType == 'view' && w.window && !w.window.isDestroyed()) {
-              if (w.customSetting.tab_id == message.options.tab_id) {
-                if (message.is_current_view) {
-                  child.is_hide = false;
-                  w.window.show();
-                  w.window.setAlwaysOnTop(true);
-                  w.window.setAlwaysOnTop(false);
-                } else {
-                  w.window.hide();
-                }
-              } else {
-                w.window.hide();
-              }
-            }
-          });
         }
-      } catch (ex) {
-        console.log(ex, event.data || event);
+      } catch (error) {
+        child.log('onmessage Error', error);
       }
     });
   }

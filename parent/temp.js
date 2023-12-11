@@ -31,3 +31,4 @@
     ]);
     parent.appIcon.setContextMenu(trayContextMenu);
   };
+

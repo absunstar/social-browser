@@ -488,7 +488,7 @@ module.exports = function (child) {
               },
             };
 
-            child.sendMessage2(data);
+            child.sendMessage(data);
           }
         });
       }

@@ -200,10 +200,12 @@ module.exports = function init(child) {
       },
     });
 
-    if (options.return == 'json') {
-      return data.json();
-    } else {
-      return data.text();
+    if (data) {
+      if (options.return == 'json') {
+        return data.json();
+      } else {
+        return data.text();
+      }
     }
   });
 
@@ -229,7 +231,7 @@ module.exports = function init(child) {
       if (m.submenu) {
         m.submenu.forEach((m2, i2) => {
           m2.click = function () {
-            win.webContents.send('[run-menu]', {index: i , index2: i2 });
+            win.webContents.send('[run-menu]', { index: i, index2: i2 });
           };
         });
       }
@@ -275,7 +277,7 @@ module.exports = function init(child) {
         child.profilesWindow.hide();
       }
     } else {
-      child.sendMessage2({
+      child.sendMessage({
         type: '[show-view]',
         options: options,
       });

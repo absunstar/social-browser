@@ -210,16 +210,8 @@ button {
   height: 100%;
 }
 
-.social-tabs .social-tab {
+.social-tabs .social-tab:not(.display-none) {
   width: 270px;
-}
-
-.social-tabs .social-tab:nth-child(1) {
-  transform: translate3d(0px, 0, 0);
-}
-
-.social-tabs .social-tab:nth-child(2) {
-  transform: translate3d(229px, 0, 0);
 }
 
 @media only screen and (max-width: 1300px) {

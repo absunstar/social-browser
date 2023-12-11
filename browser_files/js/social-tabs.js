@@ -141,7 +141,7 @@ class SocialTabs {
       e.preventDefault();
       e.stopPropagation();
 
-      if (e.target.classList.contains('social-tab')) {
+      if (e.target.classList.contains('social-tab') && !e.target.classList.contains('plus')) {
         this.setCurrentTab(e.target);
       } else if (e.target.classList.contains('social-tab-close')) {
         this.removeTab(e.target.parentNode);
@@ -152,7 +152,7 @@ class SocialTabs {
   }
 
   get tabEls() {
-    return Array.prototype.slice.call(this.el.querySelectorAll('.social-tab'));
+    return Array.prototype.slice.call(this.el.querySelectorAll('.social-tab:not(.display-none)'));
   }
 
   get tabContentEl() {
@@ -182,9 +182,18 @@ class SocialTabs {
   }
 
   layoutTabs() {
-    const tabWidth = this.tabWidth;
+    $('.social-tab.plus').remove();
+    this.tabContentEl.appendChild(this.createNewTabPlus());
 
+    $('#tabPlus').click(() => {
+      event.preventDefault();
+      event.stopPropagation();
+      this.addTab({});
+    });
+
+    const tabWidth = this.tabWidth;
     this.cleanUpPreviouslyDraggedTabs();
+
     this.tabEls.forEach((tabEl) => {
       if (tabEl.id == 'tabPlus') {
         tabEl.style.width = '20px';
@@ -192,16 +201,11 @@ class SocialTabs {
         tabEl.style.width = tabWidth + 'px';
       }
     });
+
     requestAnimationFrame(() => {
-      let styleHTML = '';
       this.tabPositions.forEach((left, i) => {
-        styleHTML += `
-            .social-tabs[data-social-tabs-instance-id="${this.instanceId}"] .social-tab:nth-child(${i + 1}) {
-              transform: translate3d(${left}px, 0, 0)
-            }
-          `;
+        this.tabEls[i].style.transform = `translate3d(${left}px, 0, 0)`;
       });
-      this.animationStyleEl.innerHTML = styleHTML;
     });
   }
 
@@ -237,7 +241,7 @@ class SocialTabs {
     // console.log(tabProperties)
 
     if (!tabProperties.partition || !tabProperties.user_name) {
-      SOCIALBROWSER.ipc('[open new tab]' , {
+      SOCIALBROWSER.ipc('[open new tab]', {
         ...tabProperties,
         windowType: 'view',
         url: tabProperties.url || defaultTapProperties.url,
@@ -256,7 +260,6 @@ class SocialTabs {
 
     if (tabProperties.url.like('http://127.0.0.1:60080*')) {
       let exists = false;
-
       document.querySelectorAll('.social-tab').forEach((tb) => {
         if (tb.getAttribute('url') == tabProperties.url) {
           exists = true;
@@ -280,21 +283,21 @@ class SocialTabs {
       ...tabProperties,
     };
 
-    $('.social-tab.plus').remove();
     this.tabContentEl.appendChild(tabEl);
-    this.tabContentEl.appendChild(this.createNewTabPlus());
+
     $('#tabPlus').click(() => {
       event.preventDefault();
       event.stopPropagation();
       this.addTab({});
     });
-    this.updateTab(tabEl, tabProperties);
 
+    this.updateTab(tabEl, tabProperties);
     this.emit('tabAdd', {
       tabEl,
       tabProperties,
     });
-    if ($('.social-tab').length == 2) {
+
+    if ($('.social-tab:not(.display-none)').length == 2) {
       this.setCurrentTab(tabEl, tabProperties);
     } else if (tabProperties.url.like('http://127.0.0.1:60080*')) {
       this.setCurrentTab(tabEl, tabProperties);
@@ -317,27 +320,35 @@ class SocialTabs {
 
   setCurrentTab(tabEl) {
     const currentTab = this.el.querySelector('.social-tab-current');
-    if (currentTab) currentTab.classList.remove('social-tab-current');
-    tabEl.classList.add('social-tab-current');
-    this.fixZIndexes();
-    this.emit('activeTabChange', {
-      tabEl,
-    });
+    if (currentTab) {
+      currentTab.classList.remove('social-tab-current');
+    }
+
+    if (tabEl && tabEl.classList.contains('display-none')) {
+      tabEl = null;
+    }
+    tabEl = tabEl || document.querySelector('.social-tab:not(.display-none):not(.plus)');
+
+    if (tabEl) {
+      tabEl.classList.add('social-tab-current');
+      this.layoutTabs();
+      this.fixZIndexes();
+      this.setupDraggabilly();
+      this.emit('activeTabChange', {
+        tabEl,
+      });
+    }
   }
 
   removeTab(tabEl) {
     if (!tabEl) return;
 
+    let isCurrentTab = false;
+
     if (tabEl.classList.contains('social-tab-current')) {
-      if (tabEl.previousElementSibling) {
-        this.setCurrentTab(tabEl.previousElementSibling);
-      } else if (tabEl.nextElementSibling) {
-        this.setCurrentTab(tabEl.nextElementSibling);
-      } else {
-        // ExitSocialWindow();
-        // this.addTab()
-      }
+      isCurrentTab = true;
     }
+
     let id = tabEl.id;
 
     tabEl.parentNode.removeChild(tabEl);
@@ -346,13 +357,12 @@ class SocialTabs {
       id,
     });
 
-    this.layoutTabs();
-    this.fixZIndexes();
-    this.setupDraggabilly();
-
-    if (this.tabEls.length < 2) {
-      // this.addTab()
-      ExitSocialWindow(true);
+    if (isCurrentTab) {
+      this.setCurrentTab();
+    } else {
+      this.layoutTabs();
+      this.fixZIndexes();
+      this.setupDraggabilly();
     }
   }
 
@@ -399,6 +409,8 @@ class SocialTabs {
         const finalTranslateX = parseFloat(tabEl.style.left, 10);
         tabEl.style.transform = `translate3d(0, 0, 0)`;
 
+        this.setupDraggabilly();
+
         // Animate dragged tab back into its place
         requestAnimationFrame(() => {
           tabEl.style.left = '0';
@@ -409,13 +421,10 @@ class SocialTabs {
             this.el.classList.remove('social-tabs-sorting');
 
             this.setCurrentTab(tabEl);
+
             tabEl.classList.add('social-tab-just-dragged');
-
-            requestAnimationFrame(() => {
-              tabEl.style.transform = '';
-
-              this.setupDraggabilly();
-            });
+            this.layoutTabs();
+            this.fixZIndexes();
           });
         });
       });

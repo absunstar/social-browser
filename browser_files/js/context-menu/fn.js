@@ -10,25 +10,15 @@ SOCIALBROWSER.fetchJson = function (options, callback) {
   options.url = SOCIALBROWSER.handleURL(options.url);
 
   return new Promise((resolve, reject) => {
-    SOCIALBROWSER.on('[fetch-json-callback]', (e, res) => {
-      if (res.options.id == options.id) {
-        if (res.error) {
-          if (!callback) {
-            reject({ message: res.error });
-          }
-          SOCIALBROWSER.log('SOCIALBROWSER.fetchJson error : ', res);
-        } else if (res.data) {
-          if (!callback) {
-            resolve(res.data);
-          } else {
-            callback(res.data);
-          }
+    SOCIALBROWSER.ipc('[fetch-json]', options).then((data) => {
+      if (data) {
+        if (callback) {
+          callback(data);
         } else {
-          SOCIALBROWSER.log('[fetch-json-callback] res : ', res);
+          resolve(data);
         }
       }
     });
-    SOCIALBROWSER.ipc('[fetch-json]', options);
   });
 };
 SOCIALBROWSER.rand = {
