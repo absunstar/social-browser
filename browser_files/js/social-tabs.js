@@ -409,8 +409,6 @@ class SocialTabs {
         const finalTranslateX = parseFloat(tabEl.style.left, 10);
         tabEl.style.transform = `translate3d(0, 0, 0)`;
 
-        this.setupDraggabilly();
-
         // Animate dragged tab back into its place
         requestAnimationFrame(() => {
           tabEl.style.left = '0';
@@ -419,12 +417,8 @@ class SocialTabs {
           requestAnimationFrame(() => {
             tabEl.classList.remove('social-tab-currently-dragged');
             this.el.classList.remove('social-tabs-sorting');
-
-            this.setCurrentTab(tabEl);
-
             tabEl.classList.add('social-tab-just-dragged');
-            this.layoutTabs();
-            this.fixZIndexes();
+            this.setCurrentTab(tabEl);
           });
         });
       });
