@@ -17,6 +17,7 @@ module.exports = function init(parent) {
         properties: ['openDirectory'],
       })
       .then((result) => {
+        parent.sendMessage({ type: 'share', message: '[show-main-window]' });
         if (result.canceled === false && result.filePaths.length > 0) {
           let path = result.filePaths[0] + '/index.js';
           parent.loadExtension({ path: path });
@@ -26,6 +27,7 @@ module.exports = function init(parent) {
         console.log(err);
       });
   };
+
   parent.loadExtension = function (_extension, exists) {
     if (!_extension) {
       return null;
@@ -70,11 +72,15 @@ module.exports = function init(parent) {
   };
 
   parent.enableExtension = function (extension) {
-    console.log('enableExtension', extension);
-    extension = parent.extensionList.find((exx) => exx.id === extension.id);
+    let index = parent.extensionList.findIndex((exx) => exx.id === extension.id);
+    if (index !== -1) {
+      extension = parent.extensionList[index];
+    } else {
+      return false;
+    }
+
     if (extension && extension.enable) {
       extension.enable();
-
       parent.var.extension_list.forEach((ex) => {
         if (ex.id === extension.id) {
           ex.isEnabled = true;

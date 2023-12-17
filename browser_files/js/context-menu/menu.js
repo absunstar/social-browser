@@ -564,11 +564,11 @@ function add_a_menu(node) {
         label: 'Play video ',
         click() {
           SOCIALBROWSER.ipc('[open new popup]', {
+            windowType: 'youtube',
             url: 'https://www.youtube.com/embed/' + u.split('=')[1].split('&')[0],
             partition: SOCIALBROWSER.partition,
             referrer: document.location.href,
             show: true,
-            windowType: 'youtube',
           });
         },
       });
@@ -1230,8 +1230,9 @@ function get_custom_menu() {
       label: 'Open current video',
       click() {
         SOCIALBROWSER.ipc('[open new popup]', {
-          partition: SOCIALBROWSER.partition,
+          windowType: 'youtube',
           url: 'https://www.youtube.com/embed/' + document.location.href.split('=')[1].split('&')[0],
+          partition: SOCIALBROWSER.partition,
           referrer: document.location.href,
           show: true,
         });
@@ -1451,9 +1452,7 @@ function get_social_menu(node, social_arr) {
   }
 }
 
-SOCIALBROWSER.addMenu = function (_menuItem) {
-  SOCIALBROWSER.menu_list.push(_menuItem);
-};
+
 function createMenuList(node) {
   if (SOCIALBROWSER.customSetting.windowType !== 'main') {
     if (SOCIALBROWSER.selectedText.length > 0) {

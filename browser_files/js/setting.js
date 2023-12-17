@@ -17,7 +17,13 @@ setTimeout(() => {
 }, 1000 * 2);
 
 app.controller('mainController', ($scope, $http, $timeout) => {
-  $scope.proxy = {};
+  $scope.$proxy = {
+    socks5: true,
+    socks4: true,
+    ftp: true,
+    http: true,
+    https: true,
+  };
   $scope.busy = true;
   $scope.setting_busy = true;
   $scope.timezones = [...SOCIALBROWSER.timeZones];
@@ -54,7 +60,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         session.user_agent = $scope.setting.user_agent_list[SOCIALBROWSER.random(0, $scope.setting.user_agent_list.length - 1)];
       } else {
         SOCIALBROWSER.var.blocking.privacy.vpc = SOCIALBROWSER.generateVPC();
-        $scope.setting.blocking.privacy.vpc = {...SOCIALBROWSER.var.blocking.privacy.vpc};
+        $scope.setting.blocking.privacy.vpc = { ...SOCIALBROWSER.var.blocking.privacy.vpc };
       }
     }
 
@@ -69,7 +75,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
       if (session) {
         session.privacy.enable_virtual_pc = false;
       } else {
-        $scope.setting.blocking.privacy.vpc = {...SOCIALBROWSER.var.blocking.privacy.vpc};
+        $scope.setting.blocking.privacy.vpc = { ...SOCIALBROWSER.var.blocking.privacy.vpc };
       }
     }
 
@@ -455,7 +461,13 @@ app.controller('mainController', ($scope, $http, $timeout) => {
 
   $scope.addProxy = function () {
     $scope.setting.proxy_list.push({ ...$scope.$proxy });
-    $scope.$proxy = {};
+    $scope.$proxy = {
+      socks5: true,
+      socks4: true,
+      ftp: true,
+      http: true,
+      https: true,
+    };
   };
 
   $scope.removeProxy = function (_se) {
@@ -517,6 +529,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
 
   $scope.addExtension = function () {
     SOCIALBROWSER.ipc('[import-extension]');
+    SOCIALBROWSER.share('[hide-main-window]');
   };
   $scope.enableExtension = function (_ex) {
     SOCIALBROWSER.ipc('[enable-extension]', { id: _ex.id });
@@ -704,8 +717,11 @@ app.controller('mainController', ($scope, $http, $timeout) => {
       }
     }
 
+   
     $scope.busy = false;
-    $scope.setting_busy = false;
+    $timeout(() => {
+      $scope.setting_busy = false;
+    }, 1000);
 
     if ($scope.setting.core.password) {
       $scope.knowPassword = false;
@@ -713,8 +729,6 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     } else {
       $scope.knowPassword = true;
     }
-
-    alert('Setting Saved ');
   };
 
   $scope.urls_sort_property = '-count';

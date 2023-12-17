@@ -78,6 +78,7 @@ window.open = function (url, _name, _specs, _replace_in_history) {
 
   if (url.like('https://www.youtube.com/watch*')) {
     SOCIALBROWSER.ipc('[open new popup]', {
+      windowType: 'youtube',
       url: 'https://www.youtube.com/embed/' + url.split('=')[1].split('&')[0],
       partition: SOCIALBROWSER.partition,
       referrer: document.location.href,

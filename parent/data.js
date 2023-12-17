@@ -676,6 +676,18 @@ module.exports = function init(parent) {
 
   parent.handleAdList();
 
+  parent.addOverwrite = function (item) {
+    parent.var.overwrite.urls.push(item);
+    parent.applay('overwrite');
+  };
+  parent.removeOverwrite = function (item) {
+    parent.var.overwrite.urls.push(item);
+    let index = parent.var.overwrite.urls.findIndex((item2) => item2.from == item.from);
+    if (index !== -1) {
+      parent.var.overwrite.urls.splice(index, 1);
+    }
+    parent.applay('overwrite');
+  };
   parent.var.customHeaderList = [];
   parent.addRequestHeader = function (h) {
     parent.var.customHeaderList.push({ ...{ type: 'request', list: [], ignore: [] }, ...h });

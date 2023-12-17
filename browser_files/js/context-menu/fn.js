@@ -305,8 +305,15 @@ SOCIALBROWSER.sessionId = function () {
   return SOCIALBROWSER.session_id;
 };
 
-SOCIALBROWSER.addMenu = function (m) {
-  SOCIALBROWSER.menu_list.push(m);
+SOCIALBROWSER.addMenu = function (_menuItem) {
+  SOCIALBROWSER.menu_list.push(_menuItem);
+};
+
+SOCIALBROWSER.removeMenu = function (_menuItem) {
+  let index = SOCIALBROWSER.menu_list.findIndex((m) => m.label == _menuItem.label);
+  if (index !== -1) {
+    SOCIALBROWSER.menu_list.splice(index, 1);
+  }
 };
 SOCIALBROWSER.readFile = function (path) {
   SOCIALBROWSER.fs = SOCIALBROWSER.fs || SOCIALBROWSER.require('fs');
@@ -392,16 +399,18 @@ SOCIALBROWSER.write = function (text, selector, timeout) {
     if (!text) {
       reject('No Text');
     }
-    let dom = null;
-    SOCIALBROWSER.copy(text);
+
     setTimeout(() => {
-      if (selector) {
-        dom = SOCIALBROWSER.select(selector);
+      selector = SOCIALBROWSER.select(selector);
+      if (!selector) {
+        reject('No selector');
+        return false;
       }
+      SOCIALBROWSER.copy(text);
       SOCIALBROWSER.paste();
       setTimeout(() => {
-        if (selector && dom) {
-          resolver(dom);
+        if (selector) {
+          resolver(selector);
         } else {
           resolver(text);
         }
@@ -455,12 +464,12 @@ SOCIALBROWSER.select = function (selector, value) {
   if (!selector) {
     return null;
   }
-  let dom = document.querySelector(selector);
-  if (dom && dom.focus) {
-    dom.focus();
+  selector = typeof selector === 'string' ? document.querySelector(selector) : selector;
+  if (selector && selector.focus) {
+    selector.focus();
     if (value) {
-      dom.value = value;
-      dom.dispatchEvent(
+      selector.value = value;
+      selector.dispatchEvent(
         new Event('change', {
           bubbles: true,
           cancelable: true,
@@ -468,7 +477,7 @@ SOCIALBROWSER.select = function (selector, value) {
       );
     }
   }
-  return dom;
+  return selector;
 };
 
 SOCIALBROWSER.getTimeZone = () => {

@@ -9,6 +9,8 @@ const updateOnlineStatus = () => {
   SOCIALBROWSER.ipc('online-status', navigator.onLine ? { status: true } : { status: false });
 };
 
+
+
 window.addEventListener('online', updateOnlineStatus);
 window.addEventListener('offline', updateOnlineStatus);
 

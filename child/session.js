@@ -433,24 +433,27 @@ module.exports = function (child) {
               });
             }
             return;
-          } else if (child.parent.var.blocking.core.block_ads && url.like(child.parent.var.$ad_string)) {
-            if (url.like('*.js*|*/js*')) {
-              callback({
-                cancel: false,
-                redirectURL: 'browser://js/fake.js',
-              });
-            } else {
-              callback({
-                cancel: true,
-              });
-            }
-            return;
           }
+        }
+
+        if (child.parent.var.blocking.core.block_ads && url.like(child.parent.var.$ad_string)) {
+          if (url.like('*.js*|*/js*')) {
+            callback({
+              cancel: false,
+              redirectURL: 'browser://js/fake.js',
+            });
+          } else {
+            callback({
+              cancel: true,
+            });
+          }
+          return;
         }
 
         callback({
           cancel: false,
         });
+        
       });
 
       ss.webRequest.onBeforeSendHeaders(filter, function (details, callback) {

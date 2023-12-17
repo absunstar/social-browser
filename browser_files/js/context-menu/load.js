@@ -291,6 +291,14 @@ SOCIALBROWSER.on('[update-browser-var]', (e, res) => {
   }
   SOCIALBROWSER.callEvent('updated', { name: res.options.name });
 });
+SOCIALBROWSER.on('share', (e, data) => {
+  if (data == '[hide-main-window]' && SOCIALBROWSER.customSetting.windowType == 'main') {
+    SOCIALBROWSER.currentWindow.hide();
+  }
+  if (data == '[show-main-window]' && SOCIALBROWSER.customSetting.windowType == 'main') {
+    SOCIALBROWSER.currentWindow.show();
+  }
+});
 
 SOCIALBROWSER.onLoad(() => {
   if (!SOCIALBROWSER.jqueryLoaded && SOCIALBROWSER.var.blocking.javascript.allow_jquery && !window.jQuery) {

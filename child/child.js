@@ -71,6 +71,7 @@ child.dialog = child.electron.dialog;
 child.electron.nativeTheme.themeSource = 'light';
 
 require(child.path.join(child.dir, 'child', 'fn'))(child);
+require(child.path.join(child.dir, 'child', 'vars'))(child);
 require(child.path.join(child.dir, 'child', 'windows'))(child);
 require(child.path.join(child.dir, 'child', 'adsManager'))(child);
 require(child.path.join(child.dir, 'child', 'ipc'))(child);

@@ -62,7 +62,7 @@ module.exports = function (child) {
           preload: child.parent.files_dir + '/js/context-menu.js',
           nativeWindowOpen: false,
           nodeIntegration: true,
-          experimentalFeatures: true,
+          experimentalFeatures: false,
           webSecurity: false,
           allowRunningInsecureContent: true,
           plugins: true,
@@ -118,7 +118,7 @@ module.exports = function (child) {
           preload: child.parent.files_dir + '/js/context-menu.js',
           nativeWindowOpen: false,
           nodeIntegration: true,
-          experimentalFeatures: true,
+          experimentalFeatures: false,
           webSecurity: false,
           allowRunningInsecureContent: true,
           plugins: true,
@@ -184,7 +184,7 @@ module.exports = function (child) {
         nodeIntegration: false,
         nodeIntegrationInSubFrames: false, // google login error
         nodeIntegrationInWorker: false,
-        experimentalFeatures: true,
+        experimentalFeatures: false,
         experimentalCanvasFeatures: true,
         navigateOnDragDrop: true,
         webSecurity: true,
@@ -209,6 +209,8 @@ module.exports = function (child) {
       defaultSetting.height = 330;
       defaultSetting.x = parent.options.screen.bounds.width - 550;
       defaultSetting.y = parent.options.screen.bounds.height - 400;
+      defaultSetting.backgroundColor = '#030303';
+      defaultSetting.center = false;
     } else if (setting.windowType.contains('popup')) {
       defaultSetting.alwaysOnTop = true;
     } else if (setting.windowType === 'view') {
@@ -855,12 +857,6 @@ module.exports = function (child) {
           child.createNewWindow({
             windowType: 'youtube',
             title: 'YouTube',
-            width: 520,
-            height: 330,
-            x: parent.options.screen.bounds.width - 550,
-            y: parent.options.screen.bounds.height - 400,
-            backgroundColor: '#030303',
-            center: false,
             url: url,
             partition: win.customSetting.partition,
             user_name: win.customSetting.user_name,
@@ -871,12 +867,6 @@ module.exports = function (child) {
           child.createNewWindow({
             windowType: 'youtube',
             title: 'YouTube',
-            width: 520,
-            height: 330,
-            x: parent.options.screen.bounds.width - 550,
-            y: parent.options.screen.bounds.height - 400,
-            backgroundColor: '#030303',
-            center: false,
             url: url,
             partition: win.customSetting.partition,
             user_name: win.customSetting.user_name,
@@ -943,12 +933,6 @@ module.exports = function (child) {
         child.createNewWindow({
           windowType: 'youtube',
           title: 'YouTube',
-          width: 520,
-          height: 330,
-          x: parent.options.screen.bounds.width - 550,
-          y: parent.options.screen.bounds.height - 400,
-          backgroundColor: '#030303',
-          center: false,
           url: real_url,
           partition: win.customSetting.partition,
           user_name: win.customSetting.user_name,
@@ -959,12 +943,6 @@ module.exports = function (child) {
         child.createNewWindow({
           windowType: 'youtube',
           title: 'YouTube',
-          width: 520,
-          height: 330,
-          x: parent.options.screen.bounds.width - 550,
-          y: parent.options.screen.bounds.height - 400,
-          backgroundColor: '#030303',
-          center: false,
           url: real_url,
           partition: win.customSetting.partition,
           user_name: win.customSetting.user_name,

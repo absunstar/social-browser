@@ -127,7 +127,7 @@
     return SOCIALBROWSER.electron.ipcRenderer.sendSync(channel, value);
   };
 
-  SOCIALBROWSER.invoke = SOCIALBROWSER.ipc = function (channel, value) {
+  SOCIALBROWSER.invoke = SOCIALBROWSER.ipc = function (channel, value = {}) {
     value.parentSetting = SOCIALBROWSER.customSetting;
     return SOCIALBROWSER.electron.ipcRenderer.invoke(channel, value);
   };
