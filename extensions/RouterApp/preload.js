@@ -28,16 +28,9 @@ function changeInfo() {
     logo.style.backgroundSize = 'contain';
     logo.style.backgroundPosition = '0';
   }
-  if ((title = document.querySelector('#width_product_title'))) {
-    title.innerHTML = 'Smart Code Company';
+  if ((width_product_title = document.querySelector('#width_product_title'))) {
+    width_product_title.innerHTML = 'Smart Code Company';
   }
-  if ((body = document.querySelector('body'))) {
-    body.style.background = '#009688';
-  }
-
-  document.querySelectorAll('.container, .navbar-fixed-top .container, .navbar-fixed-bottom .container').forEach((el) => {
-    el.style.width = '100%';
-  });
 }
 
 SOCIALBROWSER.onLoad(() => {

@@ -1,3 +1,7 @@
+body{
+  font-family: cursive;
+  background: #00bcd4;
+}
 .product_title {
   font-size: 22px;
   color: #000000;
@@ -6,4 +10,15 @@
   padding-top: 20px;
   padding-left: 16px;
   height: 20px;
+}
+#product_name , footer{
+  display: none;
+}
+.container, .navbar-fixed-top .container, .navbar-fixed-bottom .container{
+  width: 90% !important;
+}
+.top_menu_back_img {
+  background-image: none;
+  background-position: 0;
+  background: #2196f3;
 }
