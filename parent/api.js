@@ -80,8 +80,8 @@ module.exports = function init(parent) {
   });
 
   parent.api.onGET({
-    name: '/iframe',
-    path: parent.files_dir + '/html/mini_view.html',
+    name: ['/iframe','/youtube-view'],
+    path: parent.files_dir + '/html/iframe-view.html',
     parser: 'html css js',
   });
 
@@ -94,7 +94,13 @@ module.exports = function init(parent) {
   parent.api.onGET({
     name: '/home',
     path: parent.files_dir + '/html/main-window.html',
-    parser: 'html',
+    parser: 'html css js',
+  });
+
+  parent.api.onGET({
+    name: '/home2',
+    path: parent.files_dir + '/html/browserWindow.html',
+    parser: 'html css js',
   });
 
   parent.api.onGET({
@@ -266,7 +272,7 @@ module.exports = function init(parent) {
       type: req.data.type,
       origin: req.data.origin,
       url: req.data.href,
-      win_id: req.data.win_id,
+      windowID: req.data.windowID,
       options: { ...print_options, ...req.data },
       index: parent.content_list.length,
     };

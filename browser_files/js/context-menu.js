@@ -265,7 +265,7 @@
       hostname: SOCIALBROWSER.hostname,
       url: SOCIALBROWSER.href,
       name: SOCIALBROWSER.selected_properties,
-      win_id: SOCIALBROWSER.currentWindow.id,
+      windowID: SOCIALBROWSER.currentWindow.id,
       partition: SOCIALBROWSER.partition,
     }).then((data) => {
       SOCIALBROWSER.browserData = data;

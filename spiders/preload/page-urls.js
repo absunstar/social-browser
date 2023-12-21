@@ -97,7 +97,7 @@ window.addEventListener('load', () => {
     data.image_url = image ? image.content || image.href : null;
     data.description = description ? description.innerText || description.content : '';
     data.title = title ? title.innerText : '';
-    data.win_id = remote.getCurrentWindow().id;
+    data.windowID = remote.getCurrentWindow().id;
     data.file = 'page-urls';
 
     if (data.is_youtube) {

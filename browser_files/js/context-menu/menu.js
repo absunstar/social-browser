@@ -373,7 +373,7 @@ function get_url_menu_list(url) {
         url: url,
         partition: SOCIALBROWSER.partition,
         user_name: SOCIALBROWSER.session.display,
-        win_id: SOCIALBROWSER.currentWindow.id,
+        windowID: SOCIALBROWSER.currentWindow.id,
         center: true,
       });
     },
@@ -485,7 +485,7 @@ function get_url_menu_list(url) {
             url: url,
             partition: ss.name,
             user_name: ss.display,
-            win_id: SOCIALBROWSER.currentWindow.id,
+            windowID: SOCIALBROWSER.currentWindow.id,
           });
         },
       });
@@ -523,7 +523,7 @@ function add_a_menu(node) {
             url: u,
             partition: SOCIALBROWSER.partition,
             user_name: SOCIALBROWSER.session.display,
-            win_id: SOCIALBROWSER.currentWindow.id,
+            windowID: SOCIALBROWSER.currentWindow.id,
             center: true,
           });
         },
@@ -611,7 +611,7 @@ function get_img_menu(node) {
         SOCIALBROWSER.ipc('[open new tab]', {
           url: url,
           referrer: document.location.href,
-          win_id: SOCIALBROWSER.currentWindow.id,
+          windowID: SOCIALBROWSER.currentWindow.id,
         });
       },
     });
@@ -725,7 +725,7 @@ function get_options_menu(node) {
     click() {
       sendToMain({
         name: '[save-window-as-pdf]',
-        win_id: SOCIALBROWSER.currentWindow.id,
+        windowID: SOCIALBROWSER.currentWindow.id,
       });
     },
   });
@@ -746,7 +746,7 @@ function get_options_menu(node) {
     accelerator: 'CommandOrControl+F5',
     click() {
       SOCIALBROWSER.ipc('[window-reload-hard]', {
-        win_id: SOCIALBROWSER.currentWindow.id,
+        windowID: SOCIALBROWSER.currentWindow.id,
         origin: document.location.origin || document.location.href,
         partition: SOCIALBROWSER.partition,
         storages: ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage'],
@@ -763,7 +763,7 @@ function get_options_menu(node) {
     click() {
       sendToMain({
         name: '[toggle-fullscreen]',
-        win_id: SOCIALBROWSER.currentWindow.id,
+        windowID: SOCIALBROWSER.currentWindow.id,
       });
     },
   });
@@ -817,7 +817,7 @@ function get_options_menu(node) {
     accelerator: 'CommandOrControl+F5',
     click() {
       SOCIALBROWSER.ipc('[window-reload-hard]', {
-        win_id: SOCIALBROWSER.currentWindow.id,
+        windowID: SOCIALBROWSER.currentWindow.id,
         origin: document.location.origin || document.location.href,
         storages: ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage'],
       });
@@ -828,7 +828,7 @@ function get_options_menu(node) {
     label: 'Clear Site Cookies',
     click() {
       SOCIALBROWSER.ipc('[window-reload-hard]', {
-        win_id: SOCIALBROWSER.currentWindow.id,
+        windowID: SOCIALBROWSER.currentWindow.id,
         origin: document.location.origin || document.location.href,
         storages: ['cookies'],
       });
@@ -839,7 +839,7 @@ function get_options_menu(node) {
     label: 'Clear All Site Data',
     click() {
       SOCIALBROWSER.ipc('[window-reload-hard]', {
-        win_id: SOCIALBROWSER.currentWindow.id,
+        windowID: SOCIALBROWSER.currentWindow.id,
         origin: document.location.origin || document.location.href,
         storages: ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage', 'cookies'],
       });
@@ -1482,7 +1482,7 @@ function createMenuList(node) {
           SOCIALBROWSER.ipc('[open new tab]', {
             referrer: document.location.href,
             url: 'https://www.google.com/search?q=' + encodeURIComponent(SOCIALBROWSER.selectedText),
-            win_id: SOCIALBROWSER.currentWindow.id,
+            windowID: SOCIALBROWSER.currentWindow.id,
           });
         },
       });
@@ -1542,7 +1542,7 @@ function createMenuList(node) {
                   url: o.url || document.location.href,
                   referrer: document.location.href,
                   show: true,
-                  win_id: SOCIALBROWSER.currentWindow.id,
+                  windowID: SOCIALBROWSER.currentWindow.id,
                 });
               },
             });
@@ -1856,7 +1856,7 @@ SOCIALBROWSER.contextmenu = function (e) {
         type: m.type,
         submenu: m.submenu?.map((s) => ({ label: s.label, type: s.type, sublabel: s.sublabel, visible: s.visible })),
       })),
-      win_id: SOCIALBROWSER.currentWindow.id,
+      windowID: SOCIALBROWSER.currentWindow.id,
     });
   } catch (error) {
     SOCIALBROWSER.log(error);

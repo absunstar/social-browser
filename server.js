@@ -113,25 +113,6 @@
 
   browser.remoteMain.initialize();
 
-  if (browser.isAutoStartup) {
-    browser.createChildProcess({
-      url: 'https://www.google.com',
-      windowType: 'none',
-      partition: 'persist:social',
-    });
-  } else {
-    browser.createChildProcess({
-      url: 'http://127.0.0.1:60080/home',
-      windowType: 'main',
-      partition: 'persist:social',
-    });
-  }
-
-  browser.createChildProcess({
-    windowType: 'files',
-    partition: 'persist:file',
-  });
-
   browser.electron.app.setAppUserModelId('Social.Browser');
   browser.electron.Menu.setApplicationMenu(null);
   browser.electron.app.setAsDefaultProtocolClient('browser');
@@ -260,5 +241,24 @@
       windowType: 'main',
       partition: 'persist:social',
     });
+  });
+
+  if (browser.isAutoStartup) {
+    browser.createChildProcess({
+      url: 'https://www.google.com',
+      windowType: 'none',
+      partition: 'persist:social',
+    });
+  } else {
+    browser.createChildProcess({
+      url: 'http://127.0.0.1:60080/home',
+      windowType: 'main',
+      partition: 'persist:social',
+    });
+  }
+
+  browser.createChildProcess({
+    windowType: 'files',
+    partition: 'persist:file',
   });
 })();

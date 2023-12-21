@@ -111,7 +111,7 @@ module.exports = function init(parent) {
         case '[show-view]':
           parent.clientList.forEach((client) => {
             if (client.index != message.index && client.ws) {
-              if (client.option_list.some((op) => op.tab_id === message.options.tab_id)) {
+              if (client.option_list.some((op) => op.tabID === message.options.tabID)) {
                 message.is_current_view = true;
                 client.ws.send(message);
               } else {
@@ -124,84 +124,84 @@ module.exports = function init(parent) {
 
         case '[close-view]':
           parent.clientList.forEach((client) => {
-            if (client.index != message.index && client.ws && client.option_list.some((op) => op.tab_id === message.options.tab_id)) {
+            if (client.index != message.index && client.ws && client.option_list.some((op) => op.tabID === message.options.tabID)) {
               client.ws.send(message);
             }
           });
           break;
         case '[update-view-url]':
           parent.clientList.forEach((client) => {
-            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tab_id === message.data.tab_id)) {
+            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tabID === message.data.tabID)) {
               client.ws.send(message);
             }
           });
           break;
         case '[edit-window]':
           parent.clientList.forEach((client) => {
-            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tab_id === message.data.tab_id)) {
+            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tabID === message.data.tabID)) {
               client.ws.send(message);
             }
           });
           break;
         case '[window-reload]':
           parent.clientList.forEach((client) => {
-            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tab_id === message.data.tab_id)) {
+            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tabID === message.data.tabID)) {
               client.ws.send(message);
             }
           });
           break;
         case '[window-reload-hard]':
           parent.clientList.forEach((client) => {
-            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tab_id === message.data.tab_id)) {
+            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tabID === message.data.tabID)) {
               client.ws.send(message);
             }
           });
           break;
         case '[toggle-window-audio]':
           parent.clientList.forEach((client) => {
-            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tab_id === message.data.tab_id)) {
+            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tabID === message.data.tabID)) {
               client.ws.send(message);
             }
           });
           break;
         case '[window-zoom-]':
           parent.clientList.forEach((client) => {
-            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tab_id === message.data.tab_id)) {
+            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tabID === message.data.tabID)) {
               client.ws.send(message);
             }
           });
           break;
         case '[window-zoom]':
           parent.clientList.forEach((client) => {
-            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tab_id === message.data.tab_id)) {
+            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tabID === message.data.tabID)) {
               client.ws.send(message);
             }
           });
           break;
         case '[window-zoom+]':
           parent.clientList.forEach((client) => {
-            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tab_id === message.data.tab_id)) {
+            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tabID === message.data.tabID)) {
               client.ws.send(message);
             }
           });
           break;
         case '[window-go-back]':
           parent.clientList.forEach((client) => {
-            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tab_id === message.data.tab_id)) {
+            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tabID === message.data.tabID)) {
               client.ws.send(message);
             }
           });
           break;
         case '[window-go-forward]':
           parent.clientList.forEach((client) => {
-            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tab_id === message.data.tab_id)) {
+            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tabID === message.data.tabID)) {
               client.ws.send(message);
             }
           });
           break;
         case '[show-window-dev-tools]':
           parent.clientList.forEach((client) => {
-            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tab_id === message.data.tab_id)) {
+            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tabID === message.data.tabID)) {
               client.ws.send(message);
             }
           });
@@ -210,17 +210,17 @@ module.exports = function init(parent) {
         case '[add-to-bookmark]':
           parent.bookmarks_exists = false;
           parent.var.bookmarks.forEach((b, i) => {
-            if (b.url == message.data.tab_url) {
-              parent.var.bookmarks[i].title == message.data.tab_title;
-              parent.var.bookmarks[i].favicon == message.data.tab_icon;
+            if (b.url == message.data.url) {
+              parent.var.bookmarks[i].title == message.data.title;
+              parent.var.bookmarks[i].favicon == message.data.icon;
               parent.bookmarks_exists = true;
             }
           });
           if (!parent.bookmarks_exists) {
             parent.var.bookmarks.push({
-              title: message.data.tab_title,
-              url: message.data.tab_url,
-              favicon: message.data.tab_icon,
+              title: message.data.title,
+              url: message.data.url,
+              favicon: message.data.icon,
             });
           }
           parent.applay('bookmarks');
@@ -285,7 +285,7 @@ module.exports = function init(parent) {
           break;
         case '[call-window-action]':
           parent.clientList.forEach((client) => {
-            if (client.windowType !== 'main' && client.ws && client.option_list.some((op) => op.tab_id === message.data.tab_id)) {
+            if (client.windowType !== 'main' && client.ws && client.option_list.some((op) => op.tabID === message.data.tabID)) {
               client.ws.send(message);
             }
           });

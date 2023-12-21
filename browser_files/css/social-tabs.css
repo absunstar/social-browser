@@ -1,6 +1,6 @@
 .social-tabs {
   margin: 0px;
-  -webkit-app-region: no-drag;
+  -webkit-app-region: drag;
   box-sizing: border-box;
   position: relative;
   font-size: 10px;
@@ -37,9 +37,9 @@
 
 .social-tabs .social-close  {
   text-align: center;
-  -webkit-app-region: no-drag;
+  -webkit-app-region: no-drag;;
   position: fixed;
-  width: 30px;
+  width: 30px;;
   height: 27px;
   top: 0px;
   right: 0px;
@@ -62,7 +62,7 @@
 
 .social-tabs .social-maxmize {
   text-align: center;
-  -webkit-app-region: no-drag;
+  -webkit-app-region: no-drag;;
   position: fixed;
   width: 30px;
   height: 27px;
@@ -82,7 +82,7 @@
 
 .social-tabs .social-minmize {
   text-align: center;
-  -webkit-app-region: no-drag;
+  -webkit-app-region: no-drag;;
   position: fixed;
   width: 30px;
   height: 27px;
@@ -101,7 +101,7 @@
 }
 
 .social-tabs .social-tab {
-  -webkit-app-region: no-drag;
+  -webkit-app-region: no-drag !important;
   position: absolute;
   left: 0;
   height: 2.8em;
@@ -335,7 +335,7 @@
 }
 
 .social-address-bar .logo {
-  -webkit-app-region: no-drag;
+  -webkit-app-region: no-drag;;
      height: 30px;
      position: fixed;
      top: 5px;

@@ -4,7 +4,9 @@ SOCIALBROWSER.ws = function (message) {
 SOCIALBROWSER.share = function (message) {
   SOCIALBROWSER.ipc('share', message);
 };
-
+SOCIALBROWSER.message = function (message) {
+  SOCIALBROWSER.ipc('message', message);
+};
 SOCIALBROWSER.fetchJson = function (options, callback) {
   options.id = new Date().getTime() + Math.random();
   options.url = SOCIALBROWSER.handleURL(options.url);
@@ -597,13 +599,13 @@ SOCIALBROWSER.openWindow = function (_customSetting) {
         plugins: true,
       },
     });
-    customSetting.win_id = win.id;
+    customSetting.windowID = win.id;
 
     SOCIALBROWSER.ipc('[handle-session]', { ...customSetting, name: customSetting.partition });
-    SOCIALBROWSER.ipc('[add][window]', { win_id: win.id, customSetting: customSetting });
+    SOCIALBROWSER.ipc('[add][window]', { windowID: win.id, customSetting: customSetting });
     SOCIALBROWSER.ipc('[assign][window]', {
-      parent_id: SOCIALBROWSER.currentWindow.id,
-      child_id: win.id,
+      parentWindowID: SOCIALBROWSER.currentWindow.id,
+      childWindowID: win.id,
     });
     if (!customSetting.x && !customSetting.y) {
       win.center();
@@ -630,7 +632,7 @@ SOCIALBROWSER.openWindow = function (_customSetting) {
         code = code.slice(code.indexOf('{') + 1, code.lastIndexOf('}'));
       }
       SOCIALBROWSER.ipc('[set][window][setting]', {
-        win_id: win.id,
+        windowID: win.id,
         customSetting: customSetting,
         name: 'eval',
         code: code,

@@ -602,39 +602,43 @@ module.exports = function init(parent) {
       return;
     }
     let index = parent.var.urls.findIndex((u) => u.url == nitm.url);
-    if (index > -1) {
+
+    if (index !== -1) {
+
       parent.var.urls[index].title = nitm.title || parent.var.urls[index].title;
       parent.var.urls[index].logo = nitm.logo || parent.var.urls[index].logo;
       parent.var.urls[index].last_visit = new Date().getTime();
+
       if (!nitm.ignoreCounted) {
         parent.var.urls[index].count++;
       }
-      if (!parent.var.urls[index].busy && parent.var.urls[index].logo && (!parent.var.urls[index].logo2 || !parent.api.isFileExistsSync(parent.var.urls[index].logo2))) {
-        parent.var.urls[index].busy = true;
-        let path = parent.path.join(parent.data_dir, 'favicons', parent.md5(parent.var.urls[index].logo) + '.' + parent.var.urls[index].logo.split('?')[0].split('.').pop());
-        if (parent.api.isFileExistsSync(path)) {
-          parent.var.urls[index].logo2 = path;
-          parent.clientList.forEach((client) => {
-            if ((client.windowType === 'main' || client.windowType === 'files') && client.ws) {
-              client.ws.send({ ...nitm, ...parent.var.urls[index] });
-            }
-          });
-        } else {
-          parent.download({ url: parent.var.urls[index].logo, path: path }, (options) => {
-            parent.var.urls[index].logo2 = path;
-            parent.clientList.forEach((client) => {
-              if ((client.windowType === 'main' || client.windowType === 'files') && client.ws) {
-                client.ws.send({ ...nitm, ...parent.var.urls[index] });
-              }
-            });
-          });
-        }
-      }
+
+      // if (!parent.var.urls[index].busy && parent.var.urls[index].logo && (!parent.var.urls[index].localLogo || !parent.api.isFileExistsSync(parent.var.urls[index].localLogo))) {
+      //   parent.var.urls[index].busy = true;
+      //   let path = parent.path.join(parent.data_dir, 'favicons', parent.md5(parent.var.urls[index].logo) + '.' + parent.var.urls[index].logo.split('?')[0].split('.').pop());
+      //   if (parent.api.isFileExistsSync(path)) {
+      //     parent.var.urls[index].localLogo = path;
+      //     parent.clientList.forEach((client) => {
+      //       if ((client.windowType === 'main' || client.windowType === 'files') && client.ws) {
+      //         client.ws.send({ ...nitm, ...parent.var.urls[index] });
+      //       }
+      //     });
+      //   } else {
+      //     parent.download({ url: parent.var.urls[index].logo, path: path }, (options) => {
+      //       parent.var.urls[index].localLogo = path;
+      //       parent.clientList.forEach((client) => {
+      //         if ((client.windowType === 'main' || client.windowType === 'files') && client.ws) {
+      //           client.ws.send({ ...nitm, ...parent.var.urls[index] });
+      //         }
+      //       });
+      //     });
+      //   }
+      // }
+
     } else {
       parent.var.urls.push({
         url: nitm.url,
         logo: nitm.logo,
-        logo2: nitm.logo,
         title: nitm.title || nitm.url,
         count: 1,
         first_visit: new Date().getTime(),
@@ -690,11 +694,11 @@ module.exports = function init(parent) {
   };
   parent.var.customHeaderList = [];
   parent.addRequestHeader = function (h) {
-    parent.var.customHeaderList.push({ ...{ type: 'request', list: [], ignore: [] }, ...h });
+    parent.var.customHeaderList.push({ type: 'request', list: [], ignore: [], ...h });
     parent.applay('customHeaderList');
   };
   parent.addResponseHeader = function (h) {
-    parent.var.customHeaderList.push({ ...{ type: 'response', list: [], ignore: [] }, ...h });
+    parent.var.customHeaderList.push({ type: 'response', list: [], ignore: [], ...h });
     parent.applay('customHeaderList');
   };
   parent.removeHeader = function (id) {

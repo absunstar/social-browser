@@ -331,9 +331,7 @@ class SocialTabs {
 
     if (tabEl) {
       tabEl.classList.add('social-tab-current');
-      this.layoutTabs();
       this.fixZIndexes();
-      this.setupDraggabilly();
       this.emit('activeTabChange', {
         tabEl,
       });
@@ -359,11 +357,11 @@ class SocialTabs {
 
     if (isCurrentTab) {
       this.setCurrentTab();
-    } else {
-      this.layoutTabs();
-      this.fixZIndexes();
-      this.setupDraggabilly();
     }
+
+    this.layoutTabs();
+    this.fixZIndexes();
+    this.setupDraggabilly();
   }
 
   updateTab(tabEl, tabProperties) {
@@ -417,8 +415,15 @@ class SocialTabs {
           requestAnimationFrame(() => {
             tabEl.classList.remove('social-tab-currently-dragged');
             this.el.classList.remove('social-tabs-sorting');
-            tabEl.classList.add('social-tab-just-dragged');
+
             this.setCurrentTab(tabEl);
+            tabEl.classList.add('social-tab-just-dragged');
+
+            requestAnimationFrame(() => {
+              tabEl.style.transform = '';
+              this.layoutTabs();
+              this.setupDraggabilly();
+            });
           });
         });
       });

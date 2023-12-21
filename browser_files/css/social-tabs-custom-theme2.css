@@ -22,7 +22,7 @@
 
 .social-tabs {
   margin: 0px;
-  -webkit-app-region: no-drag;
+  -webkit-app-region: drag;
   box-sizing: border-box;
   position: relative;
   font-size: 10px;
@@ -137,7 +137,7 @@
 }
 
 #user_name {
-  -webkit-app-region: no-drag;
+  -webkit-app-region: no-drag;;
   position: fixed;
   right: 120px;
   top: 3px;

@@ -127,7 +127,7 @@ window.open = function (url, _name, _specs, _replace_in_history) {
     }))
   ) {
     child_window.postMessage = function (...args) {
-      SOCIALBROWSER.ipc('window.message', { child_id: win.id, data: args[0], origin: args[1] || '*', transfer: args[2] });
+      SOCIALBROWSER.ipc('window.message', { windowID: win.id, data: args[0], origin: args[1] || '*', transfer: args[2] });
     };
 
     win.on('close', () => {
@@ -209,9 +209,9 @@ if (SOCIALBROWSER.var.blocking.javascript.block_window_post_message) {
   };
 }
 
-SOCIALBROWSER.on('window.message', (e, obj) => {
-  obj.origin = obj.origin || '*';
-  window.postMessage(obj.data, obj.origin, obj.transfer);
+SOCIALBROWSER.on('window.message', (e, message) => {
+  message.origin = message.origin || '*';
+  window.postMessage(message.data, message.origin, message.transfer);
 });
 
 window.addEventListener('message', (e) => {
@@ -231,7 +231,7 @@ if (SOCIALBROWSER.windows) {
   window.opener = {
     postMessage: (...args) => {
       SOCIALBROWSER.ipc('window.message', {
-        parent_id: SOCIALBROWSER.windows.parent_id,
+        windowID: SOCIALBROWSER.windows.parent_id,
         data: args[0],
         origin: args[1] || '*',
         transfer: args[2],
@@ -258,7 +258,7 @@ window.print2 = function (options) {
     body: JSON.stringify({
       ...options,
       name: 'print',
-      win_id: SOCIALBROWSER.currentWindow.id,
+      windowID: SOCIALBROWSER.currentWindow.id,
       type: 'html',
       html: document.querySelector('html').outerHTML,
       origin: document.location.origin,

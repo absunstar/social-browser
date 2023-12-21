@@ -41,7 +41,7 @@ require(SOCIALBROWSER.files_dir + '/js/context-menu/finger_print.js');
   if (SOCIALBROWSER.customSetting.windowType == 'view') {
     SOCIALBROWSER.ipc('[send-render-message]', {
       name: 'window_clicked',
-      win_id: SOCIALBROWSER.remote.getCurrentWindow().id,
+      windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
     });
   }
 });*/
@@ -241,7 +241,7 @@ SOCIALBROWSER.on('$download_item', (e, dl) => {
   }
 });
 SOCIALBROWSER.on('found-in-page', (event, data) => {
-  if (data.win_id == SOCIALBROWSER.currentWindow.id) {
+  if (data.windowID == SOCIALBROWSER.currentWindow.id) {
     // SOCIALBROWSER.log(data);
   }
 });

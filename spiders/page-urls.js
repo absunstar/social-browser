@@ -10,13 +10,13 @@ module.exports = function init(browser) {
 
     ipcMain.on('page-urls', (event, data) => {
 
-        let win = BrowserWindow.fromId(data.win_id)
+        let win = BrowserWindow.fromId(data.windowID)
         if(win && !win.isDestroyed()){
             win.close()
         }
 
         search_list.forEach(info => {
-            if (info.win_id == data.win_id) {
+            if (info.windowID == data.windowID) {
                 info.data = data
                 info.data.count = 0
                 info.data.match_url = info.option.match
@@ -34,7 +34,7 @@ module.exports = function init(browser) {
                     info.res.json(info.data);
                 }
                 info.res = null
-                info.data.win_id = null
+                info.data.windowID = null
             }
         })
     })
@@ -56,7 +56,7 @@ module.exports = function init(browser) {
 
         search_list.push({
             guid : op.guid ,
-            win_id: null,
+            windowID: null,
             data: null,
             url: op.url,
             option: op,
@@ -83,7 +83,7 @@ module.exports = function init(browser) {
             }
         })
 
-        search_list[search_list.length - 1].win_id = win.id
+        search_list[search_list.length - 1].windowID = win.id
         win.webContents.audioMuted = true
 
         win.webContents.on('permissionrequest', function (e) {

@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   $is_DOMContentLoaded = true;
   let data = {};
-  data.win_id = remote.getCurrentWindow().id;
+  data.windowID = remote.getCurrentWindow().id;
   data.file = 'page-info';
   // data.html = document.querySelector('html').outerHTML
   data.tags = [];

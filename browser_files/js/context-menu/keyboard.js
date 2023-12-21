@@ -16,7 +16,7 @@
     if (e.ctrlKey == true) {
       sendToMain({
         name: '[window-zoom' + (e.deltaY > 0 ? '-' : '+') + ']',
-        win_id: SOCIALBROWSER.currentWindow.id,
+        windowID: SOCIALBROWSER.currentWindow.id,
       });
     }
   });
@@ -28,12 +28,12 @@
       //e.stopPropagation();
       if (e.key == 'F12' /*f12*/ && SOCIALBROWSER.customSetting.allowDevTools && SOCIALBROWSER.customSetting.allowMenu) {
         SOCIALBROWSER.ipc('[show-window-dev-tools]' ,{
-          win_id: SOCIALBROWSER.currentWindow.id,
+          windowID: SOCIALBROWSER.currentWindow.id,
         });
       } else if (e.key == 'F11' /*f11*/ && SOCIALBROWSER.customSetting.allowDevTools && SOCIALBROWSER.customSetting.allowMenu) {
         sendToMain({
           name: '[toggle-fullscreen]',
-          win_id: SOCIALBROWSER.currentWindow.id,
+          windowID: SOCIALBROWSER.currentWindow.id,
         });
       } else if (e.keyCode == 121 /*f10*/ && SOCIALBROWSER.customSetting.allowDevTools && SOCIALBROWSER.customSetting.allowMenu) {
         sendToMain({
@@ -55,21 +55,21 @@
         if (e.ctrlKey == true) {
           sendToMain({
             name: '[window-zoom+]',
-            win_id: SOCIALBROWSER.currentWindow.id,
+            windowID: SOCIALBROWSER.currentWindow.id,
           });
         }
       } else if (e.keyCode == 109 /*-*/) {
         if (e.ctrlKey == true) {
           sendToMain({
             name: '[window-zoom-]',
-            win_id: SOCIALBROWSER.currentWindow.id,
+            windowID: SOCIALBROWSER.currentWindow.id,
           });
         }
       } else if (e.keyCode == 48 /*0*/) {
         if (e.ctrlKey == true) {
           sendToMain({
             name: '[window-zoom]',
-            win_id: SOCIALBROWSER.currentWindow.id,
+            windowID: SOCIALBROWSER.currentWindow.id,
           });
         }
       } else if (e.keyCode == 49 /*1*/) {
@@ -105,11 +105,11 @@
           name: 'escape',
         });
       } else if (e.keyCode == 69 && e.ctrlKey == true /*E*/) {
-        SOCIALBROWSER.ipc('[edit-window]', { win_id: SOCIALBROWSER.currentWindow.id });
+        SOCIALBROWSER.ipc('[edit-window]', { windowID: SOCIALBROWSER.currentWindow.id });
       } else if (e.keyCode == 78 /*n*/ || e.keyCode == 84 /*n*/) {
         if (e.ctrlKey == true) {
           SOCIALBROWSER.ipc('[open new tab]', {
-            win_id: SOCIALBROWSER.currentWindow.id,
+            windowID: SOCIALBROWSER.currentWindow.id,
           });
         }
       } else if (e.keyCode == 116 /*f5*/) {

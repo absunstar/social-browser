@@ -201,6 +201,8 @@ module.exports = function (child) {
       defaultSetting.webPreferences.webSecurity = false;
       defaultSetting.webPreferences.allowRunningInsecureContent = true;
     } else if (setting.windowType === 'youtube') {
+      setting.url = 'http://127.0.0.1:60080/youtube-view?url=' + setting.url;
+      setting.iframe = true;
       defaultSetting.show = true;
       defaultSetting.alwaysOnTop = true;
       defaultSetting.webPreferences.webSecurity = false;
@@ -278,6 +280,9 @@ module.exports = function (child) {
     customSetting.webPreferences.javascript = customSetting.allowJavascript;
     customSetting.webPreferences.webaudio = customSetting.allowAudio;
 
+    customSetting.loading_icon = 'browser://images/loading-white.gif';
+    customSetting.error_icon = 'browser://images/no.jpg';
+
     let win = new child.electron.BrowserWindow(customSetting);
 
     win.customSetting = customSetting;
@@ -293,7 +298,7 @@ module.exports = function (child) {
       setTimeout(() => {
         if (win && !win.isDestroyed()) {
           child.sendToWindows('[window-event]', {
-            win_id: win.id,
+            windowID: win.id,
             options: win.customSetting,
             name: 'close',
           });
@@ -322,16 +327,17 @@ module.exports = function (child) {
       win.center();
     }
 
-    if (win.customSetting.parentSetting && win.customSetting.parentSetting.win_id) {
+    if (win.customSetting.parentSetting && win.customSetting.parentSetting.windowID) {
       child.assignWindows.push({
-        parent_id: win.customSetting.parentSetting.win_id,
-        child_id: win.id,
+        parentWindowID: win.customSetting.parentSetting.windowID,
+        childWindowID: win.id,
       });
     }
 
     if (win.customSetting.showDevTools) {
       win.openDevTools();
     }
+
     if (win.customSetting.windowType === 'main') {
       child.mainWindow = win;
       win.center();
@@ -364,10 +370,6 @@ module.exports = function (child) {
           win.setBounds(new_bounds);
         }
       }
-    }
-
-    if (win.customSetting.openDevTools) {
-      win.openDevTools();
     }
 
     if (win.customSetting.url) {
@@ -545,7 +547,7 @@ module.exports = function (child) {
     });
     win.on('close', (e) => {
       child.sendToWindows('[window-event]', {
-        win_id: win.id,
+        windowID: win.id,
         options: win.customSetting,
         name: 'close',
       });
@@ -715,11 +717,9 @@ module.exports = function (child) {
         });
       }
     });
-    let loading_icon = 'browser://images/loading-white.gif';
-    let error_icon = 'browser://images/no.jpg';
 
     win.webContents.on('did-start-loading', (e, urls) => {
-      win.customSetting.icon = loading_icon;
+      win.customSetting.icon = win.customSetting.loading_icon;
       child.updateTab(win);
     });
     win.webContents.on('did-stop-loading', (e) => {
@@ -732,19 +732,21 @@ module.exports = function (child) {
     });
     win.webContents.on('did-fail-load', (...callback) => {
       callback[0].preventDefault();
-      if (callback[4]) {
+      if (callback[4] /* is main frame */) {
+
         if (child.parent.var.blocking.proxy_error_remove_proxy && win.customSetting.proxy) {
           child.sendMessage({
             type: '[remove-proxy]',
             proxy: win.customSetting.proxy,
           });
         }
+
         if (win.customSetting.windowType.like('*popup*')) {
           if (child.parent.var.blocking.proxy_error_close_window) {
             win.close();
           }
         } else {
-          win.customSetting.icon = error_icon;
+          win.customSetting.icon = win.customSetting.error_icon;
           child.updateTab(win);
         }
       }
@@ -837,6 +839,10 @@ module.exports = function (child) {
         child.log('Block-navigate', url);
         return;
       }
+      win.customSetting.title = url;
+      win.customSetting.icon = win.customSetting.loading_icon;
+
+      child.updateTab(win);
     });
 
     if (win.webContents.setWindowOpenHandler) {

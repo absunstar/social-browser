@@ -241,7 +241,7 @@ module.exports = function (child) {
     }
 
     setting.name = '[update-tab-properties]';
-    setting.win_id = win.id;
+    setting.windowID = win.id;
     setting.child_id = child.id;
     setting.url = win.getURL();
     setting.title = win.webContents.getTitle();

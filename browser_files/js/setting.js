@@ -549,7 +549,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
       hostname: document.location.hostname,
       url: document.location.href,
       name: '*',
-      win_id: SOCIALBROWSER.currentWindow.id,
+      windowID: SOCIALBROWSER.currentWindow.id,
       partition: SOCIALBROWSER.partition,
     }).then((data) => {
       $scope.setting = data.var;

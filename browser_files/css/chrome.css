@@ -1,0 +1,101 @@
+:root {
+  --background1: #03a9f4;
+  --background2: #ffffff;
+}
+.top-bar {
+  -webkit-app-region: drag;
+}
+.browser-actions {
+  border-bottom: 4px solid #fff;
+}
+.chrome-address-bar {
+  height: 40px;
+  border-bottom: 1px solid #eee;
+  background-color: var(--background2);
+}
+#window_actions {
+  display: block;
+  height: 40px;
+}
+#window_actions a {
+  color: #fff;
+  border-radius: 20px;
+  padding: 6px 11px;
+  cursor: pointer;
+  font-size: 18px;
+}
+.social-close {
+  text-align: center;
+  -webkit-app-region: no-drag;
+  position: fixed;
+  top: 0px;
+  right: 0px;
+  z-index: 1000;
+  padding: 5px 9px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.social-close:hover {
+  background: red;
+}
+.social-close .fa,
+.social-maxmize .fa,
+.social-minmize .fa {
+  vertical-align: top;
+}
+
+.social-maxmize {
+  text-align: center;
+  -webkit-app-region: no-drag;
+  position: fixed;
+  top: 0px;
+  right: 35px;
+  z-index: 1000;
+  padding: 5px 9px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.social-maxmize:hover {
+  background: #2196f3;
+}
+
+.social-minmize {
+  text-align: center;
+  -webkit-app-region: no-drag;
+  position: fixed;
+  top: 0px;
+  right: 70px;
+  z-index: 1000;
+  padding: 5px 9px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.social-minmize:hover {
+  background: #2196f3;
+}
+
+#user_name {
+  -webkit-app-region: no-drag;
+  position: fixed;
+  right: 120px;
+  top: 3px;
+  min-width: 200px;
+  font-family: monospace;
+  border-radius: 4px;
+  background-color: #2196F3;
+  padding: 3px 7px;
+  cursor: pointer;
+  color: #ffffff;
+  font-size: 12px;
+  z-index: 999999;
+}
+
+#user_name:hover {
+  transform: scale(1.1);
+}

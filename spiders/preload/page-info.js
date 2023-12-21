@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
       info.image_url = image ? image.content || image.href : null;
       info.description = description ? description.innerText || description.content : '';
       info.title = title ? title.innerText : '';
-      info.win_id = remote.getCurrentWindow().id;
+      info.windowID = remote.getCurrentWindow().id;
       info.file = 'page-info';
 
       if (info.is_youtube) {

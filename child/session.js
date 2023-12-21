@@ -453,7 +453,6 @@ module.exports = function (child) {
         callback({
           cancel: false,
         });
-        
       });
 
       ss.webRequest.onBeforeSendHeaders(filter, function (details, callback) {
@@ -506,6 +505,29 @@ module.exports = function (child) {
             details.requestHeaders['User-Agent'] = details.requestHeaders['User-Agent'].replace(') ', ') [xx-' + child.md5(code) + '] ');
           }
         }
+
+        // custom header request
+        child.parent.var.customHeaderList.forEach((r) => {
+          if (r.type == 'request' && url.like(r.url)) {
+            r.list.forEach((v) => {
+              if (v && v.name && v.value) {
+                delete details.requestHeaders[v.name];
+                delete details.requestHeaders[v.name.toLowerCase()];
+                details.requestHeaders[v.name] = v.value.replace('{{url}}', source_url);
+              }
+            });
+            r.ignore.forEach((key) => {
+              if (key) {
+                delete details.requestHeaders[key];
+                delete details.requestHeaders[key.toLowerCase()];
+              }
+            });
+            if (r.log) {
+              console.log(url, details.requestHeaders);
+            }
+          }
+        });
+
         // Must For Login Problem ^_^
 
         if (child.parent.var.blocking.white_list.some((item) => item.url.length > 2 && url.like(item.url))) {
@@ -579,25 +601,6 @@ module.exports = function (child) {
           // console.log('!cookie_obj', details.requestHeaders);
         }
 
-        // custom header request
-        child.parent.var.customHeaderList.forEach((r) => {
-          if (r.type == 'request' && url.like(r.url)) {
-            r.list.forEach((v) => {
-              if (v && v.name && v.value) {
-                delete details.requestHeaders[v.name];
-                delete details.requestHeaders[v.name.toLowerCase()];
-                details.requestHeaders[v.name] = v.value.replace('{{url}}', source_url);
-              }
-            });
-            r.ignore.forEach((key) => {
-              if (key) {
-                delete details.requestHeaders[key];
-                delete details.requestHeaders[key.toLowerCase()];
-              }
-            });
-          }
-        });
-
         if (_ss.user.privacy.vpc.dnt) {
           details.requestHeaders['DNT'] = '1'; // dont track me
         }
@@ -661,18 +664,7 @@ module.exports = function (child) {
           return;
         }
 
-        if (child.parent.var.blocking.white_list.some((item) => item.url.length > 2 && url.like(item.url))) {
-          callback({
-            cancel: false,
-            responseHeaders: {
-              ...details.responseHeaders,
-            },
-            statusLine: details.statusLine,
-          });
-          return;
-        }
-
-        // custom header request
+        // custom header response
         child.parent.var.customHeaderList.forEach((r) => {
           if (r.type == 'response' && url.like(r.url)) {
             r.ignore.forEach((key) => {
@@ -691,6 +683,17 @@ module.exports = function (child) {
             });
           }
         });
+
+        if (child.parent.var.blocking.white_list.some((item) => item.url.length > 2 && url.like(item.url))) {
+          callback({
+            cancel: false,
+            responseHeaders: {
+              ...details.responseHeaders,
+            },
+            statusLine: details.statusLine,
+          });
+          return;
+        }
 
         // must delete values before re set
 

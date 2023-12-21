@@ -46,7 +46,7 @@
       <ul>
         <li ng-click="goUrl(u.url);$event.stopPropagation()" ng-class="{'selected' : u.selected}" href="{{u.url}}" ng-repeat="u in url_list2 track by $index">
           <a ng-click="goUrl(u.url);$event.stopPropagation()">
-            <img ng-src="{{u.logo2 || u.logo || u.favicon}}" onerror="this.src='http://127.0.0.1:60080/images/no.jpg'" />
+            <img ng-src="{{u.logo || u.favicon || u.icon}}" onerror="this.src='http://127.0.0.1:60080/images/no.jpg'" />
             <span class="bold green" ng-click="goUrl(u.url);$event.stopPropagation()"> ( {{u.count}} ) </span>
             <span class="blue" ng-click="goUrl(u.url);$event.stopPropagation()"> {{u.url | limitTo:70}} </span>
             <span class="black float-right" ng-click="goUrl(u.url);$event.stopPropagation()"> {{u.title | limitTo:70}} </span>
@@ -101,7 +101,7 @@
           }
         }
 
-        scope().tab_id = data.tab_id;
+        scope().tabID = data.tabID;
         scope().loadUrls(scope().url, 'count');
 
         setTimeout(() => {
@@ -252,7 +252,7 @@
           $scope.url = url;
           SOCIALBROWSER.ipc('[update-view-url]', {
             url: $scope.url,
-            tab_id: $scope.tab_id,
+            tabID: $scope.tabID,
           });
           SOCIALBROWSER.currentWindow.hide();
         };

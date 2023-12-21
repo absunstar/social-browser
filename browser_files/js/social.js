@@ -9,37 +9,28 @@ const updateOnlineStatus = () => {
   SOCIALBROWSER.ipc('online-status', navigator.onLine ? { status: true } : { status: false });
 };
 
-
-
 window.addEventListener('online', updateOnlineStatus);
 window.addEventListener('offline', updateOnlineStatus);
 
 const { nativeImage } = SOCIALBROWSER.electron;
 const { Menu, MenuItem } = SOCIALBROWSER.remote;
 
-function ipc(name, obj) {
-  obj = obj || {};
-  obj.tab_id = obj.tab_id || currentTabId;
-  obj.tab_url = $('#' + obj.tab_id).attr('url');
-  obj.tab_title = $('#' + obj.tab_id).attr('title');
-  obj.tab_icon = $('#' + obj.tab_id).attr('icon');
-  obj.tab_win_id = $('#' + obj.tab_id).attr('win_id');
-  obj.tab_child_id = $('#' + obj.tab_id).attr('child_id');
-  obj.tab_main_window_id = $('#' + obj.tab_id).attr('main_window_id');
-  obj.win_id = obj.tab_win_id || SOCIALBROWSER.currentWindow.id;
+function ipc(name, message) {
+  message = message || {};
+  message.tabID = message.tabID || currentTabId;
+  message.url = message.url || $('#' + message.tabID).attr('url');
+  message.title = message.title || $('#' + message.tabID).attr('title');
+  message.icon = message.icon || $('#' + message.tabID).attr('icon');
+  message.windowID = message.windowID || $('#' + message.tabID).attr('windowID');
+  message.childID = message.childID || $('#' + message.tabID).attr('child_id');
+  message.mainWindowID = message.mainWindowID || $('#' + message.tabID).attr('main_window_id');
+  message.windowID = message.windowID || SOCIALBROWSER.currentWindow.id;
 
-  SOCIALBROWSER.ipc(name, obj);
+  SOCIALBROWSER.ipc(name, message);
 }
 
-function sendToMain(obj) {
-  obj = obj || {};
-  obj.tab_id = currentTabId;
-  obj.tab_win_id = $('#' + currentTabId).attr('win_id');
-  obj.tab_child_id = $('#' + currentTabId).attr('child_id');
-  obj.tab_main_window_id = $('#' + currentTabId).attr('main_window_id');
-  obj.win_id = obj.tab_win_id || SOCIALBROWSER.currentWindow.id;
-
-  SOCIALBROWSER.ipc('[send-render-message]', obj);
+function sendToMain(message) {
+  SOCIALBROWSER.ipc('[send-render-message]', message);
 }
 
 function goURL(e) {
@@ -316,7 +307,7 @@ function showSettingMenu() {
     label: 'Bookmark all tabs',
     click: () => {
       document.querySelectorAll('.social-tab:not(#tabPlus)').forEach((el) => {
-        ipc('[add-to-bookmark]', { tab_id: el.id });
+        ipc('[add-to-bookmark]', { tabID: el.id });
       });
     },
   });
@@ -449,7 +440,7 @@ function showSettingMenu() {
       type: m.type,
       submenu: m.submenu?.map((s) => ({ label: s.label, type: s.type, sublabel: s.sublabel, visible: s.visible })),
     })),
-    win_id: SOCIALBROWSER.currentWindow.id,
+    windowID: SOCIALBROWSER.currentWindow.id,
   });
 }
 
@@ -468,7 +459,7 @@ function showBookmarksMenu() {
     label: 'Bookmark all tabs',
     click: () => {
       document.querySelectorAll('.social-tab:not(#tabPlus)').forEach((el) => {
-        ipc('[add-to-bookmark]', { tab_id: el.id });
+        ipc('[add-to-bookmark]', { tabID: el.id });
       });
     },
   });
@@ -526,7 +517,7 @@ function showBookmarksMenu() {
       type: m.type,
       submenu: m.submenu?.map((s) => ({ label: s.label, type: s.type, sublabel: s.sublabel, visible: s.visible })),
     })),
-    win_id: SOCIALBROWSER.currentWindow.id,
+    windowID: SOCIALBROWSER.currentWindow.id,
   });
 }
 
@@ -601,10 +592,10 @@ $('.social-close').click(() => {
   ExitSocialWindow();
 });
 $('.social-maxmize').click(() => {
-  SOCIALBROWSER.ipc('[browser-message]', { name: 'maxmize', win_id: SOCIALBROWSER.currentWindow.id });
+  SOCIALBROWSER.ipc('[browser-message]', { name: 'maxmize', windowID: SOCIALBROWSER.currentWindow.id });
 });
 $('.social-minmize').click(() => {
-  SOCIALBROWSER.ipc('[browser-message]', { name: 'minmize', win_id: SOCIALBROWSER.currentWindow.id });
+  SOCIALBROWSER.ipc('[browser-message]', { name: 'minmize', windowID: SOCIALBROWSER.currentWindow.id });
 });
 
 socialTabsDom.addEventListener('activeTabChange', ({ detail }) => {
@@ -615,7 +606,7 @@ socialTabsDom.addEventListener('activeTabChange', ({ detail }) => {
     y: 0,
     width: document.width,
     height: document.height,
-    tab_id: currentTabId,
+    tabID: currentTabId,
     main_window_id: SOCIALBROWSER.currentWindow.id,
   });
 
@@ -730,7 +721,7 @@ socialTabsDom.addEventListener('tabAdd', ({ detail }) => {
       y: window.screenTop + 70,
       width: document.width,
       height: document.height,
-      tab_id: currentTabId,
+      tabID: currentTabId,
       main_window_id: SOCIALBROWSER.currentWindow.id,
     });
 
@@ -743,7 +734,7 @@ socialTabsDom.addEventListener('tabRemove', ({ detail }) => {
   currentTabId = detail.id;
 
   SOCIALBROWSER.ipc('[close-view]', {
-    tab_id: detail.id,
+    tabID: detail.id,
   });
 });
 
@@ -788,42 +779,42 @@ SOCIALBROWSER.on('[send-render-message]', (event, data) => {
   renderMessage(data);
 });
 SOCIALBROWSER.on('[update-tab-properties]', (event, data) => {
-  if (data.tab_id && data.url) {
-    $('#' + data.tab_id).attr('url', data.url);
+  if (data.tabID && data.url) {
+    $('#' + data.tabID).attr('url', data.url);
   }
-  if (data.tab_id && data.icon) {
-    $('#' + data.tab_id).attr('icon', data.icon);
-    $('#' + data.tab_id + ' .social-tab-favicon').css('background-image', 'url(' + data.icon + ')');
+  if (data.tabID && data.icon) {
+    $('#' + data.tabID).attr('icon', data.icon);
+    $('#' + data.tabID + ' .social-tab-favicon').css('background-image', 'url(' + data.icon + ')');
   }
   if (data.user_name) {
-    $('#' + data.tab_id).attr('user_name', data.user_name);
+    $('#' + data.tabID).attr('user_name', data.user_name);
   }
 
-  if (data.win_id) {
-    $('#' + data.tab_id).attr('win_id', data.win_id);
+  if (data.windowID) {
+    $('#' + data.tabID).attr('windowID', data.windowID);
   }
 
   if (data.child_id) {
-    $('#' + data.tab_id).attr('child_id', data.child_id);
+    $('#' + data.tabID).attr('child_id', data.child_id);
   }
   if (data.main_window_id) {
-    $('#' + data.tab_id).attr('main_window_id', data.main_window_id);
+    $('#' + data.tabID).attr('main_window_id', data.main_window_id);
   }
 
   if (data.forward) {
-    $('#' + data.tab_id).attr('forward', data.forward);
+    $('#' + data.tabID).attr('forward', data.forward);
   }
   if (data.back) {
-    $('#' + data.tab_id).attr('back', data.back);
+    $('#' + data.tabID).attr('back', data.back);
   }
   if (data.webaudio) {
-    $('#' + data.tab_id).attr('webaudio', data.webaudio);
+    $('#' + data.tabID).attr('webaudio', data.webaudio);
   }
 
   if (data.title) {
-    $('#' + data.tab_id + ' .social-tab-title p').text(data.title);
-    $('#' + data.tab_id).attr('title', data.title);
-    let p = document.querySelector('#' + data.tab_id + ' .social-tab-title p');
+    $('#' + data.tabID + ' .social-tab-title p').text(data.title);
+    $('#' + data.tabID).attr('title', data.title);
+    let p = document.querySelector('#' + data.tabID + ' .social-tab-title p');
     if (p) {
       if (data.title.test(/^[a-zA-Z\-\u0590-\u05FF\0-9\^@_:\?\[\]~<>\{\}\|\\ ]+$/)) {
         p.style.direction = 'ltr';
@@ -833,7 +824,7 @@ SOCIALBROWSER.on('[update-tab-properties]', (event, data) => {
     }
   }
 
-  if (data.tab_id && data.tab_id == currentTabId && data.url) {
+  if (data.tabID && data.tabID == currentTabId && data.url) {
     if (!data.forward) {
       $('.go-forward i').css('color', '#9E9E9E');
     } else {
@@ -913,7 +904,7 @@ function renderMessage(cm) {
   if (!cm) {
     return;
   } else if (cm.name == '[remove-tab]') {
-    socialTabs.removeTab(socialTabs.removeTab(socialTabsDom.querySelector('#' + cm.tab_id)));
+    socialTabs.removeTab(socialTabs.removeTab(socialTabsDom.querySelector('#' + cm.tabID)));
   } else if (cm.name == 'set-setting') {
     for (let k of Object.keys(cm.var)) {
       SOCIALBROWSER.var[k] = cm.var[k];
@@ -976,7 +967,7 @@ function closeTab(id) {
 
 function ExitSocialWindow(noTabs = false) {
   if (noTabs) {
-    SOCIALBROWSER.ipc('[browser-message]', { name: 'close', win_id: SOCIALBROWSER.currentWindow.id });
+    SOCIALBROWSER.ipc('[browser-message]', { name: 'close', windowID: SOCIALBROWSER.currentWindow.id });
     return;
   }
   $('.address-input .http').css('display', 'none');
@@ -997,7 +988,7 @@ function ExitSocialWindow(noTabs = false) {
   });
 
   setTimeout(() => {
-    SOCIALBROWSER.ipc('[browser-message]', { name: 'close', win_id: SOCIALBROWSER.currentWindow.id });
+    SOCIALBROWSER.ipc('[browser-message]', { name: 'close', windowID: SOCIALBROWSER.currentWindow.id });
   }, 250);
 }
 
@@ -1032,7 +1023,7 @@ window.addEventListener('resize', () => {
 });
 
 SOCIALBROWSER.on('show-tab-view', (data) => {
-  if (data.win_id == SOCIALBROWSER.currentWindow.id) {
+  if (data.windowID == SOCIALBROWSER.currentWindow.id) {
     $('#' + currentTabId).click();
   }
 });

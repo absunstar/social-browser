@@ -12,7 +12,7 @@ module.exports = function init(browser) {
         page_list.push({
             index : page_list.length,
             guid : op.guid ,
-            win_id: null,
+            windowID: null,
             data: null,
             url: op.url,
             option: op,
@@ -23,14 +23,14 @@ module.exports = function init(browser) {
     ipcMain.on('page-content', (event, data) => {
         
         page_list.forEach(( info , i) => {
-            if (info.win_id == data.win_id) {
+            if (info.windowID == data.windowID) {
                 if (info.res) {
                     info.res.json(data);
                 }
                 page_list.splice(i , 1)
             }
         })
-        let win = BrowserWindow.fromId(data.win_id)
+        let win = BrowserWindow.fromId(data.windowID)
         if(win && !win.isDestroyed()){
             win.close()
         }
@@ -72,7 +72,7 @@ module.exports = function init(browser) {
             }
         })
 
-        page.win_id = win.id
+        page.windowID = win.id
         win.webContents.audioMuted = true
         win.loadURL(page .url)
 

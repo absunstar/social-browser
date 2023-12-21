@@ -47,7 +47,8 @@ module.exports = function (browser) {
 
     browser.addRequestHeader({
       id: 'core',
-      url: '*youtu.be*|*www.youtube.com*',
+      url: '*www.youtube.com/embed*',
+      log : false,
       list: [
         {
           name: 'Host',
@@ -62,14 +63,14 @@ module.exports = function (browser) {
     });
     browser.addResponseHeader({
       id: 'core',
-      url: '*youtu.be*|*www.youtube.com*',
+      url: '*www.youtube.com/embed*',
       list: [
         {
           name: 'x-server',
           value: ['https://www.youtube.com/'],
         },
       ],
-      ignore: ['x-browser', 'X-Frame-Options'],
+      ignore: ['x-browser', 'X-Frame-Options' , 'Cross-Origin-Resource-Policy'],
     });
   };
 

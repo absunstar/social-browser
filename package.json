@@ -110,8 +110,8 @@
     }
   },
   "dependencies": {
-    "@electron/remote": "^2.1.0",
-    "isite": "^2023.12.17",
+    "@electron/remote": "^2.1.1",
+    "isite": "^2023.12.18",
     "node-fetch": "^2.6.6"
   },
   "devDependencies": {

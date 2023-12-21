@@ -222,12 +222,12 @@ module.exports = function init(parent) {
         }
 
         parent.clientList[index].option_list.forEach((op) => {
-          if (op.tab_id) {
+          if (op.tabID) {
             parent.clientList.forEach((client, i) => {
               if (client.windowType === 'main') {
                 client.ws.send({
                   type: '[remove-tab]',
-                  tab_id: op.tab_id,
+                  tabID: op.tabID,
                 });
               }
             });
