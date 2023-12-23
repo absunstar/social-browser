@@ -218,7 +218,7 @@
 
   SOCIALBROWSER.init2 = function () {
     SOCIALBROWSER.is_main_data = true;
-    SOCIALBROWSER.child_id = SOCIALBROWSER.browserData.child_id;
+    SOCIALBROWSER.childProcessID = SOCIALBROWSER.browserData.childProcessID;
     SOCIALBROWSER.child_index = SOCIALBROWSER.browserData.child_index;
     SOCIALBROWSER.customSetting = SOCIALBROWSER.browserData.customSetting;
     SOCIALBROWSER.var = SOCIALBROWSER.browserData.var;

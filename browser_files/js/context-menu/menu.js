@@ -1669,7 +1669,7 @@ function createMenuList(node) {
       let partition = node.getAttribute('partition');
       let user_name = node.getAttribute('user_name');
       let user_agent = node.getAttribute('user_agent');
-      let child_id = node.getAttribute('child_id');
+      let childProcessID = node.getAttribute('childProcessID');
       let ghost = 'x-ghost_' + Math.random().toString().replace('.', '');
       SOCIALBROWSER.menuList.push({
         label: 'New tab',
@@ -1737,7 +1737,7 @@ function createMenuList(node) {
         label: 'Duplicate tab in window',
         click() {
           SOCIALBROWSER.ipc('[open new popup]', {
-            child_id: child_id,
+            childProcessID: childProcessID,
             show: true,
             center: true,
             url: url,
@@ -1752,7 +1752,7 @@ function createMenuList(node) {
         label: 'Duplicate tab in Ghost window',
         click() {
           SOCIALBROWSER.ipc('[open new popup]', {
-            child_id: child_id,
+            childProcessID: childProcessID,
             show: true,
             center: true,
             url: url,

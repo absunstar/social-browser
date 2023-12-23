@@ -22,8 +22,8 @@ function ipc(name, message) {
   message.title = message.title || $('#' + message.tabID).attr('title');
   message.icon = message.icon || $('#' + message.tabID).attr('icon');
   message.windowID = message.windowID || $('#' + message.tabID).attr('windowID');
-  message.childID = message.childID || $('#' + message.tabID).attr('child_id');
-  message.mainWindowID = message.mainWindowID || $('#' + message.tabID).attr('main_window_id');
+  message.childID = message.childID || $('#' + message.tabID).attr('childProcessID');
+  message.mainWindowID = message.mainWindowID || $('#' + message.tabID).attr('mainWindowID');
   message.windowID = message.windowID || SOCIALBROWSER.currentWindow.id;
 
   SOCIALBROWSER.ipc(name, message);
@@ -216,7 +216,7 @@ document.addEventListener(
     } else if (e.keyCode == 78 /*n*/ || e.keyCode == 84 /*t*/) {
       if (e.ctrlKey == true) {
         ipc('[open new tab]', {
-          main_window_id: SOCIALBROWSER.currentWindow.id,
+          mainWindowID: SOCIALBROWSER.currentWindow.id,
         });
       }
     } else if (e.keyCode == 116 /*f5*/) {
@@ -245,7 +245,7 @@ function showSettingMenu() {
     click: () =>
       ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/setting',
-        main_window_id: SOCIALBROWSER.currentWindow.id,
+        mainWindowID: SOCIALBROWSER.currentWindow.id,
         vip: true,
       }),
   });
@@ -272,7 +272,7 @@ function showSettingMenu() {
     click: () =>
       ipc('[open new tab]', {
         url: 'https://social-browser.com',
-        main_window_id: SOCIALBROWSER.currentWindow.id,
+        mainWindowID: SOCIALBROWSER.currentWindow.id,
       }),
   });
   SOCIALBROWSER.menuList.push({
@@ -283,7 +283,7 @@ function showSettingMenu() {
     click: () =>
       ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/downloads',
-        main_window_id: SOCIALBROWSER.currentWindow.id,
+        mainWindowID: SOCIALBROWSER.currentWindow.id,
         vip: true,
       }),
   });
@@ -319,7 +319,7 @@ function showSettingMenu() {
     click: () =>
       ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/setting?open=bookmarks',
-        main_window_id: SOCIALBROWSER.currentWindow.id,
+        mainWindowID: SOCIALBROWSER.currentWindow.id,
         vip: true,
       }),
   });
@@ -330,7 +330,7 @@ function showSettingMenu() {
     arr2.push({
       label: b.title,
       sublabel: b.url,
-      icon: SOCIALBROWSER.nativeImage(b.favicon),
+      icon: SOCIALBROWSER.nativeImage(b.icon),
       click: () =>
         ipc('[open new tab]', {
           url: b.url,
@@ -350,7 +350,7 @@ function showSettingMenu() {
         SOCIALBROWSER.var.bookmarks.forEach((b) => {
           ipc('[open new tab]', {
             url: b.url,
-            main_window_id: SOCIALBROWSER.currentWindow.id,
+            mainWindowID: SOCIALBROWSER.currentWindow.id,
           });
         });
       },
@@ -471,7 +471,7 @@ function showBookmarksMenu() {
     click: () =>
       ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/setting?open=bookmarks',
-        main_window_id: SOCIALBROWSER.currentWindow.id,
+        mainWindowID: SOCIALBROWSER.currentWindow.id,
         vip: true,
       }),
   });
@@ -482,7 +482,7 @@ function showBookmarksMenu() {
     SOCIALBROWSER.menuList.push({
       label: b.title,
       sublabel: b.url,
-      icon: SOCIALBROWSER.nativeImage(b.favicon),
+      icon: SOCIALBROWSER.nativeImage(b.icon),
       click: () =>
         ipc('[open new tab]', {
           url: b.url,
@@ -502,7 +502,7 @@ function showBookmarksMenu() {
         SOCIALBROWSER.var.bookmarks.forEach((b) => {
           ipc('[open new tab]', {
             url: b.url,
-            main_window_id: SOCIALBROWSER.currentWindow.id,
+            mainWindowID: SOCIALBROWSER.currentWindow.id,
           });
         });
       },
@@ -607,7 +607,7 @@ socialTabsDom.addEventListener('activeTabChange', ({ detail }) => {
     width: document.width,
     height: document.height,
     tabID: currentTabId,
-    main_window_id: SOCIALBROWSER.currentWindow.id,
+    mainWindowID: SOCIALBROWSER.currentWindow.id,
   });
 
   $('#user_name').html($('#' + currentTabId).attr('user_name'));
@@ -722,7 +722,7 @@ socialTabsDom.addEventListener('tabAdd', ({ detail }) => {
       width: document.width,
       height: document.height,
       tabID: currentTabId,
-      main_window_id: SOCIALBROWSER.currentWindow.id,
+      mainWindowID: SOCIALBROWSER.currentWindow.id,
     });
 
     if (!$id.attr('url') || $id.attr('url').like('*newTab')) {
@@ -738,7 +738,7 @@ socialTabsDom.addEventListener('tabRemove', ({ detail }) => {
   });
 });
 
-function render_new_tab(op) {
+function renderNewTabData(op) {
   if (!op) {
     return;
   }
@@ -765,15 +765,15 @@ function render_new_tab(op) {
     id: 'tab_' + new Date().getTime(),
     title: op.title || op.url,
     user_name: op.user_name || op.partition,
-    favicon: 'browser://images/loading-white.gif',
-    main_window_id: SOCIALBROWSER.currentWindow.id,
+    icon: 'browser://images/loading-white.gif',
+    mainWindowID: SOCIALBROWSER.currentWindow.id,
   };
   socialTabs.addTab(tab);
   // console.log(tab);
 }
 
 SOCIALBROWSER.on('[open new tab]', (event, data) => {
-  render_new_tab(data);
+  renderNewTabData(data);
 });
 SOCIALBROWSER.on('[send-render-message]', (event, data) => {
   renderMessage(data);
@@ -794,11 +794,11 @@ SOCIALBROWSER.on('[update-tab-properties]', (event, data) => {
     $('#' + data.tabID).attr('windowID', data.windowID);
   }
 
-  if (data.child_id) {
-    $('#' + data.tabID).attr('child_id', data.child_id);
+  if (data.childProcessID) {
+    $('#' + data.tabID).attr('childProcessID', data.childProcessID);
   }
-  if (data.main_window_id) {
-    $('#' + data.tabID).attr('main_window_id', data.main_window_id);
+  if (data.mainWindowID) {
+    $('#' + data.tabID).attr('mainWindowID', data.mainWindowID);
   }
 
   if (data.forward) {
@@ -910,7 +910,7 @@ function renderMessage(cm) {
       SOCIALBROWSER.var[k] = cm.var[k];
     }
   } else if (cm.name == '[show-browser-setting]') {
-    render_new_tab({
+    renderNewTabData({
       url: 'http://127.0.0.1:60080/setting',
       vip: true,
     });
@@ -993,14 +993,14 @@ function ExitSocialWindow(noTabs = false) {
 }
 
 function showDownloads() {
-  render_new_tab({
+  renderNewTabData({
     url: 'http://127.0.0.1:60080/downloads',
     vip: true,
   });
 }
 
 function init_tab() {
-  render_new_tab(SOCIALBROWSER.newTabData);
+  renderNewTabData(SOCIALBROWSER.newTabData);
 }
 
 function handleUrlText() {

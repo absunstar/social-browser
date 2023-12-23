@@ -23,7 +23,7 @@ module.exports = function init(child) {
 
   child.handleBrowserData = function (data) {
     let data2 = {
-      child_id: child.id,
+      childProcessID: child.id,
       child_index: child.index,
       information: child.parent.information,
       var: child.get_dynamic_var(data),
@@ -33,7 +33,7 @@ module.exports = function init(child) {
       injectHTML: child.parent.injectHTML,
       injectCSS: child.parent.injectCSS,
       newTabData: child.parent.newTabData,
-      windows: child.assignWindows.find((w) => w.child_id == data.windowID),
+      windows: child.assignWindows.find((w) => w.childProcessID == data.windowID),
     };
 
     let win = child.windowList.find((w) => w.id == data.windowID);
@@ -55,7 +55,7 @@ module.exports = function init(child) {
       return data2;
     } catch (ex) {
       event.returnValue = {
-        child_id: child.id,
+        childProcessID: child.id,
         child_index: child.index,
         information: child.parent.information,
         var: child.parent.var,

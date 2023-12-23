@@ -129,7 +129,10 @@ child.electron.app.on('ready', function () {
     event.preventDefault();
     callback(true);
   });
-
+  child.electron.app.on('select-client-certificate', (event, webContents, url, list, callback) => {
+    event.preventDefault()
+    callback(list[0])
+  })
   child.electron.app.on('crashed', (event, session) => {
     child.electron.app.exit(0);
   });

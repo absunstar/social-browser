@@ -90,7 +90,7 @@ module.exports = function init(parent) {
       return;
     }
     setting.name = '[update-tab-properties]';
-    setting.child_id = child.id;
+    setting.childProcessID = child.id;
     setting.url = win.getURL();
     setting.title = win.webContents.getTitle();
     setting.forward = win.webContents.canGoForward();

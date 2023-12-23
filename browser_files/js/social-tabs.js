@@ -246,7 +246,7 @@ class SocialTabs {
         windowType: 'view',
         url: tabProperties.url || defaultTapProperties.url,
         source: 'session',
-        main_window_id: SOCIALBROWSER.currentWindow.id,
+        mainWindowID: SOCIALBROWSER.currentWindow.id,
       });
       return;
     }
@@ -373,7 +373,7 @@ class SocialTabs {
     tabEl.setAttribute('proxy', tabProperties.proxy);
     tabEl.setAttribute('webaudio', tabProperties.webaudio);
     tabEl.querySelector('.social-tab-title p').innerText = tabProperties.title || tabProperties.url;
-    tabEl.querySelector('.social-tab-favicon').style.backgroundImage = `url('${tabProperties.favicon}')`;
+    tabEl.querySelector('.social-tab-favicon').style.backgroundImage = `url('${tabProperties.icon}')`;
   }
 
   cleanUpPreviouslyDraggedTabs() {

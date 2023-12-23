@@ -704,17 +704,19 @@ module.exports = function (child) {
     });
 
     win.webContents.on('page-favicon-updated', (e, urls) => {
-      win.customSetting.icon = urls[0];
-      win.customSetting.favicon = urls[0];
-      child.updateTab(win);
-      if (!win.customSetting.vip) {
-        child.sendMessage({
-          type: '[add-window-url]',
-          url: child.decodeURI(win.getURL()),
-          title: win.getTitle(),
-          logo: win.customSetting.favicon,
-          ignoreCounted: true,
-        });
+      if (urls[0]) {
+        win.customSetting.icon = urls[0];
+        win.customSetting.favicon = urls[0];
+        child.updateTab(win);
+        if (!win.customSetting.vip) {
+          child.sendMessage({
+            type: '[add-window-url]',
+            url: child.decodeURI(win.getURL()),
+            title: win.getTitle(),
+            logo: win.customSetting.favicon,
+            ignoreCounted: true,
+          });
+        }
       }
     });
 
@@ -733,7 +735,6 @@ module.exports = function (child) {
     win.webContents.on('did-fail-load', (...callback) => {
       callback[0].preventDefault();
       if (callback[4] /* is main frame */) {
-
         if (child.parent.var.blocking.proxy_error_remove_proxy && win.customSetting.proxy) {
           child.sendMessage({
             type: '[remove-proxy]',
@@ -832,17 +833,40 @@ module.exports = function (child) {
         }
       }
     });
-    win.webContents.on('will-navigate', (e, url) => {
-      console.log('will-navigate : ', url);
-      if (!win.customSetting.allowRedirect || !child.isAllowURL(url)) {
-        e.preventDefault();
-        child.log('Block-navigate', url);
-        return;
-      }
-      win.customSetting.title = url;
+    win.webContents.on('will-navigate', (details) => {
+      // console.log('will-navigate : ', details.url);
+      // if (!win.customSetting.allowRedirect || !child.isAllowURL(details.url)) {
+      //   details.preventDefault();
+      //   child.log('Block-navigate', details.url);
+      //   return;
+      // }
+      win.customSetting.title = details.url;
       win.customSetting.icon = win.customSetting.loading_icon;
 
       child.updateTab(win);
+    });
+    win.webContents.on('will-frame-navigate', (details) => {
+      console.log('will-frame-navigate : ', details.url);
+      if (!win.customSetting.allowRedirect || !child.isAllowURL(details.url)) {
+        details.preventDefault();
+        child.log('Block-frame-navigate', details.url);
+        return;
+      }
+    });
+
+    win.webContents.on('will-prevent-unload', (event) => {
+      const choice = dialog.showMessageBoxSync(win, {
+        type: 'question',
+        buttons: ['Leave', 'Stay'],
+        title: 'Do you want to leave this site?',
+        message: 'Changes you made may not be saved.',
+        defaultId: 0,
+        cancelId: 1,
+      });
+      const leave = choice === 0;
+      if (leave) {
+        event.preventDefault();
+      }
     });
 
     if (win.webContents.setWindowOpenHandler) {

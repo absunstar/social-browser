@@ -24,7 +24,7 @@ function ipc(name, obj) {
   obj.title = $('#' + obj.tabID).attr('title');
   obj.icon = $('#' + obj.tabID).attr('icon');
   obj.windowID = $('#' + obj.tabID).attr('windowID');
-  obj.childID = $('#' + obj.tabID).attr('child_id');
+  obj.childID = $('#' + obj.tabID).attr('childProcessID');
   obj.mainWindowID = $('#' + obj.tabID).attr('main_window_id');
   obj.windowID = obj.windowID || SOCIALBROWSER.currentWindow.id;
 
@@ -35,7 +35,7 @@ function sendToMain(obj) {
   obj = obj || {};
   obj.tabID = currentTabId;
   obj.windowID = $('#' + currentTabId).attr('windowID');
-  obj.childID = $('#' + currentTabId).attr('child_id');
+  obj.childID = $('#' + currentTabId).attr('childProcessID');
   obj.mainWindowID = $('#' + currentTabId).attr('main_window_id');
   obj.windowID = obj.windowID || SOCIALBROWSER.currentWindow.id;
 
@@ -720,8 +720,8 @@ SOCIALBROWSER.on('[update-tab-properties]', (event, data) => {
     $('#' + data.tabID).attr('windowID', data.windowID);
   }
 
-  if (data.child_id) {
-    $('#' + data.tabID).attr('child_id', data.child_id);
+  if (data.childProcessID) {
+    $('#' + data.tabID).attr('childProcessID', data.childProcessID);
   }
   if (data.main_window_id) {
     $('#' + data.tabID).attr('main_window_id', data.main_window_id);

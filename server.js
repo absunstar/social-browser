@@ -230,6 +230,7 @@
 
     browser.newTabData = {
       name: '[open new tab]',
+      icon : 'browser://images/logo.png',
       url: url,
       partition: partition,
       user_name: user_name,

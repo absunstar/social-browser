@@ -242,12 +242,11 @@ module.exports = function (child) {
 
     setting.name = '[update-tab-properties]';
     setting.windowID = win.id;
-    setting.child_id = child.id;
-    setting.url = win.getURL();
-    setting.title = win.webContents.getTitle();
+    setting.childProcessID = child.id;
     setting.forward = win.webContents.canGoForward();
     setting.back = win.webContents.canGoBack();
     setting.webaudio = !win.webContents.audioMuted;
+    setting.url = win.getURL();
 
     child.sendMessage({
       type: '[update-tab-properties]',

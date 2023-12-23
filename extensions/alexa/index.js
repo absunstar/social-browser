@@ -16,13 +16,13 @@ module.exports = function (browser) {
     browser.addRequestHeader({
       id: 'alexa_1',
       url: '*',
-      value_list: [
+      list: [
         {
           name: 'AlexaToolbar-ALX_NS_PH',
           value: 'AlexaToolbar/alx-4.0.5',
         },
       ],
-      delete_list: [],
+      ignore: [],
     });
   };
 
