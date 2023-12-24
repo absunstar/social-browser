@@ -134,6 +134,12 @@ module.exports = function (child) {
               win.webContents.send('share', message.message);
             }
           });
+        } else if (message.type == '[tracking-info]') {
+          child.windowList.forEach((w) => {
+            if (w.window && !w.window.isDestroyed()) {
+              w.window.webContents.send('[tracking-info]', message);
+            }
+          });
         } else if (message.type == '[send-render-message]') {
           child.sendToWindow('[send-render-message]', message.data);
         } else if (message.type == '[open new tab]') {

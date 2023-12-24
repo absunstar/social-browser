@@ -87,7 +87,14 @@ module.exports = function init(parent) {
             }
           });
           break;
-        case '[window-clicked]':
+        case '[tracking-info]':
+          parent.clientList.forEach((client) => {
+            if (client.ws) {
+              client.ws.send(message);
+            }
+          });
+          break;
+          case '[window-clicked]':
           parent.clientList.forEach((client) => {
             if (client.index != message.index && client.ws) {
               client.ws.send(message);

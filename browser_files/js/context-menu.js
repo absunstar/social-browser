@@ -122,7 +122,7 @@
     SOCIALBROWSER.selected_properties = '*';
   }
 
-  SOCIALBROWSER.callSync = SOCIALBROWSER.ipcSync = function (channel, value) {
+  SOCIALBROWSER.callSync = SOCIALBROWSER.ipcSync = function (channel, value={}) {
     value.parentSetting = SOCIALBROWSER.customSetting;
     return SOCIALBROWSER.electron.ipcRenderer.sendSync(channel, value);
   };
@@ -134,6 +134,7 @@
   SOCIALBROWSER.on = function (name, callback) {
     return SOCIALBROWSER.electron.ipcRenderer.on(name, callback);
   };
+  
   SOCIALBROWSER.set = function (key, value) {
     if (!key || typeof value === 'undefined') {
       return false;
@@ -163,6 +164,7 @@
     }
     return value;
   };
+
   SOCIALBROWSER.remove = function (key) {
     if (!key) {
       return false;

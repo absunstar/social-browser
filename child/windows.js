@@ -326,7 +326,11 @@ module.exports = function (child) {
     if (win.customSetting.center) {
       win.center();
     }
-
+    if (win.customSetting.maximize) {
+      win.maximize();
+    }if (win.customSetting.minimize) {
+      win.minimize();
+    }
     if (win.customSetting.parentSetting && win.customSetting.parentSetting.windowID) {
       child.assignWindows.push({
         parentWindowID: win.customSetting.parentSetting.windowID,
@@ -382,7 +386,9 @@ module.exports = function (child) {
         userAgent: win.customSetting.userAgent || parent.var.core.user_agent,
       });
     }
-
+    if (win.customSetting.trackingID) {
+      child.sendMessage({ type: '[tracking-info]', trackingID: win.customSetting.trackingID, windowID: win.id });
+    }
     win.once('ready-to-show', function () {
       win.webContents.audioMuted = !win.customSetting.allowAudio;
       win.customSetting.title = win.customSetting.title || win.customSetting.url;
@@ -546,6 +552,9 @@ module.exports = function (child) {
       }
     });
     win.on('close', (e) => {
+      if (win.customSetting.trackingID) {
+        child.sendMessage({ type: '[tracking-info]', trackingID: win.customSetting.trackingID, windowID: win.id, isClosed: true });
+      }
       child.sendToWindows('[window-event]', {
         windowID: win.id,
         options: win.customSetting,
@@ -743,7 +752,7 @@ module.exports = function (child) {
         }
 
         if (win.customSetting.windowType.like('*popup*')) {
-          if (child.parent.var.blocking.proxy_error_close_window) {
+          if (win.customSetting.proxy || child.parent.var.blocking.proxy_error_close_window) {
             win.close();
           }
         } else {
