@@ -28,42 +28,52 @@ module.exports = function init(parent) {
       });
   };
 
-  parent.loadExtension = function (_extension, exists) {
-    if (!_extension) {
+  parent.loadExtension = function (_extension, isExists = false) {
+    console.log('loadExtension', _extension);
+    if (!_extension || !_extension.path) {
       return null;
     }
     let path = _extension.path.replace('{dir}', parent.dir);
     if (!parent.api.isFileExistsSync(path)) {
       return null;
     }
+    delete require.cache[require.resolve(path)];
     let extension = require(path)(parent);
     if (!extension) {
       return;
     }
+
     extension.path = path;
-    extension.index = parent.extensionList.length;
-    extension.id = _extension.id || extension.id;
-    parent.extensionList.push(extension);
-    if (extension.init) {
-      extension.init();
+
+    let index = parent.extensionList.findIndex((exx) => exx.id == extension.id);
+    if (index === -1) {
+      parent.extensionList.push(extension);
+      if (extension.init) {
+        extension.init();
+      }
+    } else {
+      parent.extensionList[index] = extension;
     }
 
-    if (!exists) {
-      parent.var.extension_list.push({
-        id: _extension.id || extension.id,
-        path: extension.path,
-        name: extension.name,
-        description: extension.description,
-        paid: extension.paid,
-        canDelete: extension.canDelete,
-        isEnabled: false,
-      });
-
-      parent.applay('extension_list');
+    if (!isExists) {
+      let index2 = parent.var.extension_list.findIndex((exx) => exx.id == extension.id);
+      if (index2 === -1) {
+        parent.var.extension_list.push({
+          id: extension.id,
+          path: extension.path,
+          name: extension.name,
+          description: extension.description,
+          paid: extension.paid,
+          canDelete: parent.var.core.id.like('*test*') ? true : extension.canDelete,
+          isEnabled: false,
+        });
+        parent.applay('extension_list');
+      }
     } else {
       if (_extension.isEnabled) {
         if (extension.enable) {
           extension.enable();
+          extension.enabled = true;
         }
       }
     }
@@ -72,14 +82,17 @@ module.exports = function init(parent) {
   };
 
   parent.enableExtension = function (extension) {
+    delete extension.parentSetting;
+    console.log('enableExtension', extension);
     let index = parent.extensionList.findIndex((exx) => exx.id === extension.id);
     if (index !== -1) {
       extension = parent.extensionList[index];
+      extension = parent.loadExtension(extension);
     } else {
       return false;
     }
 
-    if (extension && extension.enable) {
+    if (extension && extension.enable && !extension.enabled) {
       extension.enable();
       parent.var.extension_list.forEach((ex) => {
         if (ex.id === extension.id) {
@@ -90,32 +103,35 @@ module.exports = function init(parent) {
     }
   };
   parent.disableExtension = function (extension) {
+    delete extension.parentSetting;
     console.log('disableExtension', extension);
-    extension = parent.extensionList.find((exx) => exx.id === extension.id);
-    if (extension && extension.disable) {
-      extension.disable();
-      parent.var.extension_list.forEach((ex, i) => {
-        if (ex.id === extension.id) {
-          parent.var.extension_list[i].isEnabled = false;
-        }
-      });
+    let index = parent.extensionList.findIndex((exx) => exx.id === extension.id);
+    if (index !== -1) {
+      if (parent.extensionList[index].disable) {
+        parent.extensionList[index].disable();
+      }
+    }
+    let index2 = parent.var.extension_list.findIndex((exx) => exx.id === extension.id);
+    if (index2 !== -1) {
+      parent.var.extension_list[index2].isEnabled = false;
       parent.applay('extension_list');
     }
   };
 
   parent.removeExtension = function (extension) {
-    parent.var.extension_list.forEach((ex, i) => {
-      if (ex.id === extension.id) {
-        extension = parent.extensionList.find((exx) => exx.id == ex.id);
-        if (extension && extension.remove) {
-          extension.remove();
-        }
-        parent.extensionList.splice(extension.index, 1);
-        parent.var.extension_list.splice(i, 1);
-        parent.log('removeExtension');
+    let index = parent.extensionList.findIndex((exx) => exx.id == extension.id);
+    if (index !== -1) {
+      if (parent.extensionList[index].remove) {
+        parent.extensionList[index].remove();
       }
-    });
-    parent.applay('extension_list');
+      parent.extensionList.splice(index, 1);
+    }
+
+    let index2 = parent.var.extension_list.findIndex((exx) => exx.id == extension.id);
+    if (index2 !== -1) {
+      parent.var.extension_list.splice(index2, 1);
+      parent.applay('extension_list');
+    }
   };
   parent.applay = function (name) {
     parent.save_var(name);

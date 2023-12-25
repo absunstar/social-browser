@@ -34,12 +34,20 @@
     "isEnabled": false
   },
   {
+    "id": "df1a5745d89b73e1f5becfd40765fc99",
+    "path": "{dir}/extensions/hitleap/index.js",
+    "name": "HitLeap Integration",
+    "description": "hitleap.com site integration",
+    "canDelete": false,
+    "isEnabled": false
+  },
+  {
     "id": "7b45f7ac2220fccb0d9cd8a51e4de030",
     "path": "{dir}/extensions/rankboostup/index.js",
     "name": "RankBoosUp",
     "description": "rankboostup.com site integration",
     "canDelete": false,
-    "isEnabled": false
+    "isEnabled": true
   },
   {
     "id": "c83608e89d332c8cae92356109093fac",
@@ -47,7 +55,7 @@
     "name": "WinTub",
     "description": "wintub.com site integration",
     "canDelete": false,
-    "isEnabled": false
+    "isEnabled": true
   },
   {
     "id": "fa91d609e61bd55024d7962428c7b3c2",
@@ -58,13 +66,29 @@
     "isEnabled": false
   },
   {
+    "id": "898a334c209c4efc37cd065be981e48e",
+    "path": "{dir}/extensions/youtube-subscribe/index.js",
+    "name": "Auto Youtube Subscribes",
+    "description": "will auto subscribe to any channel viewing ",
+    "canDelete": false,
+    "isEnabled": false
+  },
+  {
+    "id": "fabb1a17262da95f56ac47c661167c38",
+    "path": "{dir}/extensions/youtube-like/index.js",
+    "name": "Auto Youtube Likes",
+    "description": "will auto like to any channel viewing ",
+    "canDelete": false,
+    "isEnabled": false
+  },
+  {
     "id": "8aa91756d52ff31ae623919c23f50ba1",
     "path": "{dir}/extensions/addmefast/index.js",
     "name": "Addmefast ",
     "description": "Tools For addmefast.com ",
     "paid": false,
     "canDelete": false,
-    "isEnabled": false
+    "isEnabled": true
   },
   {
     "id": "a0d6d612afcc2aa841ee134444534c6b",
@@ -72,6 +96,13 @@
     "name": "10K Hits",
     "description": "10khits.com site Integration",
     "canDelete": false,
+    "isEnabled": true
+  },
+  {
+    "id": "84357d3769703bed18252f32a37bb757",
+    "path": "D:\\ssd\\nodes\\extensions\\adsl-egypt/index.js",
+    "name": "Phones Manager",
+    "description": "Check Phones Numbers in Telecom Providers",
     "isEnabled": false
   },
   {
@@ -79,6 +110,24 @@
     "path": "{dir}/extensions/Jawaker/index.js",
     "name": "Jawaker Bot Version 3",
     "description": "_____________________________",
+    "canDelete": false,
+    "isEnabled": true
+  },
+  {
+    "id": "8bc6c5a1d1d433ba7e224388b73074ba",
+    "path": "C:\\nodes\\social-browser-portal\\extensions\\ipts/index.js",
+    "name": "IPTS",
+    "description": "http://www.ipts.com/",
+    "paid": false,
+    "canDelete": false,
+    "isEnabled": true
+  },
+  {
+    "id": "fa791c882e92cefabd567097ec169f67",
+    "path": "C:\\nodes\\social-browser-portal\\extensions\\RouterApp/index.js",
+    "name": "RouterApp",
+    "description": "Router App Managemet",
+    "paid": false,
     "canDelete": false,
     "isEnabled": true
   }
