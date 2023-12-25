@@ -201,16 +201,9 @@ module.exports = function (parent) {
     });
 
     ss.webRequest.onBeforeSendHeaders(filter, function (details, callback) {
-      let user = parent.var.session_list.find((s) => s.name == name);
-      let user_agent = null;
-      if (user && user.user_agent) {
-        user_agent = user.user_agent.url;
-      }
-
       let exit = false;
 
       let url = details.url.toLowerCase();
-      // parent.log(details);
       let source_url = details['referrer'] || details['Referer'] || details['Host'] || details['host'] || url;
       if (source_url) {
         source_url = source_url.toLowerCase();
@@ -218,6 +211,12 @@ module.exports = function (parent) {
 
       let d = parent.startTime.toString().substring(0, 9);
       details.requestHeaders = details.requestHeaders || {};
+
+      let user = parent.var.session_list.find((s) => s.name == name);
+      let user_agent = null;
+      if (user && user.user_agent) {
+        user_agent = user.user_agent.url;
+      }
 
       details.requestHeaders['User-Agent'] = user_agent || details.requestHeaders['User-Agent'] || parent.var.core.user_agent;
       if (details.requestHeaders['User-Agent'] == 'undefined') {
@@ -578,7 +577,6 @@ module.exports = function (parent) {
           dl.status = 'completed';
           dl.path = item.getSavePath();
 
-
           let _path = item.getSavePath();
           let _url = item.getURL().replace('#___new_tab___', '').replace('#___new_popup__', '').replace('#___trusted_window___', '');
 
@@ -607,7 +605,6 @@ module.exports = function (parent) {
           dl.received = item.getReceivedBytes();
           dl.status = state;
           dl.path = item.getSavePath();
-
         }
       });
     });

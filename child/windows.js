@@ -288,10 +288,17 @@ module.exports = function (child) {
     win.customSetting = customSetting;
     win.customSetting.windowSetting = win.customSetting.windowSetting || [];
 
-    win.customSetting.userAgent = win.customSetting.userAgent || win.customSetting.user_agent;
-    delete win.customSetting.userAgent;
+    if (win.customSetting.windowType === 'view') {
+      win.customSetting.session = parent.var.session_list.find((s) => s.name == win.customSetting.partition);
+      if (win.customSetting.session) {
+        win.customSetting.userAgent = win.customSetting.session.user_agent;
+      }
+    } else {
+      win.customSetting.userAgent = win.customSetting.userAgent || win.customSetting.user_agent;
+    }
+    delete win.customSetting.user_agent;
     if (!win.customSetting.userAgent || win.customSetting.userAgent == 'undefined') {
-      win.customSetting.userAgent = parent.var.core.user_agent;
+      win.customSetting.userAgent = parent.var.session_list.find((s) => s.name == win.customSetting.partition) || parent.var.core.user_agent;
     }
 
     if (win.customSetting.timeout) {
@@ -328,9 +335,11 @@ module.exports = function (child) {
     }
     if (win.customSetting.maximize) {
       win.maximize();
-    }if (win.customSetting.minimize) {
+    }
+    if (win.customSetting.minimize) {
       win.minimize();
     }
+
     if (win.customSetting.parentSetting && win.customSetting.parentSetting.windowID) {
       child.assignWindows.push({
         parentWindowID: win.customSetting.parentSetting.windowID,
@@ -386,9 +395,11 @@ module.exports = function (child) {
         userAgent: win.customSetting.userAgent || parent.var.core.user_agent,
       });
     }
+
     if (win.customSetting.trackingID) {
       child.sendMessage({ type: '[tracking-info]', trackingID: win.customSetting.trackingID, windowID: win.id });
     }
+
     win.once('ready-to-show', function () {
       win.webContents.audioMuted = !win.customSetting.allowAudio;
       win.customSetting.title = win.customSetting.title || win.customSetting.url;
@@ -551,15 +562,19 @@ module.exports = function (child) {
         });
       }
     });
+
     win.on('close', (e) => {
-      if (win.customSetting.trackingID) {
-        child.sendMessage({ type: '[tracking-info]', trackingID: win.customSetting.trackingID, windowID: win.id, isClosed: true });
-      }
       child.sendToWindows('[window-event]', {
         windowID: win.id,
         options: win.customSetting,
         name: 'close',
       });
+    });
+
+    win.on('closed', () => {
+      if (win.customSetting.trackingID) {
+        child.sendMessage({ type: '[tracking-info]', trackingID: win.customSetting.trackingID, windowID: win.id, isClosed: true });
+      }
       child.windowList.forEach((w, i) => {
         if (w.id == win.id) {
           child.windowList.splice(i, 1);
@@ -568,10 +583,7 @@ module.exports = function (child) {
       if (win && !win.isDestroyed()) {
         win.destroy();
       }
-    });
-
-    win.on('closed', () => {
-      //  process.exit();
+      win = null;
     });
 
     win.on('app-command', (e, cmd) => {

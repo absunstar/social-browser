@@ -1,4 +1,5 @@
 window.open = function (url, _name, _specs, _replace_in_history) {
+
   if (url.like('javascript:*|*.svg|*.png|*.ico|*.gif')) {
     console.log('unSupported URL : ' + url);
     return;
@@ -53,6 +54,7 @@ window.open = function (url, _name, _specs, _replace_in_history) {
   if (typeof url !== 'string') {
     return child_window;
   }
+
   if (url == 'about:blank') {
     return child_window;
   }
@@ -62,10 +64,12 @@ window.open = function (url, _name, _specs, _replace_in_history) {
   if (SOCIALBROWSER.copyPopupURL) {
     SOCIALBROWSER.copy(url);
   }
+
   if (SOCIALBROWSER.blockPopup || !SOCIALBROWSER.customSetting.allowNewWindows) {
     SOCIALBROWSER.log('block Popup : ' + url);
     return child_window;
   }
+
   if (SOCIALBROWSER.customSetting.allowSelfWindow) {
     document.location.href = url;
     return child_window;
@@ -116,7 +120,9 @@ window.open = function (url, _name, _specs, _replace_in_history) {
       return child_window;
     }
   }
+
   _specs = _specs || {};
+
   if (
     (win = SOCIALBROWSER.openWindow({
       width: _specs.width,
@@ -183,6 +189,7 @@ if (SOCIALBROWSER.var.blocking.javascript.block_console_output) {
   window.console.assert = function () {};
   window.console.clear = function () {};
 }
+
 if (SOCIALBROWSER.var.blocking.javascript.block_window_worker) {
   window.Worker = function (...args) {
     return {
@@ -199,6 +206,7 @@ if (SOCIALBROWSER.var.blocking.javascript.block_window_worker) {
       postMessage: () => {},
     };
   };
+
 }
 
 if (SOCIALBROWSER.var.blocking.javascript.block_window_post_message) {
@@ -227,11 +235,11 @@ window.addEventListener('message', (e) => {
   }
 });
 
-if (SOCIALBROWSER.windows) {
+if (SOCIALBROWSER.parentAssignWindow) {
   window.opener = {
     postMessage: (...args) => {
       SOCIALBROWSER.ipc('window.message', {
-        windowID: SOCIALBROWSER.windows.parent_id,
+        windowID: SOCIALBROWSER.parentAssignWindow.parentWindowID,
         data: args[0],
         origin: args[1] || '*',
         transfer: args[2],

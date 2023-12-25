@@ -48,7 +48,7 @@ module.exports = function (browser) {
     browser.addRequestHeader({
       id: 'core',
       url: '*www.youtube.com/embed*',
-      log : false,
+      log: false,
       list: [
         {
           name: 'Host',
@@ -70,7 +70,7 @@ module.exports = function (browser) {
           value: ['https://www.youtube.com/'],
         },
       ],
-      ignore: ['x-browser', 'X-Frame-Options' , 'Cross-Origin-Resource-Policy'],
+      ignore: ['x-browser', 'X-Frame-Options', 'Cross-Origin-Resource-Policy'],
     });
   };
 

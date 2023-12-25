@@ -33,7 +33,7 @@ module.exports = function init(child) {
       injectHTML: child.parent.injectHTML,
       injectCSS: child.parent.injectCSS,
       newTabData: child.parent.newTabData,
-      windows: child.assignWindows.find((w) => w.childProcessID == data.windowID),
+      parentAssignWindow: child.assignWindows.find((w) => w.childWindowID == data.windowID),
     };
 
     let win = child.windowList.find((w) => w.id == data.windowID);
