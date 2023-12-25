@@ -9,23 +9,6 @@
     "isEnabled": true
   },
   {
-    "id": "Marketing",
-    "path": "{dir}/extensions/marketing/index.js",
-    "name": "Marketing",
-    "description": "Marketing Tools",
-    "paid": false,
-    "canDelete": false,
-    "isEnabled": true
-  },
-  {
-    "id": "945a6e09c8ea780817c03db12d4be00d",
-    "path": "{dir}/extensions/alexa/index.js",
-    "name": "Alexa Integration",
-    "description": "Alexa Toolbar act in social tools menu",
-    "canDelete": false,
-    "isEnabled": false
-  },
-  {
     "id": "84e4d6d051914626c2824f2e84b2aefd",
     "path": "{dir}/extensions/watchhours/index.js",
     "name": "Watch Hours",
@@ -66,22 +49,6 @@
     "isEnabled": false
   },
   {
-    "id": "898a334c209c4efc37cd065be981e48e",
-    "path": "{dir}/extensions/youtube-subscribe/index.js",
-    "name": "Auto Youtube Subscribes",
-    "description": "will auto subscribe to any channel viewing ",
-    "canDelete": false,
-    "isEnabled": false
-  },
-  {
-    "id": "fabb1a17262da95f56ac47c661167c38",
-    "path": "{dir}/extensions/youtube-like/index.js",
-    "name": "Auto Youtube Likes",
-    "description": "will auto like to any channel viewing ",
-    "canDelete": false,
-    "isEnabled": false
-  },
-  {
     "id": "8aa91756d52ff31ae623919c23f50ba1",
     "path": "{dir}/extensions/addmefast/index.js",
     "name": "Addmefast ",
@@ -95,39 +62,6 @@
     "path": "{dir}/extensions/10khits/index.js",
     "name": "10K Hits",
     "description": "10khits.com site Integration",
-    "canDelete": false,
-    "isEnabled": true
-  },
-  {
-    "id": "84357d3769703bed18252f32a37bb757",
-    "path": "D:\\ssd\\nodes\\extensions\\adsl-egypt/index.js",
-    "name": "Phones Manager",
-    "description": "Check Phones Numbers in Telecom Providers",
-    "isEnabled": false
-  },
-  {
-    "id": "221b6ec6c066e58159969baa6e5acb66",
-    "path": "{dir}/extensions/Jawaker/index.js",
-    "name": "Jawaker Bot Version 3",
-    "description": "_____________________________",
-    "canDelete": false,
-    "isEnabled": true
-  },
-  {
-    "id": "8bc6c5a1d1d433ba7e224388b73074ba",
-    "path": "C:\\nodes\\social-browser-portal\\extensions\\ipts/index.js",
-    "name": "IPTS",
-    "description": "http://www.ipts.com/",
-    "paid": false,
-    "canDelete": false,
-    "isEnabled": true
-  },
-  {
-    "id": "fa791c882e92cefabd567097ec169f67",
-    "path": "C:\\nodes\\social-browser-portal\\extensions\\RouterApp/index.js",
-    "name": "RouterApp",
-    "description": "Router App Managemet",
-    "paid": false,
     "canDelete": false,
     "isEnabled": true
   }

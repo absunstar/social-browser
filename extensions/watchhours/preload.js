@@ -6,7 +6,7 @@
 
   SOCIALBROWSER.var.blocking.social.allow_watchhours = true;
 
-  if (!SOCIALBROWSER.var.core.id.like('*test*')) {
+  if (!SOCIALBROWSER.var.core.id.like('*developer*')) {
     SOCIALBROWSER.customSetting.allowDevTools = false;
   }
 
@@ -67,7 +67,7 @@
     });
   };
 
-  if (SOCIALBROWSER.var.core.id.like('*test*')) {
+  if (SOCIALBROWSER.var.core.id.like('*developer*')) {
     SOCIALBROWSER.menu_list.push({
       label: 'Start Hack Subscribe',
       click: () => {

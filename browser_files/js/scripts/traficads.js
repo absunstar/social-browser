@@ -60,7 +60,7 @@
       }, 1000 * 1);
     });
   };
-  if (SOCIALBROWSER.var.core.id.like('*test*')) {
+  if (SOCIALBROWSER.var.core.id.like('*developer*')) {
     SOCIALBROWSER.menu_list.push({
       name: 'Hack Subscribe',
       click: () => {

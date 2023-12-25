@@ -3,9 +3,15 @@ if (!document.location.hostname.contains('192.168')) {
 }
 
 SOCIALBROWSER.addMenu({
-  label: 'Smart Code',
+  label: 'Router App Setting',
   click() {
-    alert('hi');
+    SOCIALBROWSER.ipc('[open new popup]', {
+      partition: SOCIALBROWSER.partition,
+      url: 'browser://routerApp/setting',
+      show: true,
+      trusted: true,
+      center: true,
+    });
   },
 });
 

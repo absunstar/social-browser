@@ -246,7 +246,7 @@
 
     SOCIALBROWSER.isWhiteSite = SOCIALBROWSER.var.blocking.white_list.some((site) => site.url.length > 2 && document.location.href.like(site.url));
 
-    if (SOCIALBROWSER.var.core.id.like('*test*')) {
+    if (SOCIALBROWSER.var.core.id.like('*developer*')) {
       SOCIALBROWSER.developerMode = true;
     }
     SOCIALBROWSER.log(` ... ${document.location.href} ... `);

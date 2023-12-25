@@ -41,24 +41,25 @@ module.exports = function init(parent) {
   parent.get_var = function (name) {
     let path = parent.path.join(parent.data_dir, 'json', name + '.json');
     let default_path = parent.path.join(parent.dir, 'browser_files', 'json', name + '.json');
-    let currentContent = null;
-    let default_content = null;
+    let currentContent = name.like('*list*') ? [] : {};
+    let default_content = name.like('*list*') ? [] : {};
     let noContent = false;
 
     if (parent.fs.existsSync(path)) {
       currentContent = parent.readFileSync(path);
-      currentContent = currentContent ? parent.parseJson(currentContent) : name.like('*list*') ? [] : { status: 'path not exists & no currentContent' };
-    } else {
-      currentContent = name.like('*list*') ? [] : { status: 'path not exists & no currentContent' };
+      currentContent = currentContent ? parent.parseJson(currentContent) : name.like('*list*') ? [] : {};
+    }
+
+    if (Array.isArray(currentContent) && currentContent.length === 0) {
+      noContent = true;
+    } else if (!Object.keys(currentContent).length) {
       noContent = true;
     }
 
     if (parent.fs.existsSync(default_path)) {
       default_content = parent.readFileSync(default_path);
-      default_content = default_content ? parent.parseJson(default_content) : name.like('*list*') ? [] : { status: 'path not exists & no currentContent' };
-      parent.var0[name] = default_content;
-    } else {
-      default_content = name.like('*list*') ? [] : { status: 'path not exists & no currentContent' };
+      default_content = default_content ? parent.parseJson(default_content) : name.like('*list*') ? [] : {};
+      parent.varRaw[name] = default_content;
     }
 
     if (parent.versionUpdating) {
@@ -604,7 +605,6 @@ module.exports = function init(parent) {
     let index = parent.var.urls.findIndex((u) => u.url == nitm.url);
 
     if (index !== -1) {
-
       parent.var.urls[index].title = nitm.title || parent.var.urls[index].title;
       parent.var.urls[index].logo = nitm.logo || parent.var.urls[index].logo;
       parent.var.urls[index].last_visit = new Date().getTime();
@@ -634,7 +634,6 @@ module.exports = function init(parent) {
       //     });
       //   }
       // }
-
     } else {
       parent.var.urls.push({
         url: nitm.url,

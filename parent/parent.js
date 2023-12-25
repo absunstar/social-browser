@@ -64,7 +64,7 @@ module.exports = function init(parent) {
           name: extension.name,
           description: extension.description,
           paid: extension.paid,
-          canDelete: parent.var.core.id.like('*test*') ? true : extension.canDelete,
+          canDelete: parent.var.core.id.like('*developer*') ? true : extension.canDelete,
           isEnabled: false,
         });
         parent.applay('extension_list');

@@ -254,7 +254,7 @@ function showSettingMenu() {
     type: 'separator',
   });
 
-  if (SOCIALBROWSER.var.core.id.like('*test*')) {
+  if (SOCIALBROWSER.var.core.id.like('*developer*')) {
     SOCIALBROWSER.menuList.push({
       label: 'Check Update',
       click: () =>
@@ -1051,7 +1051,7 @@ document.querySelector('#body').addEventListener('mousemove', () => {
   SOCIALBROWSER.clickCurrentTab();
 });
 
-if (SOCIALBROWSER.var.core.id.like('*test*')) {
+if (SOCIALBROWSER.var.core.id.like('*developer*')) {
   SOCIALBROWSER.menu_list.push({
     label: 'inspect Element',
     click() {

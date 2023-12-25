@@ -71,7 +71,7 @@
       context_menu: { dev_tools: true, inspect: true },
       customHeaderList: [],
     },
-    var0: {},
+    varRaw: {},
     content_list: [],
     log: (...args) => {
       console.log(...args);
@@ -166,7 +166,7 @@
     // }
     // console.log(browser.webContentList.length);
     browser.electron.app.setAccessibilitySupportEnabled(true);
-    if (!browser.isPortal && !browser.var.core.id.like('*test*')) {
+    if (!browser.isPortal && !browser.var.core.id.like('*developer*')) {
       browser.electron.app.setLoginItemSettings({
         openAtLogin: true,
         args: ['--auto-startup'],

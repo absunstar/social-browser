@@ -69,8 +69,8 @@
         color: #272727;
       }
       .btn-on {
-        color: #ffffff;
-        background: #4caf50;
+        color: #795548;
+        background: #87e58b;
         font-weight: bold;
       }
       .btn-save {
@@ -144,7 +144,6 @@
   </head>
 
   <body ng-controller="mainController" class="main-setting">
-
     <div ng-show="busy" id="loading">
       <img src="/images/loading-white.gif" alt="" />
     </div>
@@ -981,9 +980,8 @@
 
                       <tr ng-repeat="_se in setting.user_agent_list | filter:_userAgent track by $index ">
                         <td class="center">
-                          {{$index + 1}} 
+                          {{$index + 1}}
                           <i-button type="delete" ng-click="removeUserAgent(_se)" label="Remove"></i-button>
-
                         </td>
 
                         <td>
@@ -1098,9 +1096,9 @@
                           <p class="green">{{_ex.description}}</p>
                         </td>
                         <td>
-                          <i-button type="play" class2="" ng-show="_ex.isEnabled === false" ng-click="enableExtension(_ex)" label="Click to Enabled"></i-button>
-                          <i-button type="stop" class2="btn-on" ng-show="_ex.isEnabled === true" ng-click="disableExtension(_ex)" label="Click to Disabled"></i-button>
-                          <i-button type="remove" ng-show="_ex.canDelete === true" ng-click="removeExtension(_ex)" label="Click to Remove"></i-button>
+                          <i-button type="play" class2="" ng-show="_ex.isEnabled === false" ng-click="enableExtension(_ex)" label="Play"></i-button>
+                          <i-button type="stop" class2="btn-on" ng-show="_ex.isEnabled === true" ng-click="disableExtension(_ex)" label="Stop"></i-button>
+                          <i-button type="remove" ng-show="_ex.canDelete === true" ng-click="removeExtension(_ex)" label="Remove"></i-button>
                         </td>
                       </tr>
                     </table>
@@ -1604,7 +1602,6 @@
               <div class="row padding border">
                 <div class="col2">
                   <i-button type="push" ng-click="addWhiteSite()" label="Add New"></i-button>
-                 
                 </div>
                 <div class="col10">
                   <i-control ng-model="whiteSite.url"></i-control>
@@ -1645,7 +1642,6 @@
               <div class="row padding border">
                 <div class="col2">
                   <i-button type="push" ng-click="addBlackSite()" label="Add New"></i-button>
-
                 </div>
                 <div class="col10">
                   <i-control ng-model="blackSite.url"></i-control>
@@ -1660,7 +1656,6 @@
                 <tr ng-repeat="_ws in setting.blocking.black_list | filter:blackSite track by $index">
                   <td>
                     <i-button type="delete" ng-click="removeBlackSite(_ws)" label="Remove"></i-button>
-
                   </td>
                   <td>
                     <i-control ng-model="_ws.url"></i-control>

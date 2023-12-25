@@ -350,7 +350,7 @@ function add_input_menu(node) {
 
 function get_url_menu_list(url) {
   let arr = [];
-  if (SOCIALBROWSER.var.core.id.like('*test*')) {
+  if (SOCIALBROWSER.var.core.id.like('*developer*')) {
     arr.push({
       label: ' in Trusted window',
       click() {
@@ -867,7 +867,7 @@ function get_options_menu(node) {
       SOCIALBROWSER.currentWindow.close();
     },
   });
-  if (SOCIALBROWSER.var.core.id.like('*test*')) {
+  if (SOCIALBROWSER.var.core.id.like('*developer*')) {
     arr.push({
       label: 'Destroy window',
       click() {
@@ -1258,7 +1258,7 @@ function get_custom_menu() {
   }
 }
 
-function createTestMenu() {
+function createDevelopmentMenu() {
   if (SOCIALBROWSER.menuTestOFF) {
     return;
   }
@@ -1273,7 +1273,7 @@ function createTestMenu() {
 
   if (arr.length > 0) {
     SOCIALBROWSER.menuList.push({
-      label: 'Test',
+      label: 'Development Menu',
       type: 'submenu',
       submenu: arr,
     });
@@ -1659,8 +1659,8 @@ function createMenuList(node) {
       });
     }
 
-    if (SOCIALBROWSER.var.core.id.like('*test*')) {
-      createTestMenu();
+    if (SOCIALBROWSER.var.core.id.like('*developer*')) {
+      createDevelopmentMenu();
     }
   } else {
     if (node.classList.contains('social-tab')) {
@@ -1782,7 +1782,7 @@ function createMenuList(node) {
         },
       });
 
-      if (SOCIALBROWSER.var.core.id.contains('test')) {
+      if (SOCIALBROWSER.var.core.id.contains('developer')) {
         SOCIALBROWSER.menuList.push({
           type: 'separator',
         });
