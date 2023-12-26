@@ -369,8 +369,8 @@ function get_url_menu_list(url) {
     label: ' in ( New tab )',
     click() {
       SOCIALBROWSER.ipc('[open new tab]', {
-        referrer: document.location.href,
         url: url,
+        referrer: document.location.href,
         partition: SOCIALBROWSER.partition,
         user_name: SOCIALBROWSER.session.display,
         windowID: SOCIALBROWSER.currentWindow.id,

@@ -334,6 +334,7 @@ function showSettingMenu() {
       click: () =>
         ipc('[open new tab]', {
           url: b.url,
+          title: b.title,
         }),
     });
   });
@@ -350,6 +351,7 @@ function showSettingMenu() {
         SOCIALBROWSER.var.bookmarks.forEach((b) => {
           ipc('[open new tab]', {
             url: b.url,
+            title: b.title,
             mainWindowID: SOCIALBROWSER.currentWindow.id,
           });
         });
@@ -486,6 +488,7 @@ function showBookmarksMenu() {
       click: () =>
         ipc('[open new tab]', {
           url: b.url,
+          title: b.title,
         }),
     });
   });
@@ -502,6 +505,7 @@ function showBookmarksMenu() {
         SOCIALBROWSER.var.bookmarks.forEach((b) => {
           ipc('[open new tab]', {
             url: b.url,
+            title: b.title,
             mainWindowID: SOCIALBROWSER.currentWindow.id,
           });
         });

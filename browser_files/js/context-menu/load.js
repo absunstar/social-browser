@@ -5,8 +5,6 @@ require(SOCIALBROWSER.files_dir + '/js/context-menu/decode.js');
 require(SOCIALBROWSER.files_dir + '/js/context-menu/window.js');
 require(SOCIALBROWSER.files_dir + '/js/context-menu/keyboard.js');
 
-require(SOCIALBROWSER.files_dir + '/js/context-menu/custom.js');
-
 require(SOCIALBROWSER.files_dir + '/js/context-menu/doms.js');
 
 require(SOCIALBROWSER.files_dir + '/js/context-menu/nodes.js');
