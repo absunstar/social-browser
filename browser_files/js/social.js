@@ -20,7 +20,7 @@ function ipc(name, message) {
   message.tabID = message.tabID || currentTabId;
   message.url = message.url || $('#' + message.tabID).attr('url');
   message.title = message.title || $('#' + message.tabID).attr('title');
-  message.icon = message.icon || $('#' + message.tabID).attr('icon');
+  message.iconURL = message.iconURL || $('#' + message.tabID).attr('iconURL');
   message.windowID = message.windowID || $('#' + message.tabID).attr('windowID');
   message.childID = message.childID || $('#' + message.tabID).attr('childProcessID');
   message.mainWindowID = message.mainWindowID || $('#' + message.tabID).attr('mainWindowID');
@@ -330,7 +330,7 @@ function showSettingMenu() {
     arr2.push({
       label: b.title,
       sublabel: b.url,
-      icon: SOCIALBROWSER.nativeImage(b.icon),
+      icon: SOCIALBROWSER.nativeImage(b.iconURL),
       click: () =>
         ipc('[open new tab]', {
           url: b.url,
@@ -482,7 +482,7 @@ function showBookmarksMenu() {
     SOCIALBROWSER.menuList.push({
       label: b.title,
       sublabel: b.url,
-      icon: SOCIALBROWSER.nativeImage(b.icon),
+      icon: SOCIALBROWSER.nativeImage(b.iconURL),
       click: () =>
         ipc('[open new tab]', {
           url: b.url,
@@ -765,7 +765,7 @@ function renderNewTabData(op) {
     id: 'tab_' + new Date().getTime(),
     title: op.title || op.url,
     user_name: op.user_name || op.partition,
-    icon: 'browser://images/loading-white.gif',
+    iconURL: 'browser://images/loading-white.gif',
     mainWindowID: SOCIALBROWSER.currentWindow.id,
   };
   socialTabs.addTab(tab);
@@ -782,9 +782,9 @@ SOCIALBROWSER.on('[update-tab-properties]', (event, data) => {
   if (data.tabID && data.url) {
     $('#' + data.tabID).attr('url', data.url);
   }
-  if (data.tabID && data.icon) {
-    $('#' + data.tabID).attr('icon', data.icon);
-    $('#' + data.tabID + ' .social-tab-favicon').css('background-image', 'url(' + data.icon + ')');
+  if (data.tabID && data.iconURL) {
+    $('#' + data.tabID).attr('iconURL', data.iconURL);
+    $('#' + data.tabID + ' .social-tab-favicon').css('background-image', 'url(' + data.iconURL + ')');
   }
   if (data.user_name) {
     $('#' + data.tabID).attr('user_name', data.user_name);

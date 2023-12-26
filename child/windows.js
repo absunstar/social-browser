@@ -136,7 +136,6 @@ module.exports = function (child) {
 
   child.createNewWindow = function (setting) {
     delete setting.name;
-
     let parent = child.parent;
     setting.partition = setting.partition || parent.var.core.session.name;
     let defaultSetting = {
@@ -203,16 +202,16 @@ module.exports = function (child) {
     } else if (setting.windowType === 'youtube') {
       setting.url = 'http://127.0.0.1:60080/youtube-view?url=' + setting.url;
       setting.iframe = true;
-      defaultSetting.show = true;
-      defaultSetting.alwaysOnTop = true;
-      defaultSetting.webPreferences.webSecurity = false;
+      setting.show = true;
+      setting.alwaysOnTop = true;
+      setting.width = 520;
+      setting.height = 330;
+      setting.x = parent.options.screen.bounds.width - 550;
+      setting.y = parent.options.screen.bounds.height - 400;
+      setting.backgroundColor = '#030303';
+      setting.center = false;
       defaultSetting.webPreferences.allowRunningInsecureContent = true;
-      defaultSetting.width = 520;
-      defaultSetting.height = 330;
-      defaultSetting.x = parent.options.screen.bounds.width - 550;
-      defaultSetting.y = parent.options.screen.bounds.height - 400;
-      defaultSetting.backgroundColor = '#030303';
-      defaultSetting.center = false;
+      defaultSetting.webPreferences.webSecurity = false;
     } else if (setting.windowType.contains('popup')) {
       defaultSetting.alwaysOnTop = true;
     } else if (setting.windowType === 'view') {
@@ -724,7 +723,7 @@ module.exports = function (child) {
 
     win.webContents.on('page-favicon-updated', (e, urls) => {
       if (urls[0]) {
-        win.customSetting.icon = urls[0];
+        win.customSetting.iconURL = urls[0];
         win.customSetting.favicon = urls[0];
         child.updateTab(win);
         if (!win.customSetting.vip) {
@@ -740,15 +739,15 @@ module.exports = function (child) {
     });
 
     win.webContents.on('did-start-loading', (e, urls) => {
-      win.customSetting.icon = win.customSetting.loading_icon;
+      win.customSetting.iconURL = win.customSetting.loading_icon;
       child.updateTab(win);
     });
     win.webContents.on('did-stop-loading', (e) => {
-      win.customSetting.icon = win.customSetting.favicon;
+      win.customSetting.iconURL = win.customSetting.favicon;
       child.updateTab(win);
     });
     win.webContents.on('did-finish-load', (e) => {
-      win.customSetting.icon = win.customSetting.favicon;
+      win.customSetting.iconURL = win.customSetting.favicon;
       child.updateTab(win);
     });
     win.webContents.on('did-fail-load', (...callback) => {
@@ -766,7 +765,7 @@ module.exports = function (child) {
             win.close();
           }
         } else {
-          win.customSetting.icon = win.customSetting.error_icon;
+          win.customSetting.iconURL = win.customSetting.error_icon;
           child.updateTab(win);
         }
       }
@@ -862,7 +861,7 @@ module.exports = function (child) {
       //   return;
       // }
       win.customSetting.title = details.url;
-      win.customSetting.icon = win.customSetting.loading_icon;
+      win.customSetting.iconURL = win.customSetting.loading_icon;
 
       child.updateTab(win);
     });

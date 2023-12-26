@@ -1828,6 +1828,7 @@ SOCIALBROWSER.contextmenu = function (e) {
       SOCIALBROWSER.currentWindow.show();
     } catch (error) {
       SOCIALBROWSER.currentWindow = SOCIALBROWSER.remote.getCurrentWindow();
+      SOCIALBROWSER.webContents = SOCIALBROWSER.currentWindow.webContents;
       SOCIALBROWSER.currentWindow.show();
     }
 

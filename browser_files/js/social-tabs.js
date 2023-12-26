@@ -50,14 +50,14 @@ let defaultTapProperties = {
   id: '',
   url: 'http://127.0.0.1:60080/newTab',
   title: null,
-  favicon: 'browser://images/loading-white.gif',
+  iconURL: 'browser://images/loading-white.gif',
 };
 
 function getDefaultTapProperties() {
   if (SOCIALBROWSER.var.core.default_page) {
     defaultTapProperties.url = SOCIALBROWSER.var.core.default_page;
     if (SOCIALBROWSER.var.core.default_page == 'http://127.0.0.1:60080/newTab') {
-      defaultTapProperties.favicon = 'browser://images/logo.png';
+      defaultTapProperties.iconURL = 'browser://images/logo.png';
     }
   }
 
@@ -347,17 +347,22 @@ class SocialTabs {
       isCurrentTab = true;
     }
 
-    let id = tabEl.id;
+    if (isCurrentTab) {
+      if (tabEl.previousElementSibling) {
+        this.setCurrentTab(tabEl.previousElementSibling);
+      } else if (tabEl.nextElementSibling) {
+        this.setCurrentTab(tabEl.nextElementSibling);
+      } else {
+        this.setCurrentTab();
+      }
+    }
 
+    let id = tabEl.id;
     tabEl.parentNode.removeChild(tabEl);
 
     this.emit('tabRemove', {
       id,
     });
-
-    if (isCurrentTab) {
-      this.setCurrentTab();
-    }
 
     this.layoutTabs();
     this.fixZIndexes();
@@ -373,7 +378,7 @@ class SocialTabs {
     tabEl.setAttribute('proxy', tabProperties.proxy);
     tabEl.setAttribute('webaudio', tabProperties.webaudio);
     tabEl.querySelector('.social-tab-title p').innerText = tabProperties.title || tabProperties.url;
-    tabEl.querySelector('.social-tab-favicon').style.backgroundImage = `url('${tabProperties.icon}')`;
+    tabEl.querySelector('.social-tab-favicon').style.backgroundImage = `url('${tabProperties.iconURL}')`;
   }
 
   cleanUpPreviouslyDraggedTabs() {
