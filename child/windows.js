@@ -800,7 +800,7 @@ module.exports = function (child) {
     });
 
     win.on('unresponsive', async () => {
-      console.log('unresponsive');
+      child.log('unresponsive');
       setTimeout(() => {
         if (win && !win.isDestroyed()) {
           win.webContents.reload();
@@ -825,7 +825,7 @@ module.exports = function (child) {
     });
 
     win.webContents.on('render-process-gone', (e, details) => {
-      console.log('render-process-gone');
+      child.log('render-process-gone');
       setTimeout(() => {
         if (win && !win.isDestroyed()) {
           win.webContents.reload();
@@ -834,7 +834,7 @@ module.exports = function (child) {
     });
 
     win.webContents.on('will-redirect', (e, url) => {
-      console.log('will-redirect : ', url);
+      child.log('will-redirect : ', url);
       if (!child.isAllowURL(url) || !win.customSetting.allowRedirect) {
         e.preventDefault();
         child.log('Block-redirect', url);
@@ -854,7 +854,7 @@ module.exports = function (child) {
       }
     });
     win.webContents.on('will-navigate', (details) => {
-      // console.log('will-navigate : ', details.url);
+      // child.log('will-navigate : ', details.url);
       // if (!win.customSetting.allowRedirect || !child.isAllowURL(details.url)) {
       //   details.preventDefault();
       //   child.log('Block-navigate', details.url);
@@ -866,7 +866,7 @@ module.exports = function (child) {
       child.updateTab(win);
     });
     win.webContents.on('will-frame-navigate', (details) => {
-      console.log('will-frame-navigate : ', details.url);
+      child.log('will-frame-navigate : ', details.url);
       if (!win.customSetting.allowRedirect || !child.isAllowURL(details.url)) {
         details.preventDefault();
         child.log('Block-frame-navigate', details.url);

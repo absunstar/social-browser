@@ -1,6 +1,6 @@
 module.exports = function (browser) {
     let extension = {};
-    extension.id = browser.md5(__filename);
+    extension.id = '__10khits';
     extension.name = '10K Hits';
     extension.description = '10khits.com site Integration';
     extension.paid = false;

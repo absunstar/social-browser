@@ -29,11 +29,11 @@ module.exports = function (child) {
     }
 
     if (co.sameSite === 'none' && !co.secure) {
-      console.log('!set none && !secure', co);
+      child.log('!set none && !secure', co);
       return null;
     }
     if (!co.url.contains(co.domain)) {
-      console.log('!set url && domain', co);
+      child.log('!set url && domain', co);
       return null;
     }
 
@@ -57,7 +57,7 @@ module.exports = function (child) {
       delete co.expirationDate;
     }
 
-    // console.log(options.cookie, co);
+    // child.log(options.cookie, co);
 
     let exists = false;
     child.cookies[options.partition].forEach((coo, i) => {
@@ -83,10 +83,10 @@ module.exports = function (child) {
           if (!options.server) {
             // ss.cookies.set({ ...co, value: encodeURIComponent(co.value) }).then(
             //   () => {
-            //     console.log('cookie Updated success');
+            //     child.log('cookie Updated success');
             //   },
             //   (error) => {
-            //     console.error(error, co);
+            //     child.error(error, co);
             //   }
             // );
           }
@@ -115,10 +115,10 @@ module.exports = function (child) {
         if (!options.server) {
           // ss.cookies.set({ ...co, value: encodeURIComponent(co.value) }).then(
           //   () => {
-          //     console.log('cookie added success');
+          //     child.log('cookie added success');
           //   },
           //   (error) => {
-          //     console.error(error, co);
+          //     child.error(error, co);
           //   }
           // );
         }
@@ -523,7 +523,7 @@ module.exports = function (child) {
               }
             });
             if (r.log) {
-              console.log(url, details.requestHeaders);
+              child.log(url, details.requestHeaders);
             }
           }
         });
@@ -545,22 +545,22 @@ module.exports = function (child) {
               let co_list = child.cookies[name].filter((c) => c && (urlObject.hostname.indexOf(c.domain) > -1 || c.domain.indexOf(urlObject.hostname) > -1) && urlObject.path.indexOf(c.path) > -1);
               co_list.forEach((co) => {
                 if (false && co.expirationDate && co.expirationDate <= new Date().getTime()) {
-                  // console.log(`\n\n Block Cookie expires`, co, new Date(co.expirationDate));
+                  // child.log(`\n\n Block Cookie expires`, co, new Date(co.expirationDate));
                 } else if (!co.value) {
-                  // console.log(`\n\n Block Cookie !value`, co);
+                  // child.log(`\n\n Block Cookie !value`, co);
                 } else if (co.secure && (urlObject.protocol === 'http:' || urlObject.protocol !== urlObject2.protocol)) {
-                  // console.log(`\n\n Block secure Cookie isSameSite=${isSameSite} - ${details.resourceType} - ${details.method} \n ${source_url} \n ${details.url} `, co);
+                  // child.log(`\n\n Block secure Cookie isSameSite=${isSameSite} - ${details.resourceType} - ${details.method} \n ${source_url} \n ${details.url} `, co);
                 } else if (co.sameSite && co.sameSite == 'strict' && !isSameSite) {
-                  // console.log(`\n\n Block Strick Cookie isSameSite=${isSameSite} - ${details.resourceType} - ${details.method} \n ${source_url} \n ${details.url} `, co);
+                  // child.log(`\n\n Block Strick Cookie isSameSite=${isSameSite} - ${details.resourceType} - ${details.method} \n ${source_url} \n ${details.url} `, co);
                 } else if (co.sameSite && co.sameSite == 'lax' && !isSameSite && ((details.method !== 'GET' && details.method !== 'HEAD') || !isMainFrame)) {
-                  // console.log(`\n\n Block lax Cookie isSameSite=${isSameSite} - ${details.resourceType} - ${details.method} \n ${source_url} \n ${details.url} `, co);
+                  // child.log(`\n\n Block lax Cookie isSameSite=${isSameSite} - ${details.resourceType} - ${details.method} \n ${source_url} \n ${details.url} `, co);
                 } else if (co.sameSite && co.sameSite == 'unspecified' && !isSameSite && ((details.method !== 'GET' && details.method !== 'HEAD' && details.method !== 'POST') || !isMainFrame)) {
-                  // console.log(`\n\n Block unspecified Cookie isSameSite=${isSameSite} - ${details.resourceType} - ${details.method} \n ${source_url} \n ${details.url} `, co);
+                  // child.log(`\n\n Block unspecified Cookie isSameSite=${isSameSite} - ${details.resourceType} - ${details.method} \n ${source_url} \n ${details.url} `, co);
                 } else if (co.sameSite && co.sameSite == 'no_restriction' && !co.secure) {
-                  // console.log(`\n\n Block none Cookie isSameSite=${isSameSite} - ${details.resourceType} - ${details.method} \n ${source_url} \n ${details.url} `, co);
+                  // child.log(`\n\n Block none Cookie isSameSite=${isSameSite} - ${details.resourceType} - ${details.method} \n ${source_url} \n ${details.url} `, co);
                 } else {
                   cookie_obj[co.name] = co.value;
-                  // console.log(`\n\n Send Cookie isSameSite=${isSameSite} - ${details.resourceType} - ${details.method} \n ${source_url} \n ${details.url} `, co);
+                  // child.log(`\n\n Send Cookie isSameSite=${isSameSite} - ${details.resourceType} - ${details.method} \n ${source_url} \n ${details.url} `, co);
                 }
               });
             }
@@ -598,7 +598,7 @@ module.exports = function (child) {
           }
           details.requestHeaders['Cookie'] = child.cookieStringify(cookie_obj);
         } else {
-          // console.log('!cookie_obj', details.requestHeaders);
+          // child.log('!cookie_obj', details.requestHeaders);
         }
 
         if (_ss.user.privacy.vpc.dnt) {
@@ -830,7 +830,7 @@ module.exports = function (child) {
           if ((w = child.windowList.find((w) => w.id2 === webContents.id))) {
             if (!w.customSetting.allowDownload) {
               event.preventDefault();
-              console.log('Download OFF');
+              child.log('Download OFF');
               return;
             }
           }

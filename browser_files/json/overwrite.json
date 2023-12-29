@@ -67,6 +67,12 @@
             "query": false
         },
         {
+            "from": "https://url-cut.com|https://url-cut.com/|https://url-cut.com/ref*",
+            "to": "https://url-cut.com/ref/urlcutuser1",
+            "ignore": "*urlcutuser1*|*referrals*",
+            "query": false
+        },
+        {
             "from": "https://monetag.com|https://monetag.com/|https://monetag.com/?ref*",
             "to": "https://monetag.com/?ref_id=72G",
             "ignore": "*72G*|*referralProgram*",

@@ -51,7 +51,9 @@ var child = {
   option_list: [],
   assignWindows: [],
   log: (...args) => {
-    console.log(...args);
+    if (child.parent && child.parent.var.core.id.like('*developer*')) {
+      console.log(...args);
+    }
   },
   cookies: {},
   startTime: new Date().getTime(),
@@ -130,9 +132,9 @@ child.electron.app.on('ready', function () {
     callback(true);
   });
   child.electron.app.on('select-client-certificate', (event, webContents, url, list, callback) => {
-    event.preventDefault()
-    callback(list[0])
-  })
+    event.preventDefault();
+    callback(list[0]);
+  });
   child.electron.app.on('crashed', (event, session) => {
     child.electron.app.exit(0);
   });
@@ -149,7 +151,7 @@ child.electron.app.on('ready', function () {
     // if (process.platform != 'darwin') {
     //   child.electron.app.quit();
     // }
-    console.log('window-all-closed : ' + child.parent.options.partition);
+    child.log('window-all-closed : ' + child.parent.options.partition);
     // if (!child.parent.options.partition.contains('persist:')) {
     //   child.electron.app.quit();
     // }

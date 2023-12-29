@@ -1,6 +1,6 @@
 module.exports = function (browser) {
   let extension = {};
-  extension.id = browser.md5(__filename);
+  extension.id = '__addmefast';
   extension.name = 'Addmefast ';
   extension.description = 'Tools For addmefast.com site';
   extension.paid = false;

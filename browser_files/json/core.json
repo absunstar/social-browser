@@ -1,7 +1,7 @@
 {
     "port": 60080,
     "enabled": true,
-    "version": "2023.10.25",
+    "version": "2024.01.01",
     "prefix": "",
     "full_version": true,
     "key": "free key",
@@ -10,6 +10,6 @@
     "default_page": "https://www.google.com",
     "password": "",
     "max_tabs": 20,
-    "windows_user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 Edg/114.0.1823.82",
-    "linux_user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 Edg/114.0.1823.82"
+    "windows_user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:99.0) Gecko/20100101 Firefox/99.0",
+    "linux_user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:99.0) Gecko/20100101 Firefox/99.0"
 }

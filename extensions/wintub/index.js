@@ -1,6 +1,6 @@
 module.exports = function (browser) {
   let extension = {};
-  extension.id = browser.md5(__filename);
+  extension.id = '__wintub';
   extension.name = 'WinTub';
   extension.description = 'wintub.com site integration';
   extension.paid = false;

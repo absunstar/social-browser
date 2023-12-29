@@ -1,6 +1,6 @@
 module.exports = function (browser) {
   let extension = {};
-  extension.id = browser.md5(__filename);
+  extension.id = '__watchhours';
   extension.name = 'Watch Hours';
   extension.description = 'watchhours.com Integeration';
   extension.paid = false;

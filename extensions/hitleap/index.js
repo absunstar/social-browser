@@ -1,6 +1,6 @@
 module.exports = function (browser) {
     let extension = {};
-    extension.id = browser.md5(__filename);
+    extension.id = '__hitleap';
     extension.name = 'HitLeap';
     extension.description = 'hitleap.com site integration';
     extension.paid = false;

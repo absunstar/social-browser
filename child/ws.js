@@ -291,7 +291,7 @@ module.exports = function (child) {
               }
             });
           } else {
-            console.log('[call-window-action]', message);
+            child.log('[call-window-action]', message);
           }
         } else if (message.type == '[window-reload]') {
           child.windowList.forEach((w) => {

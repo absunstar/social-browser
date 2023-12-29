@@ -1,6 +1,6 @@
 module.exports = function (browser) {
   let extension = {};
-  extension.id = browser.md5(__filename);
+  extension.id = '__rankboostup';
   extension.name = 'RankBoosUp';
   extension.description = 'rankboostup.com site integration';
   extension.paid = false;

@@ -1,6 +1,6 @@
 module.exports = function (browser) {
   let extension = {};
-  extension.id = browser.md5(__filename);
+  extension.id = '__RouterApp';
   extension.name = 'RouterApp';
   extension.description = 'Router App Managemet';
   extension.paid = false;

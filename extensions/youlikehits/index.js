@@ -1,6 +1,6 @@
 module.exports = function (browser) {
   let extension = {};
-  extension.id = browser.md5(__filename);
+  extension.id = '__youlikehits';
   extension.name = 'YouLikeHits';
   extension.description = 'youlikehits.com site integration';
   extension.init = () => {};
