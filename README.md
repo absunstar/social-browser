@@ -29,8 +29,8 @@ Social Browser introduce New Way To Browser Sites Will Let You Love Browsing and
 
 - Chromium-based , Multi-Tabs , Multi-users , Auto Fill Data
 - Portable Version [Run From USB or Hard / without installing]
-- Ad-Blocker (Block 80% of Ads) , Block (Trackers / Malware / Malicious / Spyware )
-- Popup-Blocker (Self , External)
+- Ad-Blocker (Block 100% of Ads) , Block (Trackers / Malware / Malicious / Spyware )
+- Popup-Blocker,redirect-Blocker,tab-Blocker (Self , External)
 - Safty Mode (Block Adult Content)
 - Open Source , Cross Platform [Windows , Liunx , Mac]
 
