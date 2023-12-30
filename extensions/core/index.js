@@ -73,17 +73,17 @@ module.exports = function (browser) {
       ignore: ['x-browser', 'X-Frame-Options', 'Cross-Origin-Resource-Policy'],
     });
 
-    // browser.addRequestHeader({
-    //   id: 'core',
-    //   url: '*google.com*|*gstatic.com*',
-    //   list: [
-    //     {
-    //       name: 'User-Agent',
-    //       value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:99.0) Gecko/20100101 Firefox/99.0',
-    //     },
-    //   ],
-    //   ignore: [],
-    // });
+    browser.addRequestHeader({
+      id: 'core',
+      url: '*https://accounts.google.com/v3/signin*',
+      list: [
+        {
+          name: 'User-Agent',
+          value: 'Chrome',
+        },
+      ],
+      ignore: [],
+    });
   };
 
   extension.disable = () => {
