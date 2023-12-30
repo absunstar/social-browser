@@ -97,7 +97,7 @@
             "hide_gid": false,
             "block_cloudflare": false,
             "block_rtc": true,
-            "mask_user_agent": false,
+            "maskUserAgentURL": false,
             "remove_x_frame_options": false,
             "hide_fonts": false,
             "hide_webgl": true,

@@ -19,7 +19,7 @@
       return Math.floor(Math.random() * (max - min + 1) + min);
     },
     var: {
-      core: { id: '', user_agent: '' },
+      core: { id: '' },
       overwrite: {
         urls: [],
       },
@@ -94,7 +94,9 @@
     SOCIALBROWSER.partition = SOCIALBROWSER.webPreferences.partition;
   } else {
     SOCIALBROWSER.webPreferences = SOCIALBROWSER.webContents.getLastWebPreferences();
-    SOCIALBROWSER.partition = SOCIALBROWSER.webContents.session.storagePath ? 'persist:' + SOCIALBROWSER.webContents.session.storagePath.split('\\').pop() : null;
+    SOCIALBROWSER.partition = SOCIALBROWSER.webContents.session.storagePath
+      ? 'persist:' + SOCIALBROWSER.webContents.session.storagePath.split('\\').pop()
+      : null;
     SOCIALBROWSER.webPreferences = { ...SOCIALBROWSER.webPreferences, ...{ partition: SOCIALBROWSER.partition } };
   }
 
@@ -117,12 +119,12 @@
   SOCIALBROWSER.href = document.location.href;
 
   SOCIALBROWSER.selected_properties =
-    'scripts_files,user_data,user_data_input,sites,preload_list,ad_list,proxy_list,proxy,core,bookmarks,session_list,user_agent_list,blocking,video_quality_list,customHeaderList';
+    'scripts_files,user_data,user_data_input,sites,preload_list,ad_list,proxy_list,proxy,core,bookmarks,session_list,userAgentList,blocking,video_quality_list,customHeaderList';
   if (SOCIALBROWSER.href.indexOf('127.0.0.1:60080') !== -1 || SOCIALBROWSER.href.indexOf('file://') == 0 || SOCIALBROWSER.href.indexOf('browser://') == 0) {
     SOCIALBROWSER.selected_properties = '*';
   }
 
-  SOCIALBROWSER.callSync = SOCIALBROWSER.ipcSync = function (channel, value={}) {
+  SOCIALBROWSER.callSync = SOCIALBROWSER.ipcSync = function (channel, value = {}) {
     value.parentSetting = SOCIALBROWSER.customSetting;
     return SOCIALBROWSER.electron.ipcRenderer.sendSync(channel, value);
   };
@@ -134,7 +136,7 @@
   SOCIALBROWSER.on = function (name, callback) {
     return SOCIALBROWSER.electron.ipcRenderer.on(name, callback);
   };
-  
+
   SOCIALBROWSER.set = function (key, value) {
     if (!key || typeof value === 'undefined') {
       return false;
@@ -263,11 +265,12 @@
   };
 
   SOCIALBROWSER.init = function () {
+    SOCIALBROWSER.currentWindow = SOCIALBROWSER.remote.getCurrentWindow();
     SOCIALBROWSER.ipc('[browser][data]', {
       hostname: SOCIALBROWSER.hostname,
       url: SOCIALBROWSER.href,
       name: SOCIALBROWSER.selected_properties,
-      windowID: SOCIALBROWSER.currentWindow.id,
+      windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
       partition: SOCIALBROWSER.partition,
     }).then((data) => {
       SOCIALBROWSER.browserData = data;

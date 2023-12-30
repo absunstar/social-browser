@@ -192,17 +192,17 @@ module.exports = function (child) {
     if (!user.privacy.enable_virtual_pc) {
       user.privacy = child.parent.var.blocking.privacy;
     }
-    user.user_agent = obj.user_agent ? { url: obj.user_agent } : user.user_agent || {};
+    user.defaultUserAgent = obj.defaultUserAgent ? { url: obj.userAgentURL } : user.defaultUserAgent || {};
 
-    if (!user.user_agent.url || user.user_agent.edit) {
-      user.user_agent = { url: child.parent.var.core.user_agent, edit: true };
+    if (!user.defaultUserAgent.url || user.defaultUserAgent.edit) {
+      user.defaultUserAgent = { url: child.parent.var.core.defaultUserAgent.url, edit: true };
     }
 
     child.cookies[name] = child.cookies[name] || [];
     let ss = name === '_' ? child.electron.session.defaultSession : child.electron.session.fromPartition(name);
     ss.name = name;
     ss.allowNTLMCredentialsForDomains('*');
-    ss.setUserAgent(user.user_agent.url);
+    ss.setUserAgent(user.defaultUserAgent.url);
 
     if (child.session_name_list.some((s) => s.name === name)) {
       child.allowSessionHandle = false;
@@ -460,7 +460,7 @@ module.exports = function (child) {
 
         let _ss = child.session_name_list.find((s) => s.name == name);
         _ss.user.privacy.vpc = _ss.user.privacy.vpc || {};
-        details.requestHeaders['User-Agent'] = _ss.user.user_agent.url;
+        details.requestHeaders['User-Agent'] = _ss.user.defaultUserAgent.url;
         if (child.parent.var.core.enginOFF) {
           callback({
             cancel: false,
@@ -497,7 +497,7 @@ module.exports = function (child) {
 
         let isSameSite = domain1 === domain2;
 
-        if (_ss.user.privacy.enable_virtual_pc && _ss.user.privacy.vpc && _ss.user.privacy.vpc.mask_user_agent) {
+        if (_ss.user.privacy.enable_virtual_pc && _ss.user.privacy.vpc && _ss.user.privacy.vpc.maskUserAgentURL) {
           if (!details.requestHeaders['User-Agent'].like('*[xx-*')) {
             let code = name;
             code += new URL(url).hostname;

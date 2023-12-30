@@ -239,7 +239,7 @@ SOCIALBROWSER.generateVPC = function () {
     set_window_active: true,
     dnt: true,
     block_rtc: true,
-    mask_user_agent: false,
+    maskUserAgentURL: false,
     hide_fonts: false,
   };
 };
@@ -548,7 +548,7 @@ SOCIALBROWSER.eval = function (code) {
   }
 
   SOCIALBROWSER.fs = SOCIALBROWSER.fs || SOCIALBROWSER.require('fs');
-  let path = `${SOCIALBROWSER.browserData.data_dir}/sessionData/script_${SOCIALBROWSER.currentWindow.id}_${Math.random()}.js`;
+  let path = `${SOCIALBROWSER.browserData.data_dir}/sessionData/script_${SOCIALBROWSER.remote.getCurrentWindow().id}_${Math.random()}.js`;
   if (SOCIALBROWSER.fs.existsSync(path)) {
     SOCIALBROWSER.require(path);
   } else {
@@ -601,10 +601,12 @@ SOCIALBROWSER.openWindow = function (_customSetting) {
     });
     customSetting.windowID = win.id;
 
+    SOCIALBROWSER.currentWindow = SOCIALBROWSER.remote.getCurrentWindow();
+
     SOCIALBROWSER.ipc('[handle-session]', { ...customSetting, name: customSetting.partition });
     SOCIALBROWSER.ipc('[add][window]', { windowID: win.id, customSetting: customSetting });
     SOCIALBROWSER.ipc('[assign][window]', {
-      parentWindowID: SOCIALBROWSER.currentWindow.id,
+      parentWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
       childWindowID: win.id,
     });
     if (!customSetting.x && !customSetting.y) {
@@ -617,8 +619,8 @@ SOCIALBROWSER.openWindow = function (_customSetting) {
 
     if (customSetting.url) {
       win.loadURL(SOCIALBROWSER.handleURL(customSetting.url), {
-        referrer: customSetting.referrer || document.location.href,
-        userAgent: customSetting.user_agent || customSetting.userAgent || SOCIALBROWSER.userAgent || navigator.userAgent,
+        httpReferrer: customSetting.referrer || document.location.href,
+        userAgent: customSetting.userAgentURL || SOCIALBROWSER.defaultUserAgent.url,
       });
     }
 

@@ -73,8 +73,8 @@
       win.webContents.audioMuted = true;
 
       win.loadURL(url, {
-        referrer: document.location.href,
-        user_agent: navigator.userAgent,
+        httpReferrer : document.location.href,
+        userAgent : navigator.userAgent,
       });
 
       win.once('ready-to-show', () => {

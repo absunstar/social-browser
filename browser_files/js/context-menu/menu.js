@@ -373,7 +373,7 @@ function get_url_menu_list(url) {
         referrer: document.location.href,
         partition: SOCIALBROWSER.partition,
         user_name: SOCIALBROWSER.session.display,
-        windowID: SOCIALBROWSER.currentWindow.id,
+        windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
         center: true,
       });
     },
@@ -485,7 +485,7 @@ function get_url_menu_list(url) {
             url: url,
             partition: ss.name,
             user_name: ss.display,
-            windowID: SOCIALBROWSER.currentWindow.id,
+            windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
           });
         },
       });
@@ -523,7 +523,7 @@ function add_a_menu(node) {
             url: u,
             partition: SOCIALBROWSER.partition,
             user_name: SOCIALBROWSER.session.display,
-            windowID: SOCIALBROWSER.currentWindow.id,
+            windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
             center: true,
           });
         },
@@ -611,7 +611,7 @@ function get_img_menu(node) {
         SOCIALBROWSER.ipc('[open new tab]', {
           url: url,
           referrer: document.location.href,
-          windowID: SOCIALBROWSER.currentWindow.id,
+          windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
         });
       },
     });
@@ -725,7 +725,7 @@ function get_options_menu(node) {
     click() {
       sendToMain({
         name: '[save-window-as-pdf]',
-        windowID: SOCIALBROWSER.currentWindow.id,
+        windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
       });
     },
   });
@@ -746,7 +746,7 @@ function get_options_menu(node) {
     accelerator: 'CommandOrControl+F5',
     click() {
       SOCIALBROWSER.ipc('[window-reload-hard]', {
-        windowID: SOCIALBROWSER.currentWindow.id,
+        windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
         origin: document.location.origin || document.location.href,
         partition: SOCIALBROWSER.partition,
         storages: ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage'],
@@ -763,7 +763,7 @@ function get_options_menu(node) {
     click() {
       sendToMain({
         name: '[toggle-fullscreen]',
-        windowID: SOCIALBROWSER.currentWindow.id,
+        windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
       });
     },
   });
@@ -817,7 +817,7 @@ function get_options_menu(node) {
     accelerator: 'CommandOrControl+F5',
     click() {
       SOCIALBROWSER.ipc('[window-reload-hard]', {
-        windowID: SOCIALBROWSER.currentWindow.id,
+        windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
         origin: document.location.origin || document.location.href,
         storages: ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage'],
       });
@@ -828,7 +828,7 @@ function get_options_menu(node) {
     label: 'Clear Site Cookies',
     click() {
       SOCIALBROWSER.ipc('[window-reload-hard]', {
-        windowID: SOCIALBROWSER.currentWindow.id,
+        windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
         origin: document.location.origin || document.location.href,
         storages: ['cookies'],
       });
@@ -839,7 +839,7 @@ function get_options_menu(node) {
     label: 'Clear All Site Data',
     click() {
       SOCIALBROWSER.ipc('[window-reload-hard]', {
-        windowID: SOCIALBROWSER.currentWindow.id,
+        windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
         origin: document.location.origin || document.location.href,
         storages: ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage', 'cookies'],
       });
@@ -1320,13 +1320,13 @@ function url_to_social(url, social_arr, title) {
     },
   });
   social_arr.push({
-    label: ` Open [ ${title} ] in Many window [ All User Agents (${SOCIALBROWSER.var.user_agent_list.length}) ] [Audio Muted]`,
+    label: ` Open [ ${title} ] in Many window [ All User Agents (${SOCIALBROWSER.var.userAgentList.length}) ] [Audio Muted]`,
     click() {
-      for (let index = 0; index < SOCIALBROWSER.var.user_agent_list.length; index++) {
+      for (let index = 0; index < SOCIALBROWSER.var.userAgentList.length; index++) {
         setTimeout(() => {
           SOCIALBROWSER.ipc('[open new popup]', {
             partition: SOCIALBROWSER.partition,
-            user_agent: SOCIALBROWSER.var.user_agent_list[index].url,
+            userAgentURL: SOCIALBROWSER.var.userAgentList[index].url,
             url: url,
             referrer: document.location.href,
             allowAudio: false,
@@ -1338,14 +1338,14 @@ function url_to_social(url, social_arr, title) {
     },
   });
   social_arr.push({
-    label: ` Open [ ${title} ] in Many window [ All User Agents (${SOCIALBROWSER.var.user_agent_list.length}) ] [Audio Muted] + Ghosts Profiles `,
+    label: ` Open [ ${title} ] in Many window [ All User Agents (${SOCIALBROWSER.var.userAgentList.length}) ] [Audio Muted] + Ghosts Profiles `,
     click() {
-      for (let index = 0; index < SOCIALBROWSER.var.user_agent_list.length; index++) {
+      for (let index = 0; index < SOCIALBROWSER.var.userAgentList.length; index++) {
         setTimeout(() => {
           let partition2 = 'x-ghost_' + Date.now() + '_' + Math.random();
           SOCIALBROWSER.ipc('[open new popup]', {
             partition: partition2,
-            user_agent: SOCIALBROWSER.var.user_agent_list[index].url,
+            userAgentURL: SOCIALBROWSER.var.userAgentList[index].url,
             url: url,
             referrer: document.location.href,
             allowAudio: false,
@@ -1371,7 +1371,7 @@ function url_to_social(url, social_arr, title) {
           let partition2 = 'x-ghost_' + Date.now();
           SOCIALBROWSER.ipc('[open new popup]', {
             partition: partition2,
-            user_agent: SOCIALBROWSER.userAgent,
+            userAgentURL: SOCIALBROWSER.userAgent,
             url: url,
             referrer: document.location.href,
             allowAudio: false,
@@ -1481,7 +1481,7 @@ function createMenuList(node) {
           SOCIALBROWSER.ipc('[open new tab]', {
             referrer: document.location.href,
             url: 'https://www.google.com/search?q=' + encodeURIComponent(SOCIALBROWSER.selectedText),
-            windowID: SOCIALBROWSER.currentWindow.id,
+            windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
           });
         },
       });
@@ -1541,7 +1541,7 @@ function createMenuList(node) {
                   url: o.url || document.location.href,
                   referrer: document.location.href,
                   show: true,
-                  windowID: SOCIALBROWSER.currentWindow.id,
+                  windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
                 });
               },
             });
@@ -1667,19 +1667,19 @@ function createMenuList(node) {
       let url = node.getAttribute('url');
       let partition = node.getAttribute('partition');
       let user_name = node.getAttribute('user_name');
-      let user_agent = node.getAttribute('user_agent');
+      let userAgentURL = node.getAttribute('userAgentURL');
       let childProcessID = node.getAttribute('childProcessID');
       let ghost = 'x-ghost_' + Math.random().toString().replace('.', '');
       SOCIALBROWSER.menuList.push({
         label: 'New tab',
         click() {
-          SOCIALBROWSER.ipc('[open new tab]', { main_window_id: SOCIALBROWSER.currentWindow.id });
+          SOCIALBROWSER.ipc('[open new tab]', { main_window_id: SOCIALBROWSER.remote.getCurrentWindow().id });
         },
       });
       SOCIALBROWSER.menuList.push({
         label: 'Duplicate tab',
         click() {
-          SOCIALBROWSER.ipc('[open new tab]', { url: url, partition: partition, user_name: user_name, user_agent: user_agent, main_window_id: SOCIALBROWSER.currentWindow.id });
+          SOCIALBROWSER.ipc('[open new tab]', { url: url, partition: partition, user_name: user_name, userAgentURL: userAgentURL, main_window_id: SOCIALBROWSER.remote.getCurrentWindow().id });
         },
       });
       SOCIALBROWSER.menuList.push({
@@ -1719,13 +1719,13 @@ function createMenuList(node) {
       SOCIALBROWSER.menuList.push({
         label: 'New Ghost tab',
         click() {
-          SOCIALBROWSER.ipc('[open new tab]', { partition: ghost, iframe: true, user_name: ghost, user_agent: user_agent, main_window_id: SOCIALBROWSER.currentWindow.id });
+          SOCIALBROWSER.ipc('[open new tab]', { partition: ghost, iframe: true, user_name: ghost, userAgentURL: userAgentURL, main_window_id: SOCIALBROWSER.remote.getCurrentWindow().id });
         },
       });
       SOCIALBROWSER.menuList.push({
         label: 'Duplicate tab in Ghost tab',
         click() {
-          SOCIALBROWSER.ipc('[open new tab]', { url: url, partition: ghost, user_name: ghost, user_agent: user_agent, main_window_id: SOCIALBROWSER.currentWindow.id });
+          SOCIALBROWSER.ipc('[open new tab]', { url: url, partition: ghost, user_name: ghost, userAgentURL: userAgentURL, main_window_id: SOCIALBROWSER.remote.getCurrentWindow().id });
         },
       });
       SOCIALBROWSER.menuList.push({
@@ -1742,8 +1742,8 @@ function createMenuList(node) {
             url: url,
             partition: partition,
             user_name: user_name,
-            user_agent: user_agent,
-            main_window_id: SOCIALBROWSER.currentWindow.id,
+            userAgentURL: userAgentURL,
+            main_window_id: SOCIALBROWSER.remote.getCurrentWindow().id,
           });
         },
       });
@@ -1757,8 +1757,8 @@ function createMenuList(node) {
             url: url,
             partition: ghost,
             user_name: ghost,
-            user_agent: user_agent,
-            main_window_id: SOCIALBROWSER.currentWindow.id,
+            userAgentURL: userAgentURL,
+            main_window_id: SOCIALBROWSER.remote.getCurrentWindow().id,
           });
         },
       });
@@ -1828,7 +1828,6 @@ SOCIALBROWSER.contextmenu = function (e) {
       SOCIALBROWSER.currentWindow.show();
     } catch (error) {
       SOCIALBROWSER.currentWindow = SOCIALBROWSER.remote.getCurrentWindow();
-      SOCIALBROWSER.webContents = SOCIALBROWSER.currentWindow.webContents;
       SOCIALBROWSER.currentWindow.show();
     }
 
@@ -1863,7 +1862,7 @@ SOCIALBROWSER.contextmenu = function (e) {
         type: m.type,
         submenu: m.submenu?.map((s) => ({ label: s.label, type: s.type, sublabel: s.sublabel, visible: s.visible })),
       })),
-      windowID: SOCIALBROWSER.currentWindow.id,
+      windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
     });
   } catch (error) {
     SOCIALBROWSER.log(error);

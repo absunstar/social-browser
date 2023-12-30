@@ -18,7 +18,7 @@ if (SOCIALBROWSER.customSetting.windowSetting) {
 
 if (SOCIALBROWSER.isIframe()) {
   SOCIALBROWSER.onLoad(() => {
-    SOCIALBROWSER.message({ windowID: SOCIALBROWSER.currentWindow.id, changeTitle: document.title });
+    SOCIALBROWSER.message({ windowID: SOCIALBROWSER.remote.getCurrentWindow().id, changeTitle: document.title });
   });
 } else {
   SOCIALBROWSER.on('message', (e, message) => {

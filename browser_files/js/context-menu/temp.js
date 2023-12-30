@@ -380,7 +380,7 @@
             // SOCIALBROWSER.ipc('[send-render-message]', {
         //   name: 'get_pdf',
         //   options: options || {},
-        //   windowID: SOCIALBROWSER.currentWindow.id,
+        //   windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
         // });
 
         // return;

@@ -61,8 +61,8 @@ function getDefaultTapProperties() {
     }
   }
 
-  if (SOCIALBROWSER.var.core.user_agent) {
-    defaultTapProperties.user_agent = SOCIALBROWSER.var.core.user_agent;
+  if (SOCIALBROWSER.var.core.defaultUserAgent) {
+    defaultTapProperties.userAgentURL = SOCIALBROWSER.var.core.defaultUserAgent.url;
   }
 
   return { ...defaultTapProperties };
@@ -75,8 +75,8 @@ client.on('setting changed', (arr) => {
       defaultTapProperties.url = setting.core.default_page;
     }
 
-    if (setting.core.user_agent) {
-      defaultTapProperties.user_agent = setting.core.user_agent;
+    if (setting.core.defaultUserAgent) {
+      defaultTapProperties.userAgentURL = setting.core.defaultUserAgent.url;
     }
   }
 });
@@ -246,7 +246,7 @@ class SocialTabs {
         windowType: 'view',
         url: tabProperties.url || defaultTapProperties.url,
         source: 'session',
-        mainWindowID: SOCIALBROWSER.currentWindow.id,
+        mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
       });
       return;
     }
@@ -372,7 +372,7 @@ class SocialTabs {
   updateTab(tabEl, tabProperties) {
     tabEl.setAttribute('id', tabProperties.id);
     tabEl.setAttribute('url', tabProperties.url);
-    tabEl.setAttribute('user_agent', tabProperties.user_agent);
+    tabEl.setAttribute('userAgentURL', tabProperties.userAgentURL);
     tabEl.setAttribute('partition', tabProperties.partition);
     tabEl.setAttribute('user_name', tabProperties.user_name);
     tabEl.setAttribute('proxy', tabProperties.proxy);

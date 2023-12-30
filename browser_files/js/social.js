@@ -24,7 +24,7 @@ function ipc(name, message) {
   message.windowID = message.windowID || $('#' + message.tabID).attr('windowID');
   message.childID = message.childID || $('#' + message.tabID).attr('childProcessID');
   message.mainWindowID = message.mainWindowID || $('#' + message.tabID).attr('mainWindowID');
-  message.windowID = message.windowID || SOCIALBROWSER.currentWindow.id;
+  message.windowID = message.windowID || SOCIALBROWSER.remote.getCurrentWindow().id;
 
   SOCIALBROWSER.ipc(name, message);
 }
@@ -216,7 +216,7 @@ document.addEventListener(
     } else if (e.keyCode == 78 /*n*/ || e.keyCode == 84 /*t*/) {
       if (e.ctrlKey == true) {
         ipc('[open new tab]', {
-          mainWindowID: SOCIALBROWSER.currentWindow.id,
+          mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
         });
       }
     } else if (e.keyCode == 116 /*f5*/) {
@@ -245,7 +245,7 @@ function showSettingMenu() {
     click: () =>
       ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/setting',
-        mainWindowID: SOCIALBROWSER.currentWindow.id,
+        mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
         vip: true,
       }),
   });
@@ -272,7 +272,7 @@ function showSettingMenu() {
     click: () =>
       ipc('[open new tab]', {
         url: 'https://social-browser.com',
-        mainWindowID: SOCIALBROWSER.currentWindow.id,
+        mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
       }),
   });
   SOCIALBROWSER.menuList.push({
@@ -283,7 +283,7 @@ function showSettingMenu() {
     click: () =>
       ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/downloads',
-        mainWindowID: SOCIALBROWSER.currentWindow.id,
+        mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
         vip: true,
       }),
   });
@@ -319,7 +319,7 @@ function showSettingMenu() {
     click: () =>
       ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/setting?open=bookmarks',
-        mainWindowID: SOCIALBROWSER.currentWindow.id,
+        mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
         vip: true,
       }),
   });
@@ -352,7 +352,7 @@ function showSettingMenu() {
           ipc('[open new tab]', {
             url: b.url,
             title: b.title,
-            mainWindowID: SOCIALBROWSER.currentWindow.id,
+            mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
           });
         });
       },
@@ -442,7 +442,7 @@ function showSettingMenu() {
       type: m.type,
       submenu: m.submenu?.map((s) => ({ label: s.label, type: s.type, sublabel: s.sublabel, visible: s.visible })),
     })),
-    windowID: SOCIALBROWSER.currentWindow.id,
+    windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
   });
 }
 
@@ -473,7 +473,7 @@ function showBookmarksMenu() {
     click: () =>
       ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/setting?open=bookmarks',
-        mainWindowID: SOCIALBROWSER.currentWindow.id,
+        mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
         vip: true,
       }),
   });
@@ -506,7 +506,7 @@ function showBookmarksMenu() {
           ipc('[open new tab]', {
             url: b.url,
             title: b.title,
-            mainWindowID: SOCIALBROWSER.currentWindow.id,
+            mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
           });
         });
       },
@@ -521,7 +521,7 @@ function showBookmarksMenu() {
       type: m.type,
       submenu: m.submenu?.map((s) => ({ label: s.label, type: s.type, sublabel: s.sublabel, visible: s.visible })),
     })),
-    windowID: SOCIALBROWSER.currentWindow.id,
+    windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
   });
 }
 
@@ -596,10 +596,10 @@ $('.social-close').click(() => {
   ExitSocialWindow();
 });
 $('.social-maxmize').click(() => {
-  SOCIALBROWSER.ipc('[browser-message]', { name: 'maxmize', windowID: SOCIALBROWSER.currentWindow.id });
+  SOCIALBROWSER.ipc('[browser-message]', { name: 'maxmize', windowID: SOCIALBROWSER.remote.getCurrentWindow().id });
 });
 $('.social-minmize').click(() => {
-  SOCIALBROWSER.ipc('[browser-message]', { name: 'minmize', windowID: SOCIALBROWSER.currentWindow.id });
+  SOCIALBROWSER.ipc('[browser-message]', { name: 'minmize', windowID: SOCIALBROWSER.remote.getCurrentWindow().id });
 });
 
 socialTabsDom.addEventListener('activeTabChange', ({ detail }) => {
@@ -611,7 +611,7 @@ socialTabsDom.addEventListener('activeTabChange', ({ detail }) => {
     width: document.width,
     height: document.height,
     tabID: currentTabId,
-    mainWindowID: SOCIALBROWSER.currentWindow.id,
+    mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
   });
 
   $('#user_name').html($('#' + currentTabId).attr('user_name'));
@@ -726,7 +726,7 @@ socialTabsDom.addEventListener('tabAdd', ({ detail }) => {
       width: document.width,
       height: document.height,
       tabID: currentTabId,
-      mainWindowID: SOCIALBROWSER.currentWindow.id,
+      mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
     });
 
     if (!$id.attr('url') || $id.attr('url').like('*newTab')) {
@@ -770,7 +770,7 @@ function renderNewTabData(op) {
     title: op.title || op.url,
     user_name: op.user_name || op.partition,
     iconURL: 'browser://images/loading-white.gif',
-    mainWindowID: SOCIALBROWSER.currentWindow.id,
+    mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
   };
   socialTabs.addTab(tab);
   // console.log(tab);
@@ -971,7 +971,7 @@ function closeTab(id) {
 
 function ExitSocialWindow(noTabs = false) {
   if (noTabs) {
-    SOCIALBROWSER.ipc('[browser-message]', { name: 'close', windowID: SOCIALBROWSER.currentWindow.id });
+    SOCIALBROWSER.ipc('[browser-message]', { name: 'close', windowID: SOCIALBROWSER.remote.getCurrentWindow().id });
     return;
   }
   $('.address-input .http').css('display', 'none');
@@ -992,7 +992,7 @@ function ExitSocialWindow(noTabs = false) {
   });
 
   setTimeout(() => {
-    SOCIALBROWSER.ipc('[browser-message]', { name: 'close', windowID: SOCIALBROWSER.currentWindow.id });
+    SOCIALBROWSER.ipc('[browser-message]', { name: 'close', windowID: SOCIALBROWSER.remote.getCurrentWindow().id });
   }, 250);
 }
 
@@ -1027,7 +1027,7 @@ window.addEventListener('resize', () => {
 });
 
 SOCIALBROWSER.on('show-tab-view', (data) => {
-  if (data.windowID == SOCIALBROWSER.currentWindow.id) {
+  if (data.windowID == SOCIALBROWSER.remote.getCurrentWindow().id) {
     $('#' + currentTabId).click();
   }
 });

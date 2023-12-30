@@ -51,13 +51,13 @@ app.controller('mainController', ($scope, $http, $timeout) => {
       $scope.setting.session_list.forEach((s, i) => {
         $scope.setting.session_list[i].privacy.vpc = SOCIALBROWSER.generateVPC();
         $scope.setting.session_list[i].privacy.enable_virtual_pc = true;
-        $scope.setting.session_list[i].user_agent = $scope.setting.user_agent_list[SOCIALBROWSER.random(0, $scope.setting.user_agent_list.length - 1)];
+        $scope.setting.session_list[i].defaultUserAgent = $scope.setting.userAgentList[SOCIALBROWSER.random(0, $scope.setting.userAgentList.length - 1)];
       });
     } else {
       if (session) {
         session.privacy.vpc = SOCIALBROWSER.generateVPC();
         session.privacy.enable_virtual_pc = true;
-        session.user_agent = $scope.setting.user_agent_list[SOCIALBROWSER.random(0, $scope.setting.user_agent_list.length - 1)];
+        session.defaultUserAgent = $scope.setting.userAgentList[SOCIALBROWSER.random(0, $scope.setting.userAgentList.length - 1)];
       } else {
         SOCIALBROWSER.var.blocking.privacy.vpc = SOCIALBROWSER.generateVPC();
         $scope.setting.blocking.privacy.vpc = { ...SOCIALBROWSER.var.blocking.privacy.vpc };
@@ -84,13 +84,13 @@ app.controller('mainController', ($scope, $http, $timeout) => {
   $scope.clearUserAgent = function (session) {
     if (typeof session == 'string' && session == '*') {
       $scope.setting.session_list.forEach((s) => {
-        s.user_agent = null;
+        s.defaultUserAgent = null;
       });
     } else {
       if (session) {
-        session.user_agent = null;
+        session.defaultUserAgent = null;
       } else {
-        $scope.setting.core.user_agent = null;
+        $scope.setting.core.defaultUserAgent = null;
       }
     }
 
@@ -446,15 +446,15 @@ app.controller('mainController', ($scope, $http, $timeout) => {
 
   $scope.addUserAgent = function () {
     if ($scope.userAgent.name.length > 0) {
-      $scope.setting.user_agent_list.push($scope.userAgent);
+      $scope.setting.userAgentList.push($scope.userAgent);
       $scope.userAgent = {};
     }
   };
 
   $scope.removeUserAgent = function (_se) {
-    $scope.setting.user_agent_list.forEach((se, i) => {
+    $scope.setting.userAgentList.forEach((se, i) => {
       if (se.name === _se.name && se.url === _se.url) {
-        $scope.setting.user_agent_list.splice(i, 1);
+        $scope.setting.userAgentList.splice(i, 1);
       }
     });
   };
@@ -549,7 +549,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
       hostname: document.location.hostname,
       url: document.location.href,
       name: '*',
-      windowID: SOCIALBROWSER.currentWindow.id,
+      windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
       partition: SOCIALBROWSER.partition,
     }).then((data) => {
       $scope.setting = data.var;

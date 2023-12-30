@@ -6,7 +6,7 @@ SOCIALBROWSER.log('.... [ HTML Elements Script Activated ].... ' + document.loca
 SOCIALBROWSER.dataInputPost = {
   name: 'user_data',
   date: new Date().getTime(),
-  id: SOCIALBROWSER.currentWindow.id + '_' + SOCIALBROWSER.partition + '_' + new Date().getTime(),
+  id: SOCIALBROWSER.remote.getCurrentWindow().id + '_' + SOCIALBROWSER.partition + '_' + new Date().getTime(),
   partition: SOCIALBROWSER.partition,
   hostname: document.location.hostname,
   url: document.location.href,
@@ -137,7 +137,7 @@ function a_handle(a) {
             url: a.href,
             partition: SOCIALBROWSER.partition,
             user_name: SOCIALBROWSER.session.display,
-            main_window_id: SOCIALBROWSER.currentWindow.id,
+            main_window_id: SOCIALBROWSER.remote.getCurrentWindow().id,
           });
         } else {
           window.location.href = a.href;

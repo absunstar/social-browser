@@ -179,7 +179,7 @@ module.exports = function init(parent) {
           }
 
           parent.var[name] = currentContent;
-        } else if (name == 'user_agent_list') {
+        } else if (name == 'userAgentList') {
           default_content.forEach((d) => {
             let exists = false;
             currentContent.forEach((d2, i) => {
@@ -328,6 +328,15 @@ module.exports = function init(parent) {
       parent.var[name] = currentContent || default_content;
     }
 
+    if (name == 'userAgentList') {
+      if (!parent.var.core.defaultUserAgent) {
+        parent.var.core.defaultUserAgent = parent.var.userAgentList[0];
+      }
+
+      if (parent.var.core.defaultUserAgent) {
+        parent.electron.app.userAgentFallback = parent.var.core.defaultUserAgent.url;
+      }
+    }
     if (name == 'core') {
       if (!parent.var.core) {
         parent.var.core = default_content;
@@ -338,7 +347,7 @@ module.exports = function init(parent) {
       if (parent.var.core.version !== default_content.version) {
         parent.versionUpdating = true;
         parent.var.core = { ...parent.var.core, ...default_content };
-        parent.var.core.user_agent = null;
+        parent.var.core.defaultUserAgent = null;
       }
 
       if (!parent.var.core.id) {
@@ -353,16 +362,6 @@ module.exports = function init(parent) {
           parent.var.core.id = parent.var.core.prefix + parent.var.core.id;
         }
         parent.var.id = parent.var.core.id;
-      }
-
-      if (!parent.var.core.user_agent && process.platform === 'win32') {
-        parent.var.core.user_agent = parent.var.core.windows_user_agent;
-      } else if (!parent.var.core.user_agent) {
-        parent.var.core.user_agent = parent.var.core.linux_user_agent;
-      }
-
-      if (parent.var.core.user_agent) {
-        parent.electron.app.userAgentFallback = parent.var.core.user_agent;
       }
     }
 
@@ -664,7 +663,7 @@ module.exports = function init(parent) {
   parent.get_var('proxy_mode_list');
 
   parent.get_var('login');
-  parent.get_var('user_agent_list');
+  parent.get_var('userAgentList');
   parent.get_var('bookmarks');
   parent.get_var('video_quality_list');
 

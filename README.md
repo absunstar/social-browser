@@ -9,18 +9,23 @@ Social Browser introduce New Way To Browser Sites Will Let You Love Browsing and
     </ul>
 
   ```bash
+
      git clone https://github.com/absunstar/social-browser.git
 
-     # for Portal use
+     #for Portal use
      mv social-browser social-browser-portal
      cd social-browser-portal
-     # for Normal use
+
+     #for Normal use
      cd social-browser
 
-     npm i # install all libs
-     npm start # run Social Browser
 
-     # for update to latest source code
+     #install all libs
+     npm i
+     #run Social Browser
+     npm start
+
+     #for update to latest source code
      git pull
 
   ```

@@ -43,7 +43,7 @@ module.exports = function (child) {
           child.addOverwriteList(child.parent.var.overwrite.urls);
           child.option_list.push(message.options);
           child.cookies = {};
-          child.electron.app.userAgentFallback = child.parent.var.core.user_agent;
+          child.electron.app.userAgentFallback = child.parent.var.core.defaultUserAgent.url;
           if (child.parent.windowType == 'none') {
           } else if (child.parent.windowType == 'files') {
             child.window = null;
@@ -86,8 +86,8 @@ module.exports = function (child) {
             child.set_var(message.options.name, message.options.data);
           } else {
             child.parent.var[message.options.name] = message.options.data;
-            if (child.parent.var.core.user_agent) {
-              child.electron.app.userAgentFallback = child.parent.var.core.user_agent;
+            if (child.parent.var.core.defaultUserAgent) {
+              child.electron.app.userAgentFallback = child.parent.var.core.defaultUserAgent.url;
             }
             if (message.options.name === 'overwrite') {
               child.addOverwriteList(child.parent.var.overwrite.urls);

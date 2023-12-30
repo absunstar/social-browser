@@ -336,7 +336,7 @@ module.exports = function init(parent) {
         black_list: parent.var.blocking.black_list,
         white_list: parent.var.blocking.white_list,
         session_list: parent.var.session_list,
-        user_agent_list: parent.var.user_agent_list,
+        userAgentList: parent.var.userAgentList,
         user_data_input: parent.var.user_data_input,
         blocking: parent.var.blocking,
         popup: parent.var.popup,

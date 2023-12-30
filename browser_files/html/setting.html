@@ -193,7 +193,7 @@
               <a class="tab-link" onclick="site.showTabContent(event, '#menu_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-bars"></i> Context Menu </a>
               <a class="tab-link" onclick="site.showTabContent(event, '#downloader_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-download"></i> Downloader </a>
 
-              <a class="tab-link" onclick="site.showTabContent(event, '#user_agent_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-list"></i> User Agent List </a>
+              <a id="userAgentButton" class="tab-link" onclick="site.showTabContent(event, '#userAgentTab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-list"></i> User Agent List </a>
             </div>
             <div class="tabs-content">
               <div id="basic_tab" class="tab-content">
@@ -216,6 +216,7 @@
 
                   <fieldset>
                     <legend>Basic</legend>
+
                     <div class="row padding">
                       <i-control type="password" class="col3" label="setting Password" ng-model="setting.core.password"> </i-control>
                       <i-control class="col3" label="Home Page" ng-model="setting.core.home_page"></i-control>
@@ -223,16 +224,21 @@
                       <i-control type="number" class="col3" label="Max Opend Tabs" ng-model="setting.core.max_tabs"></i-control>
                     </div>
 
-                    <i-list
-                      class="col3"
-                      ng-search="search.$user_agent"
-                      primary="name"
-                      items="setting.user_agent_list"
-                      ng-change="setting.core.user_agent = setting.core.selected_user_agent.url"
-                      ng-model="setting.core.selected_user_agent"
-                      label="Select User Agent"
-                    ></i-list>
-                    <i-control class="row" label="Custom User Agent" ng-model="setting.core.user_agent"></i-control>
+                    <div class="row">
+                      <i-list
+                        class="col6"
+                        ng-search="search.$userAgentURL"
+                        primary="name"
+                        items="setting.userAgentList"
+                        ng-model="setting.core.defaultUserAgent"
+                        label="Default User Agent"
+                      ></i-list>
+                      <div class="col6">
+                        <br />
+                        <i-button label="Edit User Agent List" type="edit" onclick="document.querySelector('#userAgentButton').click()"></i-button>
+                      </div>
+                      <i-control disabled class="row" label="User Agent URL" ng-model="setting.core.defaultUserAgent.url"></i-control>
+                    </div>
                   </fieldset>
 
                   <div class="row padding">
@@ -465,7 +471,7 @@
 
                     <div class="row padding border2">
                       <i-checkbox class="col6" label="Set Window Alawys Active" ng-model="setting.blocking.privacy.vpc.set_window_active"></i-checkbox>
-                      <i-checkbox class="col6" label="Mask User Agent (profile + host) [some Sites not work] " ng-model="setting.blocking.privacy.vpc.mask_user_agent"></i-checkbox>
+                      <i-checkbox class="col6" label="Mask User Agent (profile + host) [some Sites not work] " ng-model="setting.blocking.privacy.vpc.maskUserAgentURL"></i-checkbox>
                       <i-checkbox class="col6" label="Block HTML Canvas" ng-model="setting.blocking.privacy.vpc.hide_canvas"></i-checkbox>
 
                       <i-checkbox class="col6" label="Block Media Devices [camera , mic , ...]" ng-model="setting.blocking.privacy.vpc.hide_media_devices"></i-checkbox>
@@ -751,8 +757,8 @@
                       <i-control ng-model="currentSession.display" label="Name"></i-control>
 
                       <div class="row padding border">
-                        <i-list ng-search="search.$user_agent" primary="name" items="setting.user_agent_list" ng-model="currentSession.user_agent" label="Select User Agent"></i-list>
-                        <i-control class="row" label="Custom User Agent" ng-model="currentSession.user_agent.url"></i-control>
+                        <i-list ng-search="search.$userAgentURL" primary="name" items="setting.userAgentList" ng-model="currentSession.defaultUserAgent" label="Select User Agent"></i-list>
+                        <i-control disabled class="row" label="User Agent URL" ng-model="currentSession.defaultUserAgent.url"></i-control>
                       </div>
 
                       <fieldset>
@@ -912,7 +918,7 @@
                       </div>
                       <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border2">
                         <i-checkbox class="col6" label="Set Window Alawys Active" ng-model="currentSession.privacy.vpc.set_window_active"></i-checkbox>
-                        <i-checkbox class="col6" label="Mask User Agent (profile + host) [some Sites not work] " ng-model="currentSession.privacy.vpc.mask_user_agent"></i-checkbox>
+                        <i-checkbox class="col6" label="Mask User Agent (profile + host) [some Sites not work] " ng-model="currentSession.privacy.vpc.maskUserAgentURL"></i-checkbox>
                         <i-checkbox class="col6" label="Block HTML Canvas" ng-model="currentSession.privacy.vpc.hide_canvas"></i-checkbox>
 
                         <i-checkbox class="col6" label="Block Media Devices [camera , mic , ...]" ng-model="currentSession.privacy.vpc.hide_media_devices"></i-checkbox>
@@ -945,7 +951,7 @@
                 </div>
               </div>
 
-              <div id="user_agent_tab" class="tab-content">
+              <div id="userAgentTab" class="tab-content">
                 <div class="row">
                   <h2>Manage User Agent [ Add , Edit , Delete]</h2>
 
@@ -978,7 +984,7 @@
                         </th>
                       </tr>
 
-                      <tr ng-repeat="_se in setting.user_agent_list | filter:_userAgent track by $index ">
+                      <tr ng-repeat="_se in setting.userAgentList | filter:_userAgent track by $index ">
                         <td class="center">
                           {{$index + 1}}
                           <i-button type="delete" ng-click="removeUserAgent(_se)" label="Remove"></i-button>

@@ -56,7 +56,7 @@
     windowList: [],
     files: [],
     var: {
-      core: { id: '', user_agent: '' },
+      core: { id: ''},
       overwrite: {
         urls: [],
       },

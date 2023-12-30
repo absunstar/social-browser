@@ -120,7 +120,7 @@ module.exports = function (parent) {
     }
 
     ss.allowNTLMCredentialsForDomains('*');
-    ss.userAgent = parent.var.core.user_agent;
+    ss.userAgent = parent.var.core.defaultUserAgent.url;
 
     const filter = {
       urls: ['*://*/*'],
@@ -213,17 +213,17 @@ module.exports = function (parent) {
       details.requestHeaders = details.requestHeaders || {};
 
       let user = parent.var.session_list.find((s) => s.name == name);
-      let user_agent = null;
-      if (user && user.user_agent) {
-        user_agent = user.user_agent.url;
+      let userAgentURL = null;
+      if (user && user.defaultUserAgent) {
+        userAgentURL = user.defaultUserAgent.url;
       }
 
-      details.requestHeaders['User-Agent'] = user_agent || details.requestHeaders['User-Agent'] || parent.var.core.user_agent;
+      details.requestHeaders['User-Agent'] = userAgentURL || details.requestHeaders['User-Agent'] || parent.var.core.defaultUserAgent.url;
       if (details.requestHeaders['User-Agent'] == 'undefined') {
-        details.requestHeaders['User-Agent'] = parent.var.core.user_agent;
+        details.requestHeaders['User-Agent'] = parent.var.core.defaultUserAgent.url;
       }
 
-      if (parent.var.blocking.privacy.enable_virtual_pc && parent.var.blocking.privacy.vpc && parent.var.blocking.privacy.vpc.mask_user_agent) {
+      if (parent.var.blocking.privacy.enable_virtual_pc && parent.var.blocking.privacy.vpc && parent.var.blocking.privacy.vpc.maskUserAgentURL) {
         if (!details.requestHeaders['User-Agent'].like('*[xx-*')) {
           let code = name;
           code += new URL(url).hostname;

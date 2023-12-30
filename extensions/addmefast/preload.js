@@ -160,7 +160,7 @@ SOCIALBROWSER.onLoad(() => {
           });
 
           SOCIALBROWSER.ipc('[assign][window]', {
-            parentWindowID: SOCIALBROWSER.currentWindow.id,
+            parentWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
             childWindowID: win.id,
           });
 

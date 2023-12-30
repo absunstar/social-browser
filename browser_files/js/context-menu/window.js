@@ -266,7 +266,7 @@ window.print2 = function (options) {
     body: JSON.stringify({
       ...options,
       name: 'print',
-      windowID: SOCIALBROWSER.currentWindow.id,
+      windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
       type: 'html',
       html: document.querySelector('html').outerHTML,
       origin: document.location.origin,

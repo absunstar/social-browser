@@ -18,7 +18,7 @@ module.exports = function (parent) {
         parent
             .fetch(options.url, {
                 headers: {
-                    'User-Agent': parent.var.core.user_agent,
+                    'User-Agent': parent.var.core.defaultUserAgent.url,
                 },
             })
             .then((res) => {

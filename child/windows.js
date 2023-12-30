@@ -290,15 +290,14 @@ module.exports = function (child) {
     if (win.customSetting.windowType === 'view') {
       win.customSetting.session = parent.var.session_list.find((s) => s.name == win.customSetting.partition);
       if (win.customSetting.session) {
-        win.customSetting.userAgent = win.customSetting.session.user_agent;
+        win.customSetting.userAgent = win.customSetting.session.defaultUserAgent;
       }
     }
 
-    win.customSetting.userAgent = win.customSetting.userAgent || win.customSetting.user_agent;
-    delete win.customSetting.user_agent;
+    win.customSetting.userAgent = win.customSetting.userAgent || win.customSetting.defaultUserAgent;
 
     if (!win.customSetting.userAgent || win.customSetting.userAgent == 'undefined') {
-      win.customSetting.userAgent = parent.var.session_list.find((s) => s.name == win.customSetting.partition) || parent.var.core.user_agent;
+      win.customSetting.userAgent = parent.var.session_list.find((s) => s.name == win.customSetting.partition) || parent.var.core.defaultUserAgent.url;
     }
 
     if (win.customSetting.timeout) {
@@ -383,11 +382,11 @@ module.exports = function (child) {
     if (win.customSetting.url) {
       win.loadURL(win.customSetting.url, {
         referrer: win.customSetting.referrer,
-        userAgent: win.customSetting.userAgent || parent.var.core.user_agent,
+        userAgent: win.customSetting.userAgent || parent.var.core.defaultUserAgent.url,
       });
     } else {
       win.loadURL(parent.var.core.default_page || 'http://127.0.0.1:60080/newTab', {
-        userAgent: win.customSetting.userAgent || parent.var.core.user_agent,
+        userAgent: win.customSetting.userAgent || parent.var.core.defaultUserAgent.url,
       });
     }
 
