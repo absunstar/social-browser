@@ -75,8 +75,8 @@ function add_input_menu(node) {
                 click() {
                   node.value = '';
                   node.innerHTML = '';
-                  SOCIALBROWSER.electron.clipboard.writeText(d.value);
-                  SOCIALBROWSER.webContents.paste();
+                  SOCIALBROWSER.copy(d.value);
+                  SOCIALBROWSER.paste();
                 },
               });
 
@@ -122,8 +122,8 @@ function add_input_menu(node) {
                 click() {
                   node.value = '';
                   node.innerHTML = '';
-                  SOCIALBROWSER.electron.clipboard.writeText(d.value);
-                  SOCIALBROWSER.webContents.paste();
+                  SOCIALBROWSER.copy(d.value);
+                  SOCIALBROWSER.paste();
                 },
               });
 
@@ -169,8 +169,8 @@ function add_input_menu(node) {
                 click() {
                   node.value = '';
                   node.innerHTML = '';
-                  SOCIALBROWSER.electron.clipboard.writeText(d.value);
-                  SOCIALBROWSER.webContents.paste();
+                  SOCIALBROWSER.copy(d.value);
+                  SOCIALBROWSER.paste();
                 },
               });
             }
@@ -193,8 +193,8 @@ function add_input_menu(node) {
               click() {
                 node.value = '';
                 node.innerHTML = '';
-                SOCIALBROWSER.electron.clipboard.writeText(d.value);
-                SOCIALBROWSER.webContents.paste();
+                SOCIALBROWSER.copy(d.value);
+                SOCIALBROWSER.paste();
               },
             });
 
@@ -232,8 +232,8 @@ function add_input_menu(node) {
               click() {
                 node.value = '';
                 node.innerHTML = '';
-                SOCIALBROWSER.electron.clipboard.writeText(d.value);
-                SOCIALBROWSER.webContents.paste();
+                SOCIALBROWSER.copy(d.value);
+                SOCIALBROWSER.paste();
               },
             });
 
@@ -272,8 +272,8 @@ function add_input_menu(node) {
               click() {
                 node.value = '';
                 node.innerHTML = '';
-                SOCIALBROWSER.electron.clipboard.writeText(d.value);
-                SOCIALBROWSER.webContents.paste();
+                SOCIALBROWSER.copy(d.value);
+                SOCIALBROWSER.paste();
               },
             });
           }
@@ -517,7 +517,7 @@ function add_a_menu(node) {
       SOCIALBROWSER.menuList.push({
         label: `Copy Email ${u_string}`,
         click() {
-          SOCIALBROWSER.electron.clipboard.writeText(mail);
+          SOCIALBROWSER.copy(mail);
         },
       });
     } else {
@@ -551,7 +551,7 @@ function add_a_menu(node) {
       SOCIALBROWSER.menuList.push({
         label: `Copy link ${u_string}`,
         click() {
-          SOCIALBROWSER.electron.clipboard.writeText(u);
+          SOCIALBROWSER.copy(u);
         },
       });
 
@@ -634,7 +634,7 @@ function get_img_menu(node) {
     SOCIALBROWSER.menuList.push({
       label: `Copy image address ${u_string} `,
       click() {
-        SOCIALBROWSER.electron.clipboard.writeText(url);
+        SOCIALBROWSER.copy(url);
       },
     });
 
@@ -665,13 +665,13 @@ function add_div_menu(node) {
     SOCIALBROWSER.menuList.push({
       label: 'Copy inner text',
       click() {
-        SOCIALBROWSER.electron.clipboard.writeText(node.innerText);
+        SOCIALBROWSER.copy(node.innerText);
       },
     });
     SOCIALBROWSER.menuList.push({
       label: 'Copy inner html',
       click() {
-        SOCIALBROWSER.electron.clipboard.writeText(node.innerText);
+        SOCIALBROWSER.copy(node.innerText);
       },
     });
     SOCIALBROWSER.menuList.push({
@@ -707,7 +707,7 @@ function get_options_menu(node) {
   arr.push({
     label: 'Copy page Link',
     click() {
-      SOCIALBROWSER.electron.clipboard.writeText(window.location.href);
+      SOCIALBROWSER.copy(window.location.href);
     },
   });
   arr.push({
@@ -1003,7 +1003,7 @@ function get_options_menu(node) {
       arr2.push({
         label: 'Copy link ',
         click() {
-          SOCIALBROWSER.electron.clipboard.writeText(f.src);
+          SOCIALBROWSER.copy(f.src);
         },
       });
       arr2.push({
@@ -1111,7 +1111,7 @@ function get_options_menu(node) {
     arr3.push({
       label: 'copy link',
       click() {
-        SOCIALBROWSER.electron.clipboard.writeText(f.src);
+        SOCIALBROWSER.copy(f.src);
       },
     });
     arr3.push({
@@ -1165,7 +1165,7 @@ function get_options_menu(node) {
       arr3.push({
         label: 'copy link ',
         click() {
-          SOCIALBROWSER.electron.clipboard.writeText(f.src);
+          SOCIALBROWSER.copy(f.src);
         },
       });
 
@@ -1467,7 +1467,7 @@ function createMenuList(node) {
       SOCIALBROWSER.menuList.push({
         label: `Copy [ ${stext} ] `,
         click() {
-          SOCIALBROWSER.electron.clipboard.writeText(SOCIALBROWSER.selectedText);
+          SOCIALBROWSER.copy(SOCIALBROWSER.selectedText);
         },
       });
 

@@ -70,7 +70,7 @@
         };
 
         $scope.copyLink = function (item) {
-          SOCIALBROWSER.electron.clipboard.writeText(item.url);
+          SOCIALBROWSER.copy(item.url);
         };
 
         $scope.remove = function (item) {

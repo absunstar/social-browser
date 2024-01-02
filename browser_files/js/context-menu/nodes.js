@@ -109,7 +109,7 @@ function input_handle(input) {
 
   input.addEventListener('dblclick', () => {
     if (SOCIALBROWSER.var.blocking.javascript.auto_paste && !input.value && SOCIALBROWSER.electron.clipboard.readText()) {
-      SOCIALBROWSER.webContents.paste();
+      SOCIALBROWSER.paste();
     }
   });
 }

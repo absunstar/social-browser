@@ -800,27 +800,29 @@ module.exports = function (child) {
 
     win.on('unresponsive', async () => {
       child.log('unresponsive');
-      setTimeout(() => {
+      if (win.customSetting.windowType == 'view') {
+        const options = {
+          type: 'info',
+          title: 'Window unresponsive',
+          message: 'This Window has been suspended',
+          buttons: ['[window-reload]', 'Close'],
+        };
         if (win && !win.isDestroyed()) {
-          win.webContents.reload();
+          child.electron.dialog.showMessageBox(options).then((index) => {
+            if (index === 0) {
+              win.webContents.reload();
+            } else {
+              win.close();
+            }
+          });
         }
-      }, 500);
-
-      // const options = {
-      //   type: 'info',
-      //   title: 'Window unresponsive',
-      //   message: 'This Window has been suspended',
-      //   buttons: ['[window-reload]', 'Close'],
-      // };
-      // if (win && !win.isDestroyed()) {
-      //   child.electron.dialog.showMessageBox(options).then((index) => {
-      //     if (index === 0) {
-      //       win.webContents.reload();
-      //     } else {
-      //       win.close();
-      //     }
-      //   });
-      // }
+      } else {
+        setTimeout(() => {
+          if (win && !win.isDestroyed()) {
+            win.webContents.reload();
+          }
+        }, 2000);
+      }
     });
 
     win.webContents.on('render-process-gone', (e, details) => {

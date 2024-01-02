@@ -936,7 +936,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     });
   };
   $scope.copy = function (text) {
-    SOCIALBROWSER.electron.clipboard.writeText(text);
+    SOCIALBROWSER.copy(text);
   };
   $scope.showPassword = function (site) {
     if ((elem = document.querySelector('#pass_' + site.id + ' input[type=password]'))) {

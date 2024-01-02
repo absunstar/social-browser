@@ -99,7 +99,7 @@ module.exports = function (child) {
       query: true,
     },
     {
-      from: 'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png',
+      from: 'https://www.google.com/images/branding/googlelogo/*.png|https://www.google.com/logos*.png|https://www.google.com/logos*.gif',
       to: 'browser://images/background.png',
       anyTime: true,
       query: true,

@@ -356,7 +356,7 @@ SOCIALBROWSER.copy = function (text) {
   SOCIALBROWSER.electron.clipboard.writeText(text.toString());
 };
 SOCIALBROWSER.paste = function () {
-  SOCIALBROWSER.webContents.paste();
+  SOCIALBROWSER.remote.getCurrentWindow().webContents.paste();
 };
 
 SOCIALBROWSER.triggerMouseEvent = function (node, eventType) {
