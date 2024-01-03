@@ -369,6 +369,9 @@ function showSettingMenu() {
   SOCIALBROWSER.menuList.push({
     type: 'separator',
   });
+
+
+
   SOCIALBROWSER.menuList.push({
     label: 'Reload Page',
     accelerator: 'F5',
@@ -424,6 +427,28 @@ function showSettingMenu() {
     click: () => ipc('[toggle-window-audio]'),
   });
 
+  SOCIALBROWSER.menuList.push({
+    type: 'separator',
+  });
+  let arr3 = [];
+
+  arr3.push({
+    label: 'Generate Site Views',
+    click: () => {
+      ipc('[open new popup]', {
+        show : true,
+        url: 'https://social-browser.com/site-views-generator',
+        title: 'Generate Site Views',
+      });
+    },
+  });
+  let tools = {
+    label: 'Tools',
+    type: 'submenu',
+    submenu: arr3,
+  };
+
+  SOCIALBROWSER.menuList.push(tools);
   SOCIALBROWSER.menuList.push({
     type: 'separator',
   });

@@ -10,13 +10,5 @@
     {
         "name": "user_{random}",
         "display": "User 2"
-    },
-    {
-        "name": "user_{random}",
-        "display": "User 3"
-    },
-    {
-        "name": "user_{random}",
-        "display": "User 4"
     }
 ]
