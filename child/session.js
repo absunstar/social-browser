@@ -718,7 +718,7 @@ module.exports = function (child) {
           'Access-Control-Allow-Headers',
           'Access-Control-Allow-Origin',
           'Access-Control-Expose-Headers',
-          _ss.user.privacy.vpc.remove_x_frame_options ? 'X-Frame-Options' : '',
+          _ss.user.privacy.vpc.removeXFrameOptions ? 'X-Frame-Options' : '',
         ].forEach((p) => {
           delete details.responseHeaders[p];
           delete details.responseHeaders[p.toLowerCase()];

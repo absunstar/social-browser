@@ -7,6 +7,12 @@ SOCIALBROWSER.share = function (message) {
 SOCIALBROWSER.message = function (message) {
   SOCIALBROWSER.ipc('message', message);
 };
+SOCIALBROWSER.on('message', (e, message) => {
+  if (message.eval) {
+    window.eval(message.eval);
+  }
+});
+
 SOCIALBROWSER.fetchJson = function (options, callback) {
   options.id = new Date().getTime() + Math.random();
   options.url = SOCIALBROWSER.handleURL(options.url);
@@ -565,162 +571,66 @@ SOCIALBROWSER.eval = function (code) {
 };
 
 SOCIALBROWSER.openWindow = function (_customSetting) {
-  try {
-    let customSetting = { ...SOCIALBROWSER.customSetting, ...{ windowType: 'social-popup' }, ..._customSetting };
-    if (typeof _customSetting.resizable == 'undefined') {
-      customSetting.resizable = true;
+  let win = { trackingID: SOCIALBROWSER.guid(), eventList: [] };
+  win.on = function (name, callback) {
+    win.eventList.push({ name: name, callback: callback });
+  };
+  _customSetting.windowType = _customSetting.windowType || 'social-popup';
+  let customSetting = { ...SOCIALBROWSER.customSetting, ..._customSetting, trackingID: win.trackingID };
+
+  SOCIALBROWSER.on('[tracking-info]', (e, data) => {
+    if (data.trackingID == win.trackingID) {
+      if (data.windowID) {
+        win.id = data.windowID;
+      }
+      if (data.isClosed) {
+        win.isClosed = data.isClosed;
+        win.eventList.forEach((e) => {
+          if (e.name == 'close' && e.callback) {
+            e.callback();
+          }
+          if (e.name == 'closed' && e.callback) {
+            e.callback();
+          }
+        });
+      }
+      if (data.loaded) {
+        win.eventList.forEach((e) => {
+          if (e.name == 'load' && e.callback) {
+            e.callback();
+          }
+        });
+      }
     }
-    let win = new SOCIALBROWSER.remote.BrowserWindow({
-      show: customSetting.show ?? true,
-      alwaysOnTop: customSetting.alwaysOnTop ?? false,
-      skipTaskbar: customSetting.skipTaskbar ?? false,
-      width: customSetting.width || 1200,
-      height: customSetting.height || 720,
-      x: customSetting.x || 200,
-      y: customSetting.y || 200,
-      backgroundColor: customSetting.backgroundColor || '#ffffff',
-      icon: customSetting.icon ?? SOCIALBROWSER.var.core.icon,
-      frame: true,
-      title: customSetting.title ?? 'New Window',
-      resizable: customSetting.resizable,
-      fullscreenable: customSetting.fullscreenable ?? true,
-      webPreferences: {
-        contextIsolation: customSetting.contextIsolation ?? false,
-        enableRemoteModule: customSetting.enableRemoteModule ?? true,
-        webaudio: customSetting.allowAudio,
-        nativeWindowOpen: false,
-        nodeIntegration: customSetting.node,
-        nodeIntegrationInWorker: customSetting.node,
-        partition: customSetting.partition,
-        sandbox: customSetting.sandbox ?? false,
-        preload: customSetting.preload || SOCIALBROWSER.files_dir + '/js/context-menu.js',
-        webSecurity: customSetting.webSecurity ?? true,
-        allowRunningInsecureContent: customSetting.allowRunningInsecureContent ?? false,
-        plugins: true,
-      },
-    });
-    customSetting.windowID = win.id;
+  });
 
-    SOCIALBROWSER.currentWindow = SOCIALBROWSER.remote.getCurrentWindow();
+  win.postMessage = function (...args) {
+    SOCIALBROWSER.ipc('window.message', { windowID: win.id, data: args[0], origin: args[1] || '*', transfer: args[2] });
+  };
 
-    SOCIALBROWSER.ipc('[handle-session]', { ...customSetting, name: customSetting.partition });
-    SOCIALBROWSER.ipc('[add][window]', { windowID: win.id, customSetting: customSetting });
-    SOCIALBROWSER.ipc('[assign][window]', {
-      parentWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
-      childWindowID: win.id,
-    });
-    if (!customSetting.x && !customSetting.y) {
-      win.center();
+  win.eval = function (code) {
+    if (!code) {
+      console.log('No Eval Code');
+      return;
     }
-
-    win.setMenuBarVisibility(false);
-
-    win.webContents.audioMuted = !customSetting.allowAudio;
-
-    if (customSetting.url) {
-      win.loadURL(SOCIALBROWSER.handleURL(customSetting.url), {
-        httpReferrer: customSetting.referrer || document.location.href,
-        userAgent: customSetting.userAgentURL || SOCIALBROWSER.defaultUserAgent.url,
-      });
+    if (typeof code !== 'string') {
+      code = code.toString();
+      code = code.slice(code.indexOf('{') + 1, code.lastIndexOf('}'));
     }
 
-    win.eval = function (code) {
-      if (!code) {
-        console.log('No Eval Code');
-        return;
-      }
-      if (typeof code !== 'string') {
-        code = code.toString();
-        code = code.slice(code.indexOf('{') + 1, code.lastIndexOf('}'));
-      }
-      SOCIALBROWSER.ipc('[set][window][setting]', {
-        windowID: win.id,
-        customSetting: customSetting,
-        name: 'eval',
-        code: code,
-      });
-    };
-
-    win.on('close', (e) => {
-      if (win && !win.isDestroyed()) {
-        win.destroy();
-      }
+    SOCIALBROWSER.message({
+      windowID: win.id,
+      eval: code,
     });
+  };
 
-    win.once('ready-to-show', function () {
-      if (customSetting.show && win && !win.isDestroyed()) {
-        win.show();
-        if (customSetting.maximize && win && !win.isDestroyed()) {
-          win.maximize();
-        }
-      }
-    });
-    win.webContents.on('context-menu', (event, params) => {
-      if (win && !win.isDestroyed()) {
-        if (customSetting.allowMenu) {
-          win.webContents.send('context-menu', params);
-        }
-      }
-    });
+  win.close = function () {
+    SOCIALBROWSER.ipc('[browser-message]', { windowID: win.id, name: 'close' });
+  };
 
-    win.webContents.on('did-fail-load', (...callback) => {
-      callback[0].preventDefault();
-      if (callback[4]) {
-        if (SOCIALBROWSER.var.blocking.proxy_error_remove_proxy && customSetting.proxy) {
-          SOCIALBROWSER.ws({
-            type: '[remove-proxy]',
-            proxy: customSetting.proxy,
-          });
-        }
-        if (SOCIALBROWSER.var.blocking.proxy_error_close_window && SOCIALBROWSER.customSetting.windowType.contains('popup') && win && !win.isDestroyed()) {
-          win.close();
-        }
-        if (SOCIALBROWSER.customSetting.windowType == 'social-popup' && win && !win.isDestroyed()) {
-          win.close();
-        }
-      }
-    });
+  SOCIALBROWSER.ipc('[open new popup]', customSetting);
 
-    win.webContents.on('new-window', function (event, url, frameName, disposition, options, referrer, postBody) {
-      event.preventDefault();
-
-      if (!win || win.isDestroyed()) {
-        return;
-      }
-
-      let real_url = url || event.url || '';
-
-      if (real_url.like('*about:blank*|*javascript:*')) {
-        return false;
-      }
-
-      SOCIALBROWSER.openWindow({ url: real_url, allowMenu: true });
-    });
-
-    win.onBeforeRequest = function (callback) {
-      win.webContents.session.webRequest.onBeforeRequest(
-        {
-          urls: ['*://*/*'],
-        },
-        callback
-      );
-    };
-
-    win.onBeforeSendHeaders = function (callback) {
-      win.webContents.session.webRequest.onBeforeSendHeaders(
-        {
-          urls: ['*://*/*'],
-        },
-        callback
-      );
-    };
-
-    win.customSetting = customSetting;
-    return win;
-  } catch (error) {
-    SOCIALBROWSER.log(error);
-    return null;
-  }
+  return win;
 };
 
 window.console.clear = function () {};

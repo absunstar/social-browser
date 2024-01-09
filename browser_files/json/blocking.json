@@ -98,7 +98,7 @@
             "block_cloudflare": false,
             "block_rtc": true,
             "maskUserAgentURL": false,
-            "remove_x_frame_options": false,
+            "removeXFrameOptions": false,
             "hide_fonts": false,
             "hide_webgl": true,
             "hide_audio": true,

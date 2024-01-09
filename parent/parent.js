@@ -29,7 +29,6 @@ module.exports = function init(parent) {
   };
 
   parent.loadExtension = function (_extension, isExists = false) {
-    console.log('loadExtension', _extension);
     if (!_extension || !_extension.path) {
       return null;
     }
@@ -83,7 +82,6 @@ module.exports = function init(parent) {
 
   parent.enableExtension = function (extension) {
     delete extension.parentSetting;
-    console.log('enableExtension', extension);
     let index = parent.extensionList.findIndex((exx) => exx.id === extension.id);
     if (index !== -1) {
       extension = parent.extensionList[index];
@@ -104,7 +102,6 @@ module.exports = function init(parent) {
   };
   parent.disableExtension = function (extension) {
     delete extension.parentSetting;
-    console.log('disableExtension', extension);
     let index = parent.extensionList.findIndex((exx) => exx.id === extension.id);
     if (index !== -1) {
       if (parent.extensionList[index].disable) {
@@ -184,9 +181,7 @@ module.exports = function init(parent) {
       parent.clientList[index].option_list.push(options);
       parent.clientList[index].options = options;
       parent.clientList[index].ws.send({ type: 're-connected' });
-      console.log(`\n\n re-use  [ ${options.uuid} ] \n\n`);
     } else {
-      console.log(`\n\n new [ ${options.uuid} ] \n\n`);
       parent.clientList.push({
         source: 'child',
         partition: options.partition,

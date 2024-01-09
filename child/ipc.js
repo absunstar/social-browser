@@ -130,9 +130,11 @@ module.exports = function init(child) {
     let win = child.windowList.find((w) => w.id == data.windowID);
     if (win) {
       win.customSetting = { ...win.customSetting, ...data.customSetting };
+      win.id2 = data.id2 || win.id2;
     } else {
       child.windowList.push({
         id: data.windowID,
+        id2: data.id2,
         customSetting: data.customSetting,
       });
     }
@@ -143,6 +145,7 @@ module.exports = function init(child) {
     if (w) {
       w.customSetting.windowSetting = w.customSetting.windowSetting || [];
       w.customSetting.windowSetting.push(data);
+      w.id2 = data.id2 || w.id2;
     } else {
       let id = data.windowID;
       let customSetting = data.customSetting;
@@ -151,6 +154,7 @@ module.exports = function init(child) {
 
       child.windowList.push({
         id: id,
+        id2: data.id2,
         customSetting: { ...customSetting, windowSetting: [data] },
       });
     }

@@ -13,7 +13,7 @@
   var SOCIALBROWSER = {
     module: require('module'),
     path: require('path'),
-    random: function (min, max) {
+    random: function (min = 1, max = 1000) {
       min = Math.ceil(min);
       max = Math.floor(max);
       return Math.floor(Math.random() * (max - min + 1) + min);
@@ -94,9 +94,7 @@
     SOCIALBROWSER.partition = SOCIALBROWSER.webPreferences.partition;
   } else {
     SOCIALBROWSER.webPreferences = SOCIALBROWSER.webContents.getLastWebPreferences();
-    SOCIALBROWSER.partition = SOCIALBROWSER.webContents.session.storagePath
-      ? 'persist:' + SOCIALBROWSER.webContents.session.storagePath.split('\\').pop()
-      : null;
+    SOCIALBROWSER.partition = SOCIALBROWSER.webContents.session.storagePath ? 'persist:' + SOCIALBROWSER.webContents.session.storagePath.split('\\').pop() : null;
     SOCIALBROWSER.webPreferences = { ...SOCIALBROWSER.webPreferences, ...{ partition: SOCIALBROWSER.partition } };
   }
 

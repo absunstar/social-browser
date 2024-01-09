@@ -783,6 +783,9 @@ module.exports = function (child) {
     });
 
     win.webContents.on('dom-ready', (e) => {
+      if (win.customSetting.trackingID) {
+        child.sendMessage({ type: '[tracking-info]', trackingID: win.customSetting.trackingID, windowID: win.id , loaded : true });
+      }
       if (win && !win.isDestroyed()) {
         // win.setBounds({ width: win.getBounds().width + 1 });
         // win.setBounds({ width: win.getBounds().width - 1 });
@@ -876,7 +879,7 @@ module.exports = function (child) {
     });
 
     win.webContents.on('will-prevent-unload', (event) => {
-      const choice = dialog.showMessageBoxSync(win, {
+      const choice = child.electron.dialog.showMessageBoxSync(win, {
         type: 'question',
         buttons: ['Leave', 'Stay'],
         title: 'Do you want to leave this site?',

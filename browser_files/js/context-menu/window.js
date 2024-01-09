@@ -1,23 +1,10 @@
 window.open = function (url, _name, _specs, _replace_in_history) {
-
-  if (url.like('javascript:*|*.svg|*.png|*.ico|*.gif')) {
-    console.log('unSupported URL : ' + url);
-    return;
-  }
-
   let child_window = {
     closed: false,
     opener: window,
     innerHeight: 1028,
     innerWidth: 720,
-    addEventListener: (name, callback) => {
-      // SOCIALBROWSER.log(`[ child_window addEventListener ${name}`);
-      if (name == 'load') {
-        if (callback) {
-          callback();
-        }
-      }
-    },
+
     postMessage: function (...args) {
       //  SOCIALBROWSER.log('postMessage child_window', args);
     },
@@ -51,6 +38,10 @@ window.open = function (url, _name, _specs, _replace_in_history) {
     self: this,
   };
 
+  if (url.like('javascript:*|*.svg|*.png|*.ico|*.gif')) {
+    console.log('unSupported URL : ' + url);
+    return child_window;
+  }
   if (typeof url !== 'string') {
     return child_window;
   }
@@ -74,11 +65,6 @@ window.open = function (url, _name, _specs, _replace_in_history) {
     document.location.href = url;
     return child_window;
   }
-
-  // if (SOCIALBROWSER.windowOpenList.some((u) => u == url)) {
-  //   return child_window;
-  // }
-  // SOCIALBROWSER.windowOpenList.push(url);
 
   if (url.like('https://www.youtube.com/watch*')) {
     SOCIALBROWSER.ipc('[open new popup]', {
@@ -123,56 +109,35 @@ window.open = function (url, _name, _specs, _replace_in_history) {
 
   _specs = _specs || {};
 
-  if (
-    (win = SOCIALBROWSER.openWindow({
-      width: _specs.width,
-      height: _specs.height,
-      url: url,
-      show: true,
-      windowType: 'client-popup',
-    }))
-  ) {
-    child_window.postMessage = function (...args) {
-      SOCIALBROWSER.ipc('window.message', { windowID: win.id, data: args[0], origin: args[1] || '*', transfer: args[2] });
-    };
+  let win = SOCIALBROWSER.openWindow({
+    width: _specs.width,
+    height: _specs.height,
+    url: url,
+    show: true,
+    windowType: 'client-popup',
+    frame: true,
+    resizable: true,
+    skipTaskbar: false,
+  });
 
-    win.on('close', () => {
-      win.destroy();
-    });
+  child_window.postMessage = function (...args) {
+    win.postMessage(...args);
+  };
 
-    win.on('closed', (e) => {
-      child_window.postMessage = () => {};
-      child_window.eval = () => {};
-      child_window.closed = true;
-    });
+  child_window.addEventListener = win.on;
 
-    win.webContents.once('dom-ready', () => {
-      child_window.eval = function (code, userGesture = true) {
-        code = `window.eval(${code})`;
-        win.webContents
-          .executeJavaScript(code, userGesture)
-          .then((result) => {
-            SOCIALBROWSER.log(result);
-          })
-          .catch((err) => {
-            SOCIALBROWSER.log(err);
-          });
-      };
-    });
+  win.on('closed', (e) => {
+    child_window.postMessage = () => {};
+    child_window.eval = () => {};
+    child_window.closed = true;
+  });
 
-    child_window.close = function () {
-      if (win && !win.isDestroyed()) {
-        win.close();
-        setTimeout(() => {
-          if (win && !win.isDestroyed()) {
-            win.destroy();
-          }
-        }, 1000);
-      }
-    };
+  child_window.eval = win.eval;
 
-    child_window.win = win;
-  }
+  child_window.close = win.close;
+
+  child_window.win = win;
+
   return child_window;
 };
 
@@ -206,7 +171,6 @@ if (SOCIALBROWSER.var.blocking.javascript.block_window_worker) {
       postMessage: () => {},
     };
   };
-
 }
 
 if (SOCIALBROWSER.var.blocking.javascript.block_window_post_message) {
