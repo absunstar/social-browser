@@ -5,7 +5,6 @@ var opendTabList = [];
 let $addressbar = $('.address-input .url');
 
 const updateOnlineStatus = () => {
-  // console.log('Internet Status ' + navigator.onLine);
   SOCIALBROWSER.ipc('online-status', navigator.onLine ? { status: true } : { status: false });
 };
 

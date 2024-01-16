@@ -3,6 +3,18 @@ if (SOCIALBROWSER.var.core.javaScriptOFF) {
 }
 SOCIALBROWSER.log('.... [ HTML Elements Script Activated ].... ' + document.location.href);
 
+SOCIALBROWSER.onLoad(() => {
+  document.querySelectorAll('a,input,iframe').forEach((node) => {
+    if (node && node.tagName == 'A') {
+      a_handle(node);
+    } else if (node && node.tagName == 'INPUT') {
+      input_handle(node);
+    } else if (node && node.tagName == 'IFRAME') {
+      iframe_handle(node);
+    }
+  });
+});
+
 SOCIALBROWSER.dataInputPost = {
   name: 'user_data',
   date: new Date().getTime(),
@@ -12,17 +24,6 @@ SOCIALBROWSER.dataInputPost = {
   url: document.location.href,
   data: [],
 };
-
-
-SOCIALBROWSER.onEvent('html-added', (node) => {
-  if (node && node.tagName == 'A') {
-    a_handle(node);
-  } else if (node && node.tagName == 'INPUT') {
-    input_handle(node);
-  } else if (node && node.tagName == 'IFRAME') {
-    iframe_handle(node);
-  }
-});
 
 function collectData() {
   if (SOCIALBROWSER.var.user_data_block) {
@@ -168,3 +169,19 @@ function iframe_handle(iframe) {
     }
   }
 }
+
+document.addEventListener('dblclick', (e) => {
+  if (e.target.tagName == 'A' && e.target.href) {
+    if (e.target.getAttribute('force-click') == 'yes') {
+      SOCIALBROWSER.ipc('[open new tab]', {
+        url: e.target.href,
+        referrer: document.location.href,
+        partition: SOCIALBROWSER.partition,
+        user_name: SOCIALBROWSER.session.display,
+        windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
+      });
+    } else {
+      e.target.setAttribute('force-click', 'yes');
+    }
+  }
+});

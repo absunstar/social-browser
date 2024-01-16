@@ -289,8 +289,4 @@ SOCIALBROWSER.onLoad(() => {
     SOCIALBROWSER.jqueryLoaded = true;
     window.$ = window.jQuery = require(SOCIALBROWSER.files_dir + '/js/jquery.js');
   }
-  return;
-  document.querySelectorAll('*').forEach((el) => {
-    SOCIALBROWSER.callEvent('html-added', el);
-  });
 });

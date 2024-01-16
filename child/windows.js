@@ -784,7 +784,7 @@ module.exports = function (child) {
 
     win.webContents.on('dom-ready', (e) => {
       if (win.customSetting.trackingID) {
-        child.sendMessage({ type: '[tracking-info]', trackingID: win.customSetting.trackingID, windowID: win.id , loaded : true });
+        child.sendMessage({ type: '[tracking-info]', trackingID: win.customSetting.trackingID, windowID: win.id, loaded: true });
       }
       if (win && !win.isDestroyed()) {
         // win.setBounds({ width: win.getBounds().width + 1 });
@@ -808,11 +808,11 @@ module.exports = function (child) {
           type: 'info',
           title: 'Window unresponsive',
           message: 'This Window has been suspended',
-          buttons: ['[window-reload]', 'Close'],
+          buttons: ['Re-Load Window', 'Close'],
         };
         if (win && !win.isDestroyed()) {
-          child.electron.dialog.showMessageBox(options).then((index) => {
-            if (index === 0) {
+          child.electron.dialog.showMessageBox(win , options).then((index) => {
+            if (index == 0) {
               win.webContents.reload();
             } else {
               win.close();

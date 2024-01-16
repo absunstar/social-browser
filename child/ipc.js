@@ -71,6 +71,10 @@ module.exports = function init(child) {
     }
   });
 
+  child.electron.ipcMain.handle('online-status', (e, obj) => {
+    child.parent.var.core.onLineStatus = obj.status;
+  });
+
   child.electron.ipcMain.handle('[handle-session]', (e, obj) => {
     child.handleSession(obj);
   });
