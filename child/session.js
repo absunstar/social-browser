@@ -425,7 +425,7 @@ module.exports = function (child) {
             if (url.like('*.js*|*/js*')) {
               callback({
                 cancel: false,
-                redirectURL: 'browser://js/fake.js',
+                redirectURL: 'browser://js/fake.js?' + url.split('?')[1],
               });
             } else {
               callback({
@@ -440,7 +440,7 @@ module.exports = function (child) {
           if (url.like('*.js*|*/js*')) {
             callback({
               cancel: false,
-              redirectURL: 'browser://js/fake.js',
+              redirectURL: 'browser://js/fake.js?' + url.split('?')[1],
             });
           } else {
             callback({

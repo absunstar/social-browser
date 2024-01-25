@@ -1,13 +1,23 @@
-console.log('____________________________');
+console.log('100010001000100010001000');
 
+window.grecaptcha = window.grecaptcha || {
+  render: function (name, options) {
+    if (options.callback) {
+      setTimeout(() => {
+        options.callback();
+      }, 1000);
+    }
+    if (options.sitekey) {
+      window.grecaptcha.sitekey = options.sitekey;
+    }
+  },
+  reset: function () {},
+};
 
-
-// if (!window.xxx_ads_manager) {
-//   var script = document.createElement('script');
-//   script.id = 'xxx_ads_manager';
-//   script.src = 'browser://js/ads_manager.js';
-//   document.querySelector('head').appendChild(script);
-// }
+let onload = '##query.onload##';
+if (window[onload]) {
+  window[onload]();
+}
 
 if (false) {
   SOCIALBROWSER.__define(window, 'fuckAdBlock', {

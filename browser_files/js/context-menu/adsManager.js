@@ -2,6 +2,7 @@
     SOCIALBROWSER.log('.... [ Ads Manager OFF ] .... ' + document.location.href);
     return;
   }
+
   SOCIALBROWSER.onLoad(() => {
     document.querySelectorAll('div').forEach((div) => {
       if (div.style.position == 'fixed' && !div.innerHTML) {

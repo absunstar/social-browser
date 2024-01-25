@@ -50,6 +50,7 @@ SOCIALBROWSER.var.customHeaderList.forEach((h) => {
 
 if (!SOCIALBROWSER.userAgentURL) {
   if (SOCIALBROWSER.session.defaultUserAgent) {
+    SOCIALBROWSER.defaultUserAgent = SOCIALBROWSER.session.defaultUserAgent;
     SOCIALBROWSER.userAgentURL = SOCIALBROWSER.session.defaultUserAgent.url;
   }
 }
@@ -59,6 +60,9 @@ if (!SOCIALBROWSER.defaultUserAgent) {
   if (!SOCIALBROWSER.defaultUserAgent) {
     SOCIALBROWSER.defaultUserAgent = SOCIALBROWSER.var.core.defaultUserAgent;
   }
+}
+if (!SOCIALBROWSER.userAgentURL) {
+  SOCIALBROWSER.userAgentURL = SOCIALBROWSER.defaultUserAgent.url;
 }
 
 if (SOCIALBROWSER.defaultUserAgent) {
@@ -228,7 +232,6 @@ SOCIALBROWSER.on('$download_item', (e, dl) => {
     }
   }
 });
-
 
 SOCIALBROWSER.on('[send-render-message]', (event, data) => {
   if (data.name == 'update-target-url') {

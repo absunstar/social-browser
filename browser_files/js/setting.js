@@ -709,7 +709,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     });
 
     for (const key in $scope.setting) {
-      if (key.indexOf('$') === -1) {
+      if (key.indexOf('$') === -1 && key !== 'extension_list' && key !== 'preload_list') {
         SOCIALBROWSER.ipc('[update-browser-var]', {
           name: key,
           data: $scope.setting[key],
@@ -717,7 +717,6 @@ app.controller('mainController', ($scope, $http, $timeout) => {
       }
     }
 
-   
     $scope.busy = false;
     $timeout(() => {
       $scope.setting_busy = false;

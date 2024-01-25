@@ -18,10 +18,11 @@
  *  current location hide
  */
 
-if (SOCIALBROWSER.var.core.javaScriptOFF || SOCIALBROWSER.customSetting.windowType === 'main' || !SOCIALBROWSER.session.privacy.enable_virtual_pc) {
-  SOCIALBROWSER.log('.... [ Finger Printing OFF ] .... ' + document.location.href);
-  return;
-}
+// if (SOCIALBROWSER.var.core.javaScriptOFF || SOCIALBROWSER.customSetting.windowType === 'main' || !SOCIALBROWSER.session.privacy.enable_virtual_pc) {
+//   SOCIALBROWSER.log('.... [ Finger Printing OFF ] .... ' + document.location.href);
+//   return;
+// }
+
 
 if (SOCIALBROWSER.session.privacy.vpc.hide_cpu) {
   SOCIALBROWSER.__define(navigator, 'hardwareConcurrency', SOCIALBROWSER.session.privacy.vpc.cpu_count);
@@ -50,6 +51,7 @@ if (SOCIALBROWSER.session.privacy.vpc.hide_lang) {
     SOCIALBROWSER.__define(navigator, 'language', SOCIALBROWSER.session.privacy.vpc.languages.split(',')[0]);
   }
 }
+
 if (SOCIALBROWSER.session.privacy.vpc.hide_canvas) {
   /*document.createElement0 = document.createElement;
     document.createElement = function (name) {
@@ -115,7 +117,8 @@ if (SOCIALBROWSER.session.privacy.vpc.hide_canvas) {
     },
   });
 }
-if (SOCIALBROWSER.session.privacy.vpc.mask_date && SOCIALBROWSER.session.privacy.vpc.timeZone) {
+
+if (SOCIALBROWSER.session.privacy.vpc.mask_date && SOCIALBROWSER.session.privacy.vpc.timeZone && SOCIALBROWSER.session.privacy.vpc.timeZone.text) {
   (function (o, acOffset) {
     const gmtNeg = function (n) {
       const _format = function (v) {
@@ -141,6 +144,7 @@ if (SOCIALBROWSER.session.privacy.vpc.mask_date && SOCIALBROWSER.session.privacy
         return getTimezoneOffset.call(this);
       },
     });
+    
     Object.defineProperty(Date.prototype, '_date', {
       configurable: true,
       get() {

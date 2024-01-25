@@ -52,6 +52,9 @@ module.exports = function init(parent) {
       }
     } else {
       parent.extensionList[index] = extension;
+      if (extension.init) {
+        extension.init();
+      }
     }
 
     if (!isExists) {
@@ -72,7 +75,6 @@ module.exports = function init(parent) {
       if (_extension.isEnabled) {
         if (extension.enable) {
           extension.enable();
-          extension.enabled = true;
         }
       }
     }
@@ -91,7 +93,7 @@ module.exports = function init(parent) {
       return false;
     }
 
-    if (extension && extension.enable && !extension.enabled) {
+    if (extension && extension.enable) {
       extension.enable();
     }
     let index2 = parent.var.extension_list.findIndex((exx) => exx.id === extension.id);
@@ -106,7 +108,6 @@ module.exports = function init(parent) {
     if (index !== -1) {
       if (parent.extensionList[index].disable) {
         parent.extensionList[index].disable();
-        extension.enabled = false;
       }
     }
     let index2 = parent.var.extension_list.findIndex((exx) => exx.id === extension.id);
