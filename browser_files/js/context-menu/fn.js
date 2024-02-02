@@ -506,15 +506,23 @@ SOCIALBROWSER.getTimeZone = () => {
 };
 
 SOCIALBROWSER.isAllowURL = function (url) {
-  let allow = true;
-  if (SOCIALBROWSER.var.blocking.core.block_ads) {
-    SOCIALBROWSER.var.ad_list.forEach((ad) => {
-      if (url.like(ad.url)) {
-        allow = false;
-      }
-    });
+
+  if (SOCIALBROWSER.var.blocking.white_list.some((item) => item.url.length > 2 && url.like(item.url))) {
+    return true;
   }
 
+  let allow = true;
+  if (SOCIALBROWSER.var.blocking.core.block_ads) {
+    allow = !SOCIALBROWSER.var.ad_list.some((ad) => url.like(ad.url));
+  }
+
+  if (allow) {
+    allow = SOCIALBROWSER.var.blocking.black_list.some((item) => url.like(item.url));
+  }
+
+  if (allow && SOCIALBROWSER.var.blocking.allow_safty_mode) {
+    allow = SOCIALBROWSER.var.blocking.un_safe_list.some((item) => url.like(item.url));
+  }
   return allow;
 };
 

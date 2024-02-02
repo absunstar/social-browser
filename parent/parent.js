@@ -11,6 +11,28 @@ module.exports = function init(parent) {
   parent.information = {};
   parent.cookies = {};
 
+  parent.isAllowURL = function (url) {
+    if (parent.var.blocking.white_list.some((item) => item.url.length > 2 && url.like(item.url))) {
+      return true;
+    }
+    let allow = true;
+    if (parent.var.blocking.core.block_ads) {
+      allow = !parent.var.ad_list.some((ad) => url.like(ad.url));
+    }
+    if (allow && parent.var.blocking.core.block_ads_servers) {
+      allow = !child.adList.includes(child.url.parse(url).host);
+    }
+
+    if (allow) {
+      allow = parent.var.blocking.black_list.some((item) => url.like(item.url));
+    }
+
+    if (allow && parent.var.blocking.allow_safty_mode) {
+      allow = parent.var.blocking.un_safe_list.some((item) => url.like(item.url));
+    }
+    return allow;
+  };
+
   parent.importExtension = function () {
     parent.electron.dialog
       .showOpenDialog({
