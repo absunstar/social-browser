@@ -260,6 +260,9 @@ module.exports = function (child) {
     if (child.parent.var.blocking.core.block_ads) {
       allow = !child.parent.var.ad_list.some((ad) => url.like(ad.url));
     }
+    if (allow && child.parent.var.blocking.core.block_ads_servers) {
+      allow = !child.adList.includes(child.url.parse(url).host);
+    }
     return allow;
   };
 };

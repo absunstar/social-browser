@@ -376,7 +376,14 @@ SOCIALBROWSER.triggerMouseEvent = function (node, eventType) {
     }
   } catch (err) {}
 };
+SOCIALBROWSER.clickKey = function (key) {
+  SOCIALBROWSER.log('[ Try Click Key ] : ' + key);
+  SOCIALBROWSER.webContents.sendInputEvent({ type: 'keyDown', keyCode: key });
+  SOCIALBROWSER.webContents.sendInputEvent({ type: 'char', keyCode: key });
+};
+
 SOCIALBROWSER.triggerKey = function (el, keyCode) {
+  el = SOCIALBROWSER.select(el);
   SOCIALBROWSER.triggerKeydown(el, keyCode);
   SOCIALBROWSER.triggerKeyup(el, keyCode);
   SOCIALBROWSER.triggerKeypress(el, keyCode);
@@ -386,21 +393,27 @@ SOCIALBROWSER.triggerKeydown = function (el, keyCode) {
   e.initEvent('keydown', true, true);
   e.keyCode = keyCode;
   e.which = keyCode;
-  el.dispatchEvent(e);
+  if (el.dispatchEvent) {
+    el.dispatchEvent(e);
+  }
 };
 SOCIALBROWSER.triggerKeyup = function (el, keyCode) {
   var e = document.createEvent('Events');
   e.initEvent('keyup', true, true);
   e.keyCode = keyCode;
   e.which = keyCode;
-  el.dispatchEvent(e);
+  if (el.dispatchEvent) {
+    el.dispatchEvent(e);
+  }
 };
 SOCIALBROWSER.triggerKeypress = function (el, keyCode) {
   var e = document.createEvent('Events');
   e.initEvent('keypress', true, true);
   e.keyCode = keyCode;
   e.which = keyCode;
-  el.dispatchEvent(e);
+  if (el.dispatchEvent) {
+    el.dispatchEvent(e);
+  }
 };
 SOCIALBROWSER.write = function (text, selector, timeout) {
   return new Promise((resolver, reject) => {

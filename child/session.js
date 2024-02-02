@@ -419,24 +419,7 @@ module.exports = function (child) {
 
           return;
         }
-
-        if (child.parent.var.blocking.core.block_ads_servers) {
-          if (child.adList.includes(child.url.parse(url).host)) {
-            if (url.like('*.js*|*/js*')) {
-              callback({
-                cancel: false,
-                redirectURL: 'browser://js/fake.js?' + url.split('?')[1],
-              });
-            } else {
-              callback({
-                cancel: true,
-              });
-            }
-            return;
-          }
-        }
-
-        if (child.parent.var.blocking.core.block_ads && url.like(child.parent.var.$ad_string)) {
+        if (!child.isAllowURL(url)) {
           if (url.like('*.js*|*/js*')) {
             callback({
               cancel: false,

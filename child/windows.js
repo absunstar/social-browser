@@ -811,7 +811,7 @@ module.exports = function (child) {
           buttons: ['Re-Load Window', 'Close'],
         };
         if (win && !win.isDestroyed()) {
-          child.electron.dialog.showMessageBox(win , options).then((index) => {
+          child.electron.dialog.showMessageBox(win, options).then((index) => {
             if (index == 0) {
               win.webContents.reload();
             } else {
@@ -839,7 +839,7 @@ module.exports = function (child) {
 
     win.webContents.on('will-redirect', (e, url) => {
       child.log('will-redirect : ', url);
-      if (!child.isAllowURL(url) || !win.customSetting.allowRedirect) {
+      if ((!win.customSetting.allowAds && !child.isAllowURL(url)) || !win.customSetting.allowRedirect) {
         e.preventDefault();
         child.log('Block-redirect', url);
       }
@@ -858,20 +858,15 @@ module.exports = function (child) {
       }
     });
     win.webContents.on('will-navigate', (details) => {
-      // child.log('will-navigate : ', details.url);
-      // if (!win.customSetting.allowRedirect || !child.isAllowURL(details.url)) {
-      //   details.preventDefault();
-      //   child.log('Block-navigate', details.url);
-      //   return;
-      // }
       win.customSetting.title = details.url;
       win.customSetting.iconURL = win.customSetting.loading_icon;
-
       child.updateTab(win);
     });
+
     win.webContents.on('will-frame-navigate', (details) => {
       child.log('will-frame-navigate : ', details.url);
-      if (!win.customSetting.allowRedirect || !child.isAllowURL(details.url)) {
+
+      if (!win.customSetting.allowRedirect || (!win.customSetting.allowAds && !child.isAllowURL(details.url))) {
         details.preventDefault();
         child.log('Block-frame-navigate', details.url);
         return;
@@ -895,7 +890,7 @@ module.exports = function (child) {
 
     if (win.webContents.setWindowOpenHandler) {
       win.webContents.setWindowOpenHandler(({ url, frameName }) => {
-        if (!win.customSetting.allowNewWindows || !child.isAllowURL(url) || url.like('*about:blank*')) {
+        if (!win.customSetting.allowNewWindows || (!win.customSetting.allowAds && !child.isAllowURL(url)) || url.like('*about:blank*')) {
           child.log('Block-open-window', url);
           return { action: 'deny' };
         }
@@ -1004,7 +999,7 @@ module.exports = function (child) {
         return;
       }
 
-      if (!child.isAllowURL(real_url)) {
+      if (!win.customSetting.allowAds && !child.isAllowURL(real_url)) {
         child.log('Block-redirect', real_url);
         return false;
       }
