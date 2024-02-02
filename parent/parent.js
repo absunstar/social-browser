@@ -24,11 +24,11 @@ module.exports = function init(parent) {
     }
 
     if (allow) {
-      allow = parent.var.blocking.black_list.some((item) => url.like(item.url));
+      allow = !parent.var.blocking.black_list.some((item) => url.like(item.url));
     }
 
     if (allow && parent.var.blocking.allow_safty_mode) {
-      allow = parent.var.blocking.un_safe_list.some((item) => url.like(item.url));
+      allow = !parent.var.blocking.un_safe_list.some((item) => url.like(item.url));
     }
     return allow;
   };

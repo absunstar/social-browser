@@ -256,9 +256,6 @@ module.exports = function (child) {
   };
 
   child.isAllowURL = function (url) {
-    if (url.like('http://127.0.0.1*|https://127.0.0.1*|http://localhost*')) {
-      return true;
-    }
     if (child.parent.var.blocking.white_list.some((item) => item.url.length > 2 && url.like(item.url))) {
       return true;
     }
@@ -287,7 +284,7 @@ module.exports = function (child) {
     }
 
     if (allow && child.parent.var.blocking.allow_safty_mode) {
-      allow = child.parent.var.blocking.un_safe_list.some((item) => url.like(item.url));
+      allow = !child.parent.var.blocking.un_safe_list.some((item) => url.like(item.url));
       if (!allow) {
         console.log('child.isAllowURL :: allow_safty_mode : ' + url);
       }
