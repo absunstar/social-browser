@@ -264,30 +264,30 @@ module.exports = function (child) {
 
     if (child.parent.var.blocking.core.block_ads) {
       allow = !child.parent.var.ad_list.some((ad) => url.like(ad.url));
-      if (!allow) {
-        console.log('child.isAllowURL :: block_ads : ' + url);
-      }
+      // if (!allow) {
+      //   console.log(':: child.isAllowURL :: block_ads : ' + url);
+      // }
     }
 
     if (allow && child.parent.var.blocking.core.block_ads_servers) {
       allow = !child.adList.includes(child.url.parse(url).host);
-      if (!allow) {
-        console.log('child.isAllowURL :: block_ads_servers : ' + url);
-      }
+      // if (!allow) {
+      //   console.log(':: child.isAllowURL :: block_ads_servers : ' + url);
+      // }
     }
 
     if (allow) {
       allow = !child.parent.var.blocking.black_list.some((item) => url.like(item.url));
-      if (!allow) {
-        console.log('child.isAllowURL :: black_list : ' + url);
-      }
+      // if (!allow) {
+      //   console.log(':: child.isAllowURL :: black_list : ' + url);
+      // }
     }
 
     if (allow && child.parent.var.blocking.allow_safty_mode) {
       allow = !child.parent.var.blocking.un_safe_list.some((item) => url.like(item.url));
-      if (!allow) {
-        console.log('child.isAllowURL :: allow_safty_mode : ' + url);
-      }
+      // if (!allow) {
+      //   console.log(':: child.isAllowURL :: allow_safty_mode : ' + url);
+      // }
     }
 
     return allow;

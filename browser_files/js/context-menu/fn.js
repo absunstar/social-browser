@@ -517,11 +517,11 @@ SOCIALBROWSER.isAllowURL = function (url) {
   }
 
   if (allow) {
-    allow = SOCIALBROWSER.var.blocking.black_list.some((item) => url.like(item.url));
+    allow = !SOCIALBROWSER.var.blocking.black_list.some((item) => url.like(item.url));
   }
 
   if (allow && SOCIALBROWSER.var.blocking.allow_safty_mode) {
-    allow = SOCIALBROWSER.var.blocking.un_safe_list.some((item) => url.like(item.url));
+    allow = !SOCIALBROWSER.var.blocking.un_safe_list.some((item) => url.like(item.url));
   }
   return allow;
 };
