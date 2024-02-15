@@ -47,31 +47,28 @@ window.loadPrintOptions = function (info) {
         window.remote.getCurrentWindow().show();
         window.remote.getCurrentWindow().openDevTools();
       } else {
-         window.remote.getCurrentWindow().close();
+        window.remote.getCurrentWindow().close();
       }
     });
   }
 };
 
 window.addEventListener('load', () => {
-  window.loadPrintOptions((callback) => {
-    callback = callback || function () {};
-    let id = document.location.href.split('/').pop();
-    fetch('http://127.0.0.1:60080/data-content/' + id, {
-      mode: 'cors',
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({}),
+  let id = document.location.href.split('/').pop();
+  fetch('http://127.0.0.1:60080/data-content/' + id, {
+    mode: 'cors',
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({}),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      window.loadPrintOptions(data);
     })
-      .then((res) => res.json())
-      .then((data) => {
-        callback(data);
-      })
-      .catch((err) => {
-        console.log('loadPrintOptions', err);
-      });
-  });
+    .catch((err) => {
+      console.log('loadPrintOptions', err);
+    });
 });
