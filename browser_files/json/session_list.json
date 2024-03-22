@@ -1,9 +1,5 @@
 [
     {
-        "name": "Default_{random}",
-        "display": "Default User"
-    },
-    {
         "name": "user_{random}",
         "display": "User 1"
     },

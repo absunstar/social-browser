@@ -56,7 +56,7 @@
     windowList: [],
     files: [],
     var: {
-      core: { id: ''},
+      core: { id: '' },
       overwrite: {
         urls: [],
       },
@@ -119,6 +119,10 @@
 
   if (browser.electron.app.setUserTasks) {
     browser.electron.app.setUserTasks([]);
+  }
+
+  if (browser.electron.app.dock) {
+    browser.electron.app.dock.hide();
   }
 
   browser.electron.app.clearRecentDocuments();
