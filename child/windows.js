@@ -391,7 +391,7 @@ module.exports = function (child) {
     }
 
     if (win.customSetting.trackingID) {
-      child.sendMessage({ type: '[tracking-info]', trackingID: win.customSetting.trackingID, windowID: win.id });
+      child.sendMessage({ type: '[tracking-info]', trackingID: win.customSetting.trackingID, windowID: win.id, created: true });
     }
 
     win.once('ready-to-show', function () {
@@ -426,7 +426,7 @@ module.exports = function (child) {
 
     if ((proxy = win.customSetting.proxy)) {
       let ss = win.webContents.session;
-
+      proxy.url = proxy.url || '';
       proxy.url = proxy.url.replace('http://', '').replace('https://', '').replace('ftp://', '').replace('socks4://', '').replace('socks4://', '');
       let arr = proxy.url.split(':');
       if (arr.length > 1) {
@@ -576,6 +576,7 @@ module.exports = function (child) {
           child.windowList.splice(i, 1);
         }
       });
+
       if (win && !win.isDestroyed()) {
         win.destroy();
       }
