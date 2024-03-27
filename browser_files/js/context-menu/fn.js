@@ -429,6 +429,7 @@ SOCIALBROWSER.write = function (text, selector, timeout) {
       }
       SOCIALBROWSER.copy(text);
       SOCIALBROWSER.paste();
+      SOCIALBROWSER.copy('');
       setTimeout(() => {
         if (selector) {
           resolver(selector);
@@ -506,7 +507,6 @@ SOCIALBROWSER.getTimeZone = () => {
 };
 
 SOCIALBROWSER.isAllowURL = function (url) {
-
   if (SOCIALBROWSER.var.blocking.white_list.some((item) => item.url.length > 2 && url.like(item.url))) {
     return true;
   }
