@@ -78,14 +78,16 @@
     },
   };
 
+ 
   SOCIALBROWSER.electron = require('electron');
+  
   SOCIALBROWSER.remote = require('@electron/remote');
   SOCIALBROWSER.require = require;
 
   SOCIALBROWSER.url = SOCIALBROWSER.require('url');
   SOCIALBROWSER.path = SOCIALBROWSER.require('path');
   SOCIALBROWSER.md5 = SOCIALBROWSER.require('md5');
-
+  
   SOCIALBROWSER.currentWindow = SOCIALBROWSER.remote.getCurrentWindow();
   SOCIALBROWSER.webContents = SOCIALBROWSER.currentWindow.webContents;
 

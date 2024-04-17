@@ -899,7 +899,7 @@ module.exports = function (child) {
   };
 
   child.sessionConfig = () => {
-    child.handleSession({ name: child.parent.options.partition });
+    child.handleSession({ name: child.partition });
     // child.handleSession('_');
   };
 };

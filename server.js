@@ -255,6 +255,12 @@
       partition: 'persist:social',
     });
   } else {
+    // browser.createChildProcess({
+    //   url: 'https://www.google.com',
+    //   windowType: 'popup',
+    //   partition: 'google',
+    //   show: true,
+    // });
     browser.createChildProcess({
       url: 'http://127.0.0.1:60080/home',
       windowType: 'main',
@@ -262,8 +268,10 @@
     });
   }
 
-  browser.createChildProcess({
-    windowType: 'files',
-    partition: 'persist:file',
-  });
+  setTimeout(() => {
+    browser.createChildProcess({
+      windowType: 'files',
+      partition: 'persist:file',
+    });
+  }, 1000 * 3);
 })();

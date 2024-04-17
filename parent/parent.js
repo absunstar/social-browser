@@ -220,6 +220,7 @@ module.exports = function init(parent) {
       let child = parent.run([
         '--index=' + index,
         '--uuid=' + options.uuid,
+        '--partition=' + options.partition,
         '--dir=' + parent.dir,
         '--data_dir=' + parent.data_dir,
         '--speed=' + (parent.speedMode || ''),
@@ -231,15 +232,15 @@ module.exports = function init(parent) {
       parent.clientList[index].child = child;
 
       child.stdout.on('data', function (data) {
-        parent.log(` [ child ${options.uuid} / ${parent.clientList.length} ] Log \n  ${data}`);
+        parent.log(` [ child:${child.pid} ${options.uuid} / ${parent.clientList.length} ] Log \n  ${data}`);
       });
 
       child.stderr.on('data', (data) => {
-        parent.log(` [ child ${options.uuid} / ${parent.clientList.length} ] Error \n    ${data}`);
+        parent.log(` [ child:${child.pid} ${options.uuid} / ${parent.clientList.length} ] Error \n    ${data}`);
       });
 
       child.on('close', (code, signal) => {
-        parent.log(`\n [ child ${options.uuid} / ${parent.clientList.length} ] close with code ( ${code} ) and signal ( ${signal} ) \n`);
+        parent.log(`\n [ child:${child.pid} ${options.uuid} / ${parent.clientList.length} ] close with code ( ${code} ) and signal ( ${signal} ) \n`);
 
         let index = parent.clientList.findIndex((c) => c.uuid == options.uuid);
         if (parent.clientList[index].option_list.some((op) => op.windowType == 'main') && code == 2147483651 && !signal) {

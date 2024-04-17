@@ -429,8 +429,9 @@ SOCIALBROWSER.write = function (text, selector, timeout) {
       }
       SOCIALBROWSER.copy(text);
       SOCIALBROWSER.paste();
-      SOCIALBROWSER.copy('');
+
       setTimeout(() => {
+        SOCIALBROWSER.copy('');
         if (selector) {
           resolver(selector);
         } else {

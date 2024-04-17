@@ -137,7 +137,7 @@ module.exports = function (child) {
   child.createNewWindow = function (setting) {
     delete setting.name;
     let parent = child.parent;
-    setting.partition = setting.partition || parent.var.core.session.name;
+    setting.partition = setting.partition || child.partition || parent.var.core.session.name;
     let defaultSetting = {
       allowMenu: true,
       allowDevTools: true,
@@ -283,6 +283,7 @@ module.exports = function (child) {
     customSetting.error_icon = 'browser://images/no.jpg';
 
     let win = new child.electron.BrowserWindow(customSetting);
+   
 
     win.customSetting = customSetting;
     win.customSetting.windowSetting = win.customSetting.windowSetting || [];
@@ -341,9 +342,7 @@ module.exports = function (child) {
       });
     }
 
-    if (win.customSetting.showDevTools) {
-      win.openDevTools();
-    }
+   
 
     if (win.customSetting.windowType === 'main') {
       child.mainWindow = win;
@@ -395,6 +394,9 @@ module.exports = function (child) {
     }
 
     win.once('ready-to-show', function () {
+      if (win.customSetting.showDevTools) {
+        win.openDevTools();
+      }
       win.webContents.audioMuted = !win.customSetting.allowAudio;
       win.customSetting.title = win.customSetting.title || win.customSetting.url;
       if (win.customSetting.windowType === 'main') {

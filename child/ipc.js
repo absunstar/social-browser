@@ -372,6 +372,7 @@ module.exports = function init(child) {
   child.electron.ipcMain.handle('[open new tab]', (event, data) => {
     data.partition = data.partition || child.parent.var.core.session.name;
     data.user_name = data.user_name || child.parent.var.core.session.display;
+    data.title = data.title || data.url;
 
     if (child.windowList.some((w) => w.customSetting.windowType == 'main')) {
       child.windowList.forEach((w) => {

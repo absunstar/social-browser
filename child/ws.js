@@ -5,6 +5,7 @@ module.exports = function (child) {
     child.sendMessage = function (message) {
       message.index = child.index;
       message.uuid = child.uuid;
+      message.partition = child.partition;
       message.id = child.id;
       message.pid = child.id;
       child._ws_.send(JSON.stringify(message));
@@ -295,7 +296,7 @@ module.exports = function (child) {
           }
         } else if (message.type == '[window-reload]') {
           child.windowList.forEach((w) => {
-            if (w.window && !w.window.isDestroyed() && w.customSetting.tabID == message.data.tabID) {
+            if (w.window && !w.window.isDestroyed() && w.customSetting.windowType == 'view' && w.customSetting.tabID == message.data.tabID) {
               w.window.reload();
             }
           });

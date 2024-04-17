@@ -31,9 +31,10 @@ require('events').EventEmitter.prototype._maxListeners = 100;
 var child = {
   index: parseInt(process.argv[1].replace('--index=', '')),
   uuid: process.argv[2].replace('--uuid=', ''),
-  dir: process.argv[3].replace('--dir=', ''),
-  data_dir: process.argv[4].replace('--data_dir=', ''),
-  speedMode: Boolean(process.argv[5].replace('--speed=', '')),
+  partition: process.argv[3].replace('--partition=', ''),
+  dir: process.argv[4].replace('--dir=', ''),
+  data_dir: process.argv[5].replace('--data_dir=', ''),
+  speedMode: Boolean(process.argv[6].replace('--speed=', '')),
   electron: require('electron'),
   remoteMain: require('@electron/remote/main'),
   fetch: require('node-fetch'),
@@ -154,8 +155,8 @@ child.electron.app.on('ready', function () {
     // if (process.platform != 'darwin') {
     //   child.electron.app.quit();
     // }
-    child.log('window-all-closed : ' + child.parent.options.partition);
-    // if (!child.parent.options.partition.contains('persist:')) {
+    child.log('window-all-closed : ' + child.partition);
+    // if (!child.partition.contains('persist:')) {
     //   child.electron.app.quit();
     // }
   });

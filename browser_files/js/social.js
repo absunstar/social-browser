@@ -244,6 +244,7 @@ function showSettingMenu() {
     click: () =>
       ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/setting',
+        title : 'Setting',
         mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
         vip: true,
       }),
@@ -271,6 +272,7 @@ function showSettingMenu() {
     click: () =>
       ipc('[open new tab]', {
         url: 'https://social-browser.com',
+        title : 'Social Browser',
         mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
       }),
   });
@@ -282,6 +284,7 @@ function showSettingMenu() {
     click: () =>
       ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/downloads',
+        title : 'Dwonloads',
         mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
         vip: true,
       }),
@@ -318,6 +321,7 @@ function showSettingMenu() {
     click: () =>
       ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/setting?open=bookmarks',
+        title : 'Bookmarks',
         mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
         vip: true,
       }),
