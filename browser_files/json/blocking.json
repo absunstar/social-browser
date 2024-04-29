@@ -256,10 +256,11 @@
         "allow_hitleap": true
     },
     "permissions": {
-        "allow_geolocation": false,
         "allow_fullscreen": true,
-        "allow_openExternal": false,
-        "allow_clipboard_read": true
+        "allow_storage-access": true,
+        "allow_top-level-storage-access": true,
+        "allow_clipboard_read": true,
+        "allow_clipboard-sanitized-write": true
     },
     "core": {
         "remove_external_iframe": false,
@@ -279,7 +280,8 @@
     "white_list": [
         {
             "url": "*google.com*"
-        },{
+        },
+        {
             "url": "*youtube.com*"
         },
         {

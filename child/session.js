@@ -717,6 +717,9 @@ module.exports = function (child) {
         }
       });
       ss.setPermissionCheckHandler((webContents, permission) => {
+        if(permission.contains('storage-access|')){
+          return true;
+        }
         if (!child.parent.var.blocking.permissions) {
           return false;
         }

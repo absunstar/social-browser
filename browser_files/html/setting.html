@@ -193,7 +193,9 @@
               <a class="tab-link" onclick="site.showTabContent(event, '#menu_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-bars"></i> Context Menu </a>
               <a class="tab-link" onclick="site.showTabContent(event, '#downloader_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-download"></i> Downloader </a>
 
-              <a id="userAgentButton" class="tab-link" onclick="site.showTabContent(event, '#userAgentTab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-list"></i> User Agent List </a>
+              <a id="userAgentButton" class="tab-link" onclick="site.showTabContent(event, '#userAgentTab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                <i class="fa fa-list"></i> User Agent List
+              </a>
             </div>
             <div class="tabs-content">
               <div id="basic_tab" class="tab-content">
@@ -225,14 +227,7 @@
                     </div>
 
                     <div class="row">
-                      <i-list
-                        class="col6"
-                        ng-search="search.$userAgentURL"
-                        primary="name"
-                        items="setting.userAgentList"
-                        ng-model="setting.core.defaultUserAgent"
-                        label="Default User Agent"
-                      ></i-list>
+                      <i-list class="col6" ng-search="search.$userAgentURL" primary="name" items="setting.userAgentList" ng-model="setting.core.defaultUserAgent" label="Default User Agent"></i-list>
                       <div class="col6">
                         <br />
                         <i-button label="Edit User Agent List" type="edit" onclick="document.querySelector('#userAgentButton').click()"></i-button>
@@ -321,13 +316,32 @@
                   <fieldset>
                     <legend>Browser Permissions</legend>
 
-                    <i-checkbox class="row" label="Allow fullscreen ( Request for the app to enter fullscreen mode ) " ng-model="setting.blocking.permissions.allow_fullscreen"></i-checkbox>
-                    <i-checkbox class="row" label="Allow clipboard-read ( Request access to read from the clipboard )" ng-model="setting.blocking.permissions.allow_clipboard_read"></i-checkbox>
-                    <i-checkbox class="row" label="Allow openExternal ( Request to open links in external applications ) " ng-model="setting.blocking.permissions.allow_openExternal"></i-checkbox>
-                    <i-checkbox class="row" label="Allow geolocation ( Request access to user's current location ) " ng-model="setting.blocking.permissions.allow_geolocation"></i-checkbox>
+                    <i-checkbox class="row" label="Request access to read from the clipboard." ng-model="setting.blocking.permissions.allow_clipboard_read"></i-checkbox>
+                    <i-checkbox class="row" label="Request access to write to the clipboard." ng-model="setting.blocking.permissions['allow_clipboard-sanitized-write']"></i-checkbox>
+                    <i-checkbox class="row" label="Access the user's geolocation data via the Geolocation API" ng-model="setting.blocking.permissions.allow_geolocation"></i-checkbox>
+                    <i-checkbox class="row" label="Control of the app's fullscreen state via the Fullscreen API." ng-model="setting.blocking.permissions.allow_fullscreen"></i-checkbox>
+                    <i-checkbox class="row" label="Open links in external applications." ng-model="setting.blocking.permissions.allow_openExternal"></i-checkbox>
+                    <i-checkbox class="row" label="Access the HID protocol to manipulate HID devices via the WebHID API." ng-model="setting.blocking.permissions.allow_hid"></i-checkbox>
+                    <i-checkbox class="row" label="Access the user's idle state via the IdleDetector API." ng-model="setting.blocking.permissions['allow_idle-detection']"></i-checkbox>
+                    <i-checkbox class="row" label="Read from and write to serial devices with the Web Serial API." ng-model="setting.blocking.permissions.allow_serial"></i-checkbox>
                     <i-checkbox
                       class="row"
-                      label="Allow notifications ( Request notification creation and the ability to display them in the user's system tray ) "
+                      label="Allows content loaded in a third-party context to request access to third-party cookies using the Storage Access API."
+                      ng-model="setting.blocking.permissions['allow_storage-access']"
+                    ></i-checkbox>
+                    <i-checkbox
+                      class="row"
+                      label="Allow top-level sites to request third-party cookie access on behalf of embedded content originating from another site in the same related website set using the Storage Access API."
+                      ng-model="setting.blocking.permissions['allow_top-level-storage-access']"
+                    ></i-checkbox>
+                    <i-checkbox
+                      class="row"
+                      label="Expose non-standard Universal Serial Bus (USB) compatible devices services to the web with the WebUSB API."
+                      ng-model="setting.blocking.permissions.allow_usb"
+                    ></i-checkbox>
+                    <i-checkbox
+                      class="row"
+                      label="Configure and display desktop notifications to the user with the Notifications API."
                       ng-model="setting.blocking.permissions.allow_notifications"
                     ></i-checkbox>
                     <i-checkbox
@@ -335,16 +349,12 @@
                       label="Allow Media ( Request access to media devices such as camera, microphone and speakers ) "
                       ng-model="setting.blocking.permissions.allow_media"
                     ></i-checkbox>
-                    <i-checkbox class="row" label="Allow midi ( Request MIDI access in the webmidi API ) " ng-model="setting.blocking.permissions.allow_midi"></i-checkbox>
+                    <i-checkbox class="row" label="Enable MIDI access in the Web MIDI API." ng-model="setting.blocking.permissions.allow_midi"></i-checkbox>
+                    <i-checkbox class="row" label="Use system exclusive messages in the Web MIDI API." ng-model="setting.blocking.permissions.allow_midiSysex"></i-checkbox>
+                    <i-checkbox class="row" label="Access to DRM protected content." ng-model="setting.blocking.permissions.allow_mediaKeySystem"></i-checkbox>
                     <i-checkbox
                       class="row"
-                      label="Allow midiSysex ( Request the use of system exclusive messages in the webmidi API )"
-                      ng-model="setting.blocking.permissions.allow_midiSysex"
-                    ></i-checkbox>
-                    <i-checkbox class="row" label="Allow mediaKeySystem ( Request access to DRM protected content ) " ng-model="setting.blocking.permissions.allow_mediaKeySystem"></i-checkbox>
-                    <i-checkbox
-                      class="row"
-                      label="Allow pointerLock ( Request to directly interpret mouse movements as an input method ) "
+                      label="Directly interpret mouse movements as an input method via the Pointer Lock API"
                       ng-model="setting.blocking.permissions.allow_pointerLock"
                     ></i-checkbox>
                     <i-checkbox class="row" label="Allow keyboardLock ( Request to Lock Keyboard Keys ) " ng-model="setting.blocking.permissions.allow_keyboardLock"></i-checkbox>
