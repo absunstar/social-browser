@@ -1,10 +1,10 @@
 [
     {
-        "name": "user_{random}",
+        "name": "persist:user_{random}",
         "display": "User 1"
     },
     {
-        "name": "user_{random}",
+        "name": "persist:user_{random}",
         "display": "User 2"
     }
 ]

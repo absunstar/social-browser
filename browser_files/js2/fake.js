@@ -14,9 +14,9 @@ window.grecaptcha = window.grecaptcha || {
   reset: function () {},
 };
 
-let onload = '##query.onload##';
-if (window[onload]) {
-  window[onload]();
+window.queryOnLoad = '##query.onload##';
+if (window[window.queryOnLoad]) {
+  window[window.queryOnLoad]();
 }
 
 if (false) {

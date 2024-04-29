@@ -165,7 +165,10 @@ module.exports = function init(parent) {
         } else if (name == 'session_list') {
           if (currentContent.length == 0) {
             default_content.forEach((d) => {
-              d.name = d.name.replace('{random}', 'default_' + new Date().getTime() + Math.random());
+              d.name = d.name.replace('{random}', 'default_' + new Date().getTime().toString().replace('0.', '') + Math.random().toString().replace('0.', ''));
+              if (d.name.indexOf('persist:') === -1) {
+                d.name = 'persist:' + d.name;
+              }
               let exists = false;
               currentContent.forEach((d2) => {
                 if (d.name == d2.name) {
@@ -321,7 +324,10 @@ module.exports = function init(parent) {
 
       if (name == 'session_list') {
         parent.var[name].forEach((s) => {
-          s.name = s.name.replace('{random}', 'random_' + Math.random());
+          s.name = s.name.replace('{random}', 'random_' + new Date().getTime().toString().replace('0.', '') + Math.random().toString().replace('0.', ''));
+          if (s.name.indexOf('persist:') === -1) {
+            s.name = 'persist:' + s.name;
+          }
         });
       }
     } else {

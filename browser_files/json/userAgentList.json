@@ -1,5 +1,14 @@
 [
     {
+        "url": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:99.0) Gecko/20100101 Firefox/99.0",
+        "name": "Windows Firefox",
+        "platform": "Win32",
+        "oscpu": "Windows NT 10.0; Win64; x64",
+        "engine": {
+            "name": "Firefox"
+        }
+    },
+    {
         "url": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0",
         "name": "Windows Edge",
         "platform": "Win32",
@@ -8,15 +17,6 @@
             "name": "Edge"
         },
         "vendor": "Google Inc."
-    },
-    {
-        "url": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:99.0) Gecko/20100101 Firefox/99.0",
-        "name": "Windows Firefox",
-        "platform": "Win32",
-        "oscpu": "Windows NT 10.0; Win64; x64",
-        "engine": {
-            "name": "Firefox"
-        }
     },
     {
         "url": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/90.0.3729.157 Safari/537.36",
