@@ -1,8 +1,8 @@
 {
     "port": 60080,
     "enabled": true,
-    "version": "2024.05.01",
-    "prefix": "",
+    "version": "2024.05.15",
+    "prefix": "source_",
     "full_version": true,
     "key": "free key",
     "brand": "Social Browser",
