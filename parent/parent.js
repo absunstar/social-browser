@@ -157,6 +157,9 @@ module.exports = function init(parent) {
   parent.applay = function (name) {
     parent.save_var(name);
   };
+
+
+
   require(parent.path.join(parent.dir, 'parent', 'fn.js'))(parent);
   require(parent.path.join(parent.dir, 'parent', 'file.js'))(parent);
   require(parent.path.join(parent.dir, 'parent', 'download.js'))(parent);
@@ -166,6 +169,9 @@ module.exports = function init(parent) {
   require(parent.path.join(parent.dir, 'parent', 'ipc.js'))(parent);
   require(parent.path.join(parent.dir, 'parent', 'ws.js'))(parent);
   require(parent.path.join(parent.dir, 'parent', 'chat.js'))(parent);
+
+ 
+
   // if (parent.speedMode) {
   //     require(parent.path.join(parent.dir, 'child', 'windows.js'))(parent);
   //     require(parent.path.join(parent.dir, 'child', 'ipc.js'))(parent);
@@ -175,17 +181,7 @@ module.exports = function init(parent) {
   //  require(parent.path.join(parent.dir, 'spiders', 'page-info.js'))(parent);
   //  require(parent.path.join(parent.dir, 'spiders', 'page-content.js'))(parent);
 
-  if (process.platform == 'win32') {
-    parent.exec('wmic CPU get ProcessorId', (d) => {
-      parent.information['ProcessorId'] = d.replace(/\n|\r|\t|\s+|ProcessorId/g, '');
-    });
-    parent.exec('wmic DISKDRIVE get SerialNumber', (d) => {
-      parent.information['DISKDRIVE'] = d.replace(/\n|\r|\t|\s+|SerialNumber/g, '');
-    });
-    parent.exec('wmic BIOS get SerialNumber', (d) => {
-      parent.information['BIOS'] = d.replace(/\n|\r|\t|\s+|SerialNumber/g, '');
-    });
-  }
+
 
   parent.createChildWindow = function (options) {
     parent.createNewWindow(options);

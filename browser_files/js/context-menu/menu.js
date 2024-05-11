@@ -367,7 +367,7 @@ function get_url_menu_list(url) {
           url: url,
           referrer: document.location.href,
           show: true,
-          iframe : true,
+          iframe: true,
           trusted: true,
           center: true,
         });
@@ -1574,7 +1574,7 @@ function createMenuList(node) {
               url: SOCIALBROWSER.var.vip.server_url + v.url,
               referrer: document.location.href,
               show: true,
-              iframe : true,
+              iframe: true,
               trusted: true,
               center: true,
             });

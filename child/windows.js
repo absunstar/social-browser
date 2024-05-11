@@ -283,7 +283,6 @@ module.exports = function (child) {
     customSetting.error_icon = 'browser://images/no.jpg';
 
     let win = new child.electron.BrowserWindow(customSetting);
-   
 
     win.customSetting = customSetting;
     win.customSetting.windowSetting = win.customSetting.windowSetting || [];
@@ -292,6 +291,9 @@ module.exports = function (child) {
       win.customSetting.session = parent.var.session_list.find((s) => s.name == win.customSetting.partition);
       if (win.customSetting.session) {
         win.customSetting.userAgent = win.customSetting.session.defaultUserAgent;
+      }
+      if (!parent.var.core.active) {
+        win.customSetting.url = 'http://127.0.0.1:60080/setting';
       }
     }
 
@@ -341,8 +343,6 @@ module.exports = function (child) {
         childWindowID: win.id,
       });
     }
-
-   
 
     if (win.customSetting.windowType === 'main') {
       child.mainWindow = win;

@@ -91,6 +91,12 @@ module.exports = function init(child) {
   child.electron.ipcMain.handle('[cookies-clear]', (e, obj) => {
     return child.clearCookies(obj);
   });
+  child.electron.ipcMain.handle('show_message', (e, data) => {
+    let win = child.electron.BrowserWindow.fromId(data.windowID);
+    if (win) {
+      win.send('show_message', data);
+    }
+  });
   child.electron.ipcMain.handle('message', (e, message) => {
     let win = child.electron.BrowserWindow.fromId(message.windowID);
     if (win) {

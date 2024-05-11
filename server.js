@@ -99,6 +99,9 @@
   if (process.cwd().indexOf('-portal') !== -1) {
     browser.isPortal = true;
     browser.data_dir = browser.path.join(process.cwd(), 'social-data');
+  } else if (process.cwd().indexOf('-accounts') !== -1) {
+    browser.isAccounts = true;
+    browser.data_dir = browser.path.join(process.cwd(), 'social-data');
   } else {
     browser.data_dir = browser.path.join(browser.os.homedir(), 'social-data');
   }
@@ -170,7 +173,7 @@
     // }
     // console.log(browser.webContentList.length);
     browser.electron.app.setAccessibilitySupportEnabled(true);
-    if (!browser.isPortal && !browser.var.core.id.like('*developer*')) {
+    if (!browser.var.core.id.like('*developer*')) {
       browser.electron.app.setLoginItemSettings({
         openAtLogin: true,
         args: ['--auto-startup'],

@@ -38,7 +38,6 @@
         width: 100%;
         opacity: 0.1;
       }
-      
     </style>
   </head>
 
@@ -108,7 +107,6 @@
       </div>
     </div>
 
-
     <div id="body"></div>
 
     <script src="http://127.0.0.1:60080/js/an.min.js"></script>
@@ -119,7 +117,7 @@
         module = undefined;
       }
       function showMessage(msg) {
-        SOCIALBROWSER.ipc('show_message', { message: msg });
+        SOCIALBROWSER.ipc('show_message', { message: msg, windowID: SOCIALBROWSER.currentWindow.id });
       }
     </script>
 

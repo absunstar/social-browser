@@ -676,6 +676,17 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     $scope.saveSetting();
   };
 
+  $scope.activated = function () {
+    $scope.busy = true;
+    SOCIALBROWSER.ipc('[update-browser-var]', {
+      name: 'core',
+      data: $scope.setting['core'],
+    });
+    $timeout(() => {
+      window.location.reload();
+    }, 1000 * 5);
+  };
+
   $scope.saveSetting = function (close) {
     $scope.busy = true;
     $scope.setting_busy = true;

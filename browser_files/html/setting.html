@@ -236,6 +236,28 @@
                     </div>
                   </fieldset>
 
+                  <fieldset>
+                    <legend>Activation</legend>
+                    <div class="row padding">
+                      <h2 class="bold red" ng-hide="setting.core.active">Browser Not Active</h2>
+                      <h2 class="bold green" ng-show="setting.core.active">Browser Active</h2>
+                      <p class="bold red">{{setting.core.activeMessage}}</p>
+                    </div>
+                    <div class="row padding">
+                      <i-control disabled class="col10" label="Device ID" ng-model="setting.core.DeviceId"> </i-control>
+                      <div class="col2">
+                        <br />
+                        <i-button type="copy" label="copy" ng-click="copy(setting.core.DeviceId)"></i-button>
+                      </div>
+                    </div>
+                    <div class="row padding">
+                      <i-control class="col8" label="Device Key" ng-model="setting.core.DeviceKey"> </i-control>
+                      <div class="col4">
+                        <br />
+                        <i-button type="approve" label="Activate" ng-click="activated()"></i-button>
+                      </div>
+                    </div>
+                  </fieldset>
                   <div class="row padding">
                     <div class="col6">
                       <i-button type="list" ng-click="showBlackListModal()" label="Black List Sites"></i-button>

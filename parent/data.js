@@ -460,7 +460,9 @@ module.exports = function init(parent) {
         parent.log('parent.set_var() : ' + name);
         currentContent = parent.handleObject(currentContent);
         parent.var[name] = currentContent;
-
+        if (name === 'core') {
+          parent.activated();
+        }
         if (!ignore) {
           save_var_quee.push(name);
         }
@@ -755,4 +757,41 @@ module.exports = function init(parent) {
   //   let s2 = '__cookies_' + s1.name.replace(':', '_list');
   //   parent.get_var(s2);
   // });
+  parent.var.core.active = true;
+  parent.activated = function () {
+    if (parent.information['ProcessorId'] && parent.information['DISKDRIVE'] && parent.information['BIOS']) {
+      if (!parent.isAccounts && parent.var.session_list.length < 50) {
+        parent.var.core['DeviceKey'] = parent.md5(parent.api.to123(parent.var.core['DeviceId']));
+      }
+      parent.var.core['DeviceId'] = parent.information['ProcessorId'] + parent.information['DISKDRIVE'] + parent.information['BIOS'];
+      if (parent.md5(parent.api.to123(parent.var.core['DeviceId'])) !== parent.var.core['DeviceKey']) {
+        parent.var.core.active = false;
+        if (parent.var.session_list.length >= 50) {
+          parent.var.core.activeMessage = '+50 Profile Not Free';
+        }
+        parent.var.core.max_tabs = 2;
+      } else {
+        parent.var.core.active = true;
+        parent.var.core.activeMessage = '';
+        if ((parent.var.core.max_tabs = 1)) {
+          parent.var.core.max_tabs = 20;
+        }
+      }
+    }
+  };
+
+  if (process.platform == 'win32') {
+    parent.exec('wmic CPU get ProcessorId', (d) => {
+      parent.information['ProcessorId'] = d.replace(/\n|\r|\t|\s+|ProcessorId/g, '') || 'UNKNOWN';
+      parent.activated();
+    });
+    parent.exec('wmic DISKDRIVE get SerialNumber', (d) => {
+      parent.information['DISKDRIVE'] = d.replace(/\n|\r|\t|\s+|SerialNumber/g, '') || 'UNKNOWN';
+      parent.activated();
+    });
+    parent.exec('wmic BIOS get SerialNumber', (d) => {
+      parent.information['BIOS'] = d.replace(/\n|\r|\t|\s+|SerialNumber/g, '') || 'UNKNOWN';
+      parent.activated();
+    });
+  }
 };
