@@ -65,7 +65,7 @@ module.exports = function (child) {
             }
           } else {
             child.sessionConfig();
-            child.createNewWindow({ ...child.parent.options, ...message.options });
+            child.createNewWindow({  ...message.options });
           }
         } else if (message.type == '[re-browser-core-data]') {
           child.option_list.push(message.options);
@@ -80,7 +80,7 @@ module.exports = function (child) {
             }
           } else {
             child.sessionConfig();
-            child.createNewWindow({ ...child.parent.options, ...message.options });
+            child.createNewWindow({  ...message.options });
           }
         } else if (message.type == '[update-browser-var]') {
           if (child.parent.windowType == 'files') {
@@ -96,7 +96,9 @@ module.exports = function (child) {
             if (message.options.name == 'core' || message.options.name == 'proxy' || message.options.name == 'session_list') {
               child.sessionConfig();
             }
-
+            if (message.options.name == 'cookieList') {
+              child.cookieList = message.options.data;
+            }
             child.sendToWindows('[update-browser-var]', message);
           }
         } else if (message.type == '[user_data_input][changed]') {

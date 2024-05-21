@@ -13,6 +13,11 @@ SOCIALBROWSER.on('message', (e, message) => {
   }
 });
 
+SOCIALBROWSER.requestCookie = function (obj = {}) {
+  obj.domain = obj.domain || document.location.hostname;
+  return SOCIALBROWSER.ipc('request-cookie', obj);
+};
+
 SOCIALBROWSER.fetchJson = function (options, callback) {
   options.id = new Date().getTime() + Math.random();
   options.url = SOCIALBROWSER.handleURL(options.url);
@@ -359,7 +364,9 @@ SOCIALBROWSER.addCSS = SOCIALBROWSER.addcss = function (code) {
   }
 };
 SOCIALBROWSER.copy = function (text) {
-  SOCIALBROWSER.electron.clipboard.writeText(text.toString());
+  if (text) {
+    SOCIALBROWSER.electron.clipboard.writeText(text.toString());
+  }
 };
 SOCIALBROWSER.paste = function () {
   SOCIALBROWSER.remote.getCurrentWindow().webContents.paste();

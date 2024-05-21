@@ -166,6 +166,7 @@ module.exports = function init(parent) {
           if (currentContent.length == 0) {
             default_content.forEach((d) => {
               d.name = d.name.replace('{random}', 'default_' + new Date().getTime().toString().replace('0.', '') + Math.random().toString().replace('0.', ''));
+              d.time = d.time || new Date().getTime();
               if (d.name.indexOf('persist:') === -1) {
                 d.name = 'persist:' + d.name;
               }
@@ -487,7 +488,7 @@ module.exports = function init(parent) {
         parent.clientList.forEach((client) => {
           if (client.ws) {
             if (name == 'urls') {
-              if (client.windowType == 'main' || client.windowType == 'files') {
+              if (client.uuid == 'user-file' || client.uuid == 'user-social' || client.uuid == 'user-setting') {
                 parent.log(`update private var ( ${name} ) to client : ${client.uuid}`);
                 client.ws.send({
                   type: '[update-browser-var]',
@@ -496,6 +497,36 @@ module.exports = function init(parent) {
                     data: parent.var[name],
                   },
                 });
+              }
+            } else if (name == 'cookieList') {
+              if (client.uuid == 'user-file' || client.uuid == 'user-setting') {
+                parent.log(`update private var ( ${name} ) to client : ${client.uuid}`);
+                client.ws.send({
+                  type: '[update-browser-var]',
+                  options: {
+                    name: name,
+                    data: parent.var[name],
+                  },
+                });
+              } else {
+                parent.log(`update custom var ( ${name} ) to client : ${client.uuid}`);
+                if (client.partition.like('*ghost*')) {
+                  client.ws.send({
+                    type: '[update-browser-var]',
+                    options: {
+                      name: name,
+                      data: parent.var[name].filter((c) => c.partition.like('*ghost*')),
+                    },
+                  });
+                } else {
+                  client.ws.send({
+                    type: '[update-browser-var]',
+                    options: {
+                      name: name,
+                      data: parent.var[name].filter((c) => c.partition == client.partition),
+                    },
+                  });
+                }
               }
             } else if (name == 'download_list') {
               if (client.windowType == 'files') {
@@ -531,6 +562,7 @@ module.exports = function init(parent) {
           }
         });
       }
+      console.log('_________________________________');
     } catch (error) {
       parent.log(error);
     }
@@ -541,6 +573,7 @@ module.exports = function init(parent) {
     let update_proxy = false;
     let update_extension_list = false;
     let update_session_list = false;
+    let update_cookieList = false;
     let update_ad_list = false;
     let update_blocking = false;
     let update_core = false;
@@ -555,6 +588,9 @@ module.exports = function init(parent) {
       } else if (q === 'session_list') {
         save_var_quee.splice(i, 1);
         update_session_list = true;
+      } else if (q === 'cookieList') {
+        save_var_quee.splice(i, 1);
+        update_cookieList = true;
       } else if (q === 'extension_list') {
         save_var_quee.splice(i, 1);
         update_extension_list = true;
@@ -583,6 +619,9 @@ module.exports = function init(parent) {
     }
     if (update_session_list) {
       parent.save_var('session_list');
+    }
+    if (update_cookieList) {
+      parent.save_var('cookieList');
     }
     if (update_ad_list) {
       parent.save_var('ad_list');
@@ -683,6 +722,7 @@ module.exports = function init(parent) {
   parent.get_var('urls');
 
   parent.get_var('extension_list');
+  parent.get_var('cookieList');
 
   parent.handleAdList();
 
@@ -753,29 +793,40 @@ module.exports = function init(parent) {
     }
   });
 
-  // parent.var.session_list.forEach((s1) => {
-  //   let s2 = '__cookies_' + s1.name.replace(':', '_list');
-  //   parent.get_var(s2);
-  // });
+  parent.var.session_list.forEach((s1) => {
+    s1.time = s1.time || new Date().getTime();
+  });
+
   parent.var.core.active = true;
   parent.activated = function () {
-    if (parent.information['ProcessorId'] && parent.information['DISKDRIVE'] && parent.information['BIOS']) {
-      if (!parent.isAccounts && parent.var.session_list.length < 50) {
-        parent.var.core['DeviceKey'] = parent.md5(parent.api.to123(parent.var.core['DeviceId']));
+    if (!parent.isAccountsMode && parent.var.session_list.length <= parent.freeUsersCount) {
+      parent.var.core.active = true;
+      parent.var.core.activeMessage = '';
+      if ((parent.var.core.max_tabs = 1)) {
+        parent.var.core.max_tabs = 20;
       }
+      return;
+      parent.var.core['DeviceKey'] = parent.md5(parent.api.to123(parent.var.core['id'] + parent.var.core['DeviceId']));
+    } else if (parent.information['ProcessorId'] && parent.information['DISKDRIVE'] && parent.information['BIOS']) {
       parent.var.core['DeviceId'] = parent.information['ProcessorId'] + parent.information['DISKDRIVE'] + parent.information['BIOS'];
-      if (parent.md5(parent.api.to123(parent.var.core['DeviceId'])) !== parent.var.core['DeviceKey']) {
-        parent.var.core.active = false;
-        if (parent.var.session_list.length >= 50) {
-          parent.var.core.activeMessage = '+50 Profile Not Free';
-        }
-        parent.var.core.max_tabs = 2;
-      } else {
+      if (parent.var.core['BrowserKey'] && parent.md5(parent.api.to123(parent.var.core['id'] + parent.var.core['DeviceId'])) === parent.var.core['BrowserKey']) {
         parent.var.core.active = true;
-        parent.var.core.activeMessage = '';
+        parent.var.core.activeMessage = 'Browser Activated By ( Browser Key )';
         if ((parent.var.core.max_tabs = 1)) {
           parent.var.core.max_tabs = 20;
         }
+      } else if (parent.var.core['DeviceKey'] && parent.md5(parent.api.to123(parent.var.core['DeviceId'])) === parent.var.core['DeviceKey']) {
+        parent.var.core.active = true;
+        parent.var.core.activeMessage = 'Browser Activated By ( Device Key )';
+        if ((parent.var.core.max_tabs = 1)) {
+          parent.var.core.max_tabs = 20;
+        }
+      } else {
+        parent.var.core.active = false;
+        if (parent.var.session_list.length > parent.freeUsersCount) {
+          parent.var.core.activeMessage = `More Than ( ${parent.freeUsersCount} ) Profile Not Free`;
+        }
+        parent.var.core.max_tabs = 2;
       }
     }
   };

@@ -13,6 +13,11 @@ setTimeout(() => {
     if (btn1) {
       btn1.click();
     }
+  } else if (document.location.href.like('*cookieList*')) {
+    let btn1 = document.querySelector('#cookieManagerButton');
+    if (btn1) {
+      btn1.click();
+    }
   }
 }, 1000 * 2);
 
@@ -409,7 +414,8 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         $scope.session.name = 'persist:' + $scope.session.name;
       }
       $scope.session.can_delete = true;
-      $scope.setting.session_list.push($scope.session);
+      $scope.session.time = new Date().getTime();
+      $scope.setting.session_list.push({ ...$scope.session });
       $scope.session = {};
     }
   };
@@ -438,6 +444,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
           name: 'persist:' + new Date().getTime() + '_' + code,
           display: $scope.session.display.replace('{count}', code),
           can_delete: true,
+          time: new Date().getTime(),
         });
       }
       $scope.session = {};
@@ -687,6 +694,54 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     }, 1000 * 5);
   };
 
+  $scope.openCookieSite = function (site, withCookie = true) {
+    SOCIALBROWSER.ipc('[open new popup]', {
+      partition: site.partition,
+      url: 'https://' + site.domain,
+      cookieList: withCookie == true ? [{ cookie: site.cookie, domain: site.domain, partition: site.partition }] : [],
+      show: true,
+      center: true,
+    });
+  };
+  $scope.remove_all_cookie = function () {
+    $scope.setting.cookieList = [];
+  };
+  $scope.remove_cookie = function (site) {
+    if (site) {
+      let index = $scope.setting.cookieList.findIndex((c) => c.domain == site.domain && c.partition == site.partition);
+      if (index !== -1) {
+        $scope.setting.cookieList.splice(index, 1);
+      }
+    }
+  };
+  $scope.addToCookieList = function () {
+    $scope.cookieError = '';
+    const v = site.validated('#cookieManagerTab');
+    if (!v.ok) {
+      $scope.cookieError = v.messages[0].en;
+      return;
+    }
+    let c = {};
+    c.domain = $scope.cookie.domain;
+    c.partition = $scope.cookie.session.name;
+    c.cookie = $scope.cookie.cookie;
+    $scope.setting.cookieList.push(c);
+    $scope.cookie = {};
+  };
+
+  $scope.saveCookieList = function (close) {
+    SOCIALBROWSER.ipc('[update-browser-var]', {
+      name: 'cookieList',
+      data: $scope.setting['cookieList'],
+    });
+  };
+
+  $scope.exportCookieList = function () {
+    document.location.href = '/__social_browser/api/export-cookie-list';
+  };
+  $scope.afterCookieListImported = function (data) {
+    document.location.reload();
+  };
   $scope.saveSetting = function (close) {
     $scope.busy = true;
     $scope.setting_busy = true;
@@ -945,8 +1000,12 @@ app.controller('mainController', ($scope, $http, $timeout) => {
       allowMenu: true,
     });
   };
+
   $scope.copy = function (text) {
     SOCIALBROWSER.copy(text);
+  };
+  $scope.paste = function () {
+    SOCIALBROWSER.paste();
   };
   $scope.showPassword = function (site) {
     if ((elem = document.querySelector('#pass_' + site.id + ' input[type=password]'))) {

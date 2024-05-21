@@ -97,10 +97,10 @@
   }
   browser.files_dir = browser.dir + '/browser_files';
   if (process.cwd().indexOf('-portal') !== -1) {
-    browser.isPortal = true;
+    browser.isPortalMode = true;
     browser.data_dir = browser.path.join(process.cwd(), 'social-data');
-  } else if (process.cwd().indexOf('-accounts') !== -1) {
-    browser.isAccounts = true;
+  } else if (process.cwd().indexOf('-accounts') !== -1 || process.cwd().indexOf('-users') !== -1) {
+    browser.isAccountsMode = true;
     browser.data_dir = browser.path.join(process.cwd(), 'social-data');
   } else {
     browser.data_dir = browser.path.join(browser.os.homedir(), 'social-data');

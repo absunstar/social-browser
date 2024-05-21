@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Auto Login Manager</title>
+    <link rel="stylesheet" href="/x-css/bootstrap-5-support.css" />
+  </head>
+  <body ng-controller="mainController">
+    <h1 class="center">Auto Login Manager</h1>
+    <fieldset>
+      <legend>New Login Information</legend>
+      <div class="row">
+        <i-control class="col4" ng-model="info.url" label="Site URL (Default)"></i-control>
+        <i-control class="col4" ng-model="info.username" label="User Name"></i-control>
+        <i-control class="col4" type="password" ng-model="info.password" label="Password (Default)"></i-control>
+      </div>
+      <div class="row">
+        <div>
+          <i-button type="add" label="Add To Login List" ng-click="addToLoginList()"></i-button>
+          <i-upload api="/__social_tools/api/import-login-list" label="Upload Login List" on-uploaded="afterLoginListImported($data)"></i-upload>
+          <i-button type="download" ng-click="export()" label="Download Login List"></i-button>
+        </div>
+      </div>
+    </fieldset>
+    <table class="table">
+      <tr>
+        <th>index</th>
+        <th>Site URL</th>
+        <th>User Name</th>
+        <th>Password</th>
+        <th>
+          Actions <i-button type="login" label="Test All Login" ng-click="testAllLogin()"></i-button>
+          <i-button type="play" label="Create All Profile" ng-click="createAllProfile()"></i-button>
+        </th>
+      </tr>
+      <tr ng-repeat="login in loginList">
+        <td class="blue bold center">{{$index + 1}}</td>
+        <td><i-control ng-model="login.url"></i-control></td>
+        <td><i-control ng-model="login.username"></i-control></td>
+        <td><i-control type="password" ng-model="login.password"></i-control></td>
+        <td>
+          <i-button type="login" label="test login" ng-click="testLogin(login)"></i-button>
+          <i-button type="open" label="Open" ng-click="openLogin(login)"></i-button>
+          <i-button type="play" label="create Profile" ng-click="createProfile(login)"></i-button>
+          <i-button type="delete"></i-button>
+        </td>
+      </tr>
+    </table>
+
+    <script src="/x-js/bootstrap-5-support.js"></script>
+    <script>
+      app.controller('mainController', function ($scope, $http, $timeout, $interval) {
+        $scope.siteLogin = site.from123('/*###site-login.js*/');
+        $scope.info = {};
+        $scope.loginList = [];
+        $scope.addToLoginList = function (info) {
+          $scope.loginList.push({ ...$scope.info });
+          $scope.info = {};
+        };
+        $scope.afterLoginListImported = function (data) {
+          data.list.forEach((login) => {
+            login.url = login.url || $scope.info.url;
+            login.password = login.password || $scope.info.password;
+          });
+          $scope.loginList = data.list;
+        };
+
+        $scope.createAllProfile = function () {
+          $scope.loginList.forEach((login, i) => {
+            $scope.createProfile(login);
+          });
+        };
+        $scope.createProfile = function (login) {
+          let index = SOCIALBROWSER.var.session_list.findIndex((s) => s.display == login.username);
+          if (index === -1) {
+            SOCIALBROWSER.var.session_list.push({ name: 'persist:' + SOCIALBROWSER.md5(login.username), display: login.username });
+            SOCIALBROWSER.ipc('[update-browser-var]', {
+              name: 'session_list',
+              data: SOCIALBROWSER.var.session_list,
+            });
+          }
+        };
+        $scope.testAllLogin = function () {
+          $scope.loginList.forEach((login, i) => {
+            $timeout(() => {
+              $scope.testLogin(login);
+            }, 1000 * 10 * i);
+          });
+        };
+
+        $scope.testLogin = function (login) {
+          login.url = login.url || $scope.info.url;
+          login.password = login.password || $scope.info.password;
+          login.session = login.session || SOCIALBROWSER.var.session_list.find((s) => s.display == login.username) || { name: 'persist:' + SOCIALBROWSER.md5(login.username), display: login.username };
+          let code = `SOCIALBROWSER.fakeview123 = '${SOCIALBROWSER.to123(login)}';`;
+          SOCIALBROWSER.ipc('[open new popup]', {
+            partition: login.session.name,
+            url: login.url,
+            eval: code + $scope.siteLogin,
+            show: true,
+            center: true,
+            timeout: 1000 * 30,
+          });
+        };
+
+        $scope.openLogin = function (login) {
+          login.url = login.url || $scope.info.url;
+          login.password = login.password || $scope.info.password;
+          login.session = login.session || SOCIALBROWSER.var.session_list.find((s) => s.display == login.username) || { name: 'persist:' + SOCIALBROWSER.md5(login.username), display: login.username };
+          SOCIALBROWSER.ipc('[open new popup]', {
+            partition: login.session.name,
+            url: login.url,
+            show: true,
+            center: true,
+          });
+        };
+
+        $scope.export = function () {
+          let list = [];
+          $scope.loginList.forEach((login) => {
+            list.push({ ...login });
+          });
+          list.forEach((login) => {
+            delete login.$$hashKey;
+          });
+          $http({
+            url: '/__social_tools/api/export-login-list',
+            method: 'post',
+            data: {
+              json: JSON.stringify(list),
+            },
+          }).then(() => {
+            document.location.href = '/__social_tools/api/export-login-list';
+          });
+        };
+      });
+    </script>
+  </body>
+</html>

@@ -94,7 +94,7 @@ module.exports = function init(parent) {
             }
           });
           break;
-          case '[window-clicked]':
+        case '[window-clicked]':
           parent.clientList.forEach((client) => {
             if (client.index != message.index && client.ws) {
               client.ws.send(message);
@@ -355,6 +355,15 @@ module.exports = function init(parent) {
           let ss = parent.electron.session.fromPartition(message.partition);
           ss.downloadURL(message.url);
 
+          break;
+        case '[cookieList-set]':
+          let cookieIndex = parent.var.cookieList.findIndex((c) => c.domain == message.cookie.domain && c.partition == message.cookie.partition);
+          if (cookieIndex === -1) {
+            parent.var.cookieList.push(message.cookie);
+          } else {
+            parent.var.cookieList[cookieIndex] = message.cookie;
+          }
+          parent.applay('cookieList');
           break;
         case '[cookie-changed]':
           parent.clientList.forEach((client) => {

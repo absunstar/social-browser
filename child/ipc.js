@@ -71,6 +71,10 @@ module.exports = function init(child) {
     }
   });
 
+  child.electron.ipcMain.handle('request-cookie', (e, obj) => {
+    return child.cookieList.find((c) => c.domain == obj.domain);
+  });
+
   child.electron.ipcMain.handle('online-status', (e, obj) => {
     child.parent.var.core.onLineStatus = obj.status;
   });
@@ -137,10 +141,10 @@ module.exports = function init(child) {
   });
 
   child.electron.ipcMain.handle('[add][window]', (e, data) => {
-    let win = child.windowList.find((w) => w.id == data.windowID);
-    if (win) {
-      win.customSetting = { ...win.customSetting, ...data.customSetting };
-      win.id2 = data.id2 || win.id2;
+    let w = child.windowList.find((w) => w.id == data.windowID);
+    if (w) {
+      w.customSetting = { ...w.customSetting, ...data.customSetting };
+      w.id2 = data.id2 || w.id2;
     } else {
       child.windowList.push({
         id: data.windowID,
@@ -251,6 +255,13 @@ module.exports = function init(child) {
           m2.click = function () {
             win.webContents.send('[run-menu]', { index: i, index2: i2 });
           };
+          if (m2.submenu) {
+            m2.submenu.forEach((m3, i3) => {
+              m3.click = function () {
+                win.webContents.send('[run-menu]', { index: i, index2: i2, index3: i3 });
+              };
+            });
+          }
         });
       }
     });
@@ -627,7 +638,7 @@ module.exports = function init(child) {
           if (w.customSetting.windowType == 'main' && !w.window.isDestroyed()) {
             w.window.webContents.send('[open new tab]', {
               url: 'http://127.0.0.1:60080/setting',
-              partition: 'setting',
+              partition: 'persist:setting',
               vip: true,
             });
           }
@@ -638,7 +649,7 @@ module.exports = function init(child) {
           type: '[open new tab]',
           data: {
             url: 'http://127.0.0.1:60080/setting',
-            partition: 'setting',
+            partition: 'persist:setting',
             vip: true,
           },
         });

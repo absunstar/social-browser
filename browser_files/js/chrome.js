@@ -171,6 +171,7 @@ function showSettingMenu() {
     click: () =>
       ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/setting',
+        partition : 'persist:setting',
         main_window_id: SOCIALBROWSER.remote.getCurrentWindow().id,
         vip: true,
       }),
@@ -245,6 +246,7 @@ function showSettingMenu() {
     click: () =>
       ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/setting?open=bookmarks',
+        partition : 'persist:setting',
         main_window_id: SOCIALBROWSER.remote.getCurrentWindow().id,
         vip: true,
       }),
@@ -397,6 +399,7 @@ function showBookmarksMenu() {
     click: () =>
       ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/setting?open=bookmarks',
+        partition : 'persist:setting',
         main_window_id: SOCIALBROWSER.remote.getCurrentWindow().id,
         vip: true,
       }),
@@ -838,6 +841,7 @@ function renderMessage(cm) {
   } else if (cm.name == '[show-browser-setting]') {
     render_new_tab({
       url: 'http://127.0.0.1:60080/setting',
+      partition : 'persist:setting',
       vip: true,
     });
   } else if (cm.name == '[download-link]') {

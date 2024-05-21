@@ -244,6 +244,7 @@ function showSettingMenu() {
     click: () =>
       ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/setting',
+        partition : 'persist:setting',
         title : 'Setting',
         mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
         vip: true,
@@ -321,6 +322,7 @@ function showSettingMenu() {
     click: () =>
       ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/setting?open=bookmarks',
+        partition : 'persist:setting',
         title : 'Bookmarks',
         mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
         vip: true,
@@ -468,7 +470,13 @@ function showSettingMenu() {
       sublabel: m.sublabel,
       visible: m.visible,
       type: m.type,
-      submenu: m.submenu?.map((s) => ({ label: s.label, type: s.type, sublabel: s.sublabel, visible: s.visible })),
+      submenu: m.submenu?.map((m2) => ({
+        label: m2.label,
+        type: m2.type,
+        sublabel: m2.sublabel,
+        visible: m2.visible,
+        submenu: m2.submenu?.map((m3) => ({ label: m3.label, type: m3.type, sublabel: m3.sublabel, visible: m3.visible })),
+      })),
     })),
     windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
   });
@@ -501,6 +509,7 @@ function showBookmarksMenu() {
     click: () =>
       ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/setting?open=bookmarks',
+        partition : 'persist:setting',
         mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
         vip: true,
       }),
@@ -547,7 +556,13 @@ function showBookmarksMenu() {
       sublabel: m.sublabel,
       visible: m.visible,
       type: m.type,
-      submenu: m.submenu?.map((s) => ({ label: s.label, type: s.type, sublabel: s.sublabel, visible: s.visible })),
+      submenu: m.submenu?.map((m2) => ({
+        label: m2.label,
+        type: m2.type,
+        sublabel: m2.sublabel,
+        visible: m2.visible,
+        submenu: m2.submenu?.map((m3) => ({ label: m3.label, type: m3.type, sublabel: m3.sublabel, visible: m3.visible })),
+      })),
     })),
     windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
   });
@@ -944,6 +959,7 @@ function renderMessage(cm) {
   } else if (cm.name == '[show-browser-setting]') {
     renderNewTabData({
       url: 'http://127.0.0.1:60080/setting',
+      partition : 'persist:setting',
       vip: true,
     });
   } else if (cm.name == '[download-link]') {

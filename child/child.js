@@ -152,13 +152,14 @@ child.electron.app.on('ready', function () {
   });
 
   child.electron.app.on('window-all-closed', () => {
+    child.log('window-all-closed : ' + child.partition + ' : ' + child.index);
     // if (process.platform != 'darwin') {
     //   child.electron.app.quit();
     // }
-    child.log('window-all-closed : ' + child.partition);
-    // if (!child.partition.contains('persist:')) {
-    //   child.electron.app.quit();
-    // }
+
+    if (child.partition.contains('persist:') && child.index > 5) {
+      process.exit();
+    }
   });
 
   child.electron.app.on('login', (event, webContents, details, authInfo, callback) => {

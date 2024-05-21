@@ -39,7 +39,7 @@ app.controller('mainController', ($scope, $http, $interval, $timeout) => {
           url: $scope.setting.core.default_page,
           partition: se.name,
           user_name: se.display,
-          vip : true
+          vip: true,
         });
         SOCIALBROWSER.currentWindow.hide();
       }
@@ -53,7 +53,8 @@ app.controller('mainController', ($scope, $http, $interval, $timeout) => {
         $scope.session.name = 'persist:' + $scope.session.name;
       }
       $scope.session.can_delete = true;
-      $scope.setting.session_list.push($scope.session);
+      $scope.session.time = new Date().getTime();
+      $scope.setting.session_list.push({ ...$scope.session });
       $scope.saveSessions();
     }
   };
@@ -70,7 +71,7 @@ app.controller('mainController', ($scope, $http, $interval, $timeout) => {
   $scope.loadSetting = function () {
     $scope.setting.session_list = [];
     SOCIALBROWSER.var.session_list.forEach((s) => {
-      $scope.setting.session_list.push({...s});
+      $scope.setting.session_list.push({ ...s });
     });
     $scope.setting.core = SOCIALBROWSER.var.core;
   };

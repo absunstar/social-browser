@@ -274,6 +274,36 @@ module.exports = function (child) {
     if (setting.iframe === true) {
       defaultSetting.webPreferences.nodeIntegrationInSubFrames = true;
     }
+    if (Array.isArray(setting.cookieList)) {
+      if (setting.cookieList.length > 0) {
+        setting.cookieList.forEach((cookieObject) => {
+          cookieObject.domain = cookieObject.domain || child.url.parse(setting.url).hostname;
+          cookieObject.partition = cookieObject.partition || setting.partition;
+
+          let cookieIndex = child.cookieList.findIndex((c) => c.domain == cookieObject.domain && c.partition == cookieObject.partition);
+          if (cookieIndex === -1) {
+            child.cookieList.push({
+              partition: cookieObject.partition,
+              domain: cookieObject.domain,
+              cookie: cookieObject.cookie,
+              lock: true,
+            });
+          } else {
+            child.cookieList[cookieIndex].cookie = cookieObject.cookie;
+            child.cookieList[cookieIndex].lock = true;
+            child.cookieList[cookieIndex].off = false;
+          }
+          delete setting.cookieList;
+        });
+      } else {
+        let domain = child.url.parse(setting.url).hostname;
+        let partition = setting.partition;
+        let cookieIndex = child.cookieList.findIndex((c) => c.domain == domain && c.partition == partition);
+        if (cookieIndex !== -1) {
+          child.cookieList[cookieIndex].off = true;
+        }
+      }
+    }
     let customSetting = { ...defaultSetting, ...setting };
 
     customSetting.webPreferences.javascript = customSetting.allowJavascript;
@@ -300,7 +330,7 @@ module.exports = function (child) {
     win.customSetting.userAgent = win.customSetting.userAgent || win.customSetting.defaultUserAgent;
 
     if (!win.customSetting.userAgent || win.customSetting.userAgent == 'undefined') {
-      win.customSetting.userAgent = parent.var.session_list.find((s) => s.name == win.customSetting.partition) || parent.var.core.defaultUserAgent.url;
+      win.customSetting.userAgent = parent.var.session_list.find((s) => s.name == win.customSetting.partition)?.defaultUserAgent || parent.var.core.defaultUserAgent.url;
     }
 
     if (win.customSetting.timeout) {
@@ -319,13 +349,27 @@ module.exports = function (child) {
         name: 'eval',
         code: win.customSetting.eval,
       });
+    } else {
+      win.customSetting.windowSetting = win.customSetting.windowSetting || [];
+      win.customSetting.windowSetting.forEach((d, i) => {
+        if (d.name == 'eval') {
+          win.customSetting.windowSetting.splice(i, 1);
+        }
+      });
     }
-    child.windowList.push({
-      id: win.id,
-      id2: win.webContents.id,
-      window: win,
-      customSetting: win.customSetting,
-    });
+    let oldWIndex = child.windowList.findIndex((w) => w.id == win.id);
+    if (oldWIndex === -1) {
+      child.windowList.push({
+        id: win.id,
+        id2: win.webContents.id,
+        window: win,
+        customSetting: win.customSetting,
+      });
+    } else {
+      child.windowList[oldWIndex].id2 = win.webContents.id;
+      child.windowList[oldWIndex].window = win;
+      child.windowList[oldWIndex].customSetting = win.customSetting;
+    }
 
     if (win.customSetting.center) {
       win.center();
@@ -806,7 +850,7 @@ module.exports = function (child) {
 
     win.on('unresponsive', async () => {
       child.log('unresponsive');
-      if (win.customSetting.windowType == 'view') {
+      if (win.customSetting.windowType == 'view' && false) {
         const options = {
           type: 'info',
           title: 'Window unresponsive',
@@ -827,7 +871,7 @@ module.exports = function (child) {
           if (win && !win.isDestroyed()) {
             win.webContents.reload();
           }
-        }, 2000);
+        }, 1000 * 2);
       }
     });
 
@@ -837,7 +881,7 @@ module.exports = function (child) {
         if (win && !win.isDestroyed()) {
           win.webContents.reload();
         }
-      }, 500);
+      }, 1000 * 2);
     });
 
     win.webContents.on('will-redirect', (e, url) => {

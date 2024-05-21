@@ -10,6 +10,7 @@ module.exports = function init(parent) {
   parent.extensionList = [];
   parent.information = {};
   parent.cookies = {};
+  parent.freeUsersCount = 50;
 
   parent.isAllowURL = function (url) {
     if (parent.var.blocking.white_list.some((item) => item.url.length > 2 && url.like(item.url))) {
@@ -158,8 +159,6 @@ module.exports = function init(parent) {
     parent.save_var(name);
   };
 
-
-
   require(parent.path.join(parent.dir, 'parent', 'fn.js'))(parent);
   require(parent.path.join(parent.dir, 'parent', 'file.js'))(parent);
   require(parent.path.join(parent.dir, 'parent', 'download.js'))(parent);
@@ -170,8 +169,6 @@ module.exports = function init(parent) {
   require(parent.path.join(parent.dir, 'parent', 'ws.js'))(parent);
   require(parent.path.join(parent.dir, 'parent', 'chat.js'))(parent);
 
- 
-
   // if (parent.speedMode) {
   //     require(parent.path.join(parent.dir, 'child', 'windows.js'))(parent);
   //     require(parent.path.join(parent.dir, 'child', 'ipc.js'))(parent);
@@ -180,8 +177,6 @@ module.exports = function init(parent) {
   //  require(parent.path.join(parent.dir, 'spiders', 'page-urls.js'))(parent);
   //  require(parent.path.join(parent.dir, 'spiders', 'page-info.js'))(parent);
   //  require(parent.path.join(parent.dir, 'spiders', 'page-content.js'))(parent);
-
-
 
   parent.createChildWindow = function (options) {
     parent.createNewWindow(options);
@@ -201,6 +196,7 @@ module.exports = function init(parent) {
       parent.clientList[index].options = options;
       parent.clientList[index].ws.send({ type: 're-connected' });
     } else {
+      index = parent.clientList.length;
       parent.clientList.push({
         source: 'child',
         partition: options.partition,
@@ -210,8 +206,6 @@ module.exports = function init(parent) {
         index: index,
         options: options,
       });
-
-      index = parent.clientList.length - 1;
 
       let child = parent.run([
         '--index=' + index,
@@ -236,38 +230,37 @@ module.exports = function init(parent) {
       });
 
       child.on('close', (code, signal) => {
-        parent.log(`\n [ child:${child.pid} ${options.uuid} / ${parent.clientList.length} ] close with code ( ${code} ) and signal ( ${signal} ) \n`);
+        parent.log(`\n [ Exit :: child:${child.pid} ${options.uuid} / ${parent.clientList.length} ] close with code ( ${code} ) and signal ( ${signal} ) \n`);
+        let index2 = parent.clientList.findIndex((c) => c.pid == child.pid);
+        if (index2 !== -1) {
+          if (parent.clientList[index2].option_list.some((op) => op.windowType == 'main') && code == 2147483651 && !signal) {
+            console.log('\n\n ................. Main Window Close UpNormal ..............\n\n');
 
-        let index = parent.clientList.findIndex((c) => c.uuid == options.uuid);
-        if (parent.clientList[index].option_list.some((op) => op.windowType == 'main') && code == 2147483651 && !signal) {
-          console.log('\n\n ................. Main Window Close UpNormal ..............\n\n');
+            parent.createChildProcess(parent.clientList[index2].option_list.find(op.windowType == 'main'));
 
-          parent.createChildProcess(parent.clientList[index].option_list.find(op.windowType == 'main'));
-
-          parent.clientList.forEach((client, i) => {
-            if (client.option_list.some(op.windowType == 'view')) {
-              client.ws.send({
-                type: '[set-window]',
-              });
-            }
-          });
-        }
-
-        parent.clientList[index].option_list.forEach((op) => {
-          if (op.tabID) {
             parent.clientList.forEach((client, i) => {
-              if (client.windowType === 'main') {
+              if (client.option_list.some(op.windowType == 'view')) {
                 client.ws.send({
-                  type: '[remove-tab]',
-                  tabID: op.tabID,
+                  type: '[set-window]',
                 });
               }
             });
           }
-        });
 
-        if (parent.clientList[index]) {
-          parent.clientList.splice(index, 1);
+          parent.clientList[index2].option_list.forEach((op) => {
+            if (op.tabID) {
+              parent.clientList.forEach((client, i) => {
+                if (client.windowType === 'main') {
+                  client.ws.send({
+                    type: '[remove-tab]',
+                    tabID: op.tabID,
+                  });
+                }
+              });
+            }
+          });
+
+          parent.clientList.splice(index2, 1);
         }
       });
 
@@ -275,7 +268,7 @@ module.exports = function init(parent) {
         parent.log(` [ child ${options.uuid} / ${parent.clientList.length} ] Error \n ${err}`);
       });
       child.on('disconnect', (err) => {
-        //  parent.log(` [ child ${options.uuid} / ${parent.clientList.length} ] disconnect`, err);
+        parent.log(` [ child ${options.uuid} / ${parent.clientList.length} ] disconnect`, err);
       });
       child.on('spawn', (err) => {
         // parent.log(` [ child ${options.uuid} / ${parent.clientList.length} ] spawn`, err);
