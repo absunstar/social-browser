@@ -4,6 +4,7 @@
   let likePostScript = SOCIALBROWSER.readFile(__dirname + '/facebook-like-post.js');
   let likePageScript = SOCIALBROWSER.readFile(__dirname + '/facebook-like-page.js');
   let removeBlockedUsersScript = SOCIALBROWSER.readFile(__dirname + '/facebook-remove-blocked-users.js');
+  let followUserScript = SOCIALBROWSER.readFile(__dirname + '/facebook-follow-user.js');
   let menuList = [];
 
   menuList.push({
@@ -341,6 +342,66 @@
     if (menuList2.length > 0) {
       menuList.push({
         label: 'Like Facebook Post',
+        type: 'submenu',
+        submenu: menuList2,
+      });
+    }
+  }
+  if ((followFacebookUser = true)) {
+    let menuList2 = [];
+    menuList2.push({
+      label: 'Follow By All Profiles : ' + SOCIALBROWSER.var.session_list.length,
+      click() {
+        for (let index2 = 0; index2 < SOCIALBROWSER.var.session_list.length; index2++) {
+          setTimeout(() => {
+            if ((s = SOCIALBROWSER.var.session_list[index2])) {
+              SOCIALBROWSER.ipc('[open new popup]', {
+                partition: s.name,
+                url: document.location.href,
+                show: true,
+                center: true,
+                timeout: 1000 * 30,
+                eval: followUserScript,
+              });
+            }
+          }, 1000 * 10 * index2);
+        }
+      },
+    });
+    menuList2.push({
+      type: 'separator',
+    });
+    let count = Math.ceil(SOCIALBROWSER.var.session_list.length / 10);
+    for (let index = 0; index < count; index++) {
+      let from = index * 10 + 1;
+      let to = (index + 1) * 10;
+      if (to > SOCIALBROWSER.var.session_list.length) {
+        to = SOCIALBROWSER.var.session_list.length;
+      }
+      let count2 = to - from + 1;
+      menuList2.push({
+        label: 'Follow By Profiles : ' + from + ' , To : ' + to,
+        click() {
+          for (let index2 = 0; index2 < count2; index2++) {
+            setTimeout(() => {
+              if ((s = SOCIALBROWSER.var.session_list[from - 1 + index2])) {
+                SOCIALBROWSER.ipc('[open new popup]', {
+                  partition: s.name,
+                  url: document.location.href,
+                  show: true,
+                  center: true,
+                  timeout: 1000 * 30,
+                  eval: followUserScript,
+                });
+              }
+            }, 1000 * 10 * index2);
+          }
+        },
+      });
+    }
+    if (menuList2.length > 0) {
+      menuList.push({
+        label: 'Follow Facebook User',
         type: 'submenu',
         submenu: menuList2,
       });
