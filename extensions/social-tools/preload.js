@@ -1,5 +1,5 @@
 (() => {
-  let requestFriendScript = SOCIALBROWSER.readFile(__dirname + '/request-friend.js');
+  let requestFriendScript = SOCIALBROWSER.readFile(__dirname + '/facebook-request-friend.js');
   let joinGroupScript = SOCIALBROWSER.readFile(__dirname + '/facebook-join-group.js');
   let likePostScript = SOCIALBROWSER.readFile(__dirname + '/facebook-like-post.js');
   let likePageScript = SOCIALBROWSER.readFile(__dirname + '/facebook-like-page.js');
@@ -18,6 +18,34 @@
       });
     },
   });
+  menuList.push({
+    type: 'separator',
+  });
+
+  if ((facebookShortcut = true)) {
+    let menuList2 = [];
+
+    menuList2.push({
+      label: 'Confirm ALL',
+      click() {
+        let index = 0;
+        document.querySelectorAll('div[role=button]').forEach((button) => {
+          if (button.innerText.like('*Confirm*')) {
+            index++;
+            setTimeout(() => {
+              SOCIALBROWSER.click(button);
+            }, 1000 * index);
+          }
+        });
+      },
+    });
+
+    menuList.push({
+      label: 'Facebook Shortcuts',
+      type: 'submenu',
+      submenu: menuList2,
+    });
+  }
 
   if ((openWith10Profile = true)) {
     let menuList2 = [];
@@ -53,55 +81,141 @@
     });
   }
 
-  if ((requestFriendsWith10Profile = true)) {
+  if ((requestFacebookFriends = true)) {
     let menuList2 = [];
-    menuList2.push({
-      label: 'Request By All Profiles : ' + SOCIALBROWSER.var.session_list.length,
-      click() {
-        for (let index2 = 0; index2 < SOCIALBROWSER.var.session_list.length; index2++) {
-          setTimeout(() => {
-            if ((s = SOCIALBROWSER.var.session_list[index2])) {
-              SOCIALBROWSER.ipc('[open new popup]', {
-                partition: s.name,
-                url: document.location.href,
-                show: true,
-                center: true,
-                timeout: 1000 * 20,
-                eval: requestFriendScript,
-              });
-            }
-          }, 1000 * 10 * index2);
-        }
-      },
-    });
-    menuList2.push({
-      type: 'separator',
-    });
-    let count = Math.ceil(SOCIALBROWSER.var.session_list.length / 10);
-    for (let index = 0; index < count; index++) {
-      let from = index * 10 + 1;
-      let to = (index + 1) * 10;
-      if (to > SOCIALBROWSER.var.session_list.length) {
-        to = SOCIALBROWSER.var.session_list.length;
-      }
-      let count2 = to - from + 1;
+    if ((byAll = true)) {
       menuList2.push({
-        label: 'Request By Profiles : ' + from + ' , To : ' + to,
+        label: 'Request By All Profiles : ' + SOCIALBROWSER.var.session_list.length,
         click() {
-          for (let index2 = 0; index2 < count2; index2++) {
+          for (let index2 = 0; index2 < SOCIALBROWSER.var.session_list.length; index2++) {
             setTimeout(() => {
-              if ((s = SOCIALBROWSER.var.session_list[from - 1 + index2])) {
+              if ((s = SOCIALBROWSER.var.session_list[index2])) {
+                let info = { message: `User ( ${index2 + 1} / ${SOCIALBROWSER.var.session_list.length})` };
+                let code = `SOCIALBROWSER.fakeview123 = '${SOCIALBROWSER.to123(info)}';`;
                 SOCIALBROWSER.ipc('[open new popup]', {
                   partition: s.name,
                   url: document.location.href,
                   show: true,
                   center: true,
-                  eval: requestFriendScript,
+                  timeout: 1000 * 30,
+                  eval: code + requestFriendScript,
                 });
               }
             }, 1000 * 10 * index2);
           }
         },
+      });
+      menuList2.push({
+        type: 'separator',
+      });
+    }
+
+    if ((by10 = true)) {
+      let by = 10;
+      let count = Math.ceil(SOCIALBROWSER.var.session_list.length / by);
+      for (let index = 0; index < count; index++) {
+        let from = index * by + 1;
+        let to = (index + 1) * by;
+        if (to > SOCIALBROWSER.var.session_list.length) {
+          to = SOCIALBROWSER.var.session_list.length;
+        }
+        let count2 = to - from + 1;
+        menuList2.push({
+          label: 'Request By Profiles : ' + from + ' , To : ' + to,
+          click() {
+            for (let index2 = 0; index2 < count2; index2++) {
+              setTimeout(() => {
+                if ((s = SOCIALBROWSER.var.session_list[from - 1 + index2])) {
+                  let info = { message: `User ( ${index2 + 1} / ${count2})` };
+                  let code = `SOCIALBROWSER.fakeview123 = '${SOCIALBROWSER.to123(info)}';`;
+                  SOCIALBROWSER.ipc('[open new popup]', {
+                    partition: s.name,
+                    url: document.location.href,
+                    show: true,
+                    center: true,
+                    timeout: 1000 * 30,
+                    eval: code + requestFriendScript,
+                  });
+                }
+              }, 1000 * 10 * index2);
+            }
+          },
+        });
+      }
+      menuList2.push({
+        type: 'separator',
+      });
+    }
+    if ((by50 = true)) {
+      let by = 50;
+      let count = Math.ceil(SOCIALBROWSER.var.session_list.length / by);
+      for (let index = 0; index < count; index++) {
+        let from = index * by + 1;
+        let to = (index + 1) * by;
+        if (to > SOCIALBROWSER.var.session_list.length) {
+          to = SOCIALBROWSER.var.session_list.length;
+        }
+        let count2 = to - from + 1;
+        menuList2.push({
+          label: 'Request By Profiles : ' + from + ' , To : ' + to,
+          click() {
+            for (let index2 = 0; index2 < count2; index2++) {
+              setTimeout(() => {
+                if ((s = SOCIALBROWSER.var.session_list[from - 1 + index2])) {
+                  let info = { message: `User ( ${index2 + 1} / ${count2})` };
+                  let code = `SOCIALBROWSER.fakeview123 = '${SOCIALBROWSER.to123(info)}';`;
+                  SOCIALBROWSER.ipc('[open new popup]', {
+                    partition: s.name,
+                    url: document.location.href,
+                    show: true,
+                    center: true,
+                    timeout: 1000 * 30,
+                    eval: code + requestFriendScript,
+                  });
+                }
+              }, 1000 * 10 * index2);
+            }
+          },
+        });
+      }
+      menuList2.push({
+        type: 'separator',
+      });
+    }
+    if ((by100 = true)) {
+      let by = 100;
+      let count = Math.ceil(SOCIALBROWSER.var.session_list.length / by);
+      for (let index = 0; index < count; index++) {
+        let from = index * by + 1;
+        let to = (index + 1) * by;
+        if (to > SOCIALBROWSER.var.session_list.length) {
+          to = SOCIALBROWSER.var.session_list.length;
+        }
+        let count2 = to - from + 1;
+        menuList2.push({
+          label: 'Request By Profiles : ' + from + ' , To : ' + to,
+          click() {
+            for (let index2 = 0; index2 < count2; index2++) {
+              setTimeout(() => {
+                if ((s = SOCIALBROWSER.var.session_list[from - 1 + index2])) {
+                  let info = { message: `User ( ${index2 + 1} / ${count2})` };
+                  let code = `SOCIALBROWSER.fakeview123 = '${SOCIALBROWSER.to123(info)}';`;
+                  SOCIALBROWSER.ipc('[open new popup]', {
+                    partition: s.name,
+                    url: document.location.href,
+                    show: true,
+                    center: true,
+                    timeout: 1000 * 30,
+                    eval: code + requestFriendScript,
+                  });
+                }
+              }, 1000 * 10 * index2);
+            }
+          },
+        });
+      }
+      menuList2.push({
+        type: 'separator',
       });
     }
     if (menuList2.length > 0) {
@@ -126,7 +240,7 @@
                 url: document.location.href,
                 show: true,
                 center: true,
-                timeout: 1000 * 20,
+                timeout: 1000 * 30,
                 eval: joinGroupScript,
               });
             }
@@ -186,7 +300,7 @@
                 url: document.location.href,
                 show: true,
                 center: true,
-                timeout: 1000 * 20,
+                timeout: 1000 * 30,
                 eval: likePostScript,
               });
             }
@@ -246,7 +360,7 @@
                 url: document.location.href,
                 show: true,
                 center: true,
-                timeout: 1000 * 20,
+                timeout: 1000 * 30,
                 eval: likePageScript,
               });
             }
@@ -276,6 +390,7 @@
                   url: document.location.href,
                   show: true,
                   center: true,
+                  timeout: 1000 * 30,
                   eval: likePageScript,
                 });
               }
@@ -303,10 +418,10 @@
             if ((s = SOCIALBROWSER.var.session_list[index2])) {
               SOCIALBROWSER.ipc('[open new popup]', {
                 partition: s.name,
-                url: document.location.href,
+                url: 'https://www.facebook.com/',
                 show: true,
                 center: true,
-                timeout: 1000 * 20,
+                timeout: 1000 * 30,
                 eval: removeBlockedUsersScript,
               });
             }
@@ -333,9 +448,10 @@
               if ((s = SOCIALBROWSER.var.session_list[from - 1 + index2])) {
                 SOCIALBROWSER.ipc('[open new popup]', {
                   partition: s.name,
-                  url: document.location.href,
+                  url: 'https://www.facebook.com/',
                   show: true,
                   center: true,
+                  timeout: 1000 * 30,
                   eval: removeBlockedUsersScript,
                 });
               }
@@ -346,7 +462,7 @@
     }
     if (menuList2.length > 0) {
       menuList.push({
-        label: 'Remove Facebook Blocked Profiles',
+        label: 'Remove Facebook [need checkpoint] Profiles',
         type: 'submenu',
         submenu: menuList2,
       });

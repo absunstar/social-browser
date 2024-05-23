@@ -1,6 +1,8 @@
 SOCIALBROWSER.onLoad(() => {
   let tryCount = 0;
   let tryInterval = null;
+  SOCIALBROWSER.fakeview = JSON.parse(SOCIALBROWSER.from123(SOCIALBROWSER.fakeview123));
+  alert(SOCIALBROWSER.fakeview.message);
   function addFriend() {
     tryCount++;
     console.log('Add Friend');

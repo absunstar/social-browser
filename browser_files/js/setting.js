@@ -408,16 +408,9 @@ app.controller('mainController', ($scope, $http, $timeout) => {
   };
 
   $scope.addSession = function () {
-    if ($scope.session.display.length > 0) {
-      $scope.session.name = $scope.session.name || new Date().getTime().toString();
-      if ($scope.session.name.indexOf('persist:') === -1) {
-        $scope.session.name = 'persist:' + $scope.session.name;
-      }
-      $scope.session.can_delete = true;
-      $scope.session.time = new Date().getTime();
-      $scope.setting.session_list.push({ ...$scope.session });
-      $scope.session = {};
-    }
+    let ss = SOCIALBROWSER.addSession($scope.session.display);
+    $scope.setting.session_list.push(ss);
+    $scope.session = {};
   };
 
   $scope.removeSession = function (_se) {

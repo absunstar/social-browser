@@ -17,7 +17,34 @@ SOCIALBROWSER.requestCookie = function (obj = {}) {
   obj.domain = obj.domain || document.location.hostname;
   return SOCIALBROWSER.ipc('request-cookie', obj);
 };
+SOCIALBROWSER.addSession = function (session) {
+  if (typeof session == 'string') {
+    session = {
+      display: session,
+    };
+    session.name = 'persist:' + SOCIALBROWSER.md5(session.display);
+  }
+  if (session.name && session.display) {
+    if (!session.name.like('*persist*')) {
+      session.name = 'persist:' + session.name;
+    }
+    session.can_delete = true;
+    session.time = session.time || new Date().getTime();
+    SOCIALBROWSER.ws({ type: '[add-session]', session: session });
+  }
+  return session;
+};
+SOCIALBROWSER.removeSession = SOCIALBROWSER.deleteSession = function (session) {
+  if (typeof session == 'string') {
+    session = {
+      display: session,
+    };
+  }
 
+  SOCIALBROWSER.ws({ type: '[remove-session]', session: session });
+
+  return session;
+};
 SOCIALBROWSER.fetchJson = function (options, callback) {
   options.id = new Date().getTime() + Math.random();
   options.url = SOCIALBROWSER.handleURL(options.url);

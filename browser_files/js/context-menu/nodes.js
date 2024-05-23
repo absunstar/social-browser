@@ -30,7 +30,7 @@ function collectData() {
     return;
   }
 
-  if (SOCIALBROWSER.customSetting.windowType === 'main' || document.location.href.like('*127.0.0.1:60080*')) {
+  if (SOCIALBROWSER.customSetting.windowType === 'main' || document.location.href.like('*127.0.0.1:60080*|*browser://*')) {
     return;
   }
 
@@ -83,7 +83,7 @@ function collectData() {
         index: index,
         id: el.id,
         name: el.name,
-        value: el.value || el.innerHTML,
+        value: el.value || el.innerText,
         className: el.className,
         type: el.type,
       });

@@ -1,4 +1,4 @@
-SOCIALBROWSER.var.session_list.sort((a, b) => (a.display > b.display ? 1 : -1));
+SOCIALBROWSER.var.session_list.sort((a, b) => (a.time > b.time ? -1 : 1));
 
 require(SOCIALBROWSER.files_dir + '/js/context-menu/menu.js');
 require(SOCIALBROWSER.files_dir + '/js/context-menu/decode.js');
@@ -274,7 +274,7 @@ SOCIALBROWSER.on('[update-browser-var]', (e, res) => {
     SOCIALBROWSER.onVarUpdated(res.options.name, res.options.data);
   }
   if (res.options.name == 'session_list') {
-    SOCIALBROWSER.var.session_list.sort((a, b) => (a.display > b.display ? 1 : -1));
+    SOCIALBROWSER.var.session_list.sort((a, b) => (a.time > b.time ? -1 : 1));
   }
   SOCIALBROWSER.callEvent('updated', { name: res.options.name });
 });

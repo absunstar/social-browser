@@ -169,7 +169,7 @@
             <div class="tabs-header">
               <a class="tab-link" onclick="site.showTabContent(event, '#basic_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-info-circle"></i> Basic </a>
 
-              <a class="tab-link" onclick="site.showTabContent(event, '#users_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-users"></i> Users </a>
+              <a class="tab-link" onclick="site.showTabContent(event, '#users_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-users"></i> Users Profile </a>
               <a class="tab-link" onclick="site.showTabContent(event, '#passwords_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-key"></i> Passwords </a>
               <a class="tab-link" onclick="site.showTabContent(event, '#extension_list_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-list"></i> Extensions </a>
 
@@ -740,9 +740,8 @@
                   <div class="row padding margin">
                     <div class="col5">
                       <fieldset>
-                        <legend>New Profile</legend>
+                        <legend>New User Profile</legend>
                         <i-control label="Name" ng-model="session.display"></i-control>
-                        <i-control label="ID" ng-model="session.name"></i-control>
                         <i-button type="push" ng-click="addSession()" label="Add to profiles"></i-button>
                       </fieldset>
                     </div>

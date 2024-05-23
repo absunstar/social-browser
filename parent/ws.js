@@ -258,7 +258,7 @@ module.exports = function init(parent) {
           break;
         case '[user_data_input][changed]':
           let index1 = parent.var.user_data_input.findIndex((u) => u.id === message.data.id);
-          if (index1 > -1) {
+          if (index1 !==-1) {
             parent.var.user_data_input[index1].data = message.data.data;
           } else {
             parent.var.user_data_input.push(message.data);
@@ -438,6 +438,36 @@ module.exports = function init(parent) {
             }
           });
           parent.save_var(session4);
+          break;
+        case '[add-session]':
+          let newSession = message.session;
+          if (newSession.name && newSession.display) {
+            let newSessionIndex = parent.var.session_list.findIndex((s) => s.name == newSession.name);
+            if (newSessionIndex === -1) {
+              parent.var.session_list.push({
+                name: newSession.name,
+                display: newSession.display,
+              });
+              parent.applay('session_list');
+            }
+          }
+
+          break;
+        case '[remove-session]':
+          let oldSession = message.session;
+          if (oldSession.name) {
+            let oldSessionIndex = parent.var.session_list.findIndex((s) => s.name == oldSession.name);
+            if (oldSessionIndex !== -1) {
+              parent.var.session_list.splice(oldSessionIndex, 1);
+              parent.applay('session_list');
+            }
+          } else if (oldSession.display) {
+            let oldSessionIndex = parent.var.session_list.findIndex((s) => s.display == oldSession.display);
+            if (oldSessionIndex !== -1) {
+              parent.var.session_list.splice(oldSessionIndex, 1);
+              parent.applay('session_list');
+            }
+          }
           break;
         case '[add-window-url]':
           if (message.url && !message.url.contains('60080')) {

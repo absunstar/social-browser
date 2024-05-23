@@ -380,7 +380,6 @@ module.exports = function init(parent) {
       parent.var.user_data_input = parent.var.user_data_input.filter((v, i, a) => a.findIndex((t) => t.hostname === v.hostname && t.password === v.password && t.username === v.username) === i);
       parent.var.user_data_input.forEach((d, i) => {
         delete parent.var.user_data_input[i].options;
-        delete parent.var.user_data_input[i].__options;
         delete parent.var.user_data_input[i].parentSetting;
         parent.var.user_data_input[i].hostname = parent.var.user_data_input[i].hostname || parent.var.user_data_input[i].host;
 
@@ -393,7 +392,6 @@ module.exports = function init(parent) {
       parent.var.user_data = parent.var.user_data.filter((v, i, a) => a.findIndex((t) => t.hostname === v.hostname && JSON.stringify(t.data || {}) === JSON.stringify(v.data || {})) === i);
       parent.var.user_data.forEach((d, i) => {
         delete parent.var.user_data[i].options;
-        delete parent.var.user_data[i].__options;
         delete parent.var.user_data[i].parentSetting;
         parent.var.user_data[i].hostname = parent.var.user_data[i].hostname || parent.var.user_data[i].host;
 
@@ -796,6 +794,7 @@ module.exports = function init(parent) {
   parent.var.session_list.forEach((s1) => {
     s1.time = s1.time || new Date().getTime();
   });
+  parent.var.session_list.sort((a, b) => (a.time > b.time ? -1 : 1));
 
   parent.var.core.active = true;
   parent.activated = function () {

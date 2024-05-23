@@ -577,12 +577,11 @@ module.exports = function init(child) {
     }
     child.parent.var.user_data = child.parent.var.user_data || [];
     let index = child.parent.var.user_data.findIndex((u) => u.id === data.id);
-    if (index > -1) {
+    if (index !== -1) {
       child.parent.var.user_data[index].data = data.data;
     } else {
       child.parent.var.user_data.push(data);
     }
-    delete data.__options;
     delete data.parentSetting;
     child.sendMessage({
       type: '[user_data][changed]',
@@ -602,7 +601,6 @@ module.exports = function init(child) {
     } else {
       child.parent.var.user_data_input.push(data);
     }
-    delete data.__options;
     delete data.parentSetting;
     child.sendMessage({
       type: '[user_data_input][changed]',
