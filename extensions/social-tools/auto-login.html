@@ -86,7 +86,7 @@
           });
         };
         $scope.createProfile = function (login) {
-          SOCIALBROWSER.addSession(login.username);
+          SOCIALBROWSER.addSession({ display: login.username, defaultUserAgent: SOCIALBROWSER.var.core.defaultUserAgent });
         };
         $scope.testAllLogin = function () {
           $scope.loginList.forEach((login, i) => {

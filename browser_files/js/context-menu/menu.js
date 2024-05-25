@@ -1668,10 +1668,12 @@ SOCIALBROWSER.contextmenu = function (e) {
     }
 
     try {
+      SOCIALBROWSER.currentWindow = SOCIALBROWSER.remote.getCurrentWindow();
+      SOCIALBROWSER.webContents = SOCIALBROWSER.currentWindow.webContents;
       SOCIALBROWSER.currentWindow.show();
     } catch (error) {
-      SOCIALBROWSER.currentWindow = SOCIALBROWSER.remote.getCurrentWindow();
-      SOCIALBROWSER.currentWindow.show();
+      console.log(error);
+      return;
     }
 
     e = e || { x: 0, y: 0 };
@@ -1713,8 +1715,6 @@ SOCIALBROWSER.contextmenu = function (e) {
       })),
       windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
     });
-
-
   } catch (error) {
     SOCIALBROWSER.log(error);
   }

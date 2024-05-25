@@ -134,6 +134,42 @@ module.exports = function (child) {
     }
   };
 
+  child.sendCurrentDataLoop = function () {
+    if (child.sendCurrentDataAllow) {
+      child.sendCurrentDataAllow = false;
+
+      if (child.addressbarWindow && !child.addressbarWindow.isDestroyed()) {
+        child.addressbarWindow.hide();
+      }
+      if (child.profilesWindow && !child.profilesWindow.isDestroyed()) {
+        child.profilesWindow.hide();
+      }
+
+      child.windowList.forEach((w) => {
+        if (w.customSetting.windowType === 'main' && !w.window.isDestroyed()) {
+          let data = {
+            type: '[send-window-status]',
+            mainWindow: {
+              id: w.window.id,
+              bounds: w.window.getBounds(),
+              isMaximized: w.window.isMaximized(),
+              hide: w.window.isMinimized() || !w.window.isVisible(),
+            },
+            screen: {
+              bounds: child.electron.screen.getPrimaryDisplay().bounds,
+            },
+          };
+
+          child.sendMessage(data);
+        }
+      });
+    }
+
+    setTimeout(() => {
+      child.sendCurrentDataLoop();
+    }, 10);
+  };
+
   child.createNewWindow = function (setting) {
     delete setting.name;
     let parent = child.parent;
@@ -518,46 +554,10 @@ module.exports = function (child) {
     }
 
     win.on('blur', function () {
-      // if (win.customSetting.windowType === 'addressbar' || win.customSetting.windowType === 'profiles') {
-      //   win.hide();
-      // }
-    });
-
-    child.sendCurrentDataLoop = function () {
-      if (child.sendCurrentDataAllow) {
-        child.sendCurrentDataAllow = false;
-
-        if (child.addressbarWindow && !child.addressbarWindow.isDestroyed()) {
-          child.addressbarWindow.hide();
-        }
-        if (child.profilesWindow && !child.profilesWindow.isDestroyed()) {
-          child.profilesWindow.hide();
-        }
-
-        child.windowList.forEach((w) => {
-          if (w.customSetting.windowType === 'main' && !w.window.isDestroyed()) {
-            let data = {
-              type: '[send-window-status]',
-              mainWindow: {
-                id: w.window.id,
-                bounds: w.window.getBounds(),
-                isMaximized: w.window.isMaximized(),
-                hide: w.window.isMinimized() || !w.window.isVisible(),
-              },
-              screen: {
-                bounds: child.electron.screen.getPrimaryDisplay().bounds,
-              },
-            };
-
-            child.sendMessage(data);
-          }
-        });
+      if (win.customSetting.windowType == 'addressbar' || win.customSetting.windowType == 'profiles') {
+        win.hide();
       }
-
-      setTimeout(() => {
-        child.sendCurrentDataLoop();
-      }, 10);
-    };
+    });
 
     if (win.customSetting.windowType === 'main') {
       child.sendCurrentDataLoop();

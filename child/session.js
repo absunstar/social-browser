@@ -380,9 +380,16 @@ module.exports = function (child) {
 
         if (!child.isAllowURL(url)) {
           if (url.like('*.js*|*/js*')) {
+            let query = '';
+            if (url.split('?')[1]) {
+              query += url.split('?')[1] + '&x-url=' + url.split('?')[0];
+            } else {
+              query += 'x-url=' + url;
+            }
+
             callback({
               cancel: false,
-              redirectURL: 'browser://js/fake.js?' + url.split('?')[1],
+              redirectURL: 'browser://js/fake.js?' + query,
             });
           } else {
             callback({

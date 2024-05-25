@@ -258,7 +258,7 @@ module.exports = function init(parent) {
           break;
         case '[user_data_input][changed]':
           let index1 = parent.var.user_data_input.findIndex((u) => u.id === message.data.id);
-          if (index1 !==-1) {
+          if (index1 !== -1) {
             parent.var.user_data_input[index1].data = message.data.data;
           } else {
             parent.var.user_data_input.push(message.data);
@@ -444,10 +444,7 @@ module.exports = function init(parent) {
           if (newSession.name && newSession.display) {
             let newSessionIndex = parent.var.session_list.findIndex((s) => s.name == newSession.name);
             if (newSessionIndex === -1) {
-              parent.var.session_list.push({
-                name: newSession.name,
-                display: newSession.display,
-              });
+              parent.var.session_list.push(newSession);
               parent.applay('session_list');
             }
           }

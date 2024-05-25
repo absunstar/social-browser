@@ -24,12 +24,25 @@ SOCIALBROWSER.addSession = function (session) {
     };
     session.name = 'persist:' + SOCIALBROWSER.md5(session.display);
   }
+  if (!session.name && session.display) {
+    session.name = 'persist:' + SOCIALBROWSER.md5(session.display);
+  }
+
   if (session.name && session.display) {
     if (!session.name.like('*persist*')) {
       session.name = 'persist:' + session.name;
     }
     session.can_delete = true;
     session.time = session.time || new Date().getTime();
+    if (!session.privacy) {
+      session.privacy = {
+        enable_virtual_pc: true,
+        vpc: SOCIALBROWSER.generateVPC(),
+      };
+    }
+    if (!session.defaultUserAgent) {
+      session.defaultUserAgent = SOCIALBROWSER.var.userAgentList[SOCIALBROWSER.random(0, SOCIALBROWSER.var.userAgentList.length - 1)];
+    }
     SOCIALBROWSER.ws({ type: '[add-session]', session: session });
   }
   return session;
