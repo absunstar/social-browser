@@ -74,7 +74,7 @@
     "nsis": {
       "guid": "sbrowser-0000-0000-0000-freesbrowser",
       "perMachine": true,
-      "artifactName": "${productName} Setup.${ext}",
+      "artifactName": "${productName} ${version} Setup.${ext}",
       "uninstallDisplayName": "${productName}",
       "allowElevation": true,
       "createDesktopShortcut": "always",

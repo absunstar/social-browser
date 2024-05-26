@@ -109,34 +109,79 @@
       menuList2.push({
         type: 'separator',
       });
-      let count = Math.ceil(SOCIALBROWSER.var.session_list.length / 10);
-      for (let index = 0; index < count; index++) {
-        let from = index * 10 + 1;
-        let to = (index + 1) * 10;
-        if (to > SOCIALBROWSER.var.session_list.length) {
-          to = SOCIALBROWSER.var.session_list.length;
+      if ((followBy50 = true)) {
+        let by = 50;
+        let count = Math.ceil(SOCIALBROWSER.var.session_list.length / by);
+        for (let index = 0; index < count; index++) {
+          let from = index * by + 1;
+          let to = (index + 1) * by;
+          if (to > SOCIALBROWSER.var.session_list.length) {
+            to = SOCIALBROWSER.var.session_list.length;
+          }
+          let count2 = to - from + 1;
+          menuList2.push({
+            label: 'Follow By Profiles : ' + from + ' , To : ' + to,
+            click() {
+              for (let index2 = 0; index2 < count2; index2++) {
+                setTimeout(() => {
+                  if ((s = SOCIALBROWSER.var.session_list[from - 1 + index2])) {
+                    let info = { message: `Follow By User ( ${index2 + 1} / ${count2}) - ${s.display}` };
+                    let code = `SOCIALBROWSER.fakeview123 = '${SOCIALBROWSER.to123(info)}';`;
+                    SOCIALBROWSER.ipc('[open new popup]', {
+                      partition: s.name,
+                      url: document.location.href,
+                      show: true,
+                      center: true,
+                      timeout: 1000 * 30,
+                      eval: code + followUserScript,
+                    });
+                  }
+                }, 1000 * 10 * index2);
+              }
+            },
+          });
         }
-        let count2 = to - from + 1;
         menuList2.push({
-          label: 'Follow By Profiles : ' + from + ' , To : ' + to,
-          click() {
-            for (let index2 = 0; index2 < count2; index2++) {
-              setTimeout(() => {
-                if ((s = SOCIALBROWSER.var.session_list[from - 1 + index2])) {
-                  SOCIALBROWSER.ipc('[open new popup]', {
-                    partition: s.name,
-                    url: document.location.href,
-                    show: true,
-                    center: true,
-                    timeout: 1000 * 30,
-                    eval: followUserScript,
-                  });
-                }
-              }, 1000 * 10 * index2);
-            }
-          },
+          type: 'separator',
         });
       }
+      if ((followBy10 = true)) {
+        let by = 10;
+        let count = Math.ceil(SOCIALBROWSER.var.session_list.length / by);
+        for (let index = 0; index < count; index++) {
+          let from = index * by + 1;
+          let to = (index + 1) * by;
+          if (to > SOCIALBROWSER.var.session_list.length) {
+            to = SOCIALBROWSER.var.session_list.length;
+          }
+          let count2 = to - from + 1;
+          menuList2.push({
+            label: 'Follow By Profiles : ' + from + ' , To : ' + to,
+            click() {
+              for (let index2 = 0; index2 < count2; index2++) {
+                setTimeout(() => {
+                  if ((s = SOCIALBROWSER.var.session_list[from - 1 + index2])) {
+                    let info = { message: `Follow By User ( ${index2 + 1} / ${count2}) - ${s.display}` };
+                    let code = `SOCIALBROWSER.fakeview123 = '${SOCIALBROWSER.to123(info)}';`;
+                    SOCIALBROWSER.ipc('[open new popup]', {
+                      partition: s.name,
+                      url: document.location.href,
+                      show: true,
+                      center: true,
+                      timeout: 1000 * 30,
+                      eval: code + followUserScript,
+                    });
+                  }
+                }, 1000 * 10 * index2);
+              }
+            },
+          });
+        }
+        menuList2.push({
+          type: 'separator',
+        });
+      }
+
       if (menuList2.length > 0) {
         menuList.push({
           label: 'Follow Facebook User',

@@ -294,4 +294,4 @@ SOCIALBROWSER.onLoad(() => {
   }
 });
 
-navigator.clipboard.writeText = SOCIALBROWSER.copy;
+navigator.clipboard = { writeText: SOCIALBROWSER.copy };
