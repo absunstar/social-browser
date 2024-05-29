@@ -236,7 +236,7 @@ module.exports = function (child) {
       defaultSetting.webPreferences.webSecurity = false;
       defaultSetting.webPreferences.allowRunningInsecureContent = true;
     } else if (setting.windowType === 'youtube') {
-      setting.url = 'http://127.0.0.1:60080/youtube-view?url=' + setting.url;
+      setting.url = 'browser://youtube-view?url=' + setting.url;
       setting.iframe = true;
       setting.show = true;
       setting.alwaysOnTop = true;
@@ -460,7 +460,7 @@ module.exports = function (child) {
 
     if (win.customSetting.url) {
       win.loadURL(win.customSetting.url, {
-        referrer: win.customSetting.referrer,
+        httpReferrer: win.customSetting.referrer || win.customSetting.referer,
         userAgent: win.customSetting.userAgent || parent.var.core.defaultUserAgent.url,
       });
     } else {

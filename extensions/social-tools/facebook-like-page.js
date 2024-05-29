@@ -1,16 +1,11 @@
 SOCIALBROWSER.onLoad(() => {
-  let exists = false;
   function likePage() {
-    if (exists) {
-      return;
-    }
-    console.log('Try Like Page');
-    document.querySelectorAll('div[role=button]').forEach((button) => {
-      if (!exists && button.innerText.like('*Like*') && !button.getAttribute('aria-label').like('*Liked*')) {
-        exists = true;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (!document.querySelector('div[aria-label="Liked"]')) {
+      if ((button = document.querySelector('div[aria-label="Like"]'))) {
         SOCIALBROWSER.click(button);
       }
-    });
+    }
   }
   setInterval(() => {
     likePage();

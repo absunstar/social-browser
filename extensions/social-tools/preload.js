@@ -210,7 +210,7 @@
                     eval: code + requestFriendScript,
                   });
                 }
-              }, 1000 * 10 * index2);
+              }, 1000 * 15 * index2);
             }
           },
         });
@@ -246,7 +246,7 @@
                       eval: code + requestFriendScript,
                     });
                   }
-                }, 1000 * 10 * index2);
+                }, 1000 * 15 * index2);
               }
             },
           });

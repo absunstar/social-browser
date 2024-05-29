@@ -308,8 +308,7 @@ module.exports = function (child) {
       child.log(`\n\n [ Handle Session ......  ( ${name} ) ]  / ${child.session_name_list.length} \n\n `);
 
       ss.protocol.handle('browser', (req) => {
-        let url = req.url.substr(10);
-        url = `http://127.0.0.1:60080/${url}`;
+        let url = req.url.replace('browser://', 'http://127.0.0.1:60080/').replace('/?', '?');
         return child.electron.net.fetch(url, {
           method: req.method,
           headers: req.headers,
@@ -672,7 +671,7 @@ module.exports = function (child) {
         if (a_orgin) {
           details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = a_orgin;
         } else {
-          details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = details['referer'] ? [details['referer']] : ['*'];
+          details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = [details['referrer']] || [details['referer']] || ['*'];
         }
         if (a_expose) {
           details.responseHeaders['Access-Control-Expose-Headers'.toLowerCase()] = a_expose;

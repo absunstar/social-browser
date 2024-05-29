@@ -151,8 +151,7 @@
       contextIsolation: false,
     });
     browser.electron.protocol.handle('browser', (req) => {
-      let url = req.url.substr(10);
-      url = url.replace('browser://', 'http://127.0.0.1:60080/');
+      let url = req.url.replace('browser://', 'http://127.0.0.1:60080/').replace('/?', '?');
       return browser.electron.net.fetch(url, {
         method: req.method,
         headers: req.headers,

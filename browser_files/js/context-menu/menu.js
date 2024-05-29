@@ -1295,7 +1295,7 @@ function createDevelopmentMenu() {
 
 function createMenuList(node) {
   if (SOCIALBROWSER.customSetting.windowType !== 'main') {
-    if (SOCIALBROWSER.selectedText.length > 0) {
+    if (SOCIALBROWSER.selectedText) {
       let stext = SOCIALBROWSER.selectedText.substring(0, 70);
       SOCIALBROWSER.menuList.push({
         label: `Copy [ ${stext} ] `,
@@ -1331,7 +1331,36 @@ function createMenuList(node) {
         type: 'separator',
       });
     }
+    if (SOCIALBROWSER.memoryText) {
+      let stext = SOCIALBROWSER.memoryText.substring(0, 70);
 
+      SOCIALBROWSER.menuList.push({
+        label: `Translate [ ${stext} ] `,
+        click() {
+          SOCIALBROWSER.ipc('[open new popup]', {
+            partition: SOCIALBROWSER.partition,
+            show: true,
+            center: true,
+            url: 'https://translate.google.com/?num=100&newwindow=1&um=1&ie=UTF-8&hl=en&client=tw-ob#auto/ar/' + encodeURIComponent(SOCIALBROWSER.memoryText),
+          });
+        },
+      });
+
+      SOCIALBROWSER.menuList.push({
+        label: `Search  [ ${stext} ] `,
+        click() {
+          SOCIALBROWSER.ipc('[open new tab]', {
+            referrer: document.location.href,
+            url: 'https://www.google.com/search?q=' + encodeURIComponent(SOCIALBROWSER.memoryText),
+            windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
+          });
+        },
+      });
+
+      SOCIALBROWSER.menuList.push({
+        type: 'separator',
+      });
+    }
     add_input_menu(node);
     add_a_menu(node);
 

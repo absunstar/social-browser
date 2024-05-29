@@ -27,27 +27,41 @@
     <table class="table hover">
       <tr>
         <th>index</th>
-        <th>Site URL</th>
+        <th>
+          Site URL
+          <div class="row">
+            <i-button type="login" label="Test All Login" ng-click="testAllLogin()"></i-button>
+            <i-button type="play" label="Create All Profile" ng-click="createAllProfile()"></i-button>
+          </div>
+        </th>
         <th>User Name</th>
         <th>Password</th>
-        <th>
-          Actions <i-button type="login" label="Test All Login" ng-click="testAllLogin()"></i-button>
-          <i-button type="play" label="Create All Profile" ng-click="createAllProfile()"></i-button>
-        </th>
       </tr>
       <tr ng-repeat="login in loginList | filter:info track by $index">
         <td>
           <span class="blue bold center">{{$index + 1}}</span>
           <i-checkbox ng-model="login.$select"></i-checkbox>
         </td>
-        <td><i-control ng-model="login.url"></i-control></td>
-        <td><i-control ng-model="login.username"></i-control></td>
-        <td><i-control type="password" ng-model="login.password"></i-control></td>
         <td>
-          <i-button type="login" label="test login" ng-click="testLogin(login)"></i-button>
-          <i-button type="open" label="Open" ng-click="openLogin(login)"></i-button>
-          <i-button type="play" label="create Profile" ng-click="createProfile(login)"></i-button>
-          <i-button type="delete" ng-click="delete(login)"></i-button>
+          <i-control ng-model="login.url"></i-control>
+          <div class="row">
+            <i-button type="open" label="Open Site" ng-click="openLogin(login)"></i-button>
+            <i-button type="login" label="Test Login" ng-click="testLogin(login)"></i-button>
+            <i-button type="play" label="Create Profile" ng-click="createProfile(login)"></i-button>
+            <i-button type="delete" ng-click="delete(login)"></i-button>
+          </div>
+        </td>
+        <td>
+          <i-control ng-model="login.username"></i-control>
+          <div class="ro">
+            <i-button type="copy" ng-click="copy(login.username)"></i-button>
+          </div>
+        </td>
+        <td>
+          <i-control type="password" ng-model="login.password"></i-control>
+          <div class="row">
+            <i-button type="copy" ng-click="copy(login.password)"></i-button>
+          </div>
         </td>
       </tr>
     </table>
@@ -123,6 +137,12 @@
           });
         };
 
+        $scope.copy = function (text) {
+          SOCIALBROWSER.copy(text);
+        };
+        $scope.paste = function () {
+          SOCIALBROWSER.paste();
+        };
         $scope.export = function (selected = false) {
           let list = [];
           $scope.loginList.forEach((login) => {

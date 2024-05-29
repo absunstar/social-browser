@@ -403,10 +403,8 @@ SOCIALBROWSER.addCSS = SOCIALBROWSER.addcss = function (code) {
     SOCIALBROWSER.log(error);
   }
 };
-SOCIALBROWSER.copy = function (text) {
-  if (text) {
-    SOCIALBROWSER.electron.clipboard.writeText(text.toString());
-  }
+SOCIALBROWSER.copy = function (text = '') {
+  SOCIALBROWSER.electron.clipboard.writeText(text.toString());
 };
 SOCIALBROWSER.paste = function () {
   SOCIALBROWSER.remote.getCurrentWindow().webContents.paste();
@@ -462,7 +460,7 @@ SOCIALBROWSER.triggerKeypress = function (el, keyCode) {
     el.dispatchEvent(e);
   }
 };
-SOCIALBROWSER.write = function (text, selector, timeout) {
+SOCIALBROWSER.write = function (text, selector, timeout = 500) {
   return new Promise((resolver, reject) => {
     if (!text) {
       reject('No Text');
@@ -474,18 +472,25 @@ SOCIALBROWSER.write = function (text, selector, timeout) {
         reject('No selector');
         return false;
       }
-      SOCIALBROWSER.copy(text);
-      SOCIALBROWSER.paste();
+
+      let momeryText = SOCIALBROWSER.electron.clipboard.readText() || '';
+
+      if (selector.tagName == 'INPUT' || selector.tagName == 'TEXTAREA') {
+        selector.value = text;
+      } else {
+        SOCIALBROWSER.copy(text);
+        SOCIALBROWSER.paste();
+      }
 
       setTimeout(() => {
-        SOCIALBROWSER.copy('');
+        SOCIALBROWSER.copy(momeryText);
         if (selector) {
           resolver(selector);
         } else {
           resolver(text);
         }
       }, 500);
-    }, timeout || 500);
+    }, timeout);
   });
 };
 SOCIALBROWSER.getOffset = function (el) {
@@ -505,10 +510,17 @@ SOCIALBROWSER.click = function (selector, realPerson = true) {
     if (realPerson && SOCIALBROWSER.currentWindow && SOCIALBROWSER.webContents && SOCIALBROWSER.currentWindow.isVisible()) {
       if (!SOCIALBROWSER.isViewable(dom)) {
         dom.scrollIntoView();
-        if (window.scrollY == 0) {
-        } else if (window.innerHeight + window.scrollY >= document.body.scrollHeight) {
-        } else {
-          window.scroll(window.scrollX, window.scrollY - dom.clientHeight);
+        window.scroll(window.scrollX, window.scrollY - (dom.clientHeight + window.innerHeight / 2));
+      }
+
+      if (!SOCIALBROWSER.isViewable(dom)) {
+        dom.scrollIntoView();
+        if (window.scrollY !== 0) {
+          let y = window.scrollY - dom.clientHeight;
+          if (y < 0) {
+            y = 0;
+          }
+          window.scroll(window.scrollX, y);
         }
       }
 
@@ -609,8 +621,19 @@ SOCIALBROWSER.handle_url = SOCIALBROWSER.handleURL = function (u) {
 };
 
 SOCIALBROWSER.isViewable = function (element) {
-  const rect = element.getBoundingClientRect();
-  return rect.top >= 0 && rect.left >= 0 && rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && rect.right <= (window.innerWidth || document.documentElement.clientWidth);
+  if (!element) {
+    return false;
+  }
+  if (typeof element == 'string') {
+    element = document.querySelector(element);
+  }
+  var rect = element.getBoundingClientRect();
+  var html = document.documentElement;
+  let t1 = rect.top >= 0;
+  let t2 = rect.left >= 0;
+  let t3 = rect.bottom <= (html.clientHeight || window.innerHeight);
+  let t4 = rect.right <= (html.clientWidth || window.innerWidth);
+  return t1 && t2 && t3 && t4;
 };
 
 SOCIALBROWSER.eval = function (code) {
