@@ -24,6 +24,9 @@
         </div>
       </div>
     </fieldset>
+    <div class="row padding margin border">
+      <p class="center">Count : {{loginList.length}}</p>
+    </div>
     <table class="table hover">
       <tr>
         <th>index</th>
@@ -77,8 +80,15 @@
           if (!v.ok) {
             return;
           }
-          $scope.loginList.push({ url: $scope.info.url, username: $scope.info.password, password: $scope.info.password });
-          $scope.info = {};
+          let index = $scope.loginList.findIndex((l) => l.url == $scope.info.url && l.username == $scope.info.username);
+          if (index == -1) {
+            $scope.loginList.push({ url: $scope.info.url, username: $scope.info.password, password: $scope.info.password });
+          } else {
+            alert('User Updated :' + $scope.info.username);
+            console.log($scope.info);
+            $scope.loginList[index] = { url: $scope.info.url, username: $scope.info.password, password: $scope.info.password };
+          }
+          $scope.info.username = '';
         };
         $scope.delete = function (login) {
           let index = $scope.loginList.findIndex((l) => l.url == login.url && l.username == login.username);
@@ -90,8 +100,15 @@
           data.list.forEach((login) => {
             login.url = login.url || $scope.info.url;
             login.password = login.password || $scope.info.password;
+            let index = $scope.loginList.findIndex((l) => l.url == login.url && l.username == login.username);
+            if (index == -1) {
+              $scope.loginList.push(login);
+            } else {
+              alert('User Updated :' + login.username);
+              console.log(login);
+              $scope.loginList[index] = login;
+            }
           });
-          $scope.loginList = data.list;
         };
 
         $scope.createAllProfile = function () {

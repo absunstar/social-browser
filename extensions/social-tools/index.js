@@ -48,10 +48,22 @@ module.exports = function (browser) {
             list[i] = list[i].trim();
             if (list[i] && list[i].length > 0) {
               let user = list[i].split(':');
-              response.list.push({
-                username: user[0],
-                password: user[1],
-              });
+              if (user.length == 1) {
+                response.list.push({
+                  username: user[0],
+                });
+              } else if (user.length == 2) {
+                response.list.push({
+                  username: user[0],
+                  password: user[1],
+                });
+              } else if (user.length == 3) {
+                response.list.push({
+                  username: user[0],
+                  password: user[1],
+                  url: user[2],
+                });
+              }
             }
           });
         }
@@ -67,7 +79,7 @@ module.exports = function (browser) {
       res.writeHead(200, {
         'Content-Type': 'text/plain',
         'Content-Length': socialFile.length,
-        'Content-Disposition': 'attachment; filename=' + 'loginList.social',
+        'Content-Disposition': 'attachment; filename=' + 'login-list-' + new Date().getTime() + '.social',
       });
       res.end(socialFile);
     });
