@@ -565,12 +565,11 @@ function add_a_menu(node) {
         submenu: arr,
       });
     }
+    SOCIALBROWSER.menuList.push({
+      type: 'separator',
+    });
 
     if (u.like('https://www.youtube.com/watch*')) {
-      SOCIALBROWSER.menuList.push({
-        type: 'separator',
-      });
-
       SOCIALBROWSER.menuList.push({
         label: 'Play video ',
         click() {
@@ -1295,6 +1294,9 @@ function createDevelopmentMenu() {
 
 function createMenuList(node) {
   if (SOCIALBROWSER.customSetting.windowType !== 'main') {
+    add_input_menu(node);
+    add_a_menu(node);
+
     if (SOCIALBROWSER.selectedText) {
       let stext = SOCIALBROWSER.selectedText.substring(0, 70);
       SOCIALBROWSER.menuList.push({
@@ -1361,8 +1363,6 @@ function createMenuList(node) {
         type: 'separator',
       });
     }
-    add_input_menu(node);
-    add_a_menu(node);
 
     if (SOCIALBROWSER.memoryText && SOCIALBROWSER.isValidURL(SOCIALBROWSER.memoryText)) {
       let arr = get_url_menu_list(SOCIALBROWSER.memoryText);
