@@ -78,16 +78,15 @@
     },
   };
 
- 
   SOCIALBROWSER.electron = require('electron');
-  
+
   SOCIALBROWSER.remote = require('@electron/remote');
   SOCIALBROWSER.require = require;
 
   SOCIALBROWSER.url = SOCIALBROWSER.require('url');
   SOCIALBROWSER.path = SOCIALBROWSER.require('path');
   SOCIALBROWSER.md5 = SOCIALBROWSER.require('md5');
-  
+
   SOCIALBROWSER.currentWindow = SOCIALBROWSER.remote.getCurrentWindow();
   SOCIALBROWSER.webContents = SOCIALBROWSER.currentWindow.webContents;
 
@@ -120,7 +119,7 @@
 
   SOCIALBROWSER.selected_properties =
     'scripts_files,user_data,user_data_input,sites,preload_list,ad_list,proxy_list,proxy,core,bookmarks,session_list,userAgentList,blocking,video_quality_list,customHeaderList';
-  if (SOCIALBROWSER.href.indexOf('127.0.0.1:60080') !== -1 || SOCIALBROWSER.href.indexOf('file://') == 0 || SOCIALBROWSER.href.indexOf('browser://') == 0) {
+  if (SOCIALBROWSER.href.indexOf('http://127.0.0.1:60080') == 0 || SOCIALBROWSER.href.indexOf('file://') == 0 || SOCIALBROWSER.href.indexOf('browser://') == 0) {
     SOCIALBROWSER.selected_properties = '*';
   }
 

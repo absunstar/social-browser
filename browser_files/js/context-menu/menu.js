@@ -511,10 +511,10 @@ function add_a_menu(node) {
   }
 
   if (node.nodeName === 'A' && node.getAttribute('href') && !node.getAttribute('href').startsWith('#')) {
-    let u = node.getAttribute('href');
-    u = SOCIALBROWSER.handleURL(u);
+    let href = node.getAttribute('href');
+    let u = SOCIALBROWSER.handleURL(href);
 
-    u_string = ' [ ' + u.substring(0, 70) + ' ] ';
+    let u_string = ' [ ' + u.substring(0, 70) + ' ] ';
     if (u.like('mailto:*')) {
       let mail = u.replace('mailto:', '');
       SOCIALBROWSER.menuList.push({

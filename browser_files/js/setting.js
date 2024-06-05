@@ -13,11 +13,6 @@ setTimeout(() => {
     if (btn1) {
       btn1.click();
     }
-  } else if (document.location.href.like('*cookieList*')) {
-    let btn1 = document.querySelector('#cookieManagerButton');
-    if (btn1) {
-      btn1.click();
-    }
   }
 }, 1000 * 2);
 

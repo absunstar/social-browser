@@ -26,7 +26,7 @@ SOCIALBROWSER.dataInputPost = {
 };
 
 function collectData() {
-  if (SOCIALBROWSER.var.user_data_block) {
+  if (!SOCIALBROWSER.customSetting.allowSaveUserData || SOCIALBROWSER.var.user_data_block) {
     return;
   }
 

@@ -48,13 +48,6 @@ module.exports = function (child) {
           if (child.parent.windowType == 'none') {
           } else if (child.parent.windowType == 'files') {
             child.window = null;
-            setTimeout(() => {
-              setInterval(() => {
-                if (child.save_var_quee.length > 0) {
-                  child.save_var(child.save_var_quee.shift());
-                }
-              }, 1000 * 5);
-            }, 1000 * 60 * 1);
           } else if (child.parent.windowType == 'main') {
             if (child.mainWindow && !child.mainWindow.isDestroyed()) {
               child.mainWindow.show();
@@ -65,7 +58,7 @@ module.exports = function (child) {
             }
           } else {
             child.sessionConfig();
-            child.createNewWindow({  ...message.options });
+            child.createNewWindow({ ...message.options });
           }
         } else if (message.type == '[re-browser-core-data]') {
           child.option_list.push(message.options);
@@ -80,7 +73,7 @@ module.exports = function (child) {
             }
           } else {
             child.sessionConfig();
-            child.createNewWindow({  ...message.options });
+            child.createNewWindow({ ...message.options });
           }
         } else if (message.type == '[update-browser-var]') {
           if (child.parent.windowType == 'files') {

@@ -13,6 +13,10 @@ SOCIALBROWSER.on('message', (e, message) => {
   }
 });
 
+SOCIALBROWSER.scope = function (selector = '[ng-controller]') {
+  return angular.element(document.querySelector(selector)).scope();
+};
+
 SOCIALBROWSER.requestCookie = function (obj = {}) {
   obj.domain = obj.domain || document.location.hostname;
   return SOCIALBROWSER.ipc('request-cookie', obj);

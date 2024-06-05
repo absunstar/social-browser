@@ -175,6 +175,7 @@ module.exports = function (child) {
     let parent = child.parent;
     setting.partition = setting.partition || child.partition || parent.var.core.session.name;
     let defaultSetting = {
+      vip: false,
       allowMenu: true,
       allowDevTools: true,
       allowDownload: true,
@@ -348,6 +349,11 @@ module.exports = function (child) {
     customSetting.loading_icon = 'browser://images/loading-white.gif';
     customSetting.error_icon = 'browser://images/no.jpg';
 
+    if (customSetting.vip) {
+      customSetting.allowSaveUrls = false;
+      customSetting.allowSaveUserData = false;
+    }
+
     let win = new child.electron.BrowserWindow(customSetting);
 
     win.customSetting = customSetting;
@@ -491,7 +497,7 @@ module.exports = function (child) {
         child.sendMessage({
           type: '[request-window-status]',
         });
-        if (!win.customSetting.vip) {
+        if (win.customSetting.allowSaveUrls) {
           child.sendMessage({
             type: '[add-window-url]',
             url: child.decodeURI(win.getURL()),
@@ -756,7 +762,7 @@ module.exports = function (child) {
     win.on('page-title-updated', (e, title) => {
       win.customSetting.title = title;
       child.updateTab(win);
-      if (!win.customSetting.vip) {
+      if (win.customSetting.allowSaveUrls) {
         child.sendMessage({
           type: '[add-window-url]',
           url: child.decodeURI(win.getURL()),
@@ -772,7 +778,7 @@ module.exports = function (child) {
         win.customSetting.iconURL = urls[0];
         win.customSetting.favicon = urls[0];
         child.updateTab(win);
-        if (!win.customSetting.vip) {
+        if (win.customSetting.allowSaveUrls) {
           child.sendMessage({
             type: '[add-window-url]',
             url: child.decodeURI(win.getURL()),
@@ -837,7 +843,7 @@ module.exports = function (child) {
         // win.setBounds({ width: win.getBounds().width + 1 });
         // win.setBounds({ width: win.getBounds().width - 1 });
 
-        if (!win.customSetting.vip) {
+        if (win.customSetting.allowSaveUrls) {
           child.sendMessage({
             type: '[add-window-url]',
             url: child.decodeURI(win.getURL()),

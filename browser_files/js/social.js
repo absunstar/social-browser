@@ -244,8 +244,8 @@ function showSettingMenu() {
     click: () =>
       ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/setting',
-        partition : 'persist:setting',
-        title : 'Setting',
+        partition: 'persist:setting',
+        title: 'Setting',
         mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
         vip: true,
       }),
@@ -273,7 +273,7 @@ function showSettingMenu() {
     click: () =>
       ipc('[open new tab]', {
         url: 'https://social-browser.com',
-        title : 'Social Browser',
+        title: 'Social Browser',
         mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
       }),
   });
@@ -285,7 +285,7 @@ function showSettingMenu() {
     click: () =>
       ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/downloads',
-        title : 'Dwonloads',
+        title: 'Dwonloads',
         mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
         vip: true,
       }),
@@ -322,8 +322,8 @@ function showSettingMenu() {
     click: () =>
       ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/setting?open=bookmarks',
-        partition : 'persist:setting',
-        title : 'Bookmarks',
+        partition: 'persist:setting',
+        title: 'Bookmarks',
         mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
         vip: true,
       }),
@@ -374,8 +374,6 @@ function showSettingMenu() {
   SOCIALBROWSER.menuList.push({
     type: 'separator',
   });
-
-
 
   SOCIALBROWSER.menuList.push({
     label: 'Reload Page',
@@ -438,12 +436,23 @@ function showSettingMenu() {
   let arr3 = [];
 
   arr3.push({
-    label: 'Generate Site Views',
+    label: 'Auto Login Manager',
     click: () => {
       ipc('[open new popup]', {
-        show : true,
-        url: 'https://social-browser.com/site-views-generator',
-        title: 'Generate Site Views',
+        show: true,
+        url: 'https://social-browser.com/auto-login-manager',
+        title: 'Auto Login Manager',
+      });
+    },
+  });
+
+  arr3.push({
+    label: 'Website Traffic Manager',
+    click: () => {
+      ipc('[open new popup]', {
+        show: true,
+        url: 'https://social-browser.com/website-traffic-manager',
+        title: 'Website Traffic Manager',
       });
     },
   });
@@ -509,7 +518,7 @@ function showBookmarksMenu() {
     click: () =>
       ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/setting?open=bookmarks',
-        partition : 'persist:setting',
+        partition: 'persist:setting',
         mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
         vip: true,
       }),
@@ -959,7 +968,7 @@ function renderMessage(cm) {
   } else if (cm.name == '[show-browser-setting]') {
     renderNewTabData({
       url: 'http://127.0.0.1:60080/setting',
-      partition : 'persist:setting',
+      partition: 'persist:setting',
       vip: true,
     });
   } else if (cm.name == '[download-link]') {

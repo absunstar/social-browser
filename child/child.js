@@ -82,6 +82,15 @@ require(child.path.join(child.dir, 'child', 'session'))(child);
 require(child.path.join(child.dir, 'child', 'plugins'))(child);
 require(child.path.join(child.dir, 'child', 'proxy_check'))(child);
 
+if (child.uuid == 'user-file') {
+  child.log('Files Working ....');
+  setInterval(() => {
+    if (child.save_var_quee.length > 0) {
+      child.save_var(child.save_var_quee.shift());
+    }
+  }, 1000 * 5);
+}
+
 child.electron.app.setAppUserModelId('Social.Browser');
 child.electron.app.clearRecentDocuments();
 
