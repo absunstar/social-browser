@@ -256,7 +256,7 @@ module.exports = function (child) {
   };
 
   child.isAllowURL = function (url) {
-    if (child.parent.var.blocking.white_list.some((item) => item.url.length > 2 && url.like(item.url))) {
+    if (child.parent.var.blocking.white_list?.some((item) => item.url.length > 2 && url.like(item.url))) {
       return true;
     }
 

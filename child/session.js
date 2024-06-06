@@ -499,9 +499,8 @@ module.exports = function (child) {
           }
         });
 
-        // Must For Login Problem ^_^
-
-        if (child.parent.var.blocking.white_list.some((item) => item.url.length > 2 && url.like(item.url))) {
+        // Must Before Cookie Changing For Google and Youtube Login Problem ^_^
+        if (domainName.like('*youtube*|*google*')) {
           callback({
             cancel: false,
             requestHeaders: details.requestHeaders,
@@ -546,6 +545,13 @@ module.exports = function (child) {
           details.requestHeaders['DNT'] = '1'; // dont track me
         }
 
+        if (child.parent.var.blocking.white_list.some((item) => item.url.length > 2 && url.like(item.url))) {
+          callback({
+            cancel: false,
+            requestHeaders: details.requestHeaders,
+          });
+          return;
+        }
         //details.requestHeaders['Referrer-Policy'] = 'no-referrer';
 
         // try edit cookies before send [tracking cookies]

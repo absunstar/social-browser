@@ -1391,7 +1391,7 @@ function createMenuList(node) {
       SOCIALBROWSER.menuList.push(m);
     });
 
-    if (SOCIALBROWSER.var.blocking.open_list.length > 0) {
+    if (SOCIALBROWSER.var.blocking.open_list?.length > 0) {
       SOCIALBROWSER.var.blocking.open_list.forEach((o) => {
         if (o.enabled) {
           if (o.multi) {

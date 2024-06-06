@@ -189,6 +189,7 @@ module.exports = function (child) {
       allowSelfWindow: false,
       allowJavascript: true,
       allowAudio: true,
+      allowPopup: false,
       show: setting.show === true ? true : false,
       alwaysOnTop: false,
       skipTaskbar: setting.skipTaskbar || false,
@@ -897,7 +898,7 @@ module.exports = function (child) {
         child.log('Block-redirect', url);
       }
 
-      if (win.customSetting.allowSelfRedirect && (win.getURL().contains(child.url.parse(url).host) || url.contains(child.url.parse(win.getURL()).host))) {
+      if (win.customSetting.allowSelfRedirect && (win.getURL().contains(child.url.parse(url).hostname) || url.contains(child.url.parse(win.getURL()).hostname))) {
         return;
       }
 
@@ -981,15 +982,19 @@ module.exports = function (child) {
 
         let allow = false;
 
-        allow = parent.var.blocking.white_list.some((d) => url_parser.host.like(d.url) || current_url_parser.host.like(d.url));
-        if (!allow) {
-          allow = parent.var.blocking.popup.white_list.some((d) => url_parser.host.like(d.url) || current_url_parser.host.like(d.url));
-        }
-        if (!allow) {
-          if (parent.var.blocking.popup.allow_internal && url_parser.host.contains(current_url_parser.host)) {
-            allow = true;
-          } else if (parent.var.blocking.popup.allow_external && !url_parser.host.contains(current_url_parser.host)) {
-            allow = true;
+        if (win.customSetting.allowPopup) {
+          allow = true;
+        } else {
+          allow = parent.var.blocking.white_list.some((d) => url_parser.hostname.like(d.url) || current_url_parser.hostname.like(d.url));
+          if (!allow) {
+            allow = parent.var.blocking.popup.white_list.some((d) => url_parser.hostname.like(d.url) || current_url_parser.hostname.like(d.url));
+          }
+          if (!allow) {
+            if (parent.var.blocking.popup.allow_internal && url_parser.hostname.contains(current_url_parser.hostname)) {
+              allow = true;
+            } else if (parent.var.blocking.popup.allow_external && !url_parser.hostname.contains(current_url_parser.hostname)) {
+              allow = true;
+            }
           }
         }
 
@@ -1000,6 +1005,7 @@ module.exports = function (child) {
               data: {
                 ...win.customSetting,
                 url: url,
+                referrer: win.getURL(),
               },
             });
           } else {
@@ -1008,6 +1014,7 @@ module.exports = function (child) {
               options: {
                 ...win.customSetting,
                 url: url,
+                referrer: win.getURL(),
               },
             });
           }
@@ -1114,7 +1121,7 @@ module.exports = function (child) {
 
       let allow = false;
 
-      allow = parent.var.blocking.white_list.find((d) => url_parser.host.like(d.url) || current_url_parser.host.like(d.url));
+      allow = parent.var.blocking.white_list.find((d) => url_parser.hostname.like(d.url) || current_url_parser.hostname.like(d.url));
 
       if (allow) {
         child.sendMessage({
@@ -1129,7 +1136,7 @@ module.exports = function (child) {
         return;
       }
 
-      allow = parent.var.blocking.popup.white_list.find((d) => url_parser.host.like(d.url) || current_url_parser.host.like(d.url));
+      allow = parent.var.blocking.popup.white_list.find((d) => url_parser.hostname.like(d.url) || current_url_parser.hostname.like(d.url));
 
       if (allow) {
         child.sendMessage({
@@ -1144,7 +1151,7 @@ module.exports = function (child) {
         return;
       }
 
-      if (parent.var.blocking.popup.allow_internal && url_parser.host.contains(current_url_parser.host)) {
+      if (parent.var.blocking.popup.allow_internal && url_parser.hostname.contains(current_url_parser.hostname)) {
         child.sendMessage({
           type: '[open new tab]',
           data: {
@@ -1154,7 +1161,7 @@ module.exports = function (child) {
             options: parent.options,
           },
         });
-      } else if (parent.var.blocking.popup.allow_external && !url_parser.host.contains(current_url_parser.host)) {
+      } else if (parent.var.blocking.popup.allow_external && !url_parser.hostname.contains(current_url_parser.hostname)) {
         child.sendMessage({
           type: '[open new tab]',
           data: {
