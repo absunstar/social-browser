@@ -78,16 +78,17 @@ video0 {
   height: auto;
   margin: 5% auto;
   text-align: center;
-  font-size: 22px;
+  font-size: 24px;
+  font-weight: bold;
   left: 200px;
   right: 200px;
-  padding: 20px;
-  border: 5px solid #2196f3;
+  padding: 30px;
+  border: 8px solid #2196F3;
+  border-radius: 50px;
   top: 200px;
   z-index: 9999999;
   word-wrap: break-word;
   word-break: break-all;
-  
 }
 
 #__targetUrl {
@@ -244,11 +245,10 @@ video0 {
 
 @media screen and (max-width: 768px /*mobile*/) {
   #__alertBox {
-    border: 1px solid #2196f3;
+    border: 1px solid #2196F3;
     font-size: 12px;
     left: 0px;
     right: 0px;
-    padding: 5px;
     top: 50px;
   }
 }

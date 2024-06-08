@@ -682,54 +682,6 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     }, 1000 * 5);
   };
 
-  $scope.openCookieSite = function (site, withCookie = true) {
-    SOCIALBROWSER.ipc('[open new popup]', {
-      partition: site.partition,
-      url: 'https://' + site.domain,
-      cookieList: withCookie == true ? [{ cookie: site.cookie, domain: site.domain, partition: site.partition }] : [],
-      show: true,
-      center: true,
-    });
-  };
-  $scope.remove_all_cookie = function () {
-    $scope.setting.cookieList = [];
-  };
-  $scope.remove_cookie = function (site) {
-    if (site) {
-      let index = $scope.setting.cookieList.findIndex((c) => c.domain == site.domain && c.partition == site.partition);
-      if (index !== -1) {
-        $scope.setting.cookieList.splice(index, 1);
-      }
-    }
-  };
-  $scope.addToCookieList = function () {
-    $scope.cookieError = '';
-    const v = site.validated('#cookieManagerTab');
-    if (!v.ok) {
-      $scope.cookieError = v.messages[0].en;
-      return;
-    }
-    let c = {};
-    c.domain = $scope.cookie.domain;
-    c.partition = $scope.cookie.session.name;
-    c.cookie = $scope.cookie.cookie;
-    $scope.setting.cookieList.push(c);
-    $scope.cookie = {};
-  };
-
-  $scope.saveCookieList = function (close) {
-    SOCIALBROWSER.ipc('[update-browser-var]', {
-      name: 'cookieList',
-      data: $scope.setting['cookieList'],
-    });
-  };
-
-  $scope.exportCookieList = function () {
-    document.location.href = '/__social_browser/api/export-cookie-list';
-  };
-  $scope.afterCookieListImported = function (data) {
-    document.location.reload();
-  };
   $scope.saveSetting = function (close) {
     $scope.busy = true;
     $scope.setting_busy = true;

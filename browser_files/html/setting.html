@@ -200,7 +200,6 @@
               <a id="userAgentButton" class="tab-link" onclick="site.showTabContent(event, '#userAgentTab');window.scrollTo({ top: 0, behavior: 'smooth' });">
                 <i class="fa fa-list"></i> User Agent List
               </a>
-              
             </div>
             <div class="tabs-content">
               <div id="basic_tab" class="tab-content">
@@ -218,7 +217,6 @@
                     <i-checkbox class="" label="I'm Using Social Browser" ng-model="setting.blocking.core.send_browser_id"></i-checkbox>
                     <i-checkbox class="" label="Disabled ALL Browser Engines " ng-model="setting.core.enginOFF"></i-checkbox>
                     <i-checkbox class="" label="Disabled ALL JavaScript Engines " ng-model="setting.core.javaScriptOFF"></i-checkbox>
-                    <i-checkbox class="hidden" label="Disabled ALL Sessions Engine " ng-model="setting.core.cookiesOFF"></i-checkbox>
                   </div>
 
                   <fieldset>
@@ -234,7 +232,6 @@
                     <div class="row">
                       <i-list class="col6" ng-search="search.$userAgentURL" primary="name" items="setting.userAgentList" ng-model="setting.core.defaultUserAgent" label="Default User Agent"></i-list>
                       <div class="col6">
-                        <br />
                         <i-button label="Edit User Agent List" type="edit" onclick="document.querySelector('#userAgentButton').click()"></i-button>
                       </div>
                       <i-control disabled class="row" label="User Agent URL" ng-model="setting.core.defaultUserAgent.url"></i-control>
@@ -251,21 +248,18 @@
                     <div class="row padding">
                       <i-control disabled class="col10" label="Device ID" ng-model="setting.core.DeviceId"> </i-control>
                       <div class="col2">
-                        <br />
                         <i-button type="copy" label="copy" ng-click="copy(setting.core.DeviceId)"></i-button>
                       </div>
                     </div>
                     <div class="row padding">
                       <i-control class="col8" label="Device Key ( Any Browser on This PC )" ng-model="setting.core.DeviceKey"> </i-control>
                       <div class="col4">
-                        <br />
                         <i-button type="approve" label="Activate" ng-click="activated()"></i-button>
                       </div>
                     </div>
                     <div class="row padding">
                       <i-control class="col8" label="Browser Key ( Only This Browser )" ng-model="setting.core.BrowserKey"> </i-control>
                       <div class="col4">
-                        <br />
                         <i-button type="approve" label="Activate" ng-click="activated()"></i-button>
                       </div>
                     </div>
@@ -1264,51 +1258,6 @@
                 </fieldset>
               </div>
 
-              <div id="cookieManagerTab" class="tab-content">
-                <div class="row">
-                  <i-button class="col3" type="save" ng-click="saveCookieList()" label="Save All Cookies"></i-button>
-                  <i-upload class="col3" api="/__social_browser/api/import-cookie-list" label="Upload Cookie List" on-uploaded="afterCookieListImported($data)"></i-upload>
-                  <i-button class="col3" type="download" ng-click="exportCookieList()" label="Download Cookie List"></i-button>
-                </div>
-                <fieldset>
-                  <legend>New Cookie Information</legend>
-                  <div class="row">
-                    <i-list v="r" display="display" display2="name" class="col4" items="setting.session_list" ng-model="cookie.session" label="Select User Profile"></i-list>
-                    <i-control v="r" class="col3" ng-model="cookie.domain" label="Domain ( hostname )"></i-control>
-                    <i-control v="r" class="col5" ng-model="cookie.cookie" label="Cookie String"></i-control>
-                  </div>
-                  <div class="row">
-                    <i-button class="col3" type="add" ng-click="addToCookieList()" label="Add To Cookie List"></i-button>
-                  </div>
-                </fieldset>
-                <table class="table hover">
-                  <tr>
-                    <th class="w200">
-                      <span class="white bold"> Index ( {{setting.cookieList.length}} ) </span>
-
-                      <div class="center">
-                        <i-button label="Remove All" type="remove" ng-click="remove_all_cookie()"></i-button>
-                      </div>
-                    </th>
-                    <th><i-control ng-model="domain" label="Domain"></i-control> <i-control ng-model="partition" label="Partition"></i-control></th>
-                    <th>Cookie</th>
-                  </tr>
-                  <tr ng-repeat="site in setting.cookieList | filter : {domain : domain , partition : partition} | limitTo:500 track by $index">
-                    <td><span class="blue bold">{{$index +1 }} </span> <i-button type="remove" ng-click="remove_cookie(site)"></i-button></td>
-                    <td>
-                      <p class="green">{{site.domain | limitTo: 100}}</p>
-                      <p class="black">{{site.partition | limitTo: 100}}</p>
-                      <i-checkbox ng-model="site.lock" label="LOCK (Not Changed)"></i-checkbox>
-                    </td>
-                    <td>
-                      <i-control ng-model="site.cookie"></i-control>
-                      <i-button type="copy" ng-click="copy(site.cookie)"></i-button>
-                      <i-button type="play" label="open" ng-click="openCookieSite(site , false)"></i-button>
-                      <i-button type="play" label="open with cookie" ng-click="openCookieSite(site)"></i-button>
-                    </td>
-                  </tr>
-                </table>
-              </div>
               <div id="empty_tab" class="tab-content"></div>
             </div>
           </div>

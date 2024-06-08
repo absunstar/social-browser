@@ -13,7 +13,7 @@ SOCIALBROWSER.youtubeMaster = {
   qualityText: '*Quality*|*جود*',
   qualityButtonsSelector: '.ytp-panel.ytp-quality-menu .ytp-menuitem',
   skip_buttons: '.ytp-ad-skip-button,.ytp-ad-overlay-close-container',
-  adSelectors: 'ytd-promoted-sparkles-web-renderer,#player-ads,.video-ads,.video-masthead-iframe,#masthead-ad,.ytd-video-masthead-ad-v3-renderer',
+  adSelectors: '#player-ads',
   adsProgressSelector: '.ad-interrupting .ytp-play-progress.ytp-swatch-background-color',
   videosSelector: 'YTD-GRID-VIDEO-RENDERER,YTD-RICH-ITEM-RENDERER,YTD-VIDEO-RENDERER,YTD-COMPACT-VIDEO-RENDERER,YTD-PLAYLIST-RENDERER',
   locationchanged: function () {

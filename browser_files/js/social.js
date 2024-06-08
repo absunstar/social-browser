@@ -433,33 +433,19 @@ function showSettingMenu() {
   SOCIALBROWSER.menuList.push({
     type: 'separator',
   });
-  let arr3 = [];
 
-  arr3.push({
-    label: 'Auto Login Manager',
-    click: () => {
-      ipc('[open new popup]', {
-        show: true,
-        url: 'https://social-browser.com/auto-login-manager',
-        title: 'Auto Login Manager',
-      });
-    },
-  });
-
-  arr3.push({
-    label: 'Website Traffic Manager',
-    click: () => {
-      ipc('[open new popup]', {
-        show: true,
-        url: 'https://social-browser.com/website-traffic-manager',
-        title: 'Website Traffic Manager',
-      });
-    },
-  });
   let tools = {
     label: 'Tools',
-    type: 'submenu',
-    submenu: arr3,
+    click: () => {
+      ipc('[open new popup]', {
+        show: true,
+        url: 'https://social-browser.com/tools',
+        title: 'Social Browser Tools',
+        center: true,
+        vip: true,
+        maximize: true,
+      });
+    },
   };
 
   SOCIALBROWSER.menuList.push(tools);

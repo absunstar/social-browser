@@ -10,7 +10,7 @@ module.exports = function init(parent) {
   parent.extensionList = [];
   parent.information = {};
   parent.cookies = {};
-  parent.freeUsersCount = 50;
+  parent.freeUsersCount = 100;
 
   parent.isAllowURL = function (url) {
     if (parent.var.blocking.white_list.some((item) => item.url.length > 2 && url.like(item.url))) {

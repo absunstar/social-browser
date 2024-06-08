@@ -802,7 +802,7 @@ module.exports = function (child) {
         };
 
         let ok = false;
-        if (child.parent.var.blocking.downloader.enabled && dl.url.indexOf('127.0.0.1') === -1 && dl.url.indexOf('blob') !== 0) {
+        if (child.parent.var.blocking.downloader.enabled && !dl.url.contains('browser://|http://127.0.0.1') === -1 && dl.url.indexOf('blob') !== 0) {
           child.parent.var.blocking.downloader.apps.forEach((app) => {
             if (ok) {
               return;
