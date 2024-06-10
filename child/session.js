@@ -422,7 +422,7 @@ module.exports = function (child) {
         let urlObject = child.url.parse(url);
 
         let domainName = urlObject.hostname;
-        let domainCookie = details.requestHeaders['Cookie'];
+        let domainCookie = details.requestHeaders['Cookie'] || '';
         let domainCookieObject = child.cookieParse(domainCookie);
         let cookieIndex = child.cookieList.findIndex((c) => c.domain == domainName && c.partition == name);
         if (cookieIndex === -1) {
@@ -442,8 +442,8 @@ module.exports = function (child) {
           if (child.cookieList[cookieIndex].off) {
             console.log('Cookie OFF');
           } else if (child.cookieList[cookieIndex].lock) {
-            let lockCookieObject = child.cookieParse(child.cookieList[cookieIndex].cookie);
-            domainCookie = details.requestHeaders['Cookie'] = child.cookieStringify({ ...lockCookieObject, ...domainCookieObject });
+            domainCookieObject = { ...domainCookieObject, ...child.cookieParse(child.cookieList[cookieIndex].cookie) };
+            details.requestHeaders['Cookie'] = child.cookieStringify({ ...domainCookieObject });
           } else if (child.cookieList[cookieIndex].cookie !== domainCookie) {
             child.cookieList[cookieIndex].cookie = domainCookie;
             child.sendMessage({

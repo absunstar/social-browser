@@ -19,6 +19,7 @@ SOCIALBROWSER.scope = function (selector = '[ng-controller]') {
 
 SOCIALBROWSER.requestCookie = function (obj = {}) {
   obj.domain = obj.domain || document.location.hostname;
+  obj.partition = SOCIALBROWSER.partition;
   return SOCIALBROWSER.ipc('request-cookie', obj);
 };
 SOCIALBROWSER.addSession = function (session) {

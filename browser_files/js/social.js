@@ -443,7 +443,8 @@ function showSettingMenu() {
         title: 'Social Browser Tools',
         center: true,
         vip: true,
-        maximize: true,
+        alwaysOnTop: true,
+        maximize: false,
       });
     },
   };
