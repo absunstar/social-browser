@@ -358,11 +358,42 @@ module.exports = function init(parent) {
           break;
         case '[cookieList-set]':
           let cookieIndex = parent.var.cookieList.findIndex((c) => c.domain == message.cookie.domain && c.partition == message.cookie.partition);
+          message.cookie.time = message.cookie.time || new Date().getTime();
           if (cookieIndex === -1) {
             parent.var.cookieList.push(message.cookie);
           } else {
             parent.var.cookieList[cookieIndex] = message.cookie;
           }
+          parent.var.cookieList.sort((a, b) => {
+            return b.time - a.time;
+          });
+          parent.applay('cookieList');
+          break;
+        case '[cookieList-delete]':
+          if (message.cookie.domain && !message.cookie.partition) {
+            parent.var.cookieList.forEach((c, i) => {
+              if (c.domain == message.cookie.domain || c.domain.like(message.cookie.domain) || message.cookie.domain.like(c.domain)) {
+                parent.var.cookieList.splice(i, 1);
+              }
+            });
+          } else if (!message.cookie.domain && message.cookie.partition) {
+            parent.var.cookieList.forEach((c, i) => {
+              if (c.partition == message.cookie.partition || c.partition.like(message.cookie.partition) || message.cookie.partition.like(c.partition)) {
+                parent.var.cookieList.splice(i, 1);
+              }
+            });
+          } else if (message.cookie.domain && message.cookie.partition) {
+            parent.var.cookieList.forEach((c, i) => {
+              if (c.partition == message.cookie.partition || c.partition.like(message.cookie.partition) || message.cookie.partition.like(c.partition)) {
+                if (c.domain == message.cookie.domain || c.domain.like(message.cookie.domain) || message.cookie.domain.like(c.domain)) {
+                  parent.var.cookieList.splice(i, 1);
+                }
+              }
+            });
+          }
+          parent.var.cookieList.sort((a, b) => {
+            return b.time - a.time;
+          });
           parent.applay('cookieList');
           break;
         case '[cookie-changed]':

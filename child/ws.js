@@ -91,6 +91,9 @@ module.exports = function (child) {
             }
             if (message.options.name == 'cookieList') {
               child.cookieList = message.options.data;
+              child.cookieList.sort((a, b) => {
+                return b.time - a.time;
+              });
             }
             child.sendToWindows('[update-browser-var]', message);
           }

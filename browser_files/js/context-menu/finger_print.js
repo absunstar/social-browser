@@ -507,6 +507,7 @@ if (SOCIALBROWSER.session.privacy.vpc.hide_plugins) {
 
 if (SOCIALBROWSER.session.privacy.vpc.hide_connection || SOCIALBROWSER.session.privacy.vpc.hide_connection) {
   SOCIALBROWSER.__define(navigator, 'connection', {
+    addEventListener: function(){},
     onchange: null,
     effectiveType: SOCIALBROWSER.session.privacy.vpc.connection.effectiveType,
     rtt: SOCIALBROWSER.session.privacy.vpc.connection.rtt,

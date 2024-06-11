@@ -72,7 +72,7 @@ module.exports = function init(child) {
   });
 
   child.electron.ipcMain.handle('request-cookie', (e, obj) => {
-    return child.cookieList.find((c) => c.domain == obj.domain && c.partition == obj.partition);
+    return child.cookieList.find((c) => obj.domain.like(c.domain) && c.partition == obj.partition);
   });
 
   child.electron.ipcMain.handle('online-status', (e, obj) => {

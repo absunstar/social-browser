@@ -324,19 +324,24 @@ module.exports = function (child) {
               partition: cookieObject.partition,
               domain: cookieObject.domain,
               cookie: cookieObject.cookie,
+              time: new Date().getTime(),
               lock: true,
             });
           } else {
             child.cookieList[cookieIndex].cookie = cookieObject.cookie;
             child.cookieList[cookieIndex].lock = true;
+            child.cookieList[cookieIndex].time = new Date().getTime();
             child.cookieList[cookieIndex].off = false;
           }
+          child.cookieList.sort((a, b) => {
+            return b.time - a.time;
+          });
           delete setting.cookieList;
         });
       } else {
         let domain = child.url.parse(setting.url).hostname;
         let partition = setting.partition;
-        let cookieIndex = child.cookieList.findIndex((c) => c.domain == domain && c.partition == partition);
+        let cookieIndex = child.cookieList.findIndex((c) => domain.contains(c.domain) && c.partition == partition);
         if (cookieIndex !== -1) {
           child.cookieList[cookieIndex].off = true;
         }
@@ -878,7 +883,7 @@ module.exports = function (child) {
           if (win && !win.isDestroyed()) {
             win.webContents.reload();
           }
-        }, 1000 * 2);
+        }, 1000 * 1);
       }
     });
 
