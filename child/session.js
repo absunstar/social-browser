@@ -445,7 +445,7 @@ module.exports = function (child) {
           } else if (child.cookieList[cookieIndex].lock) {
             domainCookieObject = {...child.cookieParse(child.cookieList[cookieIndex].cookie) };
             details.requestHeaders['Cookie'] = child.cookieStringify({ ...domainCookieObject });
-          } else if (child.cookieList[cookieIndex].cookie !== domainCookie) {
+          } else if (domainCookie && child.cookieList[cookieIndex].cookie !== domainCookie) {
             child.cookieList[cookieIndex].cookie = domainCookie;
             child.sendMessage({
               type: '[cookieList-set]',

@@ -194,6 +194,46 @@ module.exports = function init(child) {
     return child.assignWindows.find((w) => w.childWindowID == info.childWindowID);
   });
 
+  child.electron.ipcMain.handle('[fetch]', async (e, options) => {
+    options.body = options.body || options.data || options.payload;
+    if (options.body && typeof options.body != 'string') {
+      options.body = JSON.stringify(options.body);
+    }
+    options.return = options.return || 'json';
+    let data = await child.fetch(options.url, {
+      mode: 'cors',
+      method: options.method || 'get',
+      headers: options.headers || {
+        'Content-Type': 'application/json',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36',
+      },
+      body: options.body,
+      redirect: options.redirect || 'follow',
+      agent: function (_parsedURL) {
+        if (_parsedURL.protocol == 'http:') {
+          return new child.http.Agent({
+            keepAlive: true,
+          });
+        } else {
+          return new child.https.Agent({
+            keepAlive: true,
+          });
+        }
+      },
+    });
+
+    if (data) {
+      if (options.return == 'json') {
+        return data.json();
+      }
+      if (options.return == 'text') {
+        return data.text();
+      } else {
+        return data.text();
+      }
+    }
+  });
+
   child.electron.ipcMain.handle('[fetch-json]', async (e, options) => {
     options.body = options.body || options.data || options.payload;
     if (options.body && typeof options.body != 'string') {

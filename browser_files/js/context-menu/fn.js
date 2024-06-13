@@ -63,6 +63,22 @@ SOCIALBROWSER.removeSession = SOCIALBROWSER.deleteSession = function (session) {
 
   return session;
 };
+SOCIALBROWSER.fetch = function (options, callback) {
+  options.id = new Date().getTime() + Math.random();
+  options.url = SOCIALBROWSER.handleURL(options.url);
+
+  return new Promise((resolve, reject) => {
+    SOCIALBROWSER.ipc('[fetch]', options).then((data) => {
+      if (data) {
+        if (callback) {
+          callback(data);
+        } else {
+          resolve(data);
+        }
+      }
+    });
+  });
+};
 SOCIALBROWSER.fetchJson = function (options, callback) {
   options.id = new Date().getTime() + Math.random();
   options.url = SOCIALBROWSER.handleURL(options.url);
