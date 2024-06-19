@@ -1,4 +1,4 @@
-window.open = function (url, _name, _specs, _replace_in_history) {
+window.open2 = function (url, _name, _specs, _replace_in_history) {
   let child_window = {
     closed: false,
     opener: window,
@@ -200,7 +200,8 @@ window.addEventListener('message', (e) => {
 });
 
 if (SOCIALBROWSER.parentAssignWindow) {
-  window.opener = {
+  window.opener = window.opener || {
+    closed : false,
     postMessage: (...args) => {
       SOCIALBROWSER.ipc('window.message', {
         windowID: SOCIALBROWSER.parentAssignWindow.parentWindowID,

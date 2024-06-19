@@ -141,7 +141,7 @@ module.exports = function (parent) {
         return;
       }
 
-      let end = parent.var.blocking.white_list.some((s) => s.url.length > 2 && (source_url.like(s.url) || url.like(s.url)));
+      let end = parent.var.blocking.white_list.some((s) => source_url.like(s.url) || url.like(s.url));
 
       if (end) {
         callback({
@@ -336,13 +336,7 @@ module.exports = function (parent) {
         }
       });
 
-      let is_white = false;
-      parent.var.blocking.white_list.forEach((w) => {
-        if (details.url.like(w.url)) {
-          is_white = true;
-        }
-      });
-
+      let is_white = parent.var.blocking.white_list.some((w) => details.url.like(w.url));
       if (is_white) {
         callback({
           cancel: false,

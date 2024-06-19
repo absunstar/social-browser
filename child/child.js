@@ -164,10 +164,12 @@ child.electron.app.on('ready', function () {
     // if (process.platform != 'darwin') {
     //   child.electron.app.quit();
     // }
-
-    if (child.partition.contains('persist:') && child.index > 5) {
-      process.exit();
-    }
+    setTimeout(() => {
+      if (child.partition.contains('persist:') && child.electron.BrowserWindow.getAllWindows().length > 0) {
+        child.log('window-all-closed :  process.exit() : ' + child.partition + ' : ' + child.index);
+        process.exit();
+      }
+    }, 1000 * 5);
   });
 
   child.electron.app.on('login', (event, webContents, details, authInfo, callback) => {

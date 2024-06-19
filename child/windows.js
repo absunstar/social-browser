@@ -50,12 +50,12 @@ module.exports = function (child) {
         x: win.getBounds().x - 90,
         y: win.getBounds().y - 70,
         alwaysOnTop: false,
+        skipTaskbar: true,
         resizable: false,
         fullscreenable: false,
         title: 'Address-bar',
         backgroundColor: '#ffffff',
         frame: false,
-        skipTaskbar: true,
         webPreferences: {
           contextIsolation: false,
           partition: 'addressbar',
@@ -347,6 +347,7 @@ module.exports = function (child) {
         }
       }
     }
+
     let customSetting = { ...defaultSetting, ...setting };
 
     customSetting.webPreferences.javascript = customSetting.allowJavascript;
@@ -362,6 +363,7 @@ module.exports = function (child) {
 
     let win = new child.electron.BrowserWindow(customSetting);
 
+    customSetting.windowID = win.id;
     win.customSetting = customSetting;
     win.customSetting.windowSetting = win.customSetting.windowSetting || [];
 
@@ -615,29 +617,40 @@ module.exports = function (child) {
       }
     });
 
+    // win.webContents.on('will-prevent-unload', (event) => {
+    //   const choice = child.electron.dialog.showMessageBoxSync(win, {
+    //     type: 'question',
+    //     buttons: ['Leave', 'Stay'],
+    //     title: 'Do you want to leave this site?',
+    //     message: 'Changes you made may not be saved.',
+    //     defaultId: 0,
+    //     cancelId: 1,
+    //   });
+    //   const leave = choice === 0;
+    //   if (leave) {
+    //     event.preventDefault();
+    //   }
+    // });
+
     win.on('close', (e) => {
       // can be cancel here
-    });
-
-    win.on('closed', () => {
       if (win.customSetting.trackingID) {
-        child.sendMessage({ type: '[tracking-info]', trackingID: win.customSetting.trackingID, windowID: win.id, isClosed: true });
+        child.sendMessage({ type: '[tracking-info]', trackingID: customSetting.trackingID, windowID: customSetting.windowID, isClosed: true });
       }
       child.sendToWindows('[window-event]', {
-        windowID: win.id,
-        options: win.customSetting,
+        windowID: customSetting.windowID,
+        options: customSetting,
         name: 'close',
       });
 
       child.windowList.forEach((w, i) => {
-        if (w.id == win.id) {
+        if (w.id == customSetting.windowID) {
           child.windowList.splice(i, 1);
         }
       });
+    });
 
-      if (win && !win.isDestroyed()) {
-        win.destroy();
-      }
+    win.on('closed', () => {
       win = null;
     });
 
@@ -932,24 +945,10 @@ module.exports = function (child) {
       }
     });
 
-    win.webContents.on('will-prevent-unload', (event) => {
-      const choice = child.electron.dialog.showMessageBoxSync(win, {
-        type: 'question',
-        buttons: ['Leave', 'Stay'],
-        title: 'Do you want to leave this site?',
-        message: 'Changes you made may not be saved.',
-        defaultId: 0,
-        cancelId: 1,
-      });
-      const leave = choice === 0;
-      if (leave) {
-        event.preventDefault();
-      }
-    });
-
     if (win.webContents.setWindowOpenHandler) {
+      // handle window.open ...
       win.webContents.setWindowOpenHandler(({ url, frameName }) => {
-        if (!win.customSetting.allowNewWindows || (!win.customSetting.allowAds && !child.isAllowURL(url)) || url.like('*about:blank*')) {
+        if (!win.customSetting.allowNewWindows || (!win.customSetting.allowAds && !child.isAllowURL(url))) {
           child.log('Block-open-window', url);
           return { action: 'deny' };
         }
@@ -957,6 +956,21 @@ module.exports = function (child) {
         if (win.customSetting.allowSelfWindow && win.customSetting.allowRedirect) {
           win.loadURL(url);
           return { action: 'deny' };
+        }
+
+        if (url === 'about:blank' || url.contains('accounts') || url.contains('login')) {
+          return {
+            action: 'allow',
+            overrideBrowserWindowOptions: {
+              ...customSetting,
+              alwaysOnTop: true,
+              skipTaskbar: false,
+              show: true,
+              frame: true,
+              fullscreenable: false,
+              backgroundColor: '#dddddd',
+            },
+          };
         }
 
         if (url.like('https://www.youtube.com/watch*')) {
@@ -1030,6 +1044,7 @@ module.exports = function (child) {
 
       win.webContents.on('did-create-window', (win, { url, frameName, options, disposition, referrer, postData }) => {
         child.log('did-create-window', url);
+        win.center();
       });
     }
     win.webContents.on('new-window', function (event, url, frameName, disposition, options, referrer, postBody) {

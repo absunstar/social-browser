@@ -5,36 +5,6 @@
     "remove_external_iframe": true,
     "block_html_tags": false,
     "skip_video_ads": true,
-    "dom_selectors": [
-        {
-            "url": "*",
-            "ex_url": "*openload.co*",
-            "select": "[class='ad'],[class$='-ad']",
-            "remove": true,
-            "hide": false,
-            "empty": false
-        },
-        {
-            "url": "*mexashare.com*",
-            "ex_url": "*openload.co*",
-            "select": "#k749",
-            "remove": false,
-            "hide": true,
-            "empty": false
-        },
-        {
-            "ex_url": "*openload.co*",
-            "url": "*",
-            "hide": false,
-            "select": "[class*='_ad_']",
-            "remove": true
-        },
-        {
-            "select": ".video-masthead-v2,#watch7-sidebar-ads,#masthead-ad",
-            "url": "*www.youtube.com*",
-            "remove": true
-        }
-    ],
     "un_safe_words": [
         {
             "text": "sex"

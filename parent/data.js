@@ -302,13 +302,7 @@ module.exports = function init(parent) {
           });
 
           default_content.popup.white_list.forEach((d) => {
-            let exists = false;
-            currentContent.popup.white_list.forEach((d2) => {
-              if (d.url == d2.url) {
-                exists = true;
-              }
-            });
-            if (!exists) {
+            if (!currentContent.popup.white_list.some((d2) => d.url == d2.url)) {
               currentContent.popup.white_list.push(d);
             }
           });
@@ -790,6 +784,21 @@ module.exports = function init(parent) {
       parent.log(err);
     }
   });
+
+  if (parent.var.blocking && parent.var.blocking.white_list) {
+    parent.var.blocking.white_list.forEach((w, i) => {
+      if (w.url.length < 3) {
+        parent.var.blocking.white_list.splice(i, 1);
+      }
+    });
+  }
+  if (parent.var.blocking && parent.var.blocking.popup && parent.var.blocking.popup.white_list) {
+    parent.var.blocking.popup.white_list.forEach((w, i) => {
+      if (w.url.length < 3) {
+        parent.var.blocking.popup.white_list.splice(i, 1);
+      }
+    });
+  }
 
   parent.var.session_list.forEach((s1) => {
     s1.time = s1.time || new Date().getTime();

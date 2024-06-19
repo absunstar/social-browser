@@ -721,7 +721,21 @@ function get_options_menu(node) {
   arr.push({
     type: 'separator',
   });
-
+  arr.push({
+    label: 'Copy Profile ID',
+    click() {
+      SOCIALBROWSER.copy(SOCIALBROWSER.session.name);
+    },
+  });
+  arr.push({
+    label: 'Copy Profile Name',
+    click() {
+      SOCIALBROWSER.copy(SOCIALBROWSER.session.display);
+    },
+  });
+  arr.push({
+    type: 'separator',
+  });
   arr.push({
     label: 'Save page',
     accelerator: 'CommandOrControl+s',
@@ -819,9 +833,6 @@ function get_options_menu(node) {
     type: 'separator',
   });
 
-  arr.push({
-    type: 'separator',
-  });
   arr.push({
     label: 'Clear Site Cache',
     accelerator: 'CommandOrControl+F5',
@@ -1297,73 +1308,6 @@ function createMenuList(node) {
     add_input_menu(node);
     add_a_menu(node);
 
-    if (SOCIALBROWSER.selectedText) {
-      let stext = SOCIALBROWSER.selectedText.substring(0, 70);
-      SOCIALBROWSER.menuList.push({
-        label: `Copy [ ${stext} ] `,
-        click() {
-          SOCIALBROWSER.copy(SOCIALBROWSER.selectedText);
-        },
-      });
-
-      SOCIALBROWSER.menuList.push({
-        label: `Translate [ ${stext} ] `,
-        click() {
-          SOCIALBROWSER.ipc('[open new popup]', {
-            partition: SOCIALBROWSER.partition,
-            show: true,
-            center: true,
-            url: 'https://translate.google.com/?num=100&newwindow=1&um=1&ie=UTF-8&hl=en&client=tw-ob#auto/ar/' + encodeURIComponent(SOCIALBROWSER.selectedText),
-          });
-        },
-      });
-
-      SOCIALBROWSER.menuList.push({
-        label: `Search  [ ${stext} ] `,
-        click() {
-          SOCIALBROWSER.ipc('[open new tab]', {
-            referrer: document.location.href,
-            url: 'https://www.google.com/search?q=' + encodeURIComponent(SOCIALBROWSER.selectedText),
-            windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
-          });
-        },
-      });
-
-      SOCIALBROWSER.menuList.push({
-        type: 'separator',
-      });
-    }
-    if (SOCIALBROWSER.memoryText) {
-      let stext = SOCIALBROWSER.memoryText.substring(0, 70);
-
-      SOCIALBROWSER.menuList.push({
-        label: `Translate [ ${stext} ] `,
-        click() {
-          SOCIALBROWSER.ipc('[open new popup]', {
-            partition: SOCIALBROWSER.partition,
-            show: true,
-            center: true,
-            url: 'https://translate.google.com/?num=100&newwindow=1&um=1&ie=UTF-8&hl=en&client=tw-ob#auto/ar/' + encodeURIComponent(SOCIALBROWSER.memoryText),
-          });
-        },
-      });
-
-      SOCIALBROWSER.menuList.push({
-        label: `Search  [ ${stext} ] `,
-        click() {
-          SOCIALBROWSER.ipc('[open new tab]', {
-            referrer: document.location.href,
-            url: 'https://www.google.com/search?q=' + encodeURIComponent(SOCIALBROWSER.memoryText),
-            windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
-          });
-        },
-      });
-
-      SOCIALBROWSER.menuList.push({
-        type: 'separator',
-      });
-    }
-
     if (SOCIALBROWSER.memoryText && SOCIALBROWSER.isValidURL(SOCIALBROWSER.memoryText)) {
       let arr = get_url_menu_list(SOCIALBROWSER.memoryText);
       SOCIALBROWSER.menuList.push({
@@ -1373,7 +1317,39 @@ function createMenuList(node) {
       });
 
       SOCIALBROWSER.menuList.push({ type: 'separator' });
+    } else {
+      if (SOCIALBROWSER.memoryText) {
+        let stext = SOCIALBROWSER.memoryText.substring(0, 70);
+
+        SOCIALBROWSER.menuList.push({
+          label: `Translate [ ${stext} ] `,
+          click() {
+            SOCIALBROWSER.ipc('[open new popup]', {
+              partition: SOCIALBROWSER.partition,
+              show: true,
+              center: true,
+              url: 'https://translate.google.com/?num=100&newwindow=1&um=1&ie=UTF-8&hl=en&client=tw-ob#auto/ar/' + encodeURIComponent(SOCIALBROWSER.memoryText),
+            });
+          },
+        });
+
+        SOCIALBROWSER.menuList.push({
+          label: `Search  [ ${stext} ] `,
+          click() {
+            SOCIALBROWSER.ipc('[open new tab]', {
+              referrer: document.location.href,
+              url: 'https://www.google.com/search?q=' + encodeURIComponent(SOCIALBROWSER.memoryText),
+              windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
+            });
+          },
+        });
+
+        SOCIALBROWSER.menuList.push({
+          type: 'separator',
+        });
+      }
     }
+
     if (SOCIALBROWSER.selectedText && SOCIALBROWSER.isValidURL(SOCIALBROWSER.selectedText)) {
       let arr = get_url_menu_list(SOCIALBROWSER.selectedText);
       SOCIALBROWSER.menuList.push({
@@ -1383,6 +1359,43 @@ function createMenuList(node) {
       });
 
       SOCIALBROWSER.menuList.push({ type: 'separator' });
+    } else {
+      if (SOCIALBROWSER.selectedText) {
+        let stext = SOCIALBROWSER.selectedText.substring(0, 70);
+        SOCIALBROWSER.menuList.push({
+          label: `Copy [ ${stext} ] `,
+          click() {
+            SOCIALBROWSER.copy(SOCIALBROWSER.selectedText);
+          },
+        });
+
+        SOCIALBROWSER.menuList.push({
+          label: `Translate [ ${stext} ] `,
+          click() {
+            SOCIALBROWSER.ipc('[open new popup]', {
+              partition: SOCIALBROWSER.partition,
+              show: true,
+              center: true,
+              url: 'https://translate.google.com/?num=100&newwindow=1&um=1&ie=UTF-8&hl=en&client=tw-ob#auto/ar/' + encodeURIComponent(SOCIALBROWSER.selectedText),
+            });
+          },
+        });
+
+        SOCIALBROWSER.menuList.push({
+          label: `Search  [ ${stext} ] `,
+          click() {
+            SOCIALBROWSER.ipc('[open new tab]', {
+              referrer: document.location.href,
+              url: 'https://www.google.com/search?q=' + encodeURIComponent(SOCIALBROWSER.selectedText),
+              windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
+            });
+          },
+        });
+
+        SOCIALBROWSER.menuList.push({
+          type: 'separator',
+        });
+      }
     }
 
     get_img_menu(node);

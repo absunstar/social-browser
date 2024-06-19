@@ -431,7 +431,7 @@ module.exports = function (child) {
               partition: name,
               domain: domainName,
               cookie: domainCookie,
-              time : new Date().getTime()
+              time: new Date().getTime(),
             };
             child.cookieList.push(co);
             child.sendMessage({
@@ -443,7 +443,7 @@ module.exports = function (child) {
           if (child.cookieList[cookieIndex].off) {
             console.log('Cookie OFF');
           } else if (child.cookieList[cookieIndex].lock) {
-            domainCookieObject = {...child.cookieParse(child.cookieList[cookieIndex].cookie) };
+            domainCookieObject = { ...child.cookieParse(child.cookieList[cookieIndex].cookie) };
             details.requestHeaders['Cookie'] = child.cookieStringify({ ...domainCookieObject });
           } else if (domainCookie && child.cookieList[cookieIndex].cookie !== domainCookie) {
             child.cookieList[cookieIndex].cookie = domainCookie;
@@ -546,7 +546,7 @@ module.exports = function (child) {
           details.requestHeaders['DNT'] = '1'; // dont track me
         }
 
-        if (child.parent.var.blocking.white_list.some((item) => item.url.length > 2 && url.like(item.url))) {
+        if (child.parent.var.blocking.white_list.some((item) => url.like(item.url))) {
           callback({
             cancel: false,
             requestHeaders: details.requestHeaders,
@@ -629,7 +629,7 @@ module.exports = function (child) {
           }
         });
 
-        if (child.parent.var.blocking.white_list.some((item) => item.url.length > 2 && url.like(item.url))) {
+        if (child.parent.var.blocking.white_list.some((item) => url.like(item.url))) {
           callback({
             cancel: false,
             responseHeaders: {
@@ -803,7 +803,7 @@ module.exports = function (child) {
         };
 
         let ok = false;
-        if (child.parent.var.blocking.downloader.enabled && !dl.url.contains('browser://|http://127.0.0.1') === -1 && dl.url.indexOf('blob') !== 0) {
+        if (child.parent.var.blocking.downloader.enabled && !dl.url.contains('browser://|http://127.0.0.1|http://localhost') && dl.url.indexOf('blob') !== 0) {
           child.parent.var.blocking.downloader.apps.forEach((app) => {
             if (ok) {
               return;
