@@ -958,21 +958,6 @@ module.exports = function (child) {
           return { action: 'deny' };
         }
 
-        if (url === 'about:blank' || url.contains('accounts') || url.contains('login')) {
-          return {
-            action: 'allow',
-            overrideBrowserWindowOptions: {
-              ...customSetting,
-              alwaysOnTop: true,
-              skipTaskbar: false,
-              show: true,
-              frame: true,
-              fullscreenable: false,
-              backgroundColor: '#dddddd',
-            },
-          };
-        }
-
         if (url.like('https://www.youtube.com/watch*')) {
           url = 'https://www.youtube.com/embed/' + url.split('=')[1].split('&')[0];
 
@@ -996,29 +981,46 @@ module.exports = function (child) {
           return { action: 'deny' };
         }
 
-        let url_parser = child.url.parse(url);
-        let current_url_parser = child.url.parse(win.getURL());
-
         let allow = false;
 
-        if (win.customSetting.allowPopup) {
-          allow = true;
+        if (url === 'about:blank') {
+          allow = parent.var.blocking.popup.allow_blank;
         } else {
-          allow = parent.var.blocking.white_list.some((d) => url_parser.hostname.like(d.url) || current_url_parser.hostname.like(d.url));
-          if (!allow) {
-            allow = parent.var.blocking.popup.white_list.some((d) => url_parser.hostname.like(d.url) || current_url_parser.hostname.like(d.url));
-          }
-          if (!allow) {
-            if (parent.var.blocking.popup.allow_internal && url_parser.hostname.contains(current_url_parser.hostname)) {
-              allow = true;
-            } else if (parent.var.blocking.popup.allow_external && !url_parser.hostname.contains(current_url_parser.hostname)) {
-              allow = true;
+          if (win.customSetting.allowPopup) {
+            allow = true;
+          } else {
+            let url_parser = child.url.parse(url);
+            let current_url_parser = child.url.parse(win.getURL());
+
+            allow = parent.var.blocking.white_list.some((d) => url_parser.hostname.like(d.url) || current_url_parser.hostname.like(d.url));
+            if (!allow) {
+              allow = parent.var.blocking.popup.white_list.some((d) => url_parser.hostname.like(d.url) || current_url_parser.hostname.like(d.url));
+            }
+            if (!allow) {
+              if (parent.var.blocking.popup.allow_internal && url_parser.hostname.contains(current_url_parser.hostname)) {
+                allow = true;
+              } else if (parent.var.blocking.popup.allow_external && !url_parser.hostname.contains(current_url_parser.hostname)) {
+                allow = true;
+              }
             }
           }
         }
 
         if (allow) {
-          if (win.customSetting.windowType == 'view') {
+          if (url === 'about:blank' || url.contains('accounts') || url.contains('login')) {
+            return {
+              action: 'allow',
+              overrideBrowserWindowOptions: {
+                ...customSetting,
+                alwaysOnTop: true,
+                skipTaskbar: false,
+                show: true,
+                frame: true,
+                fullscreenable: false,
+                backgroundColor: '#dddddd',
+              },
+            };
+          } else if (win.customSetting.windowType == 'view') {
             child.sendMessage({
               type: '[open new tab]',
               data: {
