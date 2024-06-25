@@ -1,4 +1,6 @@
-SOCIALBROWSER.showInfo('Blocked : ##query.x-url##');
+if (window.SOCIALBROWSER) {
+  SOCIALBROWSER.showInfo('Blocked : ##query.x-url##');
+}
 
 window.grecaptcha = window.grecaptcha || {
   render: function (name, options) {
