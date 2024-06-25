@@ -81,24 +81,6 @@ module.exports = function (child) {
       anyTime: true,
     },
     {
-      from: '*pagead2.googlesyndication.com/pagead/js/adsbygoogle.js*',
-      to: 'browser://js/googlesyndication_adsbygoogle.js',
-      anyTime: true,
-      query: true,
-    },
-    {
-      from: '*googletagmanager.com/gtag/js*',
-      to: 'browser://js/google-analytics_analytics.js',
-      anyTime: true,
-      query: true,
-    },
-    {
-      from: '*googletagmanager.com/gtm.js*',
-      to: 'browser://js/googletagmanager_gtm.js',
-      anyTime: true,
-      query: true,
-    },
-    {
       from: 'https://www.google.com/images/branding/googlelogo/*.png|https://www.google.com/logos*.png|https://www.google.com/logos*.gif',
       to: 'browser://images/background.png',
       anyTime: true,

@@ -20,9 +20,7 @@ module.exports = function init(parent) {
     if (parent.var.blocking.core.block_ads) {
       allow = !parent.var.ad_list.some((ad) => url.like(ad.url));
     }
-    if (allow && parent.var.blocking.core.block_ads_servers) {
-      allow = !child.adList.includes(child.url.parse(url).host);
-    }
+  
 
     if (allow) {
       allow = !parent.var.blocking.black_list.some((item) => url.like(item.url));

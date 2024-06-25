@@ -176,6 +176,7 @@ module.exports = function (child) {
     setting.partition = setting.partition || child.partition || parent.var.core.session.name;
     let defaultSetting = {
       vip: false,
+      parent : setting.parent || null,
       allowMenu: true,
       allowDevTools: true,
       allowDownload: true,
@@ -947,7 +948,14 @@ module.exports = function (child) {
 
     if (win.webContents.setWindowOpenHandler) {
       // handle window.open ...
-      win.webContents.setWindowOpenHandler(({ url, frameName }) => {
+      win.webContents.setWindowOpenHandler(({ url, frameName, features, disposition, referrer, postBody }) => {
+        let isPopup = false;
+        if (disposition && (disposition == 'new-window' || disposition == 'other')) {
+          isPopup = true;
+        }
+        if (features && features.contains('width|height|top|left|popup')) {
+          isPopup = true;
+        }
         if (!win.customSetting.allowNewWindows || (!win.customSetting.allowAds && !child.isAllowURL(url))) {
           child.log('Block-open-window', url);
           return { action: 'deny' };
@@ -1007,7 +1015,7 @@ module.exports = function (child) {
         }
 
         if (allow) {
-          if (url === 'about:blank' || url.contains('accounts') || url.contains('login')) {
+          if (url === 'about:blank' || url.contains('accounts.') || url.contains('login')) {
             return {
               action: 'allow',
               overrideBrowserWindowOptions: {
@@ -1020,7 +1028,7 @@ module.exports = function (child) {
                 backgroundColor: '#dddddd',
               },
             };
-          } else if (win.customSetting.windowType == 'view') {
+          } else if (!isPopup && win.customSetting.windowType == 'view') {
             child.sendMessage({
               type: '[open new tab]',
               data: {
@@ -1030,13 +1038,13 @@ module.exports = function (child) {
               },
             });
           } else {
-            child.sendMessage({
-              type: '[create-new-window]',
-              options: {
-                ...win.customSetting,
-                url: url,
-                referrer: win.getURL(),
-              },
+            child.createNewWindow({
+              ...win.customSetting,
+              windowType : 'popup',
+              modal: true,
+              parent : win,
+              url: url,
+              referrer: referrer ?? win.getURL(),
             });
           }
         }

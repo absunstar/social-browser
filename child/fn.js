@@ -267,7 +267,7 @@ module.exports = function (child) {
     }
 
     if (allow && child.parent.var.blocking.core.block_ads_servers) {
-      allow = !child.adList.includes(child.url.parse(url).host);
+      allow = !child.adHostList.includes(child.url.parse(url).hostname);
     }
 
     if (allow) {

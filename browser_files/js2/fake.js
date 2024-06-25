@@ -1,4 +1,4 @@
-console.log('100010001000100010001000');
+SOCIALBROWSER.showInfo('Blocked : ##query.x-url##');
 
 window.grecaptcha = window.grecaptcha || {
   render: function (name, options) {
