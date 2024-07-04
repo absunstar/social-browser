@@ -176,7 +176,7 @@ module.exports = function (child) {
     setting.partition = setting.partition || child.partition || parent.var.core.session.name;
     let defaultSetting = {
       vip: false,
-      parent : setting.parent || null,
+      parent: setting.parent || null,
       allowMenu: true,
       allowDevTools: true,
       allowDownload: true,
@@ -956,6 +956,10 @@ module.exports = function (child) {
         if (features && features.contains('width|height|top|left|popup')) {
           isPopup = true;
         }
+        if (win.customSetting.windowType == 'popup') {
+          isPopup = true;
+        }
+
         if (!win.customSetting.allowNewWindows || (!win.customSetting.allowAds && !child.isAllowURL(url))) {
           child.log('Block-open-window', url);
           return { action: 'deny' };
@@ -1015,7 +1019,7 @@ module.exports = function (child) {
         }
 
         if (allow) {
-          if (url === 'about:blank' || url.contains('accounts.') || url.contains('login')) {
+          if (isPopup || url === 'about:blank' || url.contains('accounts.') || url.contains('login')) {
             return {
               action: 'allow',
               overrideBrowserWindowOptions: {
@@ -1040,10 +1044,11 @@ module.exports = function (child) {
           } else {
             child.createNewWindow({
               ...win.customSetting,
-              windowType : 'popup',
+              windowType: 'popup',
               modal: true,
-              parent : win,
+              parent: win,
               url: url,
+              backgroundColor: '#2196f3',
               referrer: referrer ?? win.getURL(),
             });
           }

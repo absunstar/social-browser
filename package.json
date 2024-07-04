@@ -115,7 +115,7 @@
     "node-fetch": "^2.6.6"
   },
   "devDependencies": {
-    "electron": "^30.0.9",
+    "electron": "^31.1.0",
     "electron-builder": "^24.4.0"
   }
 }

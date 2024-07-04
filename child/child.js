@@ -147,9 +147,6 @@ child.electron.app.on('ready', function () {
     event.preventDefault();
     callback(list[0]);
   });
-  child.electron.app.on('crashed', (event, session) => {
-    child.electron.app.exit(0);
-  });
 
   child.electron.app.on('web-contents-created', (event, contents) => {
     child.remoteMain.enable(contents);
@@ -160,16 +157,10 @@ child.electron.app.on('ready', function () {
   });
 
   child.electron.app.on('window-all-closed', () => {
-    child.log('window-all-closed : ' + child.partition + ' : ' + child.index);
-    // if (process.platform != 'darwin') {
-    //   child.electron.app.quit();
-    // }
-    setTimeout(() => {
-      if (child.partition.contains('persist:') && child.electron.BrowserWindow.getAllWindows().length > 0) {
-        child.log('window-all-closed :  process.exit() : ' + child.partition + ' : ' + child.index);
-        process.exit();
-      }
-    }, 1000 * 5);
+    if (child.partition.contains('persist:') && child.electron.BrowserWindow.getAllWindows().length === 0) {
+      child.log('window-all-closed :  process.exit() : ' + child.partition + ' : ' + child.index);
+      process.exit();
+    }
   });
 
   child.electron.app.on('login', (event, webContents, details, authInfo, callback) => {

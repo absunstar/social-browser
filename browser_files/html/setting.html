@@ -208,9 +208,6 @@
                     <div class="row">
                       <h3>Browser Version <span class="red bold"> {{setting.core.version}} </span></h3>
                     </div>
-                    <div class="row">
-                      <h4>Browser ID <span class="bold blue"> {{setting.core.id}} </span> <i-button type="copy" label="copy" ng-click="copy(setting.core.id)"></i-button></h4>
-                    </div>
                   </div>
 
                   <div class="row padding">
@@ -245,9 +242,17 @@
                       <h2 class="bold green" ng-show="setting.core.active">Browser Active</h2>
                       <p class="bold blue">{{setting.core.activeMessage}}</p>
                     </div>
+
                     <div class="row padding">
-                      <i-control disabled class="col10" label="Device ID" ng-model="setting.core.DeviceId"> </i-control>
-                      <div class="col2">
+                      <i-control disabled class="col8" label="Browser ID" ng-model="setting.core.id"> </i-control>
+                      <div class="col4">
+                        <i-button type="copy" label="copy" ng-click="copy(setting.core.id)"></i-button>
+                      </div>
+                    </div>
+
+                    <div class="row padding">
+                      <i-control disabled class="col8" label="Device ID" ng-model="setting.core.DeviceId"> </i-control>
+                      <div class="col4">
                         <i-button type="copy" label="copy" ng-click="copy(setting.core.DeviceId)"></i-button>
                       </div>
                     </div>
