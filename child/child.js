@@ -200,6 +200,7 @@ child.electron.app.on('ready', function () {
         return;
       }
     } else {
+      //code here
     }
   });
 

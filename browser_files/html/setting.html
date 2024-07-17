@@ -251,17 +251,19 @@
                     </div>
 
                     <div class="row padding">
-                      <i-control disabled class="col8" label="Device ID" ng-model="setting.core.DeviceId"> </i-control>
-                      <div class="col4">
-                        <i-button type="copy" label="copy" ng-click="copy(setting.core.DeviceId)"></i-button>
-                      </div>
-                    </div>
-                    <div class="row padding">
                       <i-control class="col8" label="Device Key ( Any Browser on This PC )" ng-model="setting.core.DeviceKey"> </i-control>
                       <div class="col4">
                         <i-button type="approve" label="Activate" ng-click="activated()"></i-button>
                       </div>
                     </div>
+
+                    <div class="row padding">
+                      <i-control disabled class="col8" label="Device ID" ng-model="setting.core.DeviceId"> </i-control>
+                      <div class="col4">
+                        <i-button type="copy" label="copy" ng-click="copy(setting.core.DeviceId)"></i-button>
+                      </div>
+                    </div>
+
                     <div class="row padding">
                       <i-control class="col8" label="Browser Key ( Only This Browser )" ng-model="setting.core.BrowserKey"> </i-control>
                       <div class="col4">

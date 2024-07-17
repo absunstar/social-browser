@@ -481,7 +481,7 @@ module.exports = function init(parent) {
           if (client.ws) {
             if (name == 'urls') {
               if (client.uuid == 'user-file' || client.uuid == 'user-social' || client.uuid == 'user-setting') {
-                parent.log(`update private var ( ${name} ) to client : ${client.uuid}`);
+               // parent.log(`update private var ( ${name} ) to client : ${client.uuid}`);
                 client.ws.send({
                   type: '[update-browser-var]',
                   options: {
@@ -492,7 +492,7 @@ module.exports = function init(parent) {
               }
             } else if (name == 'cookieList') {
               if (client.uuid == 'user-file' || client.uuid == 'user-setting') {
-                parent.log(`update private var ( ${name} ) to client : ${client.uuid}`);
+                // parent.log(`update private var ( ${name} ) to client : ${client.uuid}`);
                 client.ws.send({
                   type: '[update-browser-var]',
                   options: {
@@ -501,7 +501,7 @@ module.exports = function init(parent) {
                   },
                 });
               } else {
-                parent.log(`update custom var ( ${name} ) to client : ${client.uuid}`);
+                // parent.log(`update custom var ( ${name} ) to client : ${client.uuid}`);
                 if (client.partition.like('*ghost*')) {
                   client.ws.send({
                     type: '[update-browser-var]',
@@ -522,7 +522,7 @@ module.exports = function init(parent) {
               }
             } else if (name == 'download_list') {
               if (client.windowType == 'files') {
-                parent.log(`update private var ( ${name} ) to client : ${client.uuid}`);
+               // parent.log(`update private var ( ${name} ) to client : ${client.uuid}`);
                 client.ws.send({
                   type: '[update-browser-var]',
                   options: {
@@ -542,7 +542,7 @@ module.exports = function init(parent) {
                 });
               }
             } else {
-              parent.log(`update public var ( ${name} ) to client : ${client.uuid}`);
+             // parent.log(`update public var ( ${name} ) to client : ${client.uuid}`);
               client.ws.send({
                 type: '[update-browser-var]',
                 options: {
@@ -554,7 +554,7 @@ module.exports = function init(parent) {
           }
         });
       }
-      console.log('_________________________________');
+     // console.log('_________________________________');
     } catch (error) {
       parent.log(error);
     }

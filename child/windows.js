@@ -176,6 +176,7 @@ module.exports = function (child) {
     setting.partition = setting.partition || child.partition || parent.var.core.session.name;
     let defaultSetting = {
       vip: false,
+      trackingID: new Date().getTime(),
       parent: setting.parent || null,
       allowMenu: true,
       allowDevTools: true,
@@ -387,7 +388,7 @@ module.exports = function (child) {
     if (win.customSetting.timeout) {
       setTimeout(() => {
         if (win && !win.isDestroyed()) {
-          win.destroy();
+          win.close();
         }
       }, win.customSetting.timeout);
     }
@@ -636,23 +637,23 @@ module.exports = function (child) {
     win.on('close', (e) => {
       // can be cancel here
       if (win.customSetting.trackingID) {
-        child.sendMessage({ type: '[tracking-info]', trackingID: customSetting.trackingID, windowID: customSetting.windowID, isClosed: true });
+        child.sendMessage({ type: '[tracking-info]', trackingID: win.customSetting.trackingID, windowID: win.id, isClosed: true });
       }
       child.sendToWindows('[window-event]', {
-        windowID: customSetting.windowID,
-        options: customSetting,
+        windowID: win.customSetting.windowID,
+        options: win.customSetting,
         name: 'close',
       });
 
       child.windowList.forEach((w, i) => {
-        if (w.id == customSetting.windowID) {
+        if (w.id == win.customSetting.windowID) {
           child.windowList.splice(i, 1);
         }
       });
     });
 
     win.on('closed', () => {
-      win = null;
+      // win = null;
     });
 
     win.on('app-command', (e, cmd) => {
