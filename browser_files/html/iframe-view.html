@@ -32,8 +32,12 @@
     <script>
       document.querySelector('iframe').addEventListener('load', function () {
         this.style.display = 'block';
-        if ((doc = this.contentWindow.document)) {
-          console.log(doc.querySelector('title').innerText);
+        try {
+          if ((doc = this.contentWindow.document)) {
+            console.info(doc.querySelector('title').innerText);
+          }
+        } catch (error) {
+          console.error(error);
         }
       });
     </script>

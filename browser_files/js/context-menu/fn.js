@@ -34,7 +34,7 @@ SOCIALBROWSER.addSession = function (session) {
   }
 
   if (session.name && session.display) {
-    if (!session.name.like('*persist*')) {
+    if (!session.name.like('persist*')) {
       session.name = 'persist:' + session.name;
     }
     session.can_delete = true;

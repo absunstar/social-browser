@@ -47,7 +47,8 @@ app.controller('mainController', ($scope, $http, $interval, $timeout) => {
   };
 
   $scope.addSession = function () {
-    SOCIALBROWSER.addSession($scope.session.display);
+    let ss = SOCIALBROWSER.addSession($scope.session.display);
+    $scope.setting.session_list.push(ss);
   };
 
   $scope.removeSession = function (_se) {

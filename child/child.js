@@ -164,6 +164,7 @@ child.electron.app.on('ready', function () {
   });
 
   child.electron.app.on('login', (event, webContents, details, authInfo, callback) => {
+    console.log(authInfo);
     if (authInfo.isProxy) {
       event.preventDefault();
       let proxy = null;

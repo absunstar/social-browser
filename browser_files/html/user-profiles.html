@@ -78,7 +78,7 @@
     </div>
     <br />
     <div class="row">
-      <div class="row" ng-repeat="_se in setting.session_list | orderBy : 'time'| filter:{display:session.display,name : session.display} track by $index  ">
+      <div class="row" ng-repeat="_se in setting.session_list | orderBy : 'time'| filter:session.display track by $index  ">
         <div class="col-10">
           <div class="user-box" ng-click="selectSession(_se)">
             <img src="http://127.0.0.1:60080/images/user.png" />

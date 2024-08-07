@@ -125,11 +125,17 @@
 
   SOCIALBROWSER.callSync = SOCIALBROWSER.ipcSync = function (channel, value = {}) {
     value.parentSetting = SOCIALBROWSER.customSetting;
+    if (channel == '[open new popup]' || channel == '[open new tab]') {
+      value.referrer = value.referrer || document.location.href;
+    }
     return SOCIALBROWSER.electron.ipcRenderer.sendSync(channel, value);
   };
 
   SOCIALBROWSER.invoke = SOCIALBROWSER.ipc = function (channel, value = {}) {
     value.parentSetting = SOCIALBROWSER.customSetting;
+    if (channel == '[open new popup]' || channel == '[open new tab]') {
+      value.referrer = value.referrer || document.location.href;
+    }
     return SOCIALBROWSER.electron.ipcRenderer.invoke(channel, value);
   };
   SOCIALBROWSER.on = function (name, callback) {

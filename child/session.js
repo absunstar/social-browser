@@ -648,6 +648,7 @@ module.exports = function (child) {
         let a_Headers = details.responseHeaders['Access-Control-Allow-Headers'] || details.responseHeaders['Access-Control-Allow-Headers'.toLowerCase()];
         let s_policy = details.responseHeaders['Content-Security-Policy'] || details.responseHeaders['Content-Security-Policy'.toLowerCase()];
         let s_policy_report = details.responseHeaders['Content-Security-Policy-Report-Only'] || details.responseHeaders['content-security-policy-report-only'.toLowerCase()];
+        let s_policy_resource = details.responseHeaders['Cross-Origin-Resource-Policy'] || details.responseHeaders['Cross-Origin-Resource-Policy'.toLowerCase()];
 
         // Must Delete Before set new values [duplicate headers]
         [
@@ -658,6 +659,7 @@ module.exports = function (child) {
           'Access-Control-Allow-Private-Network',
           'Content-Security-Policy-Report-Only',
           'Content-Security-Policy',
+          'Cross-Origin-Resource-Policy',
           'Access-Control-Allow-Credentials',
           'Access-Control-Allow-Methods',
           'Access-Control-Allow-Headers',
@@ -688,35 +690,37 @@ module.exports = function (child) {
           for (var key in s_policy) {
             s_policy[key] = s_policy[key].replaceAll('data:  ', 'data:  browser://* ');
             s_policy[key] = s_policy[key].replaceAll('script-src ', 'script-src browser://* ');
+            s_policy[key] = s_policy[key].replaceAll('frame-src ', 'frame-src browser://* ');
+            s_policy[key] = s_policy[key].replaceAll("default-src 'none'", '');
           }
 
-          // s_policy = JSON.stringify(s_policy);
+          if (url.like('*embed*')) {
+            details.responseHeaders['Content-Security-Policy'.toLowerCase()] = 'cross-origin';
+          } else {
+            details.responseHeaders['Content-Security-Policy'.toLowerCase()] = s_policy;
+          }
+        }
+        if (s_policy_resource && Array.isArray(s_policy_resource)) {
+          for (var key in s_policy_resource) {
+          }
 
-          // s_policy = s_policy.replaceAll('data: ', 'data: http://127.0.0.1:60080 browser://* ');
-
-          // s_policy = s_policy.replace('mediastream: ', 'mediastream: http://127.0.0.1:60080 ');
-
-          // s_policy = s_policy.replace('blob: ', 'blob: http://127.0.0.1:60080 ');
-
-          // s_policy = s_policy.replace('filesystem: ', 'filesystem: http://127.0.0.1:60080 ');
-
-          // s_policy = s_policy.replace('img-src ', 'img-src http://127.0.0.1:60080 ');
-
-          // s_policy = s_policy.replace('default-src ', "default-src 'self' http://127.0.0.1:60080 ");
-          // s_policy = s_policy.replace('script-src ', "script-src 'self' http://127.0.0.1:60080 ");
-
-          details.responseHeaders['Content-Security-Policy'.toLowerCase()] = s_policy;
+          if (url.like('*embed*')) {
+            details.responseHeaders['Cross-Origin-Resource-Policy'.toLowerCase()] = 'cross-origin';
+          } else {
+            details.responseHeaders['Cross-Origin-Resource-Policy'.toLowerCase()] = s_policy_resource;
+          }
         }
 
         if (s_policy_report && Array.isArray(s_policy_report)) {
           for (var key in s_policy_report) {
             s_policy_report[key] = s_policy_report[key].replaceAll('data:  ', 'data:  http://127.0.0.1:60080 browser://* ');
           }
-
-          details.responseHeaders['Content-Security-Policy-Report-Only'.toLowerCase()] = s_policy_report;
+          if (url.like('*embed*')) {
+            details.responseHeaders['Content-Security-Policy-Report-Only'.toLowerCase()] = 'cross-origin';
+          } else {
+            details.responseHeaders['Content-Security-Policy-Report-Only'.toLowerCase()] = s_policy_report;
+          }
         }
-
-        details.responseHeaders['Cross-Origin-Resource-Policy'.toLowerCase()] = 'cross-origin';
 
         if ((info = child.getOverwriteInfo(url))) {
           if (url.like(info.to) && info.rediect_from) {
@@ -753,21 +757,18 @@ module.exports = function (child) {
         if (webContents.getURL().like('http://127.0.0.1*|https://127.0.0.1*|http://localhost*|https://localhost*')) {
           return callback(true);
         } else {
-          let allow = child.parent.var.blocking.permissions['allow_' + permission.replace('-', '_')] || false;
+          let allow = child.parent.var.blocking.permissions[permission] || false;
           return callback(allow);
         }
       });
       ss.setPermissionCheckHandler((webContents, permission) => {
-        if (permission.contains('storage-access|')) {
-          return true;
-        }
         if (!child.parent.var.blocking.permissions) {
           return false;
         }
         if (webContents && webContents.getURL().like('http://127.0.0.1*|https://127.0.0.1*|http://localhost*|https://localhost*')) {
           return true;
         } else {
-          let allow = child.parent.var.blocking.permissions['allow_' + permission.replace('-', '_')] || false;
+          let allow = child.parent.var.blocking.permissions[permission] || false;
           // child.log(` \n  <<< setPermissionCheckHandler ${permission} ( ${allow} )  ${webContents.getURL()} \n `);
           return allow;
         }

@@ -2,7 +2,7 @@
   "name": "social_browser",
   "productName": "Social Browser",
   "homepage": "https://social-browser.com",
-  "version": "2024.07.17",
+  "version": "2024.08.10",
   "description": "Browsing Any Site with Multi Users And without Ads",
   "author": {
     "name": "Social Developer",
@@ -115,7 +115,7 @@
     "node-fetch": "^2.6.6"
   },
   "devDependencies": {
-    "electron": "^31.1.0",
+    "electron": "^31.3.1",
     "electron-builder": "^24.4.0"
   }
 }

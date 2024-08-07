@@ -67,13 +67,15 @@ SOCIALBROWSER.youtubeMaster = {
     return SOCIALBROWSER.youtubeMaster.player;
   },
   resetQuality: function () {
-    SOCIALBROWSER.log(' resetQuality : ' + document.location.href);
+    
     if (
       SOCIALBROWSER.youtubeMaster.allowChangeQualtiy &&
+      SOCIALBROWSER.var.blocking.youtube.allow_change_quality &&
       SOCIALBROWSER.var.blocking.youtube.quality &&
       SOCIALBROWSER.var.blocking.youtube.quality.value &&
       SOCIALBROWSER.youtubeMaster.player.getPlaybackQuality() != SOCIALBROWSER.var.blocking.youtube.quality.name
     ) {
+      SOCIALBROWSER.log(' resetQuality : ' + document.location.href);
       if (SOCIALBROWSER.click(SOCIALBROWSER.youtubeMaster.settingSelector, false)) {
         let subSettingButtons = document.querySelectorAll(SOCIALBROWSER.youtubeMaster.qualitySelector);
         subSettingButtons.forEach((subSettingButton, i) => {

@@ -23,7 +23,6 @@
 //   return;
 // }
 
-
 if (SOCIALBROWSER.session.privacy.vpc.hide_cpu) {
   SOCIALBROWSER.__define(navigator, 'hardwareConcurrency', SOCIALBROWSER.session.privacy.vpc.cpu_count);
 }
@@ -144,7 +143,7 @@ if (SOCIALBROWSER.session.privacy.vpc.mask_date && SOCIALBROWSER.session.privacy
         return getTimezoneOffset.call(this);
       },
     });
-    
+
     Object.defineProperty(Date.prototype, '_date', {
       configurable: true,
       get() {
@@ -507,7 +506,7 @@ if (SOCIALBROWSER.session.privacy.vpc.hide_plugins) {
 
 if (SOCIALBROWSER.session.privacy.vpc.hide_connection || SOCIALBROWSER.session.privacy.vpc.hide_connection) {
   SOCIALBROWSER.__define(navigator, 'connection', {
-    addEventListener: function(){},
+    addEventListener: function () {},
     onchange: null,
     effectiveType: SOCIALBROWSER.session.privacy.vpc.connection.effectiveType,
     rtt: SOCIALBROWSER.session.privacy.vpc.connection.rtt,
@@ -540,7 +539,7 @@ if (SOCIALBROWSER.session.privacy.vpc.hide_permissions) {
     }
 });
    */
-  
+
 if (SOCIALBROWSER.session.privacy.vpc.hide_fonts) {
   SOCIALBROWSER.__define(HTMLElement.prototype, 'offsetHeight', {
     get() {
@@ -597,8 +596,34 @@ if (SOCIALBROWSER.session.privacy.vpc.hide_location) {
         },
       });
     }
-    if (error) {
+  });
+
+  SOCIALBROWSER.__define(navigator.geolocation, 'watchPosition', function (success, error, options) {
+    if (success) {
+      let timeout = options?.timeout || 1000 * 5;
+      let latitude = parseFloat(SOCIALBROWSER.session.privacy.vpc.location.latitude || 0);
+      let longitude = parseFloat(SOCIALBROWSER.session.privacy.vpc.location.longitude || 0);
+      return setInterval(() => {
+        latitude += 0.00001;
+        longitude += 0.00001;
+        success({
+          timestamp: new Date().getTime(),
+          coords: {
+            latitude: latitude,
+            longitude: longitude,
+            altitude: null,
+            accuracy: SOCIALBROWSER.random(10, 100),
+            altitudeAccuracy: null,
+            heading: null,
+            speed: null,
+          },
+        });
+      }, timeout);
     }
+  });
+
+  SOCIALBROWSER.__define(navigator.geolocation, 'clearWatch', function (id) {
+    clearInterval(id);
   });
 }
 

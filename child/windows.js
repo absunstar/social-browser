@@ -481,6 +481,7 @@ module.exports = function (child) {
       });
     } else {
       win.loadURL(parent.var.core.default_page || 'http://127.0.0.1:60080/newTab', {
+        httpReferrer: win.customSetting.referrer || win.customSetting.referer,
         userAgent: win.customSetting.userAgent || parent.var.core.defaultUserAgent.url,
       });
     }
@@ -980,6 +981,7 @@ module.exports = function (child) {
             url: url,
             partition: win.customSetting.partition,
             user_name: win.customSetting.user_name,
+            referrer: referrer ?? win.getURL(),
           });
 
           return { action: 'deny' };
@@ -990,6 +992,7 @@ module.exports = function (child) {
             url: url,
             partition: win.customSetting.partition,
             user_name: win.customSetting.user_name,
+            referrer: referrer ?? win.getURL(),
           });
           return { action: 'deny' };
         }
@@ -1039,7 +1042,7 @@ module.exports = function (child) {
               data: {
                 ...win.customSetting,
                 url: url,
-                referrer: win.getURL(),
+                referrer: referrer ?? win.getURL(),
               },
             });
           } else {

@@ -251,13 +251,6 @@
                     </div>
 
                     <div class="row padding">
-                      <i-control class="col8" label="Device Key ( Any Browser on This PC )" ng-model="setting.core.DeviceKey"> </i-control>
-                      <div class="col4">
-                        <i-button type="approve" label="Activate" ng-click="activated()"></i-button>
-                      </div>
-                    </div>
-
-                    <div class="row padding">
                       <i-control disabled class="col8" label="Device ID" ng-model="setting.core.DeviceId"> </i-control>
                       <div class="col4">
                         <i-button type="copy" label="copy" ng-click="copy(setting.core.DeviceId)"></i-button>
@@ -266,6 +259,13 @@
 
                     <div class="row padding">
                       <i-control class="col8" label="Browser Key ( Only This Browser )" ng-model="setting.core.BrowserKey"> </i-control>
+                      <div class="col4">
+                        <i-button type="approve" label="Activate" ng-click="activated()"></i-button>
+                      </div>
+                    </div>
+
+                    <div class="row padding">
+                      <i-control class="col8" label="Device Key ( Any Browser on This PC )" ng-model="setting.core.DeviceKey"> </i-control>
                       <div class="col4">
                         <i-button type="approve" label="Activate" ng-click="activated()"></i-button>
                       </div>
@@ -352,48 +352,44 @@
                   <fieldset>
                     <legend>Browser Permissions</legend>
 
-                    <i-checkbox class="row" label="Request access to read from the clipboard." ng-model="setting.blocking.permissions.allow_clipboard_read"></i-checkbox>
-                    <i-checkbox class="row" label="Request access to write to the clipboard." ng-model="setting.blocking.permissions['allow_clipboard-sanitized-write']"></i-checkbox>
-                    <i-checkbox class="row" label="Access the user's geolocation data via the Geolocation API" ng-model="setting.blocking.permissions.allow_geolocation"></i-checkbox>
-                    <i-checkbox class="row" label="Control of the app's fullscreen state via the Fullscreen API." ng-model="setting.blocking.permissions.allow_fullscreen"></i-checkbox>
-                    <i-checkbox class="row" label="Open links in external applications." ng-model="setting.blocking.permissions.allow_openExternal"></i-checkbox>
-                    <i-checkbox class="row" label="Access the HID protocol to manipulate HID devices via the WebHID API." ng-model="setting.blocking.permissions.allow_hid"></i-checkbox>
-                    <i-checkbox class="row" label="Access the user's idle state via the IdleDetector API." ng-model="setting.blocking.permissions['allow_idle-detection']"></i-checkbox>
-                    <i-checkbox class="row" label="Read from and write to serial devices with the Web Serial API." ng-model="setting.blocking.permissions.allow_serial"></i-checkbox>
+                    <i-checkbox class="row" label="Request access to read from the clipboard." ng-model="setting.blocking.permissions['clipboard-read']"></i-checkbox>
+                    <i-checkbox class="row" label="Request access to write to the clipboard." ng-model="setting.blocking.permissions['clipboard-sanitized-write']"></i-checkbox>
+                    <i-checkbox class="row" label="Access the user's geolocation data via the Geolocation API" ng-model="setting.blocking.permissions['geolocation']"></i-checkbox>
+                    <i-checkbox class="row" label="Control of the app's fullscreen state via the Fullscreen API." ng-model="setting.blocking.permissions['fullscreen']"></i-checkbox>
+                    <i-checkbox class="row" label="Open links in external applications." ng-model="setting.blocking.permissions['openExternal']"></i-checkbox>
+                    <i-checkbox class="row" label="Access the HID protocol to manipulate HID devices via the WebHID API." ng-model="setting.blocking.permissions['hid']"></i-checkbox>
+                    <i-checkbox class="row" label="Access the user's idle state via the IdleDetector API." ng-model="setting.blocking.permissions['idle-detection']"></i-checkbox>
+                    <i-checkbox class="row" label="Read from and write to serial devices with the Web Serial API." ng-model="setting.blocking.permissions['serial']"></i-checkbox>
                     <i-checkbox
                       class="row"
                       label="Allows content loaded in a third-party context to request access to third-party cookies using the Storage Access API."
-                      ng-model="setting.blocking.permissions['allow_storage-access']"
+                      ng-model="setting.blocking.permissions['storage-access']"
                     ></i-checkbox>
                     <i-checkbox
                       class="row"
                       label="Allow top-level sites to request third-party cookie access on behalf of embedded content originating from another site in the same related website set using the Storage Access API."
-                      ng-model="setting.blocking.permissions['allow_top-level-storage-access']"
+                      ng-model="setting.blocking.permissions['top-level-storage-access']"
                     ></i-checkbox>
                     <i-checkbox
                       class="row"
                       label="Expose non-standard Universal Serial Bus (USB) compatible devices services to the web with the WebUSB API."
-                      ng-model="setting.blocking.permissions.allow_usb"
+                      ng-model="setting.blocking.permissions['usb']"
                     ></i-checkbox>
                     <i-checkbox
                       class="row"
                       label="Configure and display desktop notifications to the user with the Notifications API."
-                      ng-model="setting.blocking.permissions.allow_notifications"
+                      ng-model="setting.blocking.permissions['notifications']"
                     ></i-checkbox>
                     <i-checkbox
                       class="row"
                       label="Allow Media ( Request access to media devices such as camera, microphone and speakers ) "
-                      ng-model="setting.blocking.permissions.allow_media"
+                      ng-model="setting.blocking.permissions['media']"
                     ></i-checkbox>
-                    <i-checkbox class="row" label="Enable MIDI access in the Web MIDI API." ng-model="setting.blocking.permissions.allow_midi"></i-checkbox>
-                    <i-checkbox class="row" label="Use system exclusive messages in the Web MIDI API." ng-model="setting.blocking.permissions.allow_midiSysex"></i-checkbox>
-                    <i-checkbox class="row" label="Access to DRM protected content." ng-model="setting.blocking.permissions.allow_mediaKeySystem"></i-checkbox>
-                    <i-checkbox
-                      class="row"
-                      label="Directly interpret mouse movements as an input method via the Pointer Lock API"
-                      ng-model="setting.blocking.permissions.allow_pointerLock"
-                    ></i-checkbox>
-                    <i-checkbox class="row" label="Allow keyboardLock ( Request to Lock Keyboard Keys ) " ng-model="setting.blocking.permissions.allow_keyboardLock"></i-checkbox>
+                    <i-checkbox class="row" label="Enable MIDI access in the Web MIDI API." ng-model="setting.blocking.permissions['midi']"></i-checkbox>
+                    <i-checkbox class="row" label="Use system exclusive messages in the Web MIDI API." ng-model="setting.blocking.permissions['midiSysex']"></i-checkbox>
+                    <i-checkbox class="row" label="Access to DRM protected content." ng-model="setting.blocking.permissions['mediaKeySystem']"></i-checkbox>
+                    <i-checkbox class="row" label="Directly interpret mouse movements as an input method via the Pointer Lock API" ng-model="setting.blocking.permissions['pointerLock']"></i-checkbox>
+                    <i-checkbox class="row" label="Allow keyboardLock ( Request to Lock Keyboard Keys ) " ng-model="setting.blocking.permissions['keyboardLock']"></i-checkbox>
                   </fieldset>
                 </div>
               </div>
@@ -575,14 +571,11 @@
                     <legend>Youtube</legend>
                     <div>
                       <div class="row">
-                        <div class="col6">
-                          <i-checkbox class="row" label="Auto Skip Ads " ng-model="setting.blocking.youtube.skip_ads"> </i-checkbox>
-                          <i-checkbox class="row" label="Allow Safty Mode" ng-model="setting.blocking.youtube.allow_safty_mode"></i-checkbox>
-                        </div>
-                        <div class="col6">
-                          <i-checkbox class="row" label="Change Video Quality" ng-model="setting.blocking.youtube.allow_change_quality"> </i-checkbox>
-                          <i-list class="col4" primary="name" display="value" ng-model="setting.blocking.youtube.quality" items="setting.video_quality_list" label="Video Quality"></i-list>
-                        </div>
+                        <i-checkbox class="row" label="Auto Skip Ads " ng-model="setting.blocking.youtube.skip_ads"> </i-checkbox>
+                        <i-checkbox class="row" label="Allow Safty Mode" ng-model="setting.blocking.youtube.allow_safty_mode"></i-checkbox>
+
+                        <i-checkbox class="col4" label="Auto Change Video Quality" ng-model="setting.blocking.youtube.allow_change_quality"> </i-checkbox>
+                        <i-list class="col4" primary="name" display="value" ng-model="setting.blocking.youtube.quality" items="setting.video_quality_list" label="Select Video Quality"></i-list>
                       </div>
 
                       <div class="row">

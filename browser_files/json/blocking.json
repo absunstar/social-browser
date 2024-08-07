@@ -227,11 +227,10 @@
         "allow_hitleap": true
     },
     "permissions": {
-        "allow_fullscreen": true,
-        "allow_storage-access": true,
-        "allow_top-level-storage-access": true,
-        "allow_clipboard_read": true,
-        "allow_clipboard-sanitized-write": true
+        "clipboard-read": true,
+        "clipboard-sanitized-write": true,
+        "geolocation": true,
+        "fullscreen": true
     },
     "core": {
         "remove_external_iframe": false,

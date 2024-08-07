@@ -481,7 +481,7 @@ module.exports = function init(parent) {
           if (client.ws) {
             if (name == 'urls') {
               if (client.uuid == 'user-file' || client.uuid == 'user-social' || client.uuid == 'user-setting') {
-               // parent.log(`update private var ( ${name} ) to client : ${client.uuid}`);
+                // parent.log(`update private var ( ${name} ) to client : ${client.uuid}`);
                 client.ws.send({
                   type: '[update-browser-var]',
                   options: {
@@ -522,7 +522,7 @@ module.exports = function init(parent) {
               }
             } else if (name == 'download_list') {
               if (client.windowType == 'files') {
-               // parent.log(`update private var ( ${name} ) to client : ${client.uuid}`);
+                // parent.log(`update private var ( ${name} ) to client : ${client.uuid}`);
                 client.ws.send({
                   type: '[update-browser-var]',
                   options: {
@@ -542,7 +542,7 @@ module.exports = function init(parent) {
                 });
               }
             } else {
-             // parent.log(`update public var ( ${name} ) to client : ${client.uuid}`);
+              // parent.log(`update public var ( ${name} ) to client : ${client.uuid}`);
               client.ws.send({
                 type: '[update-browser-var]',
                 options: {
@@ -554,7 +554,7 @@ module.exports = function init(parent) {
           }
         });
       }
-     // console.log('_________________________________');
+      // console.log('_________________________________');
     } catch (error) {
       parent.log(error);
     }
@@ -814,9 +814,12 @@ module.exports = function init(parent) {
         parent.var.core.max_tabs = 20;
       }
       return;
-      parent.var.core['DeviceKey'] = parent.md5(parent.api.to123(parent.var.core['id'] + parent.var.core['DeviceId']));
+
+      parent.var.core['BrowserKey'] = parent.md5(parent.api.to123(parent.var.core['id'] + parent.var.core['DeviceId']));
+      parent.var.core['DeviceKey'] = parent.md5(parent.api.to123(parent.var.core['DeviceId']));
     } else if (parent.information['ProcessorId'] && parent.information['DISKDRIVE'] && parent.information['BIOS']) {
-      parent.var.core['DeviceId'] = parent.information['ProcessorId'] + parent.information['DISKDRIVE'] + parent.information['BIOS'];
+      parent.var.core['DeviceId'] = parent.md5(parent.information['ProcessorId'] + parent.information['DISKDRIVE'] + parent.information['BIOS']);
+
       if (parent.var.core['BrowserKey'] && parent.md5(parent.api.to123(parent.var.core['id'] + parent.var.core['DeviceId'])) === parent.var.core['BrowserKey']) {
         parent.var.core.active = true;
         parent.var.core.activeMessage = 'Browser Activated By ( Browser Key )';
@@ -840,6 +843,10 @@ module.exports = function init(parent) {
   };
 
   if (process.platform == 'win32') {
+    parent.information['ProcessorId'] = 'UNKNOWN';
+    parent.information['DISKDRIVE'] = 'UNKNOWN';
+    parent.information['BIOS'] = 'UNKNOWN';
+
     parent.exec('wmic CPU get ProcessorId', (d) => {
       parent.information['ProcessorId'] = d.replace(/\n|\r|\t|\s+|ProcessorId/g, '') || 'UNKNOWN';
       parent.activated();
