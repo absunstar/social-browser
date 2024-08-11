@@ -173,19 +173,21 @@ module.exports = function (child) {
     return true;
   };
 
-  child.handleSession = function (obj) {
+  child.handleSession = function (sessionOptions) {
     if (child.sessionBusy) {
-      setTimeout(() => {
-        child.handleSession(obj);
-      }, 1000 * 5);
+      // setTimeout(() => {
+      //   child.handleSession(obj);
+      // }, 1000 * 5);
       return;
     }
+
     child.sessionBusy = true;
 
-    if (!obj || !obj.name) {
+    if (!sessionOptions || !sessionOptions.name) {
+      child.sessionBusy = false;
       return;
     }
-    let name = obj.name;
+    let name = sessionOptions.name;
 
     let user = child.parent.var.session_list.find((s) => s.name == name) ?? {};
     user.privacy = user.privacy || child.parent.var.blocking.privacy;
@@ -193,44 +195,53 @@ module.exports = function (child) {
     if (!user.privacy.enable_virtual_pc) {
       user.privacy = child.parent.var.blocking.privacy;
     }
-    user.defaultUserAgent = obj.defaultUserAgent ? { url: obj.userAgentURL } : user.defaultUserAgent || {};
+    user.defaultUserAgent = sessionOptions.defaultUserAgent ? { url: sessionOptions.userAgentURL } : user.defaultUserAgent || {};
 
     if (!user.defaultUserAgent.url || user.defaultUserAgent.edit) {
       user.defaultUserAgent = { url: child.parent.var.core.defaultUserAgent.url, edit: true };
     }
 
     child.cookies[name] = child.cookies[name] || [];
-    let ss = name === '_' ? child.electron.session.defaultSession : child.electron.session.fromPartition(name);
+    let ss = sessionOptions.isDefault ? child.electron.session.defaultSession : child.electron.session.fromPartition(name);
     ss.name = name;
-    ss.allowNTLMCredentialsForDomains('*');
     ss.setUserAgent(user.defaultUserAgent.url);
 
-    if (child.session_name_list.some((s) => s.name === name)) {
+    let sessionIndex = -1;
+    if (sessionOptions.isDefault) {
+      sessionIndex = child.session_name_list.findIndex((s) => s.isDefault === true);
+    } else {
+      sessionIndex = child.session_name_list.findIndex((s) => s.name === name);
+    }
+
+    if (sessionIndex !== -1) {
+      child.session_name_list[sessionIndex].user = user;
       child.allowSessionHandle = false;
-      child.session_name_list.forEach((s, i) => {
-        if (s.name === name) {
-          child.session_name_list[i].user = user;
-        }
-      });
     } else {
       child.allowSessionHandle = true;
       child.session_name_list.push({
-        name: name,
+        name: sessionOptions.isDefault ? null : name,
         user: user,
+        proxy: {},
+        isDefault: sessionOptions.isDefault || false,
       });
+      sessionIndex = child.session_name_list.length - 1;
+      ss.setSpellCheckerLanguages(['en-US']);
+      ss.allowNTLMCredentialsForDomains('*');
     }
 
-    ss.setSpellCheckerLanguages(['en-US']);
     let proxy = null;
 
-    if (obj.proxy) {
-      proxy = obj.proxy;
+    if (sessionOptions.proxy) {
+      proxy = sessionOptions.proxy;
     } else if (user.proxy && user.proxy.enabled && user.proxy.mode) {
       proxy = user.proxy;
-    } else if (child.parent.var.proxy.enabled && child.parent.var.proxy.mode) {
+    } else if (child.parent.var.proxy && child.parent.var.proxy.enabled && child.parent.var.proxy.mode) {
       proxy = child.parent.var.proxy;
     }
-    if (proxy) {
+
+    if (proxy && JSON.stringify(child.session_name_list[sessionIndex].proxy) !== JSON.stringify(proxy)) {
+      child.session_name_list[sessionIndex].proxy = proxy;
+
       if (proxy.mode == 'fixed_servers' && (proxy.url || (proxy.ip && proxy.port))) {
         if (!proxy.url && proxy.ip && proxy.port) {
           proxy.url = proxy.ip + ':' + proxy.port;
@@ -245,58 +256,68 @@ module.exports = function (child) {
           proxy.ip = arr[0];
           proxy.port = arr[1];
         }
-        let proxyRules = '';
-        let startline = '';
-        if (proxy.socks4) {
-          proxyRules += startline + 'socks4://' + proxy.ip + ':' + proxy.port;
-          startline = ',';
+        if (proxy.ip && proxy.port) {
+          let proxyRules = '';
+          let startline = ',';
+          if (proxy.socks4) {
+            proxyRules += startline + 'socks4://' + proxy.ip + ':' + proxy.port;
+            startline = ',';
+          }
+          if (proxy.socks5) {
+            proxyRules += startline + 'socks5://' + proxy.ip + ':' + proxy.port;
+            startline = ',';
+          }
+          if (proxy.ftp) {
+            proxyRules += startline + 'ftp://' + proxy.ip + ':' + proxy.port;
+            startline = ',';
+          }
+          if (proxy.http) {
+            proxyRules += startline + 'http://' + proxy.ip + ':' + proxy.port;
+            startline = ',';
+          }
+          if (proxy.https) {
+            proxyRules += startline + 'https://' + proxy.ip + ':' + proxy.port;
+            startline = ',';
+          }
+          if (!proxy.http && !proxy.https && !proxy.ftp && !proxy.socks5 && !proxy.socks4) {
+            proxyRules = proxy.ip + ':' + proxy.port;
+            startline = ',';
+          }
+          if (proxyRules && proxy.direct) {
+            proxyRules += startline + 'direct://';
+          }
+          if (proxyRules) {
+            ss.closeAllConnections().then(() => {
+              ss.setProxy({
+                mode: proxy.mode,
+                proxyRules: proxyRules,
+                proxyBypassRules: proxy.ignore || 'localhost,127.0.0.1,::1,192.168.*',
+              }).then(() => {
+                child.log(`session ${name} Proxy Set : ${proxyRules}`);
+              });
+            });
+          }
         }
-        if (proxy.socks5) {
-          proxyRules += startline + 'socks5://' + proxy.ip + ':' + proxy.port;
-          startline = ',';
-        }
-        if (proxy.ftp) {
-          proxyRules += startline + 'ftp://' + proxy.ip + ':' + proxy.port;
-          startline = ',';
-        }
-        if (proxy.http) {
-          proxyRules += startline + 'http://' + proxy.ip + ':' + proxy.port;
-          startline = ',';
-        }
-        if (proxy.https) {
-          proxyRules += startline + 'https://' + proxy.ip + ':' + proxy.port;
-          startline = ',';
-        }
-        if (proxyRules == '') {
-          proxyRules = proxy.ip + ':' + proxy.port;
-          startline = ',';
-        }
-        ss.setProxy({
-          mode: proxy.mode,
-          proxyRules: proxyRules,
-          proxyBypassRules: proxy.ignore || '127.0.0.1',
-        }).then(() => {
-          // child.log(`session ${name} Proxy Set : ${proxyRules}`);
-        });
       } else if (proxy.mode == 'pac_script' && proxy.pacScript) {
         ss.setProxy({
           mode: proxy.mode,
           pacScript: proxy.pacScript,
         }).then(() => {
-          // child.log(`session ${name} Proxy Set : ${proxy.mode}`);
+          child.log(`session ${name} Proxy Set : ${proxy.mode}`);
         });
       } else {
         ss.setProxy({
           mode: proxy.mode,
         }).then(() => {
-          //  child.log(`session ${name} Proxy Set Default : ${proxy.mode}`);
+          child.log(`session ${name} Proxy Set Default : ${proxy.mode}`);
         });
       }
-    } else {
+    } else if (!proxy) {
       ss.setProxy({
-        mode: 'system',
+        mode: 'direct',
+        proxyBypassRules: 'localhost,127.0.0.1,::1,192.168.*',
       }).then(() => {
-        // child.log(`session ${name} Proxy Set : System`);
+        child.log(`session ${name} Proxy Set : direct `);
       });
     }
 
@@ -307,14 +328,18 @@ module.exports = function (child) {
     if (child.allowSessionHandle === true) {
       child.log(`\n\n [ Handle Session ......  ( ${name} ) ]  / ${child.session_name_list.length} \n\n `);
 
-      ss.protocol.handle('browser', (req) => {
-        let url = req.url.replace('browser://', 'http://127.0.0.1:60080/').replace('/?', '?');
-        return child.electron.net.fetch(url, {
-          method: req.method,
-          headers: req.headers,
-          body: req.body,
+      try {
+        ss.protocol.handle('browser', (req) => {
+          let url = req.url.replace('browser://', 'http://127.0.0.1:60080/').replace('/?', '?');
+          return child.electron.net.fetch(url, {
+            method: req.method,
+            headers: req.headers,
+            body: req.body,
+          });
         });
-      });
+      } catch (error) {
+        console.log(error, sessionOptions, child.session_name_list);
+      }
 
       ss.webRequest.onBeforeRequest(filter, function (details, callback) {
         if (child.parent.var.core.enginOFF) {
@@ -912,39 +937,17 @@ module.exports = function (child) {
       });
     }
 
-    if (false && child.allowSessionHandle) {
-      ss.cookies.on('changed', function (event, cookie, cause, removed) {
-        if (child.sessionBusy) {
-          return;
-        }
-        // if (cookie.domain.startsWith('.')) {
-        //   cookie.url = 'https://' + cookie.domain.substring(1);
-        // } else {
-        //   cookie.url = 'https://' + cookie.domain;
-        // }
-        child.sendMessage({
-          type: '[cookie-changed]',
-          partition: name,
-          cookie: cookie,
-          removed: removed,
-          cause: cause,
-        });
-
-        child.cookies[name].forEach((co, i) => {
-          if (co && co.domain === cookie.domain && co.name === cookie.name) {
-            child.cookies[name].splice(i, 1);
-          }
-        });
-      });
-    }
-
-    child.sessionBusy = false;
+    setTimeout(() => {
+      child.sessionBusy = false;
+      if (!sessionOptions.isDefault) {
+        // child.handleSession({ ...sessionOptions, isDefault: true });
+      }
+    }, 1000 * 3);
 
     return ss;
   };
 
   child.sessionConfig = () => {
     child.handleSession({ name: child.partition });
-    // child.handleSession('_');
   };
 };

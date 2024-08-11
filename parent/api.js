@@ -269,11 +269,12 @@ module.exports = function init(parent) {
             port: doc.port,
             username: doc.username,
             password: doc.password,
-            socks5: true,
-            socks4: true,
-            http: true,
-            https: true,
-            ftp: true,
+            socks5: false,
+            socks4: false,
+            http: false,
+            https: false,
+            direct: false,
+            ftp: false,
           });
         });
         console.log('saving proxy list');

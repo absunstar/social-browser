@@ -532,40 +532,49 @@ module.exports = function (child) {
         proxy.ip = arr[0];
         proxy.port = arr[1];
       }
-      let proxyRules = '';
-      let startline = '';
-      if (proxy.socks4) {
-        proxyRules += startline + 'socks4://' + proxy.ip + ':' + proxy.port;
-        startline = ',';
-      }
-      if (proxy.socks5) {
-        proxyRules += startline + 'socks5://' + proxy.ip + ':' + proxy.port;
-        startline = ',';
-      }
-      if (proxy.ftp) {
-        proxyRules += startline + 'ftp://' + proxy.ip + ':' + proxy.port;
-        startline = ',';
-      }
-      if (proxy.http) {
-        proxyRules += startline + 'http://' + proxy.ip + ':' + proxy.port;
-        startline = ',';
-      }
-      if (proxy.https) {
-        proxyRules += startline + 'https://' + proxy.ip + ':' + proxy.port;
-        startline = ',';
-      }
-      if (proxyRules == '') {
-        proxyRules = proxy.ip + ':' + proxy.port;
-        startline = ',';
-      }
+      if (proxy.ip && proxy.port) {
+        let proxyRules = '';
+        let startline = '';
 
-      ss.setProxy({
-        mode: proxy.mode,
-        proxyRules: proxyRules,
-        proxyBypassRules: proxy.ignore || '127.0.0.1',
-      }).then(() => {
-        // child.log('window Proxy Set : ' + proxyRules);
-      });
+        if (proxy.socks4) {
+          proxyRules += startline + 'socks4://' + proxy.ip + ':' + proxy.port;
+          startline = ',';
+        }
+        if (proxy.socks5) {
+          proxyRules += startline + 'socks5://' + proxy.ip + ':' + proxy.port;
+          startline = ',';
+        }
+        if (proxy.ftp) {
+          proxyRules += startline + 'ftp://' + proxy.ip + ':' + proxy.port;
+          startline = ',';
+        }
+        if (proxy.http) {
+          proxyRules += startline + 'http://' + proxy.ip + ':' + proxy.port;
+          startline = ',';
+        }
+        if (proxy.https) {
+          proxyRules += startline + 'https://' + proxy.ip + ':' + proxy.port;
+          startline = ',';
+        }
+        if (!proxy.http && !proxy.https && !proxy.ftp && !proxy.socks5 && !proxy.socks4) {
+          proxyRules = proxy.ip + ':' + proxy.port;
+          startline = ',';
+        }
+        if (proxyRules && proxy.direct) {
+          proxyRules += startline + 'direct://';
+        }
+        if (proxyRules) {
+          ss.closeAllConnections().then(() => {
+            ss.setProxy({
+              mode: proxy.mode || 'fixed_servers',
+              proxyRules: proxyRules,
+              proxyBypassRules: proxy.ignore || 'localhost,127.0.0.1,::1,192.168.*',
+            }).then(() => {
+              child.log('window Proxy Set : ' + proxyRules);
+            });
+          });
+        }
+      }
     } else {
       child.handleSession({ name: win.customSetting.partition });
     }
@@ -877,29 +886,22 @@ module.exports = function (child) {
     });
 
     win.on('unresponsive', async () => {
-      child.log('unresponsive');
-      if (win.customSetting.windowType == 'view' && false) {
-        const options = {
-          type: 'info',
-          title: 'Window unresponsive',
-          message: 'This Window has been suspended',
-          buttons: ['Re-Load Window', 'Close'],
-        };
-        if (win && !win.isDestroyed()) {
-          child.electron.dialog.showMessageBox(win, options).then((index) => {
-            if (index == 0) {
-              win.webContents.reload();
-            } else {
-              win.close();
-            }
-          });
+      child.log('window unresponsive');
+      if (win && !win.isDestroyed() && win.customSetting.windowType !== 'view' && win.isVisible()) {
+        const { response } = await dialog.showMessageBox({
+          message: 'This Window has become unresponsive',
+          title: 'Do you want to try forcefully reloading the window ?',
+          buttons: ['OK', 'Cancel'],
+          cancelId: 1,
+        });
+        if (response === 0) {
+          win.webContents.forcefullyCrashRenderer();
+          win.webContents.reload();
         }
       } else {
-        setTimeout(() => {
-          if (win && !win.isDestroyed()) {
-            win.webContents.reload();
-          }
-        }, 1000 * 1);
+        if (win && !win.isDestroyed()) {
+          win.close();
+        }
       }
     });
 
@@ -939,7 +941,7 @@ module.exports = function (child) {
     });
 
     win.webContents.on('will-frame-navigate', (details) => {
-      child.log('will-frame-navigate : ', details.url);
+      child.log('will-frame-navigate : ' + details.url);
 
       if (!win.customSetting.allowRedirect || (!win.customSetting.allowAds && !child.isAllowURL(details.url))) {
         details.preventDefault();
@@ -951,14 +953,15 @@ module.exports = function (child) {
     if (win.webContents.setWindowOpenHandler) {
       // handle window.open ...
       win.webContents.setWindowOpenHandler(({ url, frameName, features, disposition, referrer, postBody }) => {
+        child.log('try setWindowOpenHandler : ' + url);
         let isPopup = false;
-        if (disposition && (disposition == 'new-window' || disposition == 'other')) {
+        if (frameName) {
           isPopup = true;
-        }
-        if (features && features.contains('width|height|top|left|popup')) {
+        } else if (disposition && (disposition == 'new-window' || disposition == 'other')) {
           isPopup = true;
-        }
-        if (win.customSetting.windowType == 'popup') {
+        } else if (features && features.contains('width|height|top|left|popup')) {
+          isPopup = true;
+        } else if (win.customSetting.windowType == 'popup') {
           isPopup = true;
         }
 
@@ -968,6 +971,7 @@ module.exports = function (child) {
         }
 
         if (win.customSetting.allowSelfWindow && win.customSetting.allowRedirect) {
+          child.log('load in self window', url);
           win.loadURL(url);
           return { action: 'deny' };
         }
@@ -990,6 +994,20 @@ module.exports = function (child) {
             windowType: 'youtube',
             title: 'YouTube',
             url: url,
+            partition: win.customSetting.partition,
+            user_name: win.customSetting.user_name,
+            referrer: referrer ?? win.getURL(),
+          });
+          return { action: 'deny' };
+        } else if (url.like('https://www.youtube.com/shorts*')) {
+          child.createNewWindow({
+            windowType: 'popup',
+            title: 'YouTube',
+            url: url,
+            center: true,
+            width: 550,
+            height: 850,
+            show: true,
             partition: win.customSetting.partition,
             user_name: win.customSetting.user_name,
             referrer: referrer ?? win.getURL(),
@@ -1056,6 +1074,8 @@ module.exports = function (child) {
               referrer: referrer ?? win.getURL(),
             });
           }
+        } else {
+          child.log('Now Allowed Block-open-window', url);
         }
 
         return { action: 'deny' };

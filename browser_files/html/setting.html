@@ -548,6 +548,7 @@
                     <legend>Javascript</legend>
                     <div class="row padding">
                       <div class="col6">
+                        <i-checkbox class="row" label="Allow Window.open ( client mode )" ng-model="setting.blocking.javascript.allow_window_open"></i-checkbox>
                         <i-checkbox class="row" label="Block ( Eval functions )" ng-model="setting.blocking.javascript.block_eval"></i-checkbox>
                         <i-checkbox class="row" label="Block ( Console functions )" ng-model="setting.blocking.javascript.block_console_output"> </i-checkbox>
                         <i-checkbox class="row" label="Block ( window.postMessage )" ng-model="setting.blocking.javascript.block_window_post_message"> </i-checkbox>
@@ -667,6 +668,7 @@
                           <i-checkbox class="" label="FTP" ng-model="setting.proxy.ftp"></i-checkbox>
                           <i-checkbox class="" label="HTTP" ng-model="setting.proxy.http"></i-checkbox>
                           <i-checkbox class="" label="HTTPS" ng-model="setting.proxy.https"></i-checkbox>
+                          <i-checkbox class="" label="ignore Proxy if not Working" ng-model="setting.proxy.direct"></i-checkbox>
                         </div>
                       </div>
                     </div>
@@ -848,6 +850,7 @@
                               <i-checkbox class="" label="FTP" ng-model="currentSession.proxy.ftp"></i-checkbox>
                               <i-checkbox class="" label="HTTP" ng-model="currentSession.proxy.http"></i-checkbox>
                               <i-checkbox class="" label="HTTPS" ng-model="currentSession.proxy.https"></i-checkbox>
+                              <i-checkbox class="" label="ignore Proxy if not Working" ng-model="currentSession.proxy.direct"></i-checkbox>
                             </div>
                           </div>
                         </div>
@@ -1070,11 +1073,12 @@
                         </div>
 
                         <div class="row padding">
-                          <i-checkbox class="col4" label="Socks 5" ng-model="$proxy.socks5"></i-checkbox>
-                          <i-checkbox class="col4" label="Socks 4" ng-model="$proxy.socks4"></i-checkbox>
-                          <i-checkbox class="col4" label="FTP" ng-model="$proxy.ftp"></i-checkbox>
-                          <i-checkbox class="col4" label="HTTP" ng-model="$proxy.http"></i-checkbox>
-                          <i-checkbox class="col4" label="HTTPS" ng-model="$proxy.https"></i-checkbox>
+                          <i-checkbox class="" label="Socks 5" ng-model="$proxy.socks5"></i-checkbox>
+                          <i-checkbox class="" label="Socks 4" ng-model="$proxy.socks4"></i-checkbox>
+                          <i-checkbox class="" label="FTP" ng-model="$proxy.ftp"></i-checkbox>
+                          <i-checkbox class="" label="HTTP" ng-model="$proxy.http"></i-checkbox>
+                          <i-checkbox class="" label="HTTPS" ng-model="$proxy.https"></i-checkbox>
+                          <i-checkbox class="" label="ignore Proxy if not Working" ng-model="$proxy.direct"></i-checkbox>
                         </div>
 
                         <i-button type="push" ng-click="addProxy()" label="Add to List"></i-button>
@@ -1089,11 +1093,11 @@
                           <span> Count : ({{setting.proxy_list.length}})</span>
                           <i-button type="delete" ng-click="setting.proxy_list = []" label="Remove All"></i-button>
                         </th>
-                        <th>URL <i-control ng-model="$proxy.url"></i-control></th>
-                        <th>IP <i-control ng-model="$proxy.ip"></i-control></th>
-                        <th>Port <i-control ng-model="$proxy.port"></i-control></th>
+                        <th>URL <i-control ng-model="$proxy2.url"></i-control></th>
+                        <th>IP <i-control ng-model="$proxy2.ip"></i-control></th>
+                        <th>Port <i-control ng-model="$proxy2.port"></i-control></th>
                       </tr>
-                      <tr ng-repeat="_se in setting.proxy_list | limitTo : 100 | filter:$proxy | orderBy : 'name' track by $index">
+                      <tr ng-repeat="_se in setting.proxy_list | limitTo : 100 | filter:$proxy2 | orderBy : 'ip' track by $index">
                         <td>
                           <span class="bold"> ( {{$index + 1}} ) </span>
                           <i-button type="delete" ng-click="removeProxy(_se)"></i-button>
@@ -1107,11 +1111,12 @@
                             </div>
                           </div>
                           <div class="row">
-                            <i-checkbox class="col4" label="Socks 5" ng-model="_se.socks5"></i-checkbox>
-                            <i-checkbox class="col4" label="Socks 4" ng-model="_se.socks4"></i-checkbox>
-                            <i-checkbox class="col4" label="FTP" ng-model="_se.ftp"></i-checkbox>
-                            <i-checkbox class="col4" label="HTTP" ng-model="_se.http"></i-checkbox>
-                            <i-checkbox class="col4" label="HTTPS" ng-model="_se.https"></i-checkbox>
+                            <i-checkbox class="" label="Socks 5" ng-model="_se.socks5"></i-checkbox>
+                            <i-checkbox class="" label="Socks 4" ng-model="_se.socks4"></i-checkbox>
+                            <i-checkbox class="" label="FTP" ng-model="_se.ftp"></i-checkbox>
+                            <i-checkbox class="" label="HTTP" ng-model="_se.http"></i-checkbox>
+                            <i-checkbox class="" label="HTTPS" ng-model="_se.https"></i-checkbox>
+                            <i-checkbox class="" label="ignore Proxy if not Working" ng-model="_se.direct"></i-checkbox>
                           </div>
                         </td>
                         <td><i-control label="Server IP" ng-model="_se.ip"></i-control></td>

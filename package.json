@@ -2,7 +2,7 @@
   "name": "social_browser",
   "productName": "Social Browser",
   "homepage": "https://social-browser.com",
-  "version": "2024.08.10",
+  "version": "2024.08.15",
   "description": "Browsing Any Site with Multi Users And without Ads",
   "author": {
     "name": "Social Developer",
@@ -21,7 +21,7 @@
     "ubuntu": "electron-builder -l --x64 --ia32",
     "mac": "electron-builder -m --x64",
     "postinstall": "electron-builder install-app-deps",
-    "start": "electron .  ",
+    "start": "electron --trace-warnings .  ",
     "reload": "electron-rebuild",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",

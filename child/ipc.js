@@ -452,10 +452,14 @@ module.exports = function init(child) {
 
     delete data.name;
     data.windowType = data.windowType || 'popup';
-    child.sendMessage({
-      type: '[create-new-window]',
-      options: data,
-    });
+    if (data.partition == child.partition) {
+      child.createNewWindow(data);
+    } else {
+      child.sendMessage({
+        type: '[create-new-window]',
+        options: data,
+      });
+    }
   });
 
   child.electron.ipcMain.handle('[show-addressbar]', (event, data) => {

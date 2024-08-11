@@ -37,285 +37,46 @@ module.exports = function init(parent) {
       }
     });
   };
-  parent.versionUpdating = false;
-  parent.get_var = function (name) {
-    let path = parent.path.join(parent.data_dir, 'json', name + '.json');
-    let default_path = parent.path.join(parent.dir, 'browser_files', 'json', name + '.json');
-    let currentContent = name.like('*list*') ? [] : {};
-    let default_content = name.like('*list*') ? [] : {};
-    let noContent = false;
+  parent.newVersionDetected = false;
+  parent.readBrowserVar = function (name) {
+    let path = parent.path.join(parent.dir, 'browser_files', 'json', name + '.json');
+    let Content = name.like('*list*') ? [] : {};
 
     if (parent.fs.existsSync(path)) {
-      currentContent = parent.readFileSync(path);
-      currentContent = currentContent ? parent.parseJson(currentContent) : name.like('*list*') ? [] : {};
+      Content = parent.readFileSync(path);
+      Content = Content ? parent.parseJson(Content) : name.like('*list*') ? [] : {};
+      parent.varRaw[name] = Content;
     }
 
-    if (Array.isArray(currentContent) && currentContent.length === 0) {
-      noContent = true;
-    } else if (!Object.keys(currentContent).length) {
-      noContent = true;
+    return Content;
+  };
+  parent.readUserVar = function (name) {
+    let path = parent.path.join(parent.data_dir, 'json', name + '.json');
+    let Content = name.like('*list*') ? [] : {};
+
+    if (parent.fs.existsSync(path)) {
+      Content = parent.readFileSync(path);
+      Content = Content ? parent.parseJson(Content) : name.like('*list*') ? [] : {};
+      parent.var[name] = Content;
     }
 
-    if (parent.fs.existsSync(default_path)) {
-      default_content = parent.readFileSync(default_path);
-      default_content = default_content ? parent.parseJson(default_content) : name.like('*list*') ? [] : {};
-      parent.varRaw[name] = default_content;
+    return Content;
+  };
+  parent.get_var = function (name) {
+    let userVarContent = parent.readUserVar(name);
+    let browserVarContent = parent.readBrowserVar(name);
+
+    let userNoContent = false;
+
+    if (Array.isArray(userVarContent) && userVarContent.length === 0) {
+      userNoContent = true;
+    } else if (!Object.keys(userVarContent).length) {
+      userNoContent = true;
     }
 
-    if (parent.versionUpdating) {
-      if (!noContent) {
-        if (name == 'user_data_input') {
-          default_content.forEach((d) => {
-            let exists = false;
-            currentContent.forEach((d2) => {
-              if (d.id == d2.id) {
-                d2 = d;
-                exists = true;
-              }
-            });
-
-            if (!exists) {
-              currentContent.push(d);
-            }
-          });
-          parent.var[name] = currentContent;
-        } else if (name == 'user_data') {
-          default_content.forEach((d) => {
-            let exists = false;
-            currentContent.forEach((d2) => {
-              if (d.id == d2.id) {
-                d2 = d;
-                exists = true;
-              }
-            });
-            if (!exists) {
-              currentContent.push(d);
-            }
-          });
-          parent.var[name] = currentContent;
-        } else if (name == 'urls') {
-          default_content.forEach((d) => {
-            let exists = false;
-            currentContent.forEach((d2) => {
-              if (d.url === d2.url) {
-                d2 = d;
-                exists = true;
-              }
-            });
-            if (!exists) {
-              currentContent.push(d);
-            }
-          });
-          parent.var[name] = currentContent;
-        } else if (name == 'download_list') {
-          default_content.forEach((d) => {
-            let exists = false;
-            currentContent.forEach((d2) => {
-              if (d.url == d2.url) {
-                d2 = d;
-                exists = true;
-              }
-            });
-            if (!exists) {
-              currentContent.push(d);
-            }
-          });
-          parent.var[name] = currentContent;
-        } else if (name == 'proxy_list') {
-          default_content.forEach((d) => {
-            let exists = false;
-            currentContent.forEach((d2) => {
-              if (d.url == d2.url) {
-                d2 = d;
-                exists = true;
-              }
-            });
-            if (!exists) {
-              currentContent.push(d);
-            }
-          });
-          parent.var[name] = currentContent;
-        } else if (name == 'bookmarks') {
-          default_content.forEach((d) => {
-            let exists = false;
-            currentContent.forEach((d2) => {
-              if (d.url == d2.url) {
-                exists = true;
-              }
-            });
-            if (!exists) {
-              currentContent.push(d);
-            }
-          });
-          parent.var[name] = currentContent;
-        } else if (name == 'open_list') {
-          default_content.forEach((d) => {
-            let exists = false;
-            currentContent.forEach((d2) => {
-              if (d.url == d2.url) {
-                d2 = d;
-                exists = true;
-              }
-            });
-            if (!exists) {
-              currentContent.push(d);
-            }
-          });
-          parent.var[name] = currentContent;
-        } else if (name == 'session_list') {
-          if (currentContent.length == 0) {
-            default_content.forEach((d) => {
-              d.name = d.name.replace('{random}', 'default_' + new Date().getTime().toString().replace('0.', '') + Math.random().toString().replace('0.', ''));
-              d.time = d.time || new Date().getTime();
-              if (d.name.indexOf('persist:') === -1) {
-                d.name = 'persist:' + d.name;
-              }
-              let exists = false;
-              currentContent.forEach((d2) => {
-                if (d.name == d2.name) {
-                  exists = true;
-                }
-              });
-              if (!exists) {
-                currentContent.push(d);
-              }
-            });
-          }
-
-          parent.var[name] = currentContent;
-        } else if (name == 'userAgentList') {
-          default_content.forEach((d) => {
-            let exists = false;
-            currentContent.forEach((d2, i) => {
-              if (d.name == d2.name) {
-                exists = true;
-                currentContent[i].url = d.url;
-                currentContent[i].platform = d.platform;
-                currentContent[i].oscpu = d.oscpu;
-                currentContent[i].vendor = d.vendor;
-                currentContent[i].engine = d.engine;
-              }
-            });
-            if (!exists) {
-              currentContent.push(d);
-            }
-          });
-
-          parent.var[name] = currentContent;
-        } else if (name == 'extension_list') {
-          default_content.forEach((d) => {
-            let exists = false;
-            currentContent.forEach((d2) => {
-              if (d.id == d2.id) {
-                exists = true;
-              }
-            });
-            if (!exists) {
-              currentContent.push(d);
-            }
-          });
-
-          parent.var[name] = currentContent;
-        } else if (name == 'ad_list') {
-          default_content.forEach((d) => {
-            let exists = false;
-            currentContent.forEach((d2) => {
-              if (d.name == d2.name) {
-                exists = true;
-                d2.url = d.url;
-              }
-            });
-            if (!exists) {
-              currentContent.push(d);
-            }
-          });
-
-          parent.var[name] = currentContent;
-        } else if (name == 'blocking') {
-          currentContent.core = default_content.core || {};
-          currentContent.javascript = default_content.javascript || {};
-          currentContent.privacy = default_content.privacy || {};
-          currentContent.youtube = default_content.youtube || {};
-          currentContent.permissions = default_content.permissions || {};
-          currentContent.internet_speed = default_content.internet_speed || {};
-          currentContent.white_list = default_content.white_list || [];
-          currentContent.black_list = default_content.black_list || [];
-          currentContent.open_list = default_content.open_list || [];
-          currentContent.popup = currentContent.popup || {};
-          currentContent.popup.white_list = currentContent.popup.white_list || [];
-          currentContent.popup.black_list = currentContent.popup.black_list || [];
-          currentContent.popup.allow_external = default_content.popup.allow_external;
-          currentContent.popup.allow_internal = default_content.popup.allow_internal;
-
-          currentContent.white_list = default_content.white_list || [];
-
-          default_content.black_list.forEach((d) => {
-            let exists = false;
-            currentContent.black_list.forEach((d2, i2) => {
-              if (d.url == d2.url) {
-                currentContent.black_list[i2] = d;
-                exists = true;
-              }
-            });
-            if (!exists) {
-              currentContent.black_list.push(d);
-            }
-          });
-          // selectros will remove when allow dom
-          currentContent.html_tags_selector_list = currentContent.html_tags_selector_list || [];
-          default_content.html_tags_selector_list.forEach((d) => {
-            let exists = false;
-            currentContent.html_tags_selector_list.forEach((d2) => {
-              if (d.url == d2.url && d.ex_url == d2.ex_url && d.select == d2.select) {
-                exists = true;
-              }
-            });
-            if (!exists) {
-              currentContent.html_tags_selector_list.push(d);
-            }
-          });
-
-          currentContent.un_safe_list = currentContent.un_safe_list || [];
-          default_content.un_safe_list.forEach((d) => {
-            let exists = false;
-            currentContent.un_safe_list.forEach((d2) => {
-              if (d.url == d2.url) {
-                exists = true;
-              }
-            });
-            if (!exists) {
-              currentContent.un_safe_list.push(d);
-            }
-          });
-
-          currentContent.un_safe_words_list = currentContent.un_safe_words_list || [];
-          default_content.un_safe_words_list.forEach((d) => {
-            let exists = false;
-            currentContent.un_safe_words_list.forEach((d2) => {
-              if (d.text == d2.text) {
-                exists = true;
-              }
-            });
-            if (!exists) {
-              currentContent.un_safe_words_list.push(d);
-            }
-          });
-
-          default_content.popup.white_list.forEach((d) => {
-            if (!currentContent.popup.white_list.some((d2) => d.url == d2.url)) {
-              currentContent.popup.white_list.push(d);
-            }
-          });
-
-          parent.var[name] = currentContent;
-        } else {
-          parent.var[name] = default_content;
-        }
-      } else {
-        parent.var[name] = default_content;
-      }
-    } else if (noContent) {
-      parent.var[name] = default_content;
+    if (userNoContent) {
+      // replace with browser var
+      parent.var[name] = userVarContent = browserVarContent;
 
       if (name == 'session_list') {
         parent.var[name].forEach((s) => {
@@ -325,29 +86,187 @@ module.exports = function init(parent) {
           }
         });
       }
-    } else {
-      parent.var[name] = currentContent || default_content;
     }
 
-    if (name == 'userAgentList') {
-      if (!parent.var.core.defaultUserAgent) {
-        parent.var.core.defaultUserAgent = parent.var.userAgentList[0];
-      }
+    if (parent.newVersionDetected && !userNoContent) {
+      if (name == 'user_data_input') {
+        browserVarContent.forEach((d) => {
+          let exists = false;
+          userVarContent.forEach((d2) => {
+            if (d.id == d2.id) {
+              d2 = d;
+              exists = true;
+            }
+          });
 
-      if (parent.var.core.defaultUserAgent) {
-        parent.electron.app.userAgentFallback = parent.var.core.defaultUserAgent.url;
+          if (!exists) {
+            userVarContent.push(d);
+          }
+        });
+        parent.var[name] = userVarContent;
+      } else if (name == 'user_data') {
+        browserVarContent.forEach((d) => {
+          let exists = false;
+          userVarContent.forEach((d2) => {
+            if (d.id == d2.id) {
+              d2 = d;
+              exists = true;
+            }
+          });
+          if (!exists) {
+            userVarContent.push(d);
+          }
+        });
+        parent.var[name] = userVarContent;
+      } else if (name == 'urls') {
+        browserVarContent.forEach((d) => {
+          let exists = false;
+          userVarContent.forEach((d2) => {
+            if (d.url === d2.url) {
+              d2 = d;
+              exists = true;
+            }
+          });
+          if (!exists) {
+            userVarContent.push(d);
+          }
+        });
+        parent.var[name] = userVarContent;
+      } else if (name == 'download_list') {
+        browserVarContent.forEach((d) => {
+          let exists = false;
+          userVarContent.forEach((d2) => {
+            if (d.url == d2.url) {
+              d2 = d;
+              exists = true;
+            }
+          });
+          if (!exists) {
+            userVarContent.push(d);
+          }
+        });
+        parent.var[name] = userVarContent;
+      } else if (name == 'proxy_list') {
+        browserVarContent.forEach((d) => {
+          let exists = false;
+          userVarContent.forEach((d2) => {
+            if (d.url == d2.url) {
+              d2 = d;
+              exists = true;
+            }
+          });
+          if (!exists) {
+            userVarContent.push(d);
+          }
+        });
+        parent.var[name] = userVarContent;
+      } else if (name == 'bookmarks') {
+        browserVarContent.forEach((d) => {
+          let exists = false;
+          userVarContent.forEach((d2) => {
+            if (d.url == d2.url) {
+              exists = true;
+            }
+          });
+          if (!exists) {
+            userVarContent.push(d);
+          }
+        });
+        parent.var[name] = userVarContent;
+      } else if (name == 'open_list') {
+        browserVarContent.forEach((d) => {
+          let exists = false;
+          userVarContent.forEach((d2) => {
+            if (d.url == d2.url) {
+              d2 = d;
+              exists = true;
+            }
+          });
+          if (!exists) {
+            userVarContent.push(d);
+          }
+        });
+        parent.var[name] = userVarContent;
+      } else if (name == 'session_list') {
+        if (userVarContent.length == 0) {
+          browserVarContent.forEach((d) => {
+            d.name = d.name.replace('{random}', 'default_' + new Date().getTime().toString().replace('0.', '') + Math.random().toString().replace('0.', ''));
+            d.time = d.time || new Date().getTime();
+            if (d.name.indexOf('persist:') === -1) {
+              d.name = 'persist:' + d.name;
+            }
+            let exists = false;
+            userVarContent.forEach((d2) => {
+              if (d.name == d2.name) {
+                exists = true;
+              }
+            });
+            if (!exists) {
+              userVarContent.push(d);
+            }
+          });
+        }
+
+        parent.var[name] = userVarContent;
+      } else if (name == 'userAgentList') {
+        browserVarContent.forEach((d) => {
+          let exists = false;
+          userVarContent.forEach((d2, i) => {
+            if (d.name == d2.name) {
+              exists = true;
+              userVarContent[i].url = d.url;
+              userVarContent[i].platform = d.platform;
+              userVarContent[i].oscpu = d.oscpu;
+              userVarContent[i].vendor = d.vendor;
+              userVarContent[i].engine = d.engine;
+            }
+          });
+          if (!exists) {
+            userVarContent.push(d);
+          }
+        });
+
+        parent.var[name] = userVarContent;
+      } else if (name == 'extension_list') {
+        browserVarContent.forEach((d) => {
+          let exists = false;
+          userVarContent.forEach((d2) => {
+            if (d.id == d2.id) {
+              exists = true;
+            }
+          });
+          if (!exists) {
+            userVarContent.push(d);
+          }
+        });
+
+        parent.var[name] = userVarContent;
+      } else if (name == 'ad_list') {
+        browserVarContent.forEach((d) => {
+          let exists = false;
+          userVarContent.forEach((d2) => {
+            if (d.name == d2.name) {
+              exists = true;
+              d2.url = d.url;
+            }
+          });
+          if (!exists) {
+            userVarContent.push(d);
+          }
+        });
+
+        parent.var[name] = userVarContent;
+      } else if (name == 'blocking') {
+        parent.var[name] = browserVarContent;
+      } else {
+        parent.var[name] = browserVarContent;
       }
     }
+
     if (name == 'core') {
-      if (!parent.var.core) {
-        parent.var.core = default_content;
-        parent.var.core.id = null;
-        parent.versionUpdating = true;
-      }
-
-      if (parent.var.core.version !== default_content.version) {
-        parent.versionUpdating = true;
-        parent.var.core = { ...parent.var.core, ...default_content };
+      if (parent.var.core.version !== browserVarContent.version) {
+        parent.newVersionDetected = true;
+        parent.var.core = { ...parent.var.core, ...browserVarContent };
         parent.var.core.defaultUserAgent = null;
       }
 
@@ -363,6 +282,16 @@ module.exports = function init(parent) {
           parent.var.core.id = parent.var.core.prefix + parent.var.core.id;
         }
         parent.var.id = parent.var.core.id;
+      }
+    }
+
+    if (name == 'userAgentList') {
+      if (!parent.var.core.defaultUserAgent) {
+        parent.var.core.defaultUserAgent = parent.var.userAgentList[0];
+      }
+
+      if (parent.var.core.defaultUserAgent) {
+        parent.electron.app.userAgentFallback = parent.var.core.defaultUserAgent.url;
       }
     }
 
@@ -396,14 +325,14 @@ module.exports = function init(parent) {
     }
 
     if (name == 'proxy_mode_list') {
-      parent.var.proxy_mode_list = default_content;
+      parent.var.proxy_mode_list = browserVarContent;
     }
     if (name == 'blocking') {
       parent.var.blocking.open_list = parent.var.blocking.open_list || [];
       parent.var.blocking.core = parent.var.blocking.core || {};
       parent.var.blocking.javascript = parent.var.blocking.javascript || {};
       parent.var.blocking.privacy = parent.var.blocking.privacy || {};
-      parent.var.blocking.privacy.browserEnginList = [
+      parent.var.blocking.privacy.browserEnginList = parent.var.blocking.privacy.browserEnginList || [
         {
           name: 'Chrome',
         },
@@ -440,30 +369,39 @@ module.exports = function init(parent) {
         },
       ];
     }
+
     return parent.var[name];
   };
 
-  parent.set_var = function (name, currentContent, ignore) {
+  parent.set_var = function (name, userVarContent, ignore) {
     try {
       if (!name || name.indexOf('$') == 0) {
         return;
       }
 
-      if (currentContent) {
+      if (userVarContent) {
         parent.log('parent.set_var() : ' + name);
-        currentContent = parent.handleObject(currentContent);
-        parent.var[name] = currentContent;
+        userVarContent = parent.handleObject(userVarContent);
+        if (!userVarContent || (Array.isArray(userVarContent) && userVarContent.length == 0)) {
+          return;
+        }
+
+        parent.var[name] = userVarContent;
+
         if (name === 'core') {
           parent.activated();
         }
+
         if (!ignore) {
           save_var_quee.push(name);
         }
+
         if (name == 'ad_list') {
           parent.handleAdList();
         }
+
       } else {
-        parent.log('set_var Error : no currentContent : ' + name);
+        parent.log('set_var Error : no userVarContent : ' + name);
       }
     } catch (error) {
       parent.log(error);

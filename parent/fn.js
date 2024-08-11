@@ -145,10 +145,13 @@ module.exports = function init(parent) {
 
   parent.handleObject = function (doc) {
     if (!doc) {
-      return doc;
+      return null;
     }
-
-    if (typeof doc === 'object') {
+    if (Array.isArray(doc)) {
+      doc.forEach((v, i) => {
+        doc[i] = parent.handleObject(v);
+      });
+    } else if (typeof doc === 'object') {
       for (let key in doc) {
         let val = doc[key];
 
@@ -158,13 +161,12 @@ module.exports = function init(parent) {
             continue;
           }
         }
-
-        if (typeof val === 'object') {
-          val = parent.handleObject(val);
-        } else if (typeof val === 'array') {
+        if (Array.isArray(val)) {
           val.forEach((v) => {
             v = parent.handleObject(v);
           });
+        } else if (typeof val === 'object') {
+          val = parent.handleObject(val);
         }
       }
     }

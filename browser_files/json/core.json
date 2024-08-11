@@ -1,7 +1,7 @@
 {
     "port": 60080,
     "enabled": true,
-    "version": "2024.08.10",
+    "version": "2024.08.15",
     "prefix": "source_",
     "full_version": true,
     "key": "free key",

@@ -20,7 +20,6 @@ module.exports = function init(parent) {
     if (parent.var.blocking.core.block_ads) {
       allow = !parent.var.ad_list.some((ad) => url.like(ad.url));
     }
-  
 
     if (allow) {
       allow = !parent.var.blocking.black_list.some((item) => url.like(item.url));
@@ -186,8 +185,9 @@ module.exports = function init(parent) {
     options.user_name = options.user_name || options.partition;
 
     options.uuid = !options.partition.contains('persist:') ? 'x-ghost' : 'user-' + options.partition.replace('persist:', '');
+    const uuid = options.uuid;
 
-    let index = parent.clientList.findIndex((cl) => cl && cl.uuid === options.uuid);
+    let index = parent.clientList.findIndex((cl) => cl && cl.uuid === uuid);
     if (index !== -1 && parent.clientList[index] && parent.clientList[index].ws) {
       parent.clientList[index].windowType = options.windowType || 'popup';
       parent.clientList[index].option_list.push(options);
@@ -198,7 +198,7 @@ module.exports = function init(parent) {
       parent.clientList.push({
         source: 'child',
         partition: options.partition,
-        uuid: options.uuid,
+        uuid: uuid,
         option_list: [options],
         windowType: options.windowType || 'popup',
         index: index,
@@ -207,7 +207,7 @@ module.exports = function init(parent) {
 
       let child = parent.run([
         '--index=' + index,
-        '--uuid=' + options.uuid,
+        '--uuid=' + uuid,
         '--partition=' + options.partition,
         '--dir=' + parent.dir,
         '--data_dir=' + parent.data_dir,
@@ -220,15 +220,33 @@ module.exports = function init(parent) {
       parent.clientList[index].child = child;
 
       child.stdout.on('data', function (data) {
-        parent.log(` [ child:${child.pid} ${options.uuid} / ${parent.clientList.length} ] Log \n  ${data}`);
+        parent.log('\n-------------------------------- [stdout]');
+        parent.log(` [ child:${child.pid} ${uuid} / ${parent.clientList.length} ] Log \n  ${data}`);
+        parent.log('\n\n');
       });
 
       child.stderr.on('data', (data) => {
-        parent.log(` [ child:${child.pid} ${options.uuid} / ${parent.clientList.length} ] Error \n    ${data}`);
+        parent.log('\n-------------------------------- [stderr]');
+        parent.log(` [ child:${child.pid} ${uuid} / ${parent.clientList.length} ] Error \n    ${data}`);
+        parent.log('\n\n');
       });
 
+      child.on('error', (err) => {
+        parent.log('\n-------------------------------- [error]');
+        parent.log(` [ child ${uuid} / ${parent.clientList.length} ] Error \n ${err}`);
+        parent.log('\n\n');
+      });
+      child.on('disconnect', (err) => {
+        parent.log(` [ child ${uuid} / ${parent.clientList.length} ] disconnect`, err);
+      });
+      child.on('spawn', (err) => {
+        // parent.log(` [ child ${uuid} / ${parent.clientList.length} ] spawn`, err);
+      });
+      child.on('message', (msg) => {
+        // parent.log(` [ child ${uuid} / ${parent.clientList.length} ] message`, msg);
+      });
       child.on('close', (code, signal) => {
-        parent.log(`\n [ Exit :: child:${child.pid} ${options.uuid} / ${parent.clientList.length} ] close with code ( ${code} ) and signal ( ${signal} ) \n`);
+        parent.log(`\n [ Exit :: child:${child.pid} ${uuid} / ${parent.clientList.length} ] close with code ( ${code} ) and signal ( ${signal} ) \n`);
         let index2 = parent.clientList.findIndex((c) => c.pid == child.pid);
         if (index2 !== -1) {
           if (parent.clientList[index2].option_list.some((op) => op.windowType == 'main') && code == 2147483651 && !signal) {
@@ -260,19 +278,6 @@ module.exports = function init(parent) {
 
           parent.clientList.splice(index2, 1);
         }
-      });
-
-      child.on('error', (err) => {
-        parent.log(` [ child ${options.uuid} / ${parent.clientList.length} ] Error \n ${err}`);
-      });
-      child.on('disconnect', (err) => {
-        parent.log(` [ child ${options.uuid} / ${parent.clientList.length} ] disconnect`, err);
-      });
-      child.on('spawn', (err) => {
-        // parent.log(` [ child ${options.uuid} / ${parent.clientList.length} ] spawn`, err);
-      });
-      child.on('message', (msg) => {
-        // parent.log(` [ child ${options.uuid} / ${parent.clientList.length} ] message`, msg);
       });
     }
   };

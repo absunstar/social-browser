@@ -77,6 +77,12 @@
             "to": "https://monetag.com/?ref_id=72G",
             "ignore": "*72G*|*referralProgram*",
             "query": false
+        },
+        {
+            "from": "https://viefaucet.com|https://viefaucet.com/|https://viefaucet.com?r=*",
+            "to": "https://viefaucet.com?r=66b7eae82360410ab39a9059",
+            "ignore": "*66b7eae82360410ab39a9059*",
+            "query": false
         }
     ]
 }

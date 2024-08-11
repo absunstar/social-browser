@@ -168,34 +168,26 @@ child.electron.app.on('ready', function () {
     if (authInfo.isProxy) {
       event.preventDefault();
       let proxy = null;
-      child.windowList.forEach((w) => {
-        if (w.id2 == webContents.id) {
-          proxy = w.customSetting.proxy;
-        }
-      });
-      if (proxy) {
+
+      let index = child.windowList.findIndex((w) => w.id2 == webContents.id && w.customSetting && w.customSetting.proxy);
+      if (index !== -1) {
+        proxy = child.windowList[index].customSetting.proxy;
         callback(proxy.username, proxy.password);
         child.log(proxy);
         return;
       }
-      child.parent.var.session_list.forEach((s) => {
-        if (s.name == webContents.session.name) {
-          if (s.proxy && s.proxy.enabled) {
-            proxy = s.proxy;
-          }
-        }
-      });
-      if (proxy) {
+
+      let index2 = child.parent.var.session_list.findIndex((s) => s.name == webContents.session.name && s.proxy && s.proxy.enabled);
+      if (index2 !== -1) {
+        proxy = child.parent.var.session_list[index2].proxy;
         callback(proxy.username, proxy.password);
         child.log(proxy);
         return;
       }
-      child.parent.var.proxy_list.forEach((p) => {
-        if (p.ip == authInfo.host) {
-          proxy = p;
-        }
-      });
-      if (proxy) {
+
+      let index3 = child.parent.var.proxy_list.findIndex((p) => p.ip == authInfo.host);
+      if (index3 !== -1) {
+        proxy = child.parent.var.proxy_list[index3];
         callback(proxy.username, proxy.password);
         child.log(proxy);
         return;
