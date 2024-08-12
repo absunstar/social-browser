@@ -37,7 +37,6 @@ var child = {
   speedMode: Boolean(process.argv[6].replace('--speed=', '')),
   electron: require('electron'),
   remoteMain: require('@electron/remote/main'),
-  fetch: require('node-fetch'),
   url: require('url'),
   path: require('path'),
   os: require('os'),
@@ -66,6 +65,23 @@ var child = {
   },
 };
 
+child.fetchAsync = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+child.fetch = function (...args) {
+  args[1] = args[1] || {};
+  args[1].agent = function (_parsedURL) {
+    if (_parsedURL.protocol == 'http:') {
+      return new child.http.Agent({
+        keepAlive: true,
+      });
+    } else {
+      return new child.https.Agent({
+        keepAlive: true,
+      });
+    }
+  };
+  return child.fetchAsync(...args);
+};
+
 child.remoteMain.initialize();
 
 child.shell = child.electron.shell;
@@ -91,7 +107,7 @@ if (child.uuid == 'user-file') {
   }, 1000 * 5);
 }
 
-child.electron.app.setAppUserModelId('Social.Browser');
+child.electron.app.setAppUserModelId('Social.child');
 child.electron.app.clearRecentDocuments();
 
 if (child.electron.app.setUserTasks) {
@@ -118,7 +134,7 @@ child.electron.app.disableHardwareAcceleration();
 child.mkdirSync(child.path.join(child.data_dir, child.uuid));
 child.electron.app.setPath('userData', child.path.join(child.data_dir, child.uuid));
 child.electron.protocol.registerSchemesAsPrivileged([
-  { scheme: 'browser', privileges: { bypassCSP: true, standard: true, secure: true, supportFetchAPI: true, allowServiceWorkers: true, corsEnabled: true, stream: true } },
+  { scheme: 'child', privileges: { bypassCSP: true, standard: true, secure: true, supportFetchAPI: true, allowServiceWorkers: true, corsEnabled: true, stream: true } },
 ]);
 // child.mkdirSync(child.path.join(child.data_dir, 'sessionData', 'sessionData_' + 'default'));
 // child.electron.app.setPath('userData', child.path.join(child.data_dir, 'sessionData', 'sessionData_' + 'default'));
@@ -126,8 +142,8 @@ child.electron.app.whenReady().then(() => {
   child.electron.globalShortcut.unregisterAll();
   child.electron.app.setAccessibilitySupportEnabled(false);
 
-  child.electron.protocol.handle('browser', (req) => {
-    let url = req.url.replace('browser://', 'http://127.0.0.1:60080/').replace('/?', '?');
+  child.electron.protocol.handle('child', (req) => {
+    let url = req.url.replace('child://', 'http://127.0.0.1:60080/').replace('/?', '?');
     return child.electron.net.fetch(url, {
       method: req.method,
       headers: req.headers,
@@ -157,7 +173,7 @@ child.electron.app.whenReady().then(() => {
   });
 
   child.electron.app.on('window-all-closed', () => {
-    if (child.partition.contains('persist:') && child.electron.BrowserWindow.getAllWindows().length === 0) {
+    if (child.partition.contains('persist:') && child.electron.childWindow.getAllWindows().length === 0) {
       child.log('window-all-closed :  process.exit() : ' + child.partition + ' : ' + child.index);
       process.exit();
     }
