@@ -173,7 +173,7 @@ child.electron.app.whenReady().then(() => {
   });
 
   child.electron.app.on('window-all-closed', () => {
-    if (child.partition.contains('persist:') && child.electron.childWindow.getAllWindows().length === 0) {
+    if (child.partition.contains('persist:') && child.electron.BrowserWindow.getAllWindows().length === 0) {
       child.log('window-all-closed :  process.exit() : ' + child.partition + ' : ' + child.index);
       process.exit();
     }

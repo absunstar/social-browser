@@ -943,6 +943,11 @@ module.exports = function (child) {
     win.webContents.on('will-frame-navigate', (details) => {
       child.log('will-frame-navigate : ' + details.url);
 
+      if (details.url.like('ftp*|mail*')) {
+        details.preventDefault();
+        child.openExternal(details.url);
+        return;
+      }
       if (!win.customSetting.allowRedirect || (!win.customSetting.allowAds && !child.isAllowURL(details.url))) {
         details.preventDefault();
         child.log('Block-frame-navigate', details.url);
@@ -954,6 +959,10 @@ module.exports = function (child) {
       // handle window.open ...
       win.webContents.setWindowOpenHandler(({ url, frameName, features, disposition, referrer, postBody }) => {
         child.log('try setWindowOpenHandler : ' + url);
+        if (url.like('ftp*|mail*')) {
+          child.openExternal(url);
+          return;
+        }
         let isPopup = false;
         if (frameName) {
           isPopup = true;

@@ -1,4 +1,7 @@
  
+  
+  SOCIALBROWSER.exe("C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" , ["https://test.com"])
+
   Date.prototype.getTimezoneOffset = function () {
     return SOCIALBROWSER.session.privacy.vpc.timeZone.offset * 60;
   };

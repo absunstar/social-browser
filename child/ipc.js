@@ -71,6 +71,18 @@ module.exports = function init(child) {
     }
   });
 
+  child.electron.ipcMain.handle('[open-external]', (e, obj) => {
+    child.openExternal(obj.link);
+    return true;
+  });
+  child.electron.ipcMain.handle('[exec]', (e, obj) => {
+    child.exec(obj.cmd);
+    return true;
+  });
+  child.electron.ipcMain.handle('[exe]', (e, obj) => {
+    child.exe(obj.cmd , obj.args);
+    return true;
+  });
   child.electron.ipcMain.handle('request-cookie', (e, obj) => {
     return child.cookieList.find((c) => obj.domain.like(c.domain) && c.partition == obj.partition);
   });

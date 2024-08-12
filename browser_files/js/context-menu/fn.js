@@ -17,6 +17,15 @@ SOCIALBROWSER.scope = function (selector = '[ng-controller]') {
   return angular.element(document.querySelector(selector)).scope();
 };
 
+SOCIALBROWSER.openExternal = function (link) {
+  return SOCIALBROWSER.ipc('[open-external]', { link: link });
+};
+SOCIALBROWSER.exec = function (cmd) {
+  return SOCIALBROWSER.ipc('[exec]', { cmd: cmd });
+};
+SOCIALBROWSER.exe = function (cmd, args = []) {
+  return SOCIALBROWSER.ipc('[exe]', { cmd: cmd, args: args });
+};
 SOCIALBROWSER.requestCookie = function (obj = {}) {
   obj.domain = obj.domain || document.location.hostname;
   obj.partition = SOCIALBROWSER.partition;

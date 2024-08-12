@@ -54,6 +54,28 @@ module.exports = function (child) {
     };
   }
 
+  child.openExternal = function (link) {
+    child.shell.openExternal(link);
+  };
+  child.exec = function (cmd, callback) {
+    callback =
+      callback ||
+      function (d) {
+        console.log(d);
+      };
+    let exec = child.child_process.exec;
+    return exec(cmd, function (error, stdout, stderr) {
+      if (error) {
+        callback(error);
+      }
+      if (stdout) {
+        callback(stdout);
+      }
+      if (stderr) {
+        callback(stderr);
+      }
+    });
+  };
   child.mkdirSync = function (dirname) {
     try {
       if (child.fs.existsSync(dirname)) {
@@ -121,6 +143,7 @@ module.exports = function (child) {
       }
     });
   };
+
   child.set_var = function (name, currentContent, ignore) {
     try {
       child.parent.var[name] = currentContent;

@@ -709,18 +709,7 @@ module.exports = function init(parent) {
   });
   parent.var.scripts_files = [];
   parent.var.core.icon = parent.path.join(parent.files_dir, 'images', 'logo.ico');
-  parent.fs.readdir(parent.files_dir + '/js/scripts', (err, files) => {
-    if (!err) {
-      files.forEach((file) => {
-        parent.var.scripts_files.push({
-          path: parent.files_dir + '/js/scripts/' + file,
-          name: file,
-        });
-      });
-    } else {
-      parent.log(err);
-    }
-  });
+
 
   if (parent.var.blocking && parent.var.blocking.white_list) {
     parent.var.blocking.white_list.forEach((w, i) => {
