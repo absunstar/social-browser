@@ -10,7 +10,8 @@ module.exports = function init(parent) {
   parent.extensionList = [];
   parent.information = {};
   parent.cookies = {};
-  parent.freeUsersCount = 100;
+  parent.freeUsersCount = 10;
+  parent.eval = require('eval');
 
   parent.isAllowURL = function (url) {
     if (parent.var.blocking.white_list.some((item) => url.like(item.url))) {
@@ -165,6 +166,8 @@ module.exports = function init(parent) {
   require(parent.path.join(parent.dir, 'parent', 'ipc.js'))(parent);
   require(parent.path.join(parent.dir, 'parent', 'ws.js'))(parent);
   require(parent.path.join(parent.dir, 'parent', 'chat.js'))(parent);
+
+  parent.getOnlineData();
 
   // if (parent.speedMode) {
   //     require(parent.path.join(parent.dir, 'child', 'windows.js'))(parent);

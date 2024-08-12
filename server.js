@@ -146,7 +146,7 @@
   });
 
   /* App Ready */
-  browser.electron.app.on('ready', function () {
+  browser.electron.app.whenReady().then(() => {
     browser.webContent = browser.electron.webContents.create({
       contextIsolation: false,
     });

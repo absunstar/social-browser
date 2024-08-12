@@ -374,7 +374,7 @@ module.exports = function (child) {
       if (win.customSetting.session) {
         win.customSetting.userAgent = win.customSetting.session.defaultUserAgent;
       }
-      if (!parent.var.core.active) {
+      if (!parent.var.core.browserActivated) {
         win.customSetting.url = 'http://127.0.0.1:60080/setting';
       }
     }

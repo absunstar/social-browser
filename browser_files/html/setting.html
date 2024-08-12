@@ -238,8 +238,8 @@
                   <fieldset>
                     <legend>Activation</legend>
                     <div class="row padding">
-                      <h2 class="bold red" ng-hide="setting.core.active">Browser Not Active</h2>
-                      <h2 class="bold green" ng-show="setting.core.active">Browser Active</h2>
+                      <h2 class="bold red" ng-hide="setting.core.browserActivated">Browser Not Active</h2>
+                      <h2 class="bold green" ng-show="setting.core.browserActivated">Browser Active</h2>
                       <p class="bold blue">{{setting.core.activeMessage}}</p>
                     </div>
 
@@ -258,7 +258,7 @@
                     </div>
 
                     <div class="row padding">
-                      <i-control class="col8" label="Browser Key ( Only This Browser )" ng-model="setting.core.BrowserKey"> </i-control>
+                      <i-control class="col8" label="Browser Key ( Only This Browser Version )" ng-model="setting.core.BrowserKey"> </i-control>
                       <div class="col4">
                         <i-button type="approve" label="Activate" ng-click="activated()"></i-button>
                       </div>
@@ -270,6 +270,14 @@
                         <i-button type="approve" label="Activate" ng-click="activated()"></i-button>
                       </div>
                     </div>
+
+                    <div class="row padding">
+                      <i-control class="col8" label="Online Key ( For Any Browser or PC )" ng-model="setting.core.OnlineKey"> </i-control>
+                      <div class="col4">
+                        <i-button type="approve" label="Activate" ng-click="activated()"></i-button>
+                      </div>
+                    </div>
+
                   </fieldset>
                   <div class="row padding">
                     <div class="col6">

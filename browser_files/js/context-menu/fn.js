@@ -667,32 +667,6 @@ SOCIALBROWSER.isViewable = function (element) {
   return t1 && t2 && t3 && t4;
 };
 
-SOCIALBROWSER.eval = function (code) {
-  if (!code) {
-    return;
-  }
-  if (typeof code !== 'string') {
-    code = code.toString();
-    code = code.slice(code.indexOf('{') + 1, code.lastIndexOf('}'));
-  }
-
-  SOCIALBROWSER.fs = SOCIALBROWSER.fs || SOCIALBROWSER.require('fs');
-  let path = `${SOCIALBROWSER.browserData.data_dir}/sessionData/script_${SOCIALBROWSER.remote.getCurrentWindow().id}_${Math.random()}.js`;
-  if (SOCIALBROWSER.fs.existsSync(path)) {
-    SOCIALBROWSER.require(path);
-  } else {
-    try {
-      SOCIALBROWSER.fs.writeFileSync(path, code);
-      SOCIALBROWSER.require(path);
-      setTimeout(() => {
-        SOCIALBROWSER.fs.unlinkSync(path);
-      }, 1000 * 3);
-    } catch (error) {
-      SOCIALBROWSER.log(error);
-    }
-  }
-};
-
 SOCIALBROWSER.openWindow = function (_customSetting) {
   _customSetting.trackingID = new Date().getTime().toString();
   SOCIALBROWSER.windowOpenList[_customSetting.trackingID] = { eventList: [] };

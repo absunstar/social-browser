@@ -292,9 +292,13 @@ module.exports = function (child) {
                 mode: proxy.mode,
                 proxyRules: proxyRules,
                 proxyBypassRules: proxy.ignore || 'localhost,127.0.0.1,::1,192.168.*',
-              }).then(() => {
-                child.log(`session ${name} Proxy Set : ${proxyRules}`);
-              });
+              })
+                .then(() => {
+                  child.log(`session ${name} Proxy Set : ${proxyRules}`);
+                })
+                .catch((err) => {
+                  child.log(err);
+                });
             });
           }
         }

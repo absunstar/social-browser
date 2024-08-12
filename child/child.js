@@ -122,7 +122,7 @@ child.electron.protocol.registerSchemesAsPrivileged([
 ]);
 // child.mkdirSync(child.path.join(child.data_dir, 'sessionData', 'sessionData_' + 'default'));
 // child.electron.app.setPath('userData', child.path.join(child.data_dir, 'sessionData', 'sessionData_' + 'default'));
-child.electron.app.on('ready', function () {
+child.electron.app.whenReady().then(() => {
   child.electron.globalShortcut.unregisterAll();
   child.electron.app.setAccessibilitySupportEnabled(false);
 

@@ -182,7 +182,7 @@ window.addEventListener('message', (e) => {
     let info = JSON.parse(e.data);
     if (info.name === 'SOCIALBROWSER') {
       if (info.key === 'eval' && info.value) {
-        SOCIALBROWSER.eval(info.value);
+        SOCIALBROWSER.eval(info.value , true)();
       } else {
         SOCIALBROWSER[info.key] = info.value;
       }

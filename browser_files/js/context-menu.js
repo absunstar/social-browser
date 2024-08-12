@@ -86,6 +86,7 @@
   SOCIALBROWSER.url = SOCIALBROWSER.require('url');
   SOCIALBROWSER.path = SOCIALBROWSER.require('path');
   SOCIALBROWSER.md5 = SOCIALBROWSER.require('md5');
+  SOCIALBROWSER.eval = SOCIALBROWSER.require('eval');
 
   SOCIALBROWSER.currentWindow = SOCIALBROWSER.remote.getCurrentWindow();
   SOCIALBROWSER.webContents = SOCIALBROWSER.currentWindow.webContents;
