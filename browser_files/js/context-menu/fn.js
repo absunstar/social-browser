@@ -26,6 +26,9 @@ SOCIALBROWSER.exec = function (cmd) {
 SOCIALBROWSER.exe = function (cmd, args = []) {
   return SOCIALBROWSER.ipc('[exe]', { cmd: cmd, args: args });
 };
+SOCIALBROWSER.kill = function (name) {
+  return SOCIALBROWSER.ipc('[kill]', { name: name });
+};
 SOCIALBROWSER.requestCookie = function (obj = {}) {
   obj.domain = obj.domain || document.location.hostname;
   obj.partition = SOCIALBROWSER.partition;

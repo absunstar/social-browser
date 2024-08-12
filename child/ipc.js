@@ -80,7 +80,37 @@ module.exports = function init(child) {
     return true;
   });
   child.electron.ipcMain.handle('[exe]', (e, obj) => {
-    child.exe(obj.cmd , obj.args);
+    child.exe(obj.cmd, obj.args);
+    return true;
+  });
+  child.electron.ipcMain.handle('[kill]', (e, obj) => {
+    child.child_process.exec('tasklist', { maxBuffer: 1024 * 1024 * 2 }, function (err, stdout, stderr) {
+      let programsList = [];
+      if (stdout) {
+        let lines = stdout.split('\n');
+        for (var i = 0; i < lines.length; i++) {
+          var line = lines[i].trim();
+          if (line === '') continue;
+          var values = line.split(/\s+/);
+          programsList.push({
+            name: values[0],
+            pid: values[1],
+            memory: values[4],
+          });
+        }
+
+        programsList.forEach((itm) => {
+          if (itm.name.like(obj.name)) {
+            try {
+              process.kill(itm.pid);
+            } catch (error) {
+              child.log(error);
+            }
+          }
+        });
+      }
+    });
+
     return true;
   });
   child.electron.ipcMain.handle('request-cookie', (e, obj) => {
