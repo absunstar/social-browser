@@ -391,16 +391,6 @@ module.exports = function (child) {
               w.window.webContents.send('[update-tab-properties]', message.data);
             }
           });
-        } else if (message.type == '[window-clicked]') {
-          if (child.mainWindow && !child.mainWindow.isDestroyed()) {
-            child.mainWindow.show();
-          }
-          if (child.addressbarWindow && !child.addressbarWindow.isDestroyed()) {
-            child.addressbarWindow.hide();
-          }
-          if (child.profilesWindow && !child.profilesWindow.isDestroyed()) {
-            child.profilesWindow.hide();
-          }
         } else if (message.type == '[edit-window]') {
           child.windowList.forEach((w) => {
             if (w.customSetting.tabID == message.data.tabID && w.window && !w.window.isDestroyed()) {
@@ -430,13 +420,6 @@ module.exports = function (child) {
         } else if (message.type == '[show-view]') {
           child.is_hide = true;
 
-          if (child.addressbarWindow && !child.addressbarWindow.isDestroyed()) {
-            child.addressbarWindow.hide();
-          }
-          if (child.profilesWindow && !child.profilesWindow.isDestroyed()) {
-            child.profilesWindow.hide();
-          }
-
           child.windowList.forEach((w) => {
             if (w.customSetting && w.customSetting.windowType == 'view' && w.window && !w.window.isDestroyed()) {
               if (w.customSetting.tabID == message.options.tabID) {
@@ -445,6 +428,7 @@ module.exports = function (child) {
                   w.window.show();
                   w.window.setAlwaysOnTop(true);
                   w.window.setAlwaysOnTop(false);
+                 // console.log(message , w.window.getURL());
                 } else {
                   w.window.hide();
                 }
@@ -483,7 +467,7 @@ module.exports = function (child) {
               }
             });
           }
-        } else if (message.type == '[send-window-status]') {
+        } else if (message.type == '[main-window-data-changed]') {
           if (message.screen && message.mainWindow) {
             child.parent.options.screen = message.screen;
             child.parent.options.mainWindow = message.mainWindow;

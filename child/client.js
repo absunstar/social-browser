@@ -22,7 +22,7 @@ module.exports = function (child) {
       data = JSON.parse(data);
       if (data.type == 'attached') {
         child.log('^_^ child Attached !!!');
-      } else if (data.type == '[send-window-status]') {
+      } else if (data.type == '[main-window-data-changed]') {
         child.parent = child.parent || { options: {} };
         child.parent.options.screen = data.screen;
         child.parent.options.mainWindow = data.mainWindow;

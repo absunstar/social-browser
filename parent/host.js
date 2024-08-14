@@ -18,11 +18,11 @@ module.exports = function init(parent) {
         parent.sendToClient(client, {
           type: 'attached',
         });
-        if (client.windowType === 'view' && parent.lastWindowStatus) {
-          parent.sendToClient(client, parent.lastWindowStatus);
+        if (client.windowType === 'view' && parent.mainWindowDataMessage) {
+          parent.sendToClient(client, parent.mainWindowDataMessage);
         }
-      } else if (data.type == '[send-window-status]') {
-        parent.lastWindowStatus = data;
+      } else if (data.type == '[main-window-data-changed]') {
+        parent.mainWindowDataMessage = data;
         parent.ipcClientList.forEach((client) => {
           if (client.windowType === 'view') {
             parent.sendToClient(client, data);

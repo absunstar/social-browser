@@ -134,40 +134,32 @@ module.exports = function (child) {
     }
   };
 
-  child.sendCurrentDataLoop = function () {
-    if (child.sendCurrentDataAllow) {
-      child.sendCurrentDataAllow = false;
+  child.shareMainWindowData = function (win) {
+    if (child.allowShareMainWindowData) {
+      child.allowShareMainWindowData = false;
 
-      if (child.addressbarWindow && !child.addressbarWindow.isDestroyed()) {
-        child.addressbarWindow.hide();
+      if (win && !win.isDestroyed()) {
+        let data = {
+          type: '[main-window-data-changed]',
+          mainWindow: {
+            id: win.id,
+            bounds: win.getBounds(),
+            isMaximized: win.isMaximized(),
+            hide: win.isMinimized() || !win.isVisible(),
+          },
+          screen: {
+            bounds: child.electron.screen.getPrimaryDisplay().bounds,
+          },
+        };
+
+        child.sendMessage(data);
       }
-      if (child.profilesWindow && !child.profilesWindow.isDestroyed()) {
-        child.profilesWindow.hide();
-      }
-
-      child.windowList.forEach((w) => {
-        if (w.customSetting.windowType === 'main' && !w.window.isDestroyed()) {
-          let data = {
-            type: '[send-window-status]',
-            mainWindow: {
-              id: w.window.id,
-              bounds: w.window.getBounds(),
-              isMaximized: w.window.isMaximized(),
-              hide: w.window.isMinimized() || !w.window.isVisible(),
-            },
-            screen: {
-              bounds: child.electron.screen.getPrimaryDisplay().bounds,
-            },
-          };
-
-          child.sendMessage(data);
-        }
-      });
     }
 
     setTimeout(() => {
-      child.sendCurrentDataLoop();
+      child.shareMainWindowData(win);
     }, 10);
+
   };
 
   child.createNewWindow = function (setting) {
@@ -443,6 +435,8 @@ module.exports = function (child) {
     if (win.customSetting.windowType === 'main') {
       child.mainWindow = win;
       win.center();
+      // win.focusable = true;
+      // win.fullScreenable = false;
     } else if (win.customSetting.windowType === 'view') {
       if (child.speedMode) {
         if (!child.currentView) {
@@ -460,7 +454,7 @@ module.exports = function (child) {
           win.setBounds(new_bounds);
         }
       } else {
-        if ((mainWindow = child.parent.lastWindowStatus)) {
+        if ((mainWindow = child.parent.mainWindowData)) {
           let bounds = mainWindow.bounds;
           let new_bounds = {
             x: mainWindow.isMaximized ? bounds.x + child.offset.x : bounds.x,
@@ -506,7 +500,7 @@ module.exports = function (child) {
         child.updateTab(win);
 
         child.sendMessage({
-          type: '[request-window-status]',
+          type: '[request-main-window-data]',
         });
         if (win.customSetting.allowSaveUrls) {
           child.sendMessage({
@@ -586,12 +580,12 @@ module.exports = function (child) {
     });
 
     if (win.customSetting.windowType === 'main') {
-      child.sendCurrentDataLoop();
+      child.shareMainWindowData(win);
     }
 
     function sendCurrentData() {
       if (win.customSetting.windowType === 'main') {
-        child.sendCurrentDataAllow = true;
+        child.allowShareMainWindowData = true;
       }
     }
     win.on('move', function () {
@@ -621,12 +615,7 @@ module.exports = function (child) {
     });
     win.on('focus', function () {
       sendCurrentData();
-      if (win.customSetting.windowType !== 'addressbar') {
-        child.sendMessage({
-          type: '[to-all]',
-          name: 'hide-addressbar',
-        });
-      }
+     
     });
 
     // win.webContents.on('will-prevent-unload', (event) => {

@@ -388,6 +388,11 @@ module.exports = function init(child) {
         child.profilesWindow.hide();
       }
     } else {
+       delete options.parentSetting;
+      // let w = child.windowList.find((w) => w.customSetting.windowType == 'main');
+      // if (w && w.window && !w.window.isDestroyed()) {
+     
+      // }
       child.sendMessage({
         type: '[show-view]',
         options: options,
@@ -789,17 +794,6 @@ module.exports = function init(child) {
             });
           });
         });
-    } else if (data.name == 'window_clicked') {
-      child.sendMessage({
-        type: '[window-clicked]',
-        data: data,
-      });
-      if (child.addressbarWindow && !child.addressbarWindow.isDestroyed()) {
-        child.addressbarWindow.hide();
-      }
-      if (child.profilesWindow && !child.profilesWindow.isDestroyed()) {
-        child.profilesWindow.hide();
-      }
     } else if (data.name == '[download-link]') {
       child.sendMessage({
         type: '[download-link]',

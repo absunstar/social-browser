@@ -107,7 +107,7 @@ if (child.uuid == 'user-file') {
   }, 1000 * 5);
 }
 
-child.electron.app.setAppUserModelId('Social.child');
+child.electron.app.setAppUserModelId('Social.Browser');
 child.electron.app.clearRecentDocuments();
 
 if (child.electron.app.setUserTasks) {
@@ -123,7 +123,7 @@ if (child.electron.app.dock) {
 // child.electron.app.commandLine.appendSwitch('disable-dev-shm-usage');
 // child.electron.app.commandLine.appendSwitch('no-sandbox');
 // child.electron.app.commandLine.appendSwitch('disable-gpu');
-child.electron.app.disableHardwareAcceleration();
+// child.electron.app.disableHardwareAcceleration();
 
 //child.electron.app.commandLine.appendSwitch('disable-web-security');
 // child.electron.app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
@@ -234,6 +234,7 @@ child.electron.app.whenReady().then(() => {
       return;
     }
     child.handleWindowBoundsBusy = true;
+
     let mainWindow = child.parent.options.mainWindow;
     let screen = child.parent.options.screen;
 
