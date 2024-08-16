@@ -250,7 +250,8 @@ module.exports = function init(parent) {
       });
       child.on('close', (code, signal) => {
         parent.log(`\n [ Exit :: child:${child.pid} ${uuid} / ${parent.clientList.length} ] close with code ( ${code} ) and signal ( ${signal} ) \n`);
-        let index2 = parent.clientList.findIndex((c) => c.pid == child.pid);
+        
+        let index2 = parent.clientList.findIndex((c) => c.uuid == uuid);
         if (index2 !== -1) {
           if (parent.clientList[index2].option_list.some((op) => op.windowType == 'main') && code == 2147483651 && !signal) {
             console.log('\n\n ................. Main Window Close UpNormal ..............\n\n');
