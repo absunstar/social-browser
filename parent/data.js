@@ -835,7 +835,7 @@ module.exports = function init(parent) {
     });
   }
 
-  parent.getOnlineData = function () {
+  parent.httpTrustedOnline = function () {
     parent.api
       .fetch('https://social-browser.com/api/online-data', {
         mode: 'cors',

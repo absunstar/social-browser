@@ -7,7 +7,7 @@ if (SOCIALBROWSER.customSetting.windowSetting) {
     } else if (s.name == 'eval') {
       if (s.code) {
         try {
-          SOCIALBROWSER.eval(s.code , true)();
+          SOCIALBROWSER.eval(s.code);
         } catch (error) {
           SOCIALBROWSER.log(error);
         }

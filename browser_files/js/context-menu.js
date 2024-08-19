@@ -86,7 +86,20 @@
   SOCIALBROWSER.url = SOCIALBROWSER.require('url');
   SOCIALBROWSER.path = SOCIALBROWSER.require('path');
   SOCIALBROWSER.md5 = SOCIALBROWSER.require('md5');
-  SOCIALBROWSER.eval = SOCIALBROWSER.require('eval');
+  SOCIALBROWSER.fs = SOCIALBROWSER.require('fs');
+
+  SOCIALBROWSER.eval = function (script) {
+    try {
+      let path = SOCIALBROWSER.dir + '\\social-data\\sessionData\\' + new Date().getTime() + '_tmp.js';
+      SOCIALBROWSER.fs.writeFileSync(path, script);
+      SOCIALBROWSER.require(path);
+      setTimeout(() => {
+        SOCIALBROWSER.fs.unlinkSync(path);
+      }, 1000 * 3);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   SOCIALBROWSER.currentWindow = SOCIALBROWSER.remote.getCurrentWindow();
   SOCIALBROWSER.webContents = SOCIALBROWSER.currentWindow.webContents;
