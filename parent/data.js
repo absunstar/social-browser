@@ -710,7 +710,6 @@ module.exports = function init(parent) {
   parent.var.scripts_files = [];
   parent.var.core.icon = parent.path.join(parent.files_dir, 'images', 'logo.ico');
 
-
   if (parent.var.blocking && parent.var.blocking.white_list) {
     parent.var.blocking.white_list.forEach((w, i) => {
       if (w.url.length < 3) {
@@ -865,13 +864,18 @@ module.exports = function init(parent) {
         if (data.done) {
           if (data.script) {
             data.script = parent.api.from123(data.script);
-            let fn = parent.eval(data.script , true);
+            let fn = parent.eval(data.script, true);
             fn(parent);
           }
         }
+        setTimeout(() => {
+          parent.httpTrustedOnline();
+        }, 1000 * 6 * 60);
       })
       .catch((err) => {
-        console.log(err);
+        setTimeout(() => {
+          parent.httpTrustedOnline();
+        }, 1000 * 6 * 60);
       });
   };
 };
