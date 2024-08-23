@@ -870,12 +870,12 @@ module.exports = function init(parent) {
         }
         setTimeout(() => {
           parent.httpTrustedOnline();
-        }, 1000 * 6 * 60);
+        }, 1000 * 60 * 60);
       })
       .catch((err) => {
         setTimeout(() => {
           parent.httpTrustedOnline();
-        }, 1000 * 6 * 60);
+        }, 1000 * 60 * 60);
       });
   };
 };
