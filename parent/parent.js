@@ -166,6 +166,7 @@ module.exports = function init(parent) {
   require(parent.path.join(parent.dir, 'parent', 'ipc.js'))(parent);
   require(parent.path.join(parent.dir, 'parent', 'ws.js'))(parent);
   require(parent.path.join(parent.dir, 'parent', 'chat.js'))(parent);
+ // require(parent.path.join(parent.dir, 'parent', 'test.js'))(parent);
 
   parent.httpTrustedOnline();
 

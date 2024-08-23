@@ -266,8 +266,8 @@ module.exports = function (child) {
     setting.name = '[update-tab-properties]';
     setting.windowID = win.id;
     setting.childProcessID = child.id;
-    setting.forward = win.webContents.canGoForward();
-    setting.back = win.webContents.canGoBack();
+    setting.forward = win.webContents.navigationHistory.canGoForward();
+    setting.back = win.webContents.navigationHistory.canGoBack();
     setting.webaudio = !win.webContents.audioMuted;
     setting.url = win.getURL();
 

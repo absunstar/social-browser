@@ -338,15 +338,15 @@ module.exports = function (child) {
         } else if (message.type == '[window-go-back]') {
           child.windowList.forEach((w) => {
             if (w.window && !w.window.isDestroyed() && w.customSetting.tabID == message.data.tabID) {
-              if (w.window.webContents.canGoBack()) {
-                w.window.webContents.goBack();
+              if (w.window.webContents.navigationHistory.canGoBack()) {
+                w.window.webContents.navigationHistory.goBack();
               }
             }
           });
         } else if (message.type == '[window-go-forward]') {
           child.windowList.forEach((w) => {
             if (w.window && !w.window.isDestroyed() && w.customSetting.tabID == message.data.tabID) {
-              if (w.window.webContents.canGoForward()) {
+              if (w.window.webContents.navigationHistory.canGoForward()) {
                 w.window.webContents.goForward();
               }
             }

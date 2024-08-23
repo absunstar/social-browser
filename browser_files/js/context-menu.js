@@ -87,6 +87,7 @@
   SOCIALBROWSER.path = SOCIALBROWSER.require('path');
   SOCIALBROWSER.md5 = SOCIALBROWSER.require('md5');
   SOCIALBROWSER.fs = SOCIALBROWSER.require('fs');
+  SOCIALBROWSER.Buffer = Buffer;
 
   SOCIALBROWSER.eval = function (script) {
     try {

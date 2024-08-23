@@ -591,8 +591,8 @@ module.exports = function init(child) {
       child.sendMessage({ type: '[window-go-back]', data: data });
     } else if (data.windowID) {
       let win = child.electron.BrowserWindow.fromId(data.windowID);
-      if (win.webContents.canGoBack()) {
-        win.webContents.goBack();
+      if (win.webContents.navigationHistory.canGoBack()) {
+        win.webContents.navigationHistory.goBack();
       }
     }
   });
@@ -602,7 +602,7 @@ module.exports = function init(child) {
       child.sendMessage({ type: '[window-go-forward]', data: data });
     } else if (data.windowID) {
       let win = child.electron.BrowserWindow.fromId(data.windowID);
-      if (win.webContents.canGoForward()) {
+      if (win.webContents.navigationHistory.canGoForward()) {
         win.webContents.goForward();
       }
     }
@@ -748,12 +748,12 @@ module.exports = function init(child) {
       win.setFullScreen(!win.isFullScreen());
     } else if (data.name == '[window-go-forward]') {
       let win = child.electron.BrowserWindow.fromId(data.windowID);
-      if (win.webContents.canGoForward()) {
+      if (win.webContents.navigationHistory.canGoForward()) {
         win.webContents.goForward();
       }
     } else if (data.name == '[window-go-forward]') {
       let win = child.electron.BrowserWindow.fromId(data.windowID);
-      if (win.webContents.canGoForward()) {
+      if (win.webContents.navigationHistory.canGoForward()) {
         win.webContents.goForward();
       }
     } else if (data.name == '[save-window-as-pdf]') {

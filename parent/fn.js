@@ -93,8 +93,8 @@ module.exports = function init(parent) {
     setting.childProcessID = child.id;
     setting.url = win.getURL();
     setting.title = win.webContents.getTitle();
-    setting.forward = win.webContents.canGoForward();
-    setting.back = win.webContents.canGoBack();
+    setting.forward = win.webContents.navigationHistory.canGoForward();
+    setting.back = win.webContents.navigationHistory.canGoBack();
     setting.webaudio = !win.webContents.audioMuted;
 
     child.sendMessage({

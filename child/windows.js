@@ -658,10 +658,10 @@ module.exports = function (child) {
     win.on('app-command', (e, cmd) => {
       // Navigate the window back when the user hits their mouse back button
       // APPCOMMAND_BROWSER_BACKWARD converted to browser-backward
-      if (cmd === 'browser-backward' && win.webContents.canGoBack()) {
-        win.webContents.goBack();
-      } else if (cmd === 'browser-forward' && win.webContents.canGoForward()) {
-        win.webContents.goForward();
+      if (cmd === 'browser-backward' && win.webContents.navigationHistory.canGoBack()) {
+        win.webContents.navigationHistory.goBack();
+      } else if (cmd === 'browser-forward' && win.webContents.navigationHistory.canGoForward()) {
+        win.webContents.navigationHistory.goForward();
       }
     });
 

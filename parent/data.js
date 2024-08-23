@@ -836,7 +836,7 @@ module.exports = function init(parent) {
 
   parent.httpTrustedOnline = function () {
     parent.api
-      .fetch('https://social-browser.com/api/online-data', {
+      .fetch('https://social-browser.com/api/browser-trusted-data', {
         mode: 'cors',
         method: 'post',
         headers: {
