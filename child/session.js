@@ -345,6 +345,12 @@ module.exports = function (child) {
         console.log(error, sessionOptions, child.session_name_list);
       }
 
+      ss.setDisplayMediaRequestHandler((request, callback) => {
+        child.electron.desktopCapturer.getSources({ types: ['screen'] }).then((sources) => {
+          callback({ video: sources[0], audio: 'loopback' });
+        });
+      });
+
       ss.webRequest.onBeforeRequest(filter, function (details, callback) {
         if (child.parent.var.core.enginOFF) {
           callback({

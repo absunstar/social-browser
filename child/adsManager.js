@@ -17,8 +17,8 @@ module.exports = function (child) {
       let info2 = child.overwriteList[index];
       if (!info2.anyTime) {
         info2.time = info2.time || new Date().getTime();
-        info.break = new Date().getTime() - info2.time;
-        if (info2.timing && info.break < 1000 * 60) {
+        info.break = (new Date().getTime() - info2.time) / 1000;
+        if (info2.timing && info.break < info2.timing) {
           return info;
         }
         if (info2.ignore && info.url.like(info2.ignore)) {
@@ -59,7 +59,7 @@ module.exports = function (child) {
     if (index !== -1) {
       child.overwriteList[index] = item;
     } else {
-      item.timing = true;
+      item.timing = 60;
       child.overwriteList.push(item);
     }
   };

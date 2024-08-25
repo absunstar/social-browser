@@ -18,10 +18,10 @@
  *  current location hide
  */
 
-// if (SOCIALBROWSER.var.core.javaScriptOFF || SOCIALBROWSER.customSetting.windowType === 'main' || !SOCIALBROWSER.session.privacy.enable_virtual_pc) {
-//   SOCIALBROWSER.log('.... [ Finger Printing OFF ] .... ' + document.location.href);
-//   return;
-// }
+if (SOCIALBROWSER.var.core.javaScriptOFF || SOCIALBROWSER.customSetting.windowType === 'main' || !SOCIALBROWSER.session.privacy.enable_virtual_pc) {
+  SOCIALBROWSER.log('.... [ Finger Printing OFF ] .... ' + document.location.href);
+  return;
+}
 
 if (SOCIALBROWSER.session.privacy.vpc.hide_cpu) {
   SOCIALBROWSER.__define(navigator, 'hardwareConcurrency', SOCIALBROWSER.session.privacy.vpc.cpu_count);
@@ -261,7 +261,11 @@ if (SOCIALBROWSER.session.privacy.vpc.set_window_active) {
 }
 
 if (SOCIALBROWSER.session.privacy.vpc.block_rtc) {
-  SOCIALBROWSER.webContents.setWebRTCIPHandlingPolicy('disable_non_proxied_udp');
+  try {
+    SOCIALBROWSER.webContents.setWebRTCIPHandlingPolicy('disable_non_proxied_udp');
+  } catch (error) {
+    console.log(error);
+  }
 
   navigator.getUserMedia = undefined;
   window.MediaStreamTrack = undefined;

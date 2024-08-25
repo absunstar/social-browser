@@ -72,23 +72,24 @@ video0 {
 #__alertBox {
   display: none;
   position: fixed;
-  background: #ffffff;
-  color: #000000;
+  background: #272727;
+  color: #ffffff;
   width: auto;
   height: auto;
   margin: 5% auto;
   text-align: center;
   font-size: 24px;
   font-weight: bold;
-  left: 200px;
-  right: 200px;
+  left: 20%;
+  right: 20%;
   padding: 30px;
-  border: 8px solid #2196F3;
-  border-radius: 50px;
-  top: 200px;
+  border: 8px solid #313131;
+  border-radius: 0;
+  top: 100px;
   z-index: 9999999;
   word-wrap: break-word;
   word-break: break-all;
+  box-shadow: 1px 1px 8px 8px #000000;
 }
 
 #__targetUrl {
@@ -245,7 +246,7 @@ video0 {
 
 @media screen and (max-width: 768px /*mobile*/) {
   #__alertBox {
-    border: 1px solid #2196F3;
+    border: 1px solid #2196f3;
     font-size: 12px;
     left: 0px;
     right: 0px;

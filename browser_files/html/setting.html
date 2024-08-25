@@ -133,6 +133,9 @@
       i-button:hover {
         transform: scale(1.1);
       }
+      table button {
+        margin-top: 5px !important;
+      }
       p {
         margin: 0px;
         padding: 0px;
@@ -277,7 +280,6 @@
                         <i-button type="approve" label="Activate" ng-click="activated()"></i-button>
                       </div>
                     </div>
-
                   </fieldset>
                   <div class="row padding">
                     <div class="col6">
@@ -654,14 +656,14 @@
                             class="col4"
                             ng-search="$selected_proxy"
                             items="setting.proxy_list"
-                            display="url"
+                            display="ip"
+                            display2="port"
                             label="Select Proxy"
                             ng-model="setting.proxy.selected_proxy"
                             ng-change="changeProxy()"
                           >
                           </i-list>
                           <div class="row border">
-                            <i-control class="row" label="Proxy URL" type="text" ng-model="setting.proxy.url"> </i-control>
                             <i-control class="col8" label="Proxy IP" type="text" ng-model="setting.proxy.ip"> </i-control>
                             <i-control class="col4" label="Proxy Port" type="text" ng-model="setting.proxy.port"> </i-control>
                             <i-control class="col6" label="User Name" type="text" ng-model="setting.proxy.username"> </i-control>
@@ -836,14 +838,14 @@
                                 class="col4"
                                 ng-search="$selected_proxy"
                                 items="setting.proxy_list"
-                                display="url"
+                                display="ip"
+                                display2="port"
                                 label="Select Proxy"
                                 ng-model="currentSession.selected_proxy"
                                 ng-change="changeProxy(currentSession)"
                               >
                               </i-list>
                               <div class="row border">
-                                <i-control class="row" label="Proxy URL" type="text" ng-model="currentSession.proxy.url"> </i-control>
                                 <i-control class="col8" label="Proxy IP" type="text" ng-model="currentSession.proxy.ip"> </i-control>
                                 <i-control class="col4" label="Proxy Port" type="text" ng-model="currentSession.proxy.port"> </i-control>
                                 <i-control class="col6" label="User Name" type="text" ng-model="currentSession.proxy.username"> </i-control>
@@ -1072,7 +1074,6 @@
                       <fieldset>
                         <legend>New Proxy</legend>
                         <div class="row padding">
-                          <i-control class="row" label="URL" ng-model="$proxy.url"></i-control>
                           <i-control class="col8" label="Server IP" ng-model="$proxy.ip"></i-control>
                           <i-control class="col4" type="text" label="Server Port" ng-model="$proxy.port"></i-control>
                           <i-control class="col6" type="text" label="User Name" ng-model="$proxy.username"></i-control>
@@ -1101,9 +1102,7 @@
                           <span> Count : ({{setting.proxy_list.length}})</span>
                           <i-button type="delete" ng-click="setting.proxy_list = []" label="Remove All"></i-button>
                         </th>
-                        <th>URL <i-control ng-model="$proxy2.url"></i-control></th>
-                        <th>IP <i-control ng-model="$proxy2.ip"></i-control></th>
-                        <th>Port <i-control ng-model="$proxy2.port"></i-control></th>
+                        <th>Proxy Details <i-control ng-model="$proxy2"></i-control></th>
                       </tr>
                       <tr ng-repeat="_se in setting.proxy_list | limitTo : 100 | filter:$proxy2 | orderBy : 'ip' track by $index">
                         <td>
@@ -1112,11 +1111,10 @@
                         </td>
                         <td>
                           <div class="row">
-                            <i-control class="row" ng-model="_se.url"></i-control>
-                            <div class="row">
-                              <i-control class="col6" label="User Name" ng-model="_se.username"></i-control>
-                              <i-control class="col6" label="Password" ng-model="_se.password"></i-control>
-                            </div>
+                            <i-control class="col6" label="Server IP" ng-model="_se.ip"></i-control>
+                            <i-control class="col6" label="Server Port" ng-model="_se.port"></i-control>
+                            <i-control class="col6" label="User Name" ng-model="_se.username"></i-control>
+                            <i-control class="col6" label="Password" ng-model="_se.password"></i-control>
                           </div>
                           <div class="row">
                             <i-checkbox class="" label="Socks 5" ng-model="_se.socks5"></i-checkbox>
@@ -1127,8 +1125,6 @@
                             <i-checkbox class="" label="ignore Proxy if not Working" ng-model="_se.direct"></i-checkbox>
                           </div>
                         </td>
-                        <td><i-control label="Server IP" ng-model="_se.ip"></i-control></td>
-                        <td><i-control label="Server Port" ng-model="_se.port"></i-control></td>
                       </tr>
                     </table>
                   </div>

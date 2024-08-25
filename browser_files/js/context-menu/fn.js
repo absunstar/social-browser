@@ -34,6 +34,27 @@ SOCIALBROWSER.requestCookie = function (obj = {}) {
   obj.partition = SOCIALBROWSER.partition;
   return SOCIALBROWSER.ipc('request-cookie', obj);
 };
+SOCIALBROWSER.desktopCapturer = function (options = {}, callback) {
+  navigator.mediaDevices
+    .getDisplayMedia({
+      audio: false,
+      video: {
+        width: 1200,
+        height: 800,
+        frameRate: 30,
+      },
+    })
+    .then((stream) => {
+      callback(null, stream, video);
+      if ((video = options.video)) {
+        video.srcObject = stream;
+        video.onloadedmetadata = (e) => video.play();
+      }
+    })
+    .catch((err) => {
+      callback(err);
+    });
+};
 SOCIALBROWSER.addSession = function (session) {
   if (typeof session == 'string') {
     session = {
