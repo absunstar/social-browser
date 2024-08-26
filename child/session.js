@@ -256,6 +256,7 @@ module.exports = function (child) {
           proxy.ip = arr[0];
           proxy.port = arr[1];
         }
+        
         if (proxy.ip && proxy.port) {
           let proxyRules = '';
           let startline = ',';

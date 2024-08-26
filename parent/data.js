@@ -732,8 +732,8 @@ module.exports = function init(parent) {
 
   parent.var.core.browserActivated = true;
   parent.activated = function () {
-    parent.log('activated');
 
+    
     parent.var.core['DeviceId'] = '';
     if (parent.information['ProcessorId'] !== '...' && parent.information['DISKDRIVE'] !== '...' && parent.information['BIOS'] !== '...') {
       parent.var.core['DeviceId'] = parent.md5(parent.information['ProcessorId'] + parent.information['DISKDRIVE'] + parent.information['BIOS']);
