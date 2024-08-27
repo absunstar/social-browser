@@ -1,6 +1,5 @@
 window.open0 = window.open;
 window.open = function (...args /*url, target, windowFeatures*/) {
-  console.log(args);
   let url = args[0];
   let target = args[1];
   let windowFeaturesString = args[2]; /*"left=100,top=100,width=320,height=320"*/
@@ -52,7 +51,7 @@ window.open = function (...args /*url, target, windowFeatures*/) {
     self: this,
   };
 
-  if (!SOCIALBROWSER.var.blocking.javascript.allow_window_open || !url || url.like('javascript:*|about:blank')) {
+  if (!url || url.like('javascript:*|about:blank')) {
     let opener = window.open0(...args);
     return opener || child_window;
   }

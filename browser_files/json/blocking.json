@@ -26,7 +26,6 @@
         }
     ],
     "javascript": {
-        "allow_window_open": true,
         "block_console_output": false,
         "block_window_open": false,
         "block_eval": false,
