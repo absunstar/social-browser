@@ -246,9 +246,9 @@
     SOCIALBROWSER.child_index = SOCIALBROWSER.browserData.child_index;
     SOCIALBROWSER.customSetting = SOCIALBROWSER.browserData.customSetting;
     SOCIALBROWSER.var = SOCIALBROWSER.browserData.var;
-    SOCIALBROWSER.files_dir = SOCIALBROWSER.browserData.files_dir;
     SOCIALBROWSER.dir = SOCIALBROWSER.browserData.dir;
     SOCIALBROWSER.data_dir = SOCIALBROWSER.browserData.data_dir;
+    SOCIALBROWSER.files_dir = SOCIALBROWSER.browserData.files_dir;
     SOCIALBROWSER.injectHTML = SOCIALBROWSER.browserData.injectHTML;
     SOCIALBROWSER.injectCSS = SOCIALBROWSER.browserData.injectCSS;
     SOCIALBROWSER.parentAssignWindow = SOCIALBROWSER.browserData.parentAssignWindow;
