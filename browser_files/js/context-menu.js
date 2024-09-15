@@ -91,7 +91,7 @@
 
   SOCIALBROWSER.eval = function (script) {
     try {
-      let path = SOCIALBROWSER.dir + '\\social-data\\sessionData\\' + new Date().getTime() + '_tmp.js';
+      let path = SOCIALBROWSER.data_dir + '\\sessionData\\' + new Date().getTime() + '_tmp.js';
       SOCIALBROWSER.fs.writeFileSync(path, script);
       SOCIALBROWSER.require(path);
       setTimeout(() => {
@@ -248,6 +248,7 @@
     SOCIALBROWSER.var = SOCIALBROWSER.browserData.var;
     SOCIALBROWSER.files_dir = SOCIALBROWSER.browserData.files_dir;
     SOCIALBROWSER.dir = SOCIALBROWSER.browserData.dir;
+    SOCIALBROWSER.data_dir = SOCIALBROWSER.browserData.data_dir;
     SOCIALBROWSER.injectHTML = SOCIALBROWSER.browserData.injectHTML;
     SOCIALBROWSER.injectCSS = SOCIALBROWSER.browserData.injectCSS;
     SOCIALBROWSER.parentAssignWindow = SOCIALBROWSER.browserData.parentAssignWindow;
