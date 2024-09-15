@@ -35,16 +35,15 @@
         --bs-body-font-family: var(--font-family);
       }
       html,
-      body {
-        background: #fff;
+      body,
+      .tabs .tabs-header {
+        background: #f8f9fa;
       }
       body {
         margin: 0;
         padding: 0px;
       }
-      .tabs .tabs-header {
-        background: #fff;
-      }
+
       .tabs .tabs-header .tab-link {
         font-size: 18px;
         font-weight: normal;
@@ -60,17 +59,19 @@
         color: #fff;
       }
       .big-button button {
-        font-size: 26px;
+        transform: scale(2);
       }
-      .btnxxx {
-        box-shadow: none;
-        border: 1px solid #ddd;
-        background: #fff;
-        color: #272727;
+      .btn-light {
+        --bs-btn-color: #ffffff;
+        --bs-btn-bg: #198754;
+        --bs-btn-border-color: #198754;
+        --bs-btn-hover-color: #198754;
+        --bs-btn-hover-bg: #ffffff;
+        --bs-btn-hover-border-color: #198754;
       }
-      .btn-on {
-        color: #795548;
-        background: #87e58b;
+      .btn-stop {
+        color: #ffffff;
+        background: #6c757d;
         font-weight: bold;
       }
       .btn-save {
@@ -107,7 +108,7 @@
         text-align: left !important;
       }
       .row.border2 {
-        border: 1px solid #bbb;
+        border: 1px solid #ddd;
         margin: 5px !important;
       }
       .table input {
@@ -539,13 +540,13 @@
 
                       <fieldset>
                         <legend>Options</legend>
-
-                        <i-checkbox class="col6" label="Remove X Frame Options (iframe)" ng-model="setting.blocking.privacy.vpc.removeXFrameOptions"></i-checkbox>
-                        <i-checkbox class="col6" label="Hide Browser (site) Permisions" ng-model="setting.blocking.privacy.vpc.hide_permissions"></i-checkbox>
-                        <i-checkbox class="col6" label="Block Google ID in other sites" ng-model="setting.blocking.privacy.vpc.hide_gid"></i-checkbox>
-                        <i-checkbox class="col6" label="Hide Social Media Info" ng-model="setting.blocking.privacy.vpc.hide_social_media_info"></i-checkbox>
-                        <i-checkbox class="col6" label="Block Cloud Flare Tracking" ng-model="setting.blocking.privacy.vpc.block_cloudflare"></i-checkbox>
-                        <i-checkbox class="col6" label="Send Don't Track Header" ng-model="setting.blocking.privacy.vpc.dnt"></i-checkbox>
+                        <div class="row">
+                          <i-checkbox class="col6" label="Remove X Frame Options (iframe)" ng-model="setting.blocking.privacy.vpc.removeXFrameOptions"></i-checkbox>
+                          <i-checkbox class="col6" label="Block Google ID in other sites" ng-model="setting.blocking.privacy.vpc.hide_gid"></i-checkbox>
+                          <i-checkbox class="col6" label="Hide Social Media Info" ng-model="setting.blocking.privacy.vpc.hide_social_media_info"></i-checkbox>
+                          <i-checkbox class="col6" label="Block Cloud Flare Tracking" ng-model="setting.blocking.privacy.vpc.block_cloudflare"></i-checkbox>
+                          <i-checkbox class="col6" label="Send Don't Track Header" ng-model="setting.blocking.privacy.vpc.dnt"></i-checkbox>
+                        </div>
                       </fieldset>
                     </div>
                   </div>
@@ -631,53 +632,54 @@
                 <div class="row">
                   <fieldset>
                     <legend>Proxy</legend>
-
-                    <i-checkbox class="col2" label="Enable" ng-model="setting.proxy.enabled"></i-checkbox>
-                    <div class="row" ng-show="setting.proxy.enabled === true">
-                      <div class="row padding">
-                        <i-list
-                          class="col6"
-                          items="setting.proxy_mode_list"
-                          display="name"
-                          label="Select Proxy Mode"
-                          ng-model="setting.proxy.selected_proxy_mode"
-                          ng-change="setting.proxy.mode = setting.proxy.selected_proxy_mode.value"
-                        >
-                        </i-list>
-                      </div>
-
-                      <div class="row padding" ng-show="setting.proxy.mode == 'pac_script' ">
-                        <i-control class="col4" label="Proxy Pac Script" type="text" ng-model="setting.proxy.pacScript"> </i-control>
-                      </div>
-                      <div class="row padding" ng-show="setting.proxy.mode == 'fixed_servers' ">
-                        <div class="row padding border">
+                    <div class="row">
+                      <i-checkbox class="col2" label="Enable" ng-model="setting.proxy.enabled"></i-checkbox>
+                      <div class="row" ng-show="setting.proxy.enabled === true">
+                        <div class="row padding">
                           <i-list
-                            class="col4"
-                            ng-search="$selected_proxy"
-                            items="setting.proxy_list"
-                            display="ip"
-                            display2="port"
-                            label="Select Proxy"
-                            ng-model="setting.proxy.selected_proxy"
-                            ng-change="changeProxy()"
+                            class="col6"
+                            items="setting.proxy_mode_list"
+                            display="name"
+                            label="Select Proxy Mode"
+                            ng-model="setting.proxy.selected_proxy_mode"
+                            ng-change="setting.proxy.mode = setting.proxy.selected_proxy_mode.value"
                           >
                           </i-list>
-                          <div class="row border">
-                            <i-control class="col8" label="Proxy IP" type="text" ng-model="setting.proxy.ip"> </i-control>
-                            <i-control class="col4" label="Proxy Port" type="text" ng-model="setting.proxy.port"> </i-control>
-                            <i-control class="col6" label="User Name" type="text" ng-model="setting.proxy.username"> </i-control>
-                            <i-control class="col6" label="Password" type="text" ng-model="setting.proxy.password"> </i-control>
-                          </div>
-
-                          <i-control class="row" label="No Proxy For URLs" type="text" ng-model="setting.proxy.ignore"> </i-control>
                         </div>
-                        <div class="row padding">
-                          <i-checkbox class="" label="Socks 5" ng-model="setting.proxy.socks5"></i-checkbox>
-                          <i-checkbox class="" label="Socks 4" ng-model="setting.proxy.socks4"></i-checkbox>
-                          <i-checkbox class="" label="FTP" ng-model="setting.proxy.ftp"></i-checkbox>
-                          <i-checkbox class="" label="HTTP" ng-model="setting.proxy.http"></i-checkbox>
-                          <i-checkbox class="" label="HTTPS" ng-model="setting.proxy.https"></i-checkbox>
-                          <i-checkbox class="" label="ignore Proxy if not Working" ng-model="setting.proxy.direct"></i-checkbox>
+
+                        <div class="row padding" ng-show="setting.proxy.mode == 'pac_script' ">
+                          <i-control class="col4" label="Proxy Pac Script" type="text" ng-model="setting.proxy.pacScript"> </i-control>
+                        </div>
+                        <div class="row padding" ng-show="setting.proxy.mode == 'fixed_servers' ">
+                          <div class="row padding border">
+                            <i-list
+                              class="col4"
+                              ng-search="$selected_proxy"
+                              items="setting.proxy_list"
+                              display="ip"
+                              display2="port"
+                              label="Select Proxy"
+                              ng-model="setting.proxy.selected_proxy"
+                              ng-change="changeProxy()"
+                            >
+                            </i-list>
+                            <div class="row border">
+                              <i-control class="col8" label="Proxy IP" type="text" ng-model="setting.proxy.ip"> </i-control>
+                              <i-control class="col4" label="Proxy Port" type="text" ng-model="setting.proxy.port"> </i-control>
+                              <i-control class="col6" label="User Name" type="text" ng-model="setting.proxy.username"> </i-control>
+                              <i-control class="col6" label="Password" type="text" ng-model="setting.proxy.password"> </i-control>
+                            </div>
+
+                            <i-control class="row" label="No Proxy For URLs" type="text" ng-model="setting.proxy.ignore"> </i-control>
+                          </div>
+                          <div class="row padding">
+                            <i-checkbox class="" label="Socks 5" ng-model="setting.proxy.socks5"></i-checkbox>
+                            <i-checkbox class="" label="Socks 4" ng-model="setting.proxy.socks4"></i-checkbox>
+                            <i-checkbox class="" label="FTP" ng-model="setting.proxy.ftp"></i-checkbox>
+                            <i-checkbox class="" label="HTTP" ng-model="setting.proxy.http"></i-checkbox>
+                            <i-checkbox class="" label="HTTPS" ng-model="setting.proxy.https"></i-checkbox>
+                            <i-checkbox class="" label="ignore Proxy if not Working" ng-model="setting.proxy.direct"></i-checkbox>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -795,7 +797,7 @@
                 </div>
               </div>
 
-              <div id="usersOptionsModal" class="modal small" fixed>
+              <div id="usersOptionsModal" class="modal" fixed>
                 <div class="modal-content">
                   <div class="modal-header">
                     <span class="close">&times;</span>
@@ -812,54 +814,55 @@
 
                       <fieldset>
                         <legend>Proxy</legend>
-
-                        <i-checkbox class="col2" label="Enable" ng-model="currentSession.proxy.enabled"></i-checkbox>
-                        <div ng-show="currentSession.proxy.enabled">
-                          <div class="row">
-                            <i-list
-                              class="col7"
-                              items="setting.proxy_mode_list"
-                              display="name"
-                              label="Select Proxy Mode"
-                              ng-model="currentSession.selected_proxy_mode"
-                              ng-change="currentSession.proxy.mode = currentSession.selected_proxy_mode.value"
-                            >
-                            </i-list>
-                          </div>
-
-                          <div class="row padding" ng-show="setting.proxy.mode == 'pac_script' ">
-                            <i-control class="col4" label="Proxy Script URL" type="text" ng-model="setting.proxy.pacScript"> </i-control>
-                          </div>
-
-                          <div class="row" ng-show="currentSession.proxy.mode == 'fixed_servers' ">
-                            <div class="row padding border">
+                        <div class="row">
+                          <i-checkbox class="col2" label="Enable" ng-model="currentSession.proxy.enabled"></i-checkbox>
+                          <div ng-show="currentSession.proxy.enabled">
+                            <div class="row">
                               <i-list
-                                class="col4"
-                                ng-search="$selected_proxy"
-                                items="setting.proxy_list"
-                                display="ip"
-                                display2="port"
-                                label="Select Proxy"
-                                ng-model="currentSession.selected_proxy"
-                                ng-change="changeProxy(currentSession)"
+                                class="col7"
+                                items="setting.proxy_mode_list"
+                                display="name"
+                                label="Select Proxy Mode"
+                                ng-model="currentSession.selected_proxy_mode"
+                                ng-change="currentSession.proxy.mode = currentSession.selected_proxy_mode.value"
                               >
                               </i-list>
-                              <div class="row border">
-                                <i-control class="col8" label="Proxy IP" type="text" ng-model="currentSession.proxy.ip"> </i-control>
-                                <i-control class="col4" label="Proxy Port" type="text" ng-model="currentSession.proxy.port"> </i-control>
-                                <i-control class="col6" label="User Name" type="text" ng-model="currentSession.proxy.username"> </i-control>
-                                <i-control class="col6" label="Password" type="text" ng-model="currentSession.proxy.password"> </i-control>
-                              </div>
-
-                              <i-control class="row" label="No Proxy For URLs" type="text" ng-model="currentSession.proxy.ignore"> </i-control>
                             </div>
-                            <div class="row padding">
-                              <i-checkbox class="" label="Socks 5" ng-model="currentSession.proxy.socks5"></i-checkbox>
-                              <i-checkbox class="" label="Socks 4" ng-model="currentSession.proxy.socks4"></i-checkbox>
-                              <i-checkbox class="" label="FTP" ng-model="currentSession.proxy.ftp"></i-checkbox>
-                              <i-checkbox class="" label="HTTP" ng-model="currentSession.proxy.http"></i-checkbox>
-                              <i-checkbox class="" label="HTTPS" ng-model="currentSession.proxy.https"></i-checkbox>
-                              <i-checkbox class="" label="ignore Proxy if not Working" ng-model="currentSession.proxy.direct"></i-checkbox>
+
+                            <div class="row padding" ng-show="setting.proxy.mode == 'pac_script' ">
+                              <i-control class="col4" label="Proxy Script URL" type="text" ng-model="setting.proxy.pacScript"> </i-control>
+                            </div>
+
+                            <div class="row" ng-show="currentSession.proxy.mode == 'fixed_servers' ">
+                              <div class="row padding border">
+                                <i-list
+                                  class="col4"
+                                  ng-search="$selected_proxy"
+                                  items="setting.proxy_list"
+                                  display="ip"
+                                  display2="port"
+                                  label="Select Proxy"
+                                  ng-model="currentSession.selected_proxy"
+                                  ng-change="changeProxy(currentSession)"
+                                >
+                                </i-list>
+                                <div class="row border">
+                                  <i-control class="col8" label="Proxy IP" type="text" ng-model="currentSession.proxy.ip"> </i-control>
+                                  <i-control class="col4" label="Proxy Port" type="text" ng-model="currentSession.proxy.port"> </i-control>
+                                  <i-control class="col6" label="User Name" type="text" ng-model="currentSession.proxy.username"> </i-control>
+                                  <i-control class="col6" label="Password" type="text" ng-model="currentSession.proxy.password"> </i-control>
+                                </div>
+
+                                <i-control class="row" label="No Proxy For URLs" type="text" ng-model="currentSession.proxy.ignore"> </i-control>
+                              </div>
+                              <div class="row padding">
+                                <i-checkbox class="" label="Socks 5" ng-model="currentSession.proxy.socks5"></i-checkbox>
+                                <i-checkbox class="" label="Socks 4" ng-model="currentSession.proxy.socks4"></i-checkbox>
+                                <i-checkbox class="" label="FTP" ng-model="currentSession.proxy.ftp"></i-checkbox>
+                                <i-checkbox class="" label="HTTP" ng-model="currentSession.proxy.http"></i-checkbox>
+                                <i-checkbox class="" label="HTTPS" ng-model="currentSession.proxy.https"></i-checkbox>
+                                <i-checkbox class="" label="ignore Proxy if not Working" ng-model="currentSession.proxy.direct"></i-checkbox>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -984,13 +987,13 @@
 
                         <fieldset>
                           <legend>Options</legend>
-
-                          <i-checkbox class="col6" label="Remove X Frame Options (iframe)" ng-model="currentSession.privacy.vpc.removeXFrameOptions"></i-checkbox>
-                          <i-checkbox class="col6" label="Hide Browser (site) Permisions" ng-model="currentSession.privacy.vpc.hide_permissions"></i-checkbox>
-                          <i-checkbox class="col6" label="Block Google ID in other sites" ng-model="currentSession.privacy.vpc.hide_gid"></i-checkbox>
-                          <i-checkbox class="col6" label="Hide Social Media Info" ng-model="currentSession.privacy.vpc.hide_social_media_info"></i-checkbox>
-                          <i-checkbox class="col6" label="Block Cloud Flare Tracking" ng-model="currentSession.privacy.vpc.block_cloudflare"></i-checkbox>
-                          <i-checkbox class="col6" label="Send Don't Track Header" ng-model="currentSession.privacy.vpc.dnt"></i-checkbox>
+                          <div class="row">
+                            <i-checkbox class="col6" label="Remove X Frame Options (iframe)" ng-model="currentSession.privacy.vpc.removeXFrameOptions"></i-checkbox>
+                            <i-checkbox class="col6" label="Block Google ID in other sites" ng-model="currentSession.privacy.vpc.hide_gid"></i-checkbox>
+                            <i-checkbox class="col6" label="Hide Social Media Info" ng-model="currentSession.privacy.vpc.hide_social_media_info"></i-checkbox>
+                            <i-checkbox class="col6" label="Block Cloud Flare Tracking" ng-model="currentSession.privacy.vpc.block_cloudflare"></i-checkbox>
+                            <i-checkbox class="col6" label="Send Don't Track Header" ng-model="currentSession.privacy.vpc.dnt"></i-checkbox>
+                          </div>
                         </fieldset>
                       </div>
                     </form>
@@ -1147,7 +1150,7 @@
                         </td>
                         <td>
                           <i-button type="play" class2="" ng-show="_ex.isEnabled === false" ng-click="enableExtension(_ex)" label="Play"></i-button>
-                          <i-button type="stop" class2="btn-on" ng-show="_ex.isEnabled === true" ng-click="disableExtension(_ex)" label="Stop"></i-button>
+                          <i-button type="stop" class2="btn-stop" ng-show="_ex.isEnabled === true" ng-click="disableExtension(_ex)" label="Stop"></i-button>
                           <i-button type="remove" ng-show="_ex.canDelete === true" ng-click="removeExtension(_ex)" label="Remove"></i-button>
                         </td>
                       </tr>
@@ -1178,7 +1181,10 @@
                     <td>{{$index +1 }} <i-button type="remove" ng-click="remove_user_data_input(site)"></i-button></td>
                     <td>{{site.hostname || site.host}}</td>
                     <td>
-                      <i-control ng-model="site.username"></i-control>
+                      <div class="row">
+                        <div class="col8"><i-control ng-model="site.username"></i-control></div>
+                        <div class="col4"><i-button type="copy" label="copy" ng-click="copy(site.username)"></i-button></div>
+                      </div>
                     </td>
                     <td>
                       <div class="row">
@@ -1273,7 +1279,7 @@
         </div>
       </div>
 
-      <div class="center">
+      <div class="center padding margin">
         <i-button loading="{{setting_busy}}" class="big-button" type="save" ng-show="knowPassword === true" ng-click="saveSetting(true)" label="Save All Setting"></i-button>
         <i-button class="big-button" type="save" ng-show="knowPassword === false" ng-click="checkPassword(true)" label="Next"></i-button>
       </div>
@@ -1641,7 +1647,7 @@
           </div>
         </div>
 
-        <div id="whiteListModal" class="modal small" fixed>
+        <div id="whiteListModal" class="modal" fixed>
           <div class="modal-content">
             <div class="modal-header">
               <span class="close">&times;</span>
@@ -1681,7 +1687,7 @@
             </div>
           </div>
         </div>
-        <div id="blackListModal" class="modal small" fixed>
+        <div id="blackListModal" class="modal" fixed>
           <div class="modal-content">
             <div class="modal-header">
               <span class="close">&times;</span>

@@ -60,7 +60,6 @@
             "hide_plugins": true,
             "hide_mimetypes": true,
             "hide_media_devices": true,
-            "hide_permissions": false,
             "hide_battery": true,
             "set_window_active": false,
             "dnt": true,
@@ -218,7 +217,6 @@
     "social": {
         "allow_10khits": false,
         "allow_addmefast": false,
-        "allow_youlikehits": false,
         "allow_menu": true,
         "allow_alexa": false,
         "allow_rankboostup": true,

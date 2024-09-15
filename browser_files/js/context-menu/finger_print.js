@@ -521,18 +521,7 @@ if (SOCIALBROWSER.session.privacy.vpc.hide_connection || SOCIALBROWSER.session.p
   });
 }
 
-if (SOCIALBROWSER.session.privacy.vpc.hide_permissions) {
-  SOCIALBROWSER.navigator.permissions = navigator.permissions;
-  SOCIALBROWSER.__define(navigator, 'permissions', {
-    query: (permission) => {
-      return new Promise((ok, err) => {
-        ok({
-          state: ['', 'granted', 'prompt', 'denied', ''][3],
-        });
-      });
-    },
-  });
-}
+
 
 /** This is not Chrome headless
    * navigator.permissions.query({name:'notifications'}).then(function(permissionStatus) {

@@ -1,200 +1,222 @@
+if (!document.location.hostname.contains('youlikehits.com')) {
+  return;
+}
 
+SOCIALBROWSER.onLoad(() => {
+  SOCIALBROWSER.customSetting.allowURLs = '*youlikehits.com*|*jquery*|*static.cloudflareinsights.com*';
+  SOCIALBROWSER.customSetting.alwaysOnTop = false;
+  SOCIALBROWSER.customSetting.allowAudio = false;
+  SOCIALBROWSER.customSetting.allowDownload = false;
+  SOCIALBROWSER.customSetting.allowSaveUrls = false;
+  SOCIALBROWSER.customSetting.allowSaveUserData = false;
+  SOCIALBROWSER.customSetting.iframe = true;
+  SOCIALBROWSER.customSetting.timeout = 1000 * 30;
 
-  if (!document.location.hostname.contains('youlikehits.com')) {
-    return;
-  }
-  SOCIALBROWSER.var.blocking.social = SOCIALBROWSER.var.blocking.social || {};
-  SOCIALBROWSER.log(' >>> youlikehits Activated');
-  SOCIALBROWSER.var.blocking.social.allow_youlikehits = true
   SOCIALBROWSER.var.blocking.core.block_empty_iframe = false;
+
+  if (document.location.href.like('*youtubenew2*')) {
+    SOCIALBROWSER.customSetting.timeout = 1000 * 60 * 5;
+    SOCIALBROWSER.customSetting.hide = true;
+
+    SOCIALBROWSER.onEvent('window-loaded', () => {
+      alert('New Youtube Video Viewing Now ......', 1000 * 20);
+    });
+
+    let clickReady = false;
+
+    function clickViewButton() {
+      if (typeof cnum == 'number' && cnum == 0) {
+        if (true || parseInt(document.querySelector('#listall').innerText.split(': ')[1]?.split('\n')[0] || '1') > 3) {
+          if (!clickReady) {
+            clickReady = true;
+          } else {
+            if ((a = document.querySelector('#listall a.followbutton'))) {
+              if (a.innerText.like('view')) {
+                a.click();
+                clickReady = false;
+              }
+            }
+          }
+        } else {
+          if ((a = document.querySelector('#listall a:last-child'))) {
+            a.click();
+          }
+        }
+      }
+
+      setTimeout(() => {
+        clickViewButton();
+      }, 1000 * 5);
+    }
+    clickViewButton();
+  }
+  if (document.location.href.like('*youtube2*')) {
+    SOCIALBROWSER.customSetting.timeout = 1000 * 40;
+    SOCIALBROWSER.customSetting.hide = true;
+
+    SOCIALBROWSER.onEvent('window-loaded', () => {
+      alert('New Youtube Video subscribing Now ......', 1000 * 30);
+    });
+
+    SOCIALBROWSER.onEvent('window-closed', () => {
+      confirmSubscribe();
+    });
+
+    function confirmSubscribe() {
+      if ((a = document.querySelector('#DoesLike button'))) {
+        if (a.innerText.like('*confirm*')) {
+          a.click();
+          setTimeout(() => {
+            clickLikeButton();
+          }, 1000 * 20);
+          return;
+        }
+      }
+      confirmSubscribe();
+    }
+
+    function clickLikeButton() {
+      if ((a = document.querySelector('a.followbutton'))) {
+        if (a.innerText.like('*subscribe*')) {
+          a.click();
+        }
+      }
+      if ((a = document.querySelector('a.likebutton'))) {
+        if (a.innerText.like('*subscribe*')) {
+          a.click();
+          return;
+        }
+      }
+      setTimeout(() => {
+        clickLikeButton();
+      }, 1000 * 5);
+    }
+    clickLikeButton();
+  }
+  if (document.location.href.like('*youtubelikes*')) {
+    SOCIALBROWSER.customSetting.timeout = 1000 * 40;
+    SOCIALBROWSER.customSetting.hide = false;
+    SOCIALBROWSER.allowPopup = true;
+    SOCIALBROWSER.customSetting.allowURLs = '*youlikehits.com*|http://linkto.social*';
+
+    SOCIALBROWSER.onEvent('window-loaded', () => {
+      alert('New Youtube Video Like Now ......', 1000 * 30);
+    });
+
+    SOCIALBROWSER.onEvent('window-closed', () => {
+      confirmLike();
+    });
+
+    function confirmLike() {
+      if ((a = document.querySelector('#DoesLike button'))) {
+        if (a.innerText.like('*confirm*')) {
+          a.click();
+          setTimeout(() => {
+            clickLikeButton();
+          }, 1000 * 20);
+          return;
+        }
+      }
+      confirmLike();
+    }
+
+    function clickLikeButton() {
+      if ((a = document.querySelector('a.followbutton'))) {
+        if (a.innerText.like('*like*')) {
+          a.click();
+        }
+      }
+      if ((a = document.querySelector('a.likebutton'))) {
+        if (a.innerText.like('*like*')) {
+          a.click();
+          return;
+        }
+      }
+      setTimeout(() => {
+        clickLikeButton();
+      }, 1000 * 5);
+    }
+    clickLikeButton();
+  }
+  if (document.location.href.like('*viewwebsite*')) {
+    setInterval(() => {
+      if (document.getElementsByName('frame1')[0]?.contentDocument.body.innerText.like('*We could*locate the website*')) {
+        SOCIALBROWSER.currentWindow.close();
+      }
+    }, 1000 * 3);
+  }
+  if (document.location.href.like('*websites*')) {
+    SOCIALBROWSER.customSetting.hide = true;
+
+    SOCIALBROWSER.onEvent('window-loaded', () => {
+      alert('New Website Visiting Now ......', 1000 * 20);
+    });
+    SOCIALBROWSER.onEvent('window-closed', () => {
+      setTimeout(() => {
+        clickVisitButton();
+      }, 1000 * 3);
+    });
+
+    SOCIALBROWSER.customSetting.timeout = 1000 * 40;
+
+    function clickVisitButton() {
+      let card = null;
+      document.querySelectorAll('.cards').forEach((_card) => {
+        if (!card && _card.style.display !== 'none') {
+          card = _card;
+        }
+      });
+
+      if (card) {
+        if ((a = card.querySelector('a.followbutton'))) {
+          if (a.innerText.like('Visit')) {
+            a.click();
+          }
+        }
+      } else {
+        document.location.reload();
+      }
+    }
+
+    clickVisitButton();
+  }
+
+  if (document.location.href.like('*soundcloudplays*')) {
+    SOCIALBROWSER.onEvent('window-loaded', () => {
+      alert('New Sound Playing Now ......', 1000 * 20);
+    });
+
+    SOCIALBROWSER.customSetting.timeout = 1000 * 60 * 5;
+    SOCIALBROWSER.customSetting.hide = true;
+
+    function clickListenButton() {
+      if (typeof cnum == 'number' && cnum == 0) {
+        if (parseInt(document.querySelector('#listall').innerText.split(': ')[1]?.split('\n')[0] || '1') > 0) {
+          setTimeout(() => {
+            if ((a = document.querySelector('a.followbutton'))) {
+              if (a.innerText.like('Listen')) {
+                a.click();
+              }
+            }
+          }, 1000 * 3);
+        } else {
+          if ((a = document.querySelector('#listall a:last-child'))) {
+            a.click();
+          }
+        }
+      }
+      setTimeout(() => {
+        clickListenButton();
+      }, 1000 * 10);
+    }
+    clickListenButton();
+  }
 
   window.addEventListener('load', () => {
     SOCIALBROWSER.__showBotImage();
   });
 
-  if (document.location.href.contains('youtubenew2|soundcloud_views|youtubelikes')) {
-    SOCIALBROWSER.var.user_data_block = true;
-
-    window.open = function (url, _name, _specs, _replace_in_history) {
-      SOCIALBROWSER.log('youlikehits : ', url);
-
-      let opener = {
-        closed: false,
-        opener: window,
-        postMessage: () => {
-          SOCIALBROWSER.log('postMessage opener');
-        },
-        eval: () => {
-          SOCIALBROWSER.log('eval opener');
-        },
-        close: () => {
-          SOCIALBROWSER.log('close opener');
-        },
-        focus: () => {
-          SOCIALBROWSER.log('focus opener');
-        },
-      };
-
-      if (typeof url !== 'string') {
-        return opener;
-      }
-      if (url == 'about:blank') {
-        return opener;
-      }
-      url = SOCIALBROWSER.handle_url(url);
-
-      SOCIALBROWSER.log('youlikehits : ', url);
-
-      let win = new SOCIALBROWSER.remote.BrowserWindow({
-        show: false,
-        alwaysOnTop: true,
-        width: _specs.width || 800,
-        height: _specs.height || 600,
-        x: _specs.x || 200,
-        y: _specs.y || 200,
-        backgroundColor: '#ffffff',
-        frame: true,
-        webPreferences: {
-          contextIsolation: false,
-          webaudio: false,
-          nativeWindowOpen : false,
-          nodeIntegration: false,
-          nodeIntegrationInWorker: false,
-          session: SOCIALBROWSER.remote.getCurrentWebContents().session,
-          sandbox: false,
-          preload: SOCIALBROWSER.files_dir + '/js/context-menu.js',
-          webSecurity: false,
-          allowRunningInsecureContent: true,
-          plugins: false,
-        },
-      });
-
-      win.setMenuBarVisibility(false);
-      win.webContents.audioMuted = true;
-
-      win.loadURL(url, {
-        httpReferrer : document.location.href,
-        userAgent : navigator.userAgent,
-      });
-
-      win.once('ready-to-show', () => {
-        // win.showInactive()
-      });
-
-      opener.postMessage = function (message, targetOrigin) {
-        return win.webContents.postMessage(message, targetOrigin);
-      };
-      win.webContents.once('dom-ready', () => {
-        if (document.location.href.contains('youtubelikes')) {
-          win.webContents.executeJavaScript(`
-                    document.querySelectorAll('video').forEach(v=> v.remove());
-                    function like_video(){
-                        let btn =  document.querySelectorAll('ytd-toggle-button-renderer.style-scope.ytd-menu-renderer.force-icon-button.style-text')[0]
-                        SOCIALBROWSER.log(btn);
-                        if(btn){
-                            btn.click()
-                            setTimeout(() => {
-                             btn.click()
-                         }, 1000 * 10);
-                        }else{
-                            setTimeout(() => {
-                                like_video()
-                            }, 1000);
-                        }
-                    }
-                    like_video()
-                    `);
-          setTimeout(() => {
-            opener.closed = true;
-          }, 1000 * 10);
-          setTimeout(() => {
-            alert('youlikehits : opner closed done');
-            win.close();
-          }, 1000 * 40);
-        } else {
-          setTimeout(() => {
-            win.close();
-          }, 1000 * 6);
-        }
-      });
-
-      opener.close = function () {
-        opener.closed = true;
-        if (win && !win.isDestroyed()) {
-          win.close();
-        }
-      };
-      // opener.document
-      win.on('close', (e) => {
-        opener.postMessage = () => {};
-        opener.eval = () => {};
-        // opener.closed = true
-      });
-
-      return opener;
-    };
-
-    let captca_count = 0;
-
-    setInterval(() => {
-      window.counting = function (videoid, randtime, x) {
-        SOCIALBROWSER.log('counting');
-        if (newWin.closed) {
-          clearInterval(settimer);
-          // cnum = 0;
-          ctrig = 'closed';
-        } else {
-          cnum = cnum + 1;
-          if (document.getElementById('count' + videoid)) {
-            document.getElementById('count' + videoid).style.display = 'inline';
-          }
-        }
-        if (cnum >= randtime) {
-          window.cnum = -1;
-          newWin.close();
-          setTimeout(() => {
-            $.ajax({
-              type: 'GET',
-              url: 'playyoutubenew.php',
-              data: 'id=' + videoid + '&step=points&x=' + x + '&rand=' + Math.random(),
-              success: function (msg) {
-                // window.cnum = -1
-                $('#showresult').html(msg);
-                // window.cnum = 0
-                document.location.reload();
-              },
-            });
-          }, 1000 * 5);
-        }
-
-        document.title = `count ${cnum} / ${randtime}`;
-
-        if (document.getElementById('count' + videoid + 'num')) {
-          document.getElementById('count' + videoid + 'num').innerHTML = cnum;
-        }
-      };
-
-      if (document.querySelector('#captcha')) {
-        document.title = 'captcha';
-      } else if (window.cnum === 0) {
-        let btn = document.querySelector('a.followbutton');
-        if (btn) {
-          btn.click();
-          btn.style.display = 'none';
-        }
-        // window.cnum = 100
-      }
-    }, 5000);
-  }
-
-  if (document.location.href.contains('websites')) {
-    SOCIALBROWSER.var.user_data_block = true;
-    setInterval(() => {
-      document.querySelectorAll('iframe').forEach((f) => {
-        if (f.id == 'preview-frame') {
-          f.remove();
-        }
-      });
-    }, 1000);
-  }
-
+  updatepoints = function () {
+    window.close();
+  };
+});

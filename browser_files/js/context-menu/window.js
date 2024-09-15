@@ -51,7 +51,7 @@ window.open = function (...args /*url, target, windowFeatures*/) {
     self: this,
   };
 
-  if (!url || url.like('javascript:*|about:blank')) {
+  if (!url || url.like('javascript:*|about:blank|*accounts.*|*login*') || SOCIALBROWSER.customSetting.allowCorePopup) {
     let opener = window.open0(...args);
     return opener || child_window;
   }
@@ -59,37 +59,44 @@ window.open = function (...args /*url, target, windowFeatures*/) {
   url = SOCIALBROWSER.handle_url(url);
   child_window.url = url;
 
-  if (SOCIALBROWSER.blockPopup || !SOCIALBROWSER.customSetting.allowNewWindows) {
-    SOCIALBROWSER.log('block Popup : ' + url);
-    return child_window;
-  }
+  let allow = false;
 
-  if (SOCIALBROWSER.customSetting.allowSelfWindow) {
-    document.location.href = url;
-    return child_window;
-  }
-
-  if (!SOCIALBROWSER.var.core.javaScriptOFF) {
-    if (!SOCIALBROWSER.isAllowURL(url)) {
-      SOCIALBROWSER.log('Not Allow URL : ' + url);
+  if (SOCIALBROWSER.allowPopup || SOCIALBROWSER.customSetting.allowPopup) {
+    allow = true;
+  } else {
+    if (SOCIALBROWSER.customSetting.blockPopup || !SOCIALBROWSER.customSetting.allowNewWindows) {
+      SOCIALBROWSER.log('block Popup : ' + url);
       return child_window;
     }
-    let allow = !SOCIALBROWSER.var.blocking.popup.black_list.some((d) => url.like(d.url));
 
-    if (!allow) {
-      SOCIALBROWSER.log('black list : ' + url);
+    if (SOCIALBROWSER.customSetting.allowSelfWindow) {
+      document.location.href = url;
       return child_window;
     }
-    allow = false;
-    let toUrlParser = SOCIALBROWSER.url.parse(url);
-    let fromUrlParser = SOCIALBROWSER.url.parse(this.document.location.href);
 
-    if ((toUrlParser.host.contains(fromUrlParser.host) || fromUrlParser.host.contains(toUrlParser.host)) && SOCIALBROWSER.var.blocking.popup.allow_internal) {
-      allow = true;
-    } else if (toUrlParser.host !== fromUrlParser.host && SOCIALBROWSER.var.blocking.popup.allow_external) {
-      allow = true;
-    } else {
-      allow = SOCIALBROWSER.var.blocking.popup.white_list.some((d) => toUrlParser.host.like(d.url) || fromUrlParser.host.like(d.url));
+    if (!SOCIALBROWSER.var.core.javaScriptOFF) {
+      if (!SOCIALBROWSER.isAllowURL(url)) {
+        SOCIALBROWSER.log('Not Allow URL : ' + url);
+        return child_window;
+      }
+
+      allow = !SOCIALBROWSER.var.blocking.popup.black_list.some((d) => url.like(d.url));
+
+      if (!allow) {
+        SOCIALBROWSER.log('black list : ' + url);
+        return child_window;
+      }
+
+      allow = false;
+      let toUrlParser = new URL(url);
+      let fromUrlParser = new URL(document.location.href);
+      if ((toUrlParser.host.contains(fromUrlParser.host) || fromUrlParser.host.contains(toUrlParser.host)) && SOCIALBROWSER.var.blocking.popup.allow_internal) {
+        allow = true;
+      } else if (toUrlParser.host !== fromUrlParser.host && SOCIALBROWSER.var.blocking.popup.allow_external) {
+        allow = true;
+      } else {
+        allow = SOCIALBROWSER.var.blocking.popup.white_list.some((d) => toUrlParser.host.like(d.url) || fromUrlParser.host.like(d.url));
+      }
     }
 
     if (!allow) {
@@ -98,16 +105,29 @@ window.open = function (...args /*url, target, windowFeatures*/) {
     }
   }
 
+  let showPopup = false;
+  let skipTaskbar = true;
+  let center = false;
+  if (SOCIALBROWSER.customSetting.hide) {
+    showPopup = false;
+    skipTaskbar = true;
+  } else if (SOCIALBROWSER.customSetting.windowType === 'view') {
+    showPopup = true;
+    center = true;
+    skipTaskbar = false;
+  } else if (SOCIALBROWSER.customSetting.windowType.like('*popup*')) {
+    showPopup = SOCIALBROWSER.customSetting.show;
+  }
   let win = SOCIALBROWSER.openWindow({
-    width: windowFeatures.width,
-    height: windowFeatures.height,
-    center: true,
     url: url,
-    show: true,
     windowType: 'client-popup',
-    frame: true,
+    show: showPopup,
+    center: center,
+    skipTaskbar: skipTaskbar,
+    width: windowFeatures.width || SOCIALBROWSER.customSetting.width,
+    height: windowFeatures.height || SOCIALBROWSER.customSetting.height,
     resizable: true,
-    skipTaskbar: false,
+    frame: true,
   });
 
   child_window.postMessage = function (...args) {

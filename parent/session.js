@@ -113,9 +113,9 @@ module.exports = function (parent) {
       }
     } else {
       ss.setProxy({
-        mode: 'direct',
+        mode: 'system',
       }).then(() => {
-        parent.log('Default Proxy Set :direct  ');
+        parent.log('Default Proxy Set :system  ');
       });
     }
 

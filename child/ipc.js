@@ -282,34 +282,38 @@ module.exports = function init(child) {
       options.body = JSON.stringify(options.body);
     }
     options.return = options.return || 'json';
-    let data = await child.fetch(options.url, {
-      mode: 'cors',
-      method: options.method || 'get',
-      headers: options.headers || {
-        'Content-Type': 'application/json',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36',
-      },
-      body: options.body,
-      redirect: options.redirect || 'follow',
-      agent: function (_parsedURL) {
-        if (_parsedURL.protocol == 'http:') {
-          return new child.http.Agent({
-            keepAlive: true,
-          });
-        } else {
-          return new child.https.Agent({
-            keepAlive: true,
-          });
-        }
-      },
-    });
+    try {
+      let data = await child.fetch(options.url, {
+        mode: 'cors',
+        method: options.method || 'get',
+        headers: options.headers || {
+          'Content-Type': 'application/json',
+          'User-Agent': child.parent.var.core.defaultUserAgent.url,
+        },
+        body: options.body,
+        redirect: options.redirect || 'follow',
+        agent: function (_parsedURL) {
+          if (_parsedURL.protocol == 'http:') {
+            return new child.http.Agent({
+              keepAlive: true,
+            });
+          } else {
+            return new child.https.Agent({
+              keepAlive: true,
+            });
+          }
+        },
+      });
 
-    if (data) {
-      if (options.return == 'json') {
-        return data.json();
-      } else {
-        return data.text();
+      if (data) {
+        if (options.return == 'json') {
+          return data.json();
+        } else {
+          return data.text();
+        }
       }
+    } catch (error) {
+      console.log(error);
     }
   });
 
@@ -388,10 +392,10 @@ module.exports = function init(child) {
         child.profilesWindow.hide();
       }
     } else {
-       delete options.parentSetting;
+      delete options.parentSetting;
       // let w = child.windowList.find((w) => w.customSetting.windowType == 'main');
       // if (w && w.window && !w.window.isDestroyed()) {
-     
+
       // }
       child.sendMessage({
         type: '[show-view]',

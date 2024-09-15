@@ -589,6 +589,7 @@ function add_a_menu(node) {
             url: u.replace('youtube', 'ssyoutube'),
             partition: SOCIALBROWSER.partition,
             referrer: document.location.href,
+            allowPopup : true,
             show: true,
             center: true,
           });
@@ -1270,6 +1271,7 @@ function get_custom_menu() {
           referrer: document.location.href,
           url: document.location.href.replace('youtube', 'ssyoutube'),
           show: true,
+          allowPopup : true,
           center: true,
         });
       },

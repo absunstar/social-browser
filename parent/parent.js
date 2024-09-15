@@ -10,7 +10,7 @@ module.exports = function init(parent) {
   parent.extensionList = [];
   parent.information = {};
   parent.cookies = {};
-  parent.freeUsersCount = 10;
+  parent.freeUsersCount = 100;
   parent.eval = require('eval');
 
   parent.isAllowURL = function (url) {

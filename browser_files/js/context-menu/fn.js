@@ -344,7 +344,6 @@ SOCIALBROWSER.generateVPC = function () {
     hide_plugins: true,
     hide_mimetypes: true,
     hide_media_devices: true,
-    hide_permissions: true,
     hide_battery: true,
     set_window_active: true,
     dnt: true,
@@ -626,6 +625,17 @@ SOCIALBROWSER.getTimeZone = () => {
 };
 
 SOCIALBROWSER.isAllowURL = function (url) {
+  if (SOCIALBROWSER.customSetting.blockURLs) {
+    if (url.like(SOCIALBROWSER.customSetting.blockURLs)) {
+      return false;
+    }
+  }
+  if (SOCIALBROWSER.customSetting.allowURLs) {
+    if (url.like(SOCIALBROWSER.customSetting.allowURLs)) {
+      return true;
+    }
+  }
+
   if (SOCIALBROWSER.var.blocking.white_list?.some((item) => url.like(item.url))) {
     return true;
   }
@@ -707,16 +717,17 @@ SOCIALBROWSER.openWindow = function (_customSetting) {
     SOCIALBROWSER.windowOpenList[_customSetting.trackingID].eventList.push({ name: name, callback: callback });
   };
   _customSetting.windowType = _customSetting.windowType || 'social-popup';
+
   let customSetting = { ...SOCIALBROWSER.customSetting, ..._customSetting };
 
   SOCIALBROWSER.on('[tracking-info]', (e, data) => {
-    if (data.trackingID == _customSetting.trackingID) {
+    if (data.trackingID == customSetting.trackingID) {
       if (data.windowID) {
-        SOCIALBROWSER.windowOpenList[_customSetting.trackingID].id = data.windowID;
+        SOCIALBROWSER.windowOpenList[customSetting.trackingID].id = data.windowID;
       }
       if (data.isClosed) {
-        SOCIALBROWSER.windowOpenList[_customSetting.trackingID].isClosed = data.isClosed;
-        SOCIALBROWSER.windowOpenList[_customSetting.trackingID].eventList.forEach((e) => {
+        SOCIALBROWSER.windowOpenList[customSetting.trackingID].isClosed = data.isClosed;
+        SOCIALBROWSER.windowOpenList[customSetting.trackingID].eventList.forEach((e) => {
           if (e.name == 'close' && e.callback) {
             e.callback();
           }
@@ -724,22 +735,24 @@ SOCIALBROWSER.openWindow = function (_customSetting) {
             e.callback();
           }
         });
+        SOCIALBROWSER.callEvent('window-closed', SOCIALBROWSER.windowOpenList[customSetting.trackingID]);
       }
       if (data.loaded) {
-        SOCIALBROWSER.windowOpenList[_customSetting.trackingID].eventList.forEach((e) => {
+        SOCIALBROWSER.windowOpenList[customSetting.trackingID].eventList.forEach((e) => {
           if (e.name == 'load' && e.callback) {
             e.callback();
           }
         });
+        SOCIALBROWSER.callEvent('window-loaded', SOCIALBROWSER.windowOpenList[customSetting.trackingID]);
       }
     }
   });
 
-  SOCIALBROWSER.windowOpenList[_customSetting.trackingID].postMessage = function (...args) {
-    SOCIALBROWSER.ipc('window.message', { windowID: SOCIALBROWSER.windowOpenList[_customSetting.trackingID].id, data: args[0], origin: args[1] || '*', transfer: args[2] });
+  SOCIALBROWSER.windowOpenList[customSetting.trackingID].postMessage = function (...args) {
+    SOCIALBROWSER.ipc('window.message', { windowID: SOCIALBROWSER.windowOpenList[customSetting.trackingID].id, data: args[0], origin: args[1] || '*', transfer: args[2] });
   };
 
-  SOCIALBROWSER.windowOpenList[_customSetting.trackingID].eval = function (code) {
+  SOCIALBROWSER.windowOpenList[customSetting.trackingID].eval = function (code) {
     if (!code) {
       console.log('No Eval Code');
       return;
@@ -750,17 +763,17 @@ SOCIALBROWSER.openWindow = function (_customSetting) {
     }
 
     SOCIALBROWSER.message({
-      windowID: SOCIALBROWSER.windowOpenList[_customSetting.trackingID].id,
+      windowID: SOCIALBROWSER.windowOpenList[customSetting.trackingID].id,
       eval: code,
     });
   };
 
-  SOCIALBROWSER.windowOpenList[_customSetting.trackingID].close = function () {
-    SOCIALBROWSER.ipc('[browser-message]', { windowID: SOCIALBROWSER.windowOpenList[_customSetting.trackingID].id, name: 'close' });
+  SOCIALBROWSER.windowOpenList[customSetting.trackingID].close = function () {
+    SOCIALBROWSER.ipc('[browser-message]', { windowID: SOCIALBROWSER.windowOpenList[customSetting.trackingID].id, name: 'close' });
   };
 
   SOCIALBROWSER.ipc('[open new popup]', customSetting);
-  return SOCIALBROWSER.windowOpenList[_customSetting.trackingID];
+  return SOCIALBROWSER.windowOpenList[customSetting.trackingID];
 };
 
 window.console.clear = function () {};

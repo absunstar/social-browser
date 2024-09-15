@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <link rel="stylesheet" href="http://127.0.0.1:60080/x-css/site.css" />
+    <link rel="stylesheet" href="http://127.0.0.1:60080/x-css/bootstrap-5-support.css" />
     <link rel="stylesheet" href="http://127.0.0.1:60080/x-css/theme_paper.css" />
     <link rel="stylesheet" href="http://127.0.0.1:60080/css/social-tabs-custom-theme2.css" />
 
@@ -64,19 +64,22 @@
       a.btn {
         background-color: #4182e2 !important;
       }
+      i-button button {
+        margin-top: 0px !important;
+      }
     </style>
     <title>Document</title>
   </head>
-  <body ng-controller="mainController">
+  <body ng-controller="mainController" class="container">
     <div class="row padding margin">
       <fieldset>
         <legend>Search in Profiles</legend>
         <div class="row">
-          <input class="block" type="text" ng-model="session.display" />
+          <i-control ng-model="session.display"></i-control>
         </div>
       </fieldset>
     </div>
-    <br />
+
     <div class="row">
       <div class="row" ng-repeat="_se in setting.session_list | orderBy : 'time'| filter:session.display track by $index  ">
         <div class="col-10">
@@ -90,18 +93,18 @@
         </div>
       </div>
     </div>
-    <br />
+
     <div class="row padding margin">
       <fieldset>
         <legend>New Profile Name</legend>
         <div class="row">
-          <input class="block" type="text" ng-model="session.display" />
-          <i-button type="add" ng-click="addSession()" label="Create"></i-button>
+          <i-control ng-model="session.display"></i-control>
+          <i-button type="add" ng-click="addSession()" label="Create New Profile"></i-button>
         </div>
       </fieldset>
     </div>
 
-    <script src="http://127.0.0.1:60080/x-js/all.js"></script>
+    <script src="http://127.0.0.1:60080/x-js/bootstrap-5-support.js"></script>
     <script src="http://127.0.0.1:60080/js/user-profiles.js"></script>
   </body>
 </html>

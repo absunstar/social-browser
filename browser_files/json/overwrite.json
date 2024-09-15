@@ -8,28 +8,32 @@
             "email": "absunstar@gmail.com"
         },
         {
-            "from": "https://www.swagbucks.com|https://www.swagbucks.com/",
-            "to": "https://www.swagbucks.com/p/register?rb=110986255",
-            "ignore": "*110986255*",
-            "query": false
-        },
-        {
             "from": "https://m.do.co/c*|https://www.digitalocean.com/|https://try.digitalocean.com*",
             "to": "https://m.do.co/c/f192b51fbbf7",
             "ignore": "*f192b51fbbf7*",
-            "query": false
+            "query": false,
+            "email": "absunstar@gmail.com"
         },
         {
-            "from": "https://www.expressvpn.com/?gclid=*|https://www.expressvpn.com/",
-            "to": "https://www.expressrefer.com/refer-friend?referrer_id=41888111&utm_campaign=referrals&utm_medium=copy_link&utm_source=referral_dashboard",
-            "ignore": "*41888111*",
-            "query": false
+            "from": "https://www.swagbucks.com|https://www.swagbucks.com/",
+            "to": "https://www.swagbucks.com/p/register?rb=110986255",
+            "ignore": "*110986255*",
+            "query": false,
+            "email": "user1@egytag.com"
         },
         {
-            "from": "https://youlikehits.com/|https://www.youlikehits.com/?x=*|http://ylkhts.cc/?id=*",
+            "from": "https://www.youlikehits.com/signup.php",
             "to": "http://ylkhts.cc/?id=2773499",
             "ignore": "*2773499*|*referral*|*referals*",
-            "query": false
+            "query": false,
+            "email": "kamally356@gmail.com"
+        },
+        {
+            "from": "hhttps://publisher.linkvertise.com/",
+            "to": "https://publisher.linkvertise.com/ac/1225016",
+            "ignore": "*1225016*",
+            "query": false,
+            "email": "user_1@egytag.com"
         },
         {
             "from": "https://www.10khits.com/|https://www.10khits.com*ref*",

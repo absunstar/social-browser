@@ -20,7 +20,7 @@ SOCIALBROWSER.quee_check = function (name, fire) {
       for (var i = 0; i < SOCIALBROWSER.events_list.length; i++) {
         var ev = SOCIALBROWSER.events_list[i];
         if (ev.name == name) {
-          ev.callback(quee.args, quee.callback2, () => {
+          ev.callback(quee.data, quee.callback2, () => {
             SOCIALBROWSER.quee_busy_list[name] = !1;
             SOCIALBROWSER.quee_check(name, !0);
           });
@@ -49,25 +49,19 @@ SOCIALBROWSER.onEvent = function (name, callback) {
   }
 };
 
-SOCIALBROWSER.callEvent = function (name, args, callback2) {
-  if (args && args.length === 1) {
-    args = args[0];
-  }
+SOCIALBROWSER.callEvent = function (name, data, callback2) {
   for (var i = 0; i < SOCIALBROWSER.events_list.length; i++) {
     var ev = SOCIALBROWSER.events_list[i];
     if (ev.name == name) {
-      ev.callback(args, callback2);
+      ev.callback(data, callback2);
     }
   }
 };
 
-SOCIALBROWSER.quee = function (name, args, callback2) {
-  if (args && args.length === 1) {
-    args = args[0];
-  }
+SOCIALBROWSER.quee = function (name, data, callback2) {
   SOCIALBROWSER.quee_list.push({
     name: name,
-    args: args,
+    data: data,
     callback2: callback2,
   });
 

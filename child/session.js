@@ -256,7 +256,7 @@ module.exports = function (child) {
           proxy.ip = arr[0];
           proxy.port = arr[1];
         }
-        
+
         if (proxy.ip && proxy.port) {
           let proxyRules = '';
           let startline = ',';
@@ -319,10 +319,10 @@ module.exports = function (child) {
       }
     } else if (!proxy) {
       ss.setProxy({
-        mode: 'direct',
+        mode: 'system',
         proxyBypassRules: 'localhost,127.0.0.1,::1,192.168.*',
       }).then(() => {
-        child.log(`session ${name} Proxy Set : direct `);
+        child.log(`session ${name} Proxy Set : system `);
       });
     }
 
@@ -353,6 +353,19 @@ module.exports = function (child) {
       });
 
       ss.webRequest.onBeforeRequest(filter, function (details, callback) {
+        let url = details.url.toLowerCase();
+        let source_url = '';
+        details.requestHeaders = details.requestHeaders || {};
+
+        source_url = details.requestHeaders['host'] || details.requestHeaders['origin'] || details['referrer'];
+
+        if (!source_url && details.webContents) {
+          source_url = details.webContents.getURL();
+        }
+        if (!source_url) {
+          source_url = url;
+        }
+
         if (child.parent.var.core.enginOFF) {
           callback({
             cancel: false,
@@ -360,22 +373,43 @@ module.exports = function (child) {
           return;
         }
 
+        let customSetting = {};
         if (details.webContents) {
-          if ((w = child.windowList.find((w) => w.id2 === details.webContents.id))) {
-            if (w.customSetting.allowAds) {
-              callback({
-                cancel: false,
-              });
-              return;
+          let win = child.electron.BrowserWindow.fromWebContents(details.webContents);
+          if (win) {
+            if ((w = child.windowList.find((w) => w.id === win.id))) {
+              customSetting = w.customSetting;
             }
+          }
+        }
+
+        if (customSetting.allowAds) {
+          callback({
+            cancel: false,
+          });
+          return;
+        }
+        if (customSetting.blockURLs) {
+          if (url.like(customSetting.blockURLs)) {
+            callback({
+              cancel: false,
+              redirectURL: 'browser://html/logo.html',
+            });
+            return;
+          }
+        }
+        if (customSetting.allowURLs) {
+          if (!url.like(customSetting.allowURLs)) {
+            callback({
+              cancel: false,
+              redirectURL: 'browser://html/logo.html',
+            });
+            return;
           }
         }
 
         let _ss = child.session_name_list.find((s) => s.name == name);
         _ss.user.privacy.vpc = _ss.user.privacy.vpc || {};
-        details.requestHeaders = details.requestHeaders || {};
-
-        let url = details.url.toLowerCase();
 
         if ((info = child.getOverwriteInfo(url))) {
           if (info.overwrite) {
@@ -385,18 +419,6 @@ module.exports = function (child) {
             });
             return;
           }
-        }
-        let source_url = '';
-
-        if (!source_url) {
-          source_url = details.requestHeaders['host'] || details.requestHeaders['origin'] || details['referrer'];
-        }
-
-        if (!source_url && details.webContents) {
-          source_url = details.webContents.getURL();
-        }
-        if (!source_url) {
-          source_url = url;
         }
 
         if (url.indexOf('localhost') === 0) {

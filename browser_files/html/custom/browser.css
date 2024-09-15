@@ -72,24 +72,24 @@ video0 {
 #__alertBox {
   display: none;
   position: fixed;
-  background: #272727;
+  background: #005ea9;
   color: #ffffff;
   width: auto;
   height: auto;
   margin: 5% auto;
   text-align: center;
-  font-size: 24px;
+  font-size: 26px;
   font-weight: bold;
   left: 20%;
   right: 20%;
   padding: 30px;
-  border: 8px solid #313131;
+  border: 8px solid #15719b;
   border-radius: 0;
-  top: 100px;
+  top: 0;
   z-index: 9999999;
   word-wrap: break-word;
   word-break: break-all;
-  box-shadow: 1px 1px 8px 8px #000000;
+  box-shadow: 1px 1px 8px 8px #003762;
 }
 
 #__targetUrl {

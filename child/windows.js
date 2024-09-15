@@ -159,7 +159,6 @@ module.exports = function (child) {
     setTimeout(() => {
       child.shareMainWindowData(win);
     }, 10);
-
   };
 
   child.createNewWindow = function (setting) {
@@ -484,12 +483,14 @@ module.exports = function (child) {
       child.sendMessage({ type: '[tracking-info]', trackingID: win.customSetting.trackingID, windowID: win.id, created: true });
     }
 
+    win.webContents.audioMuted = !win.customSetting.allowAudio;
+    win.customSetting.title = win.customSetting.title || win.customSetting.url;
+
     win.once('ready-to-show', function () {
       if (win.customSetting.showDevTools) {
         win.openDevTools();
       }
-      win.webContents.audioMuted = !win.customSetting.allowAudio;
-      win.customSetting.title = win.customSetting.title || win.customSetting.url;
+
       if (win.customSetting.windowType === 'main') {
         win.show();
 
@@ -615,7 +616,6 @@ module.exports = function (child) {
     });
     win.on('focus', function () {
       sendCurrentData();
-     
     });
 
     // win.webContents.on('will-prevent-unload', (event) => {
@@ -649,6 +649,9 @@ module.exports = function (child) {
           child.windowList.splice(i, 1);
         }
       });
+      setTimeout(() => {
+        if (win && !win.isDestroyed()) win.destroy();
+      }, 500);
     });
 
     win.on('closed', () => {
@@ -1039,7 +1042,7 @@ module.exports = function (child) {
         }
 
         if (allow) {
-          if (isPopup || url === 'about:blank' || url.contains('accounts.') || url.contains('login')) {
+          if (isPopup || url.like('javascript:*|about:blank|*accounts.*|*login*')) {
             return {
               action: 'allow',
               overrideBrowserWindowOptions: {

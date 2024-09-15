@@ -27,7 +27,7 @@
       session_list: [],
       blocking: {
         javascript: {},
-        privacy: { languages: 'en', connection: {}, hide_permissions: true },
+        privacy: { languages: 'en', connection: {} },
         youtube: {},
         social: {},
         popup: { white_list: [] },
@@ -61,7 +61,7 @@
     ],
     effectiveTypeList: ['slow-2g', '2g', '3g', '4g'],
     session: {
-      privacy: { languages: 'en', connection: {}, hide_permissions: true },
+      privacy: { languages: 'en', connection: {} },
     },
     menu_list: [],
     events: [],

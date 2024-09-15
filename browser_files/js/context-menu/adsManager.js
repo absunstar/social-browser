@@ -2,14 +2,11 @@
     SOCIALBROWSER.log('.... [ Ads Manager OFF ] .... ' + document.location.href);
     return;
   }
+  SOCIALBROWSER.log('.... [ Ads Manager Activated ] .... ' + document.location.href);
+
+ window.canRunAds = true;
 
   SOCIALBROWSER.onLoad(() => {
-    document.querySelectorAll('div').forEach((div) => {
-      if (div.style.position == 'fixed' && !div.innerHTML) {
-        div.parentNode.removeChild(div);
-      } else if (div.className.contains('-adsssssss')) {
-        div.parentNode.removeChild(div);
-      }
-    });
+   
   });
 
