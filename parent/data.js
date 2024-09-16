@@ -66,15 +66,15 @@ module.exports = function init(parent) {
     let userVarContent = parent.readUserVar(name);
     let browserVarContent = parent.readBrowserVar(name);
 
-    let userNoContent = false;
+    let notFoundUserContent = false;
 
     if (Array.isArray(userVarContent) && userVarContent.length === 0) {
-      userNoContent = true;
-    } else if (!Object.keys(userVarContent).length) {
-      userNoContent = true;
+      notFoundUserContent = true;
+    } else if (!Array.isArray(userVarContent) && !Object.keys(userVarContent).length) {
+      notFoundUserContent = true;
     }
 
-    if (userNoContent) {
+    if (notFoundUserContent) {
       // replace with browser var
       parent.var[name] = userVarContent = browserVarContent;
 
@@ -88,7 +88,7 @@ module.exports = function init(parent) {
       }
     }
 
-    if (parent.newVersionDetected && !userNoContent) {
+    if (parent.newVersionDetected && !notFoundUserContent) {
       if (name == 'user_data_input') {
         browserVarContent.forEach((d) => {
           let exists = false;
@@ -732,8 +732,6 @@ module.exports = function init(parent) {
 
   parent.var.core.browserActivated = true;
   parent.activated = function () {
-
-    
     parent.var.core['DeviceId'] = '';
     if (parent.information['ProcessorId'] !== '...' && parent.information['DISKDRIVE'] !== '...' && parent.information['BIOS'] !== '...') {
       parent.var.core['DeviceId'] = parent.md5(parent.information['ProcessorId'] + parent.information['DISKDRIVE'] + parent.information['BIOS']);

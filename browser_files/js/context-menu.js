@@ -287,6 +287,8 @@
 
   SOCIALBROWSER.init = function () {
     SOCIALBROWSER.currentWindow = SOCIALBROWSER.remote.getCurrentWindow();
+    SOCIALBROWSER.webContents = SOCIALBROWSER.currentWindow.webContents;
+
     SOCIALBROWSER.ipc('[browser][data]', {
       hostname: SOCIALBROWSER.hostname,
       url: SOCIALBROWSER.href,
