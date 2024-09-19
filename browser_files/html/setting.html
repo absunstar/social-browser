@@ -232,7 +232,7 @@
 
                     <div class="row">
                       <i-list class="col6" ng-search="search.$userAgentURL" primary="name" items="setting.userAgentList" ng-model="setting.core.defaultUserAgent" label="Default User Agent"></i-list>
-                      <div class="col6">
+                      <div class="col">
                         <i-button label="Edit User Agent List" type="edit" onclick="document.querySelector('#userAgentButton').click()"></i-button>
                       </div>
                       <i-control disabled class="row" label="User Agent URL" ng-model="setting.core.defaultUserAgent.url"></i-control>
@@ -249,41 +249,41 @@
 
                     <div class="row padding">
                       <i-control disabled class="col8" label="Browser ID" ng-model="setting.core.id"> </i-control>
-                      <div class="col4">
+                      <div class="col">
                         <i-button type="copy" label="copy" ng-click="copy(setting.core.id)"></i-button>
                       </div>
                     </div>
 
                     <div class="row padding">
                       <i-control disabled class="col8" label="Device ID" ng-model="setting.core.DeviceId"> </i-control>
-                      <div class="col4">
+                      <div class="col">
                         <i-button type="copy" label="copy" ng-click="copy(setting.core.DeviceId)"></i-button>
                       </div>
                     </div>
 
                     <div class="row padding">
                       <i-control class="col8" label="Browser Key ( Only This Browser Version )" ng-model="setting.core.BrowserKey"> </i-control>
-                      <div class="col4">
+                      <div class="col">
                         <i-button type="approve" label="Activate" ng-click="activated()"></i-button>
                       </div>
                     </div>
 
                     <div class="row padding">
                       <i-control class="col8" label="Device Key ( Any Browser on This PC )" ng-model="setting.core.DeviceKey"> </i-control>
-                      <div class="col4">
+                      <div class="col">
                         <i-button type="approve" label="Activate" ng-click="activated()"></i-button>
                       </div>
                     </div>
 
                     <div class="row padding">
                       <i-control class="col8" label="Online Key ( For Any Browser or PC )" ng-model="setting.core.OnlineKey"> </i-control>
-                      <div class="col4">
+                      <div class="col">
                         <i-button type="approve" label="Activate" ng-click="activated()"></i-button>
                       </div>
                     </div>
                   </fieldset>
                   <div class="row padding">
-                    <div class="col6">
+                    <div class="col">
                       <i-button type="list" ng-click="showBlackListModal()" label="Black List Sites"></i-button>
                       <i-button type="list" ng-click="showWhiteListModal()" label="White List Sites"></i-button>
                     </div>
@@ -723,7 +723,7 @@
                           <i-control type="text" ng-model="app.params" label="App Params"></i-control>
                         </div>
                         <div class="col2">
-                          <i-button type="delete default" ng-click="setting.blocking.downloader.apps.splice($index ,1)"></i-button>
+                          <i-button type="delete" ng-click="setting.blocking.downloader.apps.splice($index ,1)"></i-button>
                         </div>
                       </div>
                     </div>
@@ -874,15 +874,15 @@
                         <div class="row">
                           <i-button type="reset" label="Generate Virual PC" ng-click="generateVPC(currentSession)"></i-button>
                         </div>
-                        <div class="col6"><i-checkbox label="Hide CPU Count" ng-model="currentSession.privacy.vpc.hide_cpu"></i-checkbox></div>
-                        <div class="col6">
+                        <div class="col"><i-checkbox label="Hide CPU Count" ng-model="currentSession.privacy.vpc.hide_cpu"></i-checkbox></div>
+                        <div class="col">
                           <i-control type="number" ng-disabled="currentSession.privacy.vpc.hide_cpu !== true" ng-model="currentSession.privacy.vpc.cpu_count" label="Custom CPU Count"></i-control>
                         </div>
                       </div>
 
                       <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border">
-                        <div class="col6"><i-checkbox label="Hide Memory Count" ng-model="currentSession.privacy.vpc.hide_memory"></i-checkbox></div>
-                        <div class="col6">
+                        <div class="col"><i-checkbox label="Hide Memory Count" ng-model="currentSession.privacy.vpc.hide_memory"></i-checkbox></div>
+                        <div class="col">
                           <i-control
                             type="number"
                             ng-disabled="currentSession.privacy.vpc.hide_memory !== true"
@@ -893,15 +893,15 @@
                       </div>
 
                       <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border">
-                        <div class="col6"><i-checkbox label="Hide Languages Information" ng-model="currentSession.privacy.vpc.hide_lang"></i-checkbox></div>
-                        <div class="col6">
+                        <div class="col"><i-checkbox label="Hide Languages Information" ng-model="currentSession.privacy.vpc.hide_lang"></i-checkbox></div>
+                        <div class="col">
                           <i-control ng-disabled="currentSession.privacy.vpc.hide_lang !== true" ng-model="currentSession.privacy.vpc.languages" label="Custom Languages"></i-control>
                         </div>
                       </div>
 
                       <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border">
-                        <div class="col6"><i-checkbox label="Hide Date TimeZone" ng-model="currentSession.privacy.vpc.mask_date"></i-checkbox></div>
-                        <div class="col6">
+                        <div class="col"><i-checkbox label="Hide Date TimeZone" ng-model="currentSession.privacy.vpc.mask_date"></i-checkbox></div>
+                        <div class="col">
                           <i-list
                             ng-disabled="currentSession.privacy.vpc.mask_date !== true"
                             items="timezones2"
@@ -914,8 +914,8 @@
                       </div>
 
                       <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border">
-                        <div class="col6"><i-checkbox label="Hide Screen Size " ng-model="currentSession.privacy.vpc.hide_screen"></i-checkbox></div>
-                        <div class="col6">
+                        <div class="col"><i-checkbox label="Hide Screen Size " ng-model="currentSession.privacy.vpc.hide_screen"></i-checkbox></div>
+                        <div class="col">
                           <i-control type="number" ng-disabled="currentSession.privacy.vpc.hide_screen !== true" ng-model="currentSession.privacy.vpc.screen.width" label="Screen Width"></i-control>
                           <i-control type="number" ng-disabled="currentSession.privacy.vpc.hide_screen !== true" ng-model="currentSession.privacy.vpc.screen.height" label="Screen Height"></i-control>
                           <i-control
@@ -934,8 +934,8 @@
                       </div>
 
                       <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border">
-                        <div class="col6"><i-checkbox label="Hide Connection Information" ng-model="currentSession.privacy.vpc.hide_connection"></i-checkbox></div>
-                        <div class="col6">
+                        <div class="col"><i-checkbox label="Hide Connection Information" ng-model="currentSession.privacy.vpc.hide_connection"></i-checkbox></div>
+                        <div class="col">
                           <i-control
                             ng-disabled="currentSession.privacy.vpc.hide_connection !== true"
                             ng-model="currentSession.privacy.vpc.connection.effectiveType"
@@ -963,8 +963,8 @@
                         </div>
                       </div>
                       <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border2">
-                        <div class="col5"><i-checkbox label="Hide Current Location( Custom )" ng-model="currentSession.privacy.vpc.hide_location"></i-checkbox></div>
-                        <div class="col7">
+                        <div class="col"><i-checkbox label="Hide Current Location( Custom )" ng-model="currentSession.privacy.vpc.hide_location"></i-checkbox></div>
+                        <div class="col">
                           <i-control ng-disabled="currentSession.privacy.vpc.hide_location !== true" ng-model="currentSession.privacy.vpc.location.latitude" label="Latitude"></i-control>
                           <i-control ng-disabled="currentSession.privacy.vpc.hide_location !== true" ng-model="currentSession.privacy.vpc.location.longitude" label="Longitude"></i-control>
                         </div>
@@ -1151,7 +1151,7 @@
                         <td>
                           <i-button type="play" class2="" ng-show="_ex.isEnabled === false" ng-click="enableExtension(_ex)" label="Play"></i-button>
                           <i-button type="stop" class2="btn-stop" ng-show="_ex.isEnabled === true" ng-click="disableExtension(_ex)" label="Stop"></i-button>
-                          <i-button type="remove" ng-show="_ex.canDelete === true" ng-click="removeExtension(_ex)" label="Remove"></i-button>
+                          <i-button type="delete" ng-show="_ex.canDelete === true" ng-click="removeExtension(_ex)" label="Remove"></i-button>
                         </td>
                       </tr>
                     </table>
@@ -1178,18 +1178,18 @@
                     <th>Password <i-control ng-model="site2.password"></i-control></th>
                   </tr>
                   <tr ng-repeat="site in setting.user_data_input | filter : site2 | limitTo:500 track by $index">
-                    <td>{{$index +1 }} <i-button type="remove" ng-click="remove_user_data_input(site)"></i-button></td>
+                    <td class="center">{{$index +1 }} <i-button type="remove" ng-click="remove_user_data_input(site)"></i-button></td>
                     <td>{{site.hostname || site.host}}</td>
                     <td>
                       <div class="row">
                         <div class="col8"><i-control ng-model="site.username"></i-control></div>
-                        <div class="col4"><i-button type="copy" label="copy" ng-click="copy(site.username)"></i-button></div>
+                        <div class="col"><i-button type="copy" label="copy" ng-click="copy(site.username)"></i-button></div>
                       </div>
                     </td>
                     <td>
                       <div class="row">
                         <div class="col6"><i-control id="pass_{{site.id}}" type="password" ng-model="site.password"></i-control></div>
-                        <div class="col6">
+                        <div class="col">
                           <i-button type="copy" label="copy" ng-click="copy(site.password)"></i-button>
                           <i-button type="view" label="show" ng-click="showPassword(site)"></i-button>
                         </div>
@@ -1329,7 +1329,7 @@
                     <i-checkbox label="Enabled" ng-model="_open_menu.enabled"></i-checkbox>
                   </td>
                   <td class="center">
-                    <i-button ng-click="removeOpenMenu(_open_menu)" type="remove" label="Remove"></i-button>
+                    <i-button ng-click="removeOpenMenu(_open_menu)" type="delete" label="Remove"></i-button>
                   </td>
                 </tr>
               </table>
@@ -1371,7 +1371,7 @@
                 <tr ng-repeat="_ad in setting.ad_list | filter:ad track by $index">
                   <td>
                     <span class="bold"> ( {{$index + 1}} )</span>
-                    <i-button type="remove default" ng-click="removeAd(_ad)"></i-button>
+                    <i-button type="delete" ng-click="removeAd(_ad)"></i-button>
                   </td>
 
                   <td class="center">
@@ -1422,7 +1422,7 @@
                     <i-control ng-model="_d.url"></i-control>
                   </td>
                   <td class="center">
-                    <i-button type="remove" ng-click="removePopupIgnoreURL(_d)" label="Remove"></i-button>
+                    <i-button type="delete" ng-click="removePopupIgnoreURL(_d)" label="Remove"></i-button>
                   </td>
                 </tr>
               </table>
@@ -1461,7 +1461,7 @@
                     <i-control ng-model="_d.url"></i-control>
                   </td>
                   <td class="center">
-                    <i-button type="remove" ng-click="removePopupBlockURL(_d)" label="Remove"></i-button>
+                    <i-button type="delete" ng-click="removePopupBlockURL(_d)" label="Remove"></i-button>
                   </td>
                 </tr>
               </table>
@@ -1555,7 +1555,7 @@
                   <th>Links</th>
                 </tr>
                 <tr ng-repeat="_un_safe_link in setting.blocking.un_safe_list | filter:un_safe_link track by $index">
-                  <td class="width-200">{{$index}} <i-button ng-click="removeUnsafeLink(_un_safe_link)" type="remove default" label="Remove"></i-button></td>
+                  <td class="width-200">{{$index}} <i-button ng-click="removeUnsafeLink(_un_safe_link)" type="delete" label="Remove"></i-button></td>
                   <td>
                     <i-control ng-model="_un_safe_link.url"></i-control>
                   </td>
@@ -1590,7 +1590,7 @@
                   <th>Word</th>
                 </tr>
                 <tr ng-repeat="_un_safe_word in setting.blocking.un_safe_words_list | filter:un_safe_word track by $index">
-                  <td>{{$index}} <i-button type="remove default" ng-click="removeUnsafeWord(_un_safe_word)" label="Remove"></i-button></td>
+                  <td>{{$index}} <i-button type="delete" ng-click="removeUnsafeWord(_un_safe_word)" label="Remove"></i-button></td>
                   <td>
                     <i-control ng-model="_un_safe_word.text"></i-control>
                   </td>
@@ -1635,7 +1635,7 @@
                     <i-control ng-model="_un_safe_word.text"></i-control>
                   </td>
                   <td class="center">
-                    <i-button type="remove" ng-click="removeYoutubeWord(_un_safe_word)" label="Remove"></i-button>
+                    <i-button type="delete" ng-click="removeYoutubeWord(_un_safe_word)" label="Remove"></i-button>
                   </td>
                 </tr>
               </table>
