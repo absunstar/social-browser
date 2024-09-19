@@ -750,6 +750,7 @@ module.exports = function (child) {
             s_policy[key] = s_policy[key].replaceAll('script-src ', 'script-src browser://* ');
             s_policy[key] = s_policy[key].replaceAll('frame-src ', 'frame-src browser://* ');
             s_policy[key] = s_policy[key].replaceAll("default-src 'none'", '');
+            s_policy[key] = s_policy[key].replaceAll("require-trusted-types-for 'script'", '');
           }
 
           if (url.like('*embed*')) {

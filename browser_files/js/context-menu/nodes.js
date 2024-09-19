@@ -103,7 +103,7 @@ function collectData() {
 collectData();
 
 function input_handle(input) {
-  if (input.getAttribute('x-handled') == 'true' || input.getAttribute('type').like('*checkbox*|*radio*|*button*|*submit*|*hidden*')) {
+  if (input.getAttribute('x-handled') == 'true' || input.getAttribute('type')?.like('*checkbox*|*radio*|*button*|*submit*|*hidden*')) {
     return;
   }
   input.setAttribute('x-handled', 'true');

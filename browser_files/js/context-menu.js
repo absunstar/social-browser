@@ -300,6 +300,7 @@
       SOCIALBROWSER.init2();
     });
   };
+  
   window.SOCIALBROWSER = SOCIALBROWSER;
   SOCIALBROWSER.init();
 })();

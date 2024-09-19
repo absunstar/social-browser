@@ -105,14 +105,14 @@ module.exports = function (child) {
       }
     });
   };
-  child.writeFile = function (path, data, encode) {
+  child.writeFile = function (path, data, encode = 'utf8') {
     let path2 = path + '_tmp';
     child.deleteFile(path2, () => {
       child.fs.writeFile(
         path2,
         data,
         {
-          encoding: encode || 'utf8',
+          encoding: encode,
         },
         (err) => {
           if (!err) {
@@ -154,7 +154,7 @@ module.exports = function (child) {
   };
   child.save_var_quee = [];
   child.save_var = function (name) {
-    if (!name || name.indexOf('$') !== -1 || child.save_var_quee.includes(name)) {
+    if (!name || name.indexOf('$') !== -1) {
       return;
     }
     try {

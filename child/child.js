@@ -51,7 +51,7 @@ var child = {
   option_list: [],
   assignWindows: [],
   log: (...args) => {
-    if (child.parent && child.parent.var.core.id.like('*developer*')) {
+    if (child.parent) {
       console.log(...args);
     }
   },
@@ -102,7 +102,9 @@ if (child.uuid == 'user-file') {
   child.log('Files Working ....');
   setInterval(() => {
     if (child.save_var_quee.length > 0) {
-      child.save_var(child.save_var_quee.shift());
+      let name = child.save_var_quee.shift();
+      child.save_var_quee = child.save_var_quee.filter((s) => s !== name);
+      child.save_var(name);
     }
   }, 1000 * 5);
 }
@@ -123,7 +125,7 @@ if (child.electron.app.dock) {
 // child.electron.app.commandLine.appendSwitch('disable-dev-shm-usage');
 // child.electron.app.commandLine.appendSwitch('no-sandbox');
 // child.electron.app.commandLine.appendSwitch('disable-gpu');
- child.electron.app.disableHardwareAcceleration();
+child.electron.app.disableHardwareAcceleration();
 
 //child.electron.app.commandLine.appendSwitch('disable-web-security');
 // child.electron.app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');

@@ -76,6 +76,7 @@ module.exports = function init(parent) {
 
     if (notFoundUserContent) {
       // replace with browser var
+      parent.log('notFoundUserContent : ' + name);
       parent.var[name] = userVarContent = browserVarContent;
 
       if (name == 'session_list') {
@@ -380,7 +381,6 @@ module.exports = function init(parent) {
       }
 
       if (userVarContent) {
-        parent.log('parent.set_var() : ' + name);
         userVarContent = parent.handleObject(userVarContent);
         if (!userVarContent || (Array.isArray(userVarContent) && userVarContent.length == 0)) {
           return;
@@ -399,6 +399,7 @@ module.exports = function init(parent) {
         if (name == 'ad_list') {
           parent.handleAdList();
         }
+        parent.log('parent.set_var() : ' + name);
       } else {
         parent.log('set_var Error : no userVarContent : ' + name);
       }
@@ -409,16 +410,13 @@ module.exports = function init(parent) {
 
   let save_var_quee = [];
   parent.save_var = function (name) {
-    if (save_var_quee.includes(name)) {
-      return;
-    }
     try {
       if (true && parent.clientList) {
         parent.clientList.forEach((client) => {
           if (client.ws) {
             if (name == 'urls') {
               if (client.uuid == 'user-file' || client.uuid == 'user-social' || client.uuid == 'user-setting') {
-                // parent.log(`update private var ( ${name} ) to client : ${client.uuid}`);
+                parent.log(`update private var ( ${name} ) to client : ${client.uuid}`);
                 client.ws.send({
                   type: '[update-browser-var]',
                   options: {
@@ -429,7 +427,7 @@ module.exports = function init(parent) {
               }
             } else if (name == 'cookieList') {
               if (client.uuid == 'user-file' || client.uuid == 'user-setting') {
-                // parent.log(`update private var ( ${name} ) to client : ${client.uuid}`);
+                parent.log(`update private var ( ${name} ) to client : ${client.uuid}`);
                 client.ws.send({
                   type: '[update-browser-var]',
                   options: {
@@ -438,7 +436,7 @@ module.exports = function init(parent) {
                   },
                 });
               } else {
-                // parent.log(`update custom var ( ${name} ) to client : ${client.uuid}`);
+                parent.log(`update custom var ( ${name} ) to client : ${client.uuid}`);
                 if (client.partition.like('*ghost*')) {
                   client.ws.send({
                     type: '[update-browser-var]',
@@ -459,7 +457,7 @@ module.exports = function init(parent) {
               }
             } else if (name == 'download_list') {
               if (client.windowType == 'files') {
-                // parent.log(`update private var ( ${name} ) to client : ${client.uuid}`);
+                parent.log(`update private var ( ${name} ) to client : ${client.uuid}`);
                 client.ws.send({
                   type: '[update-browser-var]',
                   options: {
@@ -479,7 +477,7 @@ module.exports = function init(parent) {
                 });
               }
             } else {
-              // parent.log(`update public var ( ${name} ) to client : ${client.uuid}`);
+              parent.log(`update public var ( ${name} ) to client : ${client.uuid}`);
               client.ws.send({
                 type: '[update-browser-var]',
                 options: {
@@ -491,82 +489,17 @@ module.exports = function init(parent) {
           }
         });
       }
-      // console.log('_________________________________');
+       console.log('_________________________________');
     } catch (error) {
       parent.log(error);
     }
   };
 
   setInterval(() => {
-    let update_proxy_list = false;
-    let update_proxy = false;
-    let update_extension_list = false;
-    let update_session_list = false;
-    let update_cookieList = false;
-    let update_ad_list = false;
-    let update_blocking = false;
-    let update_core = false;
-    let update_bookmarks = false;
-    save_var_quee.forEach((q, i) => {
-      if (q === 'proxy_list') {
-        save_var_quee.splice(i, 1);
-        update_proxy_list = true;
-      } else if (q === 'proxy') {
-        save_var_quee.splice(i, 1);
-        update_proxy = true;
-      } else if (q === 'session_list') {
-        save_var_quee.splice(i, 1);
-        update_session_list = true;
-      } else if (q === 'cookieList') {
-        save_var_quee.splice(i, 1);
-        update_cookieList = true;
-      } else if (q === 'extension_list') {
-        save_var_quee.splice(i, 1);
-        update_extension_list = true;
-      } else if (q === 'ad_list') {
-        save_var_quee.splice(i, 1);
-        update_ad_list = true;
-      } else if (q === 'blocking') {
-        save_var_quee.splice(i, 1);
-        update_blocking = true;
-      } else if (q === 'core') {
-        save_var_quee.splice(i, 1);
-        update_core = true;
-      } else if (q === 'bookmarks') {
-        save_var_quee.splice(i, 1);
-        update_bookmarks = true;
-      }
-    });
-    if (update_proxy_list) {
-      parent.save_var('proxy_list');
-    }
-    if (update_proxy) {
-      parent.save_var('proxy');
-    }
-    if (update_extension_list) {
-      parent.save_var('extension_list');
-    }
-    if (update_session_list) {
-      parent.save_var('session_list');
-    }
-    if (update_cookieList) {
-      parent.save_var('cookieList');
-    }
-    if (update_ad_list) {
-      parent.save_var('ad_list');
-    }
-
-    if (update_blocking) {
-      parent.save_var('blocking');
-    }
-    if (update_core) {
-      parent.save_var('core');
-    }
-    if (update_bookmarks) {
-      parent.save_var('bookmarks');
-    }
     if (save_var_quee.length > 0) {
-      parent.save_var(save_var_quee.shift());
+      let name = save_var_quee.shift();
+      save_var_quee = save_var_quee.filter((s) => s !== name);
+      parent.save_var(name);
     }
   }, 1000 * 3);
 

@@ -1,5 +1,11 @@
 SOCIALBROWSER.var.session_list.sort((a, b) => (a.time > b.time ? -1 : 1));
 
+if (window.trustedTypes && window.trustedTypes.createPolicy && !window.trustedTypes.defaultPolicy) {
+  window.trustedTypes.createPolicy('default', {
+    createHTML: (string) => string,
+  });
+}
+
 require(SOCIALBROWSER.files_dir + '/js/context-menu/menu.js');
 require(SOCIALBROWSER.files_dir + '/js/context-menu/decode.js');
 require(SOCIALBROWSER.files_dir + '/js/context-menu/window.js');

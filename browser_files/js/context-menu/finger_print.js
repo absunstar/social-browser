@@ -23,6 +23,9 @@ if (SOCIALBROWSER.var.core.javaScriptOFF || SOCIALBROWSER.customSetting.windowTy
   return;
 }
 
+SOCIALBROWSER.currentWindow = SOCIALBROWSER.remote.getCurrentWindow();
+SOCIALBROWSER.webContents = SOCIALBROWSER.currentWindow.webContents;
+
 if (SOCIALBROWSER.session.privacy.vpc.hide_cpu) {
   SOCIALBROWSER.__define(navigator, 'hardwareConcurrency', SOCIALBROWSER.session.privacy.vpc.cpu_count);
 }
@@ -520,8 +523,6 @@ if (SOCIALBROWSER.session.privacy.vpc.hide_connection || SOCIALBROWSER.session.p
     type: SOCIALBROWSER.session.privacy.vpc.connection.type,
   });
 }
-
-
 
 /** This is not Chrome headless
    * navigator.permissions.query({name:'notifications'}).then(function(permissionStatus) {
