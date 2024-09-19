@@ -164,7 +164,7 @@
 
         <div class="container" ng-show="knowPassword === false">
           <div class="row">
-            <i-control ng-model="password" label="Write Password"></i-control>
+            <i-control type="password" ng-model="password" label="Write Setting Password"></i-control>
           </div>
         </div>
 
@@ -1281,7 +1281,7 @@
 
       <div class="center padding margin">
         <i-button loading="{{setting_busy}}" class="big-button" type="save" ng-show="knowPassword === true" ng-click="saveSetting(true)" label="Save All Setting"></i-button>
-        <i-button class="big-button" type="save" ng-show="knowPassword === false" ng-click="checkPassword(true)" label="Next"></i-button>
+        <i-button type="view" ng-show="knowPassword === false" ng-click="checkPassword(true)" label="Open Setting"></i-button>
       </div>
 
       <div class="modales">

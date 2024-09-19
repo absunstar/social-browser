@@ -23,7 +23,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     ftp: false,
     http: false,
     https: false,
-    direct : false
+    direct: false,
   };
   $scope.busy = true;
   $scope.setting_busy = true;
@@ -148,6 +148,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
       $scope.knowPassword = true;
     } else {
       $scope.knowPassword = false;
+      alert('Wrong Password ...');
     }
   };
 
@@ -463,7 +464,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
       ftp: false,
       http: false,
       https: false,
-      direct : false
+      direct: false,
     };
   };
 
