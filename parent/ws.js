@@ -467,7 +467,7 @@ module.exports = function init(parent) {
         case '[add-session]':
           let newSession = message.session;
           if (newSession.name && newSession.display) {
-            let newSessionIndex = parent.var.session_list.findIndex((s) => s.name == newSession.name);
+            let newSessionIndex = parent.var.session_list.findIndex((s) => s.name == newSession.name || s.display == newSession.display);
             if (newSessionIndex === -1) {
               parent.var.session_list.push(newSession);
               parent.applay('session_list');

@@ -238,7 +238,7 @@ if (SOCIALBROWSER.session.privacy.vpc.mask_date && SOCIALBROWSER.session.privacy
   })(SOCIALBROWSER.session.privacy.vpc.timeZone, new Date().getTimezoneOffset());
 }
 
-if (SOCIALBROWSER.customSetting.windowType.like('*popup*') || SOCIALBROWSER.session.privacy.vpc.set_window_active) {
+if (SOCIALBROWSER.customSetting.windowType.like('*popup*') && SOCIALBROWSER.session.privacy.vpc.set_window_active) {
   document.__proto__.hasFocus = function () {
     return true;
   };

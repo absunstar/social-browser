@@ -70,6 +70,10 @@ SOCIALBROWSER.addSession = function (session) {
     if (!session.name.like('persist*')) {
       session.name = 'persist:' + session.name;
     }
+    if (SOCIALBROWSER.session_list.find((s) => s.name == session.name || s.display == session.display)) {
+      alert('Session Profile Exists : ' + session.name);
+      return null;
+    }
     session.can_delete = true;
     session.time = session.time || new Date().getTime();
     if (!session.privacy) {
@@ -83,6 +87,7 @@ SOCIALBROWSER.addSession = function (session) {
     }
     SOCIALBROWSER.ws({ type: '[add-session]', session: session });
   }
+
   return session;
 };
 SOCIALBROWSER.removeSession = SOCIALBROWSER.deleteSession = function (session) {
@@ -327,7 +332,7 @@ SOCIALBROWSER.generateVPC = function () {
       availWidth: parseInt(screenSize[0] || '1200'),
       availHeight: parseInt(screenSize[1] || '720'),
     },
-    set_window_active: false,
+    set_window_active: true,
     block_rtc: true,
     hide_battery: true,
     hide_canvas: true,
