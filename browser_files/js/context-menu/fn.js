@@ -70,7 +70,7 @@ SOCIALBROWSER.addSession = function (session) {
     if (!session.name.like('persist*')) {
       session.name = 'persist:' + session.name;
     }
-    if (SOCIALBROWSER.session_list.find((s) => s.name == session.name || s.display == session.display)) {
+    if (SOCIALBROWSER.var.session_list.find((s) => s.name == session.name || s.display == session.display)) {
       alert('Session Profile Exists : ' + session.name);
       return null;
     }

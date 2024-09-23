@@ -1068,6 +1068,7 @@ module.exports = function (child) {
             child.createNewWindow({
               ...win.customSetting,
               windowType: 'popup',
+              show: true,
               modal: true,
               parent: win,
               url: url,

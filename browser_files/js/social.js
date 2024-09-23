@@ -441,6 +441,7 @@ function showSettingMenu() {
         show: true,
         url: 'https://social-browser.com/tools',
         title: 'Social Browser Tools',
+        partition: 'persist:social',
         center: true,
         vip: true,
         alwaysOnTop: true,
