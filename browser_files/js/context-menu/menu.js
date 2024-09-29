@@ -1306,9 +1306,14 @@ function createDevelopmentMenu() {
 }
 
 function createMenuList(node) {
+
   if (SOCIALBROWSER.customSetting.windowType !== 'main') {
+
     add_input_menu(node);
     add_a_menu(node);
+    SOCIALBROWSER.menu_list.forEach((m) => {
+      SOCIALBROWSER.menuList.push(m);
+    });
 
     if (SOCIALBROWSER.memoryText && SOCIALBROWSER.isValidURL(SOCIALBROWSER.memoryText)) {
       let arr = get_url_menu_list(SOCIALBROWSER.memoryText);
@@ -1402,9 +1407,7 @@ function createMenuList(node) {
 
     get_img_menu(node);
 
-    SOCIALBROWSER.menu_list.forEach((m) => {
-      SOCIALBROWSER.menuList.push(m);
-    });
+   
 
     if (SOCIALBROWSER.var.blocking.open_list?.length > 0) {
       SOCIALBROWSER.var.blocking.open_list.forEach((o) => {

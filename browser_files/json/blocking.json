@@ -62,6 +62,7 @@
             "hide_media_devices": true,
             "hide_battery": true,
             "set_window_active": true,
+            "set_tab_active": false,
             "dnt": true,
             "hide_gid": false,
             "block_cloudflare": false,

@@ -269,11 +269,11 @@ SOCIALBROWSER.alert =
         let div = document.querySelector('#__alertBox');
         if (div) {
           clearTimeout(alert_idle);
-          div.innerHTML = msg;
+          div.innerHTML = SOCIALBROWSER.policy.createHTML(msg);
           div.style.display = 'block';
           alert_idle = setTimeout(() => {
             div.style.display = 'none';
-            div.innerHTML = '';
+            div.innerHTML = SOCIALBROWSER.policy.createHTML('');
           }, time || 1000 * 3);
         }
       }

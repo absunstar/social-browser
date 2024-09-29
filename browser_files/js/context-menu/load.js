@@ -1,10 +1,25 @@
 SOCIALBROWSER.var.session_list.sort((a, b) => (a.time > b.time ? -1 : 1));
-
-if (window.trustedTypes && window.trustedTypes.createPolicy && !window.trustedTypes.defaultPolicy) {
+SOCIALBROWSER.policy = {
+  createHTML: (string) => string,
+  createScriptURL: (string) => string,
+  createScript: (string) => string,
+};
+if (window.trustedTypes && window.trustedTypes.createPolicy) {
+  SOCIALBROWSER.policy = window.trustedTypes.createPolicy('social', {
+    createHTML: (string) => string,
+    createScriptURL: (string) => string,
+    createScript: (string) => string,
+  });
   window.trustedTypes.createPolicy('default', {
     createHTML: (string) => string,
+    createScriptURL: (string) => string,
+    createScript: (string) => string,
   });
 }
+window.eval0 = window.eval;
+window.eval = function (code) {
+  return SOCIALBROWSER.eval(code);
+};
 
 require(SOCIALBROWSER.files_dir + '/js/context-menu/menu.js');
 require(SOCIALBROWSER.files_dir + '/js/context-menu/decode.js');

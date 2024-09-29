@@ -8,6 +8,7 @@
     "brand": "Social Browser",
     "home_page": "https://www.google.com",
     "default_page": "https://www.google.com",
+    "googleUserAgentURL" :"",
     "password": "",
     "max_tabs": 20
 }

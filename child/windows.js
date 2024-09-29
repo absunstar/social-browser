@@ -215,7 +215,7 @@ module.exports = function (child) {
         nodeIntegrationInSubFrames: false, // google login error
         nodeIntegrationInWorker: false,
         experimentalFeatures: false,
-        experimentalCanvasFeatures: true,
+        experimentalCanvasFeatures: false,
         navigateOnDragDrop: true,
         webSecurity: true,
         allowRunningInsecureContent: false,
@@ -305,40 +305,11 @@ module.exports = function (child) {
     if (setting.iframe === true) {
       defaultSetting.webPreferences.nodeIntegrationInSubFrames = true;
     }
-    if (Array.isArray(setting.cookieList)) {
-      if (setting.cookieList.length > 0) {
-        setting.cookieList.forEach((cookieObject) => {
-          cookieObject.domain = cookieObject.domain || child.url.parse(setting.url).hostname;
-          cookieObject.partition = cookieObject.partition || setting.partition;
-
-          let cookieIndex = child.cookieList.findIndex((c) => c.domain == cookieObject.domain && c.partition == cookieObject.partition);
-          if (cookieIndex === -1) {
-            child.cookieList.push({
-              partition: cookieObject.partition,
-              domain: cookieObject.domain,
-              cookie: cookieObject.cookie,
-              time: new Date().getTime(),
-              lock: true,
-            });
-          } else {
-            child.cookieList[cookieIndex].cookie = cookieObject.cookie;
-            child.cookieList[cookieIndex].lock = true;
-            child.cookieList[cookieIndex].time = new Date().getTime();
-            child.cookieList[cookieIndex].off = false;
-          }
-          child.cookieList.sort((a, b) => {
-            return b.time - a.time;
-          });
-          delete setting.cookieList;
-        });
-      } else {
-        let domain = child.url.parse(setting.url).hostname;
-        let partition = setting.partition;
-        let cookieIndex = child.cookieList.findIndex((c) => domain.contains(c.domain) && c.partition == partition);
-        if (cookieIndex !== -1) {
-          child.cookieList[cookieIndex].off = true;
-        }
-      }
+    if (Array.isArray(setting.cookieList) && setting.cookieList.length > 0) {
+      setting.cookieList.forEach((cookieObject, index) => {
+        setting.cookieList[index].domain = setting.cookieList[index].domain || child.url.parse(setting.url).hostname;
+        setting.cookieList[index].partition = setting.cookieList[index].partition || setting.partition;
+      });
     }
 
     let customSetting = { ...defaultSetting, ...setting };
@@ -719,6 +690,46 @@ module.exports = function (child) {
           win.show();
         }
       }, 100);
+    });
+
+    win.webContents.on('login', (event, details, authInfo, callback) => {
+      console.log('webContents login', authInfo);
+
+      if (authInfo.isProxy) {
+        let proxy = null;
+        proxy = win.customSetting.proxy;
+        if (proxy && proxy.username && proxy.password) {
+          event.preventDefault();
+          callback(proxy.username, proxy.password);
+          child.log(proxy);
+          return;
+        }
+
+        let index2 = child.parent.var.session_list.findIndex((s) => s.name == win.customSetting.partition && s.proxy && s.proxy.enabled);
+
+        if (index2 !== -1) {
+          proxy = child.parent.var.session_list[index2].proxy;
+          if (proxy && proxy.username && proxy.password) {
+            event.preventDefault();
+            callback(proxy.username, proxy.password);
+            child.log(proxy);
+            return;
+          }
+        }
+
+        let index3 = child.parent.var.proxy_list.findIndex((p) => p.ip == authInfo.host);
+        if (index3 !== -1) {
+          proxy = child.parent.var.proxy_list[index3];
+          if (proxy && proxy.username && proxy.password) {
+            event.preventDefault();
+            callback(proxy.username, proxy.password);
+            child.log(proxy);
+            return;
+          }
+        }
+      } else {
+        //code here
+      }
     });
 
     win.webContents.on('context-menu', (event, params) => {

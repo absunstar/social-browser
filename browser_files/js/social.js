@@ -441,7 +441,7 @@ function showSettingMenu() {
         show: true,
         url: 'https://social-browser.com/tools',
         title: 'Social Browser Tools',
-        partition: 'persist:social',
+        partition: 'persist:tools',
         center: true,
         vip: true,
         alwaysOnTop: true,
@@ -1057,7 +1057,7 @@ function handleUrlText() {
   }
   let w = document.querySelectorAll('.address-input')[0].clientWidth / 11;
   if (url.length > w) {
-    setURL(url.substring(0, w) + ' ...', url);
+    setURL(url.substring(0, w), url);
   } else {
     setURL(url, url);
   }

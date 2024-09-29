@@ -238,28 +238,39 @@ if (SOCIALBROWSER.session.privacy.vpc.mask_date && SOCIALBROWSER.session.privacy
   })(SOCIALBROWSER.session.privacy.vpc.timeZone, new Date().getTimezoneOffset());
 }
 
-if (SOCIALBROWSER.customSetting.windowType.like('*popup*') && SOCIALBROWSER.session.privacy.vpc.set_window_active) {
-  document.__proto__.hasFocus = function () {
-    return true;
-  };
-  SOCIALBROWSER.__define(document, 'hidden ', false);
-  SOCIALBROWSER.__define(document, 'mozHidden ', false);
-  SOCIALBROWSER.__define(document, 'webkitHidden ', false);
-  SOCIALBROWSER.__define(document, 'visibilityState ', 'visible');
+if (
+  (SOCIALBROWSER.customSetting.windowType.like('*popup*') && SOCIALBROWSER.session.privacy.vpc.set_window_active) ||
+  (SOCIALBROWSER.customSetting.windowType.like('*view*') && SOCIALBROWSER.session.privacy.vpc.set_tab_active)
+) {
+  // document.__proto__.hasFocus = function () {
+  //   return true;
+  // };
+
   SOCIALBROWSER.blockEvent = (e) => {
     e.preventDefault();
     e.stopPropagation();
     e.stopImmediatePropagation();
   };
-  document.addEventListener('visibilitychange', SOCIALBROWSER.blockEvent, true);
-  document.addEventListener('webkitvisibilitychange', SOCIALBROWSER.blockEvent, true);
-  document.addEventListener('mozvisibilitychange', SOCIALBROWSER.blockEvent, true);
-  document.addEventListener('hasFocus', SOCIALBROWSER.blockEvent, true);
-  document.addEventListener('blur', SOCIALBROWSER.blockEvent, true);
+
+  SOCIALBROWSER.__define(window, 'hidden ', false);
+  SOCIALBROWSER.__define(window, 'mozHidden ', false);
+  SOCIALBROWSER.__define(window, 'webkitHidden ', false);
+  SOCIALBROWSER.__define(window, 'visibilityState ', 'visible');
+
+  window.addEventListener('visibilitychange', SOCIALBROWSER.blockEvent, true);
+  window.addEventListener('webkitvisibilitychange', SOCIALBROWSER.blockEvent, true);
+  window.addEventListener('mozvisibilitychange', SOCIALBROWSER.blockEvent, true);
+
+  window.addEventListener('hasFocus', SOCIALBROWSER.blockEvent, true);
+  window.addEventListener('focus', SOCIALBROWSER.blockEvent, true);
+  window.addEventListener('focusin', SOCIALBROWSER.blockEvent, true);
+  window.addEventListener('focusout', SOCIALBROWSER.blockEvent, true);
   window.addEventListener('blur', SOCIALBROWSER.blockEvent, true);
   window.addEventListener('mouseleave', SOCIALBROWSER.blockEvent, true);
+  window.addEventListener('mouseenter', SOCIALBROWSER.blockEvent, true);
+
   setInterval(() => {
-    window.onpagehide = window.onblur = document.onfocusout = null;
+    window.onblur = window.onfocus = function () {};
   }, 1000);
 }
 

@@ -10,7 +10,9 @@ module.exports = function (child) {
       message.pid = child.id;
       child._ws_.send(JSON.stringify(message));
     };
-    child._ws_.on('open', function () {});
+    child._ws_.on('open', function () {
+      child.log('Child Socket is Open');
+    });
     child._ws_.on('ping', function () {});
     child._ws_.on('close', function (e) {
       child.log('Child Socket is closed. Reconnect will be attempted in 1 second.', e);
@@ -43,7 +45,6 @@ module.exports = function (child) {
           child.parent = message;
           child.addOverwriteList(child.parent.var.overwrite.urls);
           child.option_list.push(message.options);
-          child.cookies = {};
           child.electron.app.userAgentFallback = child.parent.var.core.defaultUserAgent.url;
           if (child.parent.windowType == 'none') {
           } else if (child.parent.windowType == 'files') {
@@ -125,8 +126,6 @@ module.exports = function (child) {
               data: child.parent.var.user_data,
             },
           });
-        } else if (message.type == '[browser-cookies]') {
-          child.cookies[message.name] = message.value;
         } else if (message.type == 'share') {
           child.electron.BrowserWindow.getAllWindows().forEach((win) => {
             if (win && !win.isDestroyed()) {
@@ -428,7 +427,7 @@ module.exports = function (child) {
                   w.window.show();
                   w.window.setAlwaysOnTop(true);
                   w.window.setAlwaysOnTop(false);
-                 // console.log(message , w.window.getURL());
+                  // console.log(message , w.window.getURL());
                 } else {
                   w.window.hide();
                 }
@@ -446,27 +445,6 @@ module.exports = function (child) {
           }
         } else if (message.type == '[remove-tab]' && child.getWindow()) {
           child.sendToWindow('[send-render-message]', { name: '[remove-tab]', tabID: message.tabID });
-        } else if (message.type == '[cookie-changed]') {
-          child.cookies[message.partition] = child.cookies[message.partition] || [];
-          let ss = child.electron.session.fromPartition(message.partition);
-          if (!message.removed) {
-            let exists = false;
-            child.cookies[message.partition].forEach((co, i) => {
-              if (co && co.domain == message.cookie.domain && co.name == message.cookie.name) {
-                exists = true;
-                child.cookies[message.partition][i] = message.cookie;
-              }
-            });
-            if (!exists) {
-              child.cookies[message.partition].push(message.cookie);
-            }
-          } else {
-            child.cookies[message.partition].forEach((co, i) => {
-              if (co && co.domain == message.cookie.domain && co.name == message.cookie.name) {
-                child.cookies[message.partition].splice(i, 1);
-              }
-            });
-          }
         } else if (message.type == '[main-window-data-changed]') {
           if (message.screen && message.mainWindow) {
             child.parent.options.screen = message.screen;

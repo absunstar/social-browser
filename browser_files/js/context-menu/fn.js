@@ -32,7 +32,7 @@ SOCIALBROWSER.kill = function (name) {
 SOCIALBROWSER.requestCookie = function (obj = {}) {
   obj.domain = obj.domain || document.location.hostname;
   obj.partition = SOCIALBROWSER.partition;
-  return SOCIALBROWSER.ipc('request-cookie', obj);
+  return SOCIALBROWSER.ipc('[request-cookie]', obj);
 };
 SOCIALBROWSER.desktopCapturer = function (options = {}, callback) {
   navigator.mediaDevices
@@ -320,7 +320,7 @@ SOCIALBROWSER.generateVPC = function () {
       longitude: SOCIALBROWSER.random(1, 49) + Math.random(),
     },
     languages: SOCIALBROWSER.languageList[SOCIALBROWSER.random(0, SOCIALBROWSER.languageList.length - 1)],
-    mask_date: true,
+    mask_date: false,
     timeZone: SOCIALBROWSER.timeZones[SOCIALBROWSER.random(0, SOCIALBROWSER.timeZones.length - 1)],
     hide_webgl: true,
     hide_mimetypes: true,
@@ -333,6 +333,7 @@ SOCIALBROWSER.generateVPC = function () {
       availHeight: parseInt(screenSize[1] || '720'),
     },
     set_window_active: true,
+    set_tab_active: false,
     block_rtc: true,
     hide_battery: true,
     hide_canvas: true,
@@ -434,7 +435,7 @@ SOCIALBROWSER.addHTML = SOCIALBROWSER.addhtml = function (code) {
   try {
     let _div = document.createElement('div');
     _div.id = '_div_' + Math.random();
-    _div.innerHTML = code;
+    _div.innerHTML = SOCIALBROWSER.policy.createHTML(code);
     (document.body || document.head || document.documentElement).appendChild(_div);
   } catch (error) {
     SOCIALBROWSER.log(error);
@@ -775,7 +776,6 @@ SOCIALBROWSER.openWindow = function (_customSetting) {
   return SOCIALBROWSER.windowOpenList[customSetting.trackingID];
 };
 
-window.console.clear = function () {};
 
 SOCIALBROWSER.upTo = function (el, tagName) {
   tagName = tagName.toLowerCase().split(',');
@@ -900,7 +900,7 @@ SOCIALBROWSER.injectDefault = function () {
     if (document.body && !document.querySelector('#social_browser_html')) {
       let social_browser_html = document.createElement('div');
       social_browser_html.id = 'social_browser_html';
-      social_browser_html.innerHTML = window.trustedTypes.defaultPolicy.createHTML(Buffer.from(SOCIALBROWSER.injectHTML).toString());
+      social_browser_html.innerHTML =  SOCIALBROWSER.policy.createHTML(Buffer.from(SOCIALBROWSER.injectHTML).toString());
       document.body.appendChild(social_browser_html);
     }
     if ((document.body || document.head || document.documentElement) && !document.querySelector('#social_browser_css')) {
@@ -949,7 +949,7 @@ SOCIALBROWSER.__blockPage = function (block, msg, close) {
   let div = document.querySelector('#__blockDiv');
   if (div && block) {
     div.style.display = 'block';
-    div.innerHTML = msg || 'This Page Blocked';
+    div.innerHTML = SOCIALBROWSER.policy.createHTML(msg || 'This Page Blocked');
     if (close) {
       setTimeout(() => {
         window.close();
@@ -973,9 +973,9 @@ SOCIALBROWSER.showInfo = function (msg, time) {
 
     if (div) {
       div.style.display = 'block';
-      div.innerHTML = msg;
+      div.innerHTML = SOCIALBROWSER.policy.createHTML(msg);
       showinfoTimeout = setTimeout(() => {
-        div.innerHTML = '';
+        div.innerHTML = SOCIALBROWSER.policy.createHTML('');
         div.style.display = 'none';
       }, time | (1000 * 3));
     }
@@ -994,16 +994,16 @@ SOCIALBROWSER.showDownloads = function (msg, css) {
     if (__downloads) {
       __downloads.addEventListener('click', () => {
         __downloads.style.display = 'none';
-        __downloads.innerHTML = '';
+        __downloads.innerHTML = SOCIALBROWSER.policy.createHTML('');
       });
     }
   }
   if (msg && __downloads) {
     __downloads.style.display = 'block';
-    __downloads.innerHTML = msg;
+    __downloads.innerHTML = SOCIALBROWSER.policy.createHTML(msg);
   } else if (__downloads) {
     __downloads.style.display = 'none';
-    __downloads.innerHTML = '';
+    __downloads.innerHTML = SOCIALBROWSER.policy.createHTML('');
   }
 };
 

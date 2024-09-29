@@ -149,6 +149,7 @@
   browser.electron.app.clearRecentDocuments();
   // browser.electron.app.commandLine.appendSwitch('no-sandbox');
   // browser.electron.app.commandLine.appendSwitch('in-process-gpu');
+  browser.electron.app.commandLine.appendSwitch('--no-sandbox');
   browser.electron.app.disableHardwareAcceleration();
   browser.electron.protocol.registerSchemesAsPrivileged([
     { scheme: 'browser', privileges: { bypassCSP: true, standard: true, secure: true, supportFetchAPI: true, allowServiceWorkers: true, corsEnabled: true, stream: true } },

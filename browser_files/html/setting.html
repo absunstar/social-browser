@@ -240,6 +240,13 @@
                   </fieldset>
 
                   <fieldset>
+                    <legend>Advanced Setting</legend>
+                    <div class="row">
+                      <i-control class="row" label="Google Login Agent URL" ng-model="setting.core.googleUserAgentURL"></i-control>
+                    </div>
+                  </fieldset>
+
+                  <fieldset>
                     <legend>Activation</legend>
                     <div class="row padding">
                       <h2 class="bold red" ng-hide="setting.core.browserActivated">Browser Not Active</h2>
@@ -524,6 +531,7 @@
 
                     <div class="row padding border2">
                       <i-checkbox class="col6" label="Set Window Alawys Active" ng-model="setting.blocking.privacy.vpc.set_window_active"></i-checkbox>
+                      <i-checkbox class="col6" label="Set Tab Alawys Active" ng-model="setting.blocking.privacy.vpc.set_tab_active"></i-checkbox>
                       <i-checkbox class="col6" label="Mask User Agent (profile + host) [some Sites not work] " ng-model="setting.blocking.privacy.vpc.maskUserAgentURL"></i-checkbox>
                       <i-checkbox class="col6" label="Block HTML Canvas" ng-model="setting.blocking.privacy.vpc.hide_canvas"></i-checkbox>
 
@@ -900,7 +908,7 @@
                       </div>
 
                       <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border">
-                        <div class="col"><i-checkbox label="Hide Date TimeZone" ng-model="currentSession.privacy.vpc.mask_date"></i-checkbox></div>
+                        <div class="col"><i-checkbox label="Hide Date ( problem in some sites )" ng-model="currentSession.privacy.vpc.mask_date"></i-checkbox></div>
                         <div class="col">
                           <i-list
                             ng-disabled="currentSession.privacy.vpc.mask_date !== true"
@@ -971,6 +979,7 @@
                       </div>
                       <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border2">
                         <i-checkbox class="col6" label="Set Window Alawys Active" ng-model="currentSession.privacy.vpc.set_window_active"></i-checkbox>
+                        <i-checkbox class="col6" label="Set Tab Alawys Active" ng-model="currentSession.privacy.vpc.set_tab_active"></i-checkbox>
                         <i-checkbox class="col6" label="Mask User Agent (profile + host) [some Sites not work] " ng-model="currentSession.privacy.vpc.maskUserAgentURL"></i-checkbox>
                         <i-checkbox class="col6" label="Block HTML Canvas" ng-model="currentSession.privacy.vpc.hide_canvas"></i-checkbox>
 

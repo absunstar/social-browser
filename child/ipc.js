@@ -113,7 +113,7 @@ module.exports = function init(child) {
 
     return true;
   });
-  child.electron.ipcMain.handle('request-cookie', (e, obj) => {
+  child.electron.ipcMain.handle('[request-cookie]', (e, obj) => {
     return child.cookieList.find((c) => obj.domain.like(c.domain) && c.partition == obj.partition);
   });
 
@@ -125,7 +125,6 @@ module.exports = function init(child) {
     child.handleSession(obj);
   });
   child.electron.ipcMain.handle('[cookie-set-raw]', (e, obj) => {
-    child.addCookie(obj);
     return true;
   });
   child.electron.ipcMain.handle('[cookie-get-raw]', (e, obj) => {

@@ -1,14 +1,12 @@
 (function () {
-  console.clear = function () {};
-
-  if (
-    document.location.href.indexOf('about:') === 0 ||
-    document.location.href.indexOf('blob') === 0 ||
-    document.location.href.indexOf('chrome-error') === 0 ||
-    document.location.href.indexOf('https://stream.') === 0
-  ) {
-    return;
-  }
+  // if (
+  //   document.location.href.indexOf('about:') === 0 ||
+  //   document.location.href.indexOf('blob') === 0 ||
+  //   document.location.href.indexOf('chrome-error') === 0 ||
+  //   document.location.href.indexOf('https://stream.') === 0
+  // ) {
+  //   return;
+  // }
 
   var SOCIALBROWSER = {
     module: require('module'),
@@ -90,16 +88,20 @@
   SOCIALBROWSER.Buffer = Buffer;
 
   SOCIALBROWSER.eval = function (script) {
+    if (typeof script !== 'string') {
+      return script;
+    }
     try {
       let path = SOCIALBROWSER.data_dir + '\\sessionData\\' + new Date().getTime() + '_tmp.js';
       SOCIALBROWSER.fs.writeFileSync(path, script);
-      SOCIALBROWSER.require(path);
       setTimeout(() => {
         SOCIALBROWSER.fs.unlinkSync(path);
       }, 1000 * 3);
+     return SOCIALBROWSER.require(path);
     } catch (error) {
       console.log(error);
     }
+    return undefined;
   };
 
   SOCIALBROWSER.currentWindow = SOCIALBROWSER.remote.getCurrentWindow();
@@ -300,7 +302,7 @@
       SOCIALBROWSER.init2();
     });
   };
-  
+
   window.SOCIALBROWSER = SOCIALBROWSER;
   SOCIALBROWSER.init();
 })();

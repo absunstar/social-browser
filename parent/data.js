@@ -284,6 +284,10 @@ module.exports = function init(parent) {
         }
         parent.var.id = parent.var.core.id;
       }
+
+      if (!parent.var.core.googleUserAgentURL) {
+        parent.var.core.googleUserAgentURL = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/534.30 (KHTML, like Gecko) Ubuntu/11.04 Chromium/12.0.742.112 Chrome/12.0.742.112 Safari/534.30';
+      }
     }
 
     if (name == 'userAgentList') {
@@ -489,7 +493,7 @@ module.exports = function init(parent) {
           }
         });
       }
-       console.log('_________________________________');
+      console.log('_________________________________');
     } catch (error) {
       parent.log(error);
     }
@@ -501,7 +505,7 @@ module.exports = function init(parent) {
       save_var_quee = save_var_quee.filter((s) => s !== name);
       parent.save_var(name);
     }
-  }, 1000 * 3);
+  }, 1000 * 0.5);
 
   parent.addURL = function (nitm) {
     if (!nitm.url) {
@@ -571,7 +575,6 @@ module.exports = function init(parent) {
   parent.get_var('proxy_list');
   parent.get_var('proxy_mode_list');
 
-  parent.get_var('login');
   parent.get_var('userAgentList');
   parent.get_var('bookmarks');
   parent.get_var('video_quality_list');

@@ -4,175 +4,6 @@ module.exports = function (child) {
   child.sessionBusy = false;
   child.allowSessionHandle = false;
 
-  child.addCookie = function (options) {
-    if (!options) {
-      return null;
-    }
-    let co = typeof options.cookie === 'string' ? child.cookieParse(options.cookie) : options.cookie;
-    // let ss = child.electron.session.fromPartition(options.partition);
-
-    co.url = options.url;
-    co.name = Object.keys(co)[0];
-    co.value = Object.values(co)[0];
-    co.domain = co.domain || co.Domain;
-    co.path = co.path || options.path || '/';
-    co.sameSite = co.sameSite || co.SameSite || co.samesite || 'unspecified';
-    co.httpOnly = co.httpOnly || co.httponly || co.Httponly || co.HttpOnly;
-    co.secure = co.secure || co.Secure;
-    co.expires = co.expires;
-    co.expirationDate = co.expirationDate || (co.expires ? new Date(co.expires).getTime() : null);
-    co.sameSite = co.sameSite.toLowerCase();
-    if (!co.domain) {
-      co.domain = options.domain;
-    }
-    if (co.domain.indexOf('.') === 0) {
-      co.domain = co.domain.replace('.', '');
-    }
-
-    if (co.sameSite === 'none' && !co.secure) {
-      child.log('!set none && !secure', co);
-      return null;
-    }
-    if (!co.url.contains(co.domain)) {
-      child.log('!set url && domain', co);
-      return null;
-    }
-
-    delete co.samesite;
-    delete co.SameSite;
-    delete co.Secure;
-    delete co.httponly;
-    delete co.Httponly;
-    delete co.HttpOnly;
-
-    if (!co.httpOnly) {
-      delete co.httpOnly;
-    }
-    if (!co.secure) {
-      delete co.secure;
-    }
-    if (!co.expires) {
-      delete co.expires;
-    }
-    if (!co.expirationDate) {
-      delete co.expirationDate;
-    }
-
-    // child.log(options.cookie, co);
-
-    let exists = false;
-    child.cookies[options.partition].forEach((coo, i) => {
-      if (!coo || exists) {
-        return;
-      }
-
-      if (coo.domain == co.domain && coo.name == co.name) {
-        exists = true;
-        if ((co.expirationDate && co.expirationDate <= new Date().getTime()) || !co.value) {
-          child.cookies[options.partition].splice(i, 1);
-          if (!options.server) {
-            // ss.cookies.remove(co.url, co.name);
-          }
-
-          child.sendMessage({
-            type: '[cookies-deleted]',
-            partition: options.partition,
-            cookie: co,
-          });
-        } else {
-          child.cookies[options.partition][i] = co;
-          if (!options.server) {
-            // ss.cookies.set({ ...co, value: encodeURIComponent(co.value) }).then(
-            //   () => {
-            //     child.log('cookie Updated success');
-            //   },
-            //   (error) => {
-            //     child.error(error, co);
-            //   }
-            // );
-          }
-
-          child.sendMessage({
-            type: '[cookies-updated]',
-            partition: options.partition,
-            cookie: co,
-          });
-        }
-      }
-    });
-    if (!exists) {
-      if ((co.expirationDate && co.expirationDate <= new Date().getTime()) || !co.value) {
-        if (!options.server) {
-          // ss.cookies.remove(co.url, co.name);
-        }
-
-        child.sendMessage({
-          type: '[cookies-deleted]',
-          partition: options.partition,
-          cookie: co,
-        });
-      } else {
-        child.cookies[options.partition].push(co);
-        if (!options.server) {
-          // ss.cookies.set({ ...co, value: encodeURIComponent(co.value) }).then(
-          //   () => {
-          //     child.log('cookie added success');
-          //   },
-          //   (error) => {
-          //     child.error(error, co);
-          //   }
-          // );
-        }
-
-        child.sendMessage({
-          type: '[cookies-added]',
-          partition: options.partition,
-          cookie: co,
-        });
-      }
-    }
-    return co;
-  };
-  child.removeCookie = function (options) {
-    child.cookies[options.partition].forEach((coo, i) => {
-      if (coo && coo.domain && (options.domain == coo.domain || options.domain.contains(coo.domain)) && (options.name == '*' || coo.name === options.name)) {
-        delete child.cookies[options.partition][i];
-      }
-    });
-    return true;
-  };
-  child.getCookiesRaw = function (options) {
-    let cookie = '';
-    child.cookies[options.partition].forEach((coo, i) => {
-      if (coo && coo.domain && (options.domain == coo.domain || options.domain.contains(coo.domain)) && (options.name == '*' || coo.name === options.name) && !coo.httpOnly) {
-        cookie += `${coo.name}=${coo.value};`;
-      }
-    });
-    return cookie;
-  };
-  child.getAllCookies = function (options) {
-    let cookies = [];
-    child.cookies[options.partition].forEach((coo, i) => {
-      if (coo && coo.domain && coo.domain.contains(options.domain)) {
-        cookies.push({ ...coo });
-      }
-    });
-    return cookies;
-  };
-  child.clearCookies = function (options) {
-    child.cookies[options.partition].forEach((coo, i) => {
-      if (coo && coo.domain && coo.domain.contains(options.domain)) {
-        delete child.cookies[options.partition][i];
-      }
-    });
-    child.sendMessage({
-      type: '[cookies-clear]',
-      partition: options.partition,
-      cookie: { domain: options.domain },
-    });
-    return true;
-  };
-
   child.handleSession = function (sessionOptions) {
     if (child.sessionBusy) {
       // setTimeout(() => {
@@ -201,7 +32,6 @@ module.exports = function (child) {
       user.defaultUserAgent = { url: child.parent.var.core.defaultUserAgent.url, edit: true };
     }
 
-    child.cookies[name] = child.cookies[name] || [];
     let ss = sessionOptions.isDefault ? child.electron.session.defaultSession : child.electron.session.fromPartition(name);
     ss.name = name;
     ss.setUserAgent(user.defaultUserAgent.url);
@@ -478,37 +308,68 @@ module.exports = function (child) {
         let exit = false;
         let url = details.url.toLowerCase();
         let urlObject = child.url.parse(url);
+        let customSetting = null;
+        let win = null;
+        let wIndex = -1;
+
+        if (details.webContents) {
+          win = child.electron.BrowserWindow.fromWebContents(details.webContents);
+          if (win) {
+            wIndex = child.windowList.findIndex((w) => w.id === win.id);
+            if (wIndex !== -1) {
+              customSetting = child.windowList[wIndex].customSetting;
+            }
+          }
+        }
 
         let domainName = urlObject.hostname;
         let domainCookie = details.requestHeaders['Cookie'] || '';
         let domainCookieObject = child.cookieParse(domainCookie);
-        let cookieIndex = child.cookieList.findIndex((c) => domainName.contains(c.domain) && c.partition == name);
-        if (cookieIndex === -1) {
-          if (domainName && domainCookie) {
-            let co = {
-              partition: name,
-              domain: domainName,
-              cookie: domainCookie,
-              time: new Date().getTime(),
-            };
-            child.cookieList.push(co);
-            child.sendMessage({
-              type: '[cookieList-set]',
-              cookie: co,
-            });
+        if (customSetting && customSetting.vip) {
+          child.log('VIP Ignore cookieList');
+        } else if (customSetting && Array.isArray(customSetting.cookieList)) {
+          if (customSetting.cookieList.length > 0) {
+            let cookieIndex = customSetting.cookieList.findIndex((c) => domainName.contains(c.domain) && c.partition == name);
+            if (cookieIndex !== -1) {
+              domainCookieObject = { ...child.cookieParse(customSetting.cookieList[cookieIndex].cookie), ...domainCookieObject };
+              customSetting.cookieList[cookieIndex].cookie = details.requestHeaders['Cookie'] = child.cookieStringify({ ...domainCookieObject });
+              child.windowList[wIndex].customSetting = customSetting;
+            }
+          } else {
+            let cookieIndex = child.cookieList.findIndex((c) => domainName.contains(c.domain) && c.partition == name);
+            if (cookieIndex !== -1) {
+              child.cookieList.splice(cookieIndex, 1);
+            }
           }
-        } else {
-          if (child.cookieList[cookieIndex].off) {
-            console.log('Cookie OFF');
-          } else if (child.cookieList[cookieIndex].lock) {
-            domainCookieObject = { ...child.cookieParse(child.cookieList[cookieIndex].cookie) };
-            details.requestHeaders['Cookie'] = child.cookieStringify({ ...domainCookieObject });
-          } else if (domainCookie && child.cookieList[cookieIndex].cookie !== domainCookie) {
-            child.cookieList[cookieIndex].cookie = domainCookie;
-            child.sendMessage({
-              type: '[cookieList-set]',
-              cookie: child.cookieList[cookieIndex],
-            });
+        } else if (Array.isArray(child.cookieList)) {
+          let cookieIndex = child.cookieList.findIndex((c) => domainName.contains(c.domain) && c.partition == name);
+          if (cookieIndex === -1) {
+            if (domainName && domainCookie) {
+              let co = {
+                partition: name,
+                domain: domainName,
+                cookie: domainCookie,
+                time: new Date().getTime(),
+              };
+              child.cookieList.push(co);
+              child.sendMessage({
+                type: '[cookieList-set]',
+                cookie: co,
+              });
+            }
+          } else {
+            if (child.cookieList[cookieIndex].off) {
+              console.log('Cookie OFF');
+            } else if (child.cookieList[cookieIndex].lock) {
+              domainCookieObject = { ...child.cookieParse(child.cookieList[cookieIndex].cookie), ...domainCookieObject };
+              details.requestHeaders['Cookie'] = child.cookieStringify({ ...domainCookieObject });
+            } else if (domainCookie && child.cookieList[cookieIndex].cookie !== domainCookie) {
+              child.cookieList[cookieIndex].cookie = domainCookie;
+              child.sendMessage({
+                type: '[cookieList-set]',
+                cookie: child.cookieList[cookieIndex],
+              });
+            }
           }
         }
 
@@ -638,23 +499,6 @@ module.exports = function (child) {
         let urlObject = child.url.parse(url);
         let _ss = child.session_name_list.find((s) => s.name == name);
         _ss.user.privacy.vpc = _ss.user.privacy.vpc || {};
-        if (false) {
-          // cookies now save to my own json ^_^
-          let cookies = details.responseHeaders['set-cookie'] || details.responseHeaders['Set-Cookie'];
-          if (cookies) {
-            cookies.forEach((co) => {
-              child.addCookie({
-                server: true,
-                partition: name,
-                cookie: co,
-                url: urlObject.origin ?? urlObject.hostname,
-                domain: urlObject.hostname,
-                path: urlObject.path,
-                protocol: urlObject.protocol,
-              });
-            });
-          }
-        }
 
         if (child.parent.var.core.enginOFF) {
           callback({
@@ -699,92 +543,69 @@ module.exports = function (child) {
         }
 
         // must delete values before re set
+        if ((headers = true)) {
+          let a_orgin = details.responseHeaders['Access-Control-Allow-Origin'] || details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()];
+          let a_expose = details.responseHeaders['Access-Control-Expose-Headers'] || details.responseHeaders['Access-Control-Expose-Headers'.toLowerCase()];
+          let a_Methods = details.responseHeaders['Access-Control-Allow-Methods'] || details.responseHeaders['Access-Control-Allow-Methods'.toLowerCase()];
+          let a_Headers = details.responseHeaders['Access-Control-Allow-Headers'] || details.responseHeaders['Access-Control-Allow-Headers'.toLowerCase()];
+          let s_policy = details.responseHeaders['Content-Security-Policy'] || details.responseHeaders['Content-Security-Policy'.toLowerCase()];
+          let s_policy_report = details.responseHeaders['Content-Security-Policy-Report-Only'] || details.responseHeaders['content-security-policy-report-only'.toLowerCase()];
+          let s_policy_resource = details.responseHeaders['Cross-Origin-Resource-Policy'] || details.responseHeaders['Cross-Origin-Resource-Policy'.toLowerCase()];
+          let s_policy_opener = details.responseHeaders['Cross-Origin-Opener-Policy-Report-Only'] || details.responseHeaders['Cross-Origin-Opener-Policy-Report-Only'.toLowerCase()];
 
-        let a_orgin = details.responseHeaders['Access-Control-Allow-Origin'] || details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()];
-        let a_expose = details.responseHeaders['Access-Control-Expose-Headers'] || details.responseHeaders['Access-Control-Expose-Headers'.toLowerCase()];
-        let a_Methods = details.responseHeaders['Access-Control-Allow-Methods'] || details.responseHeaders['Access-Control-Allow-Methods'.toLowerCase()];
-        let a_Headers = details.responseHeaders['Access-Control-Allow-Headers'] || details.responseHeaders['Access-Control-Allow-Headers'.toLowerCase()];
-        let s_policy = details.responseHeaders['Content-Security-Policy'] || details.responseHeaders['Content-Security-Policy'.toLowerCase()];
-        let s_policy_report = details.responseHeaders['Content-Security-Policy-Report-Only'] || details.responseHeaders['content-security-policy-report-only'.toLowerCase()];
-        let s_policy_resource = details.responseHeaders['Cross-Origin-Resource-Policy'] || details.responseHeaders['Cross-Origin-Resource-Policy'.toLowerCase()];
+          // Must Delete Before set new values [duplicate headers]
+          [
+            //'Cross-Origin-Embedder-Policy',
+            // 'Cross-Origin-Opener-Policy',
+            //  'Strict-Transport-Security',
+            // 'X-Content-Type-Options',
+            'Access-Control-Allow-Private-Network',
+            'Content-Security-Policy',
+            // 'Content-Security-Policy-Report-Only', // Error With Capatcha
+            // 'X-Content-Security-Policy',// Error With Capatcha
+            //'Cross-Origin-Resource-Policy',// Error With Capatcha
+            //'Cross-Origin-Opener-Policy-Report-Only',// Error With Capatcha
+            'Access-Control-Allow-Credentials',
+            'Access-Control-Allow-Methods',
+            'Access-Control-Allow-Headers',
+            'Access-Control-Allow-Origin',
+            'Access-Control-Expose-Headers',
+            _ss.user.privacy.vpc.removeXFrameOptions ? 'X-Frame-Options' : '',
+          ].forEach((p) => {
+            details.responseHeaders[p] = undefined;
+            details.responseHeaders[p.toLowerCase()] = undefined;
+            delete details.responseHeaders[p];
+            delete details.responseHeaders[p.toLowerCase()];
+          });
 
-        // Must Delete Before set new values [duplicate headers]
-        [
-          //'Cross-Origin-Embedder-Policy',
-          // 'Cross-Origin-Opener-Policy',
-          //  'Strict-Transport-Security',
-          // 'X-Content-Type-Options',
-          'Access-Control-Allow-Private-Network',
-          'Content-Security-Policy-Report-Only',
-          'Content-Security-Policy',
-          'Cross-Origin-Resource-Policy',
-          'Access-Control-Allow-Credentials',
-          'Access-Control-Allow-Methods',
-          'Access-Control-Allow-Headers',
-          'Access-Control-Allow-Origin',
-          'Access-Control-Expose-Headers',
-          _ss.user.privacy.vpc.removeXFrameOptions ? 'X-Frame-Options' : '',
-        ].forEach((p) => {
-          delete details.responseHeaders[p];
-          delete details.responseHeaders[p.toLowerCase()];
-        });
+          details.responseHeaders['Access-Control-Allow-Private-Network'.toLowerCase()] = 'true';
+          details.responseHeaders['Access-Control-Allow-Credentials'.toLowerCase()] = 'true';
+          details.responseHeaders['Access-Control-Allow-Methods'.toLowerCase()] = a_Methods || 'POST,GET,DELETE,PUT,OPTIONS,VIEW,HEAD,CONNECT,TRACE';
+          details.responseHeaders['Access-Control-Allow-Headers'.toLowerCase()] =
+            a_Headers || 'Authorization ,Access-Control-Allow-Headers, Access-Control-Request-Method, Access-Control-Request-Headers,Origin, X-Requested-With, Content-Type, Accept';
 
-        details.responseHeaders['Access-Control-Allow-Private-Network'.toLowerCase()] = 'true';
-        details.responseHeaders['Access-Control-Allow-Credentials'.toLowerCase()] = 'true';
-        details.responseHeaders['Access-Control-Allow-Methods'.toLowerCase()] = a_Methods || 'POST,GET,DELETE,PUT,OPTIONS,VIEW,HEAD,CONNECT,TRACE';
-        details.responseHeaders['Access-Control-Allow-Headers'.toLowerCase()] =
-          a_Headers || 'Authorization ,Access-Control-Allow-Headers, Access-Control-Request-Method, Access-Control-Request-Headers,Origin, X-Requested-With, Content-Type, Accept';
-
-        if (a_orgin) {
-          details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = a_orgin;
-        } else {
-          details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = [details['referrer']] || [details['referer']] || ['*'];
-        }
-        if (a_expose) {
-          details.responseHeaders['Access-Control-Expose-Headers'.toLowerCase()] = a_expose;
-        }
-
-        if (s_policy && Array.isArray(s_policy)) {
-          for (var key in s_policy) {
-            s_policy[key] = s_policy[key].replaceAll('data:  ', 'data:  browser://* ');
-            s_policy[key] = s_policy[key].replaceAll('script-src ', 'script-src browser://* ');
-            s_policy[key] = s_policy[key].replaceAll('frame-src ', 'frame-src browser://* ');
-            s_policy[key] = s_policy[key].replaceAll("default-src 'none'", '');
-            s_policy[key] = s_policy[key].replaceAll("require-trusted-types-for 'script'", '');
-          }
-
-          if (url.like('*embed*')) {
-            details.responseHeaders['Content-Security-Policy'.toLowerCase()] = 'cross-origin';
+          if (a_orgin) {
+            details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = a_orgin;
           } else {
-            details.responseHeaders['Content-Security-Policy'.toLowerCase()] = s_policy;
+            details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = [details['referrer']] || [details['referer']] || ['*'];
           }
-        }
-        if (s_policy_resource && Array.isArray(s_policy_resource)) {
-          for (var key in s_policy_resource) {
+          if (a_expose) {
+            details.responseHeaders['Access-Control-Expose-Headers'.toLowerCase()] = a_expose;
           }
 
-          if (url.like('*embed*')) {
-            details.responseHeaders['Cross-Origin-Resource-Policy'.toLowerCase()] = 'cross-origin';
-          } else {
-            details.responseHeaders['Cross-Origin-Resource-Policy'.toLowerCase()] = s_policy_resource;
-          }
-        }
-
-        if (s_policy_report && Array.isArray(s_policy_report)) {
-          for (var key in s_policy_report) {
-            s_policy_report[key] = s_policy_report[key].replaceAll('data:  ', 'data:  http://127.0.0.1:60080 browser://* ');
-          }
-          if (url.like('*embed*')) {
-            details.responseHeaders['Content-Security-Policy-Report-Only'.toLowerCase()] = 'cross-origin';
-          } else {
-            details.responseHeaders['Content-Security-Policy-Report-Only'.toLowerCase()] = s_policy_report;
+          if (s_policy && Array.isArray(s_policy)) {
+            for (var key in s_policy) {
+              s_policy[key] = s_policy[key].replaceAll('data: ', 'data: browser://* ');
+              s_policy[key] = s_policy[key].replaceAll('default-src ', 'default-src browser://* ');
+              s_policy[key] = s_policy[key].replaceAll('img-src ', 'img-src browser://* ');
+              s_policy[key] = s_policy[key].replaceAll('script-src ', 'script-src browser://* ');
+              s_policy[key] = s_policy[key].replaceAll('frame-src ', 'frame-src browser://* ');
+            }
           }
         }
 
         if ((info = child.getOverwriteInfo(url))) {
           if (url.like(info.to) && info.rediect_from) {
-            // details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = [child.parent.url.parse(data.rediect_from, false).host];
-
             details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = ['*'];
           }
         }
