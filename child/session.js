@@ -329,11 +329,21 @@ module.exports = function (child) {
           child.log('VIP Ignore cookieList');
         } else if (customSetting && Array.isArray(customSetting.cookieList)) {
           if (customSetting.cookieList.length > 0) {
+            if (customSetting.userAgentURL) {
+              details.requestHeaders['User-Agent'] = customSetting.userAgentURL;
+            }
             let cookieIndex = customSetting.cookieList.findIndex((c) => domainName.contains(c.domain) && c.partition == name);
             if (cookieIndex !== -1) {
-              domainCookieObject = { ...child.cookieParse(customSetting.cookieList[cookieIndex].cookie), ...domainCookieObject };
-              customSetting.cookieList[cookieIndex].cookie = details.requestHeaders['Cookie'] = child.cookieStringify({ ...domainCookieObject });
-              child.windowList[wIndex].customSetting = customSetting;
+              // Cookie Mode 0=fixed , 1=overwrite , else=default
+              if (customSetting.cookieList[cookieIndex].mode === 0) {
+                domainCookieObject = { ...child.cookieParse(customSetting.cookieList[cookieIndex].cookie) };
+              } else if (customSetting.cookieList[cookieIndex].mode === 1) {
+                domainCookieObject = { ...domainCookieObject, ...child.cookieParse(customSetting.cookieList[cookieIndex].cookie) };
+              } else {
+                domainCookieObject = { ...child.cookieParse(customSetting.cookieList[cookieIndex].cookie), ...domainCookieObject };
+              }
+
+              details.requestHeaders['Cookie'] = child.cookieStringify({ ...domainCookieObject });
             }
           } else {
             let cookieIndex = child.cookieList.findIndex((c) => domainName.contains(c.domain) && c.partition == name);
@@ -360,15 +370,25 @@ module.exports = function (child) {
           } else {
             if (child.cookieList[cookieIndex].off) {
               console.log('Cookie OFF');
-            } else if (child.cookieList[cookieIndex].lock) {
-              domainCookieObject = { ...child.cookieParse(child.cookieList[cookieIndex].cookie), ...domainCookieObject };
-              details.requestHeaders['Cookie'] = child.cookieStringify({ ...domainCookieObject });
-            } else if (domainCookie && child.cookieList[cookieIndex].cookie !== domainCookie) {
-              child.cookieList[cookieIndex].cookie = domainCookie;
-              child.sendMessage({
-                type: '[cookieList-set]',
-                cookie: child.cookieList[cookieIndex],
-              });
+            } else {
+              if (child.cookieList[cookieIndex].mode === 0) {
+                domainCookieObject = { ...child.cookieParse(child.cookieList[cookieIndex].cookie) };
+                details.requestHeaders['Cookie'] = child.cookieStringify({ ...domainCookieObject });
+              } else if (child.cookieList[cookieIndex].mode === 1) {
+                domainCookieObject = { ...domainCookieObject, ...child.cookieParse(child.cookieList[cookieIndex].cookie) };
+                details.requestHeaders['Cookie'] = child.cookieStringify({ ...domainCookieObject });
+              } else if (child.cookieList[cookieIndex].mode === -1) {
+                domainCookieObject = { ...child.cookieParse(child.cookieList[cookieIndex].cookie), ...domainCookieObject };
+                details.requestHeaders['Cookie'] = child.cookieStringify({ ...domainCookieObject });
+              }
+
+              if (child.cookieList[cookieIndex].cookie !== details.requestHeaders['Cookie']) {
+                child.cookieList[cookieIndex].cookie = details.requestHeaders['Cookie'];
+                child.sendMessage({
+                  type: '[cookieList-set]',
+                  cookie: child.cookieList[cookieIndex],
+                });
+              }
             }
           }
         }

@@ -296,6 +296,7 @@ SOCIALBROWSER.on('[update-browser-var]', (e, res) => {
   }
   if (res.options.name == 'session_list') {
     SOCIALBROWSER.var.session_list.sort((a, b) => (a.time > b.time ? -1 : 1));
+
   }
   SOCIALBROWSER.callEvent('updated', { name: res.options.name });
 });

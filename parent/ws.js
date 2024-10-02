@@ -470,6 +470,7 @@ module.exports = function init(parent) {
             let newSessionIndex = parent.var.session_list.findIndex((s) => s.name == newSession.name || s.display == newSession.display);
             if (newSessionIndex === -1) {
               parent.var.session_list.push(newSession);
+              parent.var.session_list.sort((a, b) => (a.time > b.time ? -1 : 1));
               parent.applay('session_list');
             }
           }
@@ -481,12 +482,14 @@ module.exports = function init(parent) {
             let oldSessionIndex = parent.var.session_list.findIndex((s) => s.name == oldSession.name);
             if (oldSessionIndex !== -1) {
               parent.var.session_list.splice(oldSessionIndex, 1);
+              parent.var.session_list.sort((a, b) => (a.time > b.time ? -1 : 1));
               parent.applay('session_list');
             }
           } else if (oldSession.display) {
             let oldSessionIndex = parent.var.session_list.findIndex((s) => s.display == oldSession.display);
             if (oldSessionIndex !== -1) {
               parent.var.session_list.splice(oldSessionIndex, 1);
+              parent.var.session_list.sort((a, b) => (a.time > b.time ? -1 : 1));
               parent.applay('session_list');
             }
           }

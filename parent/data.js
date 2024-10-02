@@ -207,6 +207,7 @@ module.exports = function init(parent) {
             }
           });
         }
+        userVarContent.sort((a, b) => (a.time > b.time ? -1 : 1));
 
         parent.var[name] = userVarContent;
       } else if (name == 'userAgentList') {
@@ -386,7 +387,7 @@ module.exports = function init(parent) {
 
       if (userVarContent) {
         userVarContent = parent.handleObject(userVarContent);
-        if (!userVarContent || (Array.isArray(userVarContent) && userVarContent.length == 0)) {
+        if (!userVarContent) {
           return;
         }
 

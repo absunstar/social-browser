@@ -788,7 +788,7 @@
                         <th>Name <i-control ng-model="session.display"></i-control></th>
                         <th>Actions</th>
                       </tr>
-                      <tr ng-repeat="_se in setting.session_list | filter:session track by $index">
+                      <tr ng-repeat="_se in setting.session_list | orderBy : 'time' | filter:session track by $index">
                         <td>{{$index + 1}}</td>
                         <td>
                           <i-control ng-model="_se.name"></i-control>
