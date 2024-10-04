@@ -36,6 +36,18 @@ module.exports = function (child) {
     ss.name = name;
     ss.setUserAgent(user.defaultUserAgent.url);
 
+    if (child.parent.var.core.autoClearCacheStorage) {
+      ss.clearStorageData({
+        storages: [('appcache', 'filesystem', 'shadercache', 'serviceworkers', 'cachestorage')],
+      }).finally(() => {
+        ss.clearCache().finally(() => {
+          ss.clearCodeCaches({}).finally(() => {
+            console.log('Session Clear All Cache : ' + name);
+          });
+        });
+      });
+    }
+
     let sessionIndex = -1;
     if (sessionOptions.isDefault) {
       sessionIndex = child.session_name_list.findIndex((s) => s.isDefault === true);

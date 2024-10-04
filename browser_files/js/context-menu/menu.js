@@ -589,7 +589,7 @@ function add_a_menu(node) {
             url: u.replace('youtube', 'ssyoutube'),
             partition: SOCIALBROWSER.partition,
             referrer: document.location.href,
-            allowPopup : true,
+            allowPopup: true,
             show: true,
             center: true,
           });
@@ -841,7 +841,7 @@ function get_options_menu(node) {
       SOCIALBROWSER.ipc('[window-reload-hard]', {
         windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
         origin: document.location.origin || document.location.href,
-        storages: ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage'],
+        storages: ['appcache', 'filesystem', 'shadercache', 'websql', 'serviceworkers', 'cachestorage'],
       });
     },
   });
@@ -1271,7 +1271,7 @@ function get_custom_menu() {
           referrer: document.location.href,
           url: document.location.href.replace('youtube', 'ssyoutube'),
           show: true,
-          allowPopup : true,
+          allowPopup: true,
           center: true,
         });
       },
@@ -1306,9 +1306,7 @@ function createDevelopmentMenu() {
 }
 
 function createMenuList(node) {
-
   if (SOCIALBROWSER.customSetting.windowType !== 'main') {
-
     add_input_menu(node);
     add_a_menu(node);
     SOCIALBROWSER.menu_list.forEach((m) => {
@@ -1407,8 +1405,6 @@ function createMenuList(node) {
 
     get_img_menu(node);
 
-   
-
     if (SOCIALBROWSER.var.blocking.open_list?.length > 0) {
       SOCIALBROWSER.var.blocking.open_list.forEach((o) => {
         if (o.enabled) {
@@ -1438,38 +1434,6 @@ function createMenuList(node) {
             type: 'separator',
           });
         }
-      });
-    }
-
-    if (SOCIALBROWSER.var.vip && SOCIALBROWSER.var.vip.enabled) {
-      let arr = [];
-      SOCIALBROWSER.var.vip.list.forEach((v) => {
-        arr.push({
-          label: v.name,
-          click() {
-            SOCIALBROWSER.ipc('[open new popup]', {
-              partition: SOCIALBROWSER.partition,
-              url: SOCIALBROWSER.var.vip.server_url + v.url,
-              referrer: document.location.href,
-              show: true,
-              iframe: true,
-              trusted: true,
-              center: true,
-            });
-          },
-        });
-      });
-
-      if (arr.length > 0) {
-        SOCIALBROWSER.menuList.push({
-          label: ' VIP ',
-          type: 'submenu',
-          submenu: arr,
-        });
-      }
-
-      SOCIALBROWSER.menuList.push({
-        type: 'separator',
       });
     }
 

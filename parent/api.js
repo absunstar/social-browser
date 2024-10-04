@@ -398,7 +398,6 @@ module.exports = function init(parent) {
       var: {
         core: parent.var.core,
         login: parent.var.login,
-        vip: parent.var.vip,
         bookmarks: parent.var.bookmarks,
         black_list: parent.var.blocking.black_list,
         white_list: parent.var.blocking.white_list,
