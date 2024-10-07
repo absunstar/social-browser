@@ -289,7 +289,9 @@ module.exports = function init(parent) {
       if (!parent.var.core.googleUserAgentURL) {
         parent.var.core.googleUserAgentURL = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/534.30 (KHTML, like Gecko) Ubuntu/11.04 Chromium/12.0.742.112 Chrome/12.0.742.112 Safari/534.30';
       }
-     
+      if (typeof parent.var.core.loginByPasskey === 'undefined') {
+        parent.var.core.loginByPasskey = true;
+      }
     }
 
     if (name == 'userAgentList') {
@@ -613,7 +615,7 @@ module.exports = function init(parent) {
     parent.applay('customHeaderList');
   };
   parent.removeHeader = function (id) {
-    parent.var.customHeaderList = parent.var.customHeaderList.filter(c=> c.id !== id)
+    parent.var.customHeaderList = parent.var.customHeaderList.filter((c) => c.id !== id);
     parent.applay('customHeaderList');
   };
 
