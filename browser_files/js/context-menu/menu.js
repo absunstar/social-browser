@@ -68,6 +68,9 @@ function add_input_menu(node) {
           return;
         }
         dd.data.forEach((d) => {
+          if (node.value && !d.value.contains(node.value)) {
+            return;
+          }
           if (node.id && node.id == d.id) {
             if (!arr1.some((a) => a.label.trim() == d.value.trim())) {
               arr1.push({
@@ -184,6 +187,9 @@ function add_input_menu(node) {
         }
         dd.data.forEach((d) => {
           if (arr1.some((a) => a.label.trim() == d.value.trim())) {
+            return;
+          }
+          if (node.value && !d.value.contains(node.value)) {
             return;
           }
 

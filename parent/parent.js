@@ -125,13 +125,13 @@ module.exports = function init(parent) {
   };
   parent.disableExtension = function (extension) {
     delete extension.parentSetting;
-    let index = parent.extensionList.findIndex((exx) => exx.id === extension.id);
+    let index = parent.extensionList.findIndex((exx) => exx.id == extension.id);
     if (index !== -1) {
       if (parent.extensionList[index].disable) {
         parent.extensionList[index].disable();
       }
     }
-    let index2 = parent.var.extension_list.findIndex((exx) => exx.id === extension.id);
+    let index2 = parent.var.extension_list.findIndex((exx) => exx.id == extension.id);
     if (index2 !== -1) {
       parent.var.extension_list[index2].isEnabled = false;
     }
@@ -166,7 +166,7 @@ module.exports = function init(parent) {
   require(parent.path.join(parent.dir, 'parent', 'ipc.js'))(parent);
   require(parent.path.join(parent.dir, 'parent', 'ws.js'))(parent);
   require(parent.path.join(parent.dir, 'parent', 'chat.js'))(parent);
- // require(parent.path.join(parent.dir, 'parent', 'test.js'))(parent);
+  // require(parent.path.join(parent.dir, 'parent', 'test.js'))(parent);
 
   parent.httpTrustedOnline();
 
@@ -251,7 +251,7 @@ module.exports = function init(parent) {
       });
       child.on('close', (code, signal) => {
         parent.log(`\n [ Exit :: child:${child.pid} ${uuid} / ${parent.clientList.length} ] close with code ( ${code} ) and signal ( ${signal} ) \n`);
-        
+
         let index2 = parent.clientList.findIndex((c) => c.uuid == uuid);
         if (index2 !== -1) {
           if (parent.clientList[index2].option_list.some((op) => op.windowType == 'main') && code == 2147483651 && !signal) {

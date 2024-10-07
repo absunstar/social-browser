@@ -48,7 +48,7 @@ const plusTemplate = `
 `;
 let defaultTapProperties = {
   id: '',
-  url: 'http://127.0.0.1:60080/newTab',
+  url: 'https://www.google.com',
   title: null,
   iconURL: 'browser://images/loading-white.gif',
 };
@@ -56,9 +56,7 @@ let defaultTapProperties = {
 function getDefaultTapProperties() {
   if (SOCIALBROWSER.var.core.default_page) {
     defaultTapProperties.url = SOCIALBROWSER.var.core.default_page;
-    if (SOCIALBROWSER.var.core.default_page == 'http://127.0.0.1:60080/newTab') {
-      defaultTapProperties.iconURL = 'browser://images/logo.png';
-    }
+    defaultTapProperties.iconURL = 'browser://images/logo.png';
   }
 
   if (SOCIALBROWSER.var.core.defaultUserAgent) {

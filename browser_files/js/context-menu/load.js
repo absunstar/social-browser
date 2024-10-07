@@ -18,8 +18,30 @@ if (window.trustedTypes && window.trustedTypes.createPolicy) {
 }
 window.eval0 = window.eval;
 window.eval = function (code) {
-  return SOCIALBROWSER.eval(code);
+  if (SOCIALBROWSER.var.blocking.javascript.block_eval) {
+    SOCIALBROWSER.log('eval block', code);
+    return undefined;
+  } else {
+    return window.eval0(code);
+  }
 };
+if (!SOCIALBROWSER.var.core.loginByPasskey) {
+  window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable = function () {
+    return new Promise((resolve, reject) => {
+      reject('AbortError');
+    });
+  };
+  navigator.credentials.create = function () {
+    return new Promise((resolve, reject) => {
+      reject('AbortError');
+    });
+  };
+  navigator.credentials.get = function () {
+    return new Promise((resolve, reject) => {
+      reject('AbortError');
+    });
+  };
+}
 
 require(SOCIALBROWSER.files_dir + '/js/context-menu/menu.js');
 require(SOCIALBROWSER.files_dir + '/js/context-menu/decode.js');
@@ -236,12 +258,6 @@ try {
   SOCIALBROWSER.log(error);
 }
 
-if (SOCIALBROWSER.var.blocking.javascript.block_eval) {
-  window.eval = function (code) {
-    SOCIALBROWSER.log('eval block', code);
-  };
-}
-
 SOCIALBROWSER.on('$download_item', (e, dl) => {
   if (dl.status === 'delete') {
     SOCIALBROWSER.showDownloads();
@@ -296,7 +312,6 @@ SOCIALBROWSER.on('[update-browser-var]', (e, res) => {
   }
   if (res.options.name == 'session_list') {
     SOCIALBROWSER.var.session_list.sort((a, b) => (a.time > b.time ? -1 : 1));
-
   }
   SOCIALBROWSER.callEvent('updated', { name: res.options.name });
 });

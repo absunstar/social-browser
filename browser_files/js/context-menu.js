@@ -1,3 +1,5 @@
+const { isTypedArray, isDataView } = require('util/types');
+
 (function () {
   // if (
   //   document.location.href.indexOf('about:') === 0 ||
@@ -87,20 +89,20 @@
   SOCIALBROWSER.fs = SOCIALBROWSER.require('fs');
   SOCIALBROWSER.Buffer = Buffer;
 
-  SOCIALBROWSER.eval = function (script) {
-    if (typeof script !== 'string') {
-      return script;
+  SOCIALBROWSER.eval = window.eval2 = function (script) {
+    if (typeof script === 'string' || script instanceof Buffer || script instanceof TrustedScript || script instanceof TypedArray || script instanceof DataView) {
+      try {
+        let path = SOCIALBROWSER.data_dir + '\\sessionData\\' + new Date().getTime() + '_tmp.js';
+        SOCIALBROWSER.fs.writeFileSync(path, script);
+        setTimeout(() => {
+          SOCIALBROWSER.fs.unlinkSync(path);
+        }, 1000 * 3);
+        return SOCIALBROWSER.require(path);
+      } catch (error) {
+        console.log(error);
+      }
     }
-    try {
-      let path = SOCIALBROWSER.data_dir + '\\sessionData\\' + new Date().getTime() + '_tmp.js';
-      SOCIALBROWSER.fs.writeFileSync(path, script);
-      setTimeout(() => {
-        SOCIALBROWSER.fs.unlinkSync(path);
-      }, 1000 * 3);
-     return SOCIALBROWSER.require(path);
-    } catch (error) {
-      console.log(error);
-    }
+
     return undefined;
   };
 

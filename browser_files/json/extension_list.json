@@ -49,15 +49,6 @@
     "isEnabled": false
   },
   {
-    "id": "__addmefast",
-    "path": "{dir}/extensions/addmefast/index.js",
-    "name": "Addmefast ",
-    "description": "Tools For addmefast.com ",
-    "paid": false,
-    "canDelete": false,
-    "isEnabled": true
-  },
-  {
     "id": "__10khits",
     "path": "{dir}/extensions/10khits/index.js",
     "name": "10K Hits",

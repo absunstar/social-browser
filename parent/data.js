@@ -613,11 +613,7 @@ module.exports = function init(parent) {
     parent.applay('customHeaderList');
   };
   parent.removeHeader = function (id) {
-    parent.var.customHeaderList.forEach((h, i) => {
-      if (h.id === id) {
-        parent.var.customHeaderList.splice(i, 1);
-      }
-    });
+    parent.var.customHeaderList = parent.var.customHeaderList.filter(c=> c.id !== id)
     parent.applay('customHeaderList');
   };
 

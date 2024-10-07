@@ -8,9 +8,10 @@ module.exports = function (browser) {
   extension.canDelete = false;
   extension.init = () => {};
   extension.enable = () => {
-    browser.addRequestHeader({
+    // custom eval block chanllage
+    /*browser.addRequestHeader({
       id: 'addmefast',
-      url: '*addmefast.com*',
+      url: '*addmefast.comxxx*',
       list: [
         {
           name: 'User-Agent',
@@ -18,7 +19,8 @@ module.exports = function (browser) {
         },
       ],
       ignore: [],
-    });
+    });*/
+
     browser.addPreload({
       id: extension.id,
       path: browser.path.join(__dirname, 'preload.js'),

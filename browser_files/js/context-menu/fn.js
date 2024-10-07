@@ -9,7 +9,7 @@ SOCIALBROWSER.message = function (message) {
 };
 SOCIALBROWSER.on('message', (e, message) => {
   if (message.eval) {
-    window.eval(message.eval);
+    window.eval0(message.eval);
   }
 });
 
