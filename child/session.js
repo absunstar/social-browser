@@ -460,43 +460,6 @@ module.exports = function (child) {
           return;
         }
 
-        if (domainCookieObject) {
-          if (domainCookieObject && child.parent.var.blocking.core.send_browser_id) {
-            domainCookieObject['_gab'] = 'sb.' + child.parent.var.core.id;
-          }
-
-          if (domainCookieObject && _ss.user.privacy.enable_virtual_pc && _ss.user.privacy.vpc.block_cloudflare) {
-            if (domainCookieObject['_cflb']) {
-              domainCookieObject['_cflb'] = 'cf.' + domainCookieObject['_gab'];
-            }
-
-            if (domainCookieObject['_cf_bm']) {
-              domainCookieObject['_cf_bm'] = 'cf.' + domainCookieObject['_gab'];
-            }
-
-            if (domainCookieObject['_cfduid']) {
-              domainCookieObject['_cfduid'] = 'cf.' + domainCookieObject['_gab'];
-            }
-
-            if (domainCookieObject['__cfduid']) {
-              domainCookieObject['__cfduid'] = 'cf.' + domainCookieObject['_gab'];
-            }
-          }
-
-          if (domainCookieObject && !url.like('*google.com*|*youtube.com*')) {
-            if (_ss.user.privacy.enable_virtual_pc && _ss.user.privacy.vpc.hide_gid) {
-              if (domainCookieObject['_gid']) {
-                delete domainCookieObject['_gid'];
-              }
-            }
-          }
-          details.requestHeaders['Cookie'] = child.cookieStringify(domainCookieObject);
-        }
-
-        if (_ss.user.privacy.vpc.dnt) {
-          details.requestHeaders['DNT'] = '1'; // dont track me
-        }
-
         if (child.parent.var.blocking.white_list.some((item) => url.like(item.url))) {
           callback({
             cancel: false,
@@ -504,9 +467,45 @@ module.exports = function (child) {
           });
           return;
         }
-        //details.requestHeaders['Referrer-Policy'] = 'no-referrer';
 
-        // try edit cookies before send [tracking cookies]
+        if (domainCookieObject && child.parent.var.blocking.core.send_browser_id) {
+          details.requestHeaders['X-Browser'] = 'social.' + child.parent.var.core.id;
+        }
+
+        if (customSetting && customSetting.vip) {
+        } else {
+          if (domainCookieObject) {
+            if (domainCookieObject && _ss.user.privacy.enable_virtual_pc && _ss.user.privacy.vpc.block_cloudflare) {
+              if (domainCookieObject['_cflb']) {
+                domainCookieObject['_cflb'] = 'cf.' + domainCookieObject['_gab'];
+              }
+
+              if (domainCookieObject['_cf_bm']) {
+                domainCookieObject['_cf_bm'] = 'cf.' + domainCookieObject['_gab'];
+              }
+
+              if (domainCookieObject['_cfduid']) {
+                domainCookieObject['_cfduid'] = 'cf.' + domainCookieObject['_gab'];
+              }
+
+              if (domainCookieObject['__cfduid']) {
+                domainCookieObject['__cfduid'] = 'cf.' + domainCookieObject['_gab'];
+              }
+            }
+
+            if (domainCookieObject && !url.like('*google.com*|*youtube.com*')) {
+              if (_ss.user.privacy.enable_virtual_pc && _ss.user.privacy.vpc.hide_gid) {
+                if (domainCookieObject['_gid']) {
+                  delete domainCookieObject['_gid'];
+                }
+              }
+            }
+            details.requestHeaders['Cookie'] = child.cookieStringify(domainCookieObject);
+          }
+          if (_ss.user.privacy.vpc.dnt) {
+            details.requestHeaders['DNT'] = '1'; // dont track me
+          }
+        }
 
         if (url.like('browser*') || url.like('*127.0.0.1*')) {
           exit = true;
@@ -834,7 +833,7 @@ module.exports = function (child) {
     return ss;
   };
 
-  child.sessionConfig = () => {
-    child.handleSession({ name: child.partition });
+  child.sessionConfig = (partition) => {
+    child.handleSession({ name: partition || child.partition });
   };
 };

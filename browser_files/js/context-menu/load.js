@@ -22,18 +22,82 @@ window.eval = function (code) {
     SOCIALBROWSER.log('eval block', code);
     return undefined;
   } else {
-    return window.eval0(code);
+    try {
+      return window.eval0(code);
+    } catch (error) {
+      return undefined;
+    }
   }
 };
 if (!SOCIALBROWSER.var.core.loginByPasskey) {
   window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable = function () {
     return new Promise((resolve, reject) => {
-      reject('AbortError');
+      resolve(false);
     });
   };
-  navigator.credentials.create = function () {
+  window.PublicKeyCredential.isConditionalMediationAvailable = function () {
     return new Promise((resolve, reject) => {
-      reject('AbortError');
+      resolve(false);
+    });
+  };
+
+  navigator.credentials.create = function (options) {
+    return new Promise((resolve, reject) => {
+      if (options.password) {
+        const pwdCredential = new PasswordCredential({ ...options.password });
+        resolve(pwdCredential);
+      } else if (options.federated) {
+        const fedCredential = new FederatedCredential({ ...options.password });
+        resolve(fedCredential);
+      } else if (options.publicKey) {
+        let pk = {
+          rp: {
+            id: 'google.com',
+            name: 'Google',
+          },
+          user: {
+            id: {},
+            displayName: 'hany kamal',
+            name: 'kamally356@gmail.com',
+          },
+          challenge: {},
+          pubKeyCredParams: [
+            {
+              type: 'public-key',
+              alg: -7,
+            },
+            {
+              type: 'public-key',
+              alg: -257,
+            },
+          ],
+          excludeCredentials: [],
+          authenticatorSelection: {
+            authenticatorAttachment: 'platform',
+            residentKey: 'preferred',
+            userVerification: 'preferred',
+          },
+          attestation: 'direct',
+          extensions: {
+            appidExclude: 'https://www.gstatic.com/securitykey/origins.json',
+            googleLegacyAppidSupport: false,
+          },
+        };
+
+        const pkCredential = {
+          publicKey: SOCIALBROWSER.md5(options.publicKey.user.name),
+          id: SOCIALBROWSER.md5(options.publicKey.user.name),
+          rawId: SOCIALBROWSER.md5(options.publicKey.user.name),
+
+          response: {
+            clientDataJSON: JSON.stringify(options.publicKey),
+          },
+        };
+        console.log(pkCredential);
+        resolve(pkCredential);
+      } else {
+        reject('AbortError');
+      }
     });
   };
   navigator.credentials.get = function () {

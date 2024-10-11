@@ -13,7 +13,7 @@ module.exports = function init(parent) {
           ws_user.send({ type: 'connected' });
           break;
         case '[request-browser-core-data]':
-          let child = parent.clientList[message.index];
+          let child = parent.clientList.find((c) => c.uuid === message.uuid);
           if (!child) {
             return;
           }
@@ -46,7 +46,7 @@ module.exports = function init(parent) {
 
           break;
         case '[re-request-browser-core-data]':
-          let child2 = parent.clientList[message.index];
+          let child2 = parent.clientList.find((c) => c.uuid === message.uuid);
           if (!child2) {
             return;
           }

@@ -624,11 +624,7 @@ module.exports = function init(parent) {
     parent.applay('preload_list');
   };
   parent.removePreload = function (id) {
-    parent.var.preload_list.forEach((p, i) => {
-      if (p.id == id) {
-        parent.var.preload_list.splice(i, 1);
-      }
-    });
+    parent.var.preload_list = parent.var.preload_list.filter((p) => p.id !== id);
     parent.applay('preload_list');
   };
 

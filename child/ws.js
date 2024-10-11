@@ -54,11 +54,11 @@ module.exports = function (child) {
               child.mainWindow.show();
               child.mainWindow.webContents.send('[open new tab]', message.newTabData);
             } else {
-              child.sessionConfig();
+              child.sessionConfig(message.options.partition);
               child.createNewWindow({ ...child.parent.options, ...message.options });
             }
           } else {
-            child.sessionConfig();
+            child.sessionConfig(message.options.partition);
             child.createNewWindow({ ...message.options });
           }
         } else if (message.type == '[re-browser-core-data]') {
@@ -69,11 +69,11 @@ module.exports = function (child) {
               child.mainWindow.show();
               child.mainWindow.webContents.send('[open new tab]', message.newTabData);
             } else {
-              child.sessionConfig();
+              child.sessionConfig(message.options.partition);
               child.createNewWindow({ ...child.parent.options, ...message.options });
             }
           } else {
-            child.sessionConfig();
+            child.sessionConfig(message.options.partition);
             child.createNewWindow({ ...message.options });
           }
         } else if (message.type == '[update-browser-var]') {
@@ -88,7 +88,7 @@ module.exports = function (child) {
               child.addOverwriteList(child.parent.var.overwrite.urls);
             }
             if (message.options.name == 'core' || message.options.name == 'proxy' || message.options.name == 'session_list') {
-              child.sessionConfig();
+              child.sessionConfig(message.options.partition);
             }
             if (message.options.name == 'cookieList') {
               child.cookieList = message.options.data;

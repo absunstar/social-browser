@@ -144,6 +144,9 @@ const { isTypedArray, isDataView } = require('util/types');
 
   SOCIALBROWSER.callSync = SOCIALBROWSER.ipcSync = function (channel, value = {}) {
     value.parentSetting = SOCIALBROWSER.customSetting;
+    if (value.parentSetting && value.parentSetting.parentSetting) {
+      value.parentSetting.parentSetting = undefined;
+    }
     if (channel == '[open new popup]' || channel == '[open new tab]') {
       value.referrer = value.referrer || document.location.href;
     }
@@ -152,6 +155,10 @@ const { isTypedArray, isDataView } = require('util/types');
 
   SOCIALBROWSER.invoke = SOCIALBROWSER.ipc = function (channel, value = {}) {
     value.parentSetting = SOCIALBROWSER.customSetting;
+    if (value.parentSetting && value.parentSetting.parentSetting) {
+      value.parentSetting.parentSetting = undefined;
+    }
+
     if (channel == '[open new popup]' || channel == '[open new tab]') {
       value.referrer = value.referrer || document.location.href;
     }
@@ -293,16 +300,14 @@ const { isTypedArray, isDataView } = require('util/types');
     SOCIALBROWSER.currentWindow = SOCIALBROWSER.remote.getCurrentWindow();
     SOCIALBROWSER.webContents = SOCIALBROWSER.currentWindow.webContents;
 
-    SOCIALBROWSER.ipc('[browser][data]', {
+    SOCIALBROWSER.browserData = SOCIALBROWSER.ipcSync('[browser][data]', {
       hostname: SOCIALBROWSER.hostname,
       url: SOCIALBROWSER.href,
       name: SOCIALBROWSER.selected_properties,
       windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
       partition: SOCIALBROWSER.partition,
-    }).then((data) => {
-      SOCIALBROWSER.browserData = data;
-      SOCIALBROWSER.init2();
     });
+    SOCIALBROWSER.init2();
   };
 
   window.SOCIALBROWSER = SOCIALBROWSER;

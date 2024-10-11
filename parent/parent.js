@@ -184,7 +184,7 @@ module.exports = function init(parent) {
   };
 
   parent.createChildProcess = function (_options) {
-    options = { ..._options };
+    let options = { ..._options };
     options.partition = options.partition || parent.var.core.session.name;
     options.user_name = options.user_name || options.partition;
 
@@ -192,11 +192,13 @@ module.exports = function init(parent) {
     const uuid = options.uuid;
 
     let index = parent.clientList.findIndex((cl) => cl && cl.uuid === uuid);
-    if (index !== -1 && parent.clientList[index] && parent.clientList[index].ws) {
+    if (index !== -1 && parent.clientList[index]) {
       parent.clientList[index].windowType = options.windowType || 'popup';
       parent.clientList[index].option_list.push(options);
       parent.clientList[index].options = options;
-      parent.clientList[index].ws.send({ type: 're-connected' });
+      if (parent.clientList[index].ws) {
+        parent.clientList[index].ws.send({ type: 're-connected' });
+      }
     } else {
       index = parent.clientList.length;
       parent.clientList.push({

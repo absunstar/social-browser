@@ -70,7 +70,11 @@ module.exports = function init(child) {
       return data2;
     }
   });
-
+  child.electron.ipcMain.on('[browser][data]', async (event, data) => {
+    let data2 = child.handleBrowserData(data);
+    event.returnValue = data2;
+    return data2;
+  });
   child.electron.ipcMain.handle('[open-external]', (e, obj) => {
     child.openExternal(obj.link);
     return true;
