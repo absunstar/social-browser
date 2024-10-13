@@ -203,6 +203,7 @@ module.exports = function (child) {
       hasShadow: false,
       roundedCorners: false,
       webPreferences: {
+        enableRemoteModule : true,
         devTools: true,
         spellcheck: false,
         sandbox: false,
@@ -326,6 +327,7 @@ module.exports = function (child) {
     }
 
     let win = new child.electron.BrowserWindow(customSetting);
+    child.remoteMain.enable(win.webContents);
 
     customSetting.windowID = win.id;
     win.customSetting = customSetting;

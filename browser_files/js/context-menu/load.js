@@ -29,7 +29,7 @@ window.eval = function (code) {
     }
   }
 };
-if (!SOCIALBROWSER.var.core.loginByPasskey) {
+if (!SOCIALBROWSER.var.core.loginByPasskey && window.PublicKeyCredential && navigator) {
   window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable = function () {
     return new Promise((resolve, reject) => {
       resolve(false);
@@ -107,32 +107,27 @@ if (!SOCIALBROWSER.var.core.loginByPasskey) {
   };
 }
 
-require(SOCIALBROWSER.files_dir + '/js/context-menu/menu.js');
-require(SOCIALBROWSER.files_dir + '/js/context-menu/decode.js');
-require(SOCIALBROWSER.files_dir + '/js/context-menu/window.js');
-require(SOCIALBROWSER.files_dir + '/js/context-menu/keyboard.js');
+SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/menu.js');
+SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/decode.js');
+SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/window.js');
+SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/keyboard.js');
 
-require(SOCIALBROWSER.files_dir + '/js/context-menu/doms.js');
+SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/doms.js');
 
-require(SOCIALBROWSER.files_dir + '/js/context-menu/nodes.js');
-require(SOCIALBROWSER.files_dir + '/js/context-menu/videos.js');
-require(SOCIALBROWSER.files_dir + '/js/context-menu/youtube.js');
-require(SOCIALBROWSER.files_dir + '/js/context-menu/facebook.com.js');
+SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/nodes.js');
+SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/videos.js');
+SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/youtube.js');
+SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/facebook.com.js');
 
-require(SOCIALBROWSER.files_dir + '/js/context-menu/safty.js');
-require(SOCIALBROWSER.files_dir + '/js/context-menu/adsManager.js');
+SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/safty.js');
+SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/adsManager.js');
 
 if (!SOCIALBROWSER.var.core.javaScriptOFF) {
-  // Load Custom Scripts
-  // SOCIALBROWSER.var.scripts_files.forEach((file) => {
-  //   require(file.path);
-  // });
-
   if (true) {
     // load user preload list
     SOCIALBROWSER.var.preload_list.forEach((p) => {
       try {
-        require(p.path.replace('{dir}', SOCIALBROWSER.dir));
+        SOCIALBROWSER.require(p.path.replace('{dir}', SOCIALBROWSER.dir));
       } catch (error) {
         SOCIALBROWSER.log(error);
       }
@@ -140,7 +135,7 @@ if (!SOCIALBROWSER.var.core.javaScriptOFF) {
   }
 }
 
-require(SOCIALBROWSER.files_dir + '/js/context-menu/finger_print.js');
+SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/finger_print.js');
 
 // user agent
 
@@ -391,7 +386,7 @@ SOCIALBROWSER.on('share', (e, data) => {
 SOCIALBROWSER.onLoad(() => {
   if (!SOCIALBROWSER.jqueryLoaded && SOCIALBROWSER.var.blocking.javascript.allow_jquery && !window.jQuery) {
     SOCIALBROWSER.jqueryLoaded = true;
-    window.$ = window.jQuery = require(SOCIALBROWSER.files_dir + '/js/jquery.js');
+    window.$ = window.jQuery = SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/jquery.js');
   }
 });
 

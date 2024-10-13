@@ -1,6 +1,6 @@
 module.exports = function init(child) {
   child.on = function (name, callback) {
-    child.electron.ipcMain.handle(name, callback);
+    child.ipcMain.handle(name, callback);
   };
 
   child.call = function (channel, value) {
@@ -49,7 +49,7 @@ module.exports = function init(child) {
     return data2;
   };
 
-  child.electron.ipcMain.handle('[browser][data]', async (event, data) => {
+  child.ipcMain.handle('[browser][data]', async (event, data) => {
     try {
       let data2 = child.handleBrowserData(data);
       return data2;
@@ -70,24 +70,24 @@ module.exports = function init(child) {
       return data2;
     }
   });
-  child.electron.ipcMain.on('[browser][data]', async (event, data) => {
+  child.ipcMain.on('[browser][data]', async (event, data) => {
     let data2 = child.handleBrowserData(data);
     event.returnValue = data2;
     return data2;
   });
-  child.electron.ipcMain.handle('[open-external]', (e, obj) => {
+  child.ipcMain.handle('[open-external]', (e, obj) => {
     child.openExternal(obj.link);
     return true;
   });
-  child.electron.ipcMain.handle('[exec]', (e, obj) => {
+  child.ipcMain.handle('[exec]', (e, obj) => {
     child.exec(obj.cmd);
     return true;
   });
-  child.electron.ipcMain.handle('[exe]', (e, obj) => {
+  child.ipcMain.handle('[exe]', (e, obj) => {
     child.exe(obj.cmd, obj.args);
     return true;
   });
-  child.electron.ipcMain.handle('[kill]', (e, obj) => {
+  child.ipcMain.handle('[kill]', (e, obj) => {
     child.child_process.exec('tasklist', { maxBuffer: 1024 * 1024 * 2 }, function (err, stdout, stderr) {
       let programsList = [];
       if (stdout) {
@@ -117,59 +117,59 @@ module.exports = function init(child) {
 
     return true;
   });
-  child.electron.ipcMain.handle('[request-cookie]', (e, obj) => {
+  child.ipcMain.handle('[request-cookie]', (e, obj) => {
     return child.cookieList.find((c) => obj.domain.like(c.domain) && c.partition == obj.partition);
   });
 
-  child.electron.ipcMain.handle('online-status', (e, obj) => {
+  child.ipcMain.handle('online-status', (e, obj) => {
     child.parent.var.core.onLineStatus = obj.status;
   });
 
-  child.electron.ipcMain.handle('[handle-session]', (e, obj) => {
+  child.ipcMain.handle('[handle-session]', (e, obj) => {
     child.handleSession(obj);
   });
-  child.electron.ipcMain.handle('[cookie-set-raw]', (e, obj) => {
+  child.ipcMain.handle('[cookie-set-raw]', (e, obj) => {
     return true;
   });
-  child.electron.ipcMain.handle('[cookie-get-raw]', (e, obj) => {
+  child.ipcMain.handle('[cookie-get-raw]', (e, obj) => {
     return child.getCookiesRaw(obj);
   });
-  child.electron.ipcMain.handle('[cookie-get-all]', (e, obj) => {
+  child.ipcMain.handle('[cookie-get-all]', (e, obj) => {
     return child.getAllCookies(obj);
   });
-  child.electron.ipcMain.handle('[cookies-clear]', (e, obj) => {
+  child.ipcMain.handle('[cookies-clear]', (e, obj) => {
     return child.clearCookies(obj);
   });
-  child.electron.ipcMain.handle('show_message', (e, data) => {
+  child.ipcMain.handle('show_message', (e, data) => {
     let win = child.electron.BrowserWindow.fromId(data.windowID);
     if (win) {
       win.send('show_message', data);
     }
   });
-  child.electron.ipcMain.handle('message', (e, message) => {
+  child.ipcMain.handle('message', (e, message) => {
     let win = child.electron.BrowserWindow.fromId(message.windowID);
     if (win) {
       win.send('message', message);
     }
   });
-  child.electron.ipcMain.handle('window.message', (e, message) => {
+  child.ipcMain.handle('window.message', (e, message) => {
     let win = child.electron.BrowserWindow.fromId(message.windowID);
     if (win) {
       win.send('window.message', message);
     }
   });
 
-  child.electron.ipcMain.handle('share', (e, message) => {
+  child.ipcMain.handle('share', (e, message) => {
     child.sendMessage({
       type: 'share',
       message: message,
     });
   });
 
-  child.electron.ipcMain.handle('[proxy-check-request]', (e, message) => {
+  child.ipcMain.handle('[proxy-check-request]', (e, message) => {
     child.proxy_check(message.proxy);
   });
-  child.electron.ipcMain.handle('getBlobData', (e, message) => {
+  child.ipcMain.handle('getBlobData', (e, message) => {
     child.log('getBlobData', message);
     let ses = child.electron.session.fromPartition(message.partition);
     ses
@@ -181,11 +181,11 @@ module.exports = function init(child) {
         child.log(err);
       });
   });
-  child.electron.ipcMain.handle('ws', (e, message) => {
+  child.ipcMain.handle('ws', (e, message) => {
     child.sendMessage(message);
   });
 
-  child.electron.ipcMain.handle('[add][window]', (e, data) => {
+  child.ipcMain.handle('[add][window]', (e, data) => {
     let w = child.windowList.find((w) => w.id == data.windowID);
     if (w) {
       w.customSetting = { ...w.customSetting, ...data.customSetting };
@@ -199,7 +199,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.handle('[set][window][setting]', (e, data) => {
+  child.ipcMain.handle('[set][window][setting]', (e, data) => {
     let w = child.windowList.find((w) => w.id == data.windowID);
     if (w) {
       w.customSetting.windowSetting = w.customSetting.windowSetting || [];
@@ -219,7 +219,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.handle('[get][window][setting]', (e, data) => {
+  child.ipcMain.handle('[get][window][setting]', (e, data) => {
     let win = child.windowList.find((w) => w.id == data.windowID);
     if (win) {
       return win.customSetting.windowSetting || [];
@@ -228,18 +228,18 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.handle('[assign][window]', (e, info) => {
+  child.ipcMain.handle('[assign][window]', (e, info) => {
     child.assignWindows.push({
       parentWindowID: info.parentWindowID,
       childWindowID: info.childWindowID,
     });
   });
 
-  child.electron.ipcMain.handle('[get][assign][window]', (e, info) => {
+  child.ipcMain.handle('[get][assign][window]', (e, info) => {
     return child.assignWindows.find((w) => w.childWindowID == info.childWindowID);
   });
 
-  child.electron.ipcMain.handle('[fetch]', async (e, options) => {
+  child.ipcMain.handle('[fetch]', async (e, options) => {
     options.body = options.body || options.data || options.payload;
     if (options.body && typeof options.body != 'string') {
       options.body = JSON.stringify(options.body);
@@ -279,7 +279,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.handle('[fetch-json]', async (e, options) => {
+  child.ipcMain.handle('[fetch-json]', async (e, options) => {
     options.body = options.body || options.data || options.payload;
     if (options.body && typeof options.body != 'string') {
       options.body = JSON.stringify(options.body);
@@ -320,7 +320,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.handle('[translate]', async (e, info) => {
+  child.ipcMain.handle('[translate]', async (e, info) => {
     info.text = encodeURIComponent(info.text);
     info.from = info.from || 'auto';
     info.to = info.to || 'en';
@@ -333,7 +333,7 @@ module.exports = function init(child) {
     }
     return info;
   });
-  child.electron.ipcMain.handle('[show-menu]', (e, data) => {
+  child.ipcMain.handle('[show-menu]', (e, data) => {
     let win = child.electron.BrowserWindow.fromId(data.windowID);
     data.list.forEach((m, i) => {
       m.click = function () {
@@ -357,7 +357,7 @@ module.exports = function init(child) {
     const menu = child.electron.Menu.buildFromTemplate(data.list);
     menu.popup(win);
   });
-  child.electron.ipcMain.handle('[create-new-view]', (event, options) => {
+  child.ipcMain.handle('[create-new-view]', (event, options) => {
     options.url = options.url || child.parent.var.core.default_page;
     options.windowType = 'view';
     options.parent_id = child.id;
@@ -375,7 +375,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.handle('[show-view]', (e, options) => {
+  child.ipcMain.handle('[show-view]', (e, options) => {
     if (child.speedMode) {
       child.currentView = options;
       child.windowList.forEach((w) => {
@@ -407,7 +407,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.handle('[close-view]', (e, options) => {
+  child.ipcMain.handle('[close-view]', (e, options) => {
     if (child.speedMode) {
       child.windowList.forEach((w) => {
         if (w.customSetting.windowType == 'view') {
@@ -424,38 +424,38 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.handle('[update-view-url]', (e, data) => {
+  child.ipcMain.handle('[update-view-url]', (e, data) => {
     child.sendMessage({
       type: '[update-view-url]',
       data: data,
     });
   });
 
-  child.electron.ipcMain.handle('[import-extension]', (e, options) => {
+  child.ipcMain.handle('[import-extension]', (e, options) => {
     child.sendMessage({
       type: '[import-extension]',
     });
   });
-  child.electron.ipcMain.handle('[enable-extension]', (e, options) => {
+  child.ipcMain.handle('[enable-extension]', (e, options) => {
     child.sendMessage({
       type: '[enable-extension]',
       extension: options,
     });
   });
-  child.electron.ipcMain.handle('[disable-extension]', (e, options) => {
+  child.ipcMain.handle('[disable-extension]', (e, options) => {
     child.sendMessage({
       type: '[disable-extension]',
       extension: options,
     });
   });
-  child.electron.ipcMain.handle('[remove-extension]', (e, options) => {
+  child.ipcMain.handle('[remove-extension]', (e, options) => {
     child.sendMessage({
       type: '[remove-extension]',
       extension: options,
     });
   });
 
-  child.electron.ipcMain.handle('[update-browser-var]', (e, options) => {
+  child.ipcMain.handle('[update-browser-var]', (e, options) => {
     child.parent.var[options.name] = options.data;
     child.sendMessage({
       type: '[update-browser-var]',
@@ -463,7 +463,7 @@ module.exports = function init(child) {
     });
   });
 
-  child.electron.ipcMain.handle('[browser-message]', (event, data) => {
+  child.ipcMain.handle('[browser-message]', (event, data) => {
     let w = child.windowList.find((w) => w.id == data.windowID);
     if (w && w.window && !w.window.isDestroyed()) {
       if (data.name == 'maxmize') {
@@ -480,9 +480,9 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.handle('[open new tab]', (event, data) => {
+  child.ipcMain.handle('[open new tab]', (event, data) => {
     data.partition = data.partition || child.parent.var.core.session.name;
-    data.user_name = data.user_name || child.parent.var.core.session.display;
+    data.user_name = data.user_name || child.parent.var.session_list.find(s => s.name == data.partition)?.display || data.partition;
     data.title = data.title || data.url;
 
     if (child.windowList.some((w) => w.customSetting.windowType == 'main')) {
@@ -500,7 +500,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.handle('[open new popup]', (event, data) => {
+  child.ipcMain.handle('[open new popup]', (event, data) => {
     data.partition = data.partition || child.parent.var.core.session.name;
     data.user_name = data.user_name || child.parent.var.core.session.display;
 
@@ -516,10 +516,10 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.handle('[show-addressbar]', (event, data) => {
+  child.ipcMain.handle('[show-addressbar]', (event, data) => {
     child.showAddressbarWindow(data);
   });
-  child.electron.ipcMain.handle('[edit-window]', (event, data) => {
+  child.ipcMain.handle('[edit-window]', (event, data) => {
     if (data.tabID && data.childID && data.windowID) {
       child.sendMessage({ type: '[edit-window]', data: data });
     } else if (data.windowID) {
@@ -542,7 +542,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.handle('[window-reload]', (event, data) => {
+  child.ipcMain.handle('[window-reload]', (event, data) => {
     if (data.tabID && data.childID && data.windowID) {
       child.sendMessage({ type: '[window-reload]', data: data });
     } else if (data.windowID) {
@@ -551,7 +551,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.handle('[window-reload-hard]', (event, data) => {
+  child.ipcMain.handle('[window-reload-hard]', (event, data) => {
     if (data.tabID && data.childID && data.windowID) {
       child.sendMessage({ type: '[window-reload-hard]', data: data });
     } else if (data.windowID) {
@@ -583,7 +583,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.handle('[toggle-window-audio]', (event, data) => {
+  child.ipcMain.handle('[toggle-window-audio]', (event, data) => {
     if (data.tabID && data.childID && data.windowID) {
       child.sendMessage({ type: '[toggle-window-audio]', data: data });
     } else if (data.windowID) {
@@ -593,7 +593,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.handle('[window-go-back]', (event, data) => {
+  child.ipcMain.handle('[window-go-back]', (event, data) => {
     if (data.tabID && data.childID && data.windowID) {
       child.sendMessage({ type: '[window-go-back]', data: data });
     } else if (data.windowID) {
@@ -604,7 +604,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.handle('[window-go-forward]', (event, data) => {
+  child.ipcMain.handle('[window-go-forward]', (event, data) => {
     if (data.tabID && data.childID && data.windowID) {
       child.sendMessage({ type: '[window-go-forward]', data: data });
     } else if (data.windowID) {
@@ -615,7 +615,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.handle('[window-zoom]', (event, data) => {
+  child.ipcMain.handle('[window-zoom]', (event, data) => {
     if (data.tabID && data.childID && data.windowID) {
       child.sendMessage({ type: '[window-zoom]', data: data });
     } else if (data.windowID) {
@@ -625,7 +625,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.handle('[window-zoom-]', (event, data) => {
+  child.ipcMain.handle('[window-zoom-]', (event, data) => {
     if (data.tabID && data.childID && data.windowID) {
       child.sendMessage({ type: '[window-zoom-]', data: data });
     } else if (data.windowID) {
@@ -637,7 +637,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.handle('[window-zoom+]', (event, data) => {
+  child.ipcMain.handle('[window-zoom+]', (event, data) => {
     if (data.tabID && data.childID && data.windowID) {
       child.sendMessage({ type: '[window-zoom+]', data: data });
     } else if (data.windowID) {
@@ -647,7 +647,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.handle('[add-to-bookmark]', (event, data) => {
+  child.ipcMain.handle('[add-to-bookmark]', (event, data) => {
     if (data.tabID && data.childID && data.windowID) {
       child.sendMessage({
         type: '[add-to-bookmark]',
@@ -656,7 +656,7 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.handle('[show-window-dev-tools]', (event, data) => {
+  child.ipcMain.handle('[show-window-dev-tools]', (event, data) => {
     if (data.tabID && data.childID && data.windowID) {
       child.sendMessage({ type: '[show-window-dev-tools]', data: data });
     } else if (data.windowID) {
@@ -665,11 +665,11 @@ module.exports = function init(child) {
     }
   });
 
-  child.electron.ipcMain.handle('[show-profiles]', (event, data) => {
+  child.ipcMain.handle('[show-profiles]', (event, data) => {
     child.showProfilesWindow();
   });
 
-  child.electron.ipcMain.handle('user_data', (event, data) => {
+  child.ipcMain.handle('user_data', (event, data) => {
     if (!Array.isArray(data.data) || data.data.length === 0) {
       return null;
     }
@@ -687,7 +687,7 @@ module.exports = function init(child) {
     });
   });
 
-  child.electron.ipcMain.handle('user_data_input', (event, data) => {
+  child.ipcMain.handle('user_data_input', (event, data) => {
     if (!Array.isArray(data.data) || data.data.length === 0) {
       return null;
     }
@@ -706,7 +706,7 @@ module.exports = function init(child) {
     });
   });
 
-  child.electron.ipcMain.handle('[send-render-message]', (event, data) => {
+  child.ipcMain.handle('[send-render-message]', (event, data) => {
     data.partition = data.partition || child.parent.var.core.session.name;
     data.user_name = data.user_name || child.parent.var.core.session.display;
 

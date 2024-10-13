@@ -412,34 +412,7 @@ function get_url_menu_list(url) {
       });
     },
   });
-  arr.push({
-    label: ' in ( Self window )',
-    click() {
-      SOCIALBROWSER.ipc('[open new popup]', {
-        url: url,
-        referrer: document.location.href,
-        partition: SOCIALBROWSER.partition,
-        show: true,
-        allowSelfWindow: true,
-        iframe: true,
-        center: true,
-      });
-    },
-  });
-  arr.push({
-    label: ' in ( Just window  )',
-    click() {
-      SOCIALBROWSER.ipc('[open new popup]', {
-        url: url,
-        referrer: document.location.href,
-        partition: SOCIALBROWSER.partition,
-        show: true,
-        iframe: true,
-        allowNewWindows: false,
-        center: true,
-      });
-    },
-  });
+
   arr.push({
     label: ' in ( Allow ads window )',
     click() {
@@ -450,21 +423,6 @@ function get_url_menu_list(url) {
         show: true,
         iframe: true,
         allowAds: true,
-        center: true,
-      });
-    },
-  });
-
-  arr.push({
-    label: ' in ( Insecure window )',
-    click() {
-      SOCIALBROWSER.ipc('[open new popup]', {
-        url: url,
-        referrer: document.location.href,
-        partition: SOCIALBROWSER.partition,
-        show: true,
-        iframe: true,
-        security: false,
         center: true,
       });
     },
@@ -1289,6 +1247,62 @@ function get_custom_menu() {
   }
 }
 
+function getEmailMenu() {
+  if (SOCIALBROWSER.var.core.autoEmail) {
+    if (SOCIALBROWSER.session.display.contains('@')) {
+      SOCIALBROWSER.menuList.push({
+        label: '[ current Email ]',
+        click() {
+          SOCIALBROWSER.copy(SOCIALBROWSER.session.display);
+          SOCIALBROWSER.paste();
+        },
+      });
+      let newEmail = SOCIALBROWSER.session.display.split('@')[0] + '@' + SOCIALBROWSER.var.core.autoEmailDomain;
+      SOCIALBROWSER.menuList.push({
+        label: '[ new Email ] ',
+        click() {
+          SOCIALBROWSER.copy(newEmail);
+          SOCIALBROWSER.paste();
+        },
+      });
+      SOCIALBROWSER.menuList.push({
+        label: '[ get Recovery Code ]',
+        click() {
+          SOCIALBROWSER.fetchJson(
+            {
+              url: 'http://emails.' + SOCIALBROWSER.var.core.autoEmailDomain + '/api/emails/all',
+              method: 'POST',
+              body: { where: { search: newEmail } },
+            },
+            (data) => {
+              if (data.done && data.list.length > 0) {
+                let email = data.list.pop();
+                let code = email.subject.split(':')[1];
+                if (code) {
+                  code = code.trim();
+                  SOCIALBROWSER.copy(code);
+                  SOCIALBROWSER.paste();
+                }
+              }
+            }
+          );
+        },
+      });
+    }
+
+    SOCIALBROWSER.menuList.push({
+      label: '[ Password ]',
+      click() {
+        SOCIALBROWSER.copy(SOCIALBROWSER.var.core.autoEmailPassword);
+        SOCIALBROWSER.paste();
+      },
+    });
+    SOCIALBROWSER.menuList.push({
+      type: 'separator',
+    });
+  }
+}
+
 function createDevelopmentMenu() {
   if (SOCIALBROWSER.menuTestOFF) {
     return;
@@ -1315,6 +1329,7 @@ function createMenuList(node) {
   if (SOCIALBROWSER.customSetting.windowType !== 'main') {
     add_input_menu(node);
     add_a_menu(node);
+    getEmailMenu();
     SOCIALBROWSER.menu_list.forEach((m) => {
       SOCIALBROWSER.menuList.push(m);
     });

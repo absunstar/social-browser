@@ -43,14 +43,14 @@
     speedMode: false,
     electron: require('electron'),
     remoteMain: require('@electron/remote/main'),
-    http: require('http'),
-    https: require('https'),
-    path: require('path'),
-    os: require('os'),
-    url: require('url'),
-    fs: require('fs'),
+    http: require('node:http'),
+    https: require('node:https'),
+    path: require('node:path'),
+    os: require('node:os'),
+    url: require('node:url'),
+    fs: require('node:fs'),
     md5: require('md5'),
-    child_process: require('child_process'),
+    child_process: require('node:child_process'),
     WebSocket: require('ws'),
     package: require('./package.json'),
     id: process.pid,
@@ -147,9 +147,8 @@
   }
 
   browser.electron.app.clearRecentDocuments();
-  // browser.electron.app.commandLine.appendSwitch('no-sandbox');
+   browser.electron.app.commandLine.appendSwitch('no-sandbox');
   // browser.electron.app.commandLine.appendSwitch('in-process-gpu');
-  browser.electron.app.commandLine.appendSwitch('--no-sandbox');
   browser.electron.app.disableHardwareAcceleration();
   browser.electron.protocol.registerSchemesAsPrivileged([
     { scheme: 'browser', privileges: { bypassCSP: true, standard: true, secure: true, supportFetchAPI: true, allowServiceWorkers: true, corsEnabled: true, stream: true } },
@@ -266,6 +265,7 @@
       url: 'http://127.0.0.1:60080/home',
       windowType: 'main',
       partition: 'persist:social',
+      showDevTools : false
     });
   });
 
@@ -286,6 +286,7 @@
       url: 'http://127.0.0.1:60080/home',
       windowType: 'main',
       partition: 'persist:social',
+      showDevTools : false
     });
   }
 

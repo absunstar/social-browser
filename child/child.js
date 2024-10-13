@@ -36,15 +36,16 @@ var child = {
   data_dir: process.argv[5].replace('--data_dir=', ''),
   speedMode: Boolean(process.argv[6].replace('--speed=', '')),
   electron: require('electron'),
+  ipcMain : require('electron/main').ipcMain,
   remoteMain: require('@electron/remote/main'),
-  url: require('url'),
-  path: require('path'),
-  os: require('os'),
-  http: require('http'),
-  https: require('https'),
-  fs: require('fs'),
+  url: require('node:url'),
+  path: require('node:path'),
+  os: require('node:os'),
+  http: require('node:http'),
+  https: require('node:https'),
+  fs: require('node:fs'),
   md5: require('md5'),
-  child_process: require('child_process'),
+  child_process: require('node:child_process'),
   WebSocket: require('ws'),
   id: process.pid,
   windowList: [],
@@ -123,9 +124,8 @@ if (child.electron.app.dock) {
 //child.electron.app.commandLine.appendSwitch('disable-software-rasterizer');
 //child.electron.app.commandLine.appendSwitch('enable-webgl');
 // child.electron.app.commandLine.appendSwitch('disable-dev-shm-usage');
-// child.electron.app.commandLine.appendSwitch('no-sandbox');
 // child.electron.app.commandLine.appendSwitch('disable-gpu');
-child.electron.app.commandLine.appendSwitch('--no-sandbox');
+child.electron.app.commandLine.appendSwitch('no-sandbox');
 child.electron.app.disableHardwareAcceleration();
 
 //child.electron.app.commandLine.appendSwitch('disable-web-security');

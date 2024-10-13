@@ -357,7 +357,7 @@ SOCIALBROWSER.nativeImage = function (_path) {
     if (!_path) {
       return null;
     }
-    return SOCIALBROWSER.electron.nativeImage.createFromPath(SOCIALBROWSER.path.resolve(_path));
+    return SOCIALBROWSER.electron.nativeImage.createFromPath(_path);
   } catch (error) {
     SOCIALBROWSER.log('nativeImage', error);
     return null;

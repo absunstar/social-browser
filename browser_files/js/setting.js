@@ -425,17 +425,18 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     }
     return code;
   };
-
+  $scope.newSessionCount = 10;
   $scope.generateSession = function () {
-    if ($scope.session.display.length && $scope.session.count) {
-      for (let index = 0; index < $scope.session.count; index++) {
-        let code = $scope.addZero(index, $scope.session.count.toString().length);
-        $scope.setting.session_list.push({
-          name: 'persist:' + new Date().getTime() + '_' + code,
-          display: $scope.session.display.replace('{count}', code),
-          can_delete: true,
-          time: new Date().getTime(),
-        });
+    if ($scope.newSessionDisplay.length && $scope.newSessionCount) {
+      for (let index = 0; index < $scope.newSessionCount; index++) {
+        let code = $scope.addZero(index, $scope.newSessionCount.toString().length);
+        let display = $scope.newSessionDisplay;
+        if (display.indexOf('{count}') === -1) {
+          display = display + ' - ' + code;
+        } else {
+          display = display.replace('{count}', code);
+        }
+        $scope.setting.session_list.push(SOCIALBROWSER.addSession(display));
       }
       $scope.session = {};
     }
@@ -952,10 +953,15 @@ app.controller('mainController', ($scope, $http, $timeout) => {
   $scope.paste = function () {
     SOCIALBROWSER.paste();
   };
+  
   $scope.showPassword = function (site) {
     if ((elem = document.querySelector('#pass_' + site.id + ' input[type=password]'))) {
       elem.setAttribute('type', 'text');
     }
   };
+
+  $scope.exportSessionList = function () {};
+  $scope.importSessionList = function () {};
+
   $scope.loadSetting();
 });

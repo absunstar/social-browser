@@ -1,18 +1,5 @@
-const { isTypedArray, isDataView } = require('util/types');
-
 (function () {
-  // if (
-  //   document.location.href.indexOf('about:') === 0 ||
-  //   document.location.href.indexOf('blob') === 0 ||
-  //   document.location.href.indexOf('chrome-error') === 0 ||
-  //   document.location.href.indexOf('https://stream.') === 0
-  // ) {
-  //   return;
-  // }
-
   var SOCIALBROWSER = {
-    module: require('module'),
-    path: require('path'),
     random: function (min = 1, max = 1000) {
       min = Math.ceil(min);
       max = Math.floor(max);
@@ -61,6 +48,8 @@ const { isTypedArray, isDataView } = require('util/types');
     ],
     effectiveTypeList: ['slow-2g', '2g', '3g', '4g'],
     session: {
+      name: 'ghost_' + new Date().getTime(),
+      display: 'ghost',
       privacy: { languages: 'en', connection: {} },
     },
     menu_list: [],
@@ -78,13 +67,21 @@ const { isTypedArray, isDataView } = require('util/types');
     },
   };
 
-  SOCIALBROWSER.electron = require('electron');
+  SOCIALBROWSER.require = function (name) {
+    try {
+      return require(name);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-  SOCIALBROWSER.remote = require('@electron/remote');
-  SOCIALBROWSER.require = require;
+  SOCIALBROWSER.electron = SOCIALBROWSER.require('electron');
+  SOCIALBROWSER.ipcRenderer = SOCIALBROWSER.require('electron/renderer').ipcRenderer;
+  SOCIALBROWSER.contextBridge = SOCIALBROWSER.require('electron/renderer').contextBridge;
+  SOCIALBROWSER.remote = SOCIALBROWSER.require('@electron/remote');
 
-  SOCIALBROWSER.url = SOCIALBROWSER.require('url');
   SOCIALBROWSER.path = SOCIALBROWSER.require('path');
+  SOCIALBROWSER.url = SOCIALBROWSER.require('url');
   SOCIALBROWSER.md5 = SOCIALBROWSER.require('md5');
   SOCIALBROWSER.fs = SOCIALBROWSER.require('fs');
   SOCIALBROWSER.Buffer = Buffer;
@@ -150,7 +147,7 @@ const { isTypedArray, isDataView } = require('util/types');
     if (channel == '[open new popup]' || channel == '[open new tab]') {
       value.referrer = value.referrer || document.location.href;
     }
-    return SOCIALBROWSER.electron.ipcRenderer.sendSync(channel, value);
+    return SOCIALBROWSER.ipcRenderer.sendSync(channel, value);
   };
 
   SOCIALBROWSER.invoke = SOCIALBROWSER.ipc = function (channel, value = {}) {
@@ -162,10 +159,10 @@ const { isTypedArray, isDataView } = require('util/types');
     if (channel == '[open new popup]' || channel == '[open new tab]') {
       value.referrer = value.referrer || document.location.href;
     }
-    return SOCIALBROWSER.electron.ipcRenderer.invoke(channel, value);
+    return SOCIALBROWSER.ipcRenderer.invoke(channel, value);
   };
   SOCIALBROWSER.on = function (name, callback) {
-    return SOCIALBROWSER.electron.ipcRenderer.on(name, callback);
+    return SOCIALBROWSER.ipcRenderer.on(name, callback);
   };
 
   SOCIALBROWSER.set = function (key, value) {
@@ -221,36 +218,6 @@ const { isTypedArray, isDataView } = require('util/types');
     return false;
   };
 
-  SOCIALBROWSER.requireFromString = function (code, filename, opts) {
-    if (typeof code !== 'string') {
-      console.log('code must be a string, not ' + typeof code);
-    }
-
-    if (typeof filename === 'object') {
-      opts = filename;
-      filename = undefined;
-    }
-
-    opts = opts || {};
-    filename = filename || '';
-
-    opts.appendPaths = opts.appendPaths || [];
-    opts.prependPaths = opts.prependPaths || [];
-
-    var paths = SOCIALBROWSER.module._nodeModulePaths(path.dirname(filename));
-
-    var parent = module.main;
-    var m = new SOCIALBROWSER.module(filename, parent);
-    m.filename = filename;
-    m.paths = [].concat(opts.prependPaths).concat(paths).concat(opts.appendPaths);
-    m._compile(code, filename);
-
-    var exports = m.exports;
-    parent && parent.children && parent.children.splice(parent.children.indexOf(m), 1);
-
-    return exports;
-  };
-
   SOCIALBROWSER.init2 = function () {
     SOCIALBROWSER.is_main_data = true;
     SOCIALBROWSER.childProcessID = SOCIALBROWSER.browserData.childProcessID;
@@ -274,9 +241,9 @@ const { isTypedArray, isDataView } = require('util/types');
       SOCIALBROWSER.session.privacy.vpc = { ...SOCIALBROWSER.var.blocking.privacy.vpc };
     }
 
-    require(SOCIALBROWSER.files_dir + '/js/context-menu/init.js');
-    require(SOCIALBROWSER.files_dir + '/js/context-menu/event.js');
-    require(SOCIALBROWSER.files_dir + '/js/context-menu/fn.js');
+    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/init.js');
+    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/event.js');
+    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/fn.js');
 
     SOCIALBROWSER.isWhiteSite = SOCIALBROWSER.var.blocking.white_list.some((site) => site.url.length > 2 && document.location.href.like(site.url));
 
@@ -290,7 +257,7 @@ const { isTypedArray, isDataView } = require('util/types');
       SOCIALBROWSER.set('vpc', SOCIALBROWSER.session.privacy.vpc);
     }
 
-    require(SOCIALBROWSER.files_dir + '/js/context-menu/load.js');
+    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/load.js');
     if (!SOCIALBROWSER.customSetting.allowSocialBrowser) {
       delete window.SOCIALBROWSER;
     }

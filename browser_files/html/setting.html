@@ -215,8 +215,16 @@
                   </div>
 
                   <div class="row padding">
-                    <i-checkbox class="" label="I'm Using Social Browser" ng-model="setting.blocking.core.send_browser_id"></i-checkbox>
-                    <i-checkbox class="" label="Auto Clear Cache Storage" ng-model="setting.core.autoClearCacheStorage"></i-checkbox>
+                    <div class="row">
+                      <i-checkbox class="" label="I'm Using Social Browser" ng-model="setting.blocking.core.send_browser_id"></i-checkbox>
+                      <i-checkbox class="" label="Auto Clear Cache Storage" ng-model="setting.core.autoClearCacheStorage"></i-checkbox>
+                    </div>
+
+                    <div class="row">
+                      <i-checkbox class="" label="Auto Email ( create new email for every profile ) " ng-model="setting.core.autoEmail"></i-checkbox>
+                      <i-control class="col3" ng-show="setting.core.autoEmail" type="password" label="Auto Email Password" ng-model="setting.core.autoEmailPassword"> </i-control>
+                      <i-control class="col3" ng-show="setting.core.autoEmail" label="Auto Email Domain" ng-model="setting.core.autoEmailDomain"> </i-control>
+                    </div>
                   </div>
 
                   <fieldset>
@@ -766,8 +774,8 @@
                       <fieldset>
                         <legend>Generate Profiles</legend>
                         <div class="row">
-                          <div class="col8"><i-control label="Name" ng-model="session.display"></i-control></div>
-                          <div class="col4"><i-control type="number" label="Count" ng-model="session.count"></i-control></div>
+                          <div class="col8"><i-control label="Name" ng-model="newSessionDisplay"></i-control></div>
+                          <div class="col4"><i-control type="number" label="Count" ng-model="newSessionCount"></i-control></div>
                         </div>
                         <div class="row">
                           <label> example : user_{count}@yoursite.com</label>
