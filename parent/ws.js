@@ -328,11 +328,7 @@ module.exports = function init(parent) {
           });
           break;
         case '[remove-proxy]':
-          parent.var.proxy_list.forEach((p, i) => {
-            if (message.proxy.ip === p.ip && message.proxy.port === p.port) {
-              parent.var.proxy_list.splice(i, 1);
-            }
-          });
+          parent.var.proxy_list = parent.var.proxy_list.filter((p) => message.proxy.ip !== p.ip || message.proxy.port !== p.port);
 
           parent.set_var('proxy_list', parent.var.proxy_list);
           break;
@@ -365,25 +361,16 @@ module.exports = function init(parent) {
           break;
         case '[cookieList-delete]':
           if (message.cookie.domain && !message.cookie.partition) {
-            parent.var.cookieList.forEach((c, i) => {
-              if (c.domain == message.cookie.domain || c.domain.like(message.cookie.domain) || message.cookie.domain.like(c.domain)) {
-                parent.var.cookieList.splice(i, 1);
-              }
-            });
+            parent.var.cookieList = parent.var.cookieList.filter((c) => c.domain !== message.cookie.domain && !c.domain.like(message.cookie.domain) && !message.cookie.domain.like(c.domain));
           } else if (!message.cookie.domain && message.cookie.partition) {
-            parent.var.cookieList.forEach((c, i) => {
-              if (c.partition == message.cookie.partition || c.partition.like(message.cookie.partition) || message.cookie.partition.like(c.partition)) {
-                parent.var.cookieList.splice(i, 1);
-              }
-            });
+            parent.var.cookieList = parent.var.cookieList.filter(
+              (c) => c.partition !== message.cookie.partition && !c.partition.like(message.cookie.partition) && !message.cookie.partition.like(c.partition)
+            );
           } else if (message.cookie.domain && message.cookie.partition) {
-            parent.var.cookieList.forEach((c, i) => {
-              if (c.partition == message.cookie.partition || c.partition.like(message.cookie.partition) || message.cookie.partition.like(c.partition)) {
-                if (c.domain == message.cookie.domain || c.domain.like(message.cookie.domain) || message.cookie.domain.like(c.domain)) {
-                  parent.var.cookieList.splice(i, 1);
-                }
-              }
-            });
+            parent.var.cookieList = parent.var.cookieList.filter(
+              (c) => c.partition !== message.cookie.partition && !c.partition.like(message.cookie.partition) && !message.cookie.partition.like(c.partition)
+            );
+            parent.var.cookieList = parent.var.cookieList.filter((c) => c.domain !== message.cookie.domain && !c.domain.like(message.cookie.domain) && !message.cookie.domain.like(c.domain));
           }
           parent.var.cookieList.sort((a, b) => {
             return b.time - a.time;
@@ -409,11 +396,7 @@ module.exports = function init(parent) {
               parent.cookies[message.partition].push(message.cookie);
             }
           } else {
-            parent.cookies[message.partition].forEach((co, i) => {
-              if (co.domain == message.cookie.domain && co.name == message.cookie.name) {
-                parent.cookies[message.partition].splice(i, 1);
-              }
-            });
+            parent.cookies[message.partition] = parent.cookies[message.partition].filter((co) => co.domain !== message.cookie.domain || co.name !== message.cookie.name);
           }
           break;
         case '[cookies-added]':
@@ -479,19 +462,11 @@ module.exports = function init(parent) {
         case '[remove-session]':
           let oldSession = message.session;
           if (oldSession.name) {
-            let oldSessionIndex = parent.var.session_list.findIndex((s) => s.name == oldSession.name);
-            if (oldSessionIndex !== -1) {
-              parent.var.session_list.splice(oldSessionIndex, 1);
-              parent.var.session_list.sort((a, b) => (a.time > b.time ? -1 : 1));
-              parent.applay('session_list');
-            }
+            parent.var.session_list = parent.var.session_list.filter((s) => s.name !== oldSession.name);
+            parent.applay('session_list');
           } else if (oldSession.display) {
-            let oldSessionIndex = parent.var.session_list.findIndex((s) => s.display == oldSession.display);
-            if (oldSessionIndex !== -1) {
-              parent.var.session_list.splice(oldSessionIndex, 1);
-              parent.var.session_list.sort((a, b) => (a.time > b.time ? -1 : 1));
-              parent.applay('session_list');
-            }
+            parent.var.session_list = parent.var.session_list.filter((s) => s.display !== oldSession.display);
+            parent.applay('session_list');
           }
           break;
         case '[add-window-url]':

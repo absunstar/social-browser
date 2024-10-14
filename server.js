@@ -80,23 +80,22 @@
     startTime: new Date().getTime(),
   };
   browser.fetchAsync = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
-    browser.fetch =
-      function (...args) {
-        args[1] = args[1] || {};
-        args[1].agent = function (_parsedURL) {
-          if (_parsedURL.protocol == 'http:') {
-            return new browser.http.Agent({
-              keepAlive: true,
-            });
-          } else {
-            return new browser.https.Agent({
-              keepAlive: true,
-            });
-          }
-        };
-        return browser.fetchAsync(...args);
-      };
-      
+  browser.fetch = function (...args) {
+    args[1] = args[1] || {};
+    args[1].agent = function (_parsedURL) {
+      if (_parsedURL.protocol == 'http:') {
+        return new browser.http.Agent({
+          keepAlive: true,
+        });
+      } else {
+        return new browser.https.Agent({
+          keepAlive: true,
+        });
+      }
+    };
+    return browser.fetchAsync(...args);
+  };
+
   const is_first_app = browser.electron.app.requestSingleInstanceLock();
   if (!is_first_app) {
     let f = process.argv[process.argv.length - 1]; // LAST arg is file to run
@@ -108,6 +107,13 @@
     }
     return;
   }
+
+  
+  browser.electron.app.clearRecentDocuments();
+  // browser.electron.app.commandLine.appendSwitch('no-sandbox');
+  // browser.electron.app.commandLine.appendSwitch('in-process-gpu');
+  browser.electron.app.disableHardwareAcceleration();
+
 
   browser.dir = process.resourcesPath + '/app.asar';
   if (!browser.fs.existsSync(browser.dir)) {
@@ -146,10 +152,6 @@
     browser.electron.app.dock.hide();
   }
 
-  browser.electron.app.clearRecentDocuments();
-   browser.electron.app.commandLine.appendSwitch('no-sandbox');
-  // browser.electron.app.commandLine.appendSwitch('in-process-gpu');
-  browser.electron.app.disableHardwareAcceleration();
   browser.electron.protocol.registerSchemesAsPrivileged([
     { scheme: 'browser', privileges: { bypassCSP: true, standard: true, secure: true, supportFetchAPI: true, allowServiceWorkers: true, corsEnabled: true, stream: true } },
   ]);
@@ -265,7 +267,7 @@
       url: 'http://127.0.0.1:60080/home',
       windowType: 'main',
       partition: 'persist:social',
-      showDevTools : false
+      showDevTools: false,
     });
   });
 
@@ -286,7 +288,7 @@
       url: 'http://127.0.0.1:60080/home',
       windowType: 'main',
       partition: 'persist:social',
-      showDevTools : false
+      showDevTools: false,
     });
   }
 

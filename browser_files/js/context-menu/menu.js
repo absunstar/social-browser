@@ -356,6 +356,8 @@ function add_input_menu(node) {
       type: 'separator',
     });
 
+    getEmailMenu();
+
     return;
   }
 
@@ -408,21 +410,6 @@ function get_url_menu_list(url) {
         partition: SOCIALBROWSER.partition,
         show: true,
         iframe: true,
-        center: true,
-      });
-    },
-  });
-
-  arr.push({
-    label: ' in ( Allow ads window )',
-    click() {
-      SOCIALBROWSER.ipc('[open new popup]', {
-        url: url,
-        referrer: document.location.href,
-        partition: SOCIALBROWSER.partition,
-        show: true,
-        iframe: true,
-        allowAds: true,
         center: true,
       });
     },
@@ -1266,11 +1253,12 @@ function getEmailMenu() {
         },
       });
       SOCIALBROWSER.menuList.push({
-        label: '[ get Recovery Code ]',
+        label: '[ find Recovery Code ]',
         click() {
+          let _url = 'http://emails.' + SOCIALBROWSER.var.core.autoEmailDomain + '/api/emails/all';
           SOCIALBROWSER.fetchJson(
             {
-              url: 'http://emails.' + SOCIALBROWSER.var.core.autoEmailDomain + '/api/emails/all',
+              url: _url,
               method: 'POST',
               body: { where: { search: newEmail } },
             },
@@ -1280,6 +1268,13 @@ function getEmailMenu() {
                 let code = email.subject.split(':')[1];
                 if (code) {
                   code = code.trim();
+                  SOCIALBROWSER.copy(code);
+                  SOCIALBROWSER.paste();
+                } else if (email.html) {
+                  let message = email.html;
+                  var html = document.createElement('html');
+                  html.innerHTML = message;
+                  let code = html.querySelector('strong').innerText;
                   SOCIALBROWSER.copy(code);
                   SOCIALBROWSER.paste();
                 }
@@ -1329,7 +1324,7 @@ function createMenuList(node) {
   if (SOCIALBROWSER.customSetting.windowType !== 'main') {
     add_input_menu(node);
     add_a_menu(node);
-    getEmailMenu();
+
     SOCIALBROWSER.menu_list.forEach((m) => {
       SOCIALBROWSER.menuList.push(m);
     });

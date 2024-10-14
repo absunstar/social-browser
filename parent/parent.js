@@ -139,18 +139,9 @@ module.exports = function init(parent) {
   };
 
   parent.removeExtension = function (extension) {
-    let index = parent.extensionList.findIndex((exx) => exx.id == extension.id);
-    if (index !== -1) {
-      if (parent.extensionList[index].remove) {
-        parent.extensionList[index].remove();
-      }
-      parent.extensionList.splice(index, 1);
-    }
+    parent.extensionList = parent.extensionList.filter((exx) => exx.id !== extension.id);
+    parent.var.extension_list = parent.var.extension_list.filter((exx) => exx.id !== extension.id);
 
-    let index2 = parent.var.extension_list.findIndex((exx) => exx.id == extension.id);
-    if (index2 !== -1) {
-      parent.var.extension_list.splice(index2, 1);
-    }
     parent.applay('extension_list');
   };
   parent.applay = function (name) {
@@ -283,7 +274,7 @@ module.exports = function init(parent) {
             }
           });
 
-          parent.clientList.splice(index2, 1);
+          parent.clientList = parent.clientList.filter((c) => c.uuid !== uuid);
         }
       });
     }

@@ -36,7 +36,7 @@ var child = {
   data_dir: process.argv[5].replace('--data_dir=', ''),
   speedMode: Boolean(process.argv[6].replace('--speed=', '')),
   electron: require('electron'),
-  ipcMain : require('electron/main').ipcMain,
+  ipcMain: require('electron/main').ipcMain,
   remoteMain: require('@electron/remote/main'),
   url: require('node:url'),
   path: require('node:path'),
@@ -83,6 +83,10 @@ child.fetch = function (...args) {
   return child.fetchAsync(...args);
 };
 
+// child.electron.app.commandLine.appendSwitch('in-process-gpu');
+// child.electron.app.commandLine.appendSwitch('no-sandbox');
+child.electron.app.disableHardwareAcceleration();
+
 child.remoteMain.initialize();
 
 child.shell = child.electron.shell;
@@ -125,8 +129,7 @@ if (child.electron.app.dock) {
 //child.electron.app.commandLine.appendSwitch('enable-webgl');
 // child.electron.app.commandLine.appendSwitch('disable-dev-shm-usage');
 // child.electron.app.commandLine.appendSwitch('disable-gpu');
-child.electron.app.commandLine.appendSwitch('no-sandbox');
-child.electron.app.disableHardwareAcceleration();
+
 
 //child.electron.app.commandLine.appendSwitch('disable-web-security');
 // child.electron.app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');

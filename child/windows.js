@@ -203,7 +203,7 @@ module.exports = function (child) {
       hasShadow: false,
       roundedCorners: false,
       webPreferences: {
-        enableRemoteModule : true,
+        enableRemoteModule: true,
         devTools: true,
         spellcheck: false,
         sandbox: false,
@@ -617,14 +617,13 @@ module.exports = function (child) {
         name: 'close',
       });
 
-      child.windowList.forEach((w, i) => {
-        if (w.id == win.customSetting.windowID) {
-          child.windowList.splice(i, 1);
-        }
-      });
+      child.windowList = child.windowList.filter((w) => w.id !== win.customSetting.windowID);
+
       setTimeout(() => {
-        if (win && !win.isDestroyed()) win.destroy();
-      }, 500);
+        if (win && !win.isDestroyed()) {
+          win.destroy();
+        }
+      }, 1000);
     });
 
     win.on('closed', () => {
@@ -849,7 +848,7 @@ module.exports = function (child) {
         }
 
         if (win.customSetting.windowType.like('*popup*')) {
-          if (win.customSetting.proxy || child.parent.var.blocking.proxy_error_close_window) {
+          if (win.customSetting.proxy && child.parent.var.blocking.proxy_error_close_window) {
             win.close();
           }
         } else {

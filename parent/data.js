@@ -207,6 +207,12 @@ module.exports = function init(parent) {
             }
           });
         }
+
+        userVarContent = userVarContent.filter((s) => !!s);
+        userVarContent.forEach((s) => {
+          s.time = s.time || new Date().getTime();
+        });
+
         userVarContent.sort((a, b) => (a.time > b.time ? -1 : 1));
 
         parent.var[name] = userVarContent;
@@ -598,11 +604,8 @@ module.exports = function init(parent) {
     parent.applay('overwrite');
   };
   parent.removeOverwrite = function (item) {
-    parent.var.overwrite.urls.push(item);
-    let index = parent.var.overwrite.urls.findIndex((item2) => item2.from == item.from);
-    if (index !== -1) {
-      parent.var.overwrite.urls.splice(index, 1);
-    }
+    parent.var.overwrite.urls = parent.var.overwrite.urls.findIndex((item2) => item2.from !== item.from);
+
     parent.applay('overwrite');
   };
   parent.var.customHeaderList = [];
@@ -641,18 +644,10 @@ module.exports = function init(parent) {
   parent.var.core.icon = parent.path.join(parent.files_dir, 'images', 'logo.ico');
 
   if (parent.var.blocking && parent.var.blocking.white_list) {
-    parent.var.blocking.white_list.forEach((w, i) => {
-      if (w.url.length < 3) {
-        parent.var.blocking.white_list.splice(i, 1);
-      }
-    });
+    parent.var.blocking.white_list = parent.var.blocking.white_list.filter((w) => w.url.length > 3);
   }
   if (parent.var.blocking && parent.var.blocking.popup && parent.var.blocking.popup.white_list) {
-    parent.var.blocking.popup.white_list.forEach((w, i) => {
-      if (w.url.length < 3) {
-        parent.var.blocking.popup.white_list.splice(i, 1);
-      }
-    });
+    parent.var.blocking.popup.white_list = parent.var.blocking.popup.white_list.filter((w) => w.url.length > 3);
   }
 
   parent.var.session_list.forEach((s1) => {

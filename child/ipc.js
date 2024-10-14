@@ -317,6 +317,11 @@ module.exports = function init(child) {
       }
     } catch (error) {
       console.log(error);
+      if (options.return == 'json') {
+        return JSON.stringify({ done: false, error: error });
+      } else {
+        return error.toString();
+      }
     }
   });
 
@@ -482,7 +487,7 @@ module.exports = function init(child) {
 
   child.ipcMain.handle('[open new tab]', (event, data) => {
     data.partition = data.partition || child.parent.var.core.session.name;
-    data.user_name = data.user_name || child.parent.var.session_list.find(s => s.name == data.partition)?.display || data.partition;
+    data.user_name = data.user_name || child.parent.var.session_list.find((s) => s.name == data.partition)?.display || data.partition;
     data.title = data.title || data.url;
 
     if (child.windowList.some((w) => w.customSetting.windowType == 'main')) {
