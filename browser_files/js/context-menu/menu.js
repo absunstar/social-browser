@@ -1770,7 +1770,7 @@ SOCIALBROWSER.on('[run-menu]', (e, data) => {
     }
   } else if (typeof data.index !== 'undefined') {
     let m = SOCIALBROWSER.menuList[data.index];
-    if (m) {
+    if (m && m.click) {
       m.click();
     }
   }
