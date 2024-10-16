@@ -693,7 +693,7 @@ module.exports = function (child) {
       }, 100);
     });
 
-    win.webContents.on('login', (event, details, authInfo, callback) => {
+    win.webContents.on('login2', (event, details, authInfo, callback) => {
       console.log('webContents login', authInfo);
 
       if (authInfo.isProxy) {

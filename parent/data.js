@@ -48,6 +48,9 @@ module.exports = function init(parent) {
       parent.varRaw[name] = Content;
     }
 
+    if (!Content) {
+      Content = name.like('*list*') ? [] : {};
+    }
     return Content;
   };
   parent.readUserVar = function (name) {
@@ -60,15 +63,21 @@ module.exports = function init(parent) {
       parent.var[name] = Content;
     }
 
+    if (!Content) {
+      Content = name.like('*list*') ? [] : {};
+    }
     return Content;
   };
+
   parent.get_var = function (name) {
     let userVarContent = parent.readUserVar(name);
     let browserVarContent = parent.readBrowserVar(name);
 
     let notFoundUserContent = false;
 
-    if (Array.isArray(userVarContent) && userVarContent.length === 0) {
+    if (!userVarContent || userVarContent == null) {
+      notFoundUserContent = true;
+    } else if (Array.isArray(userVarContent) && userVarContent.length === 0) {
       notFoundUserContent = true;
     } else if (!Array.isArray(userVarContent) && !Object.keys(userVarContent).length) {
       notFoundUserContent = true;
@@ -77,6 +86,7 @@ module.exports = function init(parent) {
     if (notFoundUserContent) {
       // replace with browser var
       parent.log('notFoundUserContent : ' + name);
+      console.log(userVarContent);
       parent.var[name] = userVarContent = browserVarContent;
 
       if (name == 'session_list') {
@@ -293,7 +303,7 @@ module.exports = function init(parent) {
       }
 
       if (!parent.var.core.googleUserAgentURL) {
-        parent.var.core.googleUserAgentURL = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/534.30 (KHTML, like Gecko) Ubuntu/11.04 Chromium/12.0.742.112 Chrome/12.0.742.112 Safari/534.30';
+        parent.var.core.googleUserAgentURL = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:99.0) Gecko/20100101 Firefox/99.0';
       }
       if (typeof parent.var.core.loginByPasskey === 'undefined') {
         parent.var.core.loginByPasskey = true;
@@ -600,6 +610,7 @@ module.exports = function init(parent) {
   parent.handleAdList();
 
   parent.addOverwrite = function (item) {
+    parent.var.overwrite.urls = parent.var.overwrite.urls || [];
     parent.var.overwrite.urls.push(item);
     parent.applay('overwrite');
   };
