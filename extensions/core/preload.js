@@ -16,14 +16,14 @@ if (SOCIALBROWSER.customSetting.windowSetting) {
   });
 }
 
-if (SOCIALBROWSER.isIframe()) {
-  SOCIALBROWSER.onLoad(() => {
-    SOCIALBROWSER.message({ windowID: SOCIALBROWSER.remote.getCurrentWindow().id, changeTitle: document.title });
-  });
-} else {
-  SOCIALBROWSER.on('message', (e, message) => {
-    if (message.changeTitle) {
-      document.title = message.changeTitle;
-    }
-  });
-}
+// if (SOCIALBROWSER.isIframe()) {
+//   SOCIALBROWSER.onLoad(() => {
+//     SOCIALBROWSER.message({ windowID: SOCIALBROWSER.remote.getCurrentWindow().id, changeTitle: document.title });
+//   });
+// } else {
+//   SOCIALBROWSER.on('message', (e, message) => {
+//     if (message.changeTitle) {
+//       document.title = message.changeTitle;
+//     }
+//   });
+// }

@@ -307,9 +307,9 @@ function add_input_menu(node) {
 
     if (node.nodeName === 'INPUT' && (node.getAttribute('type') || '').toLowerCase() == 'password' && node.value.length > 0) {
       SOCIALBROWSER.menuList.push({
-        label: 'Show Password',
+        label: 'Show Text',
         click() {
-          alert(node.value);
+          node.setAttribute('type', 'text');
         },
       });
     }
@@ -326,7 +326,7 @@ function add_input_menu(node) {
     SOCIALBROWSER.menuList.push({
       label: 'Copy',
       click() {
-        SOCIALBROWSER.currentWindow.webContents.copy();
+        SOCIALBROWSER.copy(node.value);
       },
       enabled: SOCIALBROWSER.selectedText.length > 0,
     });
@@ -351,6 +351,15 @@ function add_input_menu(node) {
         SOCIALBROWSER.currentWindow.webContents.selectall();
       },
     });
+
+    if (node.nodeName === 'INPUT' && (node.getAttribute('type') || '').toLowerCase() !== 'password' && node.value.length > 0) {
+      SOCIALBROWSER.menuList.push({
+        label: 'Hide Text',
+        click() {
+          node.setAttribute('type', 'password');
+        },
+      });
+    }
 
     SOCIALBROWSER.menuList.push({
       type: 'separator',

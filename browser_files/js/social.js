@@ -245,6 +245,7 @@ function showSettingMenu() {
       ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/setting',
         partition: 'persist:setting',
+        user_name : 'Setting',
         title: 'Setting',
         mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
         vip: true,
@@ -323,6 +324,7 @@ function showSettingMenu() {
       ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/setting?open=bookmarks',
         partition: 'persist:setting',
+        user_name : 'Setting',
         title: 'Bookmarks',
         mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
         vip: true,
@@ -507,6 +509,7 @@ function showBookmarksMenu() {
       ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/setting?open=bookmarks',
         partition: 'persist:setting',
+        user_name : 'Setting',
         mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
         vip: true,
       }),
@@ -957,6 +960,7 @@ function renderMessage(cm) {
     renderNewTabData({
       url: 'http://127.0.0.1:60080/setting',
       partition: 'persist:setting',
+      user_name : 'Setting',
       vip: true,
     });
   } else if (cm.name == '[download-link]') {

@@ -167,8 +167,10 @@ module.exports = function (child) {
     setting.partition = setting.partition || child.partition || parent.var.core.session.name;
     let defaultSetting = {
       vip: false,
+      iframe: true,
       trackingID: new Date().getTime(),
       parent: setting.parent || null,
+      allowOpenExternal: true,
       allowMenu: true,
       allowDevTools: true,
       allowDownload: true,
@@ -196,7 +198,6 @@ module.exports = function (child) {
       fullscreenable: true,
       title: 'New Window',
       backgroundColor: '#e8eaed',
-      frame: true,
       icon: parent.icon,
       autoHideMenuBar: true,
       enableLargerThanScreen: true,
@@ -303,9 +304,7 @@ module.exports = function (child) {
       defaultSetting.webPreferences.webSecurity = false;
       defaultSetting.webPreferences.allowRunningInsecureContent = true;
     }
-    if (setting.iframe === true) {
-      defaultSetting.webPreferences.nodeIntegrationInSubFrames = true;
-    }
+
     if (Array.isArray(setting.cookieList) && setting.cookieList.length > 0) {
       setting.cookieList.forEach((cookieObject, index) => {
         setting.cookieList[index].domain = setting.cookieList[index].domain || child.url.parse(setting.url).hostname;
@@ -314,6 +313,10 @@ module.exports = function (child) {
     }
 
     let customSetting = { ...defaultSetting, ...setting };
+
+    if (customSetting.iframe === true) {
+      customSetting.webPreferences.nodeIntegrationInSubFrames = true;
+    }
 
     customSetting.webPreferences.javascript = customSetting.allowJavascript;
     customSetting.webPreferences.webaudio = customSetting.allowAudio;
@@ -891,7 +894,7 @@ module.exports = function (child) {
 
     win.on('unresponsive', async () => {
       child.log('window unresponsive');
-      if (win && !win.isDestroyed() && win.customSetting.windowType !== 'view' && win.isVisible()) {
+      if (win && !win.isDestroyed() && win.customSetting.windowType == 'view' && win.isVisible()) {
         const { response } = await dialog.showMessageBox({
           message: 'This Window has become unresponsive',
           title: 'Do you want to try forcefully reloading the window ?',
@@ -901,10 +904,6 @@ module.exports = function (child) {
         if (response === 0) {
           win.webContents.forcefullyCrashRenderer();
           win.webContents.reload();
-        }
-      } else {
-        if (win && !win.isDestroyed()) {
-          win.close();
         }
       }
     });
@@ -949,9 +948,12 @@ module.exports = function (child) {
 
       if (details.url.like('ftp*|mail*')) {
         details.preventDefault();
-        child.openExternal(details.url);
+        if (win.customSetting.allowOpenExternal) {
+          child.openExternal(details.url);
+        }
         return;
       }
+
       if (!win.customSetting.allowRedirect || (!win.customSetting.allowAds && !child.isAllowURL(details.url))) {
         details.preventDefault();
         child.log('Block-frame-navigate', details.url);
@@ -964,7 +966,10 @@ module.exports = function (child) {
       win.webContents.setWindowOpenHandler(({ url, frameName, features, disposition, referrer, postBody }) => {
         child.log('try setWindowOpenHandler : ' + url);
         if (url.like('ftp*|mail*')) {
-          child.openExternal(url);
+          if (win.customSetting.allowOpenExternal) {
+            child.openExternal(url);
+          }
+
           return;
         }
         let isPopup = false;

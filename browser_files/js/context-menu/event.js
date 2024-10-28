@@ -67,3 +67,57 @@ SOCIALBROWSER.quee = function (name, data, callback2) {
 
   SOCIALBROWSER.quee_check(name);
 };
+
+SOCIALBROWSER.getTelegramBot = function (options) {
+  options.fetch = function (endPoint, callback) {
+    SOCIALBROWSER.fetchJson(
+      {
+        url: options.api + endPoint,
+        method: 'POST',
+        redirect: 'follow',
+        body: JSON.stringify(options),
+      },
+      (data) => {
+        if (callback) {
+          callback(data);
+        }
+      }
+    );
+  };
+
+  options.sendMessage = function (chatID, message, callback) {
+    if (chatID && message) {
+      options.chatID = chatID;
+      options.message = message;
+      options.fetch('/telegram/send-message');
+    }
+  };
+
+  return options;
+};
+
+SOCIALBROWSER.createTelegramBot = function (options = {}) {
+  options.api = 'http://127.0.0.1:60080';
+  let bot = SOCIALBROWSER.getTelegramBot(options);
+  bot.fetch('/telegram/connect', (data) => {
+    if (callback) {
+      callback(data);
+    } else {
+      console.log(data);
+    }
+  });
+  return bot;
+};
+
+SOCIALBROWSER.connectTelegramBot = function (options = {}, callback) {
+  options.api = 'https://social-browser.com';
+  let bot = SOCIALBROWSER.getTelegramBot(options);
+  bot.fetch('/telegram/connect', (data) => {
+    if (callback) {
+      callback(data);
+    } else {
+      console.log(data);
+    }
+  });
+  return bot;
+};

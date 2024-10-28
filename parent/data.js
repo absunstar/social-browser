@@ -91,7 +91,7 @@ module.exports = function init(parent) {
 
       if (name == 'session_list') {
         parent.var[name].forEach((s) => {
-          s.name = s.name.replace('{random}', 'random_' + new Date().getTime().toString().replace('0.', '') + Math.random().toString().replace('0.', ''));
+          s.name = s.name.replace('{random}', '_random_' + new Date().getTime().toString().replace('0.', '') + Math.random().toString().replace('0.', ''));
           if (s.name.indexOf('persist:') === -1) {
             s.name = 'persist:' + s.name;
           }
@@ -200,8 +200,10 @@ module.exports = function init(parent) {
         parent.var[name] = userVarContent;
       } else if (name == 'session_list') {
         if (userVarContent.length == 0) {
+          userVarContent = userVarContent.filter((s) => !!s);
+
           browserVarContent.forEach((d) => {
-            d.name = d.name.replace('{random}', 'default_' + new Date().getTime().toString().replace('0.', '') + Math.random().toString().replace('0.', ''));
+            d.name = d.name.replace('{random}', '_default_' + new Date().getTime().toString().replace('0.', '') + Math.random().toString().replace('0.', ''));
             d.time = d.time || new Date().getTime();
             if (d.name.indexOf('persist:') === -1) {
               d.name = 'persist:' + d.name;
@@ -218,7 +220,6 @@ module.exports = function init(parent) {
           });
         }
 
-        userVarContent = userVarContent.filter((s) => !!s);
         userVarContent.forEach((s) => {
           s.time = s.time || new Date().getTime();
         });
@@ -661,6 +662,7 @@ module.exports = function init(parent) {
     parent.var.blocking.popup.white_list = parent.var.blocking.popup.white_list.filter((w) => w.url.length > 3);
   }
 
+  parent.var.session_list = parent.var.session_list.filter((s) => !!s);
   parent.var.session_list.forEach((s1) => {
     s1.time = s1.time || new Date().getTime();
   });
@@ -673,13 +675,7 @@ module.exports = function init(parent) {
       parent.var.core['DeviceId'] = parent.md5(parent.information['ProcessorId'] + parent.information['DISKDRIVE'] + parent.information['BIOS']);
     }
 
-    if (!parent.isAccountsMode && parent.var.session_list.length <= parent.freeUsersCount) {
-      parent.var.core.browserActivated = true;
-      parent.var.core.activeMessage = 'Free Activated';
-      if (parent.var.core.max_tabs < 3) {
-        parent.var.core.max_tabs = 20;
-      }
-    } else if (parent.var.core['DeviceId']) {
+    if (parent.var.core['DeviceId']) {
       if (parent.var.core['BrowserKey'] && parent.md5(parent.api.to123(parent.var.core['id'] + parent.var.core['DeviceId'])) === parent.var.core['BrowserKey']) {
         parent.var.core.browserActivated = true;
         parent.var.core.activeMessage = 'Browser Activated By ( Browser Key )';
@@ -740,10 +736,18 @@ module.exports = function init(parent) {
             parent.var.core.max_tabs = 2;
           });
       } else {
-        parent.var.core.browserActivated = false;
-        parent.var.core.max_tabs = 2;
-        if (parent.var.session_list.length > parent.freeUsersCount) {
-          parent.var.core.activeMessage = `More Than ( ${parent.freeUsersCount} ) Profile Not Free`;
+        if (!parent.isAccountsMode && parent.var.session_list.length <= parent.freeUsersCount) {
+          parent.var.core.browserActivated = true;
+          parent.var.core.activeMessage = 'Free Activated';
+          if (parent.var.core.max_tabs < 3) {
+            parent.var.core.max_tabs = 20;
+          }
+        } else {
+          parent.var.core.browserActivated = false;
+          parent.var.core.max_tabs = 2;
+          if (parent.var.session_list.length > parent.freeUsersCount) {
+            parent.var.core.activeMessage = `More Than ( ${parent.freeUsersCount} ) Profile Not Free`;
+          }
         }
       }
     }
