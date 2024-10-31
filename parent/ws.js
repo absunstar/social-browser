@@ -462,10 +462,10 @@ module.exports = function init(parent) {
         case '[remove-session]':
           let oldSession = message.session;
           if (oldSession.name) {
-            parent.var.session_list = parent.var.session_list.filter((s) => s.name !== oldSession.name);
+            parent.var.session_list = parent.var.session_list.filter((s) => s && s.name !== oldSession.name);
             parent.applay('session_list');
           } else if (oldSession.display) {
-            parent.var.session_list = parent.var.session_list.filter((s) => s.display !== oldSession.display);
+            parent.var.session_list = parent.var.session_list.filter((s) => s && s.display !== oldSession.display);
             parent.applay('session_list');
           }
           break;
@@ -473,7 +473,7 @@ module.exports = function init(parent) {
           if (message.url && !message.url.contains('60080')) {
             parent.addURL(message);
             parent.clientList.forEach((client) => {
-              if ((client.option_list.some((op) => op.windowType === 'main') || client.windowType === 'files') && client.ws) {
+              if (client.option_list.some((op) => op.windowType === 'main' || op.windowType === 'files') && client.ws) {
                 client.ws.send(message);
               }
             });

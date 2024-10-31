@@ -165,6 +165,9 @@ module.exports = function (child) {
     delete setting.name;
     let parent = child.parent;
     setting.partition = setting.partition || child.partition || parent.var.core.session.name;
+    if (!setting.webPreferences) {
+      delete setting.webPreferences;
+    }
     let defaultSetting = {
       vip: false,
       iframe: true,
@@ -247,6 +250,7 @@ module.exports = function (child) {
       defaultSetting.webPreferences.webSecurity = false;
     } else if (setting.windowType.contains('popup')) {
       defaultSetting.alwaysOnTop = true;
+      setting.frame = true;
     } else if (setting.windowType === 'view') {
       defaultSetting.show = false;
       defaultSetting.skipTaskbar = true;
@@ -362,20 +366,7 @@ module.exports = function (child) {
     if (!child.window) {
       child.window = win;
     }
-    if (win.customSetting.eval) {
-      win.customSetting.windowSetting = win.customSetting.windowSetting || [];
-      win.customSetting.windowSetting.push({
-        name: 'eval',
-        code: win.customSetting.eval,
-      });
-    } else {
-      win.customSetting.windowSetting = win.customSetting.windowSetting || [];
-      win.customSetting.windowSetting.forEach((d, i) => {
-        if (d.name == 'eval') {
-          win.customSetting.windowSetting.splice(i, 1);
-        }
-      });
-    }
+
     let oldWIndex = child.windowList.findIndex((w) => w.id == win.id);
     if (oldWIndex === -1) {
       child.windowList.push({
@@ -446,12 +437,12 @@ module.exports = function (child) {
     if (win.customSetting.url) {
       win.loadURL(win.customSetting.url, {
         httpReferrer: win.customSetting.referrer || win.customSetting.referer,
-        userAgent: win.customSetting.userAgent || parent.var.core.defaultUserAgent.url,
+        userAgent: win.customSetting.userAgentURL || win.customSetting.userAgent || parent.var.core.defaultUserAgent.url,
       });
     } else {
       win.loadURL(parent.var.core.default_page || 'http://127.0.0.1:60080/newTab', {
         httpReferrer: win.customSetting.referrer || win.customSetting.referer,
-        userAgent: win.customSetting.userAgent || parent.var.core.defaultUserAgent.url,
+        userAgent: win.customSetting.userAgentURL || win.customSetting.userAgent || parent.var.core.defaultUserAgent.url,
       });
     }
 
@@ -895,7 +886,7 @@ module.exports = function (child) {
     win.on('unresponsive', async () => {
       child.log('window unresponsive');
       if (win && !win.isDestroyed() && win.customSetting.windowType == 'view' && win.isVisible()) {
-        const { response } = await dialog.showMessageBox({
+        const { response } = await child.dialog.showMessageBox({
           message: 'This Window has become unresponsive',
           title: 'Do you want to try forcefully reloading the window ?',
           buttons: ['OK', 'Cancel'],
@@ -917,8 +908,29 @@ module.exports = function (child) {
       }, 1000 * 2);
     });
 
-    win.webContents.on('will-redirect', (e, url) => {
+    win.webContents.on('will-redirect', (e) => {
+      let url = e.url;
       child.log('will-redirect : ', url);
+      if (win.customSetting.windowType == 'view' && url.like('*accounts.google.com*') && e.isMainFrame) {
+        e.preventDefault();
+        child.createNewWindow({
+          ...win.customSetting,
+          webPreferences: null,
+          iframe: false,
+          skipTaskbar: false,
+          windowType: 'popup',
+          alwaysOnTop: true,
+          show: true,
+          width: null,
+          height: null,
+          x: null,
+          y: null,
+          url: url,
+          userAgentURL: child.parent.var.core.googleUserAgentURL,
+        });
+
+        return;
+      }
       if ((!win.customSetting.allowAds && !child.isAllowURL(url)) || !win.customSetting.allowRedirect) {
         e.preventDefault();
         child.log('Block-redirect', url);

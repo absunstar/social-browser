@@ -304,11 +304,6 @@ module.exports = function (child) {
       });
 
       ss.webRequest.onBeforeSendHeaders(filter, function (details, callback) {
-        details.requestHeaders = details.requestHeaders || {};
-
-        let _ss = child.session_name_list.find((s) => s.name == name);
-        _ss.user.privacy.vpc = _ss.user.privacy.vpc || {};
-        details.requestHeaders['User-Agent'] = _ss.user.defaultUserAgent.url;
         if (child.parent.var.core.enginOFF) {
           callback({
             cancel: false,
@@ -316,6 +311,11 @@ module.exports = function (child) {
           });
           return;
         }
+
+        details.requestHeaders = details.requestHeaders || {};
+        let _ss = child.session_name_list.find((s) => s.name == name);
+        _ss.user.privacy.vpc = _ss.user.privacy.vpc || {};
+        details.requestHeaders['User-Agent'] = _ss.user.defaultUserAgent.url;
 
         let exit = false;
         let url = details.url.toLowerCase();
@@ -334,6 +334,15 @@ module.exports = function (child) {
           }
         }
 
+        if (customSetting) {
+          if (customSetting.userAgentURL) {
+            details.requestHeaders['User-Agent'] = customSetting.userAgentURL;
+          } else if (customSetting.userAgent) {
+            details.requestHeaders['User-Agent'] = customSetting.userAgent;
+          }
+        }
+
+
         let domainName = urlObject.hostname;
         let domainCookie = details.requestHeaders['Cookie'] || '';
         let domainCookieObject = child.cookieParse(domainCookie);
@@ -341,9 +350,6 @@ module.exports = function (child) {
           child.log('VIP Ignore cookieList');
         } else if (customSetting && Array.isArray(customSetting.cookieList)) {
           if (customSetting.cookieList.length > 0) {
-            if (customSetting.userAgentURL) {
-              details.requestHeaders['User-Agent'] = customSetting.userAgentURL;
-            }
             let cookieIndex = customSetting.cookieList.findIndex((c) => domainName.contains(c.domain) && c.partition == name);
             if (cookieIndex !== -1) {
               // Cookie Mode 0=fixed , 1=overwrite , else=default

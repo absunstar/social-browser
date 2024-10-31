@@ -81,7 +81,7 @@ module.exports = function (child) {
       anyTime: true,
     },
     {
-      from: 'https://www.google.com/images/branding/googlelogo/*.png|https://www.google.com/logos*.png|https://www.google.com/logos*.gif|https://www.google.com/logos*.webp',
+      from: 'https://duckduckgo.com/assets/logo*.svg|https://www.google.com/images/branding/searchlogo/*.gif|https://www.google.com/images/branding/googlelogo/*.png|https://www.google.com/logos*.png|https://www.google.com/logos*.gif|https://www.google.com/logos*.webp',
       to: 'browser://images/background.png',
       anyTime: true,
       query: true,

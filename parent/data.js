@@ -303,9 +303,8 @@ module.exports = function init(parent) {
         parent.var.id = parent.var.core.id;
       }
 
-      if (!parent.var.core.googleUserAgentURL) {
-        parent.var.core.googleUserAgentURL = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:99.0) Gecko/20100101 Firefox/99.0';
-      }
+      parent.var.core.googleUserAgentURL = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/534.30 (KHTML, like Gecko) Ubuntu/11.04 Chromium/12.0.742.112 Chrome/12.0.742.112 Safari/534.30';
+
       if (typeof parent.var.core.loginByPasskey === 'undefined') {
         parent.var.core.loginByPasskey = true;
       }

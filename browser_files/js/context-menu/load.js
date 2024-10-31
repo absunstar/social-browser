@@ -121,6 +121,7 @@ SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/facebook.com.j
 
 SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/safty.js');
 SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/adsManager.js');
+SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/cloudflare.js');
 
 if (!SOCIALBROWSER.var.core.javaScriptOFF) {
   if (true) {
@@ -391,3 +392,7 @@ SOCIALBROWSER.onLoad(() => {
 });
 
 navigator.clipboard = { writeText: SOCIALBROWSER.copy };
+
+if (SOCIALBROWSER.customSetting.eval) {
+  SOCIALBROWSER.eval(SOCIALBROWSER.customSetting.eval);
+}

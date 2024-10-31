@@ -73,17 +73,7 @@ module.exports = function (browser) {
       ignore: ['x-browser', 'X-Frame-Options', 'Cross-Origin-Resource-Policy'],
     });
 
-    browser.addRequestHeader({
-      id: 'core',
-      url: '*accounts.google.com*',
-      list: [
-        {
-          name: 'User-Agent',
-          value: browser.var.core.googleUserAgentURL,
-        },
-      ],
-      ignore: [],
-    });
+
   };
 
   extension.disable = () => {
