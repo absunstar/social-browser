@@ -223,39 +223,49 @@ document.hasPrivateStateToken =
       });
     };
 
-SOCIALBROWSER.__define(navigator, 'userAgent', SOCIALBROWSER.userAgentURL);
 SOCIALBROWSER.userAgent = navigator.userAgent;
-SOCIALBROWSER.__define(navigator, 'userAgentData', {
-  brands: [
-    {
-      brand: 'Google Chrome',
-      version: '120',
-    },
-    {
-      brand: 'Chromium',
-      version: '120',
-    },
-    {
-      brand: 'Not-A.Brand',
-      version: '24',
-    },
-  ],
-  mobile: false,
-  platform: 'windows',
-  getHighEntropyValues: function (arr) {
-    return new Promise((resolve, reject) => {
-      let obj = { ...navigator.userAgentData };
-      if (Array.isArray(arr)) {
-        arr.forEach((a) => {
-          if (!obj[a]) {
-            obj[a] = '';
+SOCIALBROWSER.__define(navigator, 'userAgent', SOCIALBROWSER.userAgentURL);
+if (SOCIALBROWSER.customSetting.defaultUserAgent && SOCIALBROWSER.customSetting.defaultUserAgent.engine) {
+  if (SOCIALBROWSER.customSetting.defaultUserAgent.engine.name == 'Chrome') {
+    SOCIALBROWSER.__define(navigator, 'userAgentData', {
+      brands: [
+        {
+          brand: 'Chromium',
+          version: '130',
+        },
+        {
+          brand: 'Google Chrome',
+          version: '130',
+        },
+        {
+          brand: 'Not?A_Brand',
+          version: '99',
+        },
+      ],
+      mobile: false,
+      platform: 'windows',
+      getHighEntropyValues: function (arr) {
+        return new Promise((resolve, reject) => {
+          let obj = { ...navigator.userAgentData };
+          if (Array.isArray(arr)) {
+            arr.forEach((a) => {
+              if (!obj[a]) {
+                obj[a] = '';
+              }
+            });
           }
+          resolve(obj);
         });
-      }
-      resolve(obj);
+      },
     });
-  },
-});
+  }
+  if (SOCIALBROWSER.customSetting.defaultUserAgent.engine.name == 'Firefox') {
+    navigator.userAgentData = undefined;
+    SOCIALBROWSER.__define(navigator, 'userAgentData', undefined);
+  } else {
+    navigator.userAgentData = undefined;
+  }
+}
 
 try {
   if (SOCIALBROWSER.var.blocking.javascript.custom_local_storage && localStorage) {

@@ -26,10 +26,10 @@ module.exports = function (child) {
     if (!user.privacy.enable_virtual_pc) {
       user.privacy = child.parent.var.blocking.privacy;
     }
-    user.defaultUserAgent = sessionOptions.defaultUserAgent ? { url: sessionOptions.userAgentURL } : user.defaultUserAgent || {};
+    user.defaultUserAgent = sessionOptions.defaultUserAgent || user.defaultUserAgent || { url: sessionOptions.userAgentURL } || {};
 
     if (!user.defaultUserAgent.url || user.defaultUserAgent.edit) {
-      user.defaultUserAgent = { url: child.parent.var.core.defaultUserAgent.url, edit: true };
+      user.defaultUserAgent = { ...child.parent.var.core.defaultUserAgent, edit: true };
     }
 
     let ss = sessionOptions.isDefault ? child.electron.session.defaultSession : child.electron.session.fromPartition(name);
@@ -341,7 +341,6 @@ module.exports = function (child) {
             details.requestHeaders['User-Agent'] = customSetting.userAgent;
           }
         }
-
 
         let domainName = urlObject.hostname;
         let domainCookie = details.requestHeaders['Cookie'] || '';

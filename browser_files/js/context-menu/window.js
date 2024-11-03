@@ -262,21 +262,25 @@ SOCIALBROWSER.alert =
   window.alert =
   window.prompt =
   window.confirm =
-    function (msg, time) {
-      if (msg && msg.trim()) {
-        SOCIALBROWSER.log(msg);
-        SOCIALBROWSER.injectDefault();
-        let div = document.querySelector('#__alertBox');
-        if (div) {
-          clearTimeout(alert_idle);
-          div.innerHTML = SOCIALBROWSER.policy.createHTML(msg);
-          div.style.display = 'block';
-          alert_idle = setTimeout(() => {
-            div.style.display = 'none';
-            div.innerHTML = SOCIALBROWSER.policy.createHTML('');
-          }, time || 1000 * 3);
-        }
+    function (msg, time = 1000 * 3) {
+      if (typeof msg !== 'string') {
+        return;
       }
+      msg = msg.trim();
+
+      SOCIALBROWSER.log(msg);
+      SOCIALBROWSER.injectDefault();
+      let div = document.querySelector('#__alertBox');
+      if (div) {
+        clearTimeout(alert_idle);
+        div.innerHTML = SOCIALBROWSER.policy.createHTML(msg);
+        div.style.display = 'block';
+        alert_idle = setTimeout(() => {
+          div.style.display = 'none';
+          div.innerHTML = SOCIALBROWSER.policy.createHTML('');
+        }, time);
+      }
+
       return true;
     };
 

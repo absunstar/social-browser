@@ -1231,8 +1231,10 @@ function get_custom_menu() {
           referrer: document.location.href,
           url: document.location.href.replace('youtube', 'ssyoutube'),
           show: true,
-          allowPopup: true,
+          allowNewWindows : false,
+          allowPopup: false,
           center: true,
+          vip : true
         });
       },
     });

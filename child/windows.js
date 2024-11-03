@@ -339,21 +339,22 @@ module.exports = function (child) {
     customSetting.windowID = win.id;
     win.customSetting = customSetting;
     win.customSetting.windowSetting = win.customSetting.windowSetting || [];
+    win.customSetting.session = parent.var.session_list.find((s) => s.name == win.customSetting.partition);
 
-    if (win.customSetting.windowType === 'view') {
-      win.customSetting.session = parent.var.session_list.find((s) => s.name == win.customSetting.partition);
-      if (win.customSetting.session) {
-        win.customSetting.userAgent = win.customSetting.session.defaultUserAgent;
-      }
-      if (!parent.var.core.browserActivated) {
-        win.customSetting.url = 'http://127.0.0.1:60080/setting';
-      }
+    if (win.customSetting.session && win.customSetting.session.defaultUserAgent) {
+      win.customSetting.defaultUserAgent = win.customSetting.session.defaultUserAgent;
+    } else {
+      win.customSetting.defaultUserAgent = parent.var.core.defaultUserAgent;
     }
 
-    win.customSetting.userAgent = win.customSetting.userAgent || win.customSetting.defaultUserAgent;
+    if (win.customSetting.userAgentURL) {
+      win.customSetting.defaultUserAgent = parent.var.userAgentList.find((u) => u.url == win.customSetting.userAgentURL) || win.customSetting.defaultUserAgent;
+    } else {
+      win.customSetting.userAgentURL = win.customSetting.defaultUserAgent.url;
+    }
 
-    if (!win.customSetting.userAgent || win.customSetting.userAgent == 'undefined') {
-      win.customSetting.userAgent = parent.var.session_list.find((s) => s.name == win.customSetting.partition)?.defaultUserAgent || parent.var.core.defaultUserAgent.url;
+    if (!parent.var.core.browserActivated) {
+      win.customSetting.url = 'http://127.0.0.1:60080/setting';
     }
 
     if (win.customSetting.timeout) {
@@ -437,12 +438,12 @@ module.exports = function (child) {
     if (win.customSetting.url) {
       win.loadURL(win.customSetting.url, {
         httpReferrer: win.customSetting.referrer || win.customSetting.referer,
-        userAgent: win.customSetting.userAgentURL || win.customSetting.userAgent || parent.var.core.defaultUserAgent.url,
+        userAgent: win.customSetting.userAgentURL || parent.var.core.defaultUserAgent.url,
       });
     } else {
       win.loadURL(parent.var.core.default_page || 'http://127.0.0.1:60080/newTab', {
         httpReferrer: win.customSetting.referrer || win.customSetting.referer,
-        userAgent: win.customSetting.userAgentURL || win.customSetting.userAgent || parent.var.core.defaultUserAgent.url,
+        userAgent: win.customSetting.userAgentURL || parent.var.core.defaultUserAgent.url,
       });
     }
 
@@ -911,7 +912,8 @@ module.exports = function (child) {
     win.webContents.on('will-redirect', (e) => {
       let url = e.url;
       child.log('will-redirect : ', url);
-      if (win.customSetting.windowType == 'view' && url.like('*accounts.google.com*') && e.isMainFrame) {
+
+      if (url.like('*accounts.google.com*') && win.customSetting.iframe) {
         e.preventDefault();
         child.createNewWindow({
           ...win.customSetting,
@@ -920,7 +922,7 @@ module.exports = function (child) {
           skipTaskbar: false,
           windowType: 'popup',
           alwaysOnTop: true,
-          show: true,
+          show: win.customSetting.windowType == 'view' ? true : win.isVisible(),
           width: null,
           height: null,
           x: null,
@@ -928,9 +930,13 @@ module.exports = function (child) {
           url: url,
           userAgentURL: child.parent.var.core.googleUserAgentURL,
         });
+        if (win.customSetting.windowType == 'popup') {
+          win.close();
+        }
 
         return;
       }
+
       if ((!win.customSetting.allowAds && !child.isAllowURL(url)) || !win.customSetting.allowRedirect) {
         e.preventDefault();
         child.log('Block-redirect', url);
@@ -977,9 +983,32 @@ module.exports = function (child) {
       // handle window.open ...
       win.webContents.setWindowOpenHandler(({ url, frameName, features, disposition, referrer, postBody }) => {
         child.log('try setWindowOpenHandler : ' + url);
+
         if (url.like('ftp*|mail*')) {
           if (win.customSetting.allowOpenExternal) {
             child.openExternal(url);
+          }
+          return;
+        }
+
+        if (url.like('*accounts.google.com*') && win.customSetting.iframe) {
+          child.createNewWindow({
+            ...win.customSetting,
+            webPreferences: null,
+            iframe: false,
+            skipTaskbar: false,
+            windowType: 'popup',
+            alwaysOnTop: true,
+            show: win.customSetting.windowType == 'view' ? true : win.isVisible(),
+            width: null,
+            height: null,
+            x: null,
+            y: null,
+            url: url,
+            userAgentURL: child.parent.var.core.googleUserAgentURL,
+          });
+          if (win.customSetting.windowType == 'popup') {
+            win.close();
           }
 
           return;
