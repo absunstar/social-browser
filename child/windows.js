@@ -844,12 +844,17 @@ module.exports = function (child) {
 
         if (win.customSetting.windowType.like('*popup*')) {
           if (win.customSetting.proxy && child.parent.var.blocking.proxy_error_close_window) {
-            win.close();
+            return win.close();
           }
         } else {
           win.customSetting.iconURL = win.customSetting.error_icon;
           child.updateTab(win);
         }
+        setTimeout(() => {
+          if (win && !win.isDestroyed()) {
+            win.webContents.reload();
+          }
+        }, 1000 * 5);
       }
 
       // win.loadURL('browser://error?url=' + win.getURL() + '&description=Error While Loading');
@@ -922,7 +927,7 @@ module.exports = function (child) {
           skipTaskbar: false,
           windowType: 'popup',
           alwaysOnTop: true,
-          resizable : true,
+          resizable: true,
           show: win.customSetting.windowType == 'view' ? true : win.isVisible(),
           width: null,
           height: null,
@@ -1000,7 +1005,7 @@ module.exports = function (child) {
             skipTaskbar: false,
             windowType: 'popup',
             alwaysOnTop: true,
-            resizable : true,
+            resizable: true,
             show: win.customSetting.windowType == 'view' ? true : win.isVisible(),
             width: null,
             height: null,
