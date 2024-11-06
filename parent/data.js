@@ -303,7 +303,9 @@ module.exports = function init(parent) {
         parent.var.id = parent.var.core.id;
       }
 
-      parent.var.core.googleUserAgentURL = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/534.30 (KHTML, like Gecko) Ubuntu/11.04 Chromium/12.0.742.112 Chrome/12.0.742.112 Safari/534.30';
+      // must use this useragent : 'Mozilla/5.0 (X11; U; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/124.0.6303.212 Chrome/124.0.6303.212 Safari/537.36'
+      // any other useragent error browser not secure
+      parent.var.core.googleUserAgentURL = 'Mozilla/5.0 (X11; U; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/124.0.6303.212 Chrome/124.0.6303.212 Safari/537.36';
 
       if (typeof parent.var.core.loginByPasskey === 'undefined') {
         parent.var.core.loginByPasskey = true;

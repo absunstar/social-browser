@@ -913,7 +913,7 @@ module.exports = function (child) {
       let url = e.url;
       child.log('will-redirect : ', url);
 
-      if (url.like('*accounts.google.com*') && win.customSetting.iframe) {
+      if (url.like('*accounts.google.com*') && e.isMainFrame && win.customSetting.iframe) {
         e.preventDefault();
         child.createNewWindow({
           ...win.customSetting,
@@ -922,6 +922,7 @@ module.exports = function (child) {
           skipTaskbar: false,
           windowType: 'popup',
           alwaysOnTop: true,
+          resizable : true,
           show: win.customSetting.windowType == 'view' ? true : win.isVisible(),
           width: null,
           height: null,
@@ -999,6 +1000,7 @@ module.exports = function (child) {
             skipTaskbar: false,
             windowType: 'popup',
             alwaysOnTop: true,
+            resizable : true,
             show: win.customSetting.windowType == 'view' ? true : win.isVisible(),
             width: null,
             height: null,
@@ -1135,7 +1137,7 @@ module.exports = function (child) {
             });
           }
         } else {
-          child.log('Now Allowed Block-open-window', url);
+          child.log('Not Allowed Block-open-window', url);
         }
 
         return { action: 'deny' };

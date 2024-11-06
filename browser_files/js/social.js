@@ -245,7 +245,7 @@ function showSettingMenu() {
       ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/setting',
         partition: 'persist:setting',
-        user_name : 'Setting',
+        user_name: 'Setting',
         title: 'Setting',
         mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
         vip: true,
@@ -324,7 +324,7 @@ function showSettingMenu() {
       ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/setting?open=bookmarks',
         partition: 'persist:setting',
-        user_name : 'Setting',
+        user_name: 'Setting',
         title: 'Bookmarks',
         mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
         vip: true,
@@ -509,7 +509,7 @@ function showBookmarksMenu() {
       ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/setting?open=bookmarks',
         partition: 'persist:setting',
-        user_name : 'Setting',
+        user_name: 'Setting',
         mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
         vip: true,
       }),
@@ -871,6 +871,17 @@ SOCIALBROWSER.on('[update-tab-properties]', (event, data) => {
     }
   }
 
+  if (opendTabList.length == 1) {
+    SOCIALBROWSER.ipc('[show-view]', {
+      x: 0,
+      y: 0,
+      width: document.width,
+      height: document.height,
+      tabID: currentTabId,
+      mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
+    });
+  }
+
   if (data.tabID && data.tabID == currentTabId && data.url) {
     if (!data.forward) {
       $('.go-forward i').css('color', '#9E9E9E');
@@ -960,7 +971,7 @@ function renderMessage(cm) {
     renderNewTabData({
       url: 'http://127.0.0.1:60080/setting',
       partition: 'persist:setting',
-      user_name : 'Setting',
+      user_name: 'Setting',
       vip: true,
     });
   } else if (cm.name == '[download-link]') {

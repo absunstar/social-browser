@@ -140,17 +140,21 @@ SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/finger_print.j
 
 // user agent
 
-SOCIALBROWSER.var.customHeaderList.forEach((h) => {
-  if (h.type == 'request' && document.location.href.like(h.url)) {
-    h.list.forEach((v) => {
-      if (v && v.name && v.name == 'User-Agent' && v.value) {
-        SOCIALBROWSER.userAgentURL = v.value;
-        SOCIALBROWSER.defaultUserAgent = SOCIALBROWSER.var.userAgentList.find((u) => u.url == SOCIALBROWSER.userAgentURL);
-      }
-    });
-  }
-});
-
+if (SOCIALBROWSER.customSetting.userAgentURL) {
+  SOCIALBROWSER.userAgentURL = SOCIALBROWSER.customSetting.userAgentURL;
+}
+if (!SOCIALBROWSER.userAgentURL) {
+  SOCIALBROWSER.var.customHeaderList.forEach((h) => {
+    if (h.type == 'request' && document.location.href.like(h.url)) {
+      h.list.forEach((v) => {
+        if (v && v.name && v.name == 'User-Agent' && v.value) {
+          SOCIALBROWSER.userAgentURL = v.value;
+          SOCIALBROWSER.defaultUserAgent = SOCIALBROWSER.var.userAgentList.find((u) => u.url == SOCIALBROWSER.userAgentURL);
+        }
+      });
+    }
+  });
+}
 if (!SOCIALBROWSER.userAgentURL) {
   if (SOCIALBROWSER.session.defaultUserAgent) {
     SOCIALBROWSER.defaultUserAgent = SOCIALBROWSER.session.defaultUserAgent;
