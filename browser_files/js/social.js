@@ -871,7 +871,7 @@ SOCIALBROWSER.on('[update-tab-properties]', (event, data) => {
     }
   }
 
-  if (opendTabList.length == 1) {
+  if (socialTabs.tabEls.length === 2 && SOCIALBROWSER.remote.getCurrentWindow().isVisible()) {
     SOCIALBROWSER.ipc('[show-view]', {
       x: 0,
       y: 0,

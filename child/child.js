@@ -250,7 +250,7 @@ child.electron.app.whenReady().then(() => {
 
         if (mainWindow.hide) {
           win.hide();
-          child.is_hide = true;
+          child.isCurrentView = false;
         }
 
         if (win.isFullScreen()) {

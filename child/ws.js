@@ -417,13 +417,13 @@ module.exports = function (child) {
             }
           }
         } else if (message.type == '[show-view]') {
-          child.is_hide = true;
+          child.isCurrentView = false;
 
           child.windowList.forEach((w) => {
             if (w.customSetting && w.customSetting.windowType == 'view' && w.window && !w.window.isDestroyed()) {
               if (w.customSetting.tabID == message.options.tabID) {
                 if (message.is_current_view) {
-                  child.is_hide = false;
+                  child.isCurrentView = true;
                   w.window.show();
                   w.window.setAlwaysOnTop(true);
                   w.window.setAlwaysOnTop(false);

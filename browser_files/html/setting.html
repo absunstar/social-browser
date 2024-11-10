@@ -220,11 +220,16 @@
                       <i-checkbox class="" label="Auto Clear Cache Storage" ng-model="setting.core.autoClearCacheStorage"></i-checkbox>
                     </div>
 
-                    <div class="row">
-                      <i-checkbox class="" label="Auto Email ( create new email for every profile ) " ng-model="setting.core.autoEmail"></i-checkbox>
-                      <i-control class="col3" ng-show="setting.core.autoEmail" type="password" label="Auto Email Password" ng-model="setting.core.autoEmailPassword"> </i-control>
-                      <i-control class="col3" ng-show="setting.core.autoEmail" label="Auto Email Domain" ng-model="setting.core.autoEmailDomain"> </i-control>
-                    </div>
+                    <fieldset>
+                      <legend>Email Setting</legend>
+                      <div class="row">
+                        <i-checkbox class="" label="Enabled Temp Mail ( create new email for every profile ) " ng-model="setting.core.emails.enabled"></i-checkbox>
+                        <div class="row" ng-show="setting.core.emails.enabled">
+                          <i-control class="col3" label="Emails Domain" ng-model="setting.core.emails.domain"> </i-control>
+                          <i-control class="col3" type="password" label="Emails Password" ng-model="setting.core.emails.password"> </i-control>
+                        </div>
+                      </div>
+                    </fieldset>
                   </div>
 
                   <fieldset>

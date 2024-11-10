@@ -11,7 +11,8 @@
     "autoClearCacheStorage": false,
     "password": "",
     "max_tabs": 20,
-    "autoEmail": true,
-    "autoEmailPassword": "",
-    "autoEmailDomain": "social-browser.com"
+    "emails": {
+        "enabled": true,
+        "domain": "social-browser.com"
+    }
 }

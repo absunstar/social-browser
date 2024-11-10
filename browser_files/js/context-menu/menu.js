@@ -1231,10 +1231,10 @@ function get_custom_menu() {
           referrer: document.location.href,
           url: document.location.href.replace('youtube', 'ssyoutube'),
           show: true,
-          allowNewWindows : false,
+          allowNewWindows: false,
           allowPopup: false,
           center: true,
-          vip : true
+          vip: true,
         });
       },
     });
@@ -1246,46 +1246,65 @@ function get_custom_menu() {
 }
 
 function getEmailMenu() {
-  if (SOCIALBROWSER.var.core.autoEmail) {
+  if (SOCIALBROWSER.var.core.emails && SOCIALBROWSER.var.core.emails.enabled) {
+    let arr = [];
     if (SOCIALBROWSER.session.display.contains('@')) {
-      SOCIALBROWSER.menuList.push({
-        label: '[ current Email ]',
+      arr.push({
+        label: 'paste Current Email',
         click() {
           SOCIALBROWSER.copy(SOCIALBROWSER.session.display);
           SOCIALBROWSER.paste();
         },
       });
-      let newEmail = SOCIALBROWSER.session.display.split('@')[0] + '@' + SOCIALBROWSER.var.core.autoEmailDomain;
-      SOCIALBROWSER.menuList.push({
-        label: '[ new Email ] ',
+      let newEmail = SOCIALBROWSER.session.display.split('@')[0] + '@' + SOCIALBROWSER.var.core.emails.domain;
+      arr.push({
+        label: 'paste Temp Mail',
         click() {
           SOCIALBROWSER.copy(newEmail);
           SOCIALBROWSER.paste();
         },
       });
-      SOCIALBROWSER.menuList.push({
-        label: '[ find Recovery Code ]',
+      arr.push({
+        label: 'paste Code from Temp Mail',
         click() {
-          let _url = 'http://emails.' + SOCIALBROWSER.var.core.autoEmailDomain + '/api/emails/all';
+          let _url = 'http://emails.' + SOCIALBROWSER.var.core.emails.domain + '/api/emails/view';
           SOCIALBROWSER.fetchJson(
             {
               url: _url,
               method: 'POST',
-              body: { where: { search: newEmail } },
+              body: { to: newEmail },
             },
             (data) => {
-              if (data.done && data.list.length > 0) {
-                let email = data.list.pop();
+              if (data.done && data.doc) {
+                let email = data.doc;
                 let code = email.subject.split(':')[1];
                 if (code) {
                   code = code.trim();
                   SOCIALBROWSER.copy(code);
                   SOCIALBROWSER.paste();
-                } else if (email.html) {
+                }
+                if (!code && email.html) {
                   let message = email.html;
                   var html = document.createElement('html');
                   html.innerHTML = message;
-                  let code = html.querySelector('strong').innerText;
+                  code = html.querySelector('strong')?.innerText;
+                  if (!code) {
+                    html.querySelectorAll('p').forEach((el) => {
+                      if (el.style.fontSize && el.style.fontWeight) {
+                        code = el.innerText;
+                      }
+                    });
+                  }
+                  if (!code) {
+                    html.querySelectorAll('div').forEach((el) => {
+                      if (el.style.fontSize == '36px') {
+                        code = el.innerText;
+                      }
+                    });
+                  }
+                }
+
+                if (code) {
                   SOCIALBROWSER.copy(code);
                   SOCIALBROWSER.paste();
                 }
@@ -1294,14 +1313,41 @@ function getEmailMenu() {
           );
         },
       });
+      arr.push({
+        type: 'separator',
+      });
+      arr.push({
+        label: 'Show All Messages',
+        click() {
+          SOCIALBROWSER.ipc('[open new popup]', {
+            partition: SOCIALBROWSER.partition,
+            referrer: document.location.href,
+            url: 'http://emails.' + SOCIALBROWSER.var.core.emails.domain + '/?email=' + newEmail,
+            show: true,
+            allowNewWindows: true,
+            allowPopup: true,
+            center: true,
+            vip: true,
+          });
+        },
+      });
+      arr.push({
+        type: 'separator',
+      });
     }
 
-    SOCIALBROWSER.menuList.push({
-      label: '[ Password ]',
+    arr.push({
+      label: 'paste Mail Password',
       click() {
-        SOCIALBROWSER.copy(SOCIALBROWSER.var.core.autoEmailPassword);
+        SOCIALBROWSER.copy(SOCIALBROWSER.var.core.emails.password);
         SOCIALBROWSER.paste();
       },
+    });
+
+    SOCIALBROWSER.menuList.push({
+      label: 'Emails',
+      type: 'submenu',
+      submenu: arr,
     });
     SOCIALBROWSER.menuList.push({
       type: 'separator',
