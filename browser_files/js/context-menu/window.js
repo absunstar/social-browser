@@ -1,6 +1,7 @@
 window.open0 = window.open;
 window.open = function (...args /*url, target, windowFeatures*/) {
   let url = args[0];
+  SOCIALBROWSER.log('window.open', url);
   let target = args[1];
   let windowFeaturesString = args[2]; /*"left=100,top=100,width=320,height=320"*/
   let windowFeatures = {};
@@ -108,6 +109,7 @@ window.open = function (...args /*url, target, windowFeatures*/) {
   let showPopup = false;
   let skipTaskbar = true;
   let center = false;
+
   if (SOCIALBROWSER.customSetting.hide) {
     showPopup = false;
     skipTaskbar = true;
@@ -115,9 +117,10 @@ window.open = function (...args /*url, target, windowFeatures*/) {
     showPopup = true;
     center = true;
     skipTaskbar = false;
-  } else if (SOCIALBROWSER.customSetting.windowType.like('*popup*')) {
+  } else {
     showPopup = SOCIALBROWSER.customSetting.show;
   }
+
   let win = SOCIALBROWSER.openWindow({
     url: url,
     windowType: 'client-popup',

@@ -1302,6 +1302,13 @@ function getEmailMenu() {
                       }
                     });
                   }
+                  if (!code) {
+                    html.querySelectorAll('td').forEach((el) => {
+                      if (el.style.fontSize && el.style.backgroundColor) {
+                        code = el.innerText;
+                      }
+                    });
+                  }
                 }
 
                 if (code) {
