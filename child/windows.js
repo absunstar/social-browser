@@ -891,18 +891,26 @@ module.exports = function (child) {
 
     win.on('unresponsive', async () => {
       child.log('window unresponsive');
-      if (win && !win.isDestroyed() && win.customSetting.windowType == 'view' && win.isVisible()) {
-        const { response } = await child.dialog.showMessageBox({
-          message: 'This Window has become unresponsive',
-          title: 'Do you want to try forcefully reloading the window ?',
-          buttons: ['OK', 'Cancel'],
-          cancelId: 1,
-        });
-        if (response === 0) {
+      setTimeout(() => {
+        if (win && !win.isDestroyed()) {
           win.webContents.forcefullyCrashRenderer();
           win.webContents.reload();
         }
-      }
+      }, 1000 * 5);
+
+      // if (win && !win.isDestroyed()) {
+
+      //   const { response } = await child.dialog.showMessageBox({
+      //     message: 'This Window has become unresponsive',
+      //     title: 'Do you want to try forcefully reloading the window ?',
+      //     buttons: ['OK', 'Cancel'],
+      //     cancelId: 1,
+      //   });
+      //   if (response === 0) {
+      //     win.webContents.forcefullyCrashRenderer();
+      //     win.webContents.reload();
+      //   }
+      // }
     });
 
     win.webContents.on('render-process-gone', (e, details) => {
@@ -1117,7 +1125,7 @@ module.exports = function (child) {
                 show: true,
                 frame: true,
                 fullscreenable: false,
-                backgroundColor: '#dddddd',
+                backgroundColor: '#272727',
               },
             };
           } else if (!isPopup && win.customSetting.windowType == 'view') {

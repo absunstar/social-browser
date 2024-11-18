@@ -456,15 +456,6 @@ module.exports = function (child) {
           }
         });
 
-        // Must Before Cookie Changing For Google and Youtube Login Problem ^_^
-        if (domainName.like('*youtube*|*google*')) {
-          callback({
-            cancel: false,
-            requestHeaders: details.requestHeaders,
-          });
-          return;
-        }
-
         if (child.parent.var.blocking.white_list.some((item) => url.like(item.url))) {
           callback({
             cancel: false,
@@ -480,7 +471,7 @@ module.exports = function (child) {
         if (customSetting && customSetting.vip) {
         } else {
           if (domainCookieObject) {
-            if (domainCookieObject && _ss.user.privacy.enable_virtual_pc && _ss.user.privacy.vpc.block_cloudflare) {
+            if (_ss.user.privacy.enable_virtual_pc && _ss.user.privacy.vpc.block_cloudflare) {
               if (domainCookieObject['_cflb']) {
                 domainCookieObject['_cflb'] = 'cf.' + domainCookieObject['_gab'];
               }
@@ -498,13 +489,12 @@ module.exports = function (child) {
               }
             }
 
-            if (domainCookieObject && !url.like('*google.com*|*youtube.com*')) {
-              if (_ss.user.privacy.enable_virtual_pc && _ss.user.privacy.vpc.hide_gid) {
-                if (domainCookieObject['_gid']) {
-                  delete domainCookieObject['_gid'];
-                }
+            if (_ss.user.privacy.enable_virtual_pc && _ss.user.privacy.vpc.hide_gid) {
+              if (domainCookieObject['_gid']) {
+                delete domainCookieObject['_gid'];
               }
             }
+
             details.requestHeaders['Cookie'] = child.cookieStringify(domainCookieObject);
           }
           if (_ss.user.privacy.vpc.dnt) {
@@ -513,14 +503,11 @@ module.exports = function (child) {
         }
 
         if (url.like('browser*') || url.like('*127.0.0.1*')) {
-          exit = true;
           callback({
             cancel: false,
             requestHeaders: details.requestHeaders,
           });
-          if (exit) {
-            return;
-          }
+          return;
         }
 
         // continue loading url
@@ -636,6 +623,9 @@ module.exports = function (child) {
               s_policy[key] = s_policy[key].replaceAll('img-src ', 'img-src browser://* ');
               s_policy[key] = s_policy[key].replaceAll('script-src ', 'script-src browser://* ');
               s_policy[key] = s_policy[key].replaceAll('frame-src ', 'frame-src browser://* ');
+              if (s_policy[key].contains('script-src') && !s_policy[key].contains('unsafe-inline')) {
+                s_policy[key] = s_policy[key] + "'unsafe-inline'";
+              }
             }
           }
         }

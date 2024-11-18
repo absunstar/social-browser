@@ -130,7 +130,6 @@ if (child.electron.app.dock) {
 // child.electron.app.commandLine.appendSwitch('disable-dev-shm-usage');
 // child.electron.app.commandLine.appendSwitch('disable-gpu');
 
-
 //child.electron.app.commandLine.appendSwitch('disable-web-security');
 // child.electron.app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
 //child.electron.app.commandLine.appendSwitch('disable-site-isolation-trials');
@@ -178,7 +177,8 @@ child.electron.app.whenReady().then(() => {
     });
   });
 
-  child.electron.app.on('window-all-closed', () => {
+  child.electron.app.on('window-all-closed', (e) => {
+    e.preventDefault();
     if (child.partition.contains('persist:') && child.electron.BrowserWindow.getAllWindows().length === 0) {
       child.log('window-all-closed :  process.exit() : ' + child.partition + ' : ' + child.index);
       process.exit();

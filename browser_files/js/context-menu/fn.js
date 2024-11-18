@@ -9,7 +9,7 @@ SOCIALBROWSER.message = function (message) {
 };
 SOCIALBROWSER.on('message', (e, message) => {
   if (message.eval) {
-    window.eval0(message.eval);
+    SOCIALBROWSER.eval(message.eval);
   }
 });
 
@@ -34,6 +34,11 @@ SOCIALBROWSER.requestCookie = function (obj = {}) {
   obj.partition = SOCIALBROWSER.partition;
   return SOCIALBROWSER.ipc('[request-cookie]', obj);
 };
+
+SOCIALBROWSER.isNativeFunction = function (f) {
+  return f.toString().includes('[native code]');
+};
+
 SOCIALBROWSER.desktopCapturer = function (options = {}, callback) {
   navigator.mediaDevices
     .getDisplayMedia({
@@ -776,7 +781,6 @@ SOCIALBROWSER.openWindow = function (_customSetting) {
   return SOCIALBROWSER.windowOpenList[customSetting.trackingID];
 };
 
-
 SOCIALBROWSER.upTo = function (el, tagName) {
   tagName = tagName.toLowerCase().split(',');
 
@@ -900,7 +904,7 @@ SOCIALBROWSER.injectDefault = function () {
     if (document.body && !document.querySelector('#social_browser_html')) {
       let social_browser_html = document.createElement('div');
       social_browser_html.id = 'social_browser_html';
-      social_browser_html.innerHTML =  SOCIALBROWSER.policy.createHTML(Buffer.from(SOCIALBROWSER.injectHTML).toString());
+      social_browser_html.innerHTML = SOCIALBROWSER.policy.createHTML(Buffer.from(SOCIALBROWSER.injectHTML).toString());
       document.body.appendChild(social_browser_html);
     }
     if ((document.body || document.head || document.documentElement) && !document.querySelector('#social_browser_css')) {

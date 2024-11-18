@@ -28,7 +28,7 @@ if (document.location.hostname.contains('addmefast.com')) {
               referrer: document.location.href,
               iframe: true,
               center: true,
-              audio: false,
+              allowAduio: false,
             });
           });
         }
@@ -36,19 +36,35 @@ if (document.location.hostname.contains('addmefast.com')) {
     });
 
     if (document.location.href.contains('reverbnation_fan|ok_group_join|askfm|pinterest|telegram|instagram|twitter|tiktok|soundcloud|youtube|facebook')) {
-      SOCIALBROWSER.var.user_data_block = true;
-      let waitingNumber = 10;
-      setInterval(() => {
+      SOCIALBROWSER.customSetting.allowURLs = '*addmefast*';
+      SOCIALBROWSER.customSetting.timeout = 1000 * 20;
+
+      let waitingNumber = SOCIALBROWSER.customSetting.timeout / 1000;
+
+      clearInterval(SOCIALBROWSER.addmefastInterval);
+      SOCIALBROWSER.addmefastInterval = setInterval(() => {
         if (waitingNumber > 0) {
-          document.title = 'Waiting ' + waitingNumber + ' sec';
+          alert('Waiting ' + waitingNumber + ' sec');
         }
         waitingNumber--;
 
-        let single_like_button = document.querySelector('a.single_like_button');
-        if (single_like_button && !single_like_button.id.like('*confirm*') && single_like_button.style.display != 'none') {
-          single_like_button.click();
-          single_like_button.style.display = 'none';
-          waitingNumber = 10;
+        if ((single_like_button = document.querySelector('a.single_like_button'))) {
+          if (!single_like_button.id.like('*confirm*') && single_like_button.style.display != 'none') {
+            single_like_button.click();
+            single_like_button.style.display = 'none';
+            waitingNumber = SOCIALBROWSER.customSetting.timeout / 1000;
+          }
+        }
+
+        if ((content = document.querySelector('#content'))) {
+          if (content.innerText.contains('Please try later')) {
+            clearInterval(SOCIALBROWSER.addmefastInterval);
+            alert('Reload Page After : 10 sec', 1000 * 10);
+            setTimeout(() => {
+              document.location.reload();
+            }, 1000 * 10);
+            return;
+          }
         }
       }, 1000);
 
@@ -93,6 +109,9 @@ if (document.location.hostname.contains('addmefast.com')) {
         };
 
         url = SOCIALBROWSER.handle_url(url);
+        if (url.contains('youtube.com')) {
+          SOCIALBROWSER.customSetting.timeout = 1000 * 30;
+        }
 
         let win = SOCIALBROWSER.openWindow({
           width: _specs.width,
@@ -104,8 +123,8 @@ if (document.location.hostname.contains('addmefast.com')) {
           frame: true,
           resizable: true,
           skipTaskbar: false,
-          timeout: 10 * 1000,
-          audio: false,
+          allowAduio: false,
+          vip: true,
         });
 
         child_window.postMessage = function (...args) {
@@ -121,7 +140,7 @@ if (document.location.hostname.contains('addmefast.com')) {
           if (single_like_button && single_like_button.id.like('*confirm*') && single_like_button.style.display != 'none') {
             single_like_button.click();
             waitingNumber = 0;
-            document.title = 'Collect POints';
+            alert('Collect POints');
           }
         });
 
@@ -134,8 +153,20 @@ if (document.location.hostname.contains('addmefast.com')) {
         return child_window;
       };
 
+      if ((timeout = document.querySelector('#timeoutxxx'))) {
+        if (timeout.style.display != 'none') {
+          alert('Reload Page After : 10 sec');
+          setTimeout(() => {
+            document.location.reload();
+          }, 1000 * 10);
+          return;
+        }
+      }
       if (document.querySelector('#content #content')) {
-        document.location.reload();
+        alert('Reload Page After : 10 sec');
+        setTimeout(() => {
+          document.location.reload();
+        }, 1000 * 10);
         return;
       }
 
@@ -173,7 +204,6 @@ if (document.location.hostname.contains('addmefast.com')) {
     }
 
     if (document.location.href.contains('websites')) {
-      SOCIALBROWSER.var.user_data_block = true;
       if (!document.f) {
         document.f = { m_text: { value: 0 } };
       }

@@ -86,7 +86,7 @@
   SOCIALBROWSER.fs = SOCIALBROWSER.require('fs');
   SOCIALBROWSER.Buffer = Buffer;
 
-  SOCIALBROWSER.eval = window.eval2 = function (script) {
+  SOCIALBROWSER.eval = function (script) {
     if (typeof script === 'string' || script instanceof Buffer || script instanceof TrustedScript || script instanceof TypedArray || script instanceof DataView) {
       try {
         let path = SOCIALBROWSER.data_dir + '\\sessionData\\' + new Date().getTime() + '_tmp.js';
@@ -258,6 +258,7 @@
     }
 
     SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/load.js');
+
     if (!SOCIALBROWSER.customSetting.allowSocialBrowser) {
       delete window.SOCIALBROWSER;
     }

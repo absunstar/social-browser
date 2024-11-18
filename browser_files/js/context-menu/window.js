@@ -1,158 +1,160 @@
 window.open0 = window.open;
-window.open = function (...args /*url, target, windowFeatures*/) {
-  let url = args[0];
-  SOCIALBROWSER.log('window.open', url);
-  let target = args[1];
-  let windowFeaturesString = args[2]; /*"left=100,top=100,width=320,height=320"*/
-  let windowFeatures = {};
-  if (windowFeaturesString) {
-    windowFeaturesString = windowFeaturesString.split(',');
-    windowFeaturesString.forEach((obj) => {
-      obj = obj.split('=');
-      windowFeatures[obj[0]] = obj[1];
-    });
-  }
+if (!SOCIALBROWSER.isWhiteSite) {
+  window.open = function (...args /*url, target, windowFeatures*/) {
+    let url = args[0];
+    SOCIALBROWSER.log('window.open', url);
+    let target = args[1];
+    let windowFeaturesString = args[2]; /*"left=100,top=100,width=320,height=320"*/
+    let windowFeatures = {};
+    if (windowFeaturesString) {
+      windowFeaturesString = windowFeaturesString.split(',');
+      windowFeaturesString.forEach((obj) => {
+        obj = obj.split('=');
+        windowFeatures[obj[0]] = obj[1];
+      });
+    }
 
-  let child_window = {
-    closed: false,
-    opener: window,
-    innerHeight: 1028,
-    innerWidth: 720,
+    let child_window = {
+      closed: false,
+      opener: window,
+      innerHeight: 1028,
+      innerWidth: 720,
 
-    postMessage: function (...args) {
-      //  SOCIALBROWSER.log('postMessage child_window', args);
-    },
-    eval: function () {
-      // SOCIALBROWSER.log('eval child_window');
-    },
-    close: function () {
-      //  SOCIALBROWSER.log('close child_window');
-      this.closed = true;
-    },
-    focus: function () {
-      // SOCIALBROWSER.log('focus child_window');
-    },
-    blur: function () {
-      //  SOCIALBROWSER.log('focus child_window');
-    },
-    print: function () {
-      // SOCIALBROWSER.log('print child_window');
-    },
-    document: {
-      write: function () {
-        // SOCIALBROWSER.log('document write child_window');
+      postMessage: function (...args) {
+        //  SOCIALBROWSER.log('postMessage child_window', args);
       },
-      open: function () {
-        // SOCIALBROWSER.log('document write child_window');
+      eval: function () {
+        // SOCIALBROWSER.log('eval child_window');
       },
       close: function () {
-        // SOCIALBROWSER.log('document write child_window');
+        //  SOCIALBROWSER.log('close child_window');
+        this.closed = true;
       },
-    },
-    self: this,
-  };
+      focus: function () {
+        // SOCIALBROWSER.log('focus child_window');
+      },
+      blur: function () {
+        //  SOCIALBROWSER.log('focus child_window');
+      },
+      print: function () {
+        // SOCIALBROWSER.log('print child_window');
+      },
+      document: {
+        write: function () {
+          // SOCIALBROWSER.log('document write child_window');
+        },
+        open: function () {
+          // SOCIALBROWSER.log('document write child_window');
+        },
+        close: function () {
+          // SOCIALBROWSER.log('document write child_window');
+        },
+      },
+      self: this,
+    };
 
-  if (!url || url.like('javascript:*|about:blank|*accounts.*|*login*') || SOCIALBROWSER.customSetting.allowCorePopup) {
-    let opener = window.open0(...args);
-    return opener || child_window;
-  }
-
-  url = SOCIALBROWSER.handle_url(url);
-  child_window.url = url;
-
-  let allow = false;
-
-  if (SOCIALBROWSER.allowPopup || SOCIALBROWSER.customSetting.allowPopup) {
-    allow = true;
-  } else {
-    if (SOCIALBROWSER.customSetting.blockPopup || !SOCIALBROWSER.customSetting.allowNewWindows) {
-      SOCIALBROWSER.log('block Popup : ' + url);
-      return child_window;
+    if (!url || url.like('javascript:*|about:blank|*accounts.*|*login*') || SOCIALBROWSER.customSetting.allowCorePopup) {
+      let opener = window.open0(...args);
+      return opener || child_window;
     }
 
-    if (SOCIALBROWSER.customSetting.allowSelfWindow) {
-      document.location.href = url;
-      return child_window;
-    }
+    url = SOCIALBROWSER.handle_url(url);
+    child_window.url = url;
 
-    if (!SOCIALBROWSER.var.core.javaScriptOFF) {
-      if (!SOCIALBROWSER.isAllowURL(url)) {
-        SOCIALBROWSER.log('Not Allow URL : ' + url);
+    let allow = false;
+
+    if (SOCIALBROWSER.allowPopup || SOCIALBROWSER.customSetting.allowPopup) {
+      allow = true;
+    } else {
+      if (SOCIALBROWSER.customSetting.blockPopup || !SOCIALBROWSER.customSetting.allowNewWindows) {
+        SOCIALBROWSER.log('block Popup : ' + url);
         return child_window;
       }
 
-      allow = !SOCIALBROWSER.var.blocking.popup.black_list.some((d) => url.like(d.url));
+      if (SOCIALBROWSER.customSetting.allowSelfWindow) {
+        document.location.href = url;
+        return child_window;
+      }
+
+      if (!SOCIALBROWSER.var.core.javaScriptOFF) {
+        if (!SOCIALBROWSER.isAllowURL(url)) {
+          SOCIALBROWSER.log('Not Allow URL : ' + url);
+          return child_window;
+        }
+
+        allow = !SOCIALBROWSER.var.blocking.popup.black_list.some((d) => url.like(d.url));
+
+        if (!allow) {
+          SOCIALBROWSER.log('black list : ' + url);
+          return child_window;
+        }
+
+        allow = false;
+        let toUrlParser = new URL(url);
+        let fromUrlParser = new URL(document.location.href);
+        if ((toUrlParser.host.contains(fromUrlParser.host) || fromUrlParser.host.contains(toUrlParser.host)) && SOCIALBROWSER.var.blocking.popup.allow_internal) {
+          allow = true;
+        } else if (toUrlParser.host !== fromUrlParser.host && SOCIALBROWSER.var.blocking.popup.allow_external) {
+          allow = true;
+        } else {
+          allow = SOCIALBROWSER.var.blocking.popup.white_list.some((d) => toUrlParser.host.like(d.url) || fromUrlParser.host.like(d.url));
+        }
+      }
 
       if (!allow) {
-        SOCIALBROWSER.log('black list : ' + url);
+        SOCIALBROWSER.log('Not Allow popup window : ' + url);
         return child_window;
       }
-
-      allow = false;
-      let toUrlParser = new URL(url);
-      let fromUrlParser = new URL(document.location.href);
-      if ((toUrlParser.host.contains(fromUrlParser.host) || fromUrlParser.host.contains(toUrlParser.host)) && SOCIALBROWSER.var.blocking.popup.allow_internal) {
-        allow = true;
-      } else if (toUrlParser.host !== fromUrlParser.host && SOCIALBROWSER.var.blocking.popup.allow_external) {
-        allow = true;
-      } else {
-        allow = SOCIALBROWSER.var.blocking.popup.white_list.some((d) => toUrlParser.host.like(d.url) || fromUrlParser.host.like(d.url));
-      }
     }
 
-    if (!allow) {
-      SOCIALBROWSER.log('Not Allow popup window : ' + url);
-      return child_window;
+    let showPopup = false;
+    let skipTaskbar = true;
+    let center = false;
+
+    if (SOCIALBROWSER.customSetting.hide) {
+      showPopup = false;
+      skipTaskbar = true;
+    } else if (SOCIALBROWSER.customSetting.windowType === 'view') {
+      showPopup = true;
+      center = true;
+      skipTaskbar = false;
+    } else {
+      showPopup = SOCIALBROWSER.customSetting.show;
     }
-  }
 
-  let showPopup = false;
-  let skipTaskbar = true;
-  let center = false;
+    let win = SOCIALBROWSER.openWindow({
+      url: url,
+      windowType: 'client-popup',
+      show: showPopup,
+      center: center,
+      skipTaskbar: skipTaskbar,
+      width: windowFeatures.width || SOCIALBROWSER.customSetting.width,
+      height: windowFeatures.height || SOCIALBROWSER.customSetting.height,
+      resizable: true,
+      frame: true,
+    });
 
-  if (SOCIALBROWSER.customSetting.hide) {
-    showPopup = false;
-    skipTaskbar = true;
-  } else if (SOCIALBROWSER.customSetting.windowType === 'view') {
-    showPopup = true;
-    center = true;
-    skipTaskbar = false;
-  } else {
-    showPopup = SOCIALBROWSER.customSetting.show;
-  }
+    child_window.postMessage = function (...args) {
+      win.postMessage(...args);
+    };
 
-  let win = SOCIALBROWSER.openWindow({
-    url: url,
-    windowType: 'client-popup',
-    show: showPopup,
-    center: center,
-    skipTaskbar: skipTaskbar,
-    width: windowFeatures.width || SOCIALBROWSER.customSetting.width,
-    height: windowFeatures.height || SOCIALBROWSER.customSetting.height,
-    resizable: true,
-    frame: true,
-  });
+    child_window.addEventListener = win.on;
 
-  child_window.postMessage = function (...args) {
-    win.postMessage(...args);
+    win.on('closed', (e) => {
+      child_window.postMessage = () => {};
+      child_window.eval = () => {};
+      child_window.closed = true;
+    });
+
+    child_window.eval = win.eval;
+
+    child_window.close = win.close;
+
+    child_window.win = win;
+
+    return child_window;
   };
-
-  child_window.addEventListener = win.on;
-
-  win.on('closed', (e) => {
-    child_window.postMessage = () => {};
-    child_window.eval = () => {};
-    child_window.closed = true;
-  });
-
-  child_window.eval = win.eval;
-
-  child_window.close = win.close;
-
-  child_window.win = win;
-
-  return child_window;
-};
+}
 
 if (SOCIALBROWSER.var.blocking.javascript.block_console_output) {
   window.SOCIALBROWSER.log = function () {};
@@ -188,28 +190,13 @@ if (SOCIALBROWSER.var.blocking.javascript.block_window_worker) {
 
 if (SOCIALBROWSER.var.blocking.javascript.block_window_post_message) {
   window.postMessage = function (...args) {
-    if (SOCIALBROWSER.var.blocking.javascript.block_window_post_message) {
-      SOCIALBROWSER.log('Block Post Message ', ...args);
-    }
+    SOCIALBROWSER.log('Block Post Message ', ...args);
   };
 }
 
 SOCIALBROWSER.on('window.message', (e, message) => {
   message.origin = message.origin || '*';
   window.postMessage(message.data, message.origin, message.transfer);
-});
-
-window.addEventListener('message', (e) => {
-  if (typeof e.data == 'string' && e.data.startsWith('{')) {
-    let info = JSON.parse(e.data);
-    if (info.name === 'SOCIALBROWSER') {
-      if (info.key === 'eval' && info.value) {
-        SOCIALBROWSER.eval(info.value);
-      } else {
-        SOCIALBROWSER[info.key] = info.value;
-      }
-    }
-  }
 });
 
 if (SOCIALBROWSER.parentAssignWindow) {

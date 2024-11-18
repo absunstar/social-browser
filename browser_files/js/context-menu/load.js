@@ -1,34 +1,43 @@
 SOCIALBROWSER.var.session_list.sort((a, b) => (a.time > b.time ? -1 : 1));
-SOCIALBROWSER.policy = {
-  createHTML: (string) => string,
-  createScriptURL: (string) => string,
-  createScript: (string) => string,
-};
-if (window.trustedTypes && window.trustedTypes.createPolicy) {
-  SOCIALBROWSER.policy = window.trustedTypes.createPolicy('social', {
+if ((policy = true)) {
+  SOCIALBROWSER.policy = {
     createHTML: (string) => string,
     createScriptURL: (string) => string,
     createScript: (string) => string,
-  });
-  window.trustedTypes.createPolicy('default', {
-    createHTML: (string) => string,
-    createScriptURL: (string) => string,
-    createScript: (string) => string,
-  });
+  };
+  if (window.trustedTypes && window.trustedTypes.createPolicy) {
+    SOCIALBROWSER.policy = window.trustedTypes.createPolicy('social', {
+      createHTML: (string) => string,
+      createScriptURL: (string) => string,
+      createScript: (string) => string,
+    });
+    window.trustedTypes.createPolicy('default', {
+      createHTML: (string) => string,
+      createScriptURL: (string) => string,
+      createScript: (string) => string,
+    });
+  }
 }
-window.eval0 = window.eval;
-window.eval = function (code) {
-  if (SOCIALBROWSER.var.blocking.javascript.block_eval) {
+
+if (!SOCIALBROWSER.isWhiteSite) {
+  // some site check if it native function
+  window.eval0 = window.eval;
+  window.eval = function (...code) {
+    try {
+      return window.eval0(...code);
+    } catch (error) {
+      console.log(error);
+    }
+  }.bind(window.eval);
+}
+
+if (SOCIALBROWSER.var.blocking.javascript.block_eval) {
+  window.eval = function () {
     SOCIALBROWSER.log('eval block', code);
     return undefined;
-  } else {
-    try {
-      return window.eval0(code);
-    } catch (error) {
-      return undefined;
-    }
-  }
-};
+  };
+}
+
 if (!SOCIALBROWSER.var.core.loginByPasskey && window.PublicKeyCredential && navigator) {
   window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable = function () {
     return new Promise((resolve, reject) => {
@@ -173,7 +182,7 @@ if (!SOCIALBROWSER.userAgentURL) {
 }
 
 if (SOCIALBROWSER.defaultUserAgent) {
-  if (false && SOCIALBROWSER.defaultUserAgent.vendor) {
+  if (SOCIALBROWSER.defaultUserAgent.vendor) {
     SOCIALBROWSER.__define(navigator, 'vendor', SOCIALBROWSER.defaultUserAgent.vendor);
     if (SOCIALBROWSER.defaultUserAgent.engine && SOCIALBROWSER.defaultUserAgent.engine.name === 'Chrome') {
       let chrome = JSON.parse(
