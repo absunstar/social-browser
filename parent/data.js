@@ -376,6 +376,14 @@ module.exports = function init(parent) {
           name: 'Tor',
         },
       ];
+      parent.var.blocking.privacy.browserDeviceList = parent.var.blocking.privacy.browserDeviceList || [
+        {
+          name: 'PC',
+        },
+        {
+          name: 'Mobile',
+        },
+      ];
       parent.var.blocking.youtube = parent.var.blocking.youtube || {};
       parent.var.blocking.permissions = parent.var.blocking.permissions || {};
       parent.var.blocking.internet_speed = parent.var.blocking.internet_speed || {};

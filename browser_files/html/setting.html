@@ -1038,15 +1038,17 @@
                     <fieldset>
                       <legend>New User Agent</legend>
                       <div class="row">
-                        <i-control class="col3" label="Name" ng-model="userAgent.name"></i-control>
-                        <i-control class="col9" label="URL" ng-model="userAgent.url"></i-control>
+                        <i-control class="col4" label="Name" ng-model="userAgent.name"></i-control>
+                        <i-list class="col3" items="setting.blocking.privacy.browserDeviceList" label="Engine" ng-model="userAgent.device"></i-list>
+                        <i-list class="col3" items="setting.blocking.privacy.browserEnginList" label="Engine" ng-model="userAgent.engine"></i-list>
+                        <i-control class="row" label="URL" ng-model="userAgent.url"></i-control>
                       </div>
 
                       <div class="row">
-                        <i-list class="col3" items="setting.blocking.privacy.browserEnginList" label="Engine" ng-model="userAgent.engine"></i-list>
                         <i-control class="col3" label="vendor" ng-model="userAgent.vendor" placeholder="apple || "></i-control>
                         <i-control class="col3" label="oscpu" ng-model="userAgent.oscpu" placeholder="windows || macos || linux"></i-control>
                         <i-control class="col3" label="platform" ng-model="userAgent.platform" placeholder="windows || macos || iphone || linux || android"></i-control>
+                        <i-control class="col3" label="productSub" ng-model="userAgent.productSub" placeholder="windows || macos || iphone || linux || android"></i-control>
                       </div>
 
                       <i-button type="push" ng-click="addUserAgent()" label="Add to List"></i-button>
@@ -1070,13 +1072,19 @@
                         </td>
 
                         <td>
-                          <div class="row padding border margin">
-                            <i-control label="Name" class="col8" type="text" ng-model="_se.name"></i-control>
-                            <i-list label="Engine" class="col4" primary="name" items="setting.blocking.privacy.browserEnginList" ng-model="_se.engine"></i-list>
-                            <i-control label="vendor" class="col4" type="text" ng-model="_se.vendor"></i-control>
-                            <i-control label="oscpu" class="col4" type="text" ng-model="_se.oscpu"></i-control>
-                            <i-control label="platform" class="col4" type="text" ng-model="_se.platform"></i-control>
-                            <i-control label="URL" class="bold col12" type="text" ng-model="_se.url"></i-control>
+                          <div class="row bg-gray padding border ">
+                            <div class="row">
+                              <i-control label="Name" class="col4" type="text" ng-model="_se.name"></i-control>
+                              <i-list label="Device" class="col3" primary="name" items="setting.blocking.privacy.browserDeviceList" ng-model="_se.device"></i-list>
+                              <i-list label="Engine" class="col3" primary="name" items="setting.blocking.privacy.browserEnginList" ng-model="_se.engine"></i-list>
+                              <i-control label="URL" class="bold row" type="text" ng-model="_se.url"></i-control>
+                            </div>
+                            <div class="row">
+                              <i-control label="vendor" class="col3" type="text" ng-model="_se.vendor"></i-control>
+                              <i-control label="oscpu" class="col3" type="text" ng-model="_se.oscpu"></i-control>
+                              <i-control label="platform" class="col3" type="text" ng-model="_se.platform"></i-control>
+                              <i-control label="productSub" class="col3" type="text" ng-model="_se.productSub"></i-control>
+                            </div>
                           </div>
                         </td>
                       </tr>

@@ -18,6 +18,12 @@
             "url": "*linkedin.com*"
         },
         {
+            "url": "*paypal.com*"
+        },
+        {
+            "url": "*snapchat.com*"
+        },
+        {
             "url": "*127.0.0.1*"
         }
     ]

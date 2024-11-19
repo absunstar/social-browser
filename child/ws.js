@@ -13,7 +13,9 @@ module.exports = function (child) {
     child._ws_.on('open', function () {
       child.log('Child Socket is Open');
     });
-    child._ws_.on('ping', function () {});
+    child._ws_.on('ping', function () {
+      child.sendMessage({ type: 'pong' });
+    });
     child._ws_.on('close', function (e) {
       child.log('Child Socket is closed. Reconnect will be attempted in 1 second.', e);
       setTimeout(function () {
@@ -33,7 +35,9 @@ module.exports = function (child) {
       try {
         let message = JSON.parse(event.data || event);
 
-        if (message.type == 'connected') {
+        if (message.type == 'ping') {
+          child.sendMessage({ type: 'pong' });
+        } else if (message.type == 'connected') {
           child.sendMessage({
             type: '[request-browser-core-data]',
           });
