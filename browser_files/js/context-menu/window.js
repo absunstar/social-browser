@@ -58,7 +58,7 @@ if (!SOCIALBROWSER.isWhiteSite) {
       return opener || child_window;
     }
 
-    url = SOCIALBROWSER.handle_url(url);
+    url = SOCIALBROWSER.handleURL(url);
     child_window.url = url;
 
     let allow = false;
@@ -215,10 +215,10 @@ if (SOCIALBROWSER.parentAssignWindow) {
 
 window.print2 = function (options) {
   document.querySelectorAll('[href]').forEach((el) => {
-    el.href = SOCIALBROWSER.handle_url(el.href);
+    el.href = SOCIALBROWSER.handleURL(el.href);
   });
   document.querySelectorAll('[src]').forEach((el) => {
-    el.src = SOCIALBROWSER.handle_url(el.src);
+    el.src = SOCIALBROWSER.handleURL(el.src);
   });
 
   fetch('http://127.0.0.1:60080/printing', {

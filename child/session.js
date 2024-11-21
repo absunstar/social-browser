@@ -278,7 +278,7 @@ module.exports = function (child) {
         }
 
         if (!child.isAllowURL(url)) {
-          if (url.like('*.js*|*/js*')) {
+          if (url.like('*.js*|*/js*') || details.resourceType == 'script') {
             let query = '';
             if (url.split('?')[1]) {
               query += url.split('?')[1] + '&x-url=' + url.split('?')[0];

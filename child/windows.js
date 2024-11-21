@@ -1008,6 +1008,7 @@ module.exports = function (child) {
         if (url.like('*accounts.google.com*') && win.customSetting.iframe) {
           child.createNewWindow({
             ...win.customSetting,
+            allowAds : true,
             webPreferences: null,
             iframe: false,
             skipTaskbar: false,

@@ -678,7 +678,7 @@ SOCIALBROWSER.isValidURL = SOCIALBROWSER.isURL = function (str) {
   }
 };
 
-SOCIALBROWSER.handle_url = SOCIALBROWSER.handleURL = function (u) {
+SOCIALBROWSER.handleURL = function (u) {
   if (typeof u !== 'string') {
     return u;
   }
@@ -688,8 +688,10 @@ SOCIALBROWSER.handle_url = SOCIALBROWSER.handleURL = function (u) {
     u = u;
   }
   u = u.trim();
-  if (u.indexOf('http') === 0 || u.indexOf('//') === 0 || u.indexOf('data:') === 0 || u.indexOf('blob:') === 0) {
+  if (u.indexOf('http') === 0 || u.indexOf('data:') === 0 || u.indexOf('blob:') === 0) {
     u = u;
+  } else if (u.indexOf('//') === 0) {
+    u = window.location.protocol + u;
   } else if (u.indexOf('/') === 0) {
     u = window.location.origin + u;
   } else if (u.split('?')[0].split('.').length < 3) {

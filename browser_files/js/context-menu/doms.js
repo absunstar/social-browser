@@ -14,7 +14,7 @@ function removeAdDoms() {
         } else if (sl.hide) {
           el.style.display = 'none';
         } else if (sl.empty) {
-          el.innerHTML = '';
+          el.innerHTML = SOCIALBROWSER.policy.createHTML('');
         }
       });
     }

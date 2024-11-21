@@ -77,7 +77,7 @@ function add_input_menu(node) {
                 label: d.value,
                 click() {
                   node.value = '';
-                  node.innerHTML = '';
+                  node.innerHTML = SOCIALBROWSER.policy.createHTML('');
                   SOCIALBROWSER.copy(d.value);
                   SOCIALBROWSER.paste();
                 },
@@ -87,7 +87,7 @@ function add_input_menu(node) {
                 label: d.value,
                 click() {
                   node.value = d.value;
-                  node.innerHTML = d.value;
+                  node.innerHTML = SOCIALBROWSER.policy.createHTML(d.value);
                   dd.data.forEach((d2) => {
                     if (d2.type == 'hidden' || d2.type == 'submit') {
                       return;
@@ -102,7 +102,7 @@ function add_input_menu(node) {
 
                     if (e1) {
                       e1.value = d2.value;
-                      e1.innerHTML = d2.value;
+                      e1.innerHTML = SOCIALBROWSER.policy.createHTML(d2.value);
                       if (e1.dispatchEvent) {
                         e1.dispatchEvent(inputEvent);
                         e1.dispatchEvent(changeEvent);
@@ -124,7 +124,7 @@ function add_input_menu(node) {
                 label: d.value,
                 click() {
                   node.value = '';
-                  node.innerHTML = '';
+                  node.innerHTML = SOCIALBROWSER.policy.createHTML('');
                   SOCIALBROWSER.copy(d.value);
                   SOCIALBROWSER.paste();
                 },
@@ -134,7 +134,7 @@ function add_input_menu(node) {
                 label: d.value,
                 click() {
                   node.value = d.value;
-                  node.innerHTML = d.value;
+                  node.innerHTML = SOCIALBROWSER.policy.createHTML(d.value);
                   dd.data.forEach((d2) => {
                     if (d2.type == 'hidden' || d2.type == 'submit') {
                       return;
@@ -149,7 +149,7 @@ function add_input_menu(node) {
 
                     if (e1) {
                       e1.value = d2.value;
-                      e1.innerHTML = d2.value;
+                      e1.innerHTML = SOCIALBROWSER.policy.createHTML(d2.value);
                       if (e1.dispatchEvent) {
                         e1.dispatchEvent(inputEvent);
                         e1.dispatchEvent(changeEvent);
@@ -171,7 +171,7 @@ function add_input_menu(node) {
                 label: d.value,
                 click() {
                   node.value = '';
-                  node.innerHTML = '';
+                  node.innerHTML = SOCIALBROWSER.policy.createHTML('');
                   SOCIALBROWSER.copy(d.value);
                   SOCIALBROWSER.paste();
                 },
@@ -198,7 +198,7 @@ function add_input_menu(node) {
               label: d.value,
               click() {
                 node.value = '';
-                node.innerHTML = '';
+                node.innerHTML = SOCIALBROWSER.policy.createHTML('');
                 SOCIALBROWSER.copy(d.value);
                 SOCIALBROWSER.paste();
               },
@@ -208,7 +208,7 @@ function add_input_menu(node) {
               label: d.value,
               click() {
                 node.value = d.value;
-                node.innerHTML = d.value;
+                node.innerHTML = SOCIALBROWSER.policy.createHTML(d.value);
                 dd.data.forEach((d2) => {
                   if (d2.type == 'hidden' || d2.type == 'submit') {
                     return;
@@ -223,7 +223,7 @@ function add_input_menu(node) {
 
                   if (e1) {
                     e1.value = d2.value;
-                    e1.innerHTML = d2.value;
+                    e1.innerHTML = SOCIALBROWSER.policy.createHTML(d2.value);
                     if (e1.dispatchEvent) {
                       e1.dispatchEvent(inputEvent);
                       e1.dispatchEvent(changeEvent);
@@ -237,7 +237,7 @@ function add_input_menu(node) {
               label: d.value,
               click() {
                 node.value = '';
-                node.innerHTML = '';
+                node.innerHTML = SOCIALBROWSER.policy.createHTML('');
                 SOCIALBROWSER.copy(d.value);
                 SOCIALBROWSER.paste();
               },
@@ -247,7 +247,7 @@ function add_input_menu(node) {
               label: d.value,
               click() {
                 node.value = d.value;
-                node.innerHTML = d.value;
+                node.innerHTML = SOCIALBROWSER.policy.createHTML(d.value);
 
                 dd.data.forEach((d2) => {
                   if (d2.type == 'hidden' || d2.type == 'submit') {
@@ -263,7 +263,7 @@ function add_input_menu(node) {
 
                   if (e1) {
                     e1.value = d2.value;
-                    e1.innerHTML = d2.value;
+                    e1.innerHTML = SOCIALBROWSER.policy.createHTML(d2.value);
                     if (e1.dispatchEvent) {
                       e1.dispatchEvent(inputEvent);
                       e1.dispatchEvent(changeEvent);
@@ -277,7 +277,7 @@ function add_input_menu(node) {
               label: d.value,
               click() {
                 node.value = '';
-                node.innerHTML = '';
+                node.innerHTML = SOCIALBROWSER.policy.createHTML('');
                 SOCIALBROWSER.copy(d.value);
                 SOCIALBROWSER.paste();
               },
@@ -1286,7 +1286,7 @@ function getEmailMenu() {
                 if (!code && email.html) {
                   let message = email.html;
                   var html = document.createElement('html');
-                  html.innerHTML = message;
+                  html.innerHTML = SOCIALBROWSER.policy.createHTML(message);
                   code = html.querySelector('strong')?.innerText;
                   if (!code) {
                     html.querySelectorAll('p').forEach((el) => {

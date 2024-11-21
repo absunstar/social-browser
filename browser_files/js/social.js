@@ -871,14 +871,15 @@ SOCIALBROWSER.on('[update-tab-properties]', (event, data) => {
     }
   }
 
-  if (socialTabs.tabEls.length === 2 && SOCIALBROWSER.remote.getCurrentWindow().isVisible()) {
+  if (socialTabs.tabEls.length === 2 && !SOCIALBROWSER.currentWindow.isMinimized() && SOCIALBROWSER.currentWindow.isVisible()) {
+    SOCIALBROWSER.currentWindow.moveTop();
     SOCIALBROWSER.ipc('[show-view]', {
       x: 0,
       y: 0,
       width: document.width,
       height: document.height,
       tabID: currentTabId,
-      mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
+      mainWindowID: SOCIALBROWSER.currentWindow.id,
     });
   }
 

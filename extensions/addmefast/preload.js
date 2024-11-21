@@ -108,7 +108,7 @@ if (document.location.hostname.contains('addmefast.com')) {
           self: this,
         };
 
-        url = SOCIALBROWSER.handle_url(url);
+        url = SOCIALBROWSER.handleURL(url);
         if (url.contains('youtube.com')) {
           SOCIALBROWSER.customSetting.timeout = 1000 * 30;
         }
