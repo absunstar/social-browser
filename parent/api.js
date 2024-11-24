@@ -35,7 +35,6 @@ module.exports = function init(parent) {
     },
   });
 
-  parent.var.api = parent.api.options;
   parent.api.getBrowser = function () {
     return parent;
   };

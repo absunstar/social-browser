@@ -397,7 +397,7 @@ SOCIALBROWSER.on('[update-browser-var]', (e, res) => {
   }
   SOCIALBROWSER.callEvent('updated', { name: res.options.name });
 });
-SOCIALBROWSER.on('share', (e, data) => {
+SOCIALBROWSER.onShare((data) => {
   if (data == '[hide-main-window]' && SOCIALBROWSER.customSetting.windowType == 'main') {
     SOCIALBROWSER.currentWindow.hide();
   }

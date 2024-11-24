@@ -159,10 +159,10 @@ module.exports = function init(child) {
     }
   });
 
-  child.ipcMain.handle('share', (e, message) => {
+  child.ipcMain.handle('share', (e, data) => {
     child.sendMessage({
       type: 'share',
-      message: message,
+      data: data,
     });
   });
 

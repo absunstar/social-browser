@@ -647,7 +647,6 @@ $('.social-minmize').click(() => {
 
 socialTabsDom.addEventListener('activeTabChange', ({ detail }) => {
   currentTabId = detail.tabEl.id;
-
   SOCIALBROWSER.ipc('[show-view]', {
     x: 0,
     y: 0,
@@ -872,7 +871,6 @@ SOCIALBROWSER.on('[update-tab-properties]', (event, data) => {
   }
 
   if (socialTabs.tabEls.length === 2 && !SOCIALBROWSER.currentWindow.isMinimized() && SOCIALBROWSER.currentWindow.isVisible()) {
-    SOCIALBROWSER.currentWindow.moveTop();
     SOCIALBROWSER.ipc('[show-view]', {
       x: 0,
       y: 0,

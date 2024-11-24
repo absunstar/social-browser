@@ -151,9 +151,9 @@ module.exports = function init(parent) {
   require(parent.path.join(parent.dir, 'parent', 'fn.js'))(parent);
   require(parent.path.join(parent.dir, 'parent', 'file.js'))(parent);
   require(parent.path.join(parent.dir, 'parent', 'download.js'))(parent);
+  require(parent.path.join(parent.dir, 'parent', 'api.js'))(parent);
   require(parent.path.join(parent.dir, 'parent', 'data.js'))(parent);
   require(parent.path.join(parent.dir, 'parent', 'session.js'))(parent);
-  require(parent.path.join(parent.dir, 'parent', 'api.js'))(parent);
   require(parent.path.join(parent.dir, 'parent', 'ipc.js'))(parent);
   require(parent.path.join(parent.dir, 'parent', 'ws.js'))(parent);
   require(parent.path.join(parent.dir, 'parent', 'chat.js'))(parent);

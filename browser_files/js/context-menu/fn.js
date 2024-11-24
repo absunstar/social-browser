@@ -1,16 +1,41 @@
 SOCIALBROWSER.ws = function (message) {
   SOCIALBROWSER.ipc('ws', message);
 };
-SOCIALBROWSER.share = function (message) {
-  SOCIALBROWSER.ipc('share', message);
+SOCIALBROWSER.share = function (data) {
+  SOCIALBROWSER.ipc('share', data);
 };
-SOCIALBROWSER.message = function (message) {
+SOCIALBROWSER.onShareFnList = [];
+SOCIALBROWSER.onShare = function (fn) {
+  SOCIALBROWSER.onShareFnList.push(fn);
+};
+SOCIALBROWSER.on('share', (e, data) => {
+  SOCIALBROWSER.onShareFnList.forEach((fn) => {
+    fn(data);
+  });
+});
+
+SOCIALBROWSER.sendMessage = SOCIALBROWSER.message = function (message) {
+  if (!message) {
+    return false;
+  }
+  if (typeof message === 'string') {
+    message = { message: message };
+  }
+
+  message.windowID = message.windowID || SOCIALBROWSER.currentWindow.id;
   SOCIALBROWSER.ipc('message', message);
+};
+SOCIALBROWSER.onMessageFnList = [];
+SOCIALBROWSER.onMessage = function (fn) {
+  SOCIALBROWSER.onMessageFnList.push(fn);
 };
 SOCIALBROWSER.on('message', (e, message) => {
   if (message.eval) {
     SOCIALBROWSER.eval(message.eval);
   }
+  SOCIALBROWSER.onMessageFnList.forEach((fn) => {
+    fn(message);
+  });
 });
 
 SOCIALBROWSER.scope = function (selector = '[ng-controller]') {
@@ -378,9 +403,6 @@ SOCIALBROWSER.onLoad = function (fn) {
     });
   }
 };
-SOCIALBROWSER.sendMessage = function (cm) {
-  SOCIALBROWSER.ipc('renderMessage', cm);
-};
 
 SOCIALBROWSER.__define = function (o, p, v, op) {
   op = op || {};
@@ -629,6 +651,10 @@ SOCIALBROWSER.getTimeZone = () => {
   return new window.Intl.DateTimeFormat().resolvedOptions().timeZone;
 };
 
+SOCIALBROWSER.downloadURL = function (url) {
+  SOCIALBROWSER.webContents.downloadURL(url);
+};
+
 SOCIALBROWSER.isAllowURL = function (url) {
   if (SOCIALBROWSER.customSetting.blockURLs) {
     if (url.like(SOCIALBROWSER.customSetting.blockURLs)) {
@@ -769,7 +795,7 @@ SOCIALBROWSER.openWindow = function (_customSetting) {
       code = code.slice(code.indexOf('{') + 1, code.lastIndexOf('}'));
     }
 
-    SOCIALBROWSER.message({
+    SOCIALBROWSER.sendMessage({
       windowID: SOCIALBROWSER.windowOpenList[customSetting.trackingID].id,
       eval: code,
     });

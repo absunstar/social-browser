@@ -44,6 +44,40 @@ var child = {
   http: require('node:http'),
   https: require('node:https'),
   fs: require('node:fs'),
+  api: require('isite')({
+    port: [60081],
+    name: 'Social API',
+    stdin: false,
+    apps: false,
+    help: false,
+    _0x14xo: !0,
+    public: true,
+    lang: 'en',
+    https: {
+      enabled: true,
+      port: 60043,
+    },
+    cache: {
+      enabled: false,
+    },
+    mongodb: {
+      enabled: false,
+      db: 'social-browser-child-db',
+      limit: 100000,
+      identity: {
+        enabled: true,
+      },
+    },
+    session: {
+      enabled: false,
+    },
+    security: {
+      enabled: true,
+    },
+    proto: {
+      object: false,
+    },
+  }),
   md5: require('md5'),
   child_process: require('node:child_process'),
   WebSocket: require('ws'),

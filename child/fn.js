@@ -158,8 +158,8 @@ module.exports = function (child) {
       return;
     }
     try {
-      let path = child.path.join(child.parent.data_dir, 'json', name + '.json');
-      let currentContent = JSON.stringify(child.parent.var[name]);
+      let path = child.path.join(child.parent.data_dir, 'json', name + '.social');
+      let currentContent = child.api.hide(child.parent.var[name]);
       child.writeFile(path, currentContent);
     } catch (error) {
       child.log(error);

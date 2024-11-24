@@ -4,7 +4,7 @@ SOCIALBROWSER.log('.... [ Core Extention activated ] .... ' + document.location.
 
 // if (SOCIALBROWSER.isIframe()) {
 //   SOCIALBROWSER.onLoad(() => {
-//     SOCIALBROWSER.message({ windowID: SOCIALBROWSER.remote.getCurrentWindow().id, changeTitle: document.title });
+//     SOCIALBROWSER.sendMessage({ windowID: SOCIALBROWSER.remote.getCurrentWindow().id, changeTitle: document.title });
 //   });
 // } else {
 //   SOCIALBROWSER.on('message', (e, message) => {

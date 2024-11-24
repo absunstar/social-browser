@@ -39,13 +39,19 @@ module.exports = function init(parent) {
   };
   parent.newVersionDetected = false;
   parent.readBrowserVar = function (name) {
-    let path = parent.path.join(parent.dir, 'browser_files', 'json', name + '.json');
+    let path = parent.path.join(parent.dir, 'browser_files', 'json', name + '.social');
     let Content = name.like('*list*') ? [] : {};
 
     if (parent.fs.existsSync(path)) {
-      Content = parent.readFileSync(path);
-      Content = Content ? parent.parseJson(Content) : name.like('*list*') ? [] : {};
+      Content = parent.api.show(parent.readFileSync(path)) || Content;
       parent.varRaw[name] = Content;
+    } else {
+      path = parent.path.join(parent.dir, 'browser_files', 'json', name + '.json');
+      if (parent.fs.existsSync(path)) {
+        Content = parent.readFileSync(path);
+        Content = Content ? parent.parseJson(Content) : name.like('*list*') ? [] : {};
+        parent.varRaw[name] = Content;
+      }
     }
 
     if (!Content) {
@@ -54,13 +60,19 @@ module.exports = function init(parent) {
     return Content;
   };
   parent.readUserVar = function (name) {
-    let path = parent.path.join(parent.data_dir, 'json', name + '.json');
+    let path = parent.path.join(parent.data_dir, 'json', name + '.social');
     let Content = name.like('*list*') ? [] : {};
 
     if (parent.fs.existsSync(path)) {
-      Content = parent.readFileSync(path);
-      Content = Content ? parent.parseJson(Content) : name.like('*list*') ? [] : {};
+      Content = parent.api.show(parent.readFileSync(path)) || Content;
       parent.var[name] = Content;
+    }else{
+      let path = parent.path.join(parent.data_dir, 'json', name + '.json');
+      if (parent.fs.existsSync(path)) {
+        Content = parent.readFileSync(path);
+        Content = Content ? parent.parseJson(Content) : name.like('*list*') ? [] : {};
+        parent.var[name] = Content;
+      }
     }
 
     if (!Content) {

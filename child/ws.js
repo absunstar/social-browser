@@ -133,7 +133,7 @@ module.exports = function (child) {
         } else if (message.type == 'share') {
           child.electron.BrowserWindow.getAllWindows().forEach((win) => {
             if (win && !win.isDestroyed()) {
-              win.webContents.send('share', message.message);
+              win.webContents.send('share', message.data);
             }
           });
         } else if (message.type == '[tracking-info]') {

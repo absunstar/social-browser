@@ -153,6 +153,9 @@ module.exports = function (child) {
           child.log(`session ${name} Proxy Set : ${proxy.mode}`);
         });
       } else {
+        child.electron.app.setProxy({
+          mode: proxy.mode,
+        });
         ss.setProxy({
           mode: proxy.mode,
         }).then(() => {
@@ -160,6 +163,10 @@ module.exports = function (child) {
         });
       }
     } else if (!proxy) {
+      child.electron.app.setProxy({
+        mode: 'system',
+        proxyBypassRules: 'localhost,127.0.0.1,::1,192.168.*',
+      });
       ss.setProxy({
         mode: 'system',
         proxyBypassRules: 'localhost,127.0.0.1,::1,192.168.*',
