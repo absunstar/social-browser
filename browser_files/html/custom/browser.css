@@ -35,40 +35,6 @@ video0 {
   z-index: 9999998;
 }
 
-#__bookmarkDiv {
-  display: none;
-  position: fixed;
-  width: auto;
-  height: auto;
-  text-align: center;
-  font-size: 22px;
-  left: 0px;
-  right: 0px;
-  bottom: 100px;
-  padding: 50px;
-  z-index: 9999998;
-}
-#__bookmarkDiv a {
-  display: inline-block;
-  margin: 5px;
-  background: #fff;
-  padding: 0px;
-  color: blue !important;
-  transition: all 0.2s ease;
-  text-decoration: none;
-}
-#__bookmarkDiv p:hover {
-  text-decoration: underline !important;
-}
-#__bookmarkDiv p {
-  font-size: 12px;
-}
-#__bookmarkDiv img,
-#__bookmarkDiv p {
-  display: inline-block;
-  padding: 0px;
-  margin: 0px;
-}
 #__alertBox {
   display: none;
   position: fixed;

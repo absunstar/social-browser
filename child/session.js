@@ -67,7 +67,7 @@ module.exports = function (child) {
         isDefault: sessionOptions.isDefault || false,
       });
       sessionIndex = child.session_name_list.length - 1;
-      ss.setSpellCheckerLanguages(['en-US']);
+     // ss.setSpellCheckerLanguages(['en-US']);
       ss.allowNTLMCredentialsForDomains('*');
     }
 

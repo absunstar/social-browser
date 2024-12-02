@@ -946,21 +946,7 @@ SOCIALBROWSER.injectDefault = function () {
   }
 };
 
-SOCIALBROWSER.__showBookmarks = function () {
-  SOCIALBROWSER.injectDefault();
-  let div = document.querySelector('#__bookmarkDiv');
-  if (div) {
-    SOCIALBROWSER.var.bookmarks.forEach((b) => {
-      b.image = b.image || SOCIALBROWSER.nativeImage(b.image);
-      div.innerHTML += `
-                    <a class="bookmark" href="${b.url}" target="_blank">
-                        <p class="title"> ${b.title} </p>
-                    </a>
-                    `;
-    });
-    div.style.display = 'block';
-  }
-};
+
 
 SOCIALBROWSER.__showWarningImage = function () {
   SOCIALBROWSER.injectDefault();

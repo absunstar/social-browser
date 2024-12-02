@@ -11,7 +11,6 @@ const updateOnlineStatus = () => {
 window.addEventListener('online', updateOnlineStatus);
 window.addEventListener('offline', updateOnlineStatus);
 
-const { nativeImage } = SOCIALBROWSER.electron;
 const { Menu, MenuItem } = SOCIALBROWSER.remote;
 
 function ipc(name, message) {

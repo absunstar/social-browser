@@ -13,7 +13,7 @@ module.exports = function (parent) {
     let ss = name === '0' ? parent.electron.session.defaultSession : parent.electron.session.fromPartition(name);
     let user = parent.var.session_list.find((s) => s.name == name) ?? {};
 
-    ss.setSpellCheckerLanguages(['en-US']);
+   // ss.setSpellCheckerLanguages(['en-US']);
 
     // ss.cookies.on('changed', function (event, cookie, cause, removed) {
     //     if (!Array.isArray(parent.cookies[name])) {

@@ -582,7 +582,8 @@
                     <div class="row padding">
                       <div class="col6">
                         <i-checkbox class="row" label="Block ( Eval functions )" ng-model="setting.blocking.javascript.block_eval"></i-checkbox>
-                        <i-checkbox class="row" label="Block ( Console functions )" ng-model="setting.blocking.javascript.block_console_output"> </i-checkbox>
+                        <i-checkbox class="row" label="Block ( All Console functions )" ng-model="setting.blocking.javascript.block_console_output"> </i-checkbox>
+                        <i-checkbox class="row" label="Block ( Console.clear function )" ng-model="setting.blocking.javascript.block_console_clear"> </i-checkbox>
                         <i-checkbox class="row" label="Block ( window.postMessage )" ng-model="setting.blocking.javascript.block_window_post_message"> </i-checkbox>
                         <i-checkbox class="row" label="Block ( window.Worker )" ng-model="setting.blocking.javascript.block_window_worker"> </i-checkbox>
                         <i-checkbox class="row" label="Auto Load ( jquery )" ng-model="setting.blocking.javascript.allow_jquery"> </i-checkbox>

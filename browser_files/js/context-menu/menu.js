@@ -1331,8 +1331,9 @@ function getEmailMenu() {
           SOCIALBROWSER.ipc('[open new popup]', {
             partition: SOCIALBROWSER.partition,
             referrer: document.location.href,
-            url: 'http://emails.' + SOCIALBROWSER.var.core.emails.domain + '/?email=' + newEmail,
+            url: 'http://emails.' + SOCIALBROWSER.var.core.emails.domain + '/vip?email=' + newEmail,
             show: true,
+            allowDevTools: false,
             allowNewWindows: true,
             allowPopup: true,
             center: true,
@@ -1782,6 +1783,7 @@ SOCIALBROWSER.contextmenu = function (e) {
       x2: Math.round(e.x),
       y2: Math.round(e.y),
     };
+
     let node = document.elementFromPoint(SOCIALBROWSER.rightClickPosition.x, SOCIALBROWSER.rightClickPosition.y);
 
     if (!node || !!node.oncontextmenu) {
@@ -1807,15 +1809,24 @@ SOCIALBROWSER.contextmenu = function (e) {
         })),
       })),
       windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
+      routingId: SOCIALBROWSER.electron.webFrame.routingId,
     });
   } catch (error) {
     SOCIALBROWSER.log(error);
   }
 };
 
+if (SOCIALBROWSER.isIframe()) {
+  window.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    SOCIALBROWSER.contextmenu(e);
+  });
+}
+
 SOCIALBROWSER.on('context-menu', (e, data) => {
   SOCIALBROWSER.contextmenu(data);
 });
+
 SOCIALBROWSER.on('[run-menu]', (e, data) => {
   if (typeof data.index !== 'undefined' && typeof data.index2 !== 'undefined' && typeof data.index3 !== 'undefined') {
     let m = SOCIALBROWSER.menuList[data.index];

@@ -728,7 +728,13 @@ module.exports = function (child) {
       }
     });
 
+    win.on('system-context-menu', (event, point) => {
+     // event.preventDefault();
+    });
+
     win.webContents.on('context-menu', (event, params) => {
+      event.preventDefault();
+
       if (!win.customSetting.allowMenu) {
         return;
       }
@@ -917,9 +923,10 @@ module.exports = function (child) {
       child.log('render-process-gone');
       setTimeout(() => {
         if (win && !win.isDestroyed()) {
+          win.webContents.forcefullyCrashRenderer();
           win.webContents.reload();
         }
-      }, 1000 * 2);
+      }, 1000 * 5);
     });
 
     win.webContents.on('will-redirect', (e) => {
@@ -1008,7 +1015,7 @@ module.exports = function (child) {
         if (url.like('*accounts.google.com*') && win.customSetting.iframe) {
           child.createNewWindow({
             ...win.customSetting,
-            allowAds : true,
+            allowAds: true,
             webPreferences: null,
             iframe: false,
             skipTaskbar: false,

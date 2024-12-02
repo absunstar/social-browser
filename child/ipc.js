@@ -344,19 +344,23 @@ module.exports = function init(child) {
   });
   child.ipcMain.handle('[show-menu]', (e, data) => {
     let win = child.electron.BrowserWindow.fromId(data.windowID);
+    let contents = win.webContents;
+    if (data.routingId) {
+      contents = win.webContents.mainFrame.frames.find((f) => f.routingId == data.routingId) || contents;
+    }
     data.list.forEach((m, i) => {
       m.click = function () {
-        win.webContents.send('[run-menu]', { index: i });
+        contents.send('[run-menu]', { index: i });
       };
       if (m.submenu) {
         m.submenu.forEach((m2, i2) => {
           m2.click = function () {
-            win.webContents.send('[run-menu]', { index: i, index2: i2 });
+            contents.send('[run-menu]', { index: i, index2: i2 });
           };
           if (m2.submenu) {
             m2.submenu.forEach((m3, i3) => {
               m3.click = function () {
-                win.webContents.send('[run-menu]', { index: i, index2: i2, index3: i3 });
+                contents.send('[run-menu]', { index: i, index2: i2, index3: i3 });
               };
             });
           }
