@@ -465,6 +465,7 @@ function get_url_menu_list(url) {
     return arr;
   }
 }
+
 function add_a_menu(node) {
   if (!node || SOCIALBROWSER.menuAOFF) {
     return;
@@ -1248,6 +1249,7 @@ function get_custom_menu() {
 function getEmailMenu() {
   if (SOCIALBROWSER.var.core.emails && SOCIALBROWSER.var.core.emails.enabled) {
     let arr = [];
+
     if (SOCIALBROWSER.session.display.contains('@')) {
       arr.push({
         label: 'paste Current Email',
@@ -1326,7 +1328,7 @@ function getEmailMenu() {
         type: 'separator',
       });
       arr.push({
-        label: 'Show All Messages',
+        label: 'Show All Temp Mail Messages',
         click() {
           SOCIALBROWSER.ipc('[open new popup]', {
             partition: SOCIALBROWSER.partition,
@@ -1359,6 +1361,7 @@ function getEmailMenu() {
       type: 'submenu',
       submenu: arr,
     });
+
     SOCIALBROWSER.menuList.push({
       type: 'separator',
     });
@@ -1818,8 +1821,10 @@ SOCIALBROWSER.contextmenu = function (e) {
 
 if (SOCIALBROWSER.isIframe()) {
   window.addEventListener('contextmenu', (e) => {
-    e.preventDefault();
-    SOCIALBROWSER.contextmenu(e);
+    if (SOCIALBROWSER.customSetting.allowMenu) {
+      e.preventDefault();
+      SOCIALBROWSER.contextmenu(e);
+    }
   });
 }
 
@@ -1852,6 +1857,7 @@ SOCIALBROWSER.on('[run-menu]', (e, data) => {
     }
   }
 });
+
 window.addEventListener('dblclick', (event) => {
   if (
     SOCIALBROWSER.var.blocking.javascript.auto_remove_html &&

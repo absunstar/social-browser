@@ -66,7 +66,7 @@ module.exports = function init(parent) {
     if (parent.fs.existsSync(path)) {
       Content = parent.api.show(parent.readFileSync(path)) || Content;
       parent.var[name] = Content;
-    }else{
+    } else {
       let path = parent.path.join(parent.data_dir, 'json', name + '.json');
       if (parent.fs.existsSync(path)) {
         Content = parent.readFileSync(path);
@@ -413,6 +413,7 @@ module.exports = function init(parent) {
         {
           name: 'C:\\Program Files\\Softdeluxe\\Free Download Manager\\fdm.exe',
           params: '--url $url --path $file_name',
+          url: 'https://www.freedownloadmanager.org/',
         },
       ];
     }
@@ -779,18 +780,40 @@ module.exports = function init(parent) {
     parent.information['DISKDRIVE'] = '...';
     parent.information['BIOS'] = '...';
 
-    parent.exec('wmic CPU get ProcessorId', (d) => {
-      parent.information['ProcessorId'] = d.replace(/\n|\r|\t|\s+|ProcessorId/g, '') || 'UNKNOWN';
-      parent.activated();
-    });
-    parent.exec('wmic DISKDRIVE get SerialNumber', (d) => {
-      parent.information['DISKDRIVE'] = d.replace(/\n|\r|\t|\s+|SerialNumber/g, '') || 'UNKNOWN';
-      parent.activated();
-    });
-    parent.exec('wmic BIOS get SerialNumber', (d) => {
-      parent.information['BIOS'] = d.replace(/\n|\r|\t|\s+|SerialNumber/g, '') || 'UNKNOWN';
-      parent.activated();
-    });
+    if ((cmd = true)) {
+      parent.exec('wmic CPU get ProcessorId', (d) => {
+        parent.information['ProcessorId'] = d.replace(/\n|\r|\t|\s+|ProcessorId/g, '') || 'UNKNOWN';
+        parent.activated();
+      });
+      parent.exec('wmic DISKDRIVE get SerialNumber', (d) => {
+        parent.information['DISKDRIVE'] = d.replace(/\n|\r|\t|\s+|SerialNumber/g, '') || 'UNKNOWN';
+        parent.activated();
+      });
+      parent.exec('wmic BIOS get SerialNumber', (d) => {
+        parent.information['BIOS'] = d.replace(/\n|\r|\t|\s+|SerialNumber/g, '') || 'UNKNOWN';
+        parent.activated();
+      });
+    }
+
+    if ((powerShell = true)) {
+      parent.powerShell('Get-WmiObject -Class win32_processor | Select ProcessorID', (d) => {
+        let ProcessorID = d.replace(/\n|\r|\t|\s+|ProcessorID|-/g, '');
+        parent.information['ProcessorId'] = ProcessorID || 'UNKNOWN';
+        parent.activated();
+      });
+
+      parent.powerShell('Get-Disk | WHERE {$_.BootFromDisk -eq $TRUE} | select SerialNumber', (d) => {
+        let SerialNumber = d.replace(/\n|\r|\t|\s+|SerialNumber|-/g, '');
+        parent.information['DISKDRIVE'] = SerialNumber || 'UNKNOWN';
+        parent.activated();
+      });
+
+      parent.powerShell('Get-WmiObject -Class Win32_Bios | Select SerialNumber', (d) => {
+        let SerialNumber = d.replace(/\n|\r|\t|\s+|SerialNumber|-/g, '');
+        parent.information['BIOS'] = SerialNumber || 'UNKNOWN';
+        parent.activated();
+      });
+    }
   }
 
   parent.httpTrustedOnline = function () {

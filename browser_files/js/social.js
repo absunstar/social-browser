@@ -869,7 +869,7 @@ SOCIALBROWSER.on('[update-tab-properties]', (event, data) => {
     }
   }
 
-  if (socialTabs.tabEls.length === 2 && !SOCIALBROWSER.currentWindow.isMinimized() && SOCIALBROWSER.currentWindow.isVisible()) {
+  if (socialTabs.tabEls.length === 2 && !SOCIALBROWSER.showViewDone && !SOCIALBROWSER.currentWindow.isMinimized() && SOCIALBROWSER.currentWindow.isVisible()) {
     SOCIALBROWSER.ipc('[show-view]', {
       x: 0,
       y: 0,
@@ -878,6 +878,10 @@ SOCIALBROWSER.on('[update-tab-properties]', (event, data) => {
       tabID: currentTabId,
       mainWindowID: SOCIALBROWSER.currentWindow.id,
     });
+    SOCIALBROWSER.showViewDone = true;
+    SOCIALBROWSER.currentWindow.show();
+    SOCIALBROWSER.currentWindow.setAlwaysOnTop(true);
+    SOCIALBROWSER.currentWindow.setAlwaysOnTop(false);
   }
 
   if (data.tabID && data.tabID == currentTabId && data.url) {

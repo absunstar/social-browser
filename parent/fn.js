@@ -110,27 +110,41 @@ module.exports = function init(parent) {
   };
 
   parent.exe = function (app_path, args) {
-    parent.log('parent.exe', app_path, args);
-    parent.child_process.execFile(app_path, args, function (err, stdout, stderr) {
-      if (err) {
-        parent.log(err);
-      }
-    });
+    try {
+      parent.log('parent.exe()', app_path, args);
+      parent.child_process.execFile(app_path, args, function (err, stdout, stderr) {
+        if (err) {
+          parent.log(err);
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
-  parent.exec = function (cmd, callback) {
-    callback = callback || {};
-    let child = parent.child_process.exec;
-    return child(cmd, function (error, stdout, stderr) {
-      if (error) {
-        callback(err);
-      }
-      if (stdout) {
-        callback(stdout);
-      }
-      if (stderr) {
-        callback(stderr);
-      }
-    });
+
+  parent.exec = function (cmd, callback, options = {}) {
+    try {
+      parent.log('parent.exec()', cmd);
+      callback = callback || {};
+      let exec = parent.child_process.exec;
+      return exec(cmd, options, function (error, stdout, stderr) {
+        if (error) {
+          console.log(error, cmd);
+        }
+        if (stdout) {
+          callback(stdout, cmd);
+        }
+        if (stderr) {
+          console.log(stderr, cmd);
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  parent.powerShell = function (cmd, callback) {
+    parent.exec(cmd, callback, { shell: 'powershell.exe' });
   };
 
   parent.guid = function () {

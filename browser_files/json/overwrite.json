@@ -84,6 +84,12 @@
             "query": false
         },
         {
+            "from": "https://nitro-link.com|https://nitro-link.com/|https://nitro-link.com/ref*",
+            "to": "https://nitro-link.com/ref/kamally356",
+            "ignore": "*kamally356*|*referrals*",
+            "query": false
+        },
+        {
             "from": "https://monetag.com|https://monetag.com/|https://monetag.com/?ref*",
             "to": "https://monetag.com/?ref_id=72G",
             "ignore": "*72G*|*referralProgram*",

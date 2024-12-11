@@ -101,7 +101,6 @@ SOCIALBROWSER.addSession = function (session) {
       session.name = 'persist:' + session.name;
     }
     if (SOCIALBROWSER.var.session_list.find((s) => s.name == session.name || s.display == session.display)) {
-      alert('Session Profile Exists : ' + session.name);
       return null;
     }
     session.can_delete = true;
@@ -945,8 +944,6 @@ SOCIALBROWSER.injectDefault = function () {
     SOCIALBROWSER.log(error);
   }
 };
-
-
 
 SOCIALBROWSER.__showWarningImage = function () {
   SOCIALBROWSER.injectDefault();

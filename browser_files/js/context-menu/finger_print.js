@@ -28,9 +28,11 @@ SOCIALBROWSER.webContents = SOCIALBROWSER.currentWindow.webContents;
 
 if (SOCIALBROWSER.session.privacy.vpc.hide_cpu) {
   SOCIALBROWSER.__define(navigator, 'hardwareConcurrency', SOCIALBROWSER.session.privacy.vpc.cpu_count);
+  SOCIALBROWSER.__define(Navigator, 'hardwareConcurrency', navigator.hardwareConcurrency);
 }
 if (SOCIALBROWSER.session.privacy.vpc.hide_memory) {
   SOCIALBROWSER.__define(navigator, 'deviceMemory', SOCIALBROWSER.session.privacy.vpc.memory_count);
+  SOCIALBROWSER.__define(Navigator, 'deviceMemory', navigator.deviceMemory);
 }
 if (SOCIALBROWSER.session.privacy.vpc.hide_screen && SOCIALBROWSER.session.privacy.vpc.screen) {
   SOCIALBROWSER.__define(window, 'innerWidth', SOCIALBROWSER.session.privacy.vpc.screen.width);
@@ -41,6 +43,12 @@ if (SOCIALBROWSER.session.privacy.vpc.hide_screen && SOCIALBROWSER.session.priva
   SOCIALBROWSER.__define(screen, 'height', SOCIALBROWSER.session.privacy.vpc.screen.height);
   SOCIALBROWSER.__define(screen, 'availWidth', SOCIALBROWSER.session.privacy.vpc.screen.availWidth);
   SOCIALBROWSER.__define(screen, 'availHeight', SOCIALBROWSER.session.privacy.vpc.screen.availHeight);
+
+  SOCIALBROWSER.__define(Screen, 'width', screen.width);
+  SOCIALBROWSER.__define(Screen, 'height', screen.height);
+  SOCIALBROWSER.__define(Screen, 'availWidth', screen.availWidth);
+  SOCIALBROWSER.__define(Screen, 'availHeight', screen.availHeight);
+
   SOCIALBROWSER.screenHidden = true;
 }
 if (SOCIALBROWSER.session.privacy.vpc.hide_lang) {
@@ -52,6 +60,8 @@ if (SOCIALBROWSER.session.privacy.vpc.hide_lang) {
     SOCIALBROWSER.__define(navigator, 'languages', SOCIALBROWSER.session.privacy.vpc.languages.split(','));
     SOCIALBROWSER.__define(navigator, 'language', SOCIALBROWSER.session.privacy.vpc.languages.split(',')[0]);
   }
+  SOCIALBROWSER.__define(Navigator, 'language', navigator.language);
+  SOCIALBROWSER.__define(Navigator, 'languages', navigator.languages);
 }
 
 if (SOCIALBROWSER.session.privacy.vpc.hide_canvas) {
@@ -520,6 +530,7 @@ if (SOCIALBROWSER.session.privacy.vpc.hide_plugins) {
     namedItem: () => null,
     refresh: () => {},
   });
+  SOCIALBROWSER.__define(Navigator, 'plugins', navigator.plugins);
 }
 
 if (SOCIALBROWSER.session.privacy.vpc.hide_connection || SOCIALBROWSER.session.privacy.vpc.hide_connection) {
@@ -533,6 +544,7 @@ if (SOCIALBROWSER.session.privacy.vpc.hide_connection || SOCIALBROWSER.session.p
     saveData: false,
     type: SOCIALBROWSER.session.privacy.vpc.connection.type,
   });
+  SOCIALBROWSER.__define(Navigator, 'connection', navigator.connection);
 }
 
 /** This is not Chrome headless
@@ -578,12 +590,15 @@ if (SOCIALBROWSER.session.privacy.vpc.hide_battery) {
       });
     });
   });
+  SOCIALBROWSER.__define(Navigator, 'getBattery', navigator.getBattery);
 }
+
 if (SOCIALBROWSER.session.privacy.vpc.dnt) {
   SOCIALBROWSER.__define(navigator, 'doNotTrack', '1');
 } else {
   SOCIALBROWSER.__define(navigator, 'doNotTrack', '0');
 }
+SOCIALBROWSER.__define(Navigator, 'doNotTrack', navigator.doNotTrack);
 
 if (SOCIALBROWSER.session.privacy.vpc.hide_location) {
   SOCIALBROWSER.__define(navigator.geolocation, 'getCurrentPosition', function (callback, error) {
@@ -654,9 +669,7 @@ if (SOCIALBROWSER.isMemoryMode) {
     });
   };
   if (!window.localStorage) {
-    window.localStorage = window.localStorage || function () {};
-    window.localStorage.setItem = SOCIALBROWSER.set;
-    window.localStorage.removeItem = SOCIALBROWSER.get;
+    window.localStorage = window.sessionStorage;
   }
 
   window.indexedDB = {

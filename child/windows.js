@@ -729,7 +729,7 @@ module.exports = function (child) {
     });
 
     win.on('system-context-menu', (event, point) => {
-     // event.preventDefault();
+      // event.preventDefault();
     });
 
     win.webContents.on('context-menu', (event, params) => {
