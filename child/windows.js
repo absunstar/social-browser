@@ -163,15 +163,18 @@ module.exports = function (child) {
 
   child.createNewWindow = function (setting) {
     delete setting.name;
+    delete setting.id;
+    delete setting.webPreferences;
+    if (setting.windowType !== 'view') {
+      delete setting.tabID;
+    }
     let parent = child.parent;
     setting.partition = setting.partition || child.partition || parent.var.core.session.name;
-    if (!setting.webPreferences) {
-      delete setting.webPreferences;
-    }
+
     let defaultSetting = {
       vip: false,
       iframe: true,
-      trackingID: new Date().getTime(),
+      trackingID: 'main_tracking_' + new Date().getTime(),
       parent: setting.parent || null,
       allowOpenExternal: true,
       allowMenu: true,
@@ -606,11 +609,6 @@ module.exports = function (child) {
       if (win.customSetting.trackingID) {
         child.sendMessage({ type: '[tracking-info]', trackingID: win.customSetting.trackingID, windowID: win.id, isClosed: true });
       }
-      child.sendToWindows('[window-event]', {
-        windowID: win.customSetting.windowID,
-        options: win.customSetting,
-        name: 'close',
-      });
 
       child.windowList = child.windowList.filter((w) => w.id !== win.customSetting.windowID);
 

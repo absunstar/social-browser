@@ -371,31 +371,7 @@ module.exports = function init(parent) {
       parent.var.blocking.core = parent.var.blocking.core || {};
       parent.var.blocking.javascript = parent.var.blocking.javascript || {};
       parent.var.blocking.privacy = parent.var.blocking.privacy || {};
-      parent.var.blocking.privacy.browserEnginList = parent.var.blocking.privacy.browserEnginList || [
-        {
-          name: 'Chrome',
-        },
-        {
-          name: 'Edge',
-        },
-        {
-          name: 'Firefox',
-        },
-        {
-          name: 'Opera',
-        },
-        {
-          name: 'Tor',
-        },
-      ];
-      parent.var.blocking.privacy.browserDeviceList = parent.var.blocking.privacy.browserDeviceList || [
-        {
-          name: 'PC',
-        },
-        {
-          name: 'Mobile',
-        },
-      ];
+
       parent.var.blocking.youtube = parent.var.blocking.youtube || {};
       parent.var.blocking.permissions = parent.var.blocking.permissions || {};
       parent.var.blocking.internet_speed = parent.var.blocking.internet_speed || {};

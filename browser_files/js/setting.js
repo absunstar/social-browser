@@ -17,6 +17,10 @@ setTimeout(() => {
 }, 1000 * 2);
 
 app.controller('mainController', ($scope, $http, $timeout) => {
+  $scope.userAgentPlatformList = SOCIALBROWSER.userAgentPlatformList;
+  $scope.userAgentBrowserList = SOCIALBROWSER.userAgentBrowserList;
+  $scope.userAgentDeviceList = SOCIALBROWSER.userAgentDeviceList;
+
   $scope.$proxy = {
     socks5: false,
     socks4: false,
@@ -953,7 +957,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
   $scope.paste = function () {
     SOCIALBROWSER.paste();
   };
-  
+
   $scope.showPassword = function (site) {
     if ((elem = document.querySelector('#pass_' + site.id + ' input[type=password]'))) {
       elem.setAttribute('type', 'text');

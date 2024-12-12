@@ -423,10 +423,8 @@ module.exports = function init(child) {
   child.ipcMain.handle('[close-view]', (e, options) => {
     if (child.speedMode) {
       child.windowList.forEach((w) => {
-        if (w.customSetting.windowType == 'view') {
-          if (w.customSetting.tabID == options.tabID) {
-            w.window.close();
-          }
+        if (w.customSetting.windowType == 'view' && w.customSetting.tabID == options.tabID) {
+          w.window.close();
         }
       });
     } else {

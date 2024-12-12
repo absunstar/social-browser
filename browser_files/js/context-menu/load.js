@@ -144,6 +144,77 @@ SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/finger_print.j
 
 // user agent
 
+if ((randomUserAgentSupport = true)) {
+  SOCIALBROWSER.userAgentDeviceList = [
+    {
+      name: 'PC',
+    },
+    {
+      name: 'Mobile',
+    },
+  ];
+  SOCIALBROWSER.userAgentPlatformList = ['Windows NT 10.0; Win64; x64', 'Macintosh; Intel Mac OS X 10_15_7', 'X11; Ubuntu; Linux x86_64', 'Windows NT 6.1; WOW64', 'Linux; Android 9'];
+  SOCIALBROWSER.userAgentBrowserList = [
+    {
+      name: 'Chrome',
+      randomMajor: () => SOCIALBROWSER.randomNumber(100, 132),
+      randomMinor: () => SOCIALBROWSER.randomNumber(0, 5735),
+      randomPatch: () => SOCIALBROWSER.randomNumber(0, 199),
+    },
+    {
+      name: 'Edge',
+      randomMajor: () => SOCIALBROWSER.randomNumber(100, 132),
+      randomMinor: () => SOCIALBROWSER.randomNumber(0, 5735),
+      randomPatch: () => SOCIALBROWSER.randomNumber(0, 199),
+    },
+    {
+      name: 'Firefox',
+      randomMajor: () => SOCIALBROWSER.randomNumber(90, 133),
+      randomMinor: () => SOCIALBROWSER.randomNumber(0, 9),
+      randomPatch: () => SOCIALBROWSER.randomNumber(0, 99),
+    },
+    {
+      name: 'Safari',
+      randomMajor: () => SOCIALBROWSER.randomNumber(600, 605),
+      randomMinor: () => SOCIALBROWSER.randomNumber(1, 15),
+      randomPatch: () => SOCIALBROWSER.randomNumber(10, 14),
+    },
+    {
+      name: 'Opera',
+      randomMajor: () => SOCIALBROWSER.randomNumber(100, 132),
+      randomMinor: () => SOCIALBROWSER.randomNumber(0, 5735),
+      randomPatch: () => SOCIALBROWSER.randomNumber(0, 199),
+    },
+  ];
+
+  SOCIALBROWSER.getRandomBrowser = function () {
+    let browser = SOCIALBROWSER.userAgentBrowserList[SOCIALBROWSER.randomNumber(0, 2)];
+    browser.device = SOCIALBROWSER.userAgentDeviceList[SOCIALBROWSER.randomNumber(0, 1)];
+    browser.platform = SOCIALBROWSER.userAgentPlatformList[SOCIALBROWSER.randomNumber(0, 4)];
+    browser.major = browser.randomMajor();
+    browser.minor = browser.randomMinor();
+    browser.patch = browser.randomPatch();
+
+    if (browser.name.contains('Safari')) {
+      browser.url = `Mozilla/5.0 (${browser.platform}) AppleWebKit/${browser.major}.${browser.minor} (KHTML, like Gecko) Version/${browser.patch}.0 Safari/${browser.major}.${browser.minor}`;
+    }
+    if (browser.name.contains('Firefox')) {
+      browser.url = `Mozilla/5.0 (${browser.platform}; rv:${browser.major}.${browser.minor}) Gecko/20100101 Firefox/${browser.major}.${browser.minor}`;
+    } else {
+      browser.url = `Mozilla/5.0 (${browser.platform}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${browser.major}.${browser.minor}.${browser.patch} Safari/537.36`;
+    }
+
+    if (browser.name.contains('Edge')) {
+      browser.url += ` ${browser.name}/${browser.major}.${browser.minor}.${browser.patch}`;
+    }
+    return browser;
+  };
+
+  SOCIALBROWSER.getRandomUserAgent = function () {
+    return SOCIALBROWSER.getRandomBrowser().url;
+  };
+}
+
 if (SOCIALBROWSER.customSetting.userAgentURL) {
   SOCIALBROWSER.userAgentURL = SOCIALBROWSER.customSetting.userAgentURL;
 }

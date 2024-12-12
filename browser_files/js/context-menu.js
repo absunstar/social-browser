@@ -1,10 +1,5 @@
 (function () {
   var SOCIALBROWSER = {
-    random: function (min = 1, max = 1000) {
-      min = Math.ceil(min);
-      max = Math.floor(max);
-      return Math.floor(Math.random() * (max - min + 1) + min);
-    },
     var: {
       core: { id: '' },
       overwrite: {
@@ -65,6 +60,12 @@
         console.log(...args);
       }
     },
+  };
+
+  SOCIALBROWSER.random = SOCIALBROWSER.randomNumber = function (min = 1, max = 1000) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1) + min);
   };
 
   SOCIALBROWSER.require = function (name) {

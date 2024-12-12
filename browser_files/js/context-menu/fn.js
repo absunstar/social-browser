@@ -743,7 +743,7 @@ SOCIALBROWSER.isViewable = function (element) {
 };
 
 SOCIALBROWSER.openWindow = function (_customSetting) {
-  _customSetting.trackingID = new Date().getTime().toString();
+  _customSetting.trackingID = 'tacking_' + new Date().getTime().toString();
   SOCIALBROWSER.windowOpenList[_customSetting.trackingID] = { eventList: [] };
   SOCIALBROWSER.windowOpenList[_customSetting.trackingID].on = function (name, callback) {
     SOCIALBROWSER.windowOpenList[_customSetting.trackingID].eventList.push({ name: name, callback: callback });

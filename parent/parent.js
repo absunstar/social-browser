@@ -262,7 +262,7 @@ module.exports = function init(parent) {
           }
 
           parent.clientList[index2].option_list.forEach((op) => {
-            if (op.tabID) {
+            if (op.tabID && op.windowType === 'view') {
               parent.clientList.forEach((client, i) => {
                 if (client.windowType === 'main') {
                   client.ws.send({

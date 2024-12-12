@@ -1040,8 +1040,8 @@
                       <legend>New User Agent</legend>
                       <div class="row">
                         <i-control class="col4" label="Name" ng-model="userAgent.name"></i-control>
-                        <i-list class="col3" items="setting.blocking.privacy.browserDeviceList" label="Engine" ng-model="userAgent.device"></i-list>
-                        <i-list class="col3" items="setting.blocking.privacy.browserEnginList" label="Engine" ng-model="userAgent.engine"></i-list>
+                        <i-list class="col3" items="userAgentDeviceList" label="Engine" ng-model="userAgent.device"></i-list>
+                        <i-list class="col3" items="userAgentBrowserList" label="Engine" ng-model="userAgent.engine"></i-list>
                         <i-control class="row" label="URL" ng-model="userAgent.url"></i-control>
                       </div>
 
@@ -1073,11 +1073,11 @@
                         </td>
 
                         <td>
-                          <div class="row bg-gray padding border ">
+                          <div class="row bg-gray padding border">
                             <div class="row">
                               <i-control label="Name" class="col4" type="text" ng-model="_se.name"></i-control>
-                              <i-list label="Device" class="col3" primary="name" items="setting.blocking.privacy.browserDeviceList" ng-model="_se.device"></i-list>
-                              <i-list label="Engine" class="col3" primary="name" items="setting.blocking.privacy.browserEnginList" ng-model="_se.engine"></i-list>
+                              <i-list label="Device" class="col3" primary="name" items="userAgentDeviceList" ng-model="_se.device"></i-list>
+                              <i-list label="Engine" class="col3" primary="name" items="userAgentBrowserList" ng-model="_se.engine"></i-list>
                               <i-control label="URL" class="bold row" type="text" ng-model="_se.url"></i-control>
                             </div>
                             <div class="row">
