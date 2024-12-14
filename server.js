@@ -117,10 +117,11 @@
   if (!browser.fs.existsSync(browser.dir)) {
     browser.dir = process.cwd();
   }
+
   browser.files_dir = browser.dir + '/browser_files';
   browser.data_dir = browser.path.join(browser.os.homedir(), 'social-data');
 
-  if (!browser.fs.existsSync(browser.data_dir)) {
+  if (!browser.fs.existsSync(browser.data_dir) && browser.data_dir[0] !== browser.dir[0]) {
     browser.data_dir = browser.path.join(process.cwd(), 'social-data');
   }
 

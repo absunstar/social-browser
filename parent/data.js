@@ -103,9 +103,14 @@ module.exports = function init(parent) {
 
       if (name == 'session_list') {
         parent.var[name].forEach((s) => {
-          s.name = s.name.replace('{random}', '_random_' + new Date().getTime().toString().replace('0.', '') + Math.random().toString().replace('0.', ''));
-          if (s.name.indexOf('persist:') === -1) {
-            s.name = 'persist:' + s.name;
+          if (s.display == '{email}') {
+            s.display = parent.md5(new Date().getTime().toString().replace('0.', '') + Math.random().toString().replace('0.', '')) + '@social-browser.com';
+            s.name = 'persist:' + parent.md5(s.display);
+          } else {
+            s.name = s.name.replace('{random}', '_random_' + new Date().getTime().toString().replace('0.', '') + Math.random().toString().replace('0.', ''));
+            if (s.name.indexOf('persist:') === -1) {
+              s.name = 'persist:' + s.name;
+            }
           }
         });
       }

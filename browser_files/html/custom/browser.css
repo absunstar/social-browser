@@ -38,7 +38,7 @@ video0 {
 #__alertBox {
   display: none;
   position: fixed;
-  background: #005ea9;
+  background: #2d2828;
   color: #ffffff;
   width: auto;
   height: auto;
@@ -49,13 +49,13 @@ video0 {
   left: 20%;
   right: 20%;
   padding: 30px;
-  border: 8px solid #15719b;
+  border: 8px solid #141313;
   border-radius: 0;
   top: 0;
   z-index: 9999999;
   word-wrap: break-word;
   word-break: break-all;
-  box-shadow: 1px 1px 8px 8px #003762;
+  box-shadow: 1px 1px 8px 8px #000000;
 }
 
 #__targetUrl {
@@ -212,7 +212,6 @@ video0 {
 
 @media screen and (max-width: 768px /*mobile*/) {
   #__alertBox {
-    border: 1px solid #2196f3;
     font-size: 12px;
     left: 0px;
     right: 0px;

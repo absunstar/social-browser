@@ -101,9 +101,9 @@ module.exports = function (child) {
         }),
         windowType: 'profiles',
         show: false,
-        width: 500,
+        width: 800,
         height: 800,
-        x: win.getBounds().x + (win.getBounds().width - 500),
+        x: win.getBounds().x + (win.getBounds().width - 800),
         y: (win.getBounds().y == -8 ? 0 : win.getBounds().y - 5) + 30,
         alwaysOnTop: false,
         resizable: false,
@@ -127,7 +127,7 @@ module.exports = function (child) {
     }
     if (show && child.profilesWindow && !child.profilesWindow.isDestroyed()) {
       child.profilesWindow.setBounds({
-        x: win.getBounds().x + (win.getBounds().width - 500),
+        x: win.getBounds().x + (win.getBounds().width - 800),
         y: (win.getBounds().y == -8 ? 0 : win.getBounds().y - 5) + 30,
       });
       child.profilesWindow.show();

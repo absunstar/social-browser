@@ -1,10 +1,10 @@
 [
-    {
-        "name": "persist:user_{random}",
-        "display": "User 1"
-    },
-    {
-        "name": "persist:user_{random}",
-        "display": "User 2"
-    }
+  {
+    "name": "persist:user_{random}",
+    "display": "{email}"
+  },
+  {
+    "name": "persist:user_{random}",
+    "display": "{email}"
+  }
 ]
