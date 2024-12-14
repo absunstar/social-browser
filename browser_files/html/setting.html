@@ -8,42 +8,64 @@
     <title>Setting</title>
     <style>
       :root {
-        --theme-color: #2196f3;
-        --form-color: #2196f3;
+        --theme-color: #212529;
+        --form-color: #212529;
+
+        --bs-body-color: #d1d1d1;
+        --bs-body-font-family: var(--font-family);
+
         --input-color: #795548;
         --input-font-size: 14px;
         --input-font-wight: normal;
-        --fieldset-border: 1px solid #bbb;
+        --label-color: #ffc107;
+        --label-font-weight: normal;
+
+        --tabs-header-link-color: #63ffb7;
+        --tabs-header-width: 25%;
+        --tabs-content-width: 75%;
+        --tabs-header-link-border-bottom: 1px solid #000;
+        --tabs-background-color: #000000;
+        --tabs-background-color2: #000000;
+        --tabs-header-link-radius: 5px;
+
+        --dropdown-background: #6c757d;
+
+        --fieldset-background: #283e4a;
+        --fieldset-border: 1px solid #d1d1d1;
         --modal-color: #000000;
         --modal-background: #00000026;
         --font-family: monospace, 'Cairo';
-        --tabs-background-color: #2196f3;
         --btn-add-color: #272727;
         --btn-add-background-color: #fff;
         --btn-delete-color: red;
         --btn-delete-background-color: #fff;
-        --fieldset-border: 1px solid #2196f3;
-        --legend-font-size: 16px;
-        --legend-font-weight: normal;
-        --label-font-weight: normal;
+        --legend-font-size: 20px;
+        --legend-font-weight: bold;
         --input-focus-border-width: 0 0 1px;
-        --input-focus-border-color: #2196f3;
-        --tabs-header-width: 25%;
-        --tabs-content-width: 75%;
+        --input-focus-border-color: #212529;
+
         --table-hover-background-color: #4caf5070;
-        --tabs-header-link-border-bottom: 1px solid #000;
-        --bs-body-font-family: var(--font-family);
       }
       html,
       body,
       .tabs .tabs-header {
-        background: #f8f9fa;
+        background: #212529;
       }
       body {
-        margin: 0;
-        padding: 0px;
+        padding: 0px !important;
+        margin: 10px 0px 0px 0px !important;
       }
-
+      .modal {
+        --bs-modal-bg: #283e4a;
+        --modal-box-shadow-color: #000;
+        --modal-color: #ffc107;
+        --modal-background: #6c757d63;
+      }
+      .table {
+        --bs-table-bg: #6c757d;
+        --table-color: #ffc107;
+        margin: 5px;
+      }
       .tabs .tabs-header .tab-link {
         font-size: 18px;
         font-weight: normal;
@@ -58,8 +80,23 @@
       .modal-header .close {
         color: #fff;
       }
+      .form-control {
+        background-color: #6c757d;
+        color: #fff;
+        font-size: 1.2rem;
+      }
+      .form-control:disabled {
+        background-color: #000;
+        cursor: not-allowed;
+      }
       .big-button button {
         transform: scale(2);
+      }
+      .btn-info,
+      .btn-primary {
+        --bs-btn-color: #fff;
+        --bs-btn-bg: #212529;
+        --bs-btn-border-color: #fff;
       }
       .btn-light {
         --bs-btn-color: #ffffff;
@@ -83,7 +120,7 @@
       }
       .main-setting {
         padding: 0px !important;
-        margin: 0 !important;
+        margin: 10px 0px 0px 0px !important;
       }
       div#loading {
         text-align: center;
@@ -114,11 +151,19 @@
       .table input {
         font-size: 16px !important;
       }
+      .tabs,
+      .tabs-header,
+      .tabs-header .tab-link {
+        margin: 0 !important;
+        margin-bottom: 5px !important;
+      }
       fieldset legend {
         float: none;
+        font-weight: bold;
+        font-size: 20px;
+        color: #ffffff;
       }
-      i-checkbox {
-      }
+
       i-checkbox .selector.selected {
         background: #4caf50;
         color: #fff;
@@ -157,7 +202,7 @@
     </div>
 
     <div ng-hide="busy" class="content loaded">
-      <h1 class="text-center bold"><i class="fa fa-cog"></i> Browser Setting</h1>
+      <h1 class="text-center bold"><i class="fa fa-cog"></i> Browser Setting : <small class="italic brown"> version </small> <small class="orange bold"> {{setting.core.version}} </small></h1>
 
       <div class="">
         <h2 class="red" id="settingError"></h2>
@@ -168,7 +213,7 @@
           </div>
         </div>
 
-        <div ng-show="knowPassword === true" class="container">
+        <div ng-show="knowPassword === true">
           <div class="tabs">
             <div class="tabs-header">
               <a class="tab-link" onclick="site.showTabContent(event, '#basic_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-info-circle"></i> Basic </a>
@@ -208,29 +253,23 @@
             <div class="tabs-content">
               <div id="basic_tab" class="tab-content">
                 <div class="row">
-                  <div class="row padding">
-                    <div class="row">
-                      <h3>Browser Version <span class="red bold"> {{setting.core.version}} </span></h3>
-                    </div>
-                  </div>
-
-                  <div class="row padding">
+                  <fieldset>
                     <div class="row">
                       <i-checkbox class="" label="I'm Using Social Browser" ng-model="setting.blocking.core.send_browser_id"></i-checkbox>
                       <i-checkbox class="" label="Auto Clear Cache Storage" ng-model="setting.core.autoClearCacheStorage"></i-checkbox>
                     </div>
+                  </fieldset>
 
-                    <fieldset>
-                      <legend>Email Setting</legend>
-                      <div class="row">
-                        <i-checkbox class="" label="Enabled Temp Mail ( create new email for every profile ) " ng-model="setting.core.emails.enabled"></i-checkbox>
-                        <div class="row" ng-show="setting.core.emails.enabled">
-                          <i-control class="col3" label="Emails Domain" ng-model="setting.core.emails.domain"> </i-control>
-                          <i-control class="col3" type="password" label="Emails Password" ng-model="setting.core.emails.password"> </i-control>
-                        </div>
+                  <fieldset>
+                    <legend>Email Setting</legend>
+                    <div class="row">
+                      <i-checkbox class="" label="Enabled Temp Mail ( create new email for every profile ) " ng-model="setting.core.emails.enabled"></i-checkbox>
+                      <div class="row" ng-show="setting.core.emails.enabled">
+                        <i-control class="col3" label="Emails Domain" ng-model="setting.core.emails.domain"> </i-control>
+                        <i-control class="col3" type="password" label="Emails Password" ng-model="setting.core.emails.password"> </i-control>
                       </div>
-                    </fieldset>
-                  </div>
+                    </div>
+                  </fieldset>
 
                   <fieldset>
                     <legend>Basic</legend>
@@ -262,8 +301,8 @@
                     <legend>Activation</legend>
                     <div class="row padding">
                       <h2 class="bold red" ng-hide="setting.core.browserActivated">Browser Not Active</h2>
-                      <h2 class="bold green" ng-show="setting.core.browserActivated">Browser Active</h2>
-                      <p class="bold blue">{{setting.core.activeMessage}}</p>
+                      <h2 class="bold white" ng-show="setting.core.browserActivated">Browser Active</h2>
+                      <p class="bold">{{setting.core.activeMessage}}</p>
                     </div>
 
                     <div class="row padding">
@@ -327,7 +366,7 @@
                     <legend>Login Information</legend>
                     <h2>
                       <p ng-show="setting.login.is_login">
-                        <span class="blue"> Email : </span> {{setting.login.email}}
+                        <span class=""> Email : </span> {{setting.login.email}}
                         <i-button type="logout" ng-show="setting.login.is_login" ng-click="logout()" label="Logout"></i-button>
                       </p>
                       <div ng-hide="setting.login.is_login">
@@ -773,8 +812,13 @@
                     <div class="col5">
                       <fieldset>
                         <legend>New User Profile</legend>
-                        <i-control label="Name" ng-model="session.display"></i-control>
-                        <i-button type="push" ng-click="addSession()" label="Add to profiles"></i-button>
+                        <div class="row">
+                          <i-control label="Name" ng-model="session.display"></i-control>
+                          <div class="row">
+                            <label> example : user@yoursite.com</label>
+                          </div>
+                          <i-button type="push" ng-click="addSession()" label="Add to profiles"></i-button>
+                        </div>
                       </fieldset>
                     </div>
                     <div class="col1"></div>
@@ -793,21 +837,33 @@
                     </div>
                   </div>
 
-                  <div class="row">
-                    <i-button type="reset" label="Generate Virual PC for all users" ng-click="generateVPC('*')"></i-button>
-                    <i-button type="stop" label="Stop Virual PC for all users" ng-click="stopVPC('*')"></i-button>
-                    <i-button type="clear" label="Clear All user agent" ng-click="clearUserAgent('*')"></i-button>
-                  </div>
+                  <div class="row"></div>
                   <div class="row">
                     <table class="table hover">
                       <tr>
                         <th>Index</th>
                         <th>ID <i-control ng-model="session.name"></i-control></th>
                         <th>Name <i-control ng-model="session.display"></i-control></th>
-                        <th>Actions</th>
+                        <th>
+                          <span>Actions For All Users</span>
+                          <div class="row">
+                            <div class="col"><i-button type="reset" label="Generate Virual PC" ng-click="generateVPC('*')"></i-button></div>
+                            <div class="col"><i-button type="stop" label="Stop AllVirual PC " ng-click="stopAllVPC('*')"></i-button></div>
+                          </div>
+                          <hr />
+                          <div class="row">
+                            <div class="col"><i-button type="reset" label="Assgin Random User Agent" ng-click="generateUserAgent('*')"></i-button></div>
+                            <div class="col"><i-button type="stop" label="Stop All User Agent" ng-click="stopAllUserAgent('*')"></i-button></div>
+                          </div>
+                          <hr />
+                          <div class="row">
+                            <div class="col"><i-button type="reset" label="Assgin Random Proxy" ng-click="generateProxy('*')"></i-button></div>
+                            <div class="col"><i-button type="stop" label="Stop All Proxy" ng-click="stopAllProxy('*')"></i-button></div>
+                          </div>
+                        </th>
                       </tr>
                       <tr ng-repeat="_se in setting.session_list | orderBy : 'time' | filter:session track by $index">
-                        <td>{{$index + 1}}</td>
+                        <td class="bold center">{{$index + 1}}</td>
                         <td>
                           <i-control ng-model="_se.name"></i-control>
                         </td>
@@ -829,7 +885,7 @@
                     <span class="close">&times;</span>
                     <h2>User Options ({{currentSession.display}})</h2>
                   </div>
-                  <div class="modal-body black">
+                  <div class="modal-body">
                     <form class="form">
                       <i-control ng-model="currentSession.display" label="Name"></i-control>
 
@@ -1033,7 +1089,7 @@
 
               <div id="userAgentTab" class="tab-content">
                 <div class="row">
-                  <h2>Manage User Agent [ Add , Edit , Delete]</h2>
+                  <h2>Manage User Agent List</h2>
 
                   <div class="row padding margin">
                     <fieldset>
@@ -1057,9 +1113,12 @@
                   </div>
 
                   <div class="row">
+                    <i-button type="reset" ng-click="generate50UserAgent()" label="Generate 50 User Agent"></i-button>
+                  </div>
+                  <div class="row">
                     <table class="table hover">
                       <tr>
-                        <th>Index</th>
+                        <th>Index ({{setting.userAgentList.length}})</th>
                         <th>
                           search
                           <i-control ng-model="_userAgent"></i-control>
@@ -1068,12 +1127,12 @@
 
                       <tr ng-repeat="_se in setting.userAgentList | filter:_userAgent track by $index ">
                         <td class="center">
-                          {{$index + 1}}
-                          <i-button type="delete" ng-click="removeUserAgent(_se)" label="Remove"></i-button>
+                          <span class="bold"> {{$index + 1}}</span>
+                          <i-button type="delete" ng-click="removeUserAgent(_se)"></i-button>
                         </td>
 
                         <td>
-                          <div class="row bg-gray padding border">
+                          <div class="row padding bg-green border">
                             <div class="row">
                               <i-control label="Name" class="col4" type="text" ng-model="_se.name"></i-control>
                               <i-list label="Device" class="col3" primary="name" items="userAgentDeviceList" ng-model="_se.device"></i-list>
@@ -1087,6 +1146,7 @@
                               <i-control label="productSub" class="col3" type="text" ng-model="_se.productSub"></i-control>
                             </div>
                           </div>
+                          <hr />
                         </td>
                       </tr>
                     </table>
@@ -1099,7 +1159,7 @@
                   <form class="form text-center pointer">
                     <input id="input_proxy" class="hidden" type="file" name="proxyFile" ng-model="proxy.path" />
                     <i-button type="import" fa="cloud-upload-alt" ng-click="do_click(proxy)" label="Import Proxy List ( CSV or XLSX or JSON) File"></i-button>
-                    <p class="bold green">{{proxy.uploadStatus}}</p>
+                    <p class="bold white">{{proxy.uploadStatus}}</p>
                   </form>
 
                   <i-checkbox class="row" label="Show proxy options" ng-model="setting.blocking.context_menu.proxy_options"></i-checkbox>
@@ -1180,8 +1240,8 @@
                       </tr>
                       <tr ng-repeat="_ex in setting.extension_list | filter:extension track by $index">
                         <td>
-                          <p class="bold font-18 blue">{{_ex.name}}</p>
-                          <p class="green">{{_ex.description}}</p>
+                          <p class="bold font-18">{{_ex.name}}</p>
+                          <p class="white">{{_ex.description}}</p>
                         </td>
                         <td>
                           <i-button type="play" class2="" ng-show="_ex.isEnabled === false" ng-click="enableExtension(_ex)" label="Play"></i-button>
@@ -1280,8 +1340,8 @@
                   <tr ng-repeat="site in setting.urls | filter : {url : url} | limitTo:500 track by $index">
                     <td>{{$index +1 }} <i-button type="remove" ng-click="remove_url(site)"></i-button></td>
                     <td>
-                      <p class="green">{{site.url | limitTo: 100}}</p>
-                      <p class="black">{{site.title | limitTo: 100}}</p>
+                      <p class="white">{{site.url | limitTo: 100}}</p>
+                      <p class="">{{site.title | limitTo: 100}}</p>
                     </td>
                     <td>{{site.count}}</td>
                   </tr>

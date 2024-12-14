@@ -183,7 +183,7 @@ module.exports = function init(parent) {
     res.end(socialFile);
   });
 
-  parent.api.onPOST('api/proxy/import', (req, res) => {
+  parent.api.onPOST('/api/proxy/import', (req, res) => {
     let response = {
       done: false,
       file: req.form.files.proxyFile,
@@ -203,18 +203,21 @@ module.exports = function init(parent) {
       } else if (response.file.originalFilename.like('*.csv')) {
         let file = parent.api.readFileSync(response.file.filepath);
         file = file.split('\n');
+        if (file.length === 1) {
+          file = file[0].split(' ');
+        }
 
         file.forEach(function (d, i) {
           tmp = {};
           let row = d.split(',');
           if (row.length == 2) {
-            tmp.url = row[0].replaceAll('"', '');
-            tmp.name = row[1].replaceAll('"', '');
+            tmp.ip = row[0].replaceAll('"', '');
+            tmp.port = row[1].replaceAll('"', '');
           } else if (row.length == 4) {
-            tmp.url = row[0].replaceAll('"', '');
+            tmp.ip = row[0].replaceAll('"', '');
             tmp.port = row[1].replaceAll('"', '');
             tmp.username = row[0].replaceAll('"', '');
-            tmp.port = row[1].replaceAll('"', '');
+            tmp.password = row[1].replaceAll('"', '');
           } else {
           }
           docs.push(tmp);
@@ -223,8 +226,10 @@ module.exports = function init(parent) {
         let docs2 = parent.api.readFileSync(response.file.filepath).toString().split('\n');
         docs2.forEach((line) => {
           docs.push({
-            url: line.split(',')[0].trim(),
-            name: line.split(',')[1] || '',
+            ip: line.split(':')[0],
+            port: line.split(':')[1],
+            username: line.split(':')[2],
+            password: line.split(':')[3],
           });
         });
       } else {
@@ -261,22 +266,23 @@ module.exports = function init(parent) {
             }
           }
 
-          parent.var.proxy_list.push({
-            mode: 'fixed_servers',
-            url: doc.url,
-            ip: doc.ip,
-            port: doc.port,
-            username: doc.username,
-            password: doc.password,
-            socks5: false,
-            socks4: false,
-            http: false,
-            https: false,
-            direct: false,
-            ftp: false,
-          });
+          if (doc.ip && doc.port) {
+            parent.var.proxy_list.push({
+              mode: 'fixed_servers',
+              url: doc.url,
+              ip: doc.ip,
+              port: doc.port,
+              username: doc.username,
+              password: doc.password,
+              socks5: false,
+              socks4: false,
+              http: false,
+              https: false,
+              direct: false,
+              ftp: false,
+            });
+          }
         });
-        console.log('saving proxy list');
         parent.set_var('proxy_list', parent.var.proxy_list);
       }
     } else {
@@ -545,7 +551,6 @@ module.exports = function init(parent) {
       res.json(response);
     }
   });
-
 
   parent.api.run();
 };

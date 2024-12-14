@@ -854,11 +854,13 @@ module.exports = function (child) {
           win.customSetting.iconURL = win.customSetting.error_icon;
           child.updateTab(win);
         }
-        setTimeout(() => {
-          if (win && !win.isDestroyed()) {
-            win.webContents.reload();
-          }
-        }, 1000 * 5);
+        if (win.customSetting.windowType.contains('popup')) {
+          setTimeout(() => {
+            if (win && !win.isDestroyed()) {
+              win.webContents.reload();
+            }
+          }, 1000 * 5);
+        }
       }
 
       // win.loadURL('browser://error?url=' + win.getURL() + '&description=Error While Loading');

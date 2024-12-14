@@ -71,7 +71,49 @@ app.controller('mainController', ($scope, $http, $timeout) => {
 
     $scope.$applyAsync();
   };
-  $scope.stopVPC = function (session) {
+  $scope.generateUserAgent = function (session) {
+    let index = SOCIALBROWSER.randomNumber(0, $scope.setting.userAgentList.length - 1);
+    if (typeof session == 'string' && session == '*') {
+      $scope.setting.session_list.forEach((s, i) => {
+        $scope.setting.session_list[i].defaultUserAgent = $scope.setting.userAgentList[index];
+        index++;
+        if (index >= $scope.setting.userAgentList.length) {
+          index = 0;
+        }
+      });
+    } else {
+      if (session) {
+        session.defaultUserAgent = $scope.setting.userAgentList[index];
+      }
+    }
+
+    $scope.$applyAsync();
+  };
+  $scope.generateProxy = function (session) {
+    let index = SOCIALBROWSER.randomNumber(0, $scope.setting.proxy_list.length - 1);
+    if (typeof session == 'string' && session == '*') {
+      $scope.setting.session_list.forEach((s, i) => {
+        $scope.setting.session_list[i].selected_proxy_mode = $scope.setting.proxy_mode_list[3];
+        $scope.setting.session_list[i].selected_proxy = $scope.setting.proxy_list[index];
+        $scope.setting.session_list[i].proxy = $scope.setting.proxy_list[index];
+        $scope.setting.session_list[i].proxy.enabled = true;
+        index++;
+        if (index >= $scope.setting.proxy_list.length) {
+          index = 0;
+        }
+      });
+    } else {
+      if (session) {
+        session.proxy.selected_proxy_mode = $scope.setting.proxy_mode_list[3];
+        session.proxy.selected_proxy = $scope.setting.proxy_list[index];
+        session.proxy = $scope.setting.proxy_list[index];
+        session.proxy.enabled = true;
+      }
+    }
+
+    $scope.$applyAsync();
+  };
+  $scope.stopAllVPC = function (session) {
     if (typeof session == 'string' && session == '*') {
       $scope.setting.session_list.forEach((s) => {
         s.privacy.enable_virtual_pc = false;
@@ -86,7 +128,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
 
     $scope.$applyAsync();
   };
-  $scope.clearUserAgent = function (session) {
+  $scope.stopAllUserAgent = function (session) {
     if (typeof session == 'string' && session == '*') {
       $scope.setting.session_list.forEach((s) => {
         s.defaultUserAgent = null;
@@ -101,6 +143,37 @@ app.controller('mainController', ($scope, $http, $timeout) => {
 
     $scope.$applyAsync();
   };
+  $scope.stopAllProxy = function (session) {
+    if (typeof session == 'string' && session == '*') {
+      $scope.setting.session_list.forEach((s) => {
+        s.proxy = null;
+      });
+    } else {
+      if (session) {
+        session.proxy = null;
+      }
+    }
+
+    $scope.$applyAsync();
+  };
+
+  $scope.generate50UserAgent = function () {
+    for (let index = 0; index < 50; index++) {
+      let browser = SOCIALBROWSER.getRandomBrowser();
+      $scope.setting.userAgentList.push({
+        url: browser.url,
+        device: browser.device,
+        engine: { name: browser.name },
+        platform: browser.platform,
+        vendor: browser.platform.contains('mac|iPhone') ? 'Apple Computer, Inc.' : browser.vendor,
+        oscpu: browser.oscpu,
+        productSub: browser.productSub,
+        name: browser.name + ' ' + browser.device.name + ' ' + browser.platform,
+      });
+    }
+    $scope.$applyAsync();
+  };
+
   $scope.import = function (files, proxy) {
     var fd = new FormData();
     fd.append('proxyFile', files[0]);

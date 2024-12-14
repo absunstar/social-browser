@@ -219,6 +219,7 @@ child.electron.app.whenReady().then(() => {
     }
   });
 
+  child.electron.nativeTheme.themeSource = 'dark';
   child.electron.app.on('login', (event, webContents, details, authInfo, callback) => {
     console.log(authInfo);
     if (authInfo.isProxy) {
