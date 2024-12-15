@@ -18,7 +18,7 @@ setTimeout(() => {
 
 app.controller('mainController', ($scope, $http, $timeout) => {
   $scope.userAgentPlatformList = SOCIALBROWSER.userAgentPlatformList;
-  $scope.userAgentBrowserList = SOCIALBROWSER.userAgentBrowserList;
+  $scope.userAgentBrowserList = SOCIALBROWSER.userAgentBrowserList.map((b) => ({ name: b.name }));
   $scope.userAgentDeviceList = SOCIALBROWSER.userAgentDeviceList;
 
   $scope.$proxy = {
@@ -799,6 +799,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
 
     for (const key in $scope.setting) {
       if (key.indexOf('$') === -1 && key !== 'extension_list' && key !== 'preload_list') {
+        console.log(key);
         SOCIALBROWSER.ipc('[update-browser-var]', {
           name: key,
           data: $scope.setting[key],

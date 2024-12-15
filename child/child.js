@@ -117,9 +117,9 @@ child.fetch = function (...args) {
   return child.fetchAsync(...args);
 };
 
-// child.electron.app.commandLine.appendSwitch('in-process-gpu');
-// child.electron.app.commandLine.appendSwitch('no-sandbox');
-child.electron.app.disableHardwareAcceleration();
+//  child.electron.app.commandLine.appendSwitch('in-process-gpu');
+//  child.electron.app.commandLine.appendSwitch('no-sandbox');
+// child.electron.app.disableHardwareAcceleration();
 
 child.remoteMain.initialize();
 
@@ -127,6 +127,7 @@ child.shell = child.electron.shell;
 child.dialog = child.electron.dialog;
 
 child.electron.nativeTheme.themeSource = 'light';
+// child.electron.nativeTheme.themeSource = 'dark';
 
 require(child.path.join(child.dir, 'child', 'fn'))(child);
 require(child.path.join(child.dir, 'child', 'vars'))(child);
@@ -219,7 +220,6 @@ child.electron.app.whenReady().then(() => {
     }
   });
 
-  child.electron.nativeTheme.themeSource = 'dark';
   child.electron.app.on('login', (event, webContents, details, authInfo, callback) => {
     console.log(authInfo);
     if (authInfo.isProxy) {
