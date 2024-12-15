@@ -17,9 +17,10 @@
   --social-box-shadow: 1px 1px 2px 1px #ffffff;
   --social-current-tab-fill: #324955;
   --social-other-tab-fill: #607d8b;
-  --social-tab-color: #ffffff;
+  --social-tab-color: #ffeb3b;
+  --social-other-tab-color: #c9c9c9;
   --social-address-background: #607d8b;
-  --social-address-color: #2196f3;
+  --social-address-color: #ffffff;
   --color: #000;
   --scrollbar-background-color: #000000;
   --scrollbar-color: #1a2a32;
@@ -115,11 +116,13 @@
   z-index: 20;
 }
 
+
+
 .social-tabs .social-tab-title {
   position: relative;
   display: inline-block;
   vertical-align: top;
-  color: var(--social-tab-color);
+  color: var(--social-other-tab-color);
   padding: 0 3px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -129,6 +132,11 @@
   max-width: calc(100% - 70px);
   pointer-events: none;
 }
+
+.social-tabs .social-tab.social-tab-current .social-tab-title {
+  color: var(--social-tab-color);
+}
+
 .social-tabs .social-tab-title p {
   margin: 0px;
   padding: 0px;
@@ -178,7 +186,7 @@
 .address-input {
   vertical-align: bottom;
   height: 24px;
-  color: #ffffff;
+  color: var(--social-address-color);
   font-size: 14px;
   font-family: monospace;
   border: none;

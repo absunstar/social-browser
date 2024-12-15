@@ -127,7 +127,7 @@ child.shell = child.electron.shell;
 child.dialog = child.electron.dialog;
 
 child.electron.nativeTheme.themeSource = 'light';
-// child.electron.nativeTheme.themeSource = 'dark';
+child.electron.nativeTheme.themeSource = 'dark';
 
 require(child.path.join(child.dir, 'child', 'fn'))(child);
 require(child.path.join(child.dir, 'child', 'vars'))(child);
