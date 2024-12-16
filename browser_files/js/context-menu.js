@@ -131,12 +131,12 @@
   if (!SOCIALBROWSER.origin || SOCIALBROWSER.origin == 'null') {
     SOCIALBROWSER.origin = document.location.hostname;
   }
-  SOCIALBROWSER.hostname = document.location.hostname;
+  SOCIALBROWSER.hostname = document.location.hostname || document.location.origin;
   SOCIALBROWSER.href = document.location.href;
 
   SOCIALBROWSER.selected_properties =
     'scripts_files,user_data,user_data_input,sites,preload_list,ad_list,proxy_list,proxy,core,bookmarks,session_list,userAgentList,blocking,video_quality_list,customHeaderList';
-  if (SOCIALBROWSER.href.indexOf('http://127.0.0.1:60080') == 0 || SOCIALBROWSER.href.indexOf('file://') == 0 || SOCIALBROWSER.href.indexOf('browser://') == 0) {
+  if (SOCIALBROWSER.href.indexOf('http://127.0.0.1:60080') === 0) {
     SOCIALBROWSER.selected_properties = '*';
   }
 

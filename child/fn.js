@@ -167,13 +167,20 @@ module.exports = function (child) {
   };
 
   child.get_dynamic_var = function (info) {
+
     info.name = info.name || '*';
+    
     if (info.name == '*') {
-      return child.parent.var;
-    } else {
-      let arr = info.name.split(',');
-      let obj = {};
-      arr.forEach((k) => {
+      info.name = '';
+      for (const key in child.parent.var) {
+        info.name += key + ',';
+      }
+    }
+
+    let arr = info.name.split(',');
+    let obj = {};
+    arr.forEach((k) => {
+      if (k && child.parent.var[k]) {
         if ((k == 'user_data' || k == 'user_data_input') && info.hostname) {
           obj[k] = [];
           child.parent.var[k].forEach((dd) => {
@@ -184,9 +191,9 @@ module.exports = function (child) {
         } else {
           obj[k] = child.parent.var[k];
         }
-      });
-      return arr.length == 1 ? obj[info.name] : obj;
-    }
+      }
+    });
+    return arr.length == 1 ? obj[info.name] : obj;
   };
 
   child.decodeURI = (value) => {

@@ -19,6 +19,8 @@
     <style>
       body {
         font-family: 'Cairo';
+        font-size: 20px;
+        line-height: 1.8;
       }
       .btn {
         font-size: 16px;
@@ -47,9 +49,9 @@
         <li ng-click="goUrl(u.url);$event.stopPropagation()" ng-class="{'selected' : u.selected}" href="{{u.url}}" ng-repeat="u in url_list2 track by $index">
           <a ng-click="goUrl(u.url);$event.stopPropagation()">
             <img ng-src="{{u.logo || u.favicon || u.icon}}" onerror="this.src='http://127.0.0.1:60080/images/no.jpg'" />
-            <span class="bold green" ng-click="goUrl(u.url);$event.stopPropagation()"> ( {{u.count}} ) </span>
-            <span class="blue" ng-click="goUrl(u.url);$event.stopPropagation()"> {{u.url | limitTo:70}} </span>
-            <span class="black float-right" ng-click="goUrl(u.url);$event.stopPropagation()"> {{u.title | limitTo:70}} </span>
+            <span class="bold brown" ng-click="goUrl(u.url);$event.stopPropagation()"> ( {{u.count}} ) </span>
+            <span class="white" ng-click="goUrl(u.url);$event.stopPropagation()"> {{u.url | limitTo:70}} </span>
+            <span class="green float-right" ng-click="goUrl(u.url);$event.stopPropagation()"> {{u.title | limitTo:70}} </span>
           </a>
         </li>
       </ul>

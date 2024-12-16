@@ -1,117 +1,115 @@
 body {
-    background: var(--social-current-tab-fill);
-    overflow-x: hidden;
-    margin: 3px;
+  background: var(--social-current-tab-fill);
+  overflow-x: hidden;
+  margin: 3px;
 }
 
 .address-input {
-    height: 30px;
-    width: 100%;
+  height: 30px;
+  width: 100%;
 }
 
 .address-input input {
-    width: 95%;
-    height: 100%;
-    font-size: 16px;
-    padding: 0px;
-    padding-left: 10px;
-    color: var(--color);
-    margin: 0px;
-    border-radius: 20px;
-    outline: none;
-    border: none;
-    background: var(--social-address-background);
+  width: 95%;
+  height: 100%;
+  font-size: 16px;
+  padding: 0px;
+  padding-left: 10px;
+  color: var(--color);
+  margin: 0px;
+  border-radius: 20px;
+  outline: none;
+  border: none;
+  background: var(--social-address-background);
 }
-
 
 .url-list {
-    position: fixed;
-    max-height: 450px;
-    background-color: #fff;
-    color: #292929;
-    top: 40px;
-    right: 20%;
-    left: 0;
-    bottom: 3px;
-    z-index: 99999;
-    padding-bottom: 10px;
-    border: 1px solid var(--social-background-color);
-    border-bottom: none;
-    border-left: none;
-    border-right: none;
-    width: 80%;
+  position: fixed;
+  max-height: 450px;
+  background-color: var(--social-background-color);
+  color: #fff;
+  top: 40px;
+  right: 20%;
+  left: 0;
+  bottom: 3px;
+  z-index: 99999;
+  padding-bottom: 10px;
+  border: 1px solid var(--social-background-color);
+  border-bottom: none;
+  border-left: none;
+  border-right: none;
+  width: 80%;
 }
 .url-list-actions {
-    position: fixed;
-    max-height: 450px;
-    background-color: #fff;
-    top: 40px;
-    right: 0;
-    bottom: 0;
-    z-index: 99999;
-    padding-bottom: 10px;
-    border: 1px solid var(--social-background-color);
-    border-bottom: none;
-    border-right: none;
-    border-left: none;
-    width: 20%;
+  position: fixed;
+  max-height: 450px;
+  background-color: var(--social-background-color);
+  top: 40px;
+  right: 0;
+  bottom: 0;
+  z-index: 99999;
+  padding-bottom: 10px;
+  border: 1px solid var(--social-background-color);
+  border-bottom: none;
+  border-right: none;
+  border-left: none;
+  width: 20%;
 }
 
 .url-list ul {
-    max-height: 450px;
-    overflow-y: auto;
-    background-color: #fff;
-    color: #292929;
-    list-style: none;
-    padding: 5px;
-    margin: 0px;
+  max-height: 450px;
+  overflow-y: auto;
+  background-color:var(--social-background-color);
+  color: #fff;
+  list-style: none;
+  padding: 5px;
+  margin: 0px;
 }
 
 .url-list ul li {
-    padding: 5px;
-    border-bottom: 1px solid #f2f2f2;
+  padding: 5px;
+  border-bottom: 1px solid #f2f2f2;
 }
 
 .url-list ul li img {
-    width: 18px;
-    height: 18px;
+  width: 18px;
+  height: 18px;
 }
 
 .url-list ul li:hover,
 .url-list ul li.selected {
-    background-color: #cae8ff;
-    cursor: pointer;
+  background-color: #000;
+  cursor: pointer;
 }
 
-.btn{
-    font-size: 12px;
+.btn {
+  font-size: 12px;
 }
 
 /* Force Simple Scrollbars */
 
 body ::-webkit-scrollbar {
-    -webkit-appearance: none;
-    width: 10px;
-  }
-  
-  body ::-webkit-scrollbar-track {
-    background: #2196f357;
-    border-radius: 0px;
-  }
-  
-  body ::-webkit-scrollbar-thumb {
-    cursor: pointer;
-    border-radius: 5px;
-    background: #2196f3;
-    -webkit-transition: color 0.2s ease;
-    transition: color 0.2s ease;
-  }
-  
-  body ::-webkit-scrollbar-thumb:window-inactive {
-    background: rgba(0, 0, 255, 0.15);
-  }
-  
-  body ::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 255, 0.8);
-  }
-  
+  -webkit-appearance: none;
+  width: 10px;
+}
+
+body ::-webkit-scrollbar-track {
+  background: #2196f357;
+  border-radius: 0px;
+}
+
+body ::-webkit-scrollbar-thumb {
+  cursor: pointer;
+  border-radius: 5px;
+  background: #2196f3;
+  -webkit-transition: color 0.2s ease;
+  transition: color 0.2s ease;
+}
+
+body ::-webkit-scrollbar-thumb:window-inactive {
+  background: rgba(0, 0, 255, 0.15);
+}
+
+body ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 255, 0.8);
+}

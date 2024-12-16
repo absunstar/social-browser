@@ -31,6 +31,10 @@ function sendToMain(message) {
   SOCIALBROWSER.ipc('[send-render-message]', message);
 }
 
+document.querySelector('#body').addEventListener('mousemove', () => {
+  SOCIALBROWSER.clickCurrentTab();
+});
+
 function goURL(e) {
   if (e.keyCode == 13) {
     url = $addressbar.text();
@@ -1103,15 +1107,6 @@ SOCIALBROWSER.clickCurrentTab = function () {
     }, 500);
   }
 };
-document.querySelector('#body').addEventListener('click', () => {
-  SOCIALBROWSER.clickCurrentTab();
-});
-document.querySelector('#body').addEventListener('mouseover', () => {
-  SOCIALBROWSER.clickCurrentTab();
-});
-document.querySelector('#body').addEventListener('mousemove', () => {
-  SOCIALBROWSER.clickCurrentTab();
-});
 
 if (SOCIALBROWSER.var.core.id.like('*developer*')) {
   SOCIALBROWSER.menu_list.push({

@@ -252,7 +252,6 @@ module.exports = function init(parent) {
               exists = true;
               userVarContent[i].url = d.url;
               userVarContent[i].platform = d.platform;
-              userVarContent[i].oscpu = d.oscpu;
               userVarContent[i].vendor = d.vendor;
               userVarContent[i].engine = d.engine;
             }

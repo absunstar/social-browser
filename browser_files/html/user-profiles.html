@@ -23,14 +23,13 @@
         border: 1px solid #ddd;
       }
       fieldset legend {
-        color: #2196f3;
         font-size: 14px;
         text-shadow: none;
         font-weight: normal;
         border: none;
       }
       .user-box {
-        background-color: #ffffff;
+        background-color: var(--social-current-tab-fill);
         padding: 3px;
         margin: 3px;
         text-align: left;
@@ -41,21 +40,23 @@
       }
 
       .user-box:hover {
-        transform: scale(1.1);
+        transform: scale(1.05);
       }
       .user-box:hover p2 {
         color: var(--social-current-tab-fill);
       }
       .user-box p {
         display: inline-block;
-        font-size: 14px;
+        font-size: 16px;
         text-align: center;
-        color: #000000;
+        color: #cddc39;
         padding: 3px;
         margin: 3px;
         vertical-align: top;
       }
-
+      .user-box p span {
+        color: #4caf50;
+      }
       .user-box img {
         display: inline-block;
         width: 28px;
@@ -85,7 +86,7 @@
         <div class="col-11">
           <div class="user-box" ng-click="selectSession(_se)">
             <img src="http://127.0.0.1:60080/images/user.png" />
-            <p><span class="blue bold"> ( {{$index + 1}} / {{setting.session_list.length}} ) </span> {{_se.display}}</p>
+            <p><span class="bold"> ( {{$index + 1}} / {{setting.session_list.length}} ) </span> {{_se.display}}</p>
           </div>
         </div>
         <div class="col-1">

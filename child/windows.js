@@ -54,7 +54,6 @@ module.exports = function (child) {
         resizable: false,
         fullscreenable: false,
         title: 'Address-bar',
-        backgroundColor: '#ffffff',
         frame: false,
         webPreferences: {
           contextIsolation: false,
@@ -109,7 +108,6 @@ module.exports = function (child) {
         resizable: false,
         fullscreenable: false,
         title: 'profiles',
-        backgroundColor: '#ffffff',
         frame: false,
         skipTaskbar: true,
         webPreferences: {
@@ -203,7 +201,7 @@ module.exports = function (child) {
       minHeight: 200,
       fullscreenable: true,
       title: 'New Window',
-      backgroundColor: '#e8eaed',
+      backgroundColor: '#1a2a32',
       icon: parent.icon,
       autoHideMenuBar: true,
       enableLargerThanScreen: true,
@@ -1235,7 +1233,6 @@ module.exports = function (child) {
         child.createNewWindow({
           windowType: 'popup',
           title: 'New Popup',
-          backgroundColor: '#ffffff',
           center: true,
           trusted: true,
           url: real_url.replace('#___new_tab___', '').replace('#___new_popup___', '').replace('#___trusted_window___', ''),
@@ -1249,7 +1246,6 @@ module.exports = function (child) {
         child.createNewWindow({
           windowType: 'popup',
           title: 'New Popup',
-          backgroundColor: '#ffffff',
           center: true,
           url: real_url.replace('#___new_tab___', '').replace('#___new_popup___', '').replace('#___trusted_window___', ''),
           partition: win.customSetting.partition,

@@ -17,7 +17,6 @@ setTimeout(() => {
 }, 1000 * 2);
 
 app.controller('mainController', ($scope, $http, $timeout) => {
-  $scope.userAgentPlatformList = SOCIALBROWSER.userAgentPlatformList;
   $scope.userAgentBrowserList = SOCIALBROWSER.userAgentBrowserList.map((b) => ({ name: b.name }));
   $scope.userAgentDeviceList = SOCIALBROWSER.userAgentDeviceList;
 
@@ -166,8 +165,6 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         engine: { name: browser.name },
         platform: browser.platform,
         vendor: browser.platform.contains('mac|iPhone') ? 'Apple Computer, Inc.' : browser.vendor,
-        oscpu: browser.oscpu,
-        productSub: browser.productSub,
         name: browser.name + ' ' + browser.device.name + ' ' + browser.platform,
       });
     }
@@ -624,7 +621,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     $scope.busy = true;
     $scope.setting_busy = true;
     SOCIALBROWSER.invoke('[browser][data]', {
-      hostname: document.location.hostname,
+      hostname: '',
       url: document.location.href,
       name: '*',
       windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
