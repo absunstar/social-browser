@@ -201,13 +201,14 @@ module.exports = function (child) {
       minHeight: 200,
       fullscreenable: true,
       title: 'New Window',
-      backgroundColor: '#1a2a32',
+      backgroundColor: '#FFFFFF',
       icon: parent.icon,
       autoHideMenuBar: true,
       enableLargerThanScreen: true,
       hasShadow: false,
       roundedCorners: false,
       webPreferences: {
+        defaultEncoding: 'UTF8',
         enableRemoteModule: true,
         devTools: true,
         spellcheck: false,
@@ -236,6 +237,7 @@ module.exports = function (child) {
       defaultSetting.webPreferences.nodeIntegrationInWorker = true;
       defaultSetting.webPreferences.webSecurity = false;
       defaultSetting.webPreferences.allowRunningInsecureContent = true;
+      setting.backgroundColor = '#1a2a32';
     } else if (setting.windowType === 'youtube') {
       setting.url = 'browser://youtube-view?url=' + setting.url;
       setting.iframe = true;
@@ -257,6 +259,7 @@ module.exports = function (child) {
       defaultSetting.skipTaskbar = true;
       defaultSetting.frame = false;
       defaultSetting.resizable = false;
+      setting.backgroundColor = '#1a2a32';
     } else if (setting.windowType === 'addressbar') {
       defaultSetting.show = false;
       defaultSetting.alwaysOnTop = false;
@@ -265,6 +268,7 @@ module.exports = function (child) {
       defaultSetting.frame = false;
       defaultSetting.fullscreenable = false;
       defaultSetting.allowAudio = false;
+      setting.backgroundColor = '#1a2a32';
     } else if (setting.windowType === 'profiles') {
       defaultSetting.show = false;
       defaultSetting.alwaysOnTop = false;
@@ -273,6 +277,7 @@ module.exports = function (child) {
       defaultSetting.fullscreenable = false;
       defaultSetting.frame = false;
       defaultSetting.allowAudio = false;
+      setting.backgroundColor = '#1a2a32';
     } else if (setting.windowType === 'updates') {
       defaultSetting.show = false;
       defaultSetting.alwaysOnTop = false;
@@ -281,6 +286,7 @@ module.exports = function (child) {
       defaultSetting.frame = true;
       defaultSetting.allowAudio = false;
       defaultSetting.center = true;
+      setting.backgroundColor = '#1a2a32';
     } else if (setting.windowType === 'none') {
       setting.url = 'https://www.google.com';
       defaultSetting.show = false;
@@ -290,6 +296,7 @@ module.exports = function (child) {
       defaultSetting.frame = true;
       defaultSetting.allowAudio = false;
       defaultSetting.center = true;
+      setting.backgroundColor = '#1a2a32';
     }
 
     if (setting.show === false) {
@@ -1131,7 +1138,6 @@ module.exports = function (child) {
                 show: true,
                 frame: true,
                 fullscreenable: false,
-                backgroundColor: '#272727',
               },
             };
           } else if (!isPopup && win.customSetting.windowType == 'view') {
@@ -1151,7 +1157,6 @@ module.exports = function (child) {
               modal: true,
               parent: win,
               url: url,
-              backgroundColor: '#2196f3',
               referrer: referrer ?? win.getURL(),
             });
           }

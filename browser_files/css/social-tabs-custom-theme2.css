@@ -1,5 +1,4 @@
 :root {
-  --social-background-color0: #2196f3;
   --social-background-color: #2196f3;
   --social-box-shadow: 1px 1px 2px 1px #000;
   --social-current-tab-fill: #ffffff;
@@ -12,12 +11,10 @@
   --scrollbar-color: #2196f3;
   transition: all 0.4s ease;
   /* dark theme */
-  --social-background-color0: #1a2a32;
-  --social-background-color: #1a2a32;
-  --bs-body-bg : var(--social-background-color);
   --fieldset-background: #607D8B;
   --legend-color: #fff;
   --social-box-shadow: 1px 1px 2px 1px #ffffff;
+  --social-background-color: #1a2a32;
   --social-current-tab-fill: #324955;
   --social-other-tab-fill: #607d8b;
   --social-tab-color: #ffffff;
@@ -27,6 +24,7 @@
   --color: #000;
   --scrollbar-background-color: #000000;
   --scrollbar-color: #1a2a32;
+  --bs-body-bg : var(--social-background-color);
   transition: all 0.4s ease;
 }
 #window_actions a {
@@ -241,7 +239,6 @@
   color: white;
   font-weight: bold;
   background: #e25c4b;
-  border: 2px solid #fff;
   padding: 1px 7px;
   font-weight: bold;
   border-radius: 5px;
