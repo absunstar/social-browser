@@ -1254,9 +1254,12 @@
                 <div class="row">
                   <fieldset>
                     <legend>New Site Password</legend>
-                    <i-control label="Site Name" ng-model="userDataInput.hostname"></i-control>
-                    <i-control label="User Name" ng-model="userDataInput.username"></i-control>
-                    <i-control label="User Password" ng-model="userDataInput.password"></i-control>
+                    <i-control label="Site Host Name" ng-model="userDataInput.hostname"></i-control>
+                    <div class="row">
+                      <div class="col"><i-control label="User Name" ng-model="userDataInput.username"></i-control></div>
+                      <div class="col"><i-control label="User Password" ng-model="userDataInput.password"></i-control></div>
+                    </div>
+
                     <i-button type="push" ng-click="add_user_data_input(userDataInput)" label="Add to Passwords"></i-button>
                   </fieldset>
                 </div>
