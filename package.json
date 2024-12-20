@@ -111,7 +111,7 @@
   },
   "dependencies": {
     "@electron/remote": "^2.1.2",
-    "isite": "^2024.12.1",
+    "isite": "^2024.12.2",
     "node-fetch": "^3.3.2"
   },
   "devDependencies": {

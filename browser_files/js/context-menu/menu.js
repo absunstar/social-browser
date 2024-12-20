@@ -423,7 +423,19 @@ function get_url_menu_list(url) {
       });
     },
   });
-
+  arr.push({
+    label: ' in ( Insecure window )',
+    click() {
+      SOCIALBROWSER.ipc('[open new popup]', {
+        partition: SOCIALBROWSER.partition,
+        url: url,
+        referrer: document.location.href,
+        security: false,
+        show: true,
+        center: true,
+      });
+    },
+  });
   arr.push({
     label: ' in ( Ghost window )',
     click() {

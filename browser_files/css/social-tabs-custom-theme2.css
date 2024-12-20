@@ -11,7 +11,7 @@
   --scrollbar-color: #2196f3;
   transition: all 0.4s ease;
   /* dark theme */
-  --fieldset-background: #607D8B;
+  --fieldset-background: #607d8b;
   --legend-color: #fff;
   --social-box-shadow: 1px 1px 2px 1px #ffffff;
   --social-background-color: #1a2a32;
@@ -24,8 +24,13 @@
   --color: #000;
   --scrollbar-background-color: #000000;
   --scrollbar-color: #1a2a32;
-  --bs-body-bg : var(--social-background-color);
+  --bs-body-bg: var(--social-background-color);
   transition: all 0.4s ease;
+}
+html,
+body,
+.tabs .tabs-header {
+  background: var(--social-background-color);
 }
 #window_actions a {
   color: #607d8b;
@@ -116,8 +121,6 @@
   box-shadow: 0 -0.05em rgba(0, 0, 0, 0.27);
   z-index: 20;
 }
-
-
 
 .social-tabs .social-tab-title {
   position: relative;

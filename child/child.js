@@ -156,7 +156,7 @@ if (child.electron.app.setUserTasks) {
   child.electron.app.setUserTasks([]);
 }
 if (child.electron.app.dock) {
-  child.electron.app.dock.hide();
+ // child.electron.app.dock.hide();
 }
 
 //child.electron.app.commandLine.appendSwitch('enable-experimental-web-platform-features');
