@@ -444,7 +444,7 @@ function showSettingMenu() {
     click: () => {
       ipc('[open new popup]', {
         show: true,
-        url: 'https://social-browser.com/tools',
+        url: 'https://tools.social-browser.com/tools',
         title: 'Social Browser Tools',
         partition: 'persist:tools',
         center: true,
