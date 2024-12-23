@@ -208,7 +208,9 @@ child.electron.app.whenReady().then(() => {
     child.remoteMain.enable(contents);
     contents.on('will-attach-webview', (event, webPreferences, params) => {
       webPreferences.preload = child.parent.files_dir + '/js/context-menu.js';
+      webPreferences.nodeIntegration = false;
       delete webPreferences.preloadURL;
+      event.preventDefault();
     });
   });
 

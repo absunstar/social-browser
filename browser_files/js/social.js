@@ -253,6 +253,7 @@ function showSettingMenu() {
         mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
         vip: true,
       }),
+    iconURL: 'http://127.0.0.1:60080/images/setting.png',
   });
 
   SOCIALBROWSER.menuList.push({
@@ -274,6 +275,7 @@ function showSettingMenu() {
 
   SOCIALBROWSER.menuList.push({
     label: 'Open Social Browser Site',
+    iconURL: 'http://127.0.0.1:60080/images/logo.png',
     click: () =>
       ipc('[open new tab]', {
         url: 'https://social-browser.com',
@@ -286,6 +288,7 @@ function showSettingMenu() {
   });
   SOCIALBROWSER.menuList.push({
     label: 'Downloads',
+    iconURL: 'http://127.0.0.1:60080/images/downloads.png',
     click: () =>
       ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/downloads',
@@ -301,46 +304,11 @@ function showSettingMenu() {
 
   let arr2 = [];
 
-  arr2.push({
-    label: 'Bookmark current tab',
-    click: () => ipc('[add-to-bookmark]'),
-  });
-
-  arr2.push({
-    type: 'separator',
-  });
-
-  arr2.push({
-    label: 'Bookmark all tabs',
-    click: () => {
-      document.querySelectorAll('.social-tab:not(#tabPlus)').forEach((el) => {
-        ipc('[add-to-bookmark]', { tabID: el.id });
-      });
-    },
-  });
-  arr2.push({
-    type: 'separator',
-  });
-  arr2.push({
-    label: 'Bookmark manager',
-    click: () =>
-      ipc('[open new tab]', {
-        url: 'http://127.0.0.1:60080/setting?open=bookmarks',
-        partition: 'persist:setting',
-        user_name: 'Setting',
-        title: 'Bookmarks',
-        mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
-        vip: true,
-      }),
-  });
-  arr2.push({
-    type: 'separator',
-  });
   SOCIALBROWSER.var.bookmarks.forEach((b) => {
     arr2.push({
       label: b.title,
       sublabel: b.url,
-      icon: SOCIALBROWSER.nativeImage(b.iconURL),
+      iconURL: b.favicon,
       click: () =>
         ipc('[open new tab]', {
           url: b.url,
@@ -349,28 +317,9 @@ function showSettingMenu() {
     });
   });
 
-  if (SOCIALBROWSER.var.bookmarks.length > 0) {
-    arr2.push({
-      type: 'separator',
-    });
-
-    arr2.push({
-      label: 'Open all bookmarks',
-      visible: SOCIALBROWSER.var.bookmarks.length > 0,
-      click: () => {
-        SOCIALBROWSER.var.bookmarks.forEach((b) => {
-          ipc('[open new tab]', {
-            url: b.url,
-            title: b.title,
-            mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
-          });
-        });
-      },
-    });
-  }
-
   let bookmark = {
     label: 'Bookmarks',
+    iconURL: 'http://127.0.0.1:60080/images/bookmark.png',
     type: 'submenu',
     submenu: arr2,
   };
@@ -382,6 +331,7 @@ function showSettingMenu() {
 
   SOCIALBROWSER.menuList.push({
     label: 'Reload Page',
+    iconURL: 'http://127.0.0.1:60080/images/reload.png',
     accelerator: 'F5',
     click: () =>
       ipc('[window-reload]', {
@@ -390,6 +340,7 @@ function showSettingMenu() {
   });
   SOCIALBROWSER.menuList.push({
     label: 'Hard Reload Page',
+    iconURL: 'http://127.0.0.1:60080/images/reload.png',
     accelerator: 'CommandOrControl+F5',
     click: () =>
       ipc('[window-reload-hard]', {
@@ -402,6 +353,7 @@ function showSettingMenu() {
   });
   SOCIALBROWSER.menuList.push({
     label: 'Zoom +',
+    iconURL: 'http://127.0.0.1:60080/images/zoom-in.png',
     accelerator: 'CommandOrControl+numadd',
     click: () => {
       ipc('[window-zoom+]');
@@ -409,11 +361,13 @@ function showSettingMenu() {
   });
   SOCIALBROWSER.menuList.push({
     label: 'Zoom OFF',
+    iconURL: 'http://127.0.0.1:60080/images/zoom.png',
     accelerator: 'CommandOrControl+0',
     click: () => ipc('[window-zoom]'),
   });
   SOCIALBROWSER.menuList.push({
     label: 'Zoom -',
+    iconURL: 'http://127.0.0.1:60080/images/zoom-out.png',
     accelerator: 'CommandOrControl+numsub',
     click: () => ipc('[window-zoom-]'),
   });
@@ -423,6 +377,7 @@ function showSettingMenu() {
   });
   SOCIALBROWSER.menuList.push({
     label: 'Edit Page Content',
+    iconURL: 'http://127.0.0.1:60080/images/edit.png',
     accelerator: 'CommandOrControl+E',
     click: () => ipc('[edit-window]'),
   });
@@ -431,6 +386,7 @@ function showSettingMenu() {
   });
   SOCIALBROWSER.menuList.push({
     label: 'Audio ON / OFF',
+    iconURL: 'http://127.0.0.1:60080/images/audio.png',
     accelerator: 'CommandOrControl+1',
     click: () => ipc('[toggle-window-audio]'),
   });
@@ -440,7 +396,7 @@ function showSettingMenu() {
   });
 
   let tools = {
-    label: 'Tools',
+    label: 'Social Tools',
     click: () => {
       ipc('[open new popup]', {
         show: true,
@@ -453,18 +409,10 @@ function showSettingMenu() {
         maximize: false,
       });
     },
+    iconURL: 'http://127.0.0.1:60080/images/tools.png',
   };
 
   SOCIALBROWSER.menuList.push(tools);
-  SOCIALBROWSER.menuList.push({
-    type: 'separator',
-  });
-
-  SOCIALBROWSER.menuList.push({
-    label: 'Developer Tools',
-    accelerator: 'F12',
-    click: () => ipc('[show-window-dev-tools]'),
-  });
 
   SOCIALBROWSER.ipc('[show-menu]', {
     list: SOCIALBROWSER.menuList.map((m) => ({
@@ -472,12 +420,14 @@ function showSettingMenu() {
       sublabel: m.sublabel,
       visible: m.visible,
       type: m.type,
+      iconURL: m.iconURL,
       submenu: m.submenu?.map((m2) => ({
         label: m2.label,
         type: m2.type,
         sublabel: m2.sublabel,
         visible: m2.visible,
-        submenu: m2.submenu?.map((m3) => ({ label: m3.label, type: m3.type, sublabel: m3.sublabel, visible: m3.visible })),
+        iconURL: m2.iconURL,
+        submenu: m2.submenu?.map((m3) => ({ label: m3.label, type: m3.type, sublabel: m3.sublabel, visible: m3.visible, icoiconURLn: m3.iconURL })),
       })),
     })),
     windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
@@ -489,42 +439,18 @@ function showBookmarksMenu() {
   SOCIALBROWSER.menuList = [];
   SOCIALBROWSER.menuList.push({
     label: 'Bookmark current tab',
+    iconURL: 'http://127.0.0.1:60080/images/star.png',
     click: () => ipc('[add-to-bookmark]'),
   });
   SOCIALBROWSER.menuList.push({
     type: 'separator',
   });
 
-  SOCIALBROWSER.menuList.push({
-    label: 'Bookmark all tabs',
-    click: () => {
-      document.querySelectorAll('.social-tab:not(#tabPlus)').forEach((el) => {
-        ipc('[add-to-bookmark]', { tabID: el.id });
-      });
-    },
-  });
-  SOCIALBROWSER.menuList.push({
-    type: 'separator',
-  });
-  SOCIALBROWSER.menuList.push({
-    label: 'Bookmark manager',
-    click: () =>
-      ipc('[open new tab]', {
-        url: 'http://127.0.0.1:60080/setting?open=bookmarks',
-        partition: 'persist:setting',
-        user_name: 'Setting',
-        mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
-        vip: true,
-      }),
-  });
-  SOCIALBROWSER.menuList.push({
-    type: 'separator',
-  });
   SOCIALBROWSER.var.bookmarks.forEach((b) => {
     SOCIALBROWSER.menuList.push({
       label: b.title,
       sublabel: b.url,
-      icon: SOCIALBROWSER.nativeImage(b.iconURL),
+      iconURL: b.favicon,
       click: () =>
         ipc('[open new tab]', {
           url: b.url,
@@ -533,38 +459,20 @@ function showBookmarksMenu() {
     });
   });
 
-  if (SOCIALBROWSER.var.bookmarks.length > 0) {
-    SOCIALBROWSER.menuList.push({
-      type: 'separator',
-    });
-
-    SOCIALBROWSER.menuList.push({
-      label: 'Open all bookmarks',
-      visible: SOCIALBROWSER.var.bookmarks.length > 0,
-      click: () => {
-        SOCIALBROWSER.var.bookmarks.forEach((b) => {
-          ipc('[open new tab]', {
-            url: b.url,
-            title: b.title,
-            mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
-          });
-        });
-      },
-    });
-  }
-
   SOCIALBROWSER.ipc('[show-menu]', {
     list: SOCIALBROWSER.menuList.map((m) => ({
       label: m.label,
       sublabel: m.sublabel,
       visible: m.visible,
       type: m.type,
+      iconURL: m.iconURL,
       submenu: m.submenu?.map((m2) => ({
         label: m2.label,
         type: m2.type,
         sublabel: m2.sublabel,
         visible: m2.visible,
-        submenu: m2.submenu?.map((m3) => ({ label: m3.label, type: m3.type, sublabel: m3.sublabel, visible: m3.visible })),
+        iconURL: m2.iconURL,
+        submenu: m2.submenu?.map((m3) => ({ label: m3.label, type: m3.type, sublabel: m3.sublabel, visible: m3.visible, iconURL: m3.iconURL })),
       })),
     })),
     windowID: SOCIALBROWSER.remote.getCurrentWindow().id,

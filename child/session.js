@@ -67,7 +67,7 @@ module.exports = function (child) {
         isDefault: sessionOptions.isDefault || false,
       });
       sessionIndex = child.session_name_list.length - 1;
-     // ss.setSpellCheckerLanguages(['en-US']);
+      // ss.setSpellCheckerLanguages(['en-US']);
       ss.allowNTLMCredentialsForDomains('*');
     }
 
@@ -525,21 +525,19 @@ module.exports = function (child) {
       });
 
       ss.webRequest.onHeadersReceived(filter, function (details, callback) {
-        let url = details.url;
-        let urlObject = child.url.parse(url);
-        let _ss = child.session_name_list.find((s) => s.name == name);
-        _ss.user.privacy.vpc = _ss.user.privacy.vpc || {};
-
         if (child.parent.var.core.enginOFF) {
           callback({
             cancel: false,
-            responseHeaders: {
-              ...details.responseHeaders,
-            },
+            requestHeaders: details.requestHeaders,
             statusLine: details.statusLine,
           });
           return;
         }
+
+        let url = details.url;
+        let urlObject = child.url.parse(url);
+        let _ss = child.session_name_list.find((s) => s.name == name);
+        _ss.user.privacy.vpc = _ss.user.privacy.vpc || {};
 
         // custom header response
         child.parent.var.customHeaderList.forEach((r) => {
@@ -656,7 +654,9 @@ module.exports = function (child) {
       ss.webRequest.onResponseStarted(filter, function (details) {});
       ss.webRequest.onBeforeRedirect(filter, function (details) {});
       ss.webRequest.onCompleted(filter, function (details) {});
-      ss.webRequest.onErrorOccurred(filter, function (details) {});
+      ss.webRequest.onErrorOccurred(filter, function (details) {
+        console.log(details.error);
+      });
 
       ss.setCertificateVerifyProc((request, callback) => {
         callback(0);

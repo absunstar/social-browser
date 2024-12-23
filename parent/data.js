@@ -530,6 +530,22 @@ module.exports = function init(parent) {
     }
   }, 1000 * 0.5);
 
+  parent.downloadFavicon = function (logoURL, callback) {
+    let path = parent.path.join(parent.data_dir, 'favicons', parent.md5(logoURL) + '.' + logoURL.split('?')[0].split('.').pop());
+
+    if (parent.api.isFileExistsSync(path)) {
+      if (callback) {
+        callback(path);
+      }
+    } else {
+      parent.download({ url: logoURL, path: path }, (options) => {
+        if (callback) {
+          callback(path);
+        }
+      });
+    }
+  };
+
   parent.addURL = function (nitm) {
     if (!nitm.url) {
       return;

@@ -392,7 +392,16 @@ SOCIALBROWSER.nativeImage = function (_path) {
     return null;
   }
 };
-
+SOCIALBROWSER.shuffleArray = function (array) {
+  let index = -1;
+  const length = array.length;
+  const lastIndex = length - 1;
+  while (++index < length) {
+    const rand = random(index, lastIndex);
+    [array[index], array[rand]] = [array[rand], array[index]];
+  }
+  return array;
+};
 SOCIALBROWSER.onLoad = function (fn) {
   if (document.readyState !== 'loading') {
     fn();

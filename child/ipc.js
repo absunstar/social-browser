@@ -342,6 +342,34 @@ module.exports = function init(child) {
     }
     return info;
   });
+
+  child.nativeIconList = [];
+  child.getNativeIcon = function (iconURL) {
+    if (!iconURL) {
+      return undefined;
+    }
+    let path = child.path.join(child.parent.data_dir, 'favicons', child.md5(iconURL) + '.' + iconURL.split('?')[0].split('.').pop());
+    let index = child.nativeIconList.findIndex((c) => c.url == iconURL || c.path == path);
+    if (index !== -1) {
+      return child.nativeIconList[index].icon;
+    } else {
+      child.sendMessage({
+        type: '[download-favicon]',
+        url: iconURL,
+      });
+
+      if (child.api.isFileExistsSync(path)) {
+        child.nativeIconList.push({
+          url: iconURL,
+          path: path,
+          icon: child.electron.nativeImage.createFromPath(path).resize({ width: 16 }),
+        });
+      }
+    }
+  };
+
+ 
+
   child.ipcMain.handle('[show-menu]', (e, data) => {
     let win = child.electron.BrowserWindow.fromId(data.windowID);
     let contents = win.webContents;
@@ -352,21 +380,27 @@ module.exports = function init(child) {
       m.click = function () {
         contents.send('[run-menu]', { index: i });
       };
+      m.icon = child.getNativeIcon(m.iconURL);
+
       if (m.submenu) {
         m.submenu.forEach((m2, i2) => {
           m2.click = function () {
             contents.send('[run-menu]', { index: i, index2: i2 });
           };
+          m2.icon = child.getNativeIcon(m2.iconURL);
+
           if (m2.submenu) {
             m2.submenu.forEach((m3, i3) => {
               m3.click = function () {
                 contents.send('[run-menu]', { index: i, index2: i2, index3: i3 });
               };
+              m3.icon = child.getNativeIcon(m3.iconURL);
             });
           }
         });
       }
     });
+
     const menu = child.electron.Menu.buildFromTemplate(data.list);
     menu.popup(win);
   });

@@ -213,7 +213,7 @@ module.exports = function init(parent) {
           parent.var.bookmarks.forEach((b, i) => {
             if (b.url == message.data.url) {
               parent.var.bookmarks[i].title == message.data.title;
-              parent.var.bookmarks[i].favicon == message.data.icon;
+              parent.var.bookmarks[i].favicon == message.data.iconURL;
               parent.bookmarks_exists = true;
             }
           });
@@ -221,7 +221,7 @@ module.exports = function init(parent) {
             parent.var.bookmarks.push({
               title: message.data.title,
               url: message.data.url,
-              favicon: message.data.icon,
+              favicon: message.data.iconURL,
             });
           }
           parent.applay('bookmarks');
@@ -479,6 +479,9 @@ module.exports = function init(parent) {
             });
           }
 
+          break;
+        case '[download-favicon]':
+          parent.downloadFavicon(message.url);
           break;
         case '[import-extension]':
           parent.importExtension();
