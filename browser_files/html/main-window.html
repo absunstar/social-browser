@@ -57,6 +57,12 @@
         justify-content: flex-start;
         align-items: center;
       }
+      a.space,
+      a.space:hover {
+        color: #435259;
+        font-weight: bold;
+        cursor: default;
+      }
     </style>
   </head>
 
@@ -145,9 +151,10 @@
         <a title="open in Insecure Window" onclick="ipc('[window-reload]')">
           <i class="fa-solid fa-window-restore"></i>
         </a>
-        <a title="open in Allow Ads Window"" onclick="ipc('[window-reload]')">
+        <a title="open in Allow Ads Window" onclick="ipc('[window-reload]')">
           <i class="fa-solid fa-rectangle-ad"></i>
         </a>
+        <a class="space"> | </a>
         <a title="Play video" onclick="ipc('[window-reload]')">
           <i class="fa-solid fa-play"></i>
         </a>
@@ -157,6 +164,7 @@
         <a title="Skip Video" onclick="ipc('[window-reload]')">
           <i class="fa-solid fa-forward-step"></i>
         </a>
+        <a class="space"> | </a>
         <a title="Reload All Page Files" onclick="ipc('[window-reload]')">
           <i class="fa-solid fa-globe"></i>
         </a>

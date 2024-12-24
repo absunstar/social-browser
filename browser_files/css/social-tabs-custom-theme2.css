@@ -52,8 +52,8 @@ body,
   z-index: 9999999;
 }
 
-.social-address-bar a:hover,
-.window-actions a:hover {
+.social-address-bara:not(.space):hover ,
+.window-actions a:not(.space):hover {
   color: #8bc34a;
 }
 .social-tabs .social-tab-close {
