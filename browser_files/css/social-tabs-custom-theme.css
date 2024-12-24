@@ -66,14 +66,9 @@
   width: 100%;
 }
 
-.social-address-bar {
-  height: 40px;
-  border-bottom: 1px solid #000;
-  background-color: var(--social-current-tab-fill);
-  box-shadow: 0 -0.05em rgba(0, 0, 0, 0.27);
-}
 
-.social-address-bar2 {
+
+.social-address-bar {
   height: 40px;
   border-bottom: 1px solid #000;
   background-color: var(--social-current-tab-fill);
@@ -212,7 +207,7 @@
   padding-left: 10px;
 }
 
-.social-address-bar2 .address-input {
+.social-address-bar .address-input {
   width: calc(100% - 600px);
   min-width: 350px;
 }

@@ -354,6 +354,18 @@ module.exports = function (child) {
               child.updateTab(w.window);
             }
           });
+        } else if (message.type == '[toggle-window-images]') {
+          child.windowList.forEach((w) => {
+            if (w.window && !w.window.isDestroyed() && w.customSetting.tabID == message.data.tabID && w.customSetting.windowType == 'view') {
+              w.window.webContents.send('[toggle-window-images]', message.data);
+            }
+          });
+        }else if (message.type == '[toggle-window-edit]') {
+          child.windowList.forEach((w) => {
+            if (w.window && !w.window.isDestroyed() && w.customSetting.tabID == message.data.tabID && w.customSetting.windowType == 'view') {
+              w.window.webContents.send('[toggle-window-edit]', message.data);
+            }
+          });
         } else if (message.type == '[window-go-back]') {
           child.windowList.forEach((w) => {
             if (w.window && !w.window.isDestroyed() && w.customSetting.tabID == message.data.tabID && w.customSetting.windowType == 'view') {

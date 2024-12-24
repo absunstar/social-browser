@@ -17,7 +17,11 @@
 
     <link rel="stylesheet" href="http://127.0.0.1:60080/css/social.css" />
     <link rel="stylesheet" href="http://127.0.0.1:60080/css/social-tabs.css" />
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/font-awesome.css" />
+
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/font-awesome-6.css" />
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/font-awesome-6-regular.css" />
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/font-awesome-6-solid.css" />
+
     <link rel="stylesheet" href="http://127.0.0.1:60080/css/fonts.css" />
 
     <link rel="stylesheet" href="http://127.0.0.1:60080/css/social-tabs-custom-theme2.css" />
@@ -29,14 +33,29 @@
         background: var(--social-background-color);
       }
       #body {
-        top: 70px;
+        top: 100px;
         left: 0px;
         right: 0px;
         height: 100%;
-        bottom: 0px;
+        bottom: 30px;
         position: fixed;
         width: 100%;
         opacity: 0.1;
+      }
+      .footer {
+        top: 70px;
+        left: 0px;
+        right: 0px;
+        height: 30px;
+        position: fixed;
+        opacity: 1;
+        background: var(--social-current-tab-fill);
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-content: center;
+        justify-content: flex-start;
+        align-items: center;
       }
     </style>
   </head>
@@ -44,10 +63,10 @@
   <body>
     <div class="social-tabs">
       <div title="Close Browser" class="social-close">
-        <i class="fa fa-close"></i>
+        <i class="fa-solid fa-xmark"></i>
       </div>
       <div title="Maximize Browser" class="social-maxmize">
-        <i class="fa fa-window-maximize"></i>
+        <i class="fa-regular fa-window-maximize"></i>
       </div>
       <div title="minimize Browser" class="social-minmize">
         <i class="fa fa-window-minimize"></i>
@@ -60,8 +79,8 @@
       <div class="social-tabs-bottom-bar"></div>
     </div>
 
-    <div class="row social-address-bar2">
-      <div id="window_actions">
+    <div class="row social-address-bar">
+      <div class="window-actions">
         <a title="Go Back Page" class="go-back" onclick="ipc('[window-go-back]' )">
           <i class="fa fa-arrow-left"></i>
         </a>
@@ -83,7 +102,9 @@
         <a title="Bookmarks" class="bookmarks" onclick="showBookmarksMenu();">
           <i class="fa fa-star"></i>
         </a>
-
+        <a title="Show Setting" id="setting" onclick="showSettingMenu();">
+          <i class="fa fa-bars"></i>
+        </a>
         <a title="Mute Page Audio" class="Page-audio" onclick="ipc('[toggle-window-audio]')">
           <i class="fa fa-volume-up"></i>
         </a>
@@ -98,17 +119,67 @@
         <a class="hidden" title="Downloads" onclick="showDownloads()">
           <i class="fa fa-download"></i>
         </a>
+
+        <a title="Hide / Show - Images" onclick="ipc('[toggle-window-images]')">
+          <i class="fa-regular fa-images"></i>
+        </a>
+        <a title="Edit Page Content" onclick="ipc('[toggle-window-edit]')">
+          <i class="fa-solid fa-pen-to-square"></i>
+        </a>
         <a class="developer-tools" title="Developer Tools" onclick="ipc('[show-window-dev-tools]')">
           <i class="fa fa-bug"></i>
-        </a>
-        <a title="Show Setting" id="setting" onclick="showSettingMenu();">
-          <i class="fa fa-bars"></i>
         </a>
       </div>
     </div>
 
     <div id="body"></div>
 
+    <div class="footer">
+      <div class="window-actions">
+        <a title="open in New Window" onclick="ipc('[window-reload]')">
+          <i class="fa-regular fa-window-restore"></i>
+        </a>
+        <a title="open in Ghost Window" onclick="ipc('[window-reload]')">
+          <i class="fa-solid fa-ghost"></i>
+        </a>
+        <a title="open in Insecure Window" onclick="ipc('[window-reload]')">
+          <i class="fa-solid fa-window-restore"></i>
+        </a>
+        <a title="open in Allow Ads Window"" onclick="ipc('[window-reload]')">
+          <i class="fa-solid fa-rectangle-ad"></i>
+        </a>
+        <a title="Play video" onclick="ipc('[window-reload]')">
+          <i class="fa-solid fa-play"></i>
+        </a>
+        <a title="Pause Video" onclick="ipc('[window-reload]')">
+          <i class="fa-solid fa-pause"></i>
+        </a>
+        <a title="Skip Video" onclick="ipc('[window-reload]')">
+          <i class="fa-solid fa-forward-step"></i>
+        </a>
+        <a title="Reload All Page Files" onclick="ipc('[window-reload]')">
+          <i class="fa-solid fa-globe"></i>
+        </a>
+        <a title="Reload All Page Files" onclick="ipc('[window-reload]')">
+          <i class="fa-solid fa-globe"></i>
+        </a>
+        <a title="Reload All Page Files" onclick="ipc('[window-reload]')">
+          <i class="fa-solid fa-globe"></i>
+        </a>
+        <a title="Reload All Page Files" onclick="ipc('[window-reload]')">
+          <i class="fa-solid fa-globe"></i>
+        </a>
+        <a title="Reload All Page Files" onclick="ipc('[window-reload]')">
+          <i class="fa-solid fa-globe"></i>
+        </a>
+        <a title="Reload All Page Files" onclick="ipc('[window-reload]')">
+          <i class="fa-solid fa-globe"></i>
+        </a>
+        <a title="Reload All Page Files" onclick="ipc('[window-reload]')">
+          <i class="fa-solid fa-globe"></i>
+        </a>
+      </div>
+    </div>
     <script src="http://127.0.0.1:60080/js/an.min.js"></script>
 
     <script>

@@ -32,7 +32,7 @@ body,
 .tabs .tabs-header {
   background: var(--social-background-color);
 }
-#window_actions a {
+.window-actions a {
   color: #607d8b;
   border-radius: 20px;
   padding: 6px 11px;
@@ -53,7 +53,7 @@ body,
 }
 
 .social-address-bar a:hover,
-#window_actions a:hover {
+.window-actions a:hover {
   color: #8bc34a;
 }
 .social-tabs .social-tab-close {
@@ -146,14 +146,9 @@ body,
   padding: 0px;
   width: 100%;
 }
-.social-address-bar {
-  height: 40px;
-  border-bottom: 1px solid #000;
-  background-color: var(--social-current-tab-fill);
-  box-shadow: 0 -0.05em rgba(0, 0, 0, 0.27);
-}
 
-.social-address-bar2 {
+
+.social-address-bar{
   height: 40px;
   border-bottom: none;
   background-color: var(--social-current-tab-fill);

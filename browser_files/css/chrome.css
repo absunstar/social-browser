@@ -13,11 +13,11 @@
   border-bottom: 1px solid #eee;
   background-color: var(--background2);
 }
-#window_actions {
+.window-actions {
   display: block;
   height: 40px;
 }
-#window_actions a {
+.window-actions a {
   color: #fff;
   border-radius: 20px;
   padding: 6px 11px;
@@ -40,9 +40,9 @@
 .social-close:hover {
   background: red;
 }
-.social-close .fa,
-.social-maxmize .fa,
-.social-minmize .fa {
+.social-close i,
+.social-maxmize i,
+.social-minmize i {
   vertical-align: top;
 }
 

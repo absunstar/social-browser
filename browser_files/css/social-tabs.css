@@ -54,7 +54,7 @@
 .social-tabs .social-close:hover {
   background: red;
 }
-.social-tabs .social-close .fa , .social-tabs .social-maxmize .fa , .social-tabs .social-minmize .fa {
+.social-tabs .social-close i , .social-tabs .social-maxmize i , .social-tabs .social-minmize i{
   vertical-align: top;
 }
 
@@ -275,6 +275,8 @@
   background: #b74a3b;
 }
 
+
+
 .social-address-bar {
   height: 2.4em;
   border-bottom: 1px solid #dad8d8;
@@ -282,19 +284,12 @@
   box-shadow: 0 -0.05em rgba(0, 0, 0, 0.27);
 }
 
-.social-address-bar2 {
-  height: 2.4em;
-  border-bottom: 1px solid #dad8d8;
-  background-color: #f2f2f2;
-  box-shadow: 0 -0.05em rgba(0, 0, 0, 0.27);
-}
 
-
-#window_actions {
+.window-actions{
   display: block;
   height: 40px;
 }
-#window_actions a{
+.window-actions a{
   color: #fff;
   border-radius: 20px;
   padding: 6px 11px;
@@ -318,7 +313,7 @@
   font-size: 22px !important;
 }
 
-.social-address-bar a:hover , #window_actions a:hover {
+.social-address-bar a:hover , .window-actions a:hover {
   color: yellow;
 }
 

@@ -263,6 +263,7 @@ function showSettingMenu() {
   if (SOCIALBROWSER.var.core.id.like('*developer*')) {
     SOCIALBROWSER.menuList.push({
       label: 'Check Update',
+      iconURL: 'http://127.0.0.1:60080/images/chromium.png',
       click: () =>
         sendToMain({
           name: '[run-window-update]',

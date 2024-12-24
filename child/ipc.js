@@ -368,8 +368,6 @@ module.exports = function init(child) {
     }
   };
 
- 
-
   child.ipcMain.handle('[show-menu]', (e, data) => {
     let win = child.electron.BrowserWindow.fromId(data.windowID);
     let contents = win.webContents;
@@ -635,6 +633,17 @@ module.exports = function init(child) {
       let win = child.electron.BrowserWindow.fromId(data.windowID);
       win.webContents.setAudioMuted(!win.webContents.audioMuted);
       child.updateTab(win);
+    }
+  });
+
+  child.ipcMain.handle('[toggle-window-images]', (event, data) => {
+    if (data.tabID && data.childID && data.windowID) {
+      child.sendMessage({ type: '[toggle-window-images]', data: data });
+    }
+  });
+  child.ipcMain.handle('[toggle-window-edit]', (event, data) => {
+    if (data.tabID && data.childID && data.windowID) {
+      child.sendMessage({ type: '[toggle-window-edit]', data: data });
     }
   });
 

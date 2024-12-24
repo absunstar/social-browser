@@ -2,8 +2,8 @@ module.exports = function (child) {
   child.assignWindows = [];
   child.offset = {
     x: 8,
-    y: 78,
-    y2: 70,
+    y: 78 + 30,
+    y2: 70 + 30,
     width: 15,
     width2: 2,
     height: 84,

@@ -18,7 +18,7 @@
     "win": "electron-builder -w --x64 --ia32",
     "win32": "electron-builder -w --ia32",
     "win64": "electron-builder -w --x64",
-    "ubuntu": "electron-builder -l --x64 --ia32",
+    "linux": "electron-builder -l --x64 --ia32",
     "mac": "electron-builder -m --x64",
     "postinstall": "electron-builder install-app-deps",
     "start": "electron .",

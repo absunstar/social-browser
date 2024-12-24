@@ -475,6 +475,34 @@ SOCIALBROWSER.on('$download_item', (e, dl) => {
   }
 });
 
+SOCIALBROWSER.toggleWindowImagesStatus = true;
+SOCIALBROWSER.on('[toggle-window-images]', (e, data) => {
+  SOCIALBROWSER.toggleWindowImagesStatus = !SOCIALBROWSER.toggleWindowImagesStatus;
+  document.querySelectorAll('img').forEach((img) => {
+    if (SOCIALBROWSER.toggleWindowImagesStatus) {
+      img.style.visibility = 'visible';
+    } else {
+      img.style.visibility = 'hidden';
+    }
+  });
+ 
+
+  
+});
+
+SOCIALBROWSER.toggleWindowEditStatus = true;
+SOCIALBROWSER.on('[toggle-window-edit]', (e, data) => {
+  SOCIALBROWSER.toggleWindowEditStatus = !SOCIALBROWSER.toggleWindowEditStatus;
+  let html = document.querySelector('html');
+  if (SOCIALBROWSER.toggleWindowEditStatus) {
+    html.contentEditable = true;
+    html.style.border = '10px dashed green';
+  } else {
+    html.contentEditable = 'inherit';
+    html.style.border = '0px solid white';
+  }
+});
+
 SOCIALBROWSER.on('[send-render-message]', (event, data) => {
   if (data.name == 'update-target-url') {
     SOCIALBROWSER.showInfo(data.url);
