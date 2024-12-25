@@ -3,11 +3,11 @@ module.exports = function (child) {
     child.reconnectCount = 0;
     child._ws_ = new child.WebSocket('ws://127.0.0.1:60080/ws');
     child.sendMessage = function (message) {
-      message.index = child.index;
-      message.uuid = child.uuid;
-      message.partition = child.partition;
       message.id = child.id;
       message.pid = child.id;
+      message.uuid = child.uuid;
+      message.index = child.index;
+      message.partition = message.partition || child.partition;
       child._ws_.send(JSON.stringify(message));
     };
     child._ws_.on('open', function () {

@@ -158,21 +158,21 @@ module.exports = function init(parent) {
             }
           });
           break;
-          case '[window-action]':
-            parent.clientList.forEach((client) => {
-              if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tabID === message.data.tabID)) {
-                client.ws.send(message);
-              }
-            });
-            break;
+        case '[window-action]':
+          parent.clientList.forEach((client) => {
+            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tabID === message.data.tabID)) {
+              client.ws.send(message);
+            }
+          });
+          break;
 
-            case '[toggle-window-edit]':
-              parent.clientList.forEach((client) => {
-                if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tabID === message.data.tabID)) {
-                  client.ws.send(message);
-                }
-              });
-              break;
+        case '[toggle-window-edit]':
+          parent.clientList.forEach((client) => {
+            if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tabID === message.data.tabID)) {
+              client.ws.send(message);
+            }
+          });
+          break;
         case '[window-zoom-]':
           parent.clientList.forEach((client) => {
             if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tabID === message.data.tabID)) {
@@ -476,6 +476,20 @@ module.exports = function init(parent) {
             parent.var.session_list = parent.var.session_list.filter((s) => s && s.display !== oldSession.display);
             parent.applay('session_list');
           }
+          break;
+        case '[change-user-proxy]':
+          console.log(message);
+          let userIndex = parent.var.session_list.findIndex((s) => s.name == message.partition);
+          if (userIndex !== -1) {
+            if (message.proxy) {
+              parent.var.session_list[userIndex].proxy = message.proxy;
+              parent.var.session_list[userIndex].proxy.enabled = true;
+            } else {
+              parent.var.session_list[userIndex].proxy = { enabled: false };
+            }
+            parent.applay('session_list');
+          }
+
           break;
         case '[add-window-url]':
           if (message.url && !message.url.contains('60080')) {

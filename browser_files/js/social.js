@@ -187,15 +187,15 @@ document.addEventListener(
       }
     } else if (e.keyCode == 107 /*+*/) {
       if (e.ctrlKey == true) {
-        ipc('[window-action]' , {name : 'window-zoom+'});
+        ipc('[window-action]', { name: 'window-zoom+' });
       }
     } else if (e.keyCode == 109 /*-*/) {
       if (e.ctrlKey == true) {
-        ipc('[window-action]' , {name : 'window-zoom-'});
+        ipc('[window-action]', { name: 'window-zoom-' });
       }
     } else if (e.keyCode == 48 /*0*/) {
       if (e.ctrlKey == true) {
-        ipc('[window-action]' , {name : 'window-zoom'});
+        ipc('[window-action]', { name: 'window-zoom' });
       }
     } else if (e.keyCode == 49 /*1*/) {
       if (e.ctrlKey == true) {
@@ -485,6 +485,55 @@ function showBookmarksMenu() {
   });
 }
 
+SOCIALBROWSER.showUserProxyMenu = function () {
+  SOCIALBROWSER.currentWindow.show();
+  SOCIALBROWSER.menuList = [];
+
+  SOCIALBROWSER.menuList.push({
+    label: 'Stop Proxy',
+    click: () => {
+      SOCIALBROWSER.ws({ type: '[change-user-proxy]', partition: SOCIALBROWSER.currentTabInfo.partition, proxy: null });
+      setTimeout(() => {
+        ipc('[window-reload]');
+      }, 1000 * 2);
+    },
+  });
+  SOCIALBROWSER.menuList.push({
+    type: 'separator',
+  });
+  SOCIALBROWSER.var.proxy_list.forEach((proxy) => {
+    SOCIALBROWSER.menuList.push({
+      label: proxy.url,
+      iconURL: 'http://127.0.0.1:60080/images/proxy.png',
+      click: () => {
+        SOCIALBROWSER.ws({ type: '[change-user-proxy]', partition: SOCIALBROWSER.currentTabInfo.partition, proxy: proxy });
+        setTimeout(() => {
+          ipc('[window-reload]');
+        }, 1000 * 2);
+      },
+    });
+  });
+
+  SOCIALBROWSER.ipc('[show-menu]', {
+    list: SOCIALBROWSER.menuList.map((m) => ({
+      label: m.label,
+      sublabel: m.sublabel,
+      visible: m.visible,
+      type: m.type,
+      iconURL: m.iconURL,
+      submenu: m.submenu?.map((m2) => ({
+        label: m2.label,
+        type: m2.type,
+        sublabel: m2.sublabel,
+        visible: m2.visible,
+        iconURL: m2.iconURL,
+        submenu: m2.submenu?.map((m3) => ({ label: m3.label, type: m3.type, sublabel: m3.sublabel, visible: m3.visible, iconURL: m3.iconURL })),
+      })),
+    })),
+    windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
+  });
+};
+
 socialTabs.init(socialTabsDom, {
   tabOverlapDistance: 14,
   minWidth: 35,
@@ -564,6 +613,8 @@ $('.social-minmize').click(() => {
 
 socialTabsDom.addEventListener('activeTabChange', ({ detail }) => {
   currentTabId = detail.tabEl.id;
+  SOCIALBROWSER.currentTabInfo = SOCIALBROWSER.getCurrentTabInfo();
+
   SOCIALBROWSER.ipc('[show-view]', {
     x: 0,
     y: 0,
@@ -916,6 +967,19 @@ function renderMessage(cm) {
     playMiniVideo(cm);
   }
 }
+
+SOCIALBROWSER.getCurrentTabInfo = function () {
+  let tab = document.querySelector('.social-tab-current');
+  let info = {};
+  if (tab) {
+    info.id = tab.getAttribute('id');
+    info.url = tab.getAttribute('url');
+    info.partition = tab.getAttribute('partition');
+    info.user_name = tab.getAttribute('user_name');
+    info.proxy = tab.getAttribute('proxy');
+  }
+  return info;
+};
 
 function playMiniVideo(cm) {
   return SOCIALBROWSER.ipc('new-video-window', cm);

@@ -346,6 +346,14 @@ module.exports = function init(child) {
     return info;
   });
 
+  setInterval(() => {
+    child.nativeIconList.forEach((c) => {
+      if (!c.icon) {
+        c.icon = child.electron.nativeImage.createFromPath(c.path).resize({ width: 16 });
+      }
+    });
+  }, 1000 * 5);
+
   child.nativeIconList = [];
   child.getNativeIcon = function (iconURL) {
     if (!iconURL) {
@@ -353,21 +361,19 @@ module.exports = function init(child) {
     }
     let path = child.path.join(child.parent.data_dir, 'favicons', child.md5(iconURL) + '.' + iconURL.split('?')[0].split('.').pop());
     let index = child.nativeIconList.findIndex((c) => c.url == iconURL || c.path == path);
+
     if (index !== -1) {
       return child.nativeIconList[index].icon;
     } else {
+      child.nativeIconList.push({
+        url: iconURL,
+        path: path,
+      });
+
       child.sendMessage({
         type: '[download-favicon]',
         url: iconURL,
       });
-
-      if (child.api.isFileExistsSync(path)) {
-        child.nativeIconList.push({
-          url: iconURL,
-          path: path,
-          icon: child.electron.nativeImage.createFromPath(path).resize({ width: 16 }),
-        });
-      }
     }
   };
 
@@ -628,8 +634,6 @@ module.exports = function init(child) {
       }
     }
   });
-
-
 
   child.ipcMain.handle('[window-action]', (event, data) => {
     if (data.tabID && data.childID && data.windowID) {

@@ -530,7 +530,13 @@ module.exports = function init(parent) {
     }
   }, 1000 * 0.5);
 
+  parent.downloadFaviconList = [];
+
   parent.downloadFavicon = function (logoURL, callback) {
+    if (parent.downloadFaviconList.some((f) => f.url == logoURL)) {
+      return;
+    }
+    parent.downloadFaviconList.push({ url: logoURL });
     let path = parent.path.join(parent.data_dir, 'favicons', parent.md5(logoURL) + '.' + logoURL.split('?')[0].split('.').pop());
 
     if (parent.api.isFileExistsSync(path)) {

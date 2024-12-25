@@ -48,7 +48,7 @@
       privacy: { languages: 'en', connection: {} },
     },
     menu_list: [],
-    video_list : [],
+    video_list: [],
     events: [],
     eventOff: '',
     eventOn: '',
@@ -158,9 +158,6 @@
       value.parentSetting.parentSetting = undefined;
     }
 
-    if (channel == '[open new popup]' || channel == '[open new tab]') {
-      value.referrer = value.referrer || document.location.href;
-    }
     return SOCIALBROWSER.ipcRenderer.invoke(channel, value);
   };
   SOCIALBROWSER.on = function (name, callback) {
