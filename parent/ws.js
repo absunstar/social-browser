@@ -165,13 +165,14 @@ module.exports = function init(parent) {
             }
           });
           break;
-          case '[toggle-window-images]':
+          case '[window-action]':
             parent.clientList.forEach((client) => {
               if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tabID === message.data.tabID)) {
                 client.ws.send(message);
               }
             });
             break;
+
             case '[toggle-window-edit]':
               parent.clientList.forEach((client) => {
                 if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tabID === message.data.tabID)) {

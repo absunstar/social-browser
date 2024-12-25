@@ -1018,15 +1018,9 @@ function get_options_menu(node) {
   }
 
   let arr3 = [];
-  let videos = [].concat(SOCIALBROWSER.video_list);
-  document.querySelectorAll('video').forEach((v) => {
-    if (v.src && !v.src.startsWith('xblob:'))
-      videos.push({
-        src: v.src,
-      });
-  });
-  videos.forEach((f, i) => {
-    if (!f || !f.src || arr3.length > 10 || f.src.like('blob*')) {
+
+  SOCIALBROWSER.video_list.forEach((f, i) => {
+    if (i > 5 || !f.src.startsWith('http')) {
       return;
     }
     arr3.push({
@@ -1035,7 +1029,7 @@ function get_options_menu(node) {
         SOCIALBROWSER.ipc('[open new popup]', {
           alwaysOnTop: true,
           partition: SOCIALBROWSER.partition,
-          url: 'http://127.0.0.1:60080/iframe?url=' + f.src,
+          url: 'browser://video?url=' + f.src,
           referrer: document.location.href,
           show: true,
           vip: true,
@@ -1106,71 +1100,6 @@ function get_options_menu(node) {
     arr3.push({
       type: 'separator',
     });
-  });
-
-  document.querySelectorAll('video , video source').forEach((f) => {
-    if (f.src && f.src.startsWith('http')) {
-      arr3.push({
-        label: 'Play video source  ' + f.src,
-        click() {
-          SOCIALBROWSER.ipc('[open new popup]', {
-            partition: SOCIALBROWSER.partition,
-            url: f.src,
-            referrer: document.location.href,
-            show: true,
-            center: true,
-          });
-        },
-      });
-      arr3.push({
-        label: 'Open in ( New window )',
-        click() {
-          SOCIALBROWSER.ipc('[open new popup]', {
-            alwaysOnTop: true,
-            partition: SOCIALBROWSER.partition,
-            url: f.src,
-            referrer: document.location.href,
-            show: true,
-            center: true,
-          });
-        },
-      });
-
-      arr3.push({
-        label: 'Open in ( Insecure window )',
-        click() {
-          SOCIALBROWSER.ipc('[open new popup]', {
-            alwaysOnTop: true,
-            partition: SOCIALBROWSER.partition,
-            url: f.src,
-            referrer: document.location.href,
-            security: false,
-            show: true,
-            center: true,
-          });
-        },
-      });
-
-      arr3.push({
-        label: 'copy link ',
-        click() {
-          SOCIALBROWSER.copy(f.src);
-        },
-      });
-
-      arr3.push({
-        label: 'download',
-        click() {
-          sendToMain({
-            name: '[download-link]',
-            url: f.src,
-          });
-        },
-      });
-      arr3.push({
-        type: 'separator',
-      });
-    }
   });
 
   if (arr3.length > 0) {

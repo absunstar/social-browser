@@ -126,7 +126,7 @@
           <i class="fa fa-download"></i>
         </a>
 
-        <a title="Hide / Show - Images" onclick="ipc('[toggle-window-images]')">
+        <a title="Hide / Show - Images" onclick="ipc('[window-action]' , {name : 'toggle-page-images'})">
           <i class="fa-regular fa-images"></i>
         </a>
         <a title="Edit Page Content" onclick="ipc('[toggle-window-edit]')">
@@ -142,48 +142,65 @@
 
     <div class="footer">
       <div class="window-actions">
-        <a title="open in New Window" onclick="ipc('[window-reload]')">
+        <a title="open in New Window" onclick="ipc('[window-action]' , {name : 'new-window'})">
           <i class="fa-regular fa-window-restore"></i>
         </a>
-        <a title="open in Ghost Window" onclick="ipc('[window-reload]')">
-          <i class="fa-solid fa-ghost"></i>
-        </a>
-        <a title="open in Insecure Window" onclick="ipc('[window-reload]')">
+
+        <a title="open in Insecure Window" onclick="ipc('[window-action]' , {name : 'new-insecure-window'})">
           <i class="fa-solid fa-window-restore"></i>
         </a>
-        <a title="open in Allow Ads Window" onclick="ipc('[window-reload]')">
+        <a title="open in Allow Ads Window" onclick="ipc('[window-action]' , {name : 'new-ads-window'})">
           <i class="fa-solid fa-rectangle-ad"></i>
         </a>
         <a class="space"> | </a>
-        <a title="Play video" onclick="ipc('[window-reload]')">
+        <a title="open in Ghost Window" onclick="ipc('[window-action]' , {name : 'new-ghost-window'})">
+          <i class="fa-solid fa-ghost"></i>
+        </a>
+        <a class="space"> | </a>
+        <a title="Re-Play" onclick="ipc('[window-action]' , {name : 'reset-video'})">
+          <i class="fa-solid fa-backward-step"></i>
+        </a>
+        <a title="-60 sec" onclick="ipc('[window-action]' , {name : '-60s-video'})">
+          <i class="fa-solid fa-backward-fast"></i>
+        </a>
+        <a title="-10 sec" onclick="ipc('[window-action]' , {name : '-10s-video'})">
+          <i class="fa-solid fa-backward"></i>
+        </a>
+        <a title="Play video" onclick="ipc('[window-action]' , {name : 'play-video'})">
           <i class="fa-solid fa-play"></i>
         </a>
-        <a title="Pause Video" onclick="ipc('[window-reload]')">
+        <a title="Pause Video" onclick="ipc('[window-action]' , {name : 'pause-video'})">
           <i class="fa-solid fa-pause"></i>
         </a>
-        <a title="Skip Video" onclick="ipc('[window-reload]')">
+        <a title="+10 sec" onclick="ipc('[window-action]' , {name : '+10s-video'})">
+          <i class="fa-solid fa-forward"></i>
+        </a>
+        <a title="+60 sec" onclick="ipc('[window-action]' , {name : '+60s-video'})">
+          <i class="fa-solid fa-forward-fast"></i>
+        </a>
+        <a title="Skip Video" onclick="ipc('[window-action]' , {name : 'skip-video'})">
           <i class="fa-solid fa-forward-step"></i>
         </a>
         <a class="space"> | </a>
-        <a title="Reload All Page Files" onclick="ipc('[window-reload]')">
+        <a title="Reload All Page Files" onclick="ipc('[window-action]' , {name : 'toggle-page-images'})">
           <i class="fa-solid fa-globe"></i>
         </a>
-        <a title="Reload All Page Files" onclick="ipc('[window-reload]')">
+        <a title="Reload All Page Files" onclick="ipc('[window-action]' , {name : 'toggle-page-images'})">
           <i class="fa-solid fa-globe"></i>
         </a>
-        <a title="Reload All Page Files" onclick="ipc('[window-reload]')">
+        <a title="Reload All Page Files" onclick="ipc('[window-action]' , {name : 'toggle-page-images'})">
           <i class="fa-solid fa-globe"></i>
         </a>
-        <a title="Reload All Page Files" onclick="ipc('[window-reload]')">
+        <a title="Reload All Page Files" onclick="ipc('[window-action]' , {name : 'toggle-page-images'})">
           <i class="fa-solid fa-globe"></i>
         </a>
-        <a title="Reload All Page Files" onclick="ipc('[window-reload]')">
+        <a title="Reload All Page Files" onclick="ipc('[window-action]' , {name : 'toggle-page-images'})">
           <i class="fa-solid fa-globe"></i>
         </a>
-        <a title="Reload All Page Files" onclick="ipc('[window-reload]')">
+        <a title="Reload All Page Files" onclick="ipc('[window-action]' , {name : 'toggle-page-images'})">
           <i class="fa-solid fa-globe"></i>
         </a>
-        <a title="Reload All Page Files" onclick="ipc('[window-reload]')">
+        <a title="Reload All Page Files" onclick="ipc('[window-action]' , {name : 'toggle-page-images'})">
           <i class="fa-solid fa-globe"></i>
         </a>
       </div>

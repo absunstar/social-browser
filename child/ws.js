@@ -354,13 +354,19 @@ module.exports = function (child) {
               child.updateTab(w.window);
             }
           });
-        } else if (message.type == '[toggle-window-images]') {
+        } else if (message.type == '[window-action]') {
           child.windowList.forEach((w) => {
             if (w.window && !w.window.isDestroyed() && w.customSetting.tabID == message.data.tabID && w.customSetting.windowType == 'view') {
-              w.window.webContents.send('[toggle-window-images]', message.data);
+              w.window.webContents.send('[window-action]', message.data);
+              w.window.webContents.mainFrame.frames.forEach((f) => {
+                f.send('[window-action]', message.data);
+                f.frames.forEach((f2) => {
+                  f2.send('[window-action]', message.data);
+                });
+              });
             }
           });
-        }else if (message.type == '[toggle-window-edit]') {
+        } else if (message.type == '[toggle-window-edit]') {
           child.windowList.forEach((w) => {
             if (w.window && !w.window.isDestroyed() && w.customSetting.tabID == message.data.tabID && w.customSetting.windowType == 'view') {
               w.window.webContents.send('[toggle-window-edit]', message.data);

@@ -149,7 +149,10 @@ module.exports = function init(child) {
   child.ipcMain.handle('message', (e, message) => {
     let win = child.electron.BrowserWindow.fromId(message.windowID);
     if (win) {
-      win.send('message', message);
+      win.webContents.send('message', message);
+      win.webContents.mainFrame.frames.forEach((f) => {
+        f.send('message', message);
+      });
     }
   });
   child.ipcMain.handle('window.message', (e, message) => {
@@ -636,11 +639,13 @@ module.exports = function init(child) {
     }
   });
 
-  child.ipcMain.handle('[toggle-window-images]', (event, data) => {
+  child.ipcMain.handle('[window-action]', (event, data) => {
     if (data.tabID && data.childID && data.windowID) {
-      child.sendMessage({ type: '[toggle-window-images]', data: data });
+      child.sendMessage({ type: '[window-action]', data: data });
+      
     }
   });
+
   child.ipcMain.handle('[toggle-window-edit]', (event, data) => {
     if (data.tabID && data.childID && data.windowID) {
       child.sendMessage({ type: '[toggle-window-edit]', data: data });

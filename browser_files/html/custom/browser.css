@@ -38,7 +38,7 @@ video0 {
 #__alertBox {
   display: none;
   position: fixed;
-  background: #2d2828;
+  background: #1a2a32;
   color: #ffffff;
   width: auto;
   height: auto;
@@ -49,13 +49,12 @@ video0 {
   left: 20%;
   right: 20%;
   padding: 30px;
-  border: 8px solid #141313;
   border-radius: 0;
   top: 0;
-  z-index: 9999999;
+  z-index: 999999999;
   word-wrap: break-word;
   word-break: break-all;
-  box-shadow: 1px 1px 8px 8px #000000;
+  box-shadow: 1px 1px 8px 0px #000000;
 }
 
 #__targetUrl {

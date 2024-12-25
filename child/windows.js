@@ -6,8 +6,8 @@ module.exports = function (child) {
     y2: 70 + 30,
     width: 15,
     width2: 2,
-    height: 84,
-    height2: 72,
+    height: 84 + 30,
+    height2: 72 + 30,
   };
   child.getMainWindow = function () {
     return child.windowList.find((w) => w.customSetting && w.customSetting.windowType == 'main');

@@ -84,7 +84,11 @@ module.exports = function init(parent) {
     path: parent.files_dir + '/html/iframe-view.html',
     parser: 'html css js',
   });
-
+  parent.api.onGET({
+    name: ['/video'],
+    path: parent.files_dir + '/html/video-view.html',
+    parser: 'html css js',
+  });
   parent.api.onGET({
     name: '/error*',
     path: parent.files_dir + '/html/error.html',

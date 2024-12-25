@@ -48,6 +48,7 @@
       privacy: { languages: 'en', connection: {} },
     },
     menu_list: [],
+    video_list : [],
     events: [],
     eventOff: '',
     eventOn: '',

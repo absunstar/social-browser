@@ -31,7 +31,7 @@ function sendToMain(message) {
   SOCIALBROWSER.ipc('[send-render-message]', message);
 }
 
-document.querySelector('#body').addEventListener('mousemove', () => {
+document.querySelector('#body,.footer').addEventListener('mousemove', () => {
   SOCIALBROWSER.clickCurrentTab();
 });
 

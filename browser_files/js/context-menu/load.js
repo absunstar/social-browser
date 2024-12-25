@@ -475,20 +475,151 @@ SOCIALBROWSER.on('$download_item', (e, dl) => {
   }
 });
 
-SOCIALBROWSER.toggleWindowImagesStatus = true;
-SOCIALBROWSER.on('[toggle-window-images]', (e, data) => {
-  SOCIALBROWSER.toggleWindowImagesStatus = !SOCIALBROWSER.toggleWindowImagesStatus;
-  document.querySelectorAll('img').forEach((img) => {
-    if (SOCIALBROWSER.toggleWindowImagesStatus) {
-      img.style.visibility = 'visible';
-    } else {
-      img.style.visibility = 'hidden';
+SOCIALBROWSER.on('[window-action]', (e, data) => {
+  if (data.name == 'toggle-page-images') {
+    SOCIALBROWSER.togglePageImages();
+  } else if (data.name == 'new-window') {
+    SOCIALBROWSER.ipc('[open new popup]', {
+      partition: SOCIALBROWSER.partition,
+      url: document.location.href,
+      referrer: document.location.href,
+      show: true,
+      center: true,
+    });
+  } else if (data.name == 'new-ghost-window') {
+    let ghost = 'x-ghost_' + (new Date().getTime().toString() + Math.random().toString()).replace('.', '');
+    SOCIALBROWSER.ipc('[open new popup]', {
+      alwaysOnTop: true,
+      partition: ghost,
+      user_name: ghost,
+      url: document.location.href,
+      referrer: document.location.href,
+      show: true,
+      iframe: true,
+      center: true,
+    });
+  } else if (data.name == 'new-insecure-window') {
+    SOCIALBROWSER.ipc('[open new popup]', {
+      alwaysOnTop: true,
+      partition: SOCIALBROWSER.partition,
+      url: document.location.href,
+      referrer: document.location.href,
+      security: false,
+      show: true,
+      center: true,
+    });
+  } else if (data.name == 'new-ads-window') {
+    SOCIALBROWSER.ipc('[open new popup]', {
+      partition: SOCIALBROWSER.partition,
+      url: document.location.href,
+      referrer: document.location.href,
+      allowAds: true,
+      allowPopup: true,
+      show: true,
+      center: true,
+    });
+  } else if (data.name == 'play-video') {
+    let video = document.querySelector('video');
+    if (video) {
+      video.play();
     }
-  });
- 
-
-  
+  } else if (data.name == 'pause-video') {
+    let video = document.querySelector('video');
+    if (video) {
+      video.pause();
+    }
+  } else if (data.name == 'skip-video') {
+    let video = document.querySelector('video');
+    if (video) {
+      try {
+        video.currentTime = parseFloat(video.duration);
+        setTimeout(() => {
+          video.dispatchEvent(new Event('ended'));
+        }, 200);
+      } catch (error) {
+        SOCIALBROWSER.log(error);
+      }
+    }
+  } else if (data.name == 'reset-video') {
+    let video = document.querySelector('video');
+    if (video) {
+      try {
+        video.currentTime = 0;
+      } catch (error) {
+        SOCIALBROWSER.log(error);
+      }
+    }
+  } else if (data.name == '+10s-video') {
+    let video = document.querySelector('video');
+    if (video) {
+      try {
+        let newTime = video.currentTime + 10;
+        if (newTime <= video.duration) {
+          video.currentTime = newTime;
+        }
+      } catch (error) {
+        SOCIALBROWSER.log(error);
+      }
+    }
+  }else if (data.name == '+60s-video') {
+    let video = document.querySelector('video');
+    if (video) {
+      try {
+        let newTime = video.currentTime + 60;
+        if (newTime <= video.duration) {
+          video.currentTime = newTime;
+        }
+      } catch (error) {
+        SOCIALBROWSER.log(error);
+      }
+    }
+  } else if (data.name == '-10s-video') {
+    let video = document.querySelector('video');
+    if (video) {
+      try {
+        let newTime = video.currentTime - 10;
+        if (newTime >= 0) {
+          video.currentTime = newTime;
+        }
+      } catch (error) {
+        SOCIALBROWSER.log(error);
+      }
+    }
+  }else if (data.name == '-60s-video') {
+    let video = document.querySelector('video');
+    if (video) {
+      try {
+        let newTime = video.currentTime - 60;
+        if (newTime >= 0) {
+          video.currentTime = newTime;
+        }
+      } catch (error) {
+        SOCIALBROWSER.log(error);
+      }
+    }
+  } else if (data.name == 'toggle-page-images') {
+    SOCIALBROWSER.togglePageImages();
+  } else if (data.name == 'toggle-page-images') {
+    SOCIALBROWSER.togglePageImages();
+  } else if (data.name == 'toggle-page-images') {
+    SOCIALBROWSER.togglePageImages();
+  }
 });
+
+SOCIALBROWSER.togglePageImages = function () {
+  alert('Hide / Show - Page Images', 500);
+  SOCIALBROWSER.pageImagesVisable = !SOCIALBROWSER.pageImagesVisable;
+  clearInterval(SOCIALBROWSER.pageImagesVisableInterval);
+  SOCIALBROWSER.pageImagesVisableInterval = setInterval(() => {
+    document.querySelectorAll('img').forEach((img) => {
+      if (SOCIALBROWSER.pageImagesVisable) {
+        img.style.visibility = 'hidden';
+      } else {
+        img.style.visibility = 'visible';
+      }
+    });
+  }, 500);
+};
 
 SOCIALBROWSER.toggleWindowEditStatus = true;
 SOCIALBROWSER.on('[toggle-window-edit]', (e, data) => {
@@ -557,11 +688,32 @@ SOCIALBROWSER.onShare((data) => {
   }
 });
 
+SOCIALBROWSER.onMessage((message) => {
+  if (message.name == 'new-video-exists') {
+    let index = SOCIALBROWSER.video_list.findIndex((v0) => v0.src == message.src);
+    if (index === -1) {
+      SOCIALBROWSER.video_list.push({
+        src: message.src,
+      });
+    }
+  }
+});
+
 SOCIALBROWSER.onLoad(() => {
   if (!SOCIALBROWSER.jqueryLoaded && SOCIALBROWSER.var.blocking.javascript.allow_jquery && !window.jQuery) {
     SOCIALBROWSER.jqueryLoaded = true;
     window.$ = window.jQuery = SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/jquery.js');
   }
+  setInterval(() => {
+    document.querySelectorAll('video , video source').forEach((node) => {
+      if (node.src) {
+        SOCIALBROWSER.sendMessage({
+          name: 'new-video-exists',
+          src: node.src,
+        });
+      }
+    });
+  }, 1000);
 });
 
 navigator.clipboard = { writeText: SOCIALBROWSER.copy };
@@ -569,3 +721,7 @@ navigator.clipboard = { writeText: SOCIALBROWSER.copy };
 if (SOCIALBROWSER.customSetting.eval) {
   SOCIALBROWSER.eval(SOCIALBROWSER.customSetting.eval);
 }
+
+// URL.createObjectURL = function (data) {
+//   console.log(data);
+// };
