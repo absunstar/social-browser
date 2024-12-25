@@ -491,6 +491,7 @@ SOCIALBROWSER.showUserProxyMenu = function () {
 
   SOCIALBROWSER.menuList.push({
     label: 'Stop Proxy',
+    iconURL: 'http://127.0.0.1:60080/images/stop.png',
     click: () => {
       SOCIALBROWSER.ws({ type: '[change-user-proxy]', partition: SOCIALBROWSER.currentTabInfo.partition, proxy: null });
       setTimeout(() => {
