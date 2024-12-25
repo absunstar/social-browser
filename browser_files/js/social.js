@@ -25,14 +25,19 @@ function ipc(name, message) {
   message.windowID = message.windowID || SOCIALBROWSER.remote.getCurrentWindow().id;
 
   SOCIALBROWSER.ipc(name, message);
+  if (name == '[window-action]') {
+    SOCIALBROWSER.clickCurrentTab();
+  }
 }
 
 function sendToMain(message) {
   SOCIALBROWSER.ipc('[send-render-message]', message);
 }
 
-document.querySelector('#body,.footer').addEventListener('mousemove', () => {
-  SOCIALBROWSER.clickCurrentTab();
+document.querySelectorAll('#body').forEach((el) => {
+  el.addEventListener('mousemove', () => {
+    SOCIALBROWSER.clickCurrentTab();
+  });
 });
 
 function goURL(e) {
@@ -182,19 +187,19 @@ document.addEventListener(
       }
     } else if (e.keyCode == 107 /*+*/) {
       if (e.ctrlKey == true) {
-        ipc('[window-zoom+]');
+        ipc('[window-action]' , {name : 'window-zoom+'});
       }
     } else if (e.keyCode == 109 /*-*/) {
       if (e.ctrlKey == true) {
-        ipc('[window-zoom-]');
+        ipc('[window-action]' , {name : 'window-zoom-'});
       }
     } else if (e.keyCode == 48 /*0*/) {
       if (e.ctrlKey == true) {
-        ipc('[window-zoom]');
+        ipc('[window-action]' , {name : 'window-zoom'});
       }
     } else if (e.keyCode == 49 /*1*/) {
       if (e.ctrlKey == true) {
-        ipc('[toggle-window-audio]');
+        ipc('[window-action]', { name: 'toggle-window-audio' });
       }
     } else if (e.keyCode == 74 /*j*/) {
       if (e.ctrlKey == true) {
@@ -389,7 +394,7 @@ function showSettingMenu() {
     label: 'Audio ON / OFF',
     iconURL: 'http://127.0.0.1:60080/images/audio.png',
     accelerator: 'CommandOrControl+1',
-    click: () => ipc('[toggle-window-audio]'),
+    click: () => ipc('[window-action]', { name: 'toggle-window-audio' }),
   });
 
   SOCIALBROWSER.menuList.push({

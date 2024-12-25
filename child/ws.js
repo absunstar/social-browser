@@ -347,23 +347,34 @@ module.exports = function (child) {
               }
             }
           });
-        } else if (message.type == '[toggle-window-audio]') {
-          child.windowList.forEach((w) => {
-            if (w.window && !w.window.isDestroyed() && w.customSetting.tabID == message.data.tabID && w.customSetting.windowType == 'view') {
-              w.window.webContents.setAudioMuted(!w.window.webContents.audioMuted);
-              child.updateTab(w.window);
-            }
-          });
         } else if (message.type == '[window-action]') {
           child.windowList.forEach((w) => {
             if (w.window && !w.window.isDestroyed() && w.customSetting.tabID == message.data.tabID && w.customSetting.windowType == 'view') {
-              w.window.webContents.send('[window-action]', message.data);
-              w.window.webContents.mainFrame.frames.forEach((f) => {
-                f.send('[window-action]', message.data);
-                f.frames.forEach((f2) => {
-                  f2.send('[window-action]', message.data);
-                });
-              });
+              if (message.data.name == 'toggle-window-audio') {
+                w.window.webContents.setAudioMuted(!w.window.webContents.audioMuted);
+                child.updateTab(w.window);
+              } else if (message.data.name == 'window-zoom-') {
+                if (w.window.webContents.zoomFactor - 0.3 > 0.0) {
+                  w.window.webContents.zoomFactor -= 0.2;
+                  w.window.show();
+                }
+              } else if (message.data.name == 'window-zoom+') {
+                w.window.webContents.zoomFactor += 0.2;
+                w.window.show();
+              } else if (message.data.name == 'window-zoom') {
+                w.window.webContents.zoomFactor = 1;
+                w.window.show();
+              } else {
+                w.window.webContents.send('[window-action]', message.data);
+                if (message.data.levels) {
+                  w.window.webContents.mainFrame.frames.forEach((f) => {
+                    f.send('[window-action]', message.data);
+                    f.frames.forEach((f2) => {
+                      f2.send('[window-action]', message.data);
+                    });
+                  });
+                }
+              }
             }
           });
         } else if (message.type == '[toggle-window-edit]') {

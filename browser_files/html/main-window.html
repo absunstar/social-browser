@@ -108,32 +108,20 @@
         <a title="Bookmarks" class="bookmarks" onclick="showBookmarksMenu();">
           <i class="fa fa-star"></i>
         </a>
-        <a title="Show Setting" id="setting" onclick="showSettingMenu();">
-          <i class="fa fa-bars"></i>
-        </a>
-        <a title="Mute Page Audio" class="Page-audio" onclick="ipc('[toggle-window-audio]')">
-          <i class="fa fa-volume-up"></i>
-        </a>
 
-        <a class="xzoom" title="Zoom Out" onclick="ipc('[window-zoom-]')">
-          <i class="fa fa-search-minus"></i>
-        </a>
-        <a class="xzoom" title="Zoom In" onclick="ipc('[window-zoom+]')">
-          <i class="fa fa-search-plus"></i>
-        </a>
+        <a class="space"> | </a>
 
-        <a class="hidden" title="Downloads" onclick="showDownloads()">
+        <a title="Downloads" onclick="showDownloads()">
           <i class="fa fa-download"></i>
         </a>
 
-        <a title="Hide / Show - Images" onclick="ipc('[window-action]' , {name : 'toggle-page-images'})">
-          <i class="fa-regular fa-images"></i>
-        </a>
-        <a title="Edit Page Content" onclick="ipc('[toggle-window-edit]')">
-          <i class="fa-solid fa-pen-to-square"></i>
-        </a>
+        <a class="space"> | </a>
         <a class="developer-tools" title="Developer Tools" onclick="ipc('[show-window-dev-tools]')">
           <i class="fa fa-bug"></i>
+        </a>
+
+        <a title="Show Setting" id="setting" onclick="showSettingMenu();">
+          <i class="fa fa-bars"></i>
         </a>
       </div>
     </div>
@@ -142,7 +130,7 @@
 
     <div class="footer">
       <div class="window-actions">
-        <a title="open in New Window" onclick="ipc('[window-action]' , {name : 'new-window'})">
+        <a title="open in New Window" onclick="ipc('[window-action]' , {name : 'new-window' })">
           <i class="fa-regular fa-window-restore"></i>
         </a>
 
@@ -152,38 +140,64 @@
         <a title="open in Allow Ads Window" onclick="ipc('[window-action]' , {name : 'new-ads-window'})">
           <i class="fa-solid fa-rectangle-ad"></i>
         </a>
+
         <a class="space"> | </a>
         <a title="open in Ghost Window" onclick="ipc('[window-action]' , {name : 'new-ghost-window'})">
           <i class="fa-solid fa-ghost"></i>
         </a>
+
         <a class="space"> | </a>
-        <a title="Re-Play" onclick="ipc('[window-action]' , {name : 'reset-video'})">
+
+        <a title="Hide / Show - Images" onclick="ipc('[window-action]' , {name : 'toggle-page-images'})">
+          <i class="fa-regular fa-images"></i>
+        </a>
+        <a title="Edit Page Content" onclick="ipc('[toggle-window-edit]')">
+          <i class="fa-solid fa-pen-to-square"></i>
+        </a>
+
+        <a class="space"> | </a>
+        <a class="xzoom" title="Zoom Out" onclick="ipc('[window-action]' , {name : 'window-zoom-'})">
+          <i class="fa fa-search-minus"></i>
+        </a>
+        <a class="xzoom" title="Zoom In" onclick="ipc('[window-action]' , {name : 'window-zoom+'})">
+          <i class="fa fa-search-plus"></i>
+        </a>
+
+        <a class="space"> | </a>
+
+        <a title="Mute Page Audio" class="Page-audio" onclick="ipc('[window-action]' , {name : 'toggle-window-audio'})">
+          <i class="fa fa-volume-up"></i>
+        </a>
+
+        <a class="space"> | </a>
+
+        <a title="Re-Play" onclick="ipc('[window-action]' , {name : 'reset-video' , levels : true})">
           <i class="fa-solid fa-backward-step"></i>
         </a>
-        <a title="-60 sec" onclick="ipc('[window-action]' , {name : '-60s-video'})">
+        <a title="-60 sec" onclick="ipc('[window-action]' , {name : '-60s-video', levels : true})">
           <i class="fa-solid fa-backward-fast"></i>
         </a>
-        <a title="-10 sec" onclick="ipc('[window-action]' , {name : '-10s-video'})">
+        <a title="-10 sec" onclick="ipc('[window-action]' , {name : '-10s-video', levels : true})">
           <i class="fa-solid fa-backward"></i>
         </a>
-        <a title="Play video" onclick="ipc('[window-action]' , {name : 'play-video'})">
+        <a title="Play video" onclick="ipc('[window-action]' , {name : 'play-video', levels : true})">
           <i class="fa-solid fa-play"></i>
         </a>
-        <a title="Pause Video" onclick="ipc('[window-action]' , {name : 'pause-video'})">
+        <a title="Pause Video" onclick="ipc('[window-action]' , {name : 'pause-video', levels : true})">
           <i class="fa-solid fa-pause"></i>
         </a>
-        <a title="+10 sec" onclick="ipc('[window-action]' , {name : '+10s-video'})">
+        <a title="+10 sec" onclick="ipc('[window-action]' , {name : '+10s-video', levels : true})">
           <i class="fa-solid fa-forward"></i>
         </a>
-        <a title="+60 sec" onclick="ipc('[window-action]' , {name : '+60s-video'})">
+        <a title="+60 sec" onclick="ipc('[window-action]' , {name : '+60s-video', levels : true})">
           <i class="fa-solid fa-forward-fast"></i>
         </a>
-        <a title="Skip Video" onclick="ipc('[window-action]' , {name : 'skip-video'})">
+        <a title="Skip Video" onclick="ipc('[window-action]' , {name : 'skip-video', levels : true})">
           <i class="fa-solid fa-forward-step"></i>
         </a>
         <a class="space"> | </a>
-        <a title="Reload All Page Files" onclick="ipc('[window-action]' , {name : 'toggle-page-images'})">
-          <i class="fa-solid fa-globe"></i>
+        <a title="Change User Proxy" onclick="ipc('[window-action]' , {name : 'toggle-page-images'})">
+          <i class="fa-solid fa-location-dot"></i>
         </a>
         <a title="Reload All Page Files" onclick="ipc('[window-action]' , {name : 'toggle-page-images'})">
           <i class="fa-solid fa-globe"></i>
@@ -205,6 +219,7 @@
         </a>
       </div>
     </div>
+
     <script src="http://127.0.0.1:60080/js/an.min.js"></script>
 
     <script>

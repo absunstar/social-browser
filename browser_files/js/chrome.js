@@ -105,19 +105,19 @@ document.addEventListener(
       }
     } else if (e.keyCode == 107 /*+*/) {
       if (e.ctrlKey == true) {
-        ipc('[window-zoom+]');
+        ipc('[window-action]' , {name : 'window-zoom+'});
       }
     } else if (e.keyCode == 109 /*-*/) {
       if (e.ctrlKey == true) {
-        ipc('[window-zoom-]');
+        ipc('[window-action]' , {name : 'window-zoom-'});
       }
     } else if (e.keyCode == 48 /*0*/) {
       if (e.ctrlKey == true) {
-        ipc('[window-zoom]');
+        ipc('[window-action]' , {name : 'window-zoom'});
       }
     } else if (e.keyCode == 49 /*1*/) {
       if (e.ctrlKey == true) {
-        ipc('[toggle-window-audio]');
+        ipc('[window-action]' , {name : 'toggle-window-audio'})
       }
     } else if (e.keyCode == 74 /*j*/) {
       if (e.ctrlKey == true) {
@@ -346,7 +346,7 @@ function showSettingMenu() {
   SOCIALBROWSER.menuList.push({
     label: 'Audio ON / OFF',
     accelerator: 'CommandOrControl+1',
-    click: () => ipc('[toggle-window-audio]'),
+    click: () => ipc('[window-action]' , {name : 'toggle-window-audio'}),
   });
 
   SOCIALBROWSER.menuList.push({

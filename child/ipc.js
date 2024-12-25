@@ -629,20 +629,11 @@ module.exports = function init(child) {
     }
   });
 
-  child.ipcMain.handle('[toggle-window-audio]', (event, data) => {
-    if (data.tabID && data.childID && data.windowID) {
-      child.sendMessage({ type: '[toggle-window-audio]', data: data });
-    } else if (data.windowID) {
-      let win = child.electron.BrowserWindow.fromId(data.windowID);
-      win.webContents.setAudioMuted(!win.webContents.audioMuted);
-      child.updateTab(win);
-    }
-  });
+
 
   child.ipcMain.handle('[window-action]', (event, data) => {
     if (data.tabID && data.childID && data.windowID) {
       child.sendMessage({ type: '[window-action]', data: data });
-      
     }
   });
 

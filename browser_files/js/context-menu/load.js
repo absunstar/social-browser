@@ -607,7 +607,6 @@ SOCIALBROWSER.on('[window-action]', (e, data) => {
 });
 
 SOCIALBROWSER.togglePageImages = function () {
-  alert('Hide / Show - Page Images', 500);
   SOCIALBROWSER.pageImagesVisable = !SOCIALBROWSER.pageImagesVisable;
   clearInterval(SOCIALBROWSER.pageImagesVisableInterval);
   SOCIALBROWSER.pageImagesVisableInterval = setInterval(() => {
