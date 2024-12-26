@@ -25,7 +25,7 @@ function ipc(name, message) {
   message.windowID = message.windowID || SOCIALBROWSER.remote.getCurrentWindow().id;
 
   SOCIALBROWSER.ipc(name, message);
-  if (name == '[window-action]') {
+  if (name == '[window-action]' && !message.name.like('*screen*')) {
     SOCIALBROWSER.clickCurrentTab();
   }
 }
@@ -435,8 +435,7 @@ function showSettingMenu() {
         iconURL: m2.iconURL,
         submenu: m2.submenu?.map((m3) => ({ label: m3.label, type: m3.type, sublabel: m3.sublabel, visible: m3.visible, icoiconURLn: m3.iconURL })),
       })),
-    })),
-    windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
+    }))
   });
 }
 
@@ -480,8 +479,7 @@ function showBookmarksMenu() {
         iconURL: m2.iconURL,
         submenu: m2.submenu?.map((m3) => ({ label: m3.label, type: m3.type, sublabel: m3.sublabel, visible: m3.visible, iconURL: m3.iconURL })),
       })),
-    })),
-    windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
+    }))
   });
 }
 
@@ -530,8 +528,7 @@ SOCIALBROWSER.showUserProxyMenu = function () {
         iconURL: m2.iconURL,
         submenu: m2.submenu?.map((m3) => ({ label: m3.label, type: m3.type, sublabel: m3.sublabel, visible: m3.visible, iconURL: m3.iconURL })),
       })),
-    })),
-    windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
+    }))
   });
 };
 

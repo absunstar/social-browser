@@ -5,13 +5,12 @@ if ((policy = true)) {
     createScriptURL: (string) => string,
     createScript: (string) => string,
   };
-  if (window.trustedTypes && window.trustedTypes.createPolicy) {
-    SOCIALBROWSER.policy = window.trustedTypes.createPolicy('social', {
-      createHTML: (string) => string,
-      createScriptURL: (string) => string,
-      createScript: (string) => string,
-    });
-  }
+
+  SOCIALBROWSER.policy = window.trustedTypes.createPolicy('social', {
+    createHTML: (string) => string,
+    createScriptURL: (string) => string,
+    createScript: (string) => string,
+  });
 
   // window.trustedTypes.createPolicy('default', {
   //   createHTML: (string) => string,
@@ -126,8 +125,8 @@ SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/doms.js');
 
 SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/nodes.js');
 SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/videos.js');
-SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/youtube.js');
-SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/facebook.com.js');
+// SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/youtube.js');
+// SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/facebook.com.js');
 
 SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/safty.js');
 SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/adsManager.js');
@@ -508,6 +507,16 @@ SOCIALBROWSER.on('[window-action]', (e, data) => {
       show: true,
       center: true,
     });
+  } else if (data.name == 'new-sandbox-window') {
+    SOCIALBROWSER.ipc('[open new popup]', {
+      alwaysOnTop: true,
+      partition: SOCIALBROWSER.partition,
+      url: document.location.href,
+      referrer: document.location.href,
+      sandbox: true,
+      show: true,
+      center: true,
+    });
   } else if (data.name == 'new-ads-window') {
     SOCIALBROWSER.ipc('[open new popup]', {
       partition: SOCIALBROWSER.partition,
@@ -561,7 +570,7 @@ SOCIALBROWSER.on('[window-action]', (e, data) => {
         SOCIALBROWSER.log(error);
       }
     }
-  }else if (data.name == '+60s-video') {
+  } else if (data.name == '+60s-video') {
     let video = document.querySelector('video');
     if (video) {
       try {
@@ -585,7 +594,7 @@ SOCIALBROWSER.on('[window-action]', (e, data) => {
         SOCIALBROWSER.log(error);
       }
     }
-  }else if (data.name == '-60s-video') {
+  } else if (data.name == '-60s-video') {
     let video = document.querySelector('video');
     if (video) {
       try {
@@ -595,6 +604,22 @@ SOCIALBROWSER.on('[window-action]', (e, data) => {
         }
       } catch (error) {
         SOCIALBROWSER.log(error);
+      }
+    }
+  } else if (data.name == 'full-screen-video') {
+    let video = document.querySelector('.jwplayer , video');
+    if (video) {
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      } else {
+        if (document.fullscreenEnabled) {
+          video
+            .requestFullscreen()
+            .then(() => {
+              video.setAttribute('controls', 'controls');
+            })
+            .catch((err) => console.log(err));
+        }
       }
     }
   } else if (data.name == 'toggle-page-images') {

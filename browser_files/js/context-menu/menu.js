@@ -1753,9 +1753,7 @@ SOCIALBROWSER.contextmenu = function (e) {
           iconURL: m2.iconURL,
           submenu: m2.submenu?.map((m3) => ({ label: m3.label, type: m3.type, sublabel: m3.sublabel, visible: m3.visible, iconURL: m3.iconURL })),
         })),
-      })),
-      windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
-      routingId: SOCIALBROWSER.electron.webFrame.routingId,
+      }))
     });
   } catch (error) {
     SOCIALBROWSER.log(error);

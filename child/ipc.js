@@ -379,9 +379,29 @@ module.exports = function init(child) {
 
   child.ipcMain.handle('[show-menu]', (e, data) => {
     let win = child.electron.BrowserWindow.fromId(data.windowID);
-    let contents = win.webContents;
-    if (data.routingId) {
-      contents = win.webContents.mainFrame.frames.find((f) => f.routingId == data.routingId) || contents;
+    let contents = null;
+    if (data.processId && data.routingId) {
+      contents = child.electron.webFrameMain.fromId(data.processId, data.routingId);
+    } else {
+      contents = win.webContents;
+    }
+    if (!contents) {
+      win.webContents.mainFrame.frames.forEach((f1) => {
+        if (f1.routingId == data.routingId) {
+          contents = f1;
+        }
+        f1.frames.forEach((f2) => {
+          if (f2.routingId == data.routingId) {
+            contents = f2;
+          }
+          f2.frames.forEach((f3) => {
+            if (f3.routingId == data.routingId) {
+              contents = f3;
+            }
+          });
+        });
+      });
+      contents = contents || win.webContents;
     }
     data.list.forEach((m, i) => {
       m.click = function () {

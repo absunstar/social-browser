@@ -6,18 +6,16 @@ SOCIALBROWSER.log('.... [ Browser Video script activated ] .... ' + document.loc
 
 SOCIALBROWSER.skipAdsVideosRunning = false;
 
-
 let color_list = ['rgb(236, 197, 70)', 'rgb(255, 253, 10)', 'rgb(255, 204, 0)', 'rgb(249, 211, 0)', 'rgb(244, 232, 77)'];
 let skip_buttons = '.skip_button,#skip_button_bravoplayer,.videoad-skip,.skippable,.xplayer-ads-block__skip';
 let ads_src_list = '*cdn.cloudfrale.com*';
 
 function skipAdsVideos() {
   if (SOCIALBROWSER.var.blocking.core.skip_video_ads) {
-    console.log('skipAdsVideos()  .....................');
-
     let ads = false;
     let videos = document.querySelectorAll('video');
     if (videos.length > 0) {
+      console.log('skipAdsVideos()  .....................');
       // document.querySelectorAll('*').forEach((el) => {
       //   if (el.className && typeof el.className == 'string' && color_list.includes(getComputedStyle(el)['backgroundColor'])) {
       //     ads = true;
@@ -25,6 +23,7 @@ function skipAdsVideos() {
       // });
       document.querySelectorAll(skip_buttons).forEach((b) => {
         b.click();
+        alert('<b> Auto Skiping Ads Video </b>  <small><i> Changing Form Setting </i></small>', 2000);
       });
 
       videos.forEach((v) => {
@@ -61,5 +60,4 @@ function skipAdsVideos() {
 
 SOCIALBROWSER.onLoad(() => {
   skipAdsVideos();
- 
 });

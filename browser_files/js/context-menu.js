@@ -154,6 +154,11 @@
 
   SOCIALBROWSER.invoke = SOCIALBROWSER.ipc = function (channel, value = {}) {
     value.parentSetting = SOCIALBROWSER.customSetting;
+
+    value.windowID = SOCIALBROWSER.remote.getCurrentWindow().id;
+    value.processId =SOCIALBROWSER.remote.getCurrentWindow().webContents.getProcessId();
+    value.routingId = SOCIALBROWSER.electron.webFrame.routingId;
+
     if (value.parentSetting && value.parentSetting.parentSetting) {
       value.parentSetting.parentSetting = undefined;
     }

@@ -203,6 +203,7 @@ module.exports = function (child) {
 
       ss.webRequest.onBeforeRequest(filter, function (details, callback) {
         let url = details.url.toLowerCase();
+
         let source_url = '';
         details.requestHeaders = details.requestHeaders || {};
 
@@ -284,8 +285,9 @@ module.exports = function (child) {
           return;
         }
 
+        // return js will crach if needed request not js
         if (!child.isAllowURL(url)) {
-          if (url.like('*.js*|*/js*') || details.resourceType == 'script') {
+          if (url.like('*.js|*/js/*') || details.resourceType == 'script') {
             let query = '';
             if (url.split('?')[1]) {
               query += url.split('?')[1] + '&x-url=' + url.split('?')[0];
@@ -558,6 +560,12 @@ module.exports = function (child) {
             });
           }
         });
+
+        // if (url.like('*youtube.com*')) {
+        //   console.log(details.responseHeaders);
+        //   delete details.responseHeaders['content-security-policy'];
+        //   delete details.responseHeaders['x-frame-options'];
+        // }
 
         if (child.parent.var.blocking.white_list.some((item) => url.like(item.url))) {
           callback({

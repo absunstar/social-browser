@@ -137,6 +137,7 @@
         <a title="open in Insecure Window" onclick="ipc('[window-action]' , {name : 'new-insecure-window'})">
           <i class="fa-solid fa-window-restore"></i>
         </a>
+
         <a title="open in Allow Ads Window" onclick="ipc('[window-action]' , {name : 'new-ads-window'})">
           <i class="fa-solid fa-rectangle-ad"></i>
         </a>
@@ -194,6 +195,9 @@
         </a>
         <a title="Skip Video" onclick="ipc('[window-action]' , {name : 'skip-video', levels : true})">
           <i class="fa-solid fa-forward-step"></i>
+        </a>
+        <a title="Full Screen Video" onclick="ipc('[window-action]' , {name : 'full-screen-video', levels : true})">
+          <i class="fa-solid fa-expand"></i>
         </a>
         <a class="space"> | </a>
         <a title="Change User Proxy" onclick="SOCIALBROWSER.showUserProxyMenu();">

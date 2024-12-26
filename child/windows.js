@@ -312,6 +312,13 @@ module.exports = function (child) {
       defaultSetting.webPreferences.allowRunningInsecureContent = true;
     }
 
+    if (setting.sandbox === true) {
+      defaultSetting.webPreferences.sandbox = true;
+      defaultSetting.webPreferences.contextIsolation = true;
+
+      defaultSetting.webPreferences.preload = undefined;
+    }
+
     if (setting.security === false) {
       defaultSetting.webPreferences.webSecurity = false;
       defaultSetting.webPreferences.allowRunningInsecureContent = true;
@@ -895,12 +902,12 @@ module.exports = function (child) {
 
     win.on('unresponsive', async () => {
       child.log('window unresponsive');
-      setTimeout(() => {
-        if (win && !win.isDestroyed()) {
-          win.webContents.forcefullyCrashRenderer();
-          win.webContents.reload();
-        }
-      }, 1000 * 5);
+      // setTimeout(() => {
+      //   if (win && !win.isDestroyed()) {
+      //     win.webContents.forcefullyCrashRenderer();
+      //     win.webContents.reload();
+      //   }
+      // }, 1000 * 5);
 
       // if (win && !win.isDestroyed()) {
 
@@ -919,17 +926,56 @@ module.exports = function (child) {
 
     win.webContents.on('render-process-gone', (e, details) => {
       child.log('render-process-gone');
-      setTimeout(() => {
-        if (win && !win.isDestroyed()) {
-          win.webContents.forcefullyCrashRenderer();
-          win.webContents.reload();
-        }
-      }, 1000 * 5);
+      // setTimeout(() => {
+      //   if (win && !win.isDestroyed()) {
+      //     win.webContents.forcefullyCrashRenderer();
+      //     win.webContents.reload();
+      //   }
+      // }, 1000 * 5);
     });
+    win.webContents.on('did-start-navigation', (e) => {
+      console.log('did-start-navigation : ' + e.url);
+      let url = e.url;
+      if (url.like('https://www.youtube.com/watch*')) {
+        e.preventDefault();
 
+        // let index = win.webContents.navigationHistory.length - 1;
+        // win.webContents.navigationHistory.goToIndex(index || 1);
+
+        url = 'https://www.youtube.com/embed/' + url.split('=')[1].split('&')[0];
+
+        child.createNewWindow({
+          windowType: 'youtube',
+          title: 'YouTube',
+          url: url,
+          partition: win.customSetting.partition,
+          user_name: win.customSetting.user_name,
+          referrer: win.getURL(),
+        });
+
+        return;
+      }
+    });
     win.webContents.on('will-redirect', (e) => {
       let url = e.url;
       child.log('will-redirect : ', url);
+
+      if (url.like('https://www.youtube.com/watch*')) {
+        e.preventDefault();
+
+        url = 'https://www.youtube.com/embed/' + url.split('=')[1].split('&')[0];
+
+        child.createNewWindow({
+          windowType: 'youtube',
+          title: 'YouTube',
+          url: url,
+          partition: win.customSetting.partition,
+          user_name: win.customSetting.user_name,
+          referrer: win.getURL(),
+        });
+
+        return;
+      }
 
       if (url.like('*accounts.google.com*') && e.isMainFrame && win.customSetting.iframe) {
         e.preventDefault();
@@ -975,6 +1021,8 @@ module.exports = function (child) {
       }
     });
     win.webContents.on('will-navigate', (details) => {
+      child.log('will-navigate : ' + details.url);
+
       win.customSetting.title = details.url;
       win.customSetting.iconURL = win.customSetting.loading_icon;
       child.updateTab(win);
@@ -982,6 +1030,25 @@ module.exports = function (child) {
 
     win.webContents.on('will-frame-navigate', (details) => {
       child.log('will-frame-navigate : ' + details.url);
+
+      let url = details.url;
+
+      if (url.like('https://www.youtube.com/watch*')) {
+        details.preventDefault();
+
+        url = 'https://www.youtube.com/embed/' + url.split('=')[1].split('&')[0];
+
+        child.createNewWindow({
+          windowType: 'youtube',
+          title: 'YouTube',
+          url: url,
+          partition: win.customSetting.partition,
+          user_name: win.customSetting.user_name,
+          referrer: win.getURL(),
+        });
+
+        return;
+      }
 
       if (details.url.like('ftp*|mail*')) {
         details.preventDefault();
@@ -1065,7 +1132,7 @@ module.exports = function (child) {
             url: url,
             partition: win.customSetting.partition,
             user_name: win.customSetting.user_name,
-            referrer: referrer ?? win.getURL(),
+            referrer: win.getURL(),
           });
 
           return { action: 'deny' };
@@ -1076,7 +1143,7 @@ module.exports = function (child) {
             url: url,
             partition: win.customSetting.partition,
             user_name: win.customSetting.user_name,
-            referrer: referrer ?? win.getURL(),
+            referrer: win.getURL(),
           });
           return { action: 'deny' };
         } else if (url.like('https://www.youtube.com/shorts*')) {
@@ -1090,7 +1157,7 @@ module.exports = function (child) {
             show: true,
             partition: win.customSetting.partition,
             user_name: win.customSetting.user_name,
-            referrer: referrer ?? win.getURL(),
+            referrer: win.getURL(),
           });
           return { action: 'deny' };
         }
@@ -1139,7 +1206,7 @@ module.exports = function (child) {
               data: {
                 ...win.customSetting,
                 url: url,
-                referrer: referrer ?? win.getURL(),
+                referrer: win.getURL(),
               },
             });
           } else {
@@ -1150,7 +1217,7 @@ module.exports = function (child) {
               modal: true,
               parent: win,
               url: url,
-              referrer: referrer ?? win.getURL(),
+              referrer: win.getURL(),
             });
           }
         } else {
