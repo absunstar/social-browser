@@ -196,14 +196,22 @@
         <a title="Skip Video" onclick="ipc('[window-action]' , {name : 'skip-video', levels : true})">
           <i class="fa-solid fa-forward-step"></i>
         </a>
-        <a title="Full Screen Video" onclick="ipc('[window-action]' , {name : 'full-screen-video', levels : true})">
-          <i class="fa-solid fa-expand"></i>
+        <a title="Show Video Only" onclick="ipc('[window-action]' , {name : 'show-video-only', levels : true})">
+          <i class="fa-solid fa-eye"></i>
         </a>
         <a class="space"> | </a>
         <a title="Change User Proxy" onclick="SOCIALBROWSER.showUserProxyMenu();">
           <i class="fa-solid fa-location-dot"></i>
         </a>
+        <a title="Free Social Tools" onclick="SOCIALBROWSER.showSocialTools();">
+          <i class="fa-solid fa-toolbox"></i>
+        </a>
+        <a title="Social Temp Mails" onclick="SOCIALBROWSER.showTempMails();">
+          <i class="fa-solid fa-at"></i>
+        </a>
+        
         <a class="space"> | </a>
+       
       </div>
     </div>
 

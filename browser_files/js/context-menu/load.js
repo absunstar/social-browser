@@ -607,7 +607,7 @@ SOCIALBROWSER.on('[window-action]', (e, data) => {
       }
     }
   } else if (data.name == 'full-screen-video') {
-    let video = document.querySelector('.jwplayer , video');
+    let video = document.querySelector('#vplayer:has(video) , .jwplayer:has(video) , .player:has(video)  , video');
     if (video) {
       if (document.fullscreenElement) {
         document.exitFullscreen();
@@ -616,14 +616,25 @@ SOCIALBROWSER.on('[window-action]', (e, data) => {
           video
             .requestFullscreen()
             .then(() => {
-              video.setAttribute('controls', 'controls');
+              if (video.tagName == 'VIDEO') {
+                video.setAttribute('controls', 'controls');
+              }
             })
             .catch((err) => console.log(err));
         }
       }
     }
-  } else if (data.name == 'toggle-page-images') {
-    SOCIALBROWSER.togglePageImages();
+  } else if (data.name == 'show-video-only') {
+    if (document.querySelector('video[src*="//"]')) {
+      document.querySelectorAll(':not(:has(video[src*="//"]))').forEach((el) => {
+        if (!el.tagName.like('*video*|*head*|*script*|*style*|*meta*|*link*|*source*')) {
+          el.remove();
+        }
+        if (el.tagName == 'VIDEO') {
+          el.setAttribute('controls', 'controls');
+        }
+      });
+    }
   } else if (data.name == 'toggle-page-images') {
     SOCIALBROWSER.togglePageImages();
   } else if (data.name == 'toggle-page-images') {

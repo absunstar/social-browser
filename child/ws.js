@@ -371,6 +371,12 @@ module.exports = function (child) {
                     f.send('[window-action]', message.data);
                     f.frames.forEach((f2) => {
                       f2.send('[window-action]', message.data);
+                      f2.frames.forEach((f3) => {
+                        f3.send('[window-action]', message.data);
+                        f3.frames.forEach((f4) => {
+                          f4.send('[window-action]', message.data);
+                        });
+                      });
                     });
                   });
                 }

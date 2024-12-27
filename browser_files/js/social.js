@@ -15,15 +15,15 @@ const { Menu, MenuItem } = SOCIALBROWSER.remote;
 
 function ipc(name, message) {
   message = message || {};
-  message.tabID = message.tabID || currentTabId;
-  message.url = message.url || $('#' + message.tabID).attr('url');
-  message.title = message.title || $('#' + message.tabID).attr('title');
-  message.iconURL = message.iconURL || $('#' + message.tabID).attr('iconURL');
-  message.windowID = message.windowID || $('#' + message.tabID).attr('windowID');
-  message.childID = message.childID || $('#' + message.tabID).attr('childProcessID');
-  message.mainWindowID = message.mainWindowID || $('#' + message.tabID).attr('mainWindowID');
-  message.windowID = message.windowID || SOCIALBROWSER.remote.getCurrentWindow().id;
+  message.tabID = message.tabID || SOCIALBROWSER.currentTabInfo.id;
+  message.url = message.url || SOCIALBROWSER.currentTabInfo.url;
+  message.title = message.title || SOCIALBROWSER.currentTabInfo.title;
+  message.iconURL = message.iconURL || SOCIALBROWSER.currentTabInfo.iconURL;
+  message.windowID = message.windowID || SOCIALBROWSER.currentTabInfo.windowID;
+  message.childID = message.childID || SOCIALBROWSER.currentTabInfo.childProcessID;
+  message.mainWindowID = message.mainWindowID || SOCIALBROWSER.currentTabInfo.mainWindowID;
 
+  console.log(message);
   SOCIALBROWSER.ipc(name, message);
   if (name == '[window-action]' && !message.name.like('*screen*')) {
     SOCIALBROWSER.clickCurrentTab();
@@ -435,7 +435,7 @@ function showSettingMenu() {
         iconURL: m2.iconURL,
         submenu: m2.submenu?.map((m3) => ({ label: m3.label, type: m3.type, sublabel: m3.sublabel, visible: m3.visible, icoiconURLn: m3.iconURL })),
       })),
-    }))
+    })),
   });
 }
 
@@ -479,9 +479,31 @@ function showBookmarksMenu() {
         iconURL: m2.iconURL,
         submenu: m2.submenu?.map((m3) => ({ label: m3.label, type: m3.type, sublabel: m3.sublabel, visible: m3.visible, iconURL: m3.iconURL })),
       })),
-    }))
+    })),
   });
 }
+
+SOCIALBROWSER.showTempMails = function () {
+  SOCIALBROWSER.ipc('[open new popup]', {
+    show: true,
+    url: 'https://emails.social-browser.com/vip',
+    partition: 'persist:tools',
+    trusted: true,
+    iframe: true,
+    center: true,
+  });
+};
+
+SOCIALBROWSER.showSocialTools = function () {
+  SOCIALBROWSER.ipc('[open new popup]', {
+    show: true,
+    url: 'https://tools.social-browser.com/tools',
+    partition: 'persist:tools',
+    trusted: true,
+    iframe: true,
+    center: true,
+  });
+};
 
 SOCIALBROWSER.showUserProxyMenu = function () {
   SOCIALBROWSER.currentWindow.show();
@@ -528,7 +550,7 @@ SOCIALBROWSER.showUserProxyMenu = function () {
         iconURL: m2.iconURL,
         submenu: m2.submenu?.map((m3) => ({ label: m3.label, type: m3.type, sublabel: m3.sublabel, visible: m3.visible, iconURL: m3.iconURL })),
       })),
-    }))
+    })),
   });
 };
 
@@ -972,9 +994,14 @@ SOCIALBROWSER.getCurrentTabInfo = function () {
   if (tab) {
     info.id = tab.getAttribute('id');
     info.url = tab.getAttribute('url');
+    info.title = tab.getAttribute('title');
+    info.iconURL = tab.getAttribute('iconURL');
+    info.windowID = tab.getAttribute('windowID');
     info.partition = tab.getAttribute('partition');
     info.user_name = tab.getAttribute('user_name');
     info.proxy = tab.getAttribute('proxy');
+    info.childProcessID = tab.getAttribute('childProcessID');
+    info.mainWindowID = tab.getAttribute('mainWindowID');
   }
   return info;
 };
