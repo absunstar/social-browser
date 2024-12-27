@@ -523,7 +523,7 @@ SOCIALBROWSER.on('[window-action]', (e, data) => {
       url: document.location.href,
       referrer: document.location.href,
       allowAds: true,
-      allowPopup: true,
+      allowPopup: false,
       show: true,
       center: true,
     });
@@ -624,23 +624,44 @@ SOCIALBROWSER.on('[window-action]', (e, data) => {
         }
       }
     }
-  } else if (data.name == 'show-video-only') {
-    if (document.querySelector('video[src*="//"]')) {
-      document.querySelectorAll(':not(:has(video[src*="//"]))').forEach((el) => {
-        if (!el.tagName.like('*video*|*head*|*script*|*style*|*meta*|*link*|*source*')) {
-          el.remove();
-        }
-        if (el.tagName == 'VIDEO') {
-          el.setAttribute('controls', 'controls');
-        }
-      });
-    }
+  } else if (data.name == 'tv-mode') {
+    SOCIALBROWSER.allowTvMode();
   } else if (data.name == 'toggle-page-images') {
     SOCIALBROWSER.togglePageImages();
   } else if (data.name == 'toggle-page-images') {
     SOCIALBROWSER.togglePageImages();
   }
 });
+
+SOCIALBROWSER.allowTvMode = function () {
+  if (document.querySelector('video[src*="//"]')) {
+    document.querySelectorAll(':not(:has(video[src*="//"]))').forEach((el) => {
+      if (!el.tagName.like('*video*|*head*|*style*|*meta*|*link*|*source*')) {
+        el.remove();
+        // el.style.visibility = 'hidden';
+      } else if (el.tagName == 'VIDEO') {
+        el.id = 'ghost_' + Date.now();
+        el.className = '';
+        document.querySelectorAll('#vplayer,#video_player,.jwplayer').forEach((jw) => {
+          jw.className = '';
+        });
+
+        clearInterval(SOCIALBROWSER.setVideoStyleInterval);
+        SOCIALBROWSER.setVideoStyleInterval = setInterval(() => {
+          el.setAttribute('controls', 'controls');
+          el.removeAttribute('controlslist');
+          el.style.position = 'fixed';
+          el.style.top = 0;
+          el.style.bottom = 0;
+          el.style.right = 0;
+          el.style.left = 0;
+          el.style.width = '100vw';
+          el.style.height = '100vh';
+        }, 50);
+      }
+    });
+  }
+};
 
 SOCIALBROWSER.togglePageImages = function () {
   SOCIALBROWSER.pageImagesVisable = !SOCIALBROWSER.pageImagesVisable;

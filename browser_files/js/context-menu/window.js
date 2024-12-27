@@ -156,7 +156,8 @@ if (!SOCIALBROWSER.isWhiteSite) {
   };
 }
 
-if (SOCIALBROWSER.var.blocking.javascript.block_console_output) {
+if (!SOCIALBROWSER.var.blocking.javascript.allowConsoleLogs) {
+  window.console.log = function () {};
   window.console.error = function () {};
   window.console.dir = function () {};
   window.console.dirxml = function () {};
@@ -168,6 +169,8 @@ if (SOCIALBROWSER.var.blocking.javascript.block_console_output) {
   window.console.assert = function () {};
   window.console.clear = function () {};
 }
+
+
 if (SOCIALBROWSER.var.blocking.javascript.block_console_clear) {
   window.console.clear = function () {};
 }
