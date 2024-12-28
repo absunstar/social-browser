@@ -17,6 +17,10 @@ module.exports = function (browser) {
       id: 'core',
       url: '*embed*',
       list: [
+        // {
+        //   name: 'host',
+        //   value: '{{host}}',
+        // },
         {
           name: 'Referer',
           value: '{{url}}',
@@ -47,7 +51,7 @@ module.exports = function (browser) {
 
     browser.addRequestHeader({
       id: 'core',
-      url: '*www.youtube.com/embed*',
+      url: '*youtube.com/embed*',
       log: false,
       list: [
         {
@@ -63,7 +67,7 @@ module.exports = function (browser) {
     });
     browser.addResponseHeader({
       id: 'core',
-      url: '*www.youtube.com/embed*',
+      url: '*youtube.com/embed*',
       list: [
         {
           name: 'x-server',
@@ -72,8 +76,6 @@ module.exports = function (browser) {
       ],
       ignore: ['x-browser', 'X-Frame-Options', 'Cross-Origin-Resource-Policy'],
     });
-
-
   };
 
   extension.disable = () => {

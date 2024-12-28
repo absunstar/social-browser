@@ -14,6 +14,7 @@ window.addEventListener('offline', updateOnlineStatus);
 const { Menu, MenuItem } = SOCIALBROWSER.remote;
 
 function ipc(name, message) {
+  SOCIALBROWSER.currentTabInfo = SOCIALBROWSER.getCurrentTabInfo();
   message = message || {};
   message.tabID = message.tabID || SOCIALBROWSER.currentTabInfo.id;
   message.url = message.url || SOCIALBROWSER.currentTabInfo.url;
@@ -23,7 +24,6 @@ function ipc(name, message) {
   message.childID = message.childID || SOCIALBROWSER.currentTabInfo.childProcessID;
   message.mainWindowID = message.mainWindowID || SOCIALBROWSER.currentTabInfo.mainWindowID;
 
-  console.log(message);
   SOCIALBROWSER.ipc(name, message);
   if (name == '[window-action]' && !message.name.like('*screen*')) {
     SOCIALBROWSER.clickCurrentTab();

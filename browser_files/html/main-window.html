@@ -19,8 +19,7 @@
     <link rel="stylesheet" href="http://127.0.0.1:60080/css/social-tabs.css" />
 
     <link rel="stylesheet" href="http://127.0.0.1:60080/css/font-awesome-6.css" />
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/font-awesome-6-regular.css" />
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/font-awesome-6-solid.css" />
+
 
     <link rel="stylesheet" href="http://127.0.0.1:60080/css/fonts.css" />
 
@@ -130,27 +129,31 @@
 
     <div class="footer">
       <div class="window-actions">
-        <a title="open in New Window" onclick="ipc('[window-action]' , {name : 'new-window' })">
-          <i class="fa-regular fa-window-restore"></i>
+        <a title="open current Window in Random PC Browser" onclick="ipc('[window-action]' , {name : 'new-window' })">
+          <i class="fa-solid fa-window-restore"></i>
         </a>
 
-        <a title="open in Insecure Window" onclick="ipc('[window-action]' , {name : 'new-insecure-window'})">
-          <i class="fa-solid fa-window-restore"></i>
+        <a title="open current Window in Random Mobile Browser" onclick="ipc('[window-action]' , {name : 'new-mobile-window'})">
+          <i class="fa-solid fa-window-restore fa-xs""></i>
         </a>
 
         <a title="open in Allow Ads Window" onclick="ipc('[window-action]' , {name : 'new-ads-window'})">
           <i class="fa-solid fa-rectangle-ad"></i>
         </a>
-
+        <a title="open current Window in External Browser" onclick="ipc('[window-action]' , {name : 'open-external'})">
+          <i class="fa-brands fa-chrome"></i>
+        </a>
         <a class="space"> | </a>
-        <a title="open in Ghost Window" onclick="ipc('[window-action]' , {name : 'new-ghost-window'})">
+        <a title="open current Window in Random PC Ghost Browser" onclick="ipc('[window-action]' , {name : 'new-ghost-window'})">
           <i class="fa-solid fa-ghost"></i>
         </a>
-
+        <a title="open current Window in Random Mobile Ghost Browser" onclick="ipc('[window-action]' , {name : 'new-ghost-mobile-window'})">
+          <i class="fa-solid fa-ghost fa-xs"></i>
+        </a>
         <a class="space"> | </a>
 
         <a title="Hide / Show - Images" onclick="ipc('[window-action]' , {name : 'toggle-page-images'})">
-          <i class="fa-regular fa-images"></i>
+          <i class="fa-solid fa-images"></i>
         </a>
         <a title="Edit Page Content" onclick="ipc('[toggle-window-edit]')">
           <i class="fa-solid fa-pen-to-square"></i>
@@ -207,7 +210,7 @@
           <i class="fa-solid fa-toolbox"></i>
         </a>
         <a title="Social Temp Mails" onclick="SOCIALBROWSER.showTempMails();">
-          <i class="fa-solid fa-at"></i>
+          <i class="fa-solid fa-envelope"></i>
         </a>
         
         <a class="space"> | </a>

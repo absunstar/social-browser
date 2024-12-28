@@ -163,9 +163,13 @@ module.exports = function (child) {
     delete setting.name;
     delete setting.id;
     delete setting.webPreferences;
+
+    let bounds = child.electron.screen.getPrimaryDisplay().bounds;
+
     if (setting.windowType !== 'view') {
       delete setting.tabID;
     }
+
     let parent = child.parent;
     setting.partition = setting.partition || child.partition || parent.var.core.session.name;
 
@@ -193,8 +197,8 @@ module.exports = function (child) {
       alwaysOnTop: false,
       skipTaskbar: setting.skipTaskbar || false,
       resizable: true,
-      width: 1200,
-      height: 720,
+      width: bounds.width / 1.5,
+      height: bounds.height / 1.5,
       x: 0,
       y: 0,
       minWidth: 280,
@@ -933,49 +937,15 @@ module.exports = function (child) {
       //   }
       // }, 1000 * 5);
     });
+
     win.webContents.on('did-start-navigation', (e) => {
       console.log('did-start-navigation : ' + e.url);
-      let url = e.url;
-      if (url.like('https://www.youtube.com/watch*')) {
-        e.preventDefault();
-
-        // let index = win.webContents.navigationHistory.length - 1;
-        // win.webContents.navigationHistory.goToIndex(index || 1);
-
-        url = 'https://www.youtube.com/embed/' + url.split('=')[1].split('&')[0];
-
-        child.createNewWindow({
-          windowType: 'youtube',
-          title: 'YouTube',
-          url: url,
-          partition: win.customSetting.partition,
-          user_name: win.customSetting.user_name,
-          referrer: win.getURL(),
-        });
-
-        return;
-      }
+      child.handleCustomSeting(e.url , win);
     });
     win.webContents.on('will-redirect', (e) => {
       let url = e.url;
       child.log('will-redirect : ', url);
-
-      if (url.like('https://www.youtube.com/watch*')) {
-        e.preventDefault();
-
-        url = 'https://www.youtube.com/embed/' + url.split('=')[1].split('&')[0];
-
-        child.createNewWindow({
-          windowType: 'youtube',
-          title: 'YouTube',
-          url: url,
-          partition: win.customSetting.partition,
-          user_name: win.customSetting.user_name,
-          referrer: win.getURL(),
-        });
-
-        return;
-      }
+      child.handleCustomSeting(url , win);
 
       if (url.like('*accounts.google.com*') && e.isMainFrame && win.customSetting.iframe) {
         e.preventDefault();
@@ -1022,7 +992,7 @@ module.exports = function (child) {
     });
     win.webContents.on('will-navigate', (details) => {
       child.log('will-navigate : ' + details.url);
-
+      child.handleCustomSeting(details.url , win) ;
       win.customSetting.title = details.url;
       win.customSetting.iconURL = win.customSetting.loading_icon;
       child.updateTab(win);
@@ -1030,25 +1000,7 @@ module.exports = function (child) {
 
     win.webContents.on('will-frame-navigate', (details) => {
       child.log('will-frame-navigate : ' + details.url);
-
-      let url = details.url;
-
-      if (url.like('https://www.youtube.com/watch*')) {
-        details.preventDefault();
-
-        url = 'https://www.youtube.com/embed/' + url.split('=')[1].split('&')[0];
-
-        child.createNewWindow({
-          windowType: 'youtube',
-          title: 'YouTube',
-          url: url,
-          partition: win.customSetting.partition,
-          user_name: win.customSetting.user_name,
-          referrer: win.getURL(),
-        });
-
-        return;
-      }
+      child.handleCustomSeting(details.url , win);
 
       if (details.url.like('ftp*|mail*')) {
         details.preventDefault();
@@ -1123,7 +1075,7 @@ module.exports = function (child) {
           return { action: 'deny' };
         }
 
-        if (url.like('https://www.youtube.com/watch*')) {
+        if (url.like('*youtube.com/watch*')) {
           url = 'https://www.youtube.com/embed/' + url.split('=')[1].split('&')[0];
 
           child.createNewWindow({
@@ -1241,7 +1193,7 @@ module.exports = function (child) {
 
       let real_url = url || event.url || '';
       child.log('\n new-window', real_url);
-      if (real_url.like('https://www.youtube.com/watch*')) {
+      if (real_url.like('*youtube.com/watch*')) {
         real_url = 'https://www.youtube.com/embed/' + real_url.split('=')[1].split('&')[0];
 
         child.createNewWindow({

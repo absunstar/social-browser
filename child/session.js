@@ -202,18 +202,18 @@ module.exports = function (child) {
       });
 
       ss.webRequest.onBeforeRequest(filter, function (details, callback) {
-        let url = details.url.toLowerCase();
+        let url = details.url;
 
-        let source_url = '';
+        let refererURL = '';
         details.requestHeaders = details.requestHeaders || {};
 
-        source_url = details.requestHeaders['host'] || details.requestHeaders['origin'] || details['referrer'];
+        refererURL = details.requestHeaders['host'] || details.requestHeaders['origin'] || details['referrer'];
 
-        if (!source_url && details.webContents) {
-          source_url = details.webContents.getURL();
+        if (!refererURL && details.webContents) {
+          refererURL = details.webContents.getURL();
         }
-        if (!source_url) {
-          source_url = url;
+        if (!refererURL) {
+          refererURL = url;
         }
 
         if (child.parent.var.core.enginOFF) {
@@ -327,7 +327,7 @@ module.exports = function (child) {
         details.requestHeaders['User-Agent'] = _ss.user.defaultUserAgent.url;
 
         let exit = false;
-        let url = details.url.toLowerCase();
+        let url = details.url;
         let urlObject = child.url.parse(url);
         let customSetting = null;
         let win = null;
@@ -419,25 +419,14 @@ module.exports = function (child) {
           }
         }
 
-        let source_url = '';
-
-        if (!source_url) {
-          source_url = details.requestHeaders['host'] || details.requestHeaders['origin'] || details['referrer'];
-        }
-
-        if (!source_url && details.webContents) {
-          source_url = details.webContents.getURL();
-        }
-        if (!source_url) {
-          source_url = url;
-        }
-
-        source_url = source_url.toLowerCase();
+        let refererURL = details.requestHeaders['referrer'] || details.requestHeaders['Referer'] || details.requestHeaders['Host'] || details.requestHeaders['host'] || url;
+        refererURL = refererURL;
+        refererObject = child.url.parse(refererURL);
 
         if (_ss.user.privacy.enable_virtual_pc && _ss.user.privacy.vpc && _ss.user.privacy.vpc.maskUserAgentURL) {
           if (!details.requestHeaders['User-Agent'].like('*[xx-*')) {
             let code = name;
-            code += new URL(url).hostname;
+            code += urlObject.hostname;
             code += child.parent.var.core.id;
             details.requestHeaders['User-Agent'] = details.requestHeaders['User-Agent'].replace(') ', ') [xx-' + child.md5(code) + '] ');
           }
@@ -450,7 +439,7 @@ module.exports = function (child) {
               if (v && v.name && v.value) {
                 delete details.requestHeaders[v.name];
                 delete details.requestHeaders[v.name.toLowerCase()];
-                details.requestHeaders[v.name] = v.value.replace('{{url}}', source_url);
+                details.requestHeaders[v.name] = v.value.replace('{{url}}', refererURL).replace('{{host}}', refererObject.hostname);
               }
             });
             r.ignore.forEach((key) => {

@@ -34,7 +34,9 @@ if (SOCIALBROWSER.session.privacy.vpc.hide_memory) {
   SOCIALBROWSER.__define(navigator, 'deviceMemory', SOCIALBROWSER.session.privacy.vpc.memory_count);
   SOCIALBROWSER.__define(Navigator, 'deviceMemory', navigator.deviceMemory);
 }
-if (SOCIALBROWSER.session.privacy.vpc.hide_screen && SOCIALBROWSER.session.privacy.vpc.screen) {
+
+
+if (!SOCIALBROWSER.customSetting.browser && SOCIALBROWSER.session.privacy.vpc.hide_screen && SOCIALBROWSER.session.privacy.vpc.screen) {
   SOCIALBROWSER.__define(window, 'innerWidth', SOCIALBROWSER.session.privacy.vpc.screen.width);
   SOCIALBROWSER.__define(window, 'innerHeight', SOCIALBROWSER.session.privacy.vpc.screen.height);
   SOCIALBROWSER.__define(window, 'outerWidth', SOCIALBROWSER.session.privacy.vpc.screen.width);
@@ -51,6 +53,7 @@ if (SOCIALBROWSER.session.privacy.vpc.hide_screen && SOCIALBROWSER.session.priva
 
   SOCIALBROWSER.screenHidden = true;
 }
+
 if (SOCIALBROWSER.session.privacy.vpc.hide_lang) {
   SOCIALBROWSER.session.privacy.vpc.languages = SOCIALBROWSER.session.privacy.vpc.languages || SOCIALBROWSER.languageList[0] || navigator.languages;
   if (Array.isArray(SOCIALBROWSER.session.privacy.vpc.languages)) {

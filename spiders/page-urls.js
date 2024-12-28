@@ -113,7 +113,7 @@ module.exports = function init(browser) {
         }
         
         op.not_match = op.not_match || ""
-        if(op.url.like('https://www.youtube.com*')){
+        if(op.url.like('*youtube.com*')){
             op.match = op.match || "https://www.youtube.com/watch*"
             op.not_match = op.not_match || "*list=*"
         }

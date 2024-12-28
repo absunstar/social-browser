@@ -13,7 +13,7 @@ module.exports = function (parent) {
     let ss = name === '0' ? parent.electron.session.defaultSession : parent.electron.session.fromPartition(name);
     let user = parent.var.session_list.find((s) => s.name == name) ?? {};
 
-   // ss.setSpellCheckerLanguages(['en-US']);
+    // ss.setSpellCheckerLanguages(['en-US']);
 
     // ss.cookies.on('changed', function (event, cookie, cause, removed) {
     //     if (!Array.isArray(parent.cookies[name])) {
@@ -128,10 +128,10 @@ module.exports = function (parent) {
 
     ss.webRequest.onBeforeRequest(filter, function (details, callback) {
       let url = details.url.toLowerCase();
-      let source_url = details['referrer'] || details['host'] || url;
-      source_url = source_url.toLowerCase();
+      let refererURL = details['referrer'] || details['host'] || url;
+      refererURL = refererURL.toLowerCase();
 
-      // parent.log('source url ' , source_url)
+      // parent.log('source url ' , refererURL)
 
       if (url.like('localhost*')) {
         callback({
@@ -141,7 +141,7 @@ module.exports = function (parent) {
         return;
       }
 
-      let end = parent.var.blocking.white_list.some((s) => source_url.like(s.url) || url.like(s.url));
+      let end = parent.var.blocking.white_list.some((s) => refererURL.like(s.url) || url.like(s.url));
 
       if (end) {
         callback({
@@ -174,10 +174,11 @@ module.exports = function (parent) {
       let exit = false;
 
       let url = details.url.toLowerCase();
-      let source_url = details['referrer'] || details['Referer'] || details['Host'] || details['host'] || url;
-      if (source_url) {
-        source_url = source_url.toLowerCase();
-      }
+      urlObject = new URL(url);
+
+      let refererURL = details['referrer'] || details['Referer'] || details['Host'] || details['host'] || url;
+      refererURL = refererURL.toLowerCase();
+      refererObject = new URL(refererURL);
 
       let d = parent.startTime.toString().substring(0, 9);
       details.requestHeaders = details.requestHeaders || {};
@@ -196,7 +197,7 @@ module.exports = function (parent) {
       if (parent.var.blocking.privacy.enable_virtual_pc && parent.var.blocking.privacy.vpc && parent.var.blocking.privacy.vpc.maskUserAgentURL) {
         if (!details.requestHeaders['User-Agent'].like('*[xx-*')) {
           let code = name;
-          code += new URL(url).hostname;
+          code += urlObject.hostname;
           code += parent.var.core.id;
           details.requestHeaders['User-Agent'] = details.requestHeaders['User-Agent'].replace(') ', ') [xx-' + parent.md5(code) + '] ');
         }
@@ -209,7 +210,7 @@ module.exports = function (parent) {
             if (v && v.name && v.value) {
               delete details.requestHeaders[v.name];
               delete details.requestHeaders[v.name.toLowerCase()];
-              details.requestHeaders[v.name] = v.value.replace('{{url}}', source_url);
+              details.requestHeaders[v.name] = v.value.replace('{{url}}', refererURL).replace('{{host}}' , refererObject.hostname);
             }
           });
           r.ignore.forEach((key) => {

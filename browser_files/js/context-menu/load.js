@@ -125,6 +125,7 @@ SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/doms.js');
 
 SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/nodes.js');
 SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/videos.js');
+SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/embed.js');
 // SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/youtube.js');
 // SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/facebook.com.js');
 
@@ -147,124 +148,27 @@ if (!SOCIALBROWSER.var.core.javaScriptOFF) {
 
 SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/finger_print.js');
 
-// user agent
+// custom browser
+if (SOCIALBROWSER.customSetting.browser) {
+  SOCIALBROWSER.__define(window, 'innerWidth', SOCIALBROWSER.customSetting.browser.screen.width);
+  SOCIALBROWSER.__define(window, 'innerHeight', SOCIALBROWSER.customSetting.browser.screen.height);
+  SOCIALBROWSER.__define(window, 'outerWidth', SOCIALBROWSER.customSetting.browser.screen.width);
+  SOCIALBROWSER.__define(window, 'outerHeight', SOCIALBROWSER.customSetting.browser.screen.height);
+  SOCIALBROWSER.__define(screen, 'width', SOCIALBROWSER.customSetting.browser.screen.width);
+  SOCIALBROWSER.__define(screen, 'height', SOCIALBROWSER.customSetting.browser.screen.height);
+  SOCIALBROWSER.__define(screen, 'availWidth', SOCIALBROWSER.customSetting.browser.screen.width);
+  SOCIALBROWSER.__define(screen, 'availHeight', SOCIALBROWSER.customSetting.browser.screen.height);
 
-if ((randomUserAgentSupport = true)) {
-  SOCIALBROWSER.userAgentDeviceList = [
-    {
-      name: 'PC',
-      platformList: [
-        { name: 'Windows NT 6.1; WOW64', code: 'Win32' },
-        { name: 'Windows NT 10.0; Win64; x64', code: 'Win32' },
-        { name: 'Windows NT 11.0; Win64; x64', code: 'Win32' },
-        { name: 'Windows NT 10.0', code: 'Win32' },
-        { name: 'Windows NT 11.0', code: 'Win32' },
-        { name: 'MacIntel', code: 'MacIntel' },
-        { name: 'Macintosh; Intel Mac OS X 13_0', code: 'MacIntel' },
-        { name: 'Macintosh; Intel Mac OS X 14_0', code: 'MacIntel' },
-        { name: 'Macintosh; Intel Mac OS X 15_0', code: 'MacIntel' },
-        { name: 'Macintosh; Intel Mac OS X 16_0', code: 'MacIntel' },
-        { name: 'Linux x86_64', code: 'Linux x86_64' },
-        { name: 'X11; Ubuntu; Linux x86_64', code: 'Linux x86_64' },
-      ],
-    },
-    {
-      name: 'Mobile',
-      platformList: [
-        { name: 'Linux; Android 11', code: 'Android' },
-        { name: 'Linux; Android 12', code: 'Android' },
-        { name: 'Linux; Android 13', code: 'Android' },
-        { name: 'Linux; Android 14', code: 'Android' },
-        { name: 'Linux; Android 15', code: 'Android' },
-        { name: 'iPhone; CPU iPhone OS 13_0 like Mac OS X', code: 'iPhone' },
-        { name: 'iPhone; CPU iPhone OS 14_0  like Mac OS X', code: 'iPhone' },
-        { name: 'iPhone; CPU iPhone OS 15_0  like Mac OS X', code: 'iPhone' },
-        { name: 'iPhone; CPU iPhone OS 16_0  like Mac OS X', code: 'iPhone' },
-        { name: 'iPad; CPU OS 13_0  like Mac OS X', code: 'iPad' },
-        { name: 'iPad; CPU OS 14_0  like Mac OS X', code: 'iPad' },
-        { name: 'iPad; CPU OS 15_0  like Mac OS X', code: 'iPad' },
-        { name: 'iPad; CPU OS 16_0  like Mac OS X', code: 'iPad' },
-      ],
-    },
-  ];
-  SOCIALBROWSER.userAgentBrowserList = [
-    {
-      name: 'Chrome',
-      vendor: 'Google Inc.',
-      prefix: '',
-      randomMajor: () => SOCIALBROWSER.randomNumber(100, 132),
-      randomMinor: () => SOCIALBROWSER.randomNumber(0, 5735),
-      randomPatch: () => SOCIALBROWSER.randomNumber(0, 199),
-    },
-    {
-      name: 'Edge',
-      vendor: '',
-      prefix: '',
-      randomMajor: () => SOCIALBROWSER.randomNumber(100, 132),
-      randomMinor: () => SOCIALBROWSER.randomNumber(0, 5735),
-      randomPatch: () => SOCIALBROWSER.randomNumber(0, 199),
-    },
-    {
-      name: 'Firefox',
-      vendor: 'Mozilla',
-      prefix: '',
-      randomMajor: () => SOCIALBROWSER.randomNumber(90, 133),
-      randomMinor: () => SOCIALBROWSER.randomNumber(0, 9),
-      randomPatch: () => SOCIALBROWSER.randomNumber(0, 99),
-    },
-    {
-      name: 'Safari',
-      vendor: 'Apple Computer, Inc.',
-      prefix: '',
-      randomMajor: () => SOCIALBROWSER.randomNumber(600, 605),
-      randomMinor: () => SOCIALBROWSER.randomNumber(1, 15),
-      randomPatch: () => SOCIALBROWSER.randomNumber(10, 14),
-    },
-    {
-      name: 'Opera',
-      vendor: '',
-      prefix: '',
-      randomMajor: () => SOCIALBROWSER.randomNumber(100, 132),
-      randomMinor: () => SOCIALBROWSER.randomNumber(0, 5735),
-      randomPatch: () => SOCIALBROWSER.randomNumber(0, 199),
-    },
-  ];
+  SOCIALBROWSER.__define(Screen, 'width', SOCIALBROWSER.customSetting.browser.screen.width);
+  SOCIALBROWSER.__define(Screen, 'height', SOCIALBROWSER.customSetting.browser.screen.height);
+  SOCIALBROWSER.__define(Screen, 'availWidth', SOCIALBROWSER.customSetting.browser.screen.width);
+  SOCIALBROWSER.__define(Screen, 'availHeight', SOCIALBROWSER.customSetting.browser.screen.height);
 
-  SOCIALBROWSER.getRandomBrowser = function () {
-    let browser = { ...SOCIALBROWSER.userAgentBrowserList[SOCIALBROWSER.randomNumber(0, SOCIALBROWSER.userAgentBrowserList.length - 1)] };
-    browser.device = SOCIALBROWSER.userAgentDeviceList[SOCIALBROWSER.randomNumber(0, SOCIALBROWSER.userAgentDeviceList.length - 1)];
-    browser.platformInfo = browser.device.platformList[SOCIALBROWSER.randomNumber(0, browser.device.platformList.length - 1)];
-    browser.platform = browser.platformInfo.code;
-    if (browser.device.name === 'Mobile') {
-      browser.prefix = 'Mobile';
-    }
+  SOCIALBROWSER.screenHidden = true;
 
-    browser.major = browser.randomMajor();
-    browser.minor = browser.randomMinor();
-    browser.patch = browser.randomPatch();
-
-    browser.randomMajor = undefined;
-    browser.randomMinor = undefined;
-    browser.randomPatch = undefined;
-
-    if (browser.name.contains('Safari')) {
-      browser.url = `Mozilla/5.0 (${browser.platformInfo.name}) AppleWebKit/${browser.major}.${browser.minor} (KHTML, like Gecko) Version/${browser.patch}.0 Safari/${browser.major}.${browser.minor}`;
-    }
-    if (browser.name.contains('Firefox')) {
-      browser.url = `Mozilla/5.0 (${browser.platformInfo.name}; rv:${browser.major}.${browser.minor}) Gecko/20100101 Firefox/${browser.major}.${browser.minor}`;
-    } else {
-      browser.url = `Mozilla/5.0 (${browser.platformInfo.name}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${browser.major}.${browser.minor}.${browser.patch} ${browser.prefix} Safari/537.36`;
-    }
-
-    if (browser.name.contains('Edge')) {
-      browser.url += ` ${browser.name}/${browser.major}.${browser.minor}.${browser.patch}`;
-    }
-    return browser;
-  };
-
-  SOCIALBROWSER.getRandomUserAgent = function () {
-    return SOCIALBROWSER.getRandomBrowser().url;
-  };
+  SOCIALBROWSER.defaultUserAgent = SOCIALBROWSER.customSetting.browser;
+  SOCIALBROWSER.userAgentURL = SOCIALBROWSER.customSetting.browser.url;
+  SOCIALBROWSER.defaultUserAgent.engine = { name: SOCIALBROWSER.customSetting.browser.name };
 }
 
 if (SOCIALBROWSER.customSetting.userAgentURL) {
@@ -478,28 +382,52 @@ SOCIALBROWSER.on('[window-action]', (e, data) => {
   if (data.name == 'toggle-page-images') {
     SOCIALBROWSER.togglePageImages();
   } else if (data.name == 'new-window') {
+    let browser = SOCIALBROWSER.getRandomBrowser('pc');
     SOCIALBROWSER.ipc('[open new popup]', {
       partition: SOCIALBROWSER.partition,
       url: document.location.href,
       referrer: document.location.href,
+      browser: browser,
+      userAgentURL: browser.url,
+      width: browser.screen.width,
+      height: browser.screen.height,
       show: true,
       center: true,
     });
   } else if (data.name == 'new-ghost-window') {
+    let browser = SOCIALBROWSER.getRandomBrowser('pc');
     let ghost = 'x-ghost_' + (new Date().getTime().toString() + Math.random().toString()).replace('.', '');
     SOCIALBROWSER.ipc('[open new popup]', {
-      alwaysOnTop: true,
       partition: ghost,
       user_name: ghost,
       url: document.location.href,
       referrer: document.location.href,
+      browser: browser,
+      userAgentURL: browser.url,
+      width: browser.screen.width,
+      height: browser.screen.height,
+      show: true,
+      iframe: true,
+      center: true,
+    });
+  } else if (data.name == 'new-ghost-mobile-window') {
+    let browser = SOCIALBROWSER.getRandomBrowser('mobile');
+    let ghost = 'x-ghost_' + (new Date().getTime().toString() + Math.random().toString()).replace('.', '');
+    SOCIALBROWSER.ipc('[open new popup]', {
+      partition: ghost,
+      user_name: ghost,
+      url: document.location.href,
+      referrer: document.location.href,
+      browser: browser,
+      userAgentURL: browser.url,
+      width: browser.screen.width,
+      height: browser.screen.height,
       show: true,
       iframe: true,
       center: true,
     });
   } else if (data.name == 'new-insecure-window') {
     SOCIALBROWSER.ipc('[open new popup]', {
-      alwaysOnTop: true,
       partition: SOCIALBROWSER.partition,
       url: document.location.href,
       referrer: document.location.href,
@@ -509,7 +437,6 @@ SOCIALBROWSER.on('[window-action]', (e, data) => {
     });
   } else if (data.name == 'new-sandbox-window') {
     SOCIALBROWSER.ipc('[open new popup]', {
-      alwaysOnTop: true,
       partition: SOCIALBROWSER.partition,
       url: document.location.href,
       referrer: document.location.href,
@@ -527,6 +454,21 @@ SOCIALBROWSER.on('[window-action]', (e, data) => {
       show: true,
       center: true,
     });
+  } else if (data.name == 'new-mobile-window') {
+    let browser = SOCIALBROWSER.getRandomBrowser('mobile');
+    SOCIALBROWSER.ipc('[open new popup]', {
+      partition: SOCIALBROWSER.partition,
+      url: document.location.href,
+      referrer: document.location.href,
+      browser: browser,
+      userAgentURL: browser.url,
+      width: browser.screen.width,
+      height: browser.screen.height,
+      show: true,
+      center: true,
+    });
+  } else if (data.name == 'open-external') {
+    SOCIALBROWSER.openExternal(document.location.href);
   } else if (data.name == 'play-video') {
     let video = document.querySelector('video');
     if (video) {

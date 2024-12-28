@@ -335,8 +335,155 @@ SOCIALBROWSER.timeZones = [
   },
 ];
 
+if ((randomUserAgentSupport = true)) {
+  SOCIALBROWSER.userAgentDeviceList = [
+    {
+      name: 'PC',
+      platformList: [
+        { name: 'Windows NT 6.1; WOW64', code: 'Win32' },
+        { name: 'Windows NT 10.0; Win64; x64', code: 'Win32' },
+        { name: 'Windows NT 11.0; Win64; x64', code: 'Win32' },
+        { name: 'Windows NT 10.0', code: 'Win32' },
+        { name: 'Windows NT 11.0', code: 'Win32' },
+        { name: 'MacIntel', code: 'MacIntel' },
+        { name: 'Macintosh; Intel Mac OS X 13_0', code: 'MacIntel' },
+        { name: 'Macintosh; Intel Mac OS X 14_0', code: 'MacIntel' },
+        { name: 'Macintosh; Intel Mac OS X 15_0', code: 'MacIntel' },
+        { name: 'Macintosh; Intel Mac OS X 16_0', code: 'MacIntel' },
+        { name: 'Linux x86_64', code: 'Linux x86_64' },
+        { name: 'X11; Ubuntu; Linux x86_64', code: 'Linux x86_64' },
+      ],
+      screenList: [
+        '2560*1440',
+        '1920*1080',
+        '1792*1120',
+        '1680*1050',
+        '1600*900',
+        '1536*864',
+        '1440*900',
+        '1366*768',
+        '1280*800',
+        '1280*720',
+        '1024*768',
+        '1024*600',
+        '962*601',
+        '810*1080',
+        '800*1280',
+        '768*1024',
+      ],
+    },
+    {
+      name: 'Mobile',
+      platformList: [
+        { name: 'Linux; Android 11', code: 'Android' },
+        { name: 'Linux; Android 12', code: 'Android' },
+        { name: 'Linux; Android 13', code: 'Android' },
+        { name: 'Linux; Android 14', code: 'Android' },
+        { name: 'Linux; Android 15', code: 'Android' },
+        { name: 'iPhone; CPU iPhone OS 13_0 like Mac OS X', code: 'iPhone' },
+        { name: 'iPhone; CPU iPhone OS 14_0  like Mac OS X', code: 'iPhone' },
+        { name: 'iPhone; CPU iPhone OS 15_0  like Mac OS X', code: 'iPhone' },
+        { name: 'iPhone; CPU iPhone OS 16_0  like Mac OS X', code: 'iPhone' },
+        { name: 'iPad; CPU OS 13_0  like Mac OS X', code: 'iPad' },
+        { name: 'iPad; CPU OS 14_0  like Mac OS X', code: 'iPad' },
+        { name: 'iPad; CPU OS 15_0  like Mac OS X', code: 'iPad' },
+        { name: 'iPad; CPU OS 16_0  like Mac OS X', code: 'iPad' },
+      ],
+      screenList: ['601*962', '600*1024', '414*896', '390*844', '360*800', '360*640'],
+    },
+  ];
+  SOCIALBROWSER.userAgentBrowserList = [
+    {
+      name: 'Chrome',
+      vendor: 'Google Inc.',
+      prefix: '',
+      randomMajor: () => SOCIALBROWSER.randomNumber(100, 132),
+      randomMinor: () => SOCIALBROWSER.randomNumber(0, 5735),
+      randomPatch: () => SOCIALBROWSER.randomNumber(0, 199),
+    },
+    {
+      name: 'Edge',
+      vendor: '',
+      prefix: '',
+      randomMajor: () => SOCIALBROWSER.randomNumber(100, 132),
+      randomMinor: () => SOCIALBROWSER.randomNumber(0, 5735),
+      randomPatch: () => SOCIALBROWSER.randomNumber(0, 199),
+    },
+    {
+      name: 'Firefox',
+      vendor: 'Mozilla',
+      prefix: '',
+      randomMajor: () => SOCIALBROWSER.randomNumber(90, 133),
+      randomMinor: () => SOCIALBROWSER.randomNumber(0, 9),
+      randomPatch: () => SOCIALBROWSER.randomNumber(0, 99),
+    },
+    {
+      name: 'Safari',
+      vendor: 'Apple Computer, Inc.',
+      prefix: '',
+      randomMajor: () => SOCIALBROWSER.randomNumber(600, 605),
+      randomMinor: () => SOCIALBROWSER.randomNumber(1, 15),
+      randomPatch: () => SOCIALBROWSER.randomNumber(10, 14),
+    },
+    {
+      name: 'Opera',
+      vendor: '',
+      prefix: '',
+      randomMajor: () => SOCIALBROWSER.randomNumber(100, 132),
+      randomMinor: () => SOCIALBROWSER.randomNumber(0, 5735),
+      randomPatch: () => SOCIALBROWSER.randomNumber(0, 199),
+    },
+  ];
+
+  SOCIALBROWSER.getRandomBrowser = function (deviceName = '*') {
+    let browser = { ...SOCIALBROWSER.userAgentBrowserList[SOCIALBROWSER.randomNumber(0, SOCIALBROWSER.userAgentBrowserList.length - 1)] };
+    let devices = SOCIALBROWSER.userAgentDeviceList.filter((d) => d.name.like(deviceName));
+    browser.device = devices[SOCIALBROWSER.randomNumber(0, devices.length - 1)];
+
+    browser.screen = browser.device.screenList[SOCIALBROWSER.randomNumber(0, browser.device.screenList.length - 1)];
+    browser.screen = browser.screen.split('*');
+    browser.screen = { width: parseInt(browser.screen[0]), height: parseInt(browser.screen[1]) };
+
+    browser.platformInfo = browser.device.platformList[SOCIALBROWSER.randomNumber(0, browser.device.platformList.length - 1)];
+    browser.platform = browser.platformInfo.code;
+    if (browser.device.name === 'Mobile') {
+      browser.prefix = 'Mobile';
+    }
+
+    browser.major = browser.randomMajor();
+    browser.minor = browser.randomMinor();
+    browser.patch = browser.randomPatch();
+
+    browser.randomMajor = undefined;
+    browser.randomMinor = undefined;
+    browser.randomPatch = undefined;
+
+    delete browser.randomMajor;
+    delete browser.randomMinor;
+    delete browser.randomPatch;
+
+    if (browser.name.contains('Safari')) {
+      browser.url = `Mozilla/5.0 (${browser.platformInfo.name}) AppleWebKit/${browser.major}.${browser.minor} (KHTML, like Gecko) Version/${browser.patch}.0 Safari/${browser.major}.${browser.minor}`;
+    }
+    if (browser.name.contains('Firefox')) {
+      browser.url = `Mozilla/5.0 (${browser.platformInfo.name}; rv:${browser.major}.${browser.minor}) Gecko/20100101 Firefox/${browser.major}.${browser.minor}`;
+    } else {
+      browser.url = `Mozilla/5.0 (${browser.platformInfo.name}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${browser.major}.${browser.minor}.${browser.patch} ${browser.prefix} Safari/537.36`;
+    }
+
+    if (browser.name.contains('Edge')) {
+      browser.url += ` ${browser.name}/${browser.major}.${browser.minor}.${browser.patch}`;
+    }
+    return browser;
+  };
+
+  SOCIALBROWSER.getRandomUserAgent = function () {
+    return SOCIALBROWSER.getRandomBrowser().url;
+  };
+}
+
 SOCIALBROWSER.generateVPC = function () {
-  let screenSize = SOCIALBROWSER.scrrenSizeList[SOCIALBROWSER.random(0, SOCIALBROWSER.scrrenSizeList.length - 1)].split('x');
+  let browser = SOCIALBROWSER.getRandomBrowser();
   return {
     hide_memory: true,
     memory_count: SOCIALBROWSER.random(1, 128),
@@ -356,10 +503,10 @@ SOCIALBROWSER.generateVPC = function () {
     hide_plugins: true,
     hide_screen: true,
     screen: {
-      width: parseInt(screenSize[0] || '1200'),
-      height: parseInt(screenSize[1] || '720'),
-      availWidth: parseInt(screenSize[0] || '1200'),
-      availHeight: parseInt(screenSize[1] || '720'),
+      width: browser.screen.width,
+      height: browser.screen.height,
+      availWidth: browser.screen.width,
+      availHeight: browser.screen.height,
     },
     set_window_active: true,
     set_tab_active: false,
@@ -417,12 +564,17 @@ SOCIALBROWSER.__define = function (o, p, v, op) {
   if (typeof o == 'undefined') {
     return;
   }
-  Object.defineProperty(o, p, {
-    get: function () {
-      return v;
-    },
-    enumerable: op.enumerable || false,
-  });
+  try {
+    Object.defineProperty(o, p, {
+      get: function () {
+        return v;
+      },
+      enumerable: op.enumerable || false,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+
   if (o.prototype) {
     o.prototype[p] = v;
   }

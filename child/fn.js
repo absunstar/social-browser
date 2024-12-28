@@ -167,9 +167,8 @@ module.exports = function (child) {
   };
 
   child.get_dynamic_var = function (info) {
-
     info.name = info.name || '*';
-    
+
     if (info.name == '*') {
       info.name = '';
       for (const key in child.parent.var) {
@@ -309,5 +308,18 @@ module.exports = function (child) {
     }
 
     return allow;
+  };
+  child.handleCustomSeting = function (url, win) {
+
+    let windowIndex = child.windowList.findIndex((w) => w.id == win.id);
+    if (windowIndex !== -1) {
+      if (url.like('*youtube.com/embed*')) {
+        child.windowList[windowIndex].customSetting.userAgentURL = win.customSetting.userAgentURL;
+      }if (url.like('*youtube.com*')) {
+        child.windowList[windowIndex].customSetting.userAgentURL = 'Mozilla/5.0 (iPad; CPU OS 14_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/602.6.13 Mobile Safari/537.36';
+      } else {
+        child.windowList[windowIndex].customSetting.userAgentURL = win.customSetting.userAgentURL;
+      }
+    }
   };
 };

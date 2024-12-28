@@ -542,9 +542,9 @@ function add_a_menu(node) {
       type: 'separator',
     });
 
-    if (u.like('https://www.youtube.com/watch*')) {
+    if (u.like('*youtube.com/watch*')) {
       SOCIALBROWSER.menuList.push({
-        label: 'Play video ',
+        label: 'Open video ',
         click() {
           SOCIALBROWSER.ipc('[open new popup]', {
             windowType: 'youtube',

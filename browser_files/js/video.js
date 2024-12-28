@@ -23876,7 +23876,7 @@
      * To get the current height use `currentheight()`.
      *
      * @param {number} [value]
-     *        The value to set the `Player`'s heigth to.
+     *        The value to set the `Player`'s height to.
      *
      * @return {number}
      *         The current height of the `Player` when getting.
