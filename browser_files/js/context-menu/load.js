@@ -1,4 +1,3 @@
-SOCIALBROWSER.var.session_list.sort((a, b) => (a.time > b.time ? -1 : 1));
 if ((policy = true)) {
   SOCIALBROWSER.policy = {
     createHTML: (string) => string,
@@ -672,9 +671,7 @@ SOCIALBROWSER.on('[update-browser-var]', (e, res) => {
   if (SOCIALBROWSER.onVarUpdated) {
     SOCIALBROWSER.onVarUpdated(res.options.name, res.options.data);
   }
-  if (res.options.name == 'session_list') {
-    SOCIALBROWSER.var.session_list.sort((a, b) => (a.time > b.time ? -1 : 1));
-  }
+  
   SOCIALBROWSER.callEvent('updated', { name: res.options.name });
 });
 SOCIALBROWSER.onShare((data) => {

@@ -44,6 +44,7 @@ module.exports = function (child) {
           slashes: true,
         }),
         windowType: 'addressbar',
+        vip : true,
         show: false,
         width: win.getBounds().width - 200,
         height: 500,
@@ -99,6 +100,7 @@ module.exports = function (child) {
           slashes: true,
         }),
         windowType: 'profiles',
+        vip : true,
         show: false,
         width: 800,
         height: 800,
@@ -947,30 +949,30 @@ module.exports = function (child) {
       child.log('will-redirect : ', url);
       child.handleCustomSeting(url , win);
 
-      if (url.like('*accounts.google.com*') && e.isMainFrame && win.customSetting.iframe) {
-        e.preventDefault();
-        child.createNewWindow({
-          ...win.customSetting,
-          webPreferences: null,
-          iframe: false,
-          skipTaskbar: false,
-          windowType: 'popup',
-          alwaysOnTop: true,
-          resizable: true,
-          show: win.customSetting.windowType == 'view' ? true : win.isVisible(),
-          width: null,
-          height: null,
-          x: null,
-          y: null,
-          url: url,
-          userAgentURL: child.parent.var.core.googleUserAgentURL,
-        });
-        if (win.customSetting.windowType == 'popup') {
-          win.close();
-        }
+      // if (url.like('*accounts.google.com*') && e.isMainFrame && win.customSetting.iframe) {
+      //   e.preventDefault();
+      //   child.createNewWindow({
+      //     ...win.customSetting,
+      //     webPreferences: null,
+      //     iframe: false, // Must , if not set will be unsafty browser
+      //     skipTaskbar: false,
+      //     windowType: 'popup',
+      //     alwaysOnTop: true,
+      //     resizable: true,
+      //     show: win.customSetting.windowType == 'view' ? true : win.isVisible(),
+      //     width: null,
+      //     height: null,
+      //     x: null,
+      //     y: null,
+      //     url: url,
+      //     userAgentURL: child.parent.var.core.googleUserAgentURL,
+      //   });
+      //   if (win.customSetting.windowType == 'popup') {
+      //     win.close();
+      //   }
 
-        return;
-      }
+      //   return;
+      // }
 
       if ((!win.customSetting.allowAds && !child.isAllowURL(url)) || !win.customSetting.allowRedirect) {
         e.preventDefault();

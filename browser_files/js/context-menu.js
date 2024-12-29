@@ -121,6 +121,7 @@
   SOCIALBROWSER.session_id = 0;
 
   SOCIALBROWSER.isIframe = function () {
+    return !process.isMainFrame;
     try {
       return window.self !== window.top;
     } catch (e) {
@@ -238,6 +239,12 @@
     SOCIALBROWSER.newTabData = SOCIALBROWSER.browserData.newTabData;
     SOCIALBROWSER.session = { ...SOCIALBROWSER.session, ...SOCIALBROWSER.browserData.session };
     SOCIALBROWSER.partition = SOCIALBROWSER.browserData.partition;
+
+    if (!SOCIALBROWSER.customSetting.iframe && SOCIALBROWSER.isIframe()) {
+      delete window.SOCIALBROWSER;
+      return;
+    }
+
     if (!SOCIALBROWSER.partition && SOCIALBROWSER.isMemoryMode) {
       SOCIALBROWSER.partition = 'x-ghost';
     }

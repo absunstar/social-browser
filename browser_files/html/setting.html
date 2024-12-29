@@ -62,7 +62,7 @@
         --modal-background: #6c757d63;
       }
       .table {
-        --bs-table-bg: #6c757d;
+        --bs-table-bg: #283e4a;
         --table-color: #ffc107;
         margin: 5px;
       }
@@ -90,7 +90,10 @@
         cursor: not-allowed;
       }
       .big-button button {
-        transform: scale(2);
+        width: 20%;
+        background: #283e4a;
+        font-size: 25px;
+        max-height: fit-content;
       }
       .btn-info,
       .btn-primary {
@@ -100,11 +103,11 @@
       }
       .btn-light {
         --bs-btn-color: #ffffff;
-        --bs-btn-bg: #198754;
-        --bs-btn-border-color: #198754;
-        --bs-btn-hover-color: #198754;
-        --bs-btn-hover-bg: #ffffff;
-        --bs-btn-hover-border-color: #198754;
+        --bs-btn-bg: #212529;
+        --bs-btn-border-color: #6c757d;
+        --bs-btn-hover-color: #ffffff;
+        --bs-btn-hover-bg: #145e3c;
+        --bs-btn-hover-border-color: #000000;
       }
       .btn-stop {
         color: #ffffff;
@@ -251,6 +254,9 @@
               </a>
             </div>
             <div class="tabs-content">
+              <div class="row center">
+                <i-button loading="{{setting_busy}}" class="big-button" type="save" ng-click="saveSetting(true)" label="Save All Setting"></i-button>
+              </div>
               <div id="basic_tab" class="tab-content">
                 <div class="row">
                   <fieldset>
@@ -290,7 +296,7 @@
                     </div>
                   </fieldset>
 
-                  <fieldset>
+                  <fieldset class="hidden">
                     <legend>Advanced Setting</legend>
                     <div class="row">
                       <i-control class="row" label="Google Login Agent URL" ng-model="setting.core.googleUserAgentURL"></i-control>
@@ -837,7 +843,9 @@
                     </div>
                   </div>
 
-                  <div class="row"></div>
+                  <div class="row">
+                    <i-button ng-click="sortSessionListByName()" label="Sort Profiles By Name"></i-button>
+                  </div>
                   <div class="row">
                     <table class="table hover">
                       <tr>
@@ -862,7 +870,7 @@
                           </div>
                         </th>
                       </tr>
-                      <tr ng-repeat="_se in setting.session_list | orderBy : 'time' | filter:session track by $index">
+                      <tr ng-repeat="_se in setting.session_list | filter:session track by $index">
                         <td class="bold center">{{$index + 1}}</td>
                         <td>
                           <i-control ng-model="_se.name"></i-control>
@@ -1130,7 +1138,7 @@
                         </td>
 
                         <td>
-                          <div class="row padding bg-green border">
+                          <div class="row padding  border">
                             <div class="row">
                               <i-control label="Name" class="col4" type="text" ng-model="_se.name"></i-control>
                               <i-list label="Device" class="col3" primary="name" items="userAgentDeviceList" ng-model="_se.device"></i-list>
@@ -1374,7 +1382,6 @@
       </div>
 
       <div class="center padding margin">
-        <i-button loading="{{setting_busy}}" class="big-button" type="save" ng-show="knowPassword === true" ng-click="saveSetting(true)" label="Save All Setting"></i-button>
         <i-button type="view" ng-show="knowPassword === false" ng-click="checkPassword(true)" label="Open Setting"></i-button>
       </div>
 

@@ -268,6 +268,7 @@
 
     browser.createChildProcess({
       url: 'http://127.0.0.1:60080/home',
+      vip : true,
       windowType: 'main',
       partition: 'persist:social',
       showDevTools: false,
@@ -278,6 +279,7 @@
     browser.createChildProcess({
       url: 'https://www.google.com',
       windowType: 'none',
+      vip : true,
       partition: 'persist:social',
     });
   } else {
@@ -289,6 +291,7 @@
     // });
     browser.createChildProcess({
       url: 'http://127.0.0.1:60080/home',
+      vip : true,
       windowType: 'main',
       partition: 'persist:social',
       showDevTools: false,
@@ -298,6 +301,7 @@
   setTimeout(() => {
     browser.createChildProcess({
       windowType: 'files',
+      vip : true,
       partition: 'persist:file',
     });
   }, 1000 * 3);

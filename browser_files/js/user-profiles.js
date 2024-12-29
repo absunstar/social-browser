@@ -18,7 +18,6 @@ app.controller('mainController', ($scope, $http, $interval, $timeout) => {
   SOCIALBROWSER.onEvent('updated', (p) => {
     if (p.name == 'session_list') {
       $scope.setting.session_list = [];
-      SOCIALBROWSER.var.session_list.sort((a, b) => (a.time > b.time ? -1 : 1));
       SOCIALBROWSER.var.session_list.forEach((s) => {
         $scope.setting.session_list.push({ ...s });
       });

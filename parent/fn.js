@@ -54,6 +54,21 @@ module.exports = function init(parent) {
     };
   }
 
+  parent.makeID = function (length = 12) {
+    let result = '';
+
+    let characters = 'abcdefghijklmnopqrstuvwxyz' + '0123456789';
+    let charactersLength = characters.length;
+
+    let counter = 0;
+    while (counter < length) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      counter += 1;
+    }
+
+    return result;
+  };
+
   parent.get_dynamic_var = function (info) {
     info.name = info.name || '*';
     if (info.name == '*') {

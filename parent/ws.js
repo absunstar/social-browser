@@ -461,7 +461,6 @@ module.exports = function init(parent) {
             let newSessionIndex = parent.var.session_list.findIndex((s) => s.name == newSession.name || s.display == newSession.display);
             if (newSessionIndex === -1) {
               parent.var.session_list.push(newSession);
-              parent.var.session_list.sort((a, b) => (a.time > b.time ? -1 : 1));
               parent.applay('session_list');
             }
           }
@@ -492,7 +491,7 @@ module.exports = function init(parent) {
 
           break;
         case '[add-window-url]':
-          if (message.url && !message.url.contains('60080')) {
+          if (message.url) {
             parent.addURL(message);
             parent.clientList.forEach((client) => {
               if (client.option_list.some((op) => op.windowType === 'main' || op.windowType === 'files') && client.ws) {

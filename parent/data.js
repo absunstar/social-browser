@@ -104,7 +104,7 @@ module.exports = function init(parent) {
       if (name == 'session_list') {
         parent.var[name].forEach((s) => {
           if (s.display == '{email}') {
-            s.display = parent.md5(new Date().getTime().toString().replace('0.', '') + Math.random().toString().replace('0.', '')) + '@social-browser.com';
+            s.display = parent.makeID(8) + '@social-browser.com';
             s.name = 'persist:' + parent.md5(s.display);
           } else {
             s.name = s.name.replace('{random}', '_random_' + new Date().getTime().toString().replace('0.', '') + Math.random().toString().replace('0.', ''));
@@ -301,7 +301,7 @@ module.exports = function init(parent) {
     if (name == 'core') {
       if (parent.var.core.version !== browserVarContent.version) {
         parent.newVersionDetected = true;
-        parent.var.core = { ...parent.var.core, ...browserVarContent };
+        parent.var.core = { ...parent.var.core, ...browserVarContent, emails: parent.var.core.emails || browserVarContent.emails };
         parent.var.core.defaultUserAgent = null;
       }
 
@@ -690,7 +690,6 @@ module.exports = function init(parent) {
   parent.var.session_list.forEach((s1) => {
     s1.time = s1.time || new Date().getTime();
   });
-  parent.var.session_list.sort((a, b) => (a.time > b.time ? -1 : 1));
 
   parent.var.core.browserActivated = true;
   parent.activated = function () {

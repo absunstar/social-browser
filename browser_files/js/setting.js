@@ -226,6 +226,10 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     }
   };
 
+  $scope.sortSessionListByName = function () {
+    $scope.setting.session_list.sort((a, b) => (a.display < b.display ? -1 : 1));
+  };
+
   $scope.showProfiles = function () {
     site.showModal('#profileModal');
   };

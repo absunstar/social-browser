@@ -18,15 +18,15 @@
     <link rel="stylesheet" href="http://127.0.0.1:60080/css/social-tabs-custom-theme2.css" />
     <style>
       body {
-        font-family: 'Cairo';
+        font-family: 'Arabic';
         font-size: 20px;
         line-height: 1.8;
       }
       .btn {
         font-size: 16px;
         border-radius: 5px;
-        background: #2196f3;
-        color: #ffffff;
+        background: #2b353a;
+        color: #ffc107;
         width: 80%;
         display: inline-block;
       }
@@ -59,16 +59,11 @@
     </div>
 
     <div class="url-list-actions center" ng-show="url_list.length > 0">
-      <span class="btn" onclick="event.preventDefault();event.stopPropagation();" ng-click="loadUrls(url , 'count')">Sort By Count </span>
+      <span class="btn" onclick="event.preventDefault();event.stopPropagation();" ng-click="loadUrls('', 'date') ">Show History</span>
 
-      <span class="btn" onclick="event.preventDefault();event.stopPropagation();" ng-click="loadUrls(url, 'date') ">Sort By Date </span>
+      <span class="btn" onclick="event.preventDefault();event.stopPropagation();" ng-click="loadUrls('' , 'count')">Top Site Visiting </span>
 
-      <span class="btn" onclick="event.preventDefault();event.stopPropagation();" ng-click="loadUrls(url, 'url') ">Sort By URL </span>
-      <br />
-      <br />
-      <br />
-      <br />
-      <span class="btn" onclick="event.preventDefault();event.stopPropagation();" ng-click="loadUrls(url, 'bookmark') "> Show Bookmarks </span>
+      <span class="btn" onclick="event.preventDefault();event.stopPropagation();" ng-click="loadUrls('', 'bookmark') "> Show Bookmarks </span>
     </div>
 
     <script src="http://127.0.0.1:60080/js/an.min.js"></script>
@@ -131,9 +126,8 @@
             return false;
           }
           $scope.busy = true;
-          if (url) {
-            $scope.url = url;
-          }
+
+          $scope.url = url;
 
           $scope.url_list = SOCIALBROWSER.var.urls || [];
 
@@ -171,13 +165,19 @@
             for (let i = 0; i < $scope.url_list.length; i++) {
               let itm = $scope.url_list[i];
 
-              if ((itm.url && itm.url.like('*' + word + '*')) || (itm.title && itm.title.like('*' + word + '*'))) {
+              if (word) {
+                if ((itm.url && itm.url.like('*' + word + '*')) || (itm.title && itm.title.like('*' + word + '*'))) {
+                  $scope.url_list2.push(itm);
+                }
+              } else {
                 $scope.url_list2.push(itm);
               }
+
               if ($scope.url_list2.length > 500) {
                 break;
               }
             }
+
             if ($scope.url_list2.length == 0) {
               $scope.url_list2.push({
                 title: word,

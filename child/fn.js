@@ -310,15 +310,22 @@ module.exports = function (child) {
     return allow;
   };
   child.handleCustomSeting = function (url, win) {
-
     let windowIndex = child.windowList.findIndex((w) => w.id == win.id);
     if (windowIndex !== -1) {
-      if (url.like('*youtube.com/embed*')) {
+      if (url.like('*accounts.google.com*')) {
+        child.windowList[windowIndex].customSetting.userAgentURL = child.parent.var.core.googleUserAgentURL;
+        child.windowList[windowIndex].customSetting.iframe = false;
+      } else if (url.like('*youtube.com/embed*')) {
         child.windowList[windowIndex].customSetting.userAgentURL = win.customSetting.userAgentURL;
-      }if (url.like('*youtube.com*')) {
+        child.windowList[windowIndex].customSetting.iframe = true;
+      } else if (url.like('*youtube.com*')) {
         child.windowList[windowIndex].customSetting.userAgentURL = 'Mozilla/5.0 (iPad; CPU OS 14_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/602.6.13 Mobile Safari/537.36';
-      } else {
+        child.windowList[windowIndex].customSetting.iframe = true;
+      } else if (url.like('*60080*')) {
+        child.windowList[windowIndex].customSetting.allowDevTools = false;
+      }else {
         child.windowList[windowIndex].customSetting.userAgentURL = win.customSetting.userAgentURL;
+        child.windowList[windowIndex].customSetting.iframe = true;
       }
     }
   };
