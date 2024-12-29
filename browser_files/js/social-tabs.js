@@ -59,9 +59,6 @@ function getDefaultTapProperties() {
     defaultTapProperties.iconURL = 'browser://images/logo.png';
   }
 
-  if (SOCIALBROWSER.var.core.defaultUserAgent) {
-    defaultTapProperties.userAgentURL = SOCIALBROWSER.var.core.defaultUserAgent.url;
-  }
 
   return { ...defaultTapProperties };
 }
@@ -73,9 +70,6 @@ client.on('setting changed', (arr) => {
       defaultTapProperties.url = setting.core.default_page;
     }
 
-    if (setting.core.defaultUserAgent) {
-      defaultTapProperties.userAgentURL = setting.core.defaultUserAgent.url;
-    }
   }
 });
 
@@ -370,7 +364,6 @@ class SocialTabs {
   updateTab(tabEl, tabProperties) {
     tabEl.setAttribute('id', tabProperties.id);
     tabEl.setAttribute('url', tabProperties.url);
-    tabEl.setAttribute('userAgentURL', tabProperties.userAgentURL);
     tabEl.setAttribute('partition', tabProperties.partition);
     tabEl.setAttribute('user_name', tabProperties.user_name);
     tabEl.setAttribute('proxy', tabProperties.proxy);

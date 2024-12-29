@@ -44,7 +44,7 @@ module.exports = function (child) {
           slashes: true,
         }),
         windowType: 'addressbar',
-        vip : true,
+        vip: true,
         show: false,
         width: win.getBounds().width - 200,
         height: 500,
@@ -100,7 +100,7 @@ module.exports = function (child) {
           slashes: true,
         }),
         windowType: 'profiles',
-        vip : true,
+        vip: true,
         show: false,
         width: 800,
         height: 800,
@@ -360,18 +360,23 @@ module.exports = function (child) {
     customSetting.windowID = win.id;
     win.customSetting = customSetting;
     win.customSetting.windowSetting = win.customSetting.windowSetting || [];
+
     win.customSetting.session = parent.var.session_list.find((s) => s.name == win.customSetting.partition);
 
-    if (win.customSetting.session && win.customSetting.session.defaultUserAgent) {
-      win.customSetting.defaultUserAgent = win.customSetting.session.defaultUserAgent;
-    } else {
-      win.customSetting.defaultUserAgent = parent.var.core.defaultUserAgent;
-    }
-
     if (win.customSetting.userAgentURL) {
-      win.customSetting.defaultUserAgent = parent.var.userAgentList.find((u) => u.url == win.customSetting.userAgentURL) || win.customSetting.defaultUserAgent;
+      win.customSetting.$defaultUserAgent = parent.var.userAgentList.find((u) => u.url == win.customSetting.userAgentURL) || { url: win.customSetting.userAgentURL };
+      win.customSetting.$userAgentURL = win.customSetting.$defaultUserAgent.url;
+    } else if (win.customSetting.defaultUserAgent) {
+      win.customSetting.$defaultUserAgent = win.customSetting.defaultUserAgent;
+      win.customSetting.$userAgentURL = win.customSetting.$defaultUserAgent.url;
     } else {
-      win.customSetting.userAgentURL = win.customSetting.defaultUserAgent.url;
+      if (win.customSetting.session && win.customSetting.session.defaultUserAgent) {
+        win.customSetting.$defaultUserAgent = win.customSetting.session.defaultUserAgent;
+        win.customSetting.$userAgentURL = win.customSetting.$defaultUserAgent.url;
+      } else {
+        win.customSetting.$defaultUserAgent = parent.var.core.defaultUserAgent;
+        win.customSetting.$userAgentURL = win.customSetting.$defaultUserAgent.url;
+      }
     }
 
     if (!parent.var.core.browserActivated) {
@@ -457,14 +462,15 @@ module.exports = function (child) {
     }
 
     if (win.customSetting.url) {
+      child.handleCustomSeting(win.customSetting.url, win);
       win.loadURL(win.customSetting.url, {
         httpReferrer: win.customSetting.referrer || win.customSetting.referer,
-        userAgent: win.customSetting.userAgentURL || parent.var.core.defaultUserAgent.url,
+        userAgent: win.customSetting.$userAgentURL,
       });
     } else {
       win.loadURL(parent.var.core.default_page || 'http://127.0.0.1:60080/newTab', {
         httpReferrer: win.customSetting.referrer || win.customSetting.referer,
-        userAgent: win.customSetting.userAgentURL || parent.var.core.defaultUserAgent.url,
+        userAgent: win.customSetting.$userAgentURL,
       });
     }
 
@@ -942,12 +948,12 @@ module.exports = function (child) {
 
     win.webContents.on('did-start-navigation', (e) => {
       console.log('did-start-navigation : ' + e.url);
-      child.handleCustomSeting(e.url , win);
+      child.handleCustomSeting(e.url, win);
     });
     win.webContents.on('will-redirect', (e) => {
       let url = e.url;
       child.log('will-redirect : ', url);
-      child.handleCustomSeting(url , win);
+      child.handleCustomSeting(url, win);
 
       // if (url.like('*accounts.google.com*') && e.isMainFrame && win.customSetting.iframe) {
       //   e.preventDefault();
@@ -994,7 +1000,7 @@ module.exports = function (child) {
     });
     win.webContents.on('will-navigate', (details) => {
       child.log('will-navigate : ' + details.url);
-      child.handleCustomSeting(details.url , win) ;
+      child.handleCustomSeting(details.url, win);
       win.customSetting.title = details.url;
       win.customSetting.iconURL = win.customSetting.loading_icon;
       child.updateTab(win);
@@ -1002,7 +1008,7 @@ module.exports = function (child) {
 
     win.webContents.on('will-frame-navigate', (details) => {
       child.log('will-frame-navigate : ' + details.url);
-      child.handleCustomSeting(details.url , win);
+      child.handleCustomSeting(details.url, win);
 
       if (details.url.like('ftp*|mail*')) {
         details.preventDefault();

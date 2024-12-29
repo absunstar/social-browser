@@ -344,8 +344,10 @@ module.exports = function (child) {
         }
 
         if (customSetting) {
-          if (customSetting.userAgentURL) {
-            details.requestHeaders['User-Agent'] = customSetting.userAgentURL;
+          if (customSetting.$userAgentURL) {
+            details.requestHeaders['User-Agent'] = customSetting.$userAgentURL;
+          }else if (customSetting.$defaultUserAgent) {
+            details.requestHeaders['User-Agent'] = customSetting.$defaultUserAgent.url;
           } else if (customSetting.userAgent) {
             details.requestHeaders['User-Agent'] = customSetting.userAgent;
           }
@@ -355,7 +357,7 @@ module.exports = function (child) {
         let domainCookie = details.requestHeaders['Cookie'] || '';
         let domainCookieObject = child.cookieParse(domainCookie);
         if (customSetting && customSetting.vip) {
-          child.log('VIP Ignore cookieList');
+         // child.log('VIP Ignore cookieList');
         } else if (customSetting && Array.isArray(customSetting.cookieList)) {
           if (customSetting.cookieList.length > 0) {
             let cookieIndex = customSetting.cookieList.findIndex((c) => domainName.contains(c.domain) && c.partition == name);

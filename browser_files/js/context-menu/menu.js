@@ -1546,7 +1546,6 @@ function createMenuList(node) {
       let url = node.getAttribute('url');
       let partition = node.getAttribute('partition');
       let user_name = node.getAttribute('user_name');
-      let userAgentURL = node.getAttribute('userAgentURL');
       let childProcessID = node.getAttribute('childProcessID');
       SOCIALBROWSER.menuList.push({
         label: 'New tab',
@@ -1557,7 +1556,7 @@ function createMenuList(node) {
       SOCIALBROWSER.menuList.push({
         label: 'Duplicate tab',
         click() {
-          SOCIALBROWSER.ipc('[open new tab]', { url: url, partition: partition, user_name: user_name, userAgentURL: userAgentURL, main_window_id: SOCIALBROWSER.remote.getCurrentWindow().id });
+          SOCIALBROWSER.ipc('[open new tab]', { url: url, partition: partition, user_name: user_name, main_window_id: SOCIALBROWSER.remote.getCurrentWindow().id });
         },
       });
       SOCIALBROWSER.menuList.push({
@@ -1598,14 +1597,14 @@ function createMenuList(node) {
         label: 'New Ghost tab',
         click() {
           let ghost = 'x-ghost_' + (new Date().getTime().toString() + Math.random().toString()).replace('.', '');
-          SOCIALBROWSER.ipc('[open new tab]', { partition: ghost, iframe: true, user_name: ghost, userAgentURL: userAgentURL, main_window_id: SOCIALBROWSER.remote.getCurrentWindow().id });
+          SOCIALBROWSER.ipc('[open new tab]', { partition: ghost, iframe: true, user_name: ghost, main_window_id: SOCIALBROWSER.remote.getCurrentWindow().id });
         },
       });
       SOCIALBROWSER.menuList.push({
         label: 'Duplicate tab in Ghost tab',
         click() {
           let ghost = 'x-ghost_' + (new Date().getTime().toString() + Math.random().toString()).replace('.', '');
-          SOCIALBROWSER.ipc('[open new tab]', { url: url, partition: ghost, user_name: ghost, userAgentURL: userAgentURL, main_window_id: SOCIALBROWSER.remote.getCurrentWindow().id });
+          SOCIALBROWSER.ipc('[open new tab]', { url: url, partition: ghost, user_name: ghost, main_window_id: SOCIALBROWSER.remote.getCurrentWindow().id });
         },
       });
       SOCIALBROWSER.menuList.push({
@@ -1622,7 +1621,6 @@ function createMenuList(node) {
             url: url,
             partition: partition,
             user_name: user_name,
-            userAgentURL: userAgentURL,
             main_window_id: SOCIALBROWSER.remote.getCurrentWindow().id,
           });
         },
@@ -1638,7 +1636,6 @@ function createMenuList(node) {
             url: url,
             partition: ghost,
             user_name: ghost,
-            userAgentURL: userAgentURL,
             main_window_id: SOCIALBROWSER.remote.getCurrentWindow().id,
           });
         },

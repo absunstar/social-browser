@@ -25,7 +25,7 @@ function ipc(name, message) {
   message.mainWindowID = message.mainWindowID || SOCIALBROWSER.currentTabInfo.mainWindowID;
 
   SOCIALBROWSER.ipc(name, message);
-  if (name == '[window-action]' && !message.name.like('*screen*')) {
+  if (name == '[window-action]' && !message.name.like('*screen*|*external*')) {
     SOCIALBROWSER.clickCurrentTab();
   }
 }
@@ -516,7 +516,7 @@ SOCIALBROWSER.showUserProxyMenu = function () {
       SOCIALBROWSER.ws({ type: '[change-user-proxy]', partition: SOCIALBROWSER.currentTabInfo.partition, proxy: null });
       setTimeout(() => {
         ipc('[window-reload]');
-      }, 1000 * 2);
+      }, 1000 * 0);
     },
   });
   SOCIALBROWSER.menuList.push({
@@ -530,7 +530,7 @@ SOCIALBROWSER.showUserProxyMenu = function () {
         SOCIALBROWSER.ws({ type: '[change-user-proxy]', partition: SOCIALBROWSER.currentTabInfo.partition, proxy: proxy });
         setTimeout(() => {
           ipc('[window-reload]');
-        }, 1000 * 2);
+        }, 1000 * 0);
       },
     });
   });
@@ -553,7 +553,54 @@ SOCIALBROWSER.showUserProxyMenu = function () {
     })),
   });
 };
+SOCIALBROWSER.showUserAgentMenu = function () {
+  SOCIALBROWSER.currentWindow.show();
+  SOCIALBROWSER.menuList = [];
 
+  SOCIALBROWSER.menuList.push({
+    label: 'Remove User Agent',
+    iconURL: 'http://127.0.0.1:60080/images/stop.png',
+    click: () => {
+      SOCIALBROWSER.ws({ type: '[change-user-agent]', partition: SOCIALBROWSER.currentTabInfo.partition, defaultUserAgent: null });
+      setTimeout(() => {
+        ipc('[window-reload]');
+      }, 1000 * 0);
+    },
+  });
+  SOCIALBROWSER.menuList.push({
+    type: 'separator',
+  });
+  SOCIALBROWSER.var.userAgentList.forEach((userAgent) => {
+    SOCIALBROWSER.menuList.push({
+      label: userAgent.name,
+      iconURL: 'http://127.0.0.1:60080/images/user-agent.png',
+      click: () => {
+        SOCIALBROWSER.ws({ type: '[change-user-agent]', partition: SOCIALBROWSER.currentTabInfo.partition, defaultUserAgent: userAgent });
+        setTimeout(() => {
+          ipc('[window-reload]');
+        }, 1000 * 0);
+      },
+    });
+  });
+
+  SOCIALBROWSER.ipc('[show-menu]', {
+    list: SOCIALBROWSER.menuList.map((m) => ({
+      label: m.label,
+      sublabel: m.sublabel,
+      visible: m.visible,
+      type: m.type,
+      iconURL: m.iconURL,
+      submenu: m.submenu?.map((m2) => ({
+        label: m2.label,
+        type: m2.type,
+        sublabel: m2.sublabel,
+        visible: m2.visible,
+        iconURL: m2.iconURL,
+        submenu: m2.submenu?.map((m3) => ({ label: m3.label, type: m3.type, sublabel: m3.sublabel, visible: m3.visible, iconURL: m3.iconURL })),
+      })),
+    })),
+  });
+};
 socialTabs.init(socialTabsDom, {
   tabOverlapDistance: 14,
   minWidth: 35,
@@ -813,47 +860,32 @@ SOCIALBROWSER.on('[send-render-message]', (event, data) => {
   renderMessage(data);
 });
 SOCIALBROWSER.on('[update-tab-properties]', (event, data) => {
-  if (data.tabID && data.url) {
-    $('#' + data.tabID).attr('url', data.url);
-  }
-  if (data.tabID && data.iconURL) {
-    $('#' + data.tabID).attr('iconURL', data.iconURL);
-    $('#' + data.tabID + ' .social-tab-favicon').css('background-image', 'url(' + data.iconURL + ')');
-  }
-  if (data.user_name) {
-    $('#' + data.tabID).attr('user_name', data.user_name);
-  }
+  if (data.tabID) {
+    let tab1 = document.querySelector('#' + data.tabID);
+    if (tab1) {
+      tab1.setAttribute('iconURL', data.iconURL);
+      $('#' + data.tabID + ' .social-tab-favicon').css('background-image', 'url(' + data.iconURL + ')');
+      tab1.setAttribute('windowID', data.windowID);
+      tab1.setAttribute('childProcessID', data.childProcessID);
+      tab1.setAttribute('mainWindowID', data.mainWindowID);
+      tab1.setAttribute('forward', data.forward);
+      tab1.setAttribute('back', data.back);
+      tab1.setAttribute('webaudio', data.webaudio);
+      tab1.setAttribute('proxy', data.proxy);
+      tab1.setAttribute('url', data.url);
+      tab1.setAttribute('userAgentURL', data.userAgentURL);
+    }
 
-  if (data.windowID) {
-    $('#' + data.tabID).attr('windowID', data.windowID);
-  }
-
-  if (data.childProcessID) {
-    $('#' + data.tabID).attr('childProcessID', data.childProcessID);
-  }
-  if (data.mainWindowID) {
-    $('#' + data.tabID).attr('mainWindowID', data.mainWindowID);
-  }
-
-  if (data.forward) {
-    $('#' + data.tabID).attr('forward', data.forward);
-  }
-  if (data.back) {
-    $('#' + data.tabID).attr('back', data.back);
-  }
-  if (data.webaudio) {
-    $('#' + data.tabID).attr('webaudio', data.webaudio);
-  }
-
-  if (data.title) {
-    $('#' + data.tabID + ' .social-tab-title p').text(data.title);
-    $('#' + data.tabID).attr('title', data.title);
-    let p = document.querySelector('#' + data.tabID + ' .social-tab-title p');
-    if (p) {
-      if (data.title.test(/^[a-zA-Z\-\u0590-\u05FF\0-9\^@_:\?\[\]~<>\{\}\|\\ ]+$/)) {
-        p.style.direction = 'ltr';
-      } else {
-        p.style.direction = 'rtl';
+    if (data.title) {
+      $('#' + data.tabID + ' .social-tab-title p').text(data.title);
+      $('#' + data.tabID).attr('title', data.title);
+      let p = document.querySelector('#' + data.tabID + ' .social-tab-title p');
+      if (p) {
+        if (data.title.test(/^[a-zA-Z\-\u0590-\u05FF\0-9\^@_:\?\[\]~<>\{\}\|\\ ]+$/)) {
+          p.style.direction = 'ltr';
+        } else {
+          p.style.direction = 'rtl';
+        }
       }
     }
   }

@@ -170,8 +170,8 @@ if (SOCIALBROWSER.customSetting.browser) {
   SOCIALBROWSER.defaultUserAgent.engine = { name: SOCIALBROWSER.customSetting.browser.name };
 }
 
-if (SOCIALBROWSER.customSetting.userAgentURL) {
-  SOCIALBROWSER.userAgentURL = SOCIALBROWSER.customSetting.userAgentURL;
+if (SOCIALBROWSER.customSetting.$userAgentURL) {
+  SOCIALBROWSER.userAgentURL = SOCIALBROWSER.customSetting.$userAgentURL;
 }
 if (!SOCIALBROWSER.userAgentURL) {
   SOCIALBROWSER.var.customHeaderList.forEach((h) => {

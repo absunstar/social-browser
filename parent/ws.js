@@ -477,7 +477,6 @@ module.exports = function init(parent) {
           }
           break;
         case '[change-user-proxy]':
-          console.log(message);
           let userIndex = parent.var.session_list.findIndex((s) => s.name == message.partition);
           if (userIndex !== -1) {
             if (message.proxy) {
@@ -485,6 +484,20 @@ module.exports = function init(parent) {
               parent.var.session_list[userIndex].proxy.enabled = true;
             } else {
               parent.var.session_list[userIndex].proxy = { enabled: false };
+            }
+            parent.applay('session_list');
+          }
+
+          break;
+        case '[change-user-agent]':
+          let userIndex2 = parent.var.session_list.findIndex((s) => s.name == message.partition);
+          if (userIndex2 !== -1) {
+            if (message.defaultUserAgent) {
+              parent.var.session_list[userIndex2].defaultUserAgent = message.defaultUserAgent;
+              parent.var.session_list[userIndex2].userAgentURL = message.defaultUserAgent.url;
+            } else {
+              parent.var.session_list[userIndex2].defaultUserAgent = null;
+              parent.var.session_list[userIndex2].userAgentURL = '';
             }
             parent.applay('session_list');
           }

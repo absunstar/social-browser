@@ -263,19 +263,24 @@ module.exports = function (child) {
   };
 
   child.updateTab = function (win) {
-    let setting = win.customSetting;
+    let setting = {};
 
-    if (setting.windowType !== 'view') {
+    if (win.customSetting.windowType !== 'view') {
       return;
     }
 
     setting.name = '[update-tab-properties]';
+    setting.url = win.getURL();
     setting.windowID = win.id;
+    setting.tabID = win.customSetting.tabID;
     setting.childProcessID = child.id;
     setting.forward = win.webContents.navigationHistory.canGoForward();
     setting.back = win.webContents.navigationHistory.canGoBack();
     setting.webaudio = !win.webContents.audioMuted;
-    setting.url = win.getURL();
+    setting.title = win.customSetting.title;
+    setting.iconURL = win.customSetting.iconURL;
+    setting.proxy = win.customSetting.proxy?.url || '';
+    setting.userAgentURL = win.customSetting.$userAgentURL;
 
     child.sendMessage({
       type: '[update-tab-properties]',
@@ -311,22 +316,57 @@ module.exports = function (child) {
   };
   child.handleCustomSeting = function (url, win) {
     let windowIndex = child.windowList.findIndex((w) => w.id == win.id);
+    win.customSetting.session = child.parent.var.session_list.find((s) => s.name == win.customSetting.partition);
+
     if (windowIndex !== -1) {
+      child.windowList[windowIndex].customSetting.session = win.customSetting.session;
+
+      if (child.windowList[windowIndex].customSetting.userAgentURL) {
+        child.windowList[windowIndex].customSetting.$defaultUserAgent = child.parent.var.userAgentList.find((u) => u.url == child.windowList[windowIndex].customSetting.userAgentURL) || {
+          url: child.windowList[windowIndex].customSetting.userAgentURL,
+        };
+        child.windowList[windowIndex].customSetting.$userAgentURL = child.windowList[windowIndex].customSetting.userAgentURL;
+      } else if (child.windowList[windowIndex].customSetting.defaultUserAgent) {
+        child.windowList[windowIndex].customSetting.$defaultUserAgent = child.windowList[windowIndex].customSetting.defaultUserAgent;
+        child.windowList[windowIndex].customSetting.$userAgentURL = child.windowList[windowIndex].customSetting.$defaultUserAgent.url;
+      } else {
+        if (child.windowList[windowIndex].customSetting.session && child.windowList[windowIndex].customSetting.session.defaultUserAgent) {
+          child.windowList[windowIndex].customSetting.$defaultUserAgent = child.windowList[windowIndex].customSetting.session.defaultUserAgent;
+          child.windowList[windowIndex].customSetting.$userAgentURL = child.windowList[windowIndex].customSetting.$defaultUserAgent.url;
+        } else {
+          child.windowList[windowIndex].customSetting.$defaultUserAgent = child.parent.var.core.defaultUserAgent;
+          child.windowList[windowIndex].customSetting.$userAgentURL = child.windowList[windowIndex].customSetting.$defaultUserAgent.url;
+        }
+      }
+
+      win.customSetting.$defaultUserAgent = child.windowList[windowIndex].customSetting.$defaultUserAgent;
+      win.customSetting.$userAgentURL = win.customSetting.$defaultUserAgent.url;
+      child.electron.app.userAgentFallback = win.customSetting.$userAgentURL;
+
       if (url.like('*accounts.google.com*')) {
-        child.windowList[windowIndex].customSetting.userAgentURL = child.parent.var.core.googleUserAgentURL;
+        child.windowList[windowIndex].customSetting.$userAgentURL = child.parent.var.core.googleUserAgentURL;
         child.windowList[windowIndex].customSetting.iframe = false;
       } else if (url.like('*youtube.com/embed*')) {
-        child.windowList[windowIndex].customSetting.userAgentURL = win.customSetting.userAgentURL;
+        child.windowList[windowIndex].customSetting.$userAgentURL = win.customSetting.userAgentURL;
         child.windowList[windowIndex].customSetting.iframe = true;
       } else if (url.like('*youtube.com*')) {
-        child.windowList[windowIndex].customSetting.userAgentURL = 'Mozilla/5.0 (iPad; CPU OS 14_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/602.6.13 Mobile Safari/537.36';
+        child.windowList[windowIndex].customSetting.$userAgentURL = 'Mozilla/5.0 (iPad; CPU OS 14_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/602.6.13 Mobile Safari/537.36';
+        child.windowList[windowIndex].customSetting.$defaultUserAgent = child.parent.var.userAgentList.find((u) => u.url == child.windowList[windowIndex].customSetting.$userAgentURL) || {
+          url: child.windowList[windowIndex].customSetting.$userAgentURL,
+        };
         child.windowList[windowIndex].customSetting.iframe = true;
+        if (url.like('*youtube.com/watch*') && url !== win.lastYoutubeWatch) {
+          win.lastYoutubeWatch = url;
+          win.loadURL(url);
+        }
       } else if (url.like('*60080*')) {
         child.windowList[windowIndex].customSetting.allowDevTools = false;
-      }else {
-        child.windowList[windowIndex].customSetting.userAgentURL = win.customSetting.userAgentURL;
+      } else {
+        child.windowList[windowIndex].customSetting.$userAgentURL = win.customSetting.userAgentURL;
         child.windowList[windowIndex].customSetting.iframe = true;
       }
+    } else {
+      console.log('handleCustomSeting Not Exists', url);
     }
   };
 };
