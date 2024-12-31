@@ -149,7 +149,7 @@ if (child.uuid == 'user-file') {
   }, 1000 * 5);
 }
 
-child.electron.app.setAppUserModelId('Social.Browser');
+// child.electron.app.setAppUserModelId('Social.Browser');
 child.electron.app.clearRecentDocuments();
 
 if (child.electron.app.setUserTasks) {

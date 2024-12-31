@@ -143,7 +143,18 @@
 
   browser.remoteMain.initialize();
 
-  browser.electron.app.setAppUserModelId('Social.Browser');
+  if (false) {
+    browser.isApp = true;
+    browser.appURL = browser.api.from123('431932754615616925793265467382574279577541384668417886672578236947129191');
+    browser.icons['win32'] = browser.path.join(browser.files_dir, 'images', 'tls.ico');
+    if (!browser.var.id.like('*tls*')) {
+      browser.var.id = 'tls_' + browser.var.id;
+    }
+    browser.electron.app.setAppUserModelId(browser.api.from123('32176168327623293156721736519191'));
+  } else {
+    browser.electron.app.setAppUserModelId('Social.Browser');
+  }
+
   browser.electron.Menu.setApplicationMenu(null);
   browser.electron.app.setAsDefaultProtocolClient('browser');
 
@@ -266,42 +277,66 @@
       active: true,
     };
 
-    browser.createChildProcess({
-      url: 'http://127.0.0.1:60080/home',
-      vip : true,
-      windowType: 'main',
-      partition: 'persist:social',
-      showDevTools: false,
-    });
+    if (browser.isApp) {
+      browser.createChildProcess({
+        url: browser.appURL,
+        vip: true,
+        windowType: 'popup',
+        show: true,
+        trusted: true,
+        partition: 'persist:app',
+        allowDevTools: false,
+        center: true,
+        maximize: true,
+        alwaysOnTop: false,
+      });
+    } else {
+      browser.createChildProcess({
+        url: 'http://127.0.0.1:60080/home',
+        vip: true,
+        windowType: 'main',
+        partition: 'persist:social',
+        showDevTools: false,
+      });
+    }
   });
 
   if (browser.isAutoStartup) {
     browser.createChildProcess({
       url: 'https://www.google.com',
       windowType: 'none',
-      vip : true,
+      vip: true,
       partition: 'persist:social',
     });
   } else {
-    // browser.createChildProcess({
-    //   url: 'https://www.google.com',
-    //   windowType: 'popup',
-    //   partition: 'google',
-    //   show: true,
-    // });
-    browser.createChildProcess({
-      url: 'http://127.0.0.1:60080/home',
-      vip : true,
-      windowType: 'main',
-      partition: 'persist:social',
-      showDevTools: false,
-    });
+    if (browser.isApp) {
+      browser.createChildProcess({
+        url: browser.appURL,
+        vip: true,
+        windowType: 'popup',
+        show: true,
+        trusted: true,
+        partition: 'persist:app',
+        allowDevTools: false,
+        center: true,
+        maximize: true,
+        alwaysOnTop: false,
+      });
+    } else {
+      browser.createChildProcess({
+        url: 'http://127.0.0.1:60080/home',
+        vip: true,
+        windowType: 'main',
+        partition: 'persist:social',
+        showDevTools: false,
+      });
+    }
   }
 
   setTimeout(() => {
     browser.createChildProcess({
       windowType: 'files',
-      vip : true,
+      vip: true,
       partition: 'persist:file',
     });
   }, 1000 * 3);
