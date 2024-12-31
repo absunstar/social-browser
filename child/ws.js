@@ -68,7 +68,6 @@ module.exports = function (child) {
                 const path = child.path.join(dir, file);
                 try {
                   if (child.fs.statSync(path).isFile()) {
-                    console.log(path);
                     child.nativeIconList.push({
                       path: path,
                       icon: child.electron.nativeImage.createFromPath(path).resize({ width: 16 }),

@@ -15,13 +15,13 @@
   },
   "main": "server.js",
   "scripts": {
+    "start": "electron .",
     "win": "electron-builder -w --x64 --ia32",
-    "win32": "electron-builder -w --ia32",
-    "win64": "electron-builder -w --x64",
     "linux": "electron-builder -l --x64 --ia32",
     "mac": "electron-builder -m --x64",
+    "win32": "electron-builder -w --ia32",
+    "win64": "electron-builder -w --x64",
     "postinstall": "electron-builder install-app-deps",
-    "start": "electron .",
     "reload": "electron-rebuild",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
@@ -111,7 +111,7 @@
   },
   "dependencies": {
     "@electron/remote": "^2.1.2",
-    "isite": "^2024.12.4",
+    "isite": "^2024.12.5",
     "node-fetch": "^3.3.2"
   },
   "devDependencies": {
