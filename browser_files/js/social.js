@@ -264,6 +264,27 @@ function showSettingMenu() {
   SOCIALBROWSER.menuList.push({
     type: 'separator',
   });
+  let tools = {
+    label: 'Social Tools',
+    click: () => {
+      ipc('[open new popup]', {
+        show: true,
+        url: 'https://tools.social-browser.com/tools',
+        title: 'Social Browser Tools',
+        partition: 'persist:tools',
+        center: true,
+        vip: true,
+        alwaysOnTop: true,
+        maximize: false,
+      });
+    },
+    iconURL: 'http://127.0.0.1:60080/images/tools.png',
+  };
+
+  SOCIALBROWSER.menuList.push(tools);
+  SOCIALBROWSER.menuList.push({
+    type: 'separator',
+  });
 
   if (SOCIALBROWSER.var.core.id.like('*developer*')) {
     SOCIALBROWSER.menuList.push({
@@ -401,24 +422,11 @@ function showSettingMenu() {
     type: 'separator',
   });
 
-  let tools = {
-    label: 'Social Tools',
-    click: () => {
-      ipc('[open new popup]', {
-        show: true,
-        url: 'https://tools.social-browser.com/tools',
-        title: 'Social Browser Tools',
-        partition: 'persist:tools',
-        center: true,
-        vip: true,
-        alwaysOnTop: true,
-        maximize: false,
-      });
-    },
-    iconURL: 'http://127.0.0.1:60080/images/tools.png',
-  };
-
-  SOCIALBROWSER.menuList.push(tools);
+  SOCIALBROWSER.menuList.push({
+    label: 'Close All Social Browser Services',
+    iconURL: 'http://127.0.0.1:60080/images/close.png',
+    click: () => SOCIALBROWSER.ws({ type: '[close]' }),
+  });
 
   SOCIALBROWSER.ipc('[show-menu]', {
     list: SOCIALBROWSER.menuList.map((m) => ({

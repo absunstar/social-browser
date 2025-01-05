@@ -1,11 +1,11 @@
 {
-  "name": "social_browser",
+  "name": "social.browser",
   "productName": "Social Browser",
   "homepage": "https://social-browser.com",
   "version": "2025.01.01",
-  "description": "Browsing Any Site with Multi Users And without Ads",
+  "description": "Browsing Social Platforms with Multiple Accounts without Ban",
   "author": {
-    "name": "Social Developer",
+    "name": "Social Teams",
     "email": "social.browser.com@gmail.com"
   },
   "license": "MIT",
@@ -25,7 +25,9 @@
     "reload": "electron-rebuild",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
-    "update": "npm i -D electron@latest"
+    "update": "npm i -D electron@latest",
+    "app:dir": "electron-builder --dir",
+    "app:dist": "electron-builder"
   },
   "build": {
     "appId": "com.social.browser",
@@ -111,7 +113,7 @@
   },
   "dependencies": {
     "@electron/remote": "^2.1.2",
-    "isite": "^2024.12.5",
+    "isite": "^2024.12.6",
     "node-fetch": "^3.3.2"
   },
   "devDependencies": {

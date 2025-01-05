@@ -435,16 +435,21 @@ if ((randomUserAgentSupport = true)) {
     },
   ];
 
-  SOCIALBROWSER.getRandomBrowser = function (deviceName = '*') {
-    let browser = { ...SOCIALBROWSER.userAgentBrowserList[SOCIALBROWSER.randomNumber(0, SOCIALBROWSER.userAgentBrowserList.length - 1)] };
-    let devices = SOCIALBROWSER.userAgentDeviceList.filter((d) => d.name.like(deviceName));
-    browser.device = devices[SOCIALBROWSER.randomNumber(0, devices.length - 1)];
+  SOCIALBROWSER.getRandomBrowser = function (deviceName = '*', browserName = '*', platformName = '*') {
+    let browser = SOCIALBROWSER.userAgentBrowserList.filter((d) => d.name.contains(browserName));
+    browser = browser[SOCIALBROWSER.randomNumber(0, browser.length - 1)] || SOCIALBROWSER.userAgentBrowserList[SOCIALBROWSER.randomNumber(0, SOCIALBROWSER.userAgentBrowserList.length - 1)];
+    browser = { ...browser };
+
+    let devices = SOCIALBROWSER.userAgentDeviceList.filter((d) => d.name.contains(deviceName));
+    browser.device = devices[SOCIALBROWSER.randomNumber(0, devices.length - 1)] || SOCIALBROWSER.userAgentDeviceList[SOCIALBROWSER.randomNumber(0, SOCIALBROWSER.userAgentDeviceList.length - 1)];
 
     browser.screen = browser.device.screenList[SOCIALBROWSER.randomNumber(0, browser.device.screenList.length - 1)];
     browser.screen = browser.screen.split('*');
     browser.screen = { width: parseInt(browser.screen[0]), height: parseInt(browser.screen[1]) };
 
-    browser.platformInfo = browser.device.platformList[SOCIALBROWSER.randomNumber(0, browser.device.platformList.length - 1)];
+    browser.platformInfo = browser.device.platformList.filter((d) => d.name.contains(platformName));
+    browser.platformInfo =
+      browser.platformInfo[SOCIALBROWSER.randomNumber(0, browser.platformInfo.length - 1)] || browser.device.platformList[SOCIALBROWSER.randomNumber(0, browser.device.platformList.length - 1)];
     browser.platform = browser.platformInfo.code;
     if (browser.device.name === 'Mobile') {
       browser.prefix = 'Mobile';
