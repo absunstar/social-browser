@@ -379,7 +379,7 @@ module.exports = function (child) {
       }
     }
 
-    if (!parent.var.core.browserActivated) {
+    if (!parent.var.core.browserActivated && win.customSetting.windowType == 'view') {
       win.customSetting.url = 'http://127.0.0.1:60080/setting';
     }
 
@@ -971,7 +971,6 @@ module.exports = function (child) {
       //     x: null,
       //     y: null,
       //     url: url,
-      //     userAgentURL: child.parent.var.core.googleUserAgentURL,
       //   });
       //   if (win.customSetting.windowType == 'popup') {
       //     win.close();
@@ -1053,7 +1052,6 @@ module.exports = function (child) {
             x: null,
             y: null,
             url: url,
-            userAgentURL: child.parent.var.core.googleUserAgentURL,
           });
           if (win.customSetting.windowType == 'popup') {
             win.close();

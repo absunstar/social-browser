@@ -11,6 +11,8 @@ if (document.location.href.like('*://challenges.cloudflare.com/*')) {
         clientX = randomInteger(box.left, box.left + box.width);
         clientY = randomInteger(box.top, box.top + box.height);
 
+        // SOCIALBROWSER.click(box);
+
         eventNames.forEach((eventName) => {
           const event = new MouseEvent(eventName, {
             detail: eventName === 'mouseover' ? 0 : 1,

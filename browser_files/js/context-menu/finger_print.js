@@ -36,7 +36,7 @@ if (SOCIALBROWSER.session.privacy.vpc.hide_memory) {
 }
 
 
-if (!SOCIALBROWSER.customSetting.browser && SOCIALBROWSER.session.privacy.vpc.hide_screen && SOCIALBROWSER.session.privacy.vpc.screen) {
+if (!SOCIALBROWSER.customSetting.defaultUserAgent && SOCIALBROWSER.session.privacy.vpc.hide_screen && SOCIALBROWSER.session.privacy.vpc.screen) {
   SOCIALBROWSER.__define(window, 'innerWidth', SOCIALBROWSER.session.privacy.vpc.screen.width);
   SOCIALBROWSER.__define(window, 'innerHeight', SOCIALBROWSER.session.privacy.vpc.screen.height);
   SOCIALBROWSER.__define(window, 'outerWidth', SOCIALBROWSER.session.privacy.vpc.screen.width);

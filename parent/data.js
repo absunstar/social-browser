@@ -321,7 +321,6 @@ module.exports = function init(parent) {
 
       // must use this useragent : 'Mozilla/5.0 (X11; U; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/124.0.6303.212 Chrome/124.0.6303.212 Safari/537.36'
       // any other useragent error browser not secure
-      parent.var.core.googleUserAgentURL = 'Mozilla/5.0 (X11; U; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/124.0.6303.212 Chrome/124.0.6303.212 Safari/537.36';
 
       if (typeof parent.var.core.loginByPasskey === 'undefined') {
         parent.var.core.loginByPasskey = true;
@@ -759,7 +758,7 @@ module.exports = function init(parent) {
             parent.var.core.max_tabs = 2;
           });
       } else {
-        if (!parent.isAccountsMode && parent.var.session_list.length <= parent.freeUsersCount) {
+        if (parent.var.session_list.length <= parent.freeUsersCount) {
           parent.var.core.browserActivated = true;
           parent.var.core.activeMessage = 'Free Activated';
           if (parent.var.core.max_tabs < 3) {
@@ -768,9 +767,10 @@ module.exports = function init(parent) {
         } else {
           parent.var.core.browserActivated = false;
           parent.var.core.max_tabs = 2;
-          if (parent.var.session_list.length > parent.freeUsersCount) {
-            parent.var.core.activeMessage = `More Than ( ${parent.freeUsersCount} ) Profile Not Free`;
-          }
+          parent.var.core.activeMessage = 'Need Device Key or Online Key';
+          // if (parent.var.session_list.length > parent.freeUsersCount) {
+          //   parent.var.core.activeMessage = `More Than ( ${parent.freeUsersCount} ) Profile Not Free`;
+          // }
         }
       }
     }

@@ -1,18 +1,18 @@
 {
-    "port": 60080,
+  "port": 60080,
+  "enabled": true,
+  "version": "2025.01.06",
+  "prefix": "",
+  "full_version": true,
+  "key": "free key",
+  "brand": "Social Browser",
+  "home_page": "https://www.google.com",
+  "default_page": "https://www.google.com",
+  "autoClearCacheStorage": false,
+  "password": "",
+  "max_tabs": 20,
+  "emails": {
     "enabled": true,
-    "version": "2025.01.05",
-    "prefix": "",
-    "full_version": true,
-    "key": "free key",
-    "brand": "Social Browser",
-    "home_page": "https://www.google.com",
-    "default_page": "https://www.google.com",
-    "autoClearCacheStorage": false,
-    "password": "",
-    "max_tabs": 20,
-    "emails": {
-        "enabled": true,
-        "domain": "social-browser.com"
-    }
+    "domain": "social-browser.com"
+  }
 }

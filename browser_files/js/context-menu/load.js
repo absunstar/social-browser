@@ -17,6 +17,10 @@ if ((policy = true)) {
   //   createScript: (string) => string,
   // });
 }
+if (document.location.href.like('*://challenges.cloudflare.com/*')) {
+  SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/cloudflare.js');
+  return true;
+}
 
 if (!SOCIALBROWSER.isWhiteSite) {
   // some site check if it native function
@@ -26,6 +30,7 @@ if (!SOCIALBROWSER.isWhiteSite) {
       return window.eval0(...code);
     } catch (error) {
       console.log(error);
+      return undefined;
     }
   }.bind(window.eval);
 }
@@ -130,7 +135,6 @@ SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/embed.js');
 
 SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/safty.js');
 SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/adsManager.js');
-SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/cloudflare.js');
 
 if (!SOCIALBROWSER.var.core.javaScriptOFF) {
   if (true) {
@@ -147,32 +151,33 @@ if (!SOCIALBROWSER.var.core.javaScriptOFF) {
 
 SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/finger_print.js');
 
-// custom browser
-if (SOCIALBROWSER.customSetting.browser) {
-  SOCIALBROWSER.__define(window, 'innerWidth', SOCIALBROWSER.customSetting.browser.screen.width);
-  SOCIALBROWSER.__define(window, 'innerHeight', SOCIALBROWSER.customSetting.browser.screen.height);
-  SOCIALBROWSER.__define(window, 'outerWidth', SOCIALBROWSER.customSetting.browser.screen.width);
-  SOCIALBROWSER.__define(window, 'outerHeight', SOCIALBROWSER.customSetting.browser.screen.height);
-  SOCIALBROWSER.__define(screen, 'width', SOCIALBROWSER.customSetting.browser.screen.width);
-  SOCIALBROWSER.__define(screen, 'height', SOCIALBROWSER.customSetting.browser.screen.height);
-  SOCIALBROWSER.__define(screen, 'availWidth', SOCIALBROWSER.customSetting.browser.screen.width);
-  SOCIALBROWSER.__define(screen, 'availHeight', SOCIALBROWSER.customSetting.browser.screen.height);
+SOCIALBROWSER.defaultUserAgent = SOCIALBROWSER.customSetting.$defaultUserAgent;
 
-  SOCIALBROWSER.__define(Screen, 'width', SOCIALBROWSER.customSetting.browser.screen.width);
-  SOCIALBROWSER.__define(Screen, 'height', SOCIALBROWSER.customSetting.browser.screen.height);
-  SOCIALBROWSER.__define(Screen, 'availWidth', SOCIALBROWSER.customSetting.browser.screen.width);
-  SOCIALBROWSER.__define(Screen, 'availHeight', SOCIALBROWSER.customSetting.browser.screen.height);
+// custom browser
+if (SOCIALBROWSER.defaultUserAgent) {
+  SOCIALBROWSER.__define(window, 'innerWidth', SOCIALBROWSER.defaultUserAgent.screen.width);
+  SOCIALBROWSER.__define(window, 'innerHeight', SOCIALBROWSER.defaultUserAgent.screen.height);
+  SOCIALBROWSER.__define(window, 'outerWidth', SOCIALBROWSER.defaultUserAgent.screen.width);
+  SOCIALBROWSER.__define(window, 'outerHeight', SOCIALBROWSER.defaultUserAgent.screen.height);
+  SOCIALBROWSER.__define(screen, 'width', SOCIALBROWSER.defaultUserAgent.screen.width);
+  SOCIALBROWSER.__define(screen, 'height', SOCIALBROWSER.defaultUserAgent.screen.height);
+  SOCIALBROWSER.__define(screen, 'availWidth', SOCIALBROWSER.defaultUserAgent.screen.width);
+  SOCIALBROWSER.__define(screen, 'availHeight', SOCIALBROWSER.defaultUserAgent.screen.height);
+
+  SOCIALBROWSER.__define(Screen, 'width', SOCIALBROWSER.defaultUserAgent.screen.width);
+  SOCIALBROWSER.__define(Screen, 'height', SOCIALBROWSER.defaultUserAgent.screen.height);
+  SOCIALBROWSER.__define(Screen, 'availWidth', SOCIALBROWSER.defaultUserAgent.screen.width);
+  SOCIALBROWSER.__define(Screen, 'availHeight', SOCIALBROWSER.defaultUserAgent.screen.height);
 
   SOCIALBROWSER.screenHidden = true;
 
-  SOCIALBROWSER.defaultUserAgent = SOCIALBROWSER.customSetting.browser;
-  SOCIALBROWSER.userAgentURL = SOCIALBROWSER.customSetting.browser.url;
-  SOCIALBROWSER.defaultUserAgent.engine = { name: SOCIALBROWSER.customSetting.browser.name };
+  SOCIALBROWSER.userAgentURL = SOCIALBROWSER.defaultUserAgent.url;
 }
 
 if (SOCIALBROWSER.customSetting.$userAgentURL) {
   SOCIALBROWSER.userAgentURL = SOCIALBROWSER.customSetting.$userAgentURL;
 }
+
 if (!SOCIALBROWSER.userAgentURL) {
   SOCIALBROWSER.var.customHeaderList.forEach((h) => {
     if (h.type == 'request' && document.location.href.like(h.url)) {
@@ -185,6 +190,7 @@ if (!SOCIALBROWSER.userAgentURL) {
     }
   });
 }
+
 if (!SOCIALBROWSER.userAgentURL) {
   if (SOCIALBROWSER.session.defaultUserAgent) {
     SOCIALBROWSER.defaultUserAgent = SOCIALBROWSER.session.defaultUserAgent;
@@ -198,19 +204,42 @@ if (!SOCIALBROWSER.defaultUserAgent) {
     SOCIALBROWSER.defaultUserAgent = SOCIALBROWSER.var.core.defaultUserAgent;
   }
 }
+
 if (!SOCIALBROWSER.userAgentURL) {
   SOCIALBROWSER.userAgentURL = SOCIALBROWSER.defaultUserAgent.url;
 }
 
 if (SOCIALBROWSER.defaultUserAgent) {
-  if (SOCIALBROWSER.defaultUserAgent.engine && SOCIALBROWSER.defaultUserAgent.engine.name === 'Chrome') {
+  if (SOCIALBROWSER.defaultUserAgent.engine && SOCIALBROWSER.defaultUserAgent.engine.name) {
+    SOCIALBROWSER.defaultUserAgent.name = SOCIALBROWSER.defaultUserAgent.engine.name;
+  }
+  if (SOCIALBROWSER.defaultUserAgent.name.contains('Chrome')) {
     let chrome = JSON.parse(
       '{"app":{"isInstalled":false,"InstallState":{"DISABLED":"disabled","INSTALLED":"installed","NOT_INSTALLED":"not_installed"},"RunningState":{"CANNOT_RUN":"cannot_run","READY_TO_RUN":"ready_to_run","RUNNING":"running"}},"runtime":{"OnInstalledReason":{"CHROME_UPDATE":"chrome_update","INSTALL":"install","SHARED_MODULE_UPDATE":"shared_module_update","UPDATE":"update"},"OnRestartRequiredReason":{"APP_UPDATE":"app_update","OS_UPDATE":"os_update","PERIODIC":"periodic"},"PlatformArch":{"ARM":"arm","ARM64":"arm64","MIPS":"mips","MIPS64":"mips64","X86_32":"x86-32","X86_64":"x86-64"},"PlatformNaclArch":{"ARM":"arm","MIPS":"mips","MIPS64":"mips64","X86_32":"x86-32","X86_64":"x86-64"},"PlatformOs":{"ANDROID":"android","CROS":"cros","LINUX":"linux","MAC":"mac","OPENBSD":"openbsd","WIN":"win"},"RequestUpdateCheckStatus":{"NO_UPDATE":"no_update","THROTTLED":"throttled","UPDATE_AVAILABLE":"update_available"}}}'
     );
     chrome.csi = () => {};
     chrome.loadTimes = () => {};
     SOCIALBROWSER.__define(window, 'chrome', chrome);
-  } else if (SOCIALBROWSER.defaultUserAgent.engine && SOCIALBROWSER.defaultUserAgent.engine.name === 'Edge') {
+  } else if (SOCIALBROWSER.defaultUserAgent.name.contains('Edge')) {
+    let version = SOCIALBROWSER.userAgentURL.split('Chrome/')[1].split(' ')[0].split('.')[0];
+    SOCIALBROWSER.userAgentData = {
+      brands: [
+        {
+          brand: 'Microsoft Edge',
+          version: version,
+        },
+        {
+          brand: 'Chromium',
+          version: version,
+        },
+        {
+          brand: 'Not_A Brand',
+          version: '24',
+        },
+      ],
+      mobile: false,
+      platform: 'Windows',
+    };
     let chrome = JSON.parse(
       '{"appPinningPrivate":{},"authPrivate":{"onServiceAuthStateChanged":{},"onSignInStateChanged":{},"AccountType":{"AAD":"AAD","MSA":"MSA","NO_ACCOUNT":"NO_ACCOUNT","UNSUPPORTED_SOVEREIGNTY":"UNSUPPORTED_SOVEREIGNTY"},"RegionScope":{"ARLINGTON":"ARLINGTON","BLACKFOREST":"BLACKFOREST","DOD":"DOD","DOJ":"DOJ","FAIRFAX":"FAIRFAX","GALLATIN":"GALLATIN","GCC_MODERATE":"GCC_MODERATE","GLOBAL":"GLOBAL","MAX_VALUE":"MAX_VALUE","OTHER":"OTHER","OTHER_US_GOV":"OTHER_US_GOV","UNKNOWN":"UNKNOWN"}},"ntpSettingsPrivate":{"onConfigDataChanged":{},"onPrefsChanged":{},"ControlledBy":{"DEVICE_POLICY":"DEVICE_POLICY","EXTENSION":"EXTENSION","OWNER":"OWNER","PRIMARY_USER":"PRIMARY_USER","USER_POLICY":"USER_POLICY"},"Enforcement":{"ENFORCED":"ENFORCED","RECOMMENDED":"RECOMMENDED"},"PrefType":{"BOOLEAN":"BOOLEAN","DICTIONARY":"DICTIONARY","LIST":"LIST","NUMBER":"NUMBER","STRING":"STRING","URL":"URL"}},"runtime":{"OnInstalledReason":{"CHROME_UPDATE":"chrome_update","INSTALL":"install","SHARED_MODULE_UPDATE":"shared_module_update","UPDATE":"update"},"OnRestartRequiredReason":{"APP_UPDATE":"app_update","OS_UPDATE":"os_update","PERIODIC":"periodic"},"PlatformArch":{"ARM":"arm","ARM64":"arm64","MIPS":"mips","MIPS64":"mips64","X86_32":"x86-32","X86_64":"x86-64"},"PlatformNaclArch":{"ARM":"arm","ARM64":"arm64","MIPS":"mips","MIPS64":"mips64","X86_32":"x86-32","X86_64":"x86-64"},"PlatformOs":{"ANDROID":"android","CROS":"cros","LINUX":"linux","MAC":"mac","OPENBSD":"openbsd","WIN":"win"},"RequestUpdateCheckStatus":{"NO_UPDATE":"no_update","THROTTLED":"throttled","UPDATE_AVAILABLE":"update_available"}},"shellIntegrationPrivate":{},"embeddedSearch":{"searchBox":{"rtl":false,"isFocused":false,"isKeyCaptureEnabled":false},"newTabPage":{"isInputInProgress":false,"mostVisited":[{"rid":1,"faviconUrl":"chrome-search://ntpicon/?size=48@1.000000x&url=https://wordpress.com/"},{"rid":2,"faviconUrl":"chrome-search://ntpicon/?size=48@1.000000x&url=https://javfinder.la/movie/watch/tre-148-b-prestige-losing-virginity-best-vol-05-the-best-first-experience-with-the-best-body-and-great-support-part-b.html"},{"rid":3,"faviconUrl":"chrome-search://ntpicon/?size=48@1.000000x&url=https://ae.godaddy.com/whois/results.aspx?checkAvail=1&domain=spicekingdom.com.eg&domainName=spicekingdom.com.eg"},{"rid":4,"faviconUrl":"chrome-search://ntpicon/?size=48@1.000000x&url=https://www.office.com/"}],"mostVisitedAvailable":true,"ntpTheme":{"usingDefaultTheme":true,"backgroundColorRgba":[247,247,247,255],"textColorRgba":[0,0,0,255],"textColorLightRgba":[102,102,102,255],"alternateLogo":false,"themeId":"","themeName":"","customBackgroundDisabledByPolicy":false,"customBackgroundConfigured":false,"isNtpBackgroundDark":false,"useTitleContainer":false,"iconBackgroundColor":[241,243,244,255],"useWhiteAddIcon":false,"logoColor":[238,238,238,255],"colorId":-1,"searchBox":{"bg":[255,0,0,255],"icon":[255,0,0,255],"iconSelected":[255,0,0,255],"placeholder":[255,0,0,255],"resultsBg":[255,0,0,255],"resultsBgHovered":[255,0,0,255],"resultsBgSelected":[255,0,0,255],"resultsDim":[255,0,0,255],"resultsDimSelected":[255,0,0,255],"resultsText":[255,0,0,255],"resultsTextSelected":[255,0,0,255],"resultsUrl":[255,0,0,255],"resultsUrlSelected":[255,0,0,255],"text":[255,0,0,255]}},"themeBackgroundInfo":{"usingDefaultTheme":true,"backgroundColorRgba":[247,247,247,255],"textColorRgba":[0,0,0,255],"textColorLightRgba":[102,102,102,255],"alternateLogo":false,"themeId":"","themeName":"","customBackgroundDisabledByPolicy":false,"customBackgroundConfigured":false,"isNtpBackgroundDark":false,"useTitleContainer":false,"iconBackgroundColor":[241,243,244,255],"useWhiteAddIcon":false,"logoColor":[238,238,238,255],"colorId":-1,"searchBox":{"bg":[255,0,0,255],"icon":[255,0,0,255],"iconSelected":[255,0,0,255],"placeholder":[255,0,0,255],"resultsBg":[255,0,0,255],"resultsBgHovered":[255,0,0,255],"resultsBgSelected":[255,0,0,255],"resultsDim":[255,0,0,255],"resultsDimSelected":[255,0,0,255],"resultsText":[255,0,0,255],"resultsTextSelected":[255,0,0,255],"resultsUrl":[255,0,0,255],"resultsUrlSelected":[255,0,0,255],"text":[255,0,0,255]}}}}}'
     );
@@ -221,7 +250,7 @@ if (SOCIALBROWSER.defaultUserAgent) {
     chrome.csi = () => {};
     chrome.loadTimes = () => {};
     SOCIALBROWSER.__define(window, 'chrome', chrome);
-  } else if (SOCIALBROWSER.defaultUserAgent.engine && SOCIALBROWSER.defaultUserAgent.engine.name === 'Firefox') {
+  } else if (SOCIALBROWSER.defaultUserAgent.name.contains('Firefox')) {
     SOCIALBROWSER.__define(window, 'chrome', undefined);
     SOCIALBROWSER.__define(window, 'mozRTCIceCandidate', window.RTCIceCandidate);
     SOCIALBROWSER.__define(window, 'mozRTCPeerConnection', window.RTCPeerConnection);
@@ -232,7 +261,7 @@ if (SOCIALBROWSER.defaultUserAgent) {
 
   if (SOCIALBROWSER.userAgentURL.indexOf('Chrome/') !== -1) {
     let version = SOCIALBROWSER.userAgentURL.split('Chrome/')[1].split(' ')[0].split('.')[0];
-    SOCIALBROWSER.userAgentData = {
+    SOCIALBROWSER.userAgentData = SOCIALBROWSER.userAgentData || {
       brands: [
         {
           brand: 'Chromium',
@@ -671,7 +700,7 @@ SOCIALBROWSER.on('[update-browser-var]', (e, res) => {
   if (SOCIALBROWSER.onVarUpdated) {
     SOCIALBROWSER.onVarUpdated(res.options.name, res.options.data);
   }
-  
+
   SOCIALBROWSER.callEvent('updated', { name: res.options.name });
 });
 SOCIALBROWSER.onShare((data) => {

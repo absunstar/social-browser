@@ -121,16 +121,13 @@
   browser.files_dir = browser.dir + '/browser_files';
   browser.data_dir = browser.path.join(browser.os.homedir(), 'social-data');
 
-  if (!browser.fs.existsSync(browser.data_dir) && browser.data_dir[0] !== browser.dir[0]) {
+  if (browser.data_dir[0] !== browser.dir[0]) {
     browser.data_dir = browser.path.join(process.cwd(), 'social-data');
   }
 
-  if (process.cwd().indexOf('-portal') !== -1) {
+  if (process.cwd().indexOf('-portal') !== -1 || process.cwd().indexOf('-accounts') !== -1 || process.cwd().indexOf('-users') !== -1) {
     browser.data_dir = browser.path.join(process.cwd(), 'social-data');
     browser.isPortalMode = true;
-  } else if (process.cwd().indexOf('-accounts') !== -1 || process.cwd().indexOf('-users') !== -1) {
-    browser.data_dir = browser.path.join(process.cwd(), 'social-data');
-    browser.isAccountsMode = true;
   }
 
   if (process.argv.some((x) => x == '--auto-startup')) {
