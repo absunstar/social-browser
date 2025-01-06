@@ -74,7 +74,7 @@
       ]
     },
     "nsis": {
-      "guid": "sbrowser-0000-0000-0000-freesbrowser",
+      "guid": "sbrowser-0000-0000-0000-social.browser",
       "perMachine": true,
       "artifactName": "${productName} ${version} ${os} ${arch} Setup.${ext}",
       "uninstallDisplayName": "${productName}",

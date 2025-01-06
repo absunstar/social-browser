@@ -35,8 +35,7 @@ if (SOCIALBROWSER.session.privacy.vpc.hide_memory) {
   SOCIALBROWSER.__define(Navigator, 'deviceMemory', navigator.deviceMemory);
 }
 
-
-if (!SOCIALBROWSER.customSetting.defaultUserAgent && SOCIALBROWSER.session.privacy.vpc.hide_screen && SOCIALBROWSER.session.privacy.vpc.screen) {
+if (!SOCIALBROWSER.screenHidden && SOCIALBROWSER.session.privacy.vpc.hide_screen && SOCIALBROWSER.session.privacy.vpc.screen) {
   SOCIALBROWSER.__define(window, 'innerWidth', SOCIALBROWSER.session.privacy.vpc.screen.width);
   SOCIALBROWSER.__define(window, 'innerHeight', SOCIALBROWSER.session.privacy.vpc.screen.height);
   SOCIALBROWSER.__define(window, 'outerWidth', SOCIALBROWSER.session.privacy.vpc.screen.width);

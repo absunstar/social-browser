@@ -155,23 +155,25 @@ SOCIALBROWSER.defaultUserAgent = SOCIALBROWSER.customSetting.$defaultUserAgent;
 
 // custom browser
 if (SOCIALBROWSER.defaultUserAgent) {
-  SOCIALBROWSER.__define(window, 'innerWidth', SOCIALBROWSER.defaultUserAgent.screen.width);
-  SOCIALBROWSER.__define(window, 'innerHeight', SOCIALBROWSER.defaultUserAgent.screen.height);
-  SOCIALBROWSER.__define(window, 'outerWidth', SOCIALBROWSER.defaultUserAgent.screen.width);
-  SOCIALBROWSER.__define(window, 'outerHeight', SOCIALBROWSER.defaultUserAgent.screen.height);
-  SOCIALBROWSER.__define(screen, 'width', SOCIALBROWSER.defaultUserAgent.screen.width);
-  SOCIALBROWSER.__define(screen, 'height', SOCIALBROWSER.defaultUserAgent.screen.height);
-  SOCIALBROWSER.__define(screen, 'availWidth', SOCIALBROWSER.defaultUserAgent.screen.width);
-  SOCIALBROWSER.__define(screen, 'availHeight', SOCIALBROWSER.defaultUserAgent.screen.height);
-
-  SOCIALBROWSER.__define(Screen, 'width', SOCIALBROWSER.defaultUserAgent.screen.width);
-  SOCIALBROWSER.__define(Screen, 'height', SOCIALBROWSER.defaultUserAgent.screen.height);
-  SOCIALBROWSER.__define(Screen, 'availWidth', SOCIALBROWSER.defaultUserAgent.screen.width);
-  SOCIALBROWSER.__define(Screen, 'availHeight', SOCIALBROWSER.defaultUserAgent.screen.height);
-
-  SOCIALBROWSER.screenHidden = true;
-
   SOCIALBROWSER.userAgentURL = SOCIALBROWSER.defaultUserAgent.url;
+
+  if (SOCIALBROWSER.defaultUserAgent.screen) {
+    SOCIALBROWSER.__define(window, 'innerWidth', SOCIALBROWSER.defaultUserAgent.screen.width);
+    SOCIALBROWSER.__define(window, 'innerHeight', SOCIALBROWSER.defaultUserAgent.screen.height);
+    SOCIALBROWSER.__define(window, 'outerWidth', SOCIALBROWSER.defaultUserAgent.screen.width);
+    SOCIALBROWSER.__define(window, 'outerHeight', SOCIALBROWSER.defaultUserAgent.screen.height);
+    SOCIALBROWSER.__define(screen, 'width', SOCIALBROWSER.defaultUserAgent.screen.width);
+    SOCIALBROWSER.__define(screen, 'height', SOCIALBROWSER.defaultUserAgent.screen.height);
+    SOCIALBROWSER.__define(screen, 'availWidth', SOCIALBROWSER.defaultUserAgent.screen.width);
+    SOCIALBROWSER.__define(screen, 'availHeight', SOCIALBROWSER.defaultUserAgent.screen.height);
+
+    SOCIALBROWSER.__define(Screen, 'width', SOCIALBROWSER.defaultUserAgent.screen.width);
+    SOCIALBROWSER.__define(Screen, 'height', SOCIALBROWSER.defaultUserAgent.screen.height);
+    SOCIALBROWSER.__define(Screen, 'availWidth', SOCIALBROWSER.defaultUserAgent.screen.width);
+    SOCIALBROWSER.__define(Screen, 'availHeight', SOCIALBROWSER.defaultUserAgent.screen.height);
+
+    SOCIALBROWSER.screenHidden = true;
+  }
 }
 
 if (SOCIALBROWSER.customSetting.$userAgentURL) {
