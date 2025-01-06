@@ -348,7 +348,9 @@ module.exports = function (child) {
           'Mozilla/5.0 (X11; U; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/124.0.6303.212 Chrome/124.0.6303.212 Safari/537.36';
         child.windowList[windowIndex].customSetting.iframe = false;
       } else if (url.like('*youtube.com/embed*')) {
-        child.windowList[windowIndex].customSetting.$userAgentURL = win.customSetting.userAgentURL;
+        if (win.customSetting.userAgentURL) {
+          child.windowList[windowIndex].customSetting.$userAgentURL = win.customSetting.userAgentURL;
+        }
         child.windowList[windowIndex].customSetting.iframe = true;
       } else if (url.like('*youtube.com*')) {
         child.windowList[windowIndex].customSetting.$userAgentURL = 'Mozilla/5.0 (iPad; CPU OS 14_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/602.6.13 Mobile Safari/537.36';
@@ -364,13 +366,13 @@ module.exports = function (child) {
         child.windowList[windowIndex].customSetting.allowDevTools = false;
       } else if (url.like('*challenges.cloudflare.com*')) {
         // child.windowList[windowIndex].customSetting.$userAgentURL = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0;
-       // child.windowList[windowIndex].customSetting.iframe = false;
+        // child.windowList[windowIndex].customSetting.iframe = false;
       } else {
         // child.windowList[windowIndex].customSetting.$userAgentURL = win.customSetting.userAgentURL;
         child.windowList[windowIndex].customSetting.iframe = true;
       }
 
-      child.electron.app.userAgentFallback = win.customSetting.$userAgentURL;
+      // child.electron.app.userAgentFallback = win.customSetting.$userAgentURL;
     } else {
       console.log('handleCustomSeting Not Exists', url);
     }
