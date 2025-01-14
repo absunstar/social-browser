@@ -326,7 +326,6 @@ module.exports = function (child) {
         _ss.user.privacy.vpc = _ss.user.privacy.vpc || {};
         details.requestHeaders['User-Agent'] = _ss.user.defaultUserAgent.url;
 
-        console.log(_ss.user.privacy);
         if (_ss.user.privacy.allowVPC) {
           details.requestHeaders['Accept-Language'] = _ss.user.privacy.vpc.languages;
         }
