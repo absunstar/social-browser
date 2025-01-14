@@ -467,9 +467,9 @@
               </div>
               <div id="privacy_tab" class="tab-content">
                 <div class="row padding">
-                  <i-checkbox label="Enable Virtual PC" ng-model="setting.blocking.privacy.enable_virtual_pc"></i-checkbox>
+                  <i-checkbox label="Enable Virtual PC" ng-model="setting.blocking.privacy.allowVPC"></i-checkbox>
 
-                  <div class="row padding" ng-show="setting.blocking.privacy.enable_virtual_pc">
+                  <div class="row padding" ng-show="setting.blocking.privacy.allowVPC">
                     <i-button type="reset" label="Generate Virual PC" ng-click="generateVPC()"></i-button>
                     <div class="row padding border2">
                       <div class="col"><i-checkbox label="Hide CPU Count" ng-model="setting.blocking.privacy.vpc.hide_cpu"></i-checkbox></div>
@@ -953,9 +953,9 @@
                         </div>
                       </fieldset>
 
-                      <i-checkbox label="Enable Virtual PC" ng-model="currentSession.privacy.enable_virtual_pc"></i-checkbox>
+                      <i-checkbox label="Enable Virtual PC" ng-model="currentSession.privacy.allowVPC"></i-checkbox>
 
-                      <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border">
+                      <div ng-show="currentSession.privacy.allowVPC" class="row padding border">
                         <div class="row">
                           <i-button type="reset" label="Generate Virual PC" ng-click="generateVPC(currentSession)"></i-button>
                         </div>
@@ -965,7 +965,7 @@
                         </div>
                       </div>
 
-                      <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border">
+                      <div ng-show="currentSession.privacy.allowVPC" class="row padding border">
                         <div class="col"><i-checkbox label="Hide Memory Count" ng-model="currentSession.privacy.vpc.hide_memory"></i-checkbox></div>
                         <div class="col">
                           <i-control
@@ -977,14 +977,14 @@
                         </div>
                       </div>
 
-                      <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border">
+                      <div ng-show="currentSession.privacy.allowVPC" class="row padding border">
                         <div class="col"><i-checkbox label="Hide Languages Information" ng-model="currentSession.privacy.vpc.hide_lang"></i-checkbox></div>
                         <div class="col">
                           <i-control ng-disabled="currentSession.privacy.vpc.hide_lang !== true" ng-model="currentSession.privacy.vpc.languages" label="Custom Languages"></i-control>
                         </div>
                       </div>
 
-                      <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border">
+                      <div ng-show="currentSession.privacy.allowVPC" class="row padding border">
                         <div class="col"><i-checkbox label="Hide Date ( problem in some sites )" ng-model="currentSession.privacy.vpc.mask_date"></i-checkbox></div>
                         <div class="col">
                           <i-list
@@ -998,7 +998,7 @@
                         </div>
                       </div>
 
-                      <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border">
+                      <div ng-show="currentSession.privacy.allowVPC" class="row padding border">
                         <div class="col"><i-checkbox label="Hide Screen Size " ng-model="currentSession.privacy.vpc.hide_screen"></i-checkbox></div>
                         <div class="col">
                           <i-control type="number" ng-disabled="currentSession.privacy.vpc.hide_screen !== true" ng-model="currentSession.privacy.vpc.screen.width" label="Screen Width"></i-control>
@@ -1018,7 +1018,7 @@
                         </div>
                       </div>
 
-                      <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border">
+                      <div ng-show="currentSession.privacy.allowVPC" class="row padding border">
                         <div class="col"><i-checkbox label="Hide Connection Information" ng-model="currentSession.privacy.vpc.hide_connection"></i-checkbox></div>
                         <div class="col">
                           <i-control
@@ -1047,14 +1047,14 @@
                           <i-control ng-disabled="currentSession.privacy.vpc.hide_connection !== true" ng-model="currentSession.privacy.vpc.connection.type" label="Network Source"></i-control>
                         </div>
                       </div>
-                      <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border2">
+                      <div ng-show="currentSession.privacy.allowVPC" class="row padding border2">
                         <div class="col"><i-checkbox label="Hide Current Location( Custom )" ng-model="currentSession.privacy.vpc.hide_location"></i-checkbox></div>
                         <div class="col">
                           <i-control ng-disabled="currentSession.privacy.vpc.hide_location !== true" ng-model="currentSession.privacy.vpc.location.latitude" label="Latitude"></i-control>
                           <i-control ng-disabled="currentSession.privacy.vpc.hide_location !== true" ng-model="currentSession.privacy.vpc.location.longitude" label="Longitude"></i-control>
                         </div>
                       </div>
-                      <div ng-show="currentSession.privacy.enable_virtual_pc" class="row padding border2">
+                      <div ng-show="currentSession.privacy.allowVPC" class="row padding border2">
                         <i-checkbox class="col6" label="Set Window Alawys Active" ng-model="currentSession.privacy.vpc.set_window_active"></i-checkbox>
                         <i-checkbox class="col6" label="Set Tab Alawys Active" ng-model="currentSession.privacy.vpc.set_tab_active"></i-checkbox>
                         <i-checkbox class="col6" label="Mask User Agent (profile + host) [some Sites not work] " ng-model="currentSession.privacy.vpc.maskUserAgentURL"></i-checkbox>

@@ -194,7 +194,7 @@ module.exports = function (parent) {
         details.requestHeaders['User-Agent'] = parent.var.core.defaultUserAgent.url;
       }
 
-      if (parent.var.blocking.privacy.enable_virtual_pc && parent.var.blocking.privacy.vpc && parent.var.blocking.privacy.vpc.maskUserAgentURL) {
+      if (parent.var.blocking.privacy.allowVPC && parent.var.blocking.privacy.vpc && parent.var.blocking.privacy.vpc.maskUserAgentURL) {
         if (!details.requestHeaders['User-Agent'].like('*[xx-*')) {
           let code = name;
           code += urlObject.hostname;
@@ -246,7 +246,7 @@ module.exports = function (parent) {
         cookie_obj['_gab'] = 'sb.' + parent.var.core.id;
       }
 
-      if (cookie_obj && parent.var.blocking.privacy.enable_virtual_pc && parent.var.blocking.privacy.vpc.block_cloudflare) {
+      if (cookie_obj && parent.var.blocking.privacy.allowVPC && parent.var.blocking.privacy.vpc.block_cloudflare) {
         if (cookie_obj['_cflb']) {
           cookie_obj['_cflb'] = 'cf.' + cookie_obj['_gab'];
         }
@@ -265,7 +265,7 @@ module.exports = function (parent) {
       }
 
       if (cookie_obj && !url.like('*google.com*|*youtube.com*')) {
-        if (parent.var.blocking.privacy.enable_virtual_pc && parent.var.blocking.privacy.vpc.hide_gid) {
+        if (parent.var.blocking.privacy.allowVPC && parent.var.blocking.privacy.vpc.hide_gid) {
           if (cookie_obj['_gid']) {
             delete cookie_obj['_gid'];
           }

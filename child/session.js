@@ -23,7 +23,7 @@ module.exports = function (child) {
     let user = child.parent.var.session_list.find((s) => s.name == name) ?? {};
     user.privacy = user.privacy || child.parent.var.blocking.privacy;
     user.privacy.vpc = user.privacy.vpc || {};
-    if (!user.privacy.enable_virtual_pc) {
+    if (!user.privacy.allowVPC) {
       user.privacy = child.parent.var.blocking.privacy;
     }
     user.defaultUserAgent = sessionOptions.defaultUserAgent || user.defaultUserAgent || { url: sessionOptions.userAgentURL } || {};
@@ -326,6 +326,11 @@ module.exports = function (child) {
         _ss.user.privacy.vpc = _ss.user.privacy.vpc || {};
         details.requestHeaders['User-Agent'] = _ss.user.defaultUserAgent.url;
 
+        console.log(_ss.user.privacy);
+        if (_ss.user.privacy.allowVPC) {
+          details.requestHeaders['Accept-Language'] = _ss.user.privacy.vpc.languages;
+        }
+
         let exit = false;
         let url = details.url;
         let urlObject = child.url.parse(url);
@@ -346,10 +351,13 @@ module.exports = function (child) {
         if (customSetting) {
           if (customSetting.$userAgentURL) {
             details.requestHeaders['User-Agent'] = customSetting.$userAgentURL;
-          }else if (customSetting.$defaultUserAgent) {
+          } else if (customSetting.$defaultUserAgent) {
             details.requestHeaders['User-Agent'] = customSetting.$defaultUserAgent.url;
           } else if (customSetting.userAgent) {
             details.requestHeaders['User-Agent'] = customSetting.userAgent;
+          }
+          if (customSetting.vpc) {
+            details.requestHeaders['Accept-Language'] = customSetting.vpc.languages;
           }
         }
 
@@ -357,7 +365,7 @@ module.exports = function (child) {
         let domainCookie = details.requestHeaders['Cookie'] || '';
         let domainCookieObject = child.cookieParse(domainCookie);
         if (customSetting && customSetting.vip) {
-         // child.log('VIP Ignore cookieList');
+          // child.log('VIP Ignore cookieList');
         } else if (customSetting && Array.isArray(customSetting.cookieList)) {
           if (customSetting.cookieList.length > 0) {
             let cookieIndex = customSetting.cookieList.findIndex((c) => domainName.contains(c.domain) && c.partition == name);
@@ -425,7 +433,7 @@ module.exports = function (child) {
         refererURL = refererURL;
         refererObject = child.url.parse(refererURL);
 
-        if (_ss.user.privacy.enable_virtual_pc && _ss.user.privacy.vpc && _ss.user.privacy.vpc.maskUserAgentURL) {
+        if (_ss.user.privacy.allowVPC && _ss.user.privacy.vpc && _ss.user.privacy.vpc.maskUserAgentURL) {
           if (!details.requestHeaders['User-Agent'].like('*[xx-*')) {
             let code = name;
             code += urlObject.hostname;
@@ -471,7 +479,7 @@ module.exports = function (child) {
         if (customSetting && customSetting.vip) {
         } else {
           if (domainCookieObject) {
-            if (_ss.user.privacy.enable_virtual_pc && _ss.user.privacy.vpc.block_cloudflare) {
+            if (_ss.user.privacy.allowVPC && _ss.user.privacy.vpc.block_cloudflare) {
               if (domainCookieObject['_cflb']) {
                 domainCookieObject['_cflb'] = 'cf.' + domainCookieObject['_gab'];
               }
@@ -489,7 +497,7 @@ module.exports = function (child) {
               }
             }
 
-            if (_ss.user.privacy.enable_virtual_pc && _ss.user.privacy.vpc.hide_gid) {
+            if (_ss.user.privacy.allowVPC && _ss.user.privacy.vpc.hide_gid) {
               if (domainCookieObject['_gid']) {
                 delete domainCookieObject['_gid'];
               }

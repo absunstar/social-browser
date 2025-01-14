@@ -54,13 +54,13 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     if (typeof session == 'string' && session == '*') {
       $scope.setting.session_list.forEach((s, i) => {
         $scope.setting.session_list[i].privacy.vpc = SOCIALBROWSER.generateVPC();
-        $scope.setting.session_list[i].privacy.enable_virtual_pc = true;
+        $scope.setting.session_list[i].privacy.allowVPC = true;
         $scope.setting.session_list[i].defaultUserAgent = $scope.setting.userAgentList[SOCIALBROWSER.random(0, $scope.setting.userAgentList.length - 1)];
       });
     } else {
       if (session) {
         session.privacy.vpc = SOCIALBROWSER.generateVPC();
-        session.privacy.enable_virtual_pc = true;
+        session.privacy.allowVPC = true;
         session.defaultUserAgent = $scope.setting.userAgentList[SOCIALBROWSER.random(0, $scope.setting.userAgentList.length - 1)];
       } else {
         SOCIALBROWSER.var.blocking.privacy.vpc = SOCIALBROWSER.generateVPC();
@@ -115,11 +115,11 @@ app.controller('mainController', ($scope, $http, $timeout) => {
   $scope.stopAllVPC = function (session) {
     if (typeof session == 'string' && session == '*') {
       $scope.setting.session_list.forEach((s) => {
-        s.privacy.enable_virtual_pc = false;
+        s.privacy.allowVPC = false;
       });
     } else {
       if (session) {
-        session.privacy.enable_virtual_pc = false;
+        session.privacy.allowVPC = false;
       } else {
         $scope.setting.blocking.privacy.vpc = { ...SOCIALBROWSER.var.blocking.privacy.vpc };
       }
@@ -1034,7 +1034,8 @@ app.controller('mainController', ($scope, $http, $timeout) => {
   };
 
   $scope.showPassword = function (site) {
-    if ((elem = document.querySelector('#pass_' + site.id + ' input[type=password]'))) {
+    let elem = document.querySelector('#pass_' + site.id + ' input[type=password]');
+    if (elem) {
       elem.setAttribute('type', 'text');
     }
   };

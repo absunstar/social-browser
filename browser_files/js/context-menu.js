@@ -172,54 +172,71 @@
   };
 
   SOCIALBROWSER.set = function (key, value) {
-    if (!key || typeof value === 'undefined') {
+    try {
+      if (!key || typeof value === 'undefined') {
+        return false;
+      }
+      value = JSON.stringify(value);
+      if (!SOCIALBROWSER.isMemoryMode) {
+        window.localStorage.setItem(key, value);
+        return true;
+      } else if (window.sessionStorage) {
+        window.sessionStorage.setItem(key, value);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.warn(error);
       return false;
     }
-    value = JSON.stringify(value);
-    if (!SOCIALBROWSER.isMemoryMode) {
-      window.localStorage.setItem(key, value);
-      return true;
-    } else if (window.sessionStorage) {
-      window.sessionStorage.setItem(key, value);
-      return true;
-    }
-    return false;
   };
   SOCIALBROWSER.get = function (key) {
-    if (!key) {
+    try {
+      if (!key) {
+        return null;
+      }
+      let value = null;
+      if (!SOCIALBROWSER.isMemoryMode) {
+        value = window.localStorage.getItem(key);
+      } else if (window.sessionStorage) {
+        value = window.sessionStorage.getItem(key);
+      }
+      if (value) {
+        value = JSON.parse(value);
+      }
+      return value;
+    } catch (error) {
+      console.warn(error);
       return null;
     }
-    let value = null;
-    if (!SOCIALBROWSER.isMemoryMode) {
-      value = window.localStorage.getItem(key);
-    } else if (window.sessionStorage) {
-      value = window.sessionStorage.getItem(key);
-    }
-    if (value) {
-      value = JSON.parse(value);
-    }
-    return value;
+    return null;
   };
 
   SOCIALBROWSER.remove = function (key) {
-    if (!key) {
-      return false;
-    }
-    if (!SOCIALBROWSER.isMemoryMode) {
-      if (key == '*') {
-        window.localStorage.clear();
-      } else {
-        window.localStorage.removeItem(key);
+    try {
+      if (!key) {
+        return false;
       }
+      if (!SOCIALBROWSER.isMemoryMode) {
+        if (key == '*') {
+          window.localStorage.clear();
+        } else {
+          window.localStorage.removeItem(key);
+        }
 
-      return true;
-    } else if (window.sessionStorage) {
-      if (key == '*') {
-        window.sessionStorage.clear();
-      } else {
-        window.sessionStorage.removeItem(key);
+        return true;
+      } else if (window.sessionStorage) {
+        if (key == '*') {
+          window.sessionStorage.clear();
+        } else {
+          window.sessionStorage.removeItem(key);
+        }
+        return true;
       }
-      return true;
+      return false;
+    } catch (error) {
+      console.warn(error);
+      return false;
     }
     return false;
   };
@@ -248,8 +265,14 @@
     if (!SOCIALBROWSER.partition && SOCIALBROWSER.isMemoryMode) {
       SOCIALBROWSER.partition = 'x-ghost';
     }
-    if (!SOCIALBROWSER.session.privacy.enable_virtual_pc && SOCIALBROWSER.var.blocking.privacy.enable_virtual_pc) {
-      SOCIALBROWSER.session.privacy.enable_virtual_pc = true;
+    if (SOCIALBROWSER.customSetting.vpc) {
+      SOCIALBROWSER.session.privacy = {
+        allowVPC: true,
+        vpc: SOCIALBROWSER.customSetting.vpc,
+      };
+    }
+    if (!SOCIALBROWSER.session.privacy.allowVPC && SOCIALBROWSER.var.blocking.privacy.allowVPC) {
+      SOCIALBROWSER.session.privacy.allowVPC = true;
       SOCIALBROWSER.session.privacy.vpc = { ...SOCIALBROWSER.var.blocking.privacy.vpc };
     }
 
@@ -263,8 +286,8 @@
       SOCIALBROWSER.developerMode = true;
     }
     SOCIALBROWSER.log(` ... ${document.location.href} ... `);
-    if (SOCIALBROWSER.sessionId() == 0) {
-      SOCIALBROWSER.session.privacy.enable_virtual_pc = true;
+    if (SOCIALBROWSER.sessionId() == 0 && !SOCIALBROWSER.session.privacy.vpc) {
+      SOCIALBROWSER.session.privacy.allowVPC = true;
       SOCIALBROWSER.session.privacy.vpc = SOCIALBROWSER.get('vpc') || SOCIALBROWSER.generateVPC();
       SOCIALBROWSER.set('vpc', SOCIALBROWSER.session.privacy.vpc);
     }

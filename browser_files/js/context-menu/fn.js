@@ -107,7 +107,7 @@ SOCIALBROWSER.addSession = function (session) {
     session.time = session.time || new Date().getTime();
     if (!session.privacy) {
       session.privacy = {
-        enable_virtual_pc: true,
+        allowVPC: true,
         vpc: SOCIALBROWSER.generateVPC(),
       };
     }
@@ -792,6 +792,10 @@ SOCIALBROWSER.click = function (selector, realPerson = true) {
 SOCIALBROWSER.$ = function (selector) {
   return document.querySelector(selector);
 };
+SOCIALBROWSER.$$ = function (selector) {
+  return document.querySelectorAll(selector);
+};
+
 SOCIALBROWSER.select = function (selector, value) {
   if (!selector) {
     return null;

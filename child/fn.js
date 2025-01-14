@@ -344,9 +344,21 @@ module.exports = function (child) {
       win.customSetting.$userAgentURL = win.customSetting.$defaultUserAgent.url;
 
       if (url.like('*accounts.google.com*')) {
-        child.windowList[windowIndex].customSetting.$userAgentURL =
-          'Mozilla/5.0 (X11; U; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/124.0.6303.212 Chrome/124.0.6303.212 Safari/537.36';
+      //  child.windowList[windowIndex].customSetting.$userAgentURL =
+          'Mozilla/5.0 (X11; U; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/131.0.0.0  Chrome/131.0.0.0  Safari/537.36';
         child.windowList[windowIndex].customSetting.iframe = false;
+        // win.customSetting.$defaultUserAgent = {
+        //   url: child.windowList[windowIndex].customSetting.$userAgentURL,
+        //   name: 'Chrome Chromium',
+        //   platform: 'X11; U; Linux x86_64',
+        //   engine: {
+        //     name: 'Chrome',
+        //   },
+        //   device: {
+        //     name: 'Chrome',
+        //   },
+        //   vendor: 'Google Inc.',
+        // };
       } else if (url.like('*youtube.com/embed*')) {
         if (win.customSetting.userAgentURL) {
           child.windowList[windowIndex].customSetting.$userAgentURL = win.customSetting.userAgentURL;

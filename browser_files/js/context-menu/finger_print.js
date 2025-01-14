@@ -18,7 +18,7 @@
  *  current location hide
  */
 
-if (SOCIALBROWSER.var.core.javaScriptOFF || SOCIALBROWSER.customSetting.windowType === 'main' || !SOCIALBROWSER.session.privacy.enable_virtual_pc) {
+if (SOCIALBROWSER.var.core.javaScriptOFF || SOCIALBROWSER.customSetting.windowType === 'main' || !SOCIALBROWSER.session.privacy.allowVPC) {
   SOCIALBROWSER.log('.... [ Finger Printing OFF ] .... ' + document.location.href);
   return;
 }
@@ -45,10 +45,6 @@ if (!SOCIALBROWSER.screenHidden && SOCIALBROWSER.session.privacy.vpc.hide_screen
   SOCIALBROWSER.__define(screen, 'availWidth', SOCIALBROWSER.session.privacy.vpc.screen.availWidth);
   SOCIALBROWSER.__define(screen, 'availHeight', SOCIALBROWSER.session.privacy.vpc.screen.availHeight);
 
-  SOCIALBROWSER.__define(Screen, 'width', screen.width);
-  SOCIALBROWSER.__define(Screen, 'height', screen.height);
-  SOCIALBROWSER.__define(Screen, 'availWidth', screen.availWidth);
-  SOCIALBROWSER.__define(Screen, 'availHeight', screen.availHeight);
 
   SOCIALBROWSER.screenHidden = true;
 }

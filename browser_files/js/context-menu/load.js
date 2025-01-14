@@ -149,15 +149,13 @@ if (!SOCIALBROWSER.var.core.javaScriptOFF) {
   }
 }
 
-SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/finger_print.js');
-
 SOCIALBROWSER.defaultUserAgent = SOCIALBROWSER.customSetting.$defaultUserAgent;
 
 // custom browser
 if (SOCIALBROWSER.defaultUserAgent) {
   SOCIALBROWSER.userAgentURL = SOCIALBROWSER.defaultUserAgent.url;
 
-  if (SOCIALBROWSER.defaultUserAgent.screen) {
+  if (!SOCIALBROWSER.screenHidden && SOCIALBROWSER.defaultUserAgent.screen) {
     SOCIALBROWSER.__define(window, 'innerWidth', SOCIALBROWSER.defaultUserAgent.screen.width);
     SOCIALBROWSER.__define(window, 'innerHeight', SOCIALBROWSER.defaultUserAgent.screen.height);
     SOCIALBROWSER.__define(window, 'outerWidth', SOCIALBROWSER.defaultUserAgent.screen.width);
@@ -166,11 +164,6 @@ if (SOCIALBROWSER.defaultUserAgent) {
     SOCIALBROWSER.__define(screen, 'height', SOCIALBROWSER.defaultUserAgent.screen.height);
     SOCIALBROWSER.__define(screen, 'availWidth', SOCIALBROWSER.defaultUserAgent.screen.width);
     SOCIALBROWSER.__define(screen, 'availHeight', SOCIALBROWSER.defaultUserAgent.screen.height);
-
-    SOCIALBROWSER.__define(Screen, 'width', SOCIALBROWSER.defaultUserAgent.screen.width);
-    SOCIALBROWSER.__define(Screen, 'height', SOCIALBROWSER.defaultUserAgent.screen.height);
-    SOCIALBROWSER.__define(Screen, 'availWidth', SOCIALBROWSER.defaultUserAgent.screen.width);
-    SOCIALBROWSER.__define(Screen, 'availHeight', SOCIALBROWSER.defaultUserAgent.screen.height);
 
     SOCIALBROWSER.screenHidden = true;
   }
@@ -215,14 +208,8 @@ if (SOCIALBROWSER.defaultUserAgent) {
   if (SOCIALBROWSER.defaultUserAgent.engine && SOCIALBROWSER.defaultUserAgent.engine.name) {
     SOCIALBROWSER.defaultUserAgent.name = SOCIALBROWSER.defaultUserAgent.engine.name;
   }
-  if (SOCIALBROWSER.defaultUserAgent.name.contains('Chrome')) {
-    let chrome = JSON.parse(
-      '{"app":{"isInstalled":false,"InstallState":{"DISABLED":"disabled","INSTALLED":"installed","NOT_INSTALLED":"not_installed"},"RunningState":{"CANNOT_RUN":"cannot_run","READY_TO_RUN":"ready_to_run","RUNNING":"running"}},"runtime":{"OnInstalledReason":{"CHROME_UPDATE":"chrome_update","INSTALL":"install","SHARED_MODULE_UPDATE":"shared_module_update","UPDATE":"update"},"OnRestartRequiredReason":{"APP_UPDATE":"app_update","OS_UPDATE":"os_update","PERIODIC":"periodic"},"PlatformArch":{"ARM":"arm","ARM64":"arm64","MIPS":"mips","MIPS64":"mips64","X86_32":"x86-32","X86_64":"x86-64"},"PlatformNaclArch":{"ARM":"arm","MIPS":"mips","MIPS64":"mips64","X86_32":"x86-32","X86_64":"x86-64"},"PlatformOs":{"ANDROID":"android","CROS":"cros","LINUX":"linux","MAC":"mac","OPENBSD":"openbsd","WIN":"win"},"RequestUpdateCheckStatus":{"NO_UPDATE":"no_update","THROTTLED":"throttled","UPDATE_AVAILABLE":"update_available"}}}'
-    );
-    chrome.csi = () => {};
-    chrome.loadTimes = () => {};
-    SOCIALBROWSER.__define(window, 'chrome', chrome);
-  } else if (SOCIALBROWSER.defaultUserAgent.name.contains('Edge')) {
+  SOCIALBROWSER.defaultUserAgent.name = SOCIALBROWSER.defaultUserAgent.name || SOCIALBROWSER.defaultUserAgent.url;
+  if (SOCIALBROWSER.defaultUserAgent.name.contains('Edge')) {
     let version = SOCIALBROWSER.userAgentURL.split('Chrome/')[1].split(' ')[0].split('.')[0];
     SOCIALBROWSER.userAgentData = {
       brands: [
@@ -253,12 +240,34 @@ if (SOCIALBROWSER.defaultUserAgent) {
     chrome.loadTimes = () => {};
     SOCIALBROWSER.__define(window, 'chrome', chrome);
   } else if (SOCIALBROWSER.defaultUserAgent.name.contains('Firefox')) {
+    let version = SOCIALBROWSER.userAgentURL.split('Firefox/')[1].split(' ')[0].split('.')[0];
+    SOCIALBROWSER.userAgentData = {
+      brands: [
+        {
+          brand: 'Firefox',
+          version: version,
+        },
+        {
+          brand: 'Not_A Brand',
+          version: '24',
+        },
+      ],
+      mobile: false,
+      platform: 'Windows',
+    };
     SOCIALBROWSER.__define(window, 'chrome', undefined);
     SOCIALBROWSER.__define(window, 'mozRTCIceCandidate', window.RTCIceCandidate);
     SOCIALBROWSER.__define(window, 'mozRTCPeerConnection', window.RTCPeerConnection);
     SOCIALBROWSER.__define(window, 'mozRTCSessionDescription', window.RTCSessionDescription);
     window.mozInnerScreenX = 0;
     window.mozInnerScreenY = 74;
+  } else if (SOCIALBROWSER.defaultUserAgent.name.contains('Chrome')) {
+    let chrome = JSON.parse(
+      '{"app":{"isInstalled":false,"InstallState":{"DISABLED":"disabled","INSTALLED":"installed","NOT_INSTALLED":"not_installed"},"RunningState":{"CANNOT_RUN":"cannot_run","READY_TO_RUN":"ready_to_run","RUNNING":"running"}},"runtime":{"OnInstalledReason":{"CHROME_UPDATE":"chrome_update","INSTALL":"install","SHARED_MODULE_UPDATE":"shared_module_update","UPDATE":"update"},"OnRestartRequiredReason":{"APP_UPDATE":"app_update","OS_UPDATE":"os_update","PERIODIC":"periodic"},"PlatformArch":{"ARM":"arm","ARM64":"arm64","MIPS":"mips","MIPS64":"mips64","X86_32":"x86-32","X86_64":"x86-64"},"PlatformNaclArch":{"ARM":"arm","MIPS":"mips","MIPS64":"mips64","X86_32":"x86-32","X86_64":"x86-64"},"PlatformOs":{"ANDROID":"android","CROS":"cros","LINUX":"linux","MAC":"mac","OPENBSD":"openbsd","WIN":"win"},"RequestUpdateCheckStatus":{"NO_UPDATE":"no_update","THROTTLED":"throttled","UPDATE_AVAILABLE":"update_available"}}}'
+    );
+    chrome.csi = () => {};
+    chrome.loadTimes = () => {};
+    SOCIALBROWSER.__define(window, 'chrome', chrome);
   }
 
   if (SOCIALBROWSER.userAgentURL.indexOf('Chrome/') !== -1) {
@@ -317,7 +326,7 @@ if (SOCIALBROWSER.defaultUserAgent) {
   }
 }
 
-if (SOCIALBROWSER.var.blocking.privacy.enable_virtual_pc && SOCIALBROWSER.var.blocking.privacy.vpc.maskUserAgentURL) {
+if (SOCIALBROWSER.var.blocking.privacy.allowVPC && SOCIALBROWSER.var.blocking.privacy.vpc.maskUserAgentURL) {
   if (!SOCIALBROWSER.userAgentURL.like('*[xx-*')) {
     SOCIALBROWSER.userAgentURL = SOCIALBROWSER.userAgentURL.replace(') ', ') [xx-' + SOCIALBROWSER.guid() + '] ');
   }
@@ -334,6 +343,8 @@ document.hasPrivateStateToken =
 
 SOCIALBROWSER.userAgent = navigator.userAgent;
 SOCIALBROWSER.__define(navigator, 'userAgent', SOCIALBROWSER.userAgentURL);
+
+SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/finger_print.js');
 
 try {
   if (SOCIALBROWSER.var.blocking.javascript.custom_local_storage && localStorage) {
@@ -417,8 +428,7 @@ SOCIALBROWSER.on('[window-action]', (e, data) => {
       partition: SOCIALBROWSER.partition,
       url: document.location.href,
       referrer: document.location.href,
-      browser: browser,
-      userAgentURL: browser.url,
+      defaultUserAgent: browser,
       width: browser.screen.width,
       height: browser.screen.height,
       show: true,
@@ -432,8 +442,8 @@ SOCIALBROWSER.on('[window-action]', (e, data) => {
       user_name: ghost,
       url: document.location.href,
       referrer: document.location.href,
-      browser: browser,
-      userAgentURL: browser.url,
+      defaultUserAgent: browser,
+      vpc : SOCIALBROWSER.generateVPC(),
       width: browser.screen.width,
       height: browser.screen.height,
       show: true,
@@ -448,8 +458,8 @@ SOCIALBROWSER.on('[window-action]', (e, data) => {
       user_name: ghost,
       url: document.location.href,
       referrer: document.location.href,
-      browser: browser,
-      userAgentURL: browser.url,
+      defaultUserAgent: browser,
+      vpc : SOCIALBROWSER.generateVPC(),
       width: browser.screen.width,
       height: browser.screen.height,
       show: true,
@@ -490,8 +500,7 @@ SOCIALBROWSER.on('[window-action]', (e, data) => {
       partition: SOCIALBROWSER.partition,
       url: document.location.href,
       referrer: document.location.href,
-      browser: browser,
-      userAgentURL: browser.url,
+      defaultUserAgent: browser,
       width: browser.screen.width,
       height: browser.screen.height,
       show: true,

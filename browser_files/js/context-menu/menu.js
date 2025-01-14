@@ -446,6 +446,8 @@ function get_url_menu_list(url) {
         referrer: document.location.href,
         partition: ghost,
         user_name: ghost,
+        defaultUserAgent: SOCIALBROWSER.getRandomBrowser('pc'),
+        vpc : SOCIALBROWSER.generateVPC(),
         show: true,
         iframe: true,
         iframe: true,
@@ -1059,6 +1061,8 @@ function get_options_menu(node) {
           alwaysOnTop: true,
           partition: ghost,
           user_name: ghost,
+          defaultUserAgent: SOCIALBROWSER.getRandomBrowser('pc'),
+          vpc : SOCIALBROWSER.generateVPC(),
           url: f.src,
           referrer: document.location.href,
           show: true,
@@ -1636,6 +1640,8 @@ function createMenuList(node) {
             url: url,
             partition: ghost,
             user_name: ghost,
+            defaultUserAgent: SOCIALBROWSER.getRandomBrowser('pc'),
+            vpc : SOCIALBROWSER.generateVPC(),
             main_window_id: SOCIALBROWSER.remote.getCurrentWindow().id,
           });
         },
@@ -1750,7 +1756,7 @@ SOCIALBROWSER.contextmenu = function (e) {
           iconURL: m2.iconURL,
           submenu: m2.submenu?.map((m3) => ({ label: m3.label, type: m3.type, sublabel: m3.sublabel, visible: m3.visible, iconURL: m3.iconURL })),
         })),
-      }))
+      })),
     });
   } catch (error) {
     SOCIALBROWSER.log(error);
