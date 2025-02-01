@@ -344,9 +344,9 @@ module.exports = function (child) {
       win.customSetting.$userAgentURL = win.customSetting.$defaultUserAgent.url;
 
       if (url.like('*accounts.google.com*')) {
-      //  child.windowList[windowIndex].customSetting.$userAgentURL =
-          'Mozilla/5.0 (X11; U; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/131.0.0.0  Chrome/131.0.0.0  Safari/537.36';
         child.windowList[windowIndex].customSetting.iframe = false;
+        //  child.windowList[windowIndex].customSetting.$userAgentURL =
+        // ('Mozilla/5.0 (X11; U; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/131.0.0.0  Chrome/131.0.0.0  Safari/537.36');
         // win.customSetting.$defaultUserAgent = {
         //   url: child.windowList[windowIndex].customSetting.$userAgentURL,
         //   name: 'Chrome Chromium',
@@ -377,7 +377,30 @@ module.exports = function (child) {
       } else if (url.like('*60080*')) {
         child.windowList[windowIndex].customSetting.allowDevTools = false;
       } else if (url.like('*challenges.cloudflare.com*')) {
-        // child.windowList[windowIndex].customSetting.$userAgentURL = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0;
+        child.windowList[windowIndex].customSetting.iframe = true;
+        /*  Must Be Changed From Render Before call Window / all pages and iframes must have the same defaultUserAgent */
+        // child.windowList[windowIndex].customSetting.$defaultUserAgent = {
+        //   name: 'Edge',
+        //   vendor: '',
+        //   prefix: '',
+        //   device: {
+        //     name: 'PC',
+        //   },
+        //   screen: {
+        //     width: 1280,
+        //     height: 720,
+        //   },
+        //   platformInfo: {
+        //     name: 'Windows NT 11.0',
+        //     code: 'Win32',
+        //   },
+        //   platform: 'Win32',
+        //   major: 122,
+        //   minor: 2438,
+        //   patch: 170,
+        //   url: 'Mozilla/5.0 (Windows NT 11.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.2438.170  Safari/537.36 Edge/122.2438.170',
+        // };
+        // child.windowList[windowIndex].customSetting.$userAgentURL = child.windowList[windowIndex].customSetting.$defaultUserAgent.url;
         // child.windowList[windowIndex].customSetting.iframe = false;
       } else {
         // child.windowList[windowIndex].customSetting.$userAgentURL = win.customSetting.userAgentURL;

@@ -1,10 +1,4 @@
 if ((policy = true)) {
-  SOCIALBROWSER.policy = {
-    createHTML: (string) => string,
-    createScriptURL: (string) => string,
-    createScript: (string) => string,
-  };
-
   SOCIALBROWSER.policy = window.trustedTypes.createPolicy('social', {
     createHTML: (string) => string,
     createScriptURL: (string) => string,
@@ -29,7 +23,7 @@ if (!SOCIALBROWSER.isWhiteSite) {
     try {
       return window.eval0(...code);
     } catch (error) {
-      console.log(error);
+      console.warn(document.location.href, error);
       return undefined;
     }
   }.bind(window.eval);
@@ -422,6 +416,8 @@ SOCIALBROWSER.on('$download_item', (e, dl) => {
 SOCIALBROWSER.on('[window-action]', (e, data) => {
   if (data.name == 'toggle-page-images') {
     SOCIALBROWSER.togglePageImages();
+  } else if (data.name == 'toggle-page-content') {
+    SOCIALBROWSER.togglePageContent();
   } else if (data.name == 'new-window') {
     let browser = SOCIALBROWSER.getRandomBrowser('pc');
     SOCIALBROWSER.ipc('[open new popup]', {
@@ -443,7 +439,7 @@ SOCIALBROWSER.on('[window-action]', (e, data) => {
       url: document.location.href,
       referrer: document.location.href,
       defaultUserAgent: browser,
-      vpc : SOCIALBROWSER.generateVPC(),
+      vpc: SOCIALBROWSER.generateVPC(),
       width: browser.screen.width,
       height: browser.screen.height,
       show: true,
@@ -459,7 +455,7 @@ SOCIALBROWSER.on('[window-action]', (e, data) => {
       url: document.location.href,
       referrer: document.location.href,
       defaultUserAgent: browser,
-      vpc : SOCIALBROWSER.generateVPC(),
+      vpc: SOCIALBROWSER.generateVPC(),
       width: browser.screen.width,
       height: browser.screen.height,
       show: true,
@@ -615,6 +611,8 @@ SOCIALBROWSER.on('[window-action]', (e, data) => {
 });
 
 SOCIALBROWSER.allowTvMode = function () {
+  clearTimeout(SOCIALBROWSER.allowTvModeTimeout);
+
   if (document.querySelector('video[src*="//"]')) {
     document.querySelectorAll(':not(:has(video[src*="//"]))').forEach((el) => {
       if (!el.tagName.like('*video*|*head*|*style*|*meta*|*link*|*source*')) {
@@ -638,17 +636,50 @@ SOCIALBROWSER.allowTvMode = function () {
           el.style.left = 0;
           el.style.width = '100vw';
           el.style.height = '100vh';
+          el.style.zIndex = 9999999999999;
+          el.style.background = '#272727';
+        }, 50);
+      }
+    });
+  } else if (document.querySelector('video source[src*="//"]')) {
+    document.querySelectorAll(':not(:has(video source[src*="//"]))').forEach((el) => {
+      if (!el.tagName.like('*video*|*head*|*style*|*meta*|*link*|*source*')) {
+        el.remove();
+        // el.style.visibility = 'hidden';
+      } else if (el.tagName == 'VIDEO') {
+        el.id = 'ghost_' + Date.now();
+        el.className = '';
+        document.querySelectorAll('#vplayer,#video_player,.jwplayer').forEach((jw) => {
+          jw.className = '';
+        });
+
+        clearInterval(SOCIALBROWSER.setVideoStyleInterval);
+        SOCIALBROWSER.setVideoStyleInterval = setInterval(() => {
+          el.setAttribute('controls', 'controls');
+          el.removeAttribute('controlslist');
+          el.style.position = 'fixed';
+          el.style.top = 0;
+          el.style.bottom = 0;
+          el.style.right = 0;
+          el.style.left = 0;
+          el.style.width = '100vw';
+          el.style.height = '100vh';
+          el.style.zIndex = 9999999999999;
+          el.style.background = '#272727';
         }, 50);
       }
     });
   }
+  SOCIALBROWSER.allowTvModeTimeout = setTimeout(() => {
+    SOCIALBROWSER.allowTvMode();
+  }, 1000);
 };
 
 SOCIALBROWSER.togglePageImages = function () {
   SOCIALBROWSER.pageImagesVisable = !SOCIALBROWSER.pageImagesVisable;
   clearInterval(SOCIALBROWSER.pageImagesVisableInterval);
   SOCIALBROWSER.pageImagesVisableInterval = setInterval(() => {
-    document.querySelectorAll('img').forEach((img) => {
+    document.querySelectorAll('img,image').forEach((img) => {
       if (SOCIALBROWSER.pageImagesVisable) {
         img.style.visibility = 'hidden';
       } else {
@@ -657,17 +688,29 @@ SOCIALBROWSER.togglePageImages = function () {
     });
   }, 500);
 };
-
-SOCIALBROWSER.toggleWindowEditStatus = true;
+SOCIALBROWSER.togglePageContent = function () {
+  SOCIALBROWSER.pageImagesContent = !SOCIALBROWSER.pageImagesContent;
+  clearTimeout(SOCIALBROWSER.pageImagesContentTimeout);
+  document.querySelectorAll('html').forEach((html) => {
+    if (SOCIALBROWSER.pageImagesContent) {
+      html.style.opacity = 0;
+    } else {
+      html.style.opacity = 1;
+    }
+  });
+};
 SOCIALBROWSER.on('[toggle-window-edit]', (e, data) => {
   SOCIALBROWSER.toggleWindowEditStatus = !SOCIALBROWSER.toggleWindowEditStatus;
   let html = document.querySelector('html');
-  if (SOCIALBROWSER.toggleWindowEditStatus) {
-    html.contentEditable = true;
-    html.style.border = '10px dashed green';
-  } else {
-    html.contentEditable = 'inherit';
-    html.style.border = '0px solid white';
+  if (html) {
+    if (SOCIALBROWSER.toggleWindowEditStatus) {
+      html.contentEditable = true;
+      html.style.border = '10px dashed green';
+      alert('Edit Mode Activated');
+    } else {
+      html.contentEditable = 'inherit';
+      html.style.border = '0px solid white';
+    }
   }
 });
 

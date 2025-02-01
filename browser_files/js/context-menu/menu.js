@@ -950,7 +950,7 @@ function get_options_menu(node) {
     if (i > 10) {
       return;
     }
-    if (f.src && !f.src.like('*javascript*') && !f.src.like('*about:blank*')) {
+    if (f.src && !f.src.like('*javascript*') && !f.src.like('*about:*')) {
       arr2.push({
         label: 'View  ' + f.src,
         click() {

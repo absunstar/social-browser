@@ -1122,7 +1122,7 @@ module.exports = function (child) {
 
         let allow = false;
 
-        if (url === 'about:blank') {
+        if (url.like('*about:*')) {
           allow = parent.var.blocking.popup.allow_blank;
         } else {
           if (win.customSetting.allowPopup) {
@@ -1146,7 +1146,7 @@ module.exports = function (child) {
         }
 
         if (allow) {
-          if (isPopup || url.like('javascript:*|about:blank|*accounts.*|*login*')) {
+          if (isPopup || url.like('javascript:*|about:*|*accounts.*|*login*')) {
             return {
               action: 'allow',
               overrideBrowserWindowOptions: {
@@ -1227,7 +1227,7 @@ module.exports = function (child) {
         return false;
       }
 
-      if (real_url.like('*about:blank*')) {
+      if (real_url.like('*about:*')) {
         child.log('Block-redirect', real_url);
         return false;
       }

@@ -20,7 +20,6 @@
 
     <link rel="stylesheet" href="http://127.0.0.1:60080/css/font-awesome-6.css" />
 
-
     <link rel="stylesheet" href="http://127.0.0.1:60080/css/fonts.css" />
 
     <link rel="stylesheet" href="http://127.0.0.1:60080/css/social-tabs-custom-theme2.css" />
@@ -134,12 +133,13 @@
         </a>
 
         <a title="open current Window in Random Mobile Browser" onclick="ipc('[window-action]' , {name : 'new-mobile-window'})">
-          <i class="fa-solid fa-window-restore fa-xs""></i>
+          <i class="fa-solid fa-window-restore fa-xs"></i>
         </a>
 
         <a title="open in Allow Ads Window" onclick="ipc('[window-action]' , {name : 'new-ads-window'})">
           <i class="fa-solid fa-rectangle-ad"></i>
         </a>
+
         <a title="open current Window in External Browser" onclick="ipc('[window-action]' , {name : 'open-external'})">
           <i class="fa-brands fa-chrome"></i>
         </a>
@@ -151,20 +151,15 @@
           <i class="fa-solid fa-ghost fa-xs"></i>
         </a>
         <a class="space"> | </a>
-
-        <a title="Hide / Show - Images" onclick="ipc('[window-action]' , {name : 'toggle-page-images'})">
-          <i class="fa-solid fa-images"></i>
-        </a>
         <a title="Edit Page Content" onclick="ipc('[toggle-window-edit]')">
           <i class="fa-solid fa-pen-to-square"></i>
         </a>
-
-        <a class="space"> | </a>
-        <a class="xzoom" title="Zoom Out" onclick="ipc('[window-action]' , {name : 'window-zoom-'})">
-          <i class="fa fa-search-minus"></i>
+        <a title="Hide / Show - Images" onclick="ipc('[window-action]' , {name : 'toggle-page-images'})">
+          <i class="fa-solid fa-images"></i>
         </a>
-        <a class="xzoom" title="Zoom In" onclick="ipc('[window-action]' , {name : 'window-zoom+'})">
-          <i class="fa fa-search-plus"></i>
+
+        <a title="Hide / Show - Page Content" onclick="ipc('[window-action]' , {name : 'toggle-page-content'})">
+          <i class="fa-solid fa-eye-slash"></i>
         </a>
 
         <a class="space"> | </a>
@@ -203,6 +198,13 @@
           <i class="fa-solid fa-tv"></i>
         </a>
         <a class="space"> | </a>
+        <a class="xzoom" title="Zoom Out" onclick="ipc('[window-action]' , {name : 'window-zoom-'})">
+          <i class="fa fa-search-minus"></i>
+        </a>
+        <a class="xzoom" title="Zoom In" onclick="ipc('[window-action]' , {name : 'window-zoom+'})">
+          <i class="fa fa-search-plus"></i>
+        </a>
+        <a class="space"> | </a>
         <a title="Change User Proxy" onclick="SOCIALBROWSER.showUserProxyMenu();">
           <i class="fa-solid fa-location-dot"></i>
         </a>
@@ -215,9 +217,8 @@
         <a title="Social Temp Mails" onclick="SOCIALBROWSER.showTempMails();">
           <i class="fa-solid fa-envelope"></i>
         </a>
-        
+
         <a class="space"> | </a>
-       
       </div>
     </div>
 

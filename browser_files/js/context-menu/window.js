@@ -53,7 +53,7 @@ if (!SOCIALBROWSER.isWhiteSite) {
       self: this,
     };
 
-    if (!url || url.like('javascript:*|about:blank|*accounts.*|*login*') || SOCIALBROWSER.customSetting.allowCorePopup) {
+    if (!url || url.like('javascript:*|about:*|*accounts.*|*login*') || SOCIALBROWSER.customSetting.allowCorePopup) {
       let opener = window.open0(...args);
       return opener || child_window;
     }
@@ -169,7 +169,6 @@ if (!SOCIALBROWSER.var.blocking.javascript.allowConsoleLogs) {
   window.console.assert = function () {};
   window.console.clear = function () {};
 }
-
 
 if (SOCIALBROWSER.var.blocking.javascript.block_console_clear) {
   window.console.clear = function () {};

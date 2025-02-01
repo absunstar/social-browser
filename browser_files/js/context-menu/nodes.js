@@ -155,7 +155,7 @@ function iframe_handle(iframe) {
   iframe.setAttribute('x-handled', 'true');
 
   if (!SOCIALBROWSER.isWhiteSite) {
-    if (SOCIALBROWSER.var.blocking.core.block_empty_iframe && (!iframe.src || iframe.src == 'about:blank')) {
+    if (SOCIALBROWSER.var.blocking.core.block_empty_iframe && (!iframe.src || iframe.src == 'about:')) {
       SOCIALBROWSER.log('[[ Remove ]]', iframe);
       iframe.remove();
     } else if (SOCIALBROWSER.var.blocking.core.remove_external_iframe && !iframe.src.like(document.location.protocol + '//' + document.location.hostname + '*')) {

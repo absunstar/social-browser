@@ -326,7 +326,7 @@ module.exports = function (child) {
         _ss.user.privacy.vpc = _ss.user.privacy.vpc || {};
         details.requestHeaders['User-Agent'] = _ss.user.defaultUserAgent.url;
 
-        if (_ss.user.privacy.allowVPC) {
+        if (_ss.user.privacy.allowVPC && _ss.user.privacy.vpc.languages) {
           details.requestHeaders['Accept-Language'] = _ss.user.privacy.vpc.languages;
         }
 
@@ -627,17 +627,29 @@ module.exports = function (child) {
             details.responseHeaders['Access-Control-Expose-Headers'.toLowerCase()] = a_expose;
           }
 
-          if (s_policy && Array.isArray(s_policy)) {
-            for (var key in s_policy) {
-              s_policy[key] = s_policy[key].replaceAll('data: ', 'data: browser://* ');
-              s_policy[key] = s_policy[key].replaceAll('default-src ', 'default-src browser://* ');
-              s_policy[key] = s_policy[key].replaceAll('img-src ', 'img-src browser://* ');
-              s_policy[key] = s_policy[key].replaceAll('script-src ', 'script-src browser://* ');
-              s_policy[key] = s_policy[key].replaceAll('frame-src ', 'frame-src browser://* ');
-              if (s_policy[key].contains('script-src') && !s_policy[key].contains('unsafe-inline')) {
-                s_policy[key] = s_policy[key] + "'unsafe-inline'";
+          if (s_policy) {
+            if (Array.isArray(s_policy)) {
+              for (var key in s_policy) {
+                s_policy[key] = s_policy[key].replaceAll('data: ', 'data: browser://* ');
+                s_policy[key] = s_policy[key].replaceAll('default-src ', 'default-src browser://* ');
+                s_policy[key] = s_policy[key].replaceAll('img-src ', 'img-src browser://* ');
+                s_policy[key] = s_policy[key].replaceAll('script-src ', 'script-src browser://* ');
+                s_policy[key] = s_policy[key].replaceAll('frame-src ', 'frame-src browser://* ');
+                if (s_policy[key].contains('script-src') && !s_policy[key].contains('unsafe-inline')) {
+                  s_policy[key] = s_policy[key] + " 'unsafe-inline'";
+                }
+              }
+            } else if (typeof s_policy == 'string') {
+              s_policy = s_policy.replaceAll('data: ', 'data: browser://* ');
+              s_policy = s_policy.replaceAll('default-src ', 'default-src browser://* ');
+              s_policy = s_policy.replaceAll('img-src ', 'img-src browser://* ');
+              s_policy = s_policy.replaceAll('script-src ', 'script-src browser://* ');
+              s_policy = s_policy.replaceAll('frame-src ', 'frame-src browser://* ');
+              if (s_policy.contains('script-src') && !s_policy.contains('unsafe-inline')) {
+                s_policy = s_policy + " 'unsafe-inline'";
               }
             }
+            details.responseHeaders['Content-Security-Policy'] = s_policy;
           }
         }
 
