@@ -12,7 +12,6 @@ window.print_options = {
   printSelectionOnly: false,
   color: true,
   landscape: false,
-  scaleFactor: null,
   pagesPerSheet: null,
   collate: false,
   copies: 1,
@@ -21,6 +20,7 @@ window.print_options = {
     to: 0,
   },
   duplexMode: null,
+  scaleFactor: null,
   dpi: { horizontal: 600, vertical: 600 },
   header: null,
   footer: null,
@@ -33,6 +33,12 @@ window.loadPrintOptions = function (info) {
     ...window.print_options,
     ...info.options,
   };
+
+  if (typeof window.print_options.pageSize == 'object') {
+    if (!window.print_options.pageSize.height) {
+      window.print_options.pageSize.height = document.body.clientHeight * 264.5833;
+    }
+  }
 
   if (window.print_options.width) {
     window.remote.getCurrentWindow().setSize(window.print_options.width, 720);

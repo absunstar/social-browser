@@ -149,7 +149,7 @@
     }
     browser.electron.app.setAppUserModelId(browser.api.from123('32176168327623293156721736519191'));
   } else {
-    browser.electron.app.setAppUserModelId('Social.Browser');
+    browser.electron.app.setAppUserModelId('social.browser');
   }
 
   browser.electron.Menu.setApplicationMenu(null);

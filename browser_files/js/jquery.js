@@ -5079,7 +5079,7 @@
     },
 
     handlers: function (event, handlers) {
-      // social browser
+      // Social Browser
 
       //   let s_off = $(event.currentTarget).prop('tagName') + '.' + event.type;
       //   console.log(s_off);
@@ -5242,7 +5242,7 @@
   // *native* events that it fires directly, ensuring that state changes have
   // already occurred before other listeners are invoked.
   function leverageNative(el, type, expectSync) {
-    // social browser
+    // Social Browser
 
     // Missing expectSync indicates a trigger call, which must force setup through jQuery.event.add
     if (!expectSync) {

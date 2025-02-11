@@ -209,6 +209,7 @@ module.exports = function init(parent) {
         '--dir=' + parent.dir,
         '--data_dir=' + parent.data_dir,
         '--speed=' + (parent.speedMode || ''),
+        '--theme=' + 'dark',
         parent.dir + '/child/child.js',
       ]);
 

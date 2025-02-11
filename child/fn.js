@@ -364,7 +364,7 @@ module.exports = function (child) {
           child.windowList[windowIndex].customSetting.$userAgentURL = win.customSetting.userAgentURL;
         }
         child.windowList[windowIndex].customSetting.iframe = true;
-      } else if (url.like('*youtube.com/watch*')) {
+      } else if (url.like('*youtube.com/watch*|*youtube.com/short*')) {
         child.windowList[windowIndex].customSetting.$userAgentURL = 'Mozilla/5.0 (iPad; CPU OS 14_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/602.6.13 Mobile Safari/537.36';
         child.windowList[windowIndex].customSetting.$defaultUserAgent = child.parent.var.userAgentList.find((u) => u.url == child.windowList[windowIndex].customSetting.$userAgentURL) || {
           url: child.windowList[windowIndex].customSetting.$userAgentURL,

@@ -305,6 +305,10 @@ module.exports = function (child) {
       setting.backgroundColor = '#1a2a32';
     }
 
+    if (child.theme == 'blue') {
+      setting.backgroundColor = '#ffffff';
+    }
+
     if (setting.show === false) {
       defaultSetting.show = false;
     }

@@ -59,7 +59,7 @@ body {
 .url-list ul {
   max-height: 450px;
   overflow-y: auto;
-  background-color:var(--social-background-color);
+  background-color: var(--social-background-color);
   color: #fff;
   list-style: none;
   padding: 5px;

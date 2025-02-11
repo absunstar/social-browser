@@ -283,21 +283,22 @@ if (SOCIALBROWSER.defaultUserAgent) {
       ],
       mobile: false,
       platform: 'windows',
-      getHighEntropyValues: function (arr) {
-        return new Promise((resolve, reject) => {
-          let obj = { ...navigator.userAgentData };
-          if (Array.isArray(arr)) {
-            arr.forEach((a) => {
-              if (!obj[a]) {
-                obj[a] = '';
-              }
-            });
-          }
-          resolve(obj);
-        });
-      },
     };
   }
+
+  SOCIALBROWSER.userAgentData.getHighEntropyValues = function (arr) {
+    return new Promise((resolve, reject) => {
+      let obj = { ...navigator.userAgentData };
+      if (Array.isArray(arr)) {
+        arr.forEach((a) => {
+          if (!obj[a]) {
+            obj[a] = '';
+          }
+        });
+      }
+      resolve(obj);
+    });
+  };
 
   if (SOCIALBROWSER.defaultUserAgent.device && SOCIALBROWSER.defaultUserAgent.device.name === 'Mobile') {
     SOCIALBROWSER.userAgentData = SOCIALBROWSER.userAgentData || {};
@@ -783,6 +784,7 @@ SOCIALBROWSER.onLoad(() => {
     window.$ = window.jQuery = SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/jquery.js');
   }
   setInterval(() => {
+
     document.querySelectorAll('video , video source').forEach((node) => {
       if (node.src) {
         SOCIALBROWSER.sendMessage({
@@ -792,6 +794,7 @@ SOCIALBROWSER.onLoad(() => {
       }
     });
   }, 1000);
+  
 });
 
 navigator.clipboard = { writeText: SOCIALBROWSER.copy };

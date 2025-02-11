@@ -7800,16 +7800,16 @@ i.inverted.circular.teal.icon {
 
 /* Blue */
 
-i.blue.icon {
+i.logo.icon {
   color: #2185D0 !important;
 }
 
-i.inverted.blue.icon {
+i.inverted.logo.icon {
   color: #54C8FF !important;
 }
 
-i.inverted.bordered.blue.icon,
-i.inverted.circular.blue.icon {
+i.inverted.bordered.logo.icon,
+i.inverted.circular.logo.icon {
   background-color: #2185D0 !important;
   color: #FFFFFF !important;
 }

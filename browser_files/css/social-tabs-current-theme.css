@@ -11,6 +11,8 @@
   --scrollbar-color: #2196f3;
   transition: all 0.4s ease;
   /* dark theme */
+  --color: #000;
+  --icon-color: #607d8b;
   --fieldset-background: #607d8b;
   --legend-color: #fff;
   --social-box-shadow: 1px 1px 2px 1px #ffffff;
@@ -21,11 +23,11 @@
   --social-other-tab-color: #c9c9c9;
   --social-address-background: #607d8b;
   --social-address-color: #ffffff;
-  --color: #000;
   --scrollbar-background-color: #000000;
   --scrollbar-color: #1a2a32;
   --bs-body-bg: var(--social-background-color);
   transition: all 0.4s ease;
+
 }
 html,
 body,
@@ -33,7 +35,7 @@ body,
   background: var(--social-background-color);
 }
 .window-actions a {
-  color: #607d8b;
+  color: var(--icon-color);
   border-radius: 20px;
   padding: 6px 11px;
   cursor: pointer;
@@ -52,7 +54,7 @@ body,
   z-index: 9999999;
 }
 
-.social-address-bara:not(.space):hover ,
+.social-address-bara:not(.space):hover,
 .window-actions a:not(.space):hover {
   color: #8bc34a;
 }
@@ -147,8 +149,7 @@ body,
   width: 100%;
 }
 
-
-.social-address-bar{
+.social-address-bar {
   height: 40px;
   border-bottom: none;
   background-color: var(--social-current-tab-fill);

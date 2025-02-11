@@ -299,17 +299,30 @@ function showSettingMenu() {
       type: 'separator',
     });
   }
+  if (SOCIALBROWSER.var.core.id.like('*mama*')) {
+    SOCIALBROWSER.menuList.push({
+      label: 'Open Social Browser Site',
+      iconURL: 'http://127.0.0.1:60080/images/logo.png',
+      click: () =>
+        ipc('[open new tab]', {
+          url: 'https://mama-services.net/',
+          title: 'Social Browser',
+          mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
+        }),
+    });
+  } else {
+    SOCIALBROWSER.menuList.push({
+      label: 'Open Social Browser Site',
+      iconURL: 'http://127.0.0.1:60080/images/logo.png',
+      click: () =>
+        ipc('[open new tab]', {
+          url: 'https://social-browser.com/',
+          title: 'Social Browser',
+          mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
+        }),
+    });
+  }
 
-  SOCIALBROWSER.menuList.push({
-    label: 'Open Social Browser Site',
-    iconURL: 'http://127.0.0.1:60080/images/logo.png',
-    click: () =>
-      ipc('[open new tab]', {
-        url: 'https://social-browser.com',
-        title: 'Social Browser',
-        mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
-      }),
-  });
   SOCIALBROWSER.menuList.push({
     type: 'separator',
   });
@@ -423,7 +436,7 @@ function showSettingMenu() {
   });
 
   SOCIALBROWSER.menuList.push({
-    label: 'Close All Social Browser Services',
+    label: 'Close All Browser Services',
     iconURL: 'http://127.0.0.1:60080/images/close.png',
     click: () => SOCIALBROWSER.ws({ type: '[close]' }),
   });

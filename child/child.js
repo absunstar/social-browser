@@ -35,6 +35,7 @@ var child = {
   dir: process.argv[4].replace('--dir=', ''),
   data_dir: process.argv[5].replace('--data_dir=', ''),
   speedMode: Boolean(process.argv[6].replace('--speed=', '')),
+  theme: process.argv[7].replace('--theme=', ''),
   electron: require('electron'),
   ipcMain: require('electron/main').ipcMain,
   remoteMain: require('@electron/remote/main'),
@@ -126,8 +127,11 @@ child.remoteMain.initialize();
 child.shell = child.electron.shell;
 child.dialog = child.electron.dialog;
 
-child.electron.nativeTheme.themeSource = 'light';
 child.electron.nativeTheme.themeSource = 'dark';
+
+if (child.theme == 'blue') {
+  child.electron.nativeTheme.themeSource = 'light';
+}
 
 require(child.path.join(child.dir, 'child', 'fn'))(child);
 require(child.path.join(child.dir, 'child', 'vars'))(child);
@@ -149,14 +153,14 @@ if (child.uuid == 'user-file') {
   }, 1000 * 5);
 }
 
-// child.electron.app.setAppUserModelId('Social.Browser');
+// child.electron.app.setAppUserModelId('social.browser');
 child.electron.app.clearRecentDocuments();
 
 if (child.electron.app.setUserTasks) {
   child.electron.app.setUserTasks([]);
 }
 if (child.electron.app.dock) {
- // child.electron.app.dock.hide();
+  // child.electron.app.dock.hide();
 }
 
 //child.electron.app.commandLine.appendSwitch('enable-experimental-web-platform-features');
