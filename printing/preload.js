@@ -7,6 +7,7 @@ window.print = function (options) {
 
 window.print_options = {
   show: false,
+  print: true,
   silent: true,
   printBackground: true,
   printSelectionOnly: false,
@@ -46,12 +47,14 @@ window.loadPrintOptions = function (info) {
 
   if (window.print_options.show) {
     window.remote.getCurrentWindow().show();
-  } else {
+  }
+
+  if (window.print_options.print) {
     window.remote.getCurrentWindow().webContents.print(window.print_options, (success, failureReason) => {
       if (!success) {
-        console.log(failureReason);
         window.remote.getCurrentWindow().show();
         window.remote.getCurrentWindow().openDevTools();
+        console.log(failureReason);
       } else {
         window.remote.getCurrentWindow().close();
       }

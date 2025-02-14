@@ -336,6 +336,9 @@ module.exports = function (child) {
         let customSetting = null;
         let win = null;
         let wIndex = -1;
+        let domainName = urlObject.hostname;
+        let domainCookie = details.requestHeaders['Cookie'] || '';
+        let domainCookieObject = child.cookieParse(domainCookie);
 
         if (details.webContents) {
           win = child.electron.BrowserWindow.fromWebContents(details.webContents);
@@ -355,14 +358,42 @@ module.exports = function (child) {
           } else if (customSetting.userAgent) {
             details.requestHeaders['User-Agent'] = customSetting.userAgent;
           }
+
+          if (customSetting.$defaultUserAgent && !customSetting.headers) {
+            customSetting.uaFullVersion = customSetting.$defaultUserAgent.url.split('Chrome/')[1]?.split(' ')[0];
+            customSetting.uaVersion = customSetting.uaFullVersion?.split('.')[0];
+            customSetting.headers = {};
+            if (customSetting.$defaultUserAgent.name) {
+              if (customSetting.$defaultUserAgent.name.like('*edge*')) {
+                customSetting.headers['Sec-Ch-Ua'] = `"Not(A:Brand";v="99", "Microsoft Edge";v="${customSetting.uaVersion}", "Chromium";v="${customSetting.uaVersion}"`;
+                customSetting.headers['Sec-Ch-Ua-Arch'] = '"x86"';
+                customSetting.headers['Sec-Ch-Ua-Bitness'] = '"64"';
+                customSetting.headers['Sec-Ch-Ua-Full-Version'] = `"${customSetting.uaFullVersion}"`;
+                customSetting.headers['Sec-Ch-Ua-Mobile'] = customSetting.$defaultUserAgent.platform == 'Mobile' ? '?1' : '?0';
+                customSetting.headers['Sec-Ch-Ua-Model'] = '""';
+                customSetting.headers['Sec-Ch-Ua-Platform'] = customSetting.$defaultUserAgent.platform == 'Win32' ? '"Windows"' : customSetting.$defaultUserAgent.platform;
+                customSetting.headers['Sec-Ch-Ua-Platform-Version'] = '"19.0.0"';
+                customSetting.headers['X-Edge-Shopping-Flag'] = '1';
+              } else if (customSetting.$defaultUserAgent.name.like('*chrome*')) {
+                customSetting.headers['Sec-Ch-Ua'] = `"Not A(Brand";v="8", "Chromium";v="${customSetting.uaVersion}", "Google Chrome";v="${customSetting.uaVersion}"`;
+                customSetting.headers['Sec-Ch-Ua-Mobile'] = customSetting.$defaultUserAgent.platform == 'Mobile' ? '?1' : '?0';
+                customSetting.headers['Sec-Ch-Ua-Platform'] = customSetting.$defaultUserAgent.platform == 'Win32' ? '"Windows"' : customSetting.$defaultUserAgent.platform;
+              }
+            }
+            child.windowList[wIndex].customSetting = customSetting;
+          }
+
           if (customSetting.vpc) {
             details.requestHeaders['Accept-Language'] = customSetting.vpc.languages;
           }
+
+          if (customSetting.headers) {
+            for (const key in customSetting.headers) {
+              details.requestHeaders[key] = customSetting.headers[key];
+            }
+          }
         }
 
-        let domainName = urlObject.hostname;
-        let domainCookie = details.requestHeaders['Cookie'] || '';
-        let domainCookieObject = child.cookieParse(domainCookie);
         if (customSetting && customSetting.vip) {
           // child.log('VIP Ignore cookieList');
         } else if (customSetting && Array.isArray(customSetting.cookieList)) {

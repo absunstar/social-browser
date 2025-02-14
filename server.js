@@ -143,7 +143,7 @@
   if (false) {
     browser.isApp = true;
     browser.appURL = browser.api.from123('431932754615616925793265467382574279577541384668417886672578236947129191');
-    browser.icons['win32'] = browser.path.join(browser.files_dir, 'images', 'tls.ico');
+    browser.icons['win32'] = browser.path.join(browser.files_dir, 'images', 'logo.ico');
     if (!browser.var.id.like('*tls*')) {
       browser.var.id = 'tls_' + browser.var.id;
     }

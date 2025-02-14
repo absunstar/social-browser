@@ -2,7 +2,7 @@
   "name": "social.browser",
   "productName": "Social Browser",
   "homepage": "https://social-browser.com",
-  "version": "2025.02.05",
+  "version": "2025.02.15",
   "description": "Browsing Social Platforms with Multiple Accounts without Ban",
   "author": {
     "name": "Social Teams",
@@ -32,7 +32,7 @@
   "build": {
     "appId": "com.social.browser",
     "productName": "Social Browser",
-    "copyright": "Copyright©2024",
+    "copyright": "Copyright©2025",
     "target": "NSIS",
     "files": [
       "**/*",

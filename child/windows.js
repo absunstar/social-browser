@@ -918,6 +918,7 @@ module.exports = function (child) {
 
     win.on('unresponsive', async () => {
       child.log('window unresponsive');
+
       // setTimeout(() => {
       //   if (win && !win.isDestroyed()) {
       //     win.webContents.forcefullyCrashRenderer();
@@ -938,6 +939,7 @@ module.exports = function (child) {
       //     win.webContents.reload();
       //   }
       // }
+      
     });
 
     win.webContents.on('render-process-gone', (e, details) => {
