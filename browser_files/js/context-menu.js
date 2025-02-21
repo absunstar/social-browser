@@ -153,7 +153,7 @@
     return SOCIALBROWSER.ipcRenderer.sendSync(channel, value);
   };
 
-  SOCIALBROWSER.invoke = SOCIALBROWSER.ipc = function (channel, value = {}) {
+  SOCIALBROWSER.invoke = SOCIALBROWSER.ipc = function (channel, value = {}, log = false) {
     value.parentSetting = SOCIALBROWSER.customSetting;
 
     value.windowID = value.windowID || SOCIALBROWSER.remote.getCurrentWindow().id;
@@ -164,7 +164,9 @@
     if (value.parentSetting && value.parentSetting.parentSetting) {
       value.parentSetting.parentSetting = undefined;
     }
-
+    if (log) {
+      console.log(value);
+    }
     return SOCIALBROWSER.ipcRenderer.invoke(channel, value);
   };
   SOCIALBROWSER.on = function (name, callback) {
@@ -246,6 +248,7 @@
     SOCIALBROWSER.childProcessID = SOCIALBROWSER.browserData.childProcessID;
     SOCIALBROWSER.child_index = SOCIALBROWSER.browserData.child_index;
     SOCIALBROWSER.customSetting = SOCIALBROWSER.browserData.customSetting;
+    SOCIALBROWSER.userAgentData = SOCIALBROWSER.customSetting.userAgentData;
     SOCIALBROWSER.var = SOCIALBROWSER.browserData.var;
     SOCIALBROWSER.dir = SOCIALBROWSER.browserData.dir;
     SOCIALBROWSER.data_dir = SOCIALBROWSER.browserData.data_dir;

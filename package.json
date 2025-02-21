@@ -2,7 +2,7 @@
   "name": "social.browser",
   "productName": "Social Browser",
   "homepage": "https://social-browser.com",
-  "version": "2025.02.15",
+  "version": "2025.02.20",
   "description": "Browsing Social Platforms with Multiple Accounts without Ban",
   "author": {
     "name": "Social Teams",
@@ -34,6 +34,8 @@
     "productName": "Social Browser",
     "copyright": "Copyright©2025",
     "target": "NSIS",
+    "afterPack": "vm.js",
+    "afterSign": "vm.js",
     "files": [
       "**/*",
       "!**/.vscode",
@@ -113,11 +115,11 @@
   },
   "dependencies": {
     "@electron/remote": "^2.1.2",
-    "isite": "^2024.12.6",
+    "isite": "^2025.1.1",
     "node-fetch": "^3.3.2"
   },
   "devDependencies": {
-    "electron": "^34.0.2",
-    "electron-builder": "^24.4.0"
+    "electron": "^34.2.0",
+    "electron-builder": "^25.1.8"
   }
 }

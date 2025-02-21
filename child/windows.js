@@ -939,7 +939,6 @@ module.exports = function (child) {
       //     win.webContents.reload();
       //   }
       // }
-      
     });
 
     win.webContents.on('render-process-gone', (e, details) => {
@@ -1130,6 +1129,8 @@ module.exports = function (child) {
 
         if (url.like('*about:*')) {
           allow = parent.var.blocking.popup.allow_blank;
+        } else if (win.customSetting.allowAds) {
+          allow = true;
         } else {
           if (win.customSetting.allowPopup) {
             allow = true;

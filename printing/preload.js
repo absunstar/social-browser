@@ -22,7 +22,7 @@ window.print_options = {
   },
   duplexMode: null,
   scaleFactor: null,
-  dpi: { horizontal: 600, vertical: 600 },
+ // dpi: { horizontal: 600, vertical: 600 },
   header: null,
   footer: null,
   pageSize: 'A4',
@@ -37,7 +37,10 @@ window.loadPrintOptions = function (info) {
 
   if (typeof window.print_options.pageSize == 'object') {
     if (!window.print_options.pageSize.height) {
-      window.print_options.pageSize.height = document.body.clientHeight * 264.5833;
+      window.print_options.pageSize.height = document.querySelector('html').clientHeight * 264.5833;
+    }
+    if (!window.print_options.pageSize.width) {
+      window.print_options.pageSize.width = document.querySelector('html').clientWidth * 264.5833;
     }
   }
 

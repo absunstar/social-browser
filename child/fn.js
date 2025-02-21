@@ -317,97 +317,187 @@ module.exports = function (child) {
   child.handleCustomSeting = function (url, win) {
     let windowIndex = child.windowList.findIndex((w) => w.id == win.id);
 
-    win.customSetting.session = child.parent.var.session_list.find((s) => s.name == win.customSetting.partition);
+    win.customSetting.headers = {};
+    win.customSetting.session = child.parent.var.session_list.find((s) => s.name == win.customSetting.partition) || win.customSetting.session;
 
-    if (windowIndex !== -1) {
-      child.windowList[windowIndex].customSetting.session = win.customSetting.session;
-
-      if (child.windowList[windowIndex].customSetting.userAgentURL) {
-        child.windowList[windowIndex].customSetting.$defaultUserAgent = child.parent.var.userAgentList.find((u) => u.url == child.windowList[windowIndex].customSetting.userAgentURL) || {
-          url: child.windowList[windowIndex].customSetting.userAgentURL,
-        };
-        child.windowList[windowIndex].customSetting.$userAgentURL = child.windowList[windowIndex].customSetting.userAgentURL;
-      } else if (child.windowList[windowIndex].customSetting.defaultUserAgent) {
-        child.windowList[windowIndex].customSetting.$defaultUserAgent = child.windowList[windowIndex].customSetting.defaultUserAgent;
-        child.windowList[windowIndex].customSetting.$userAgentURL = child.windowList[windowIndex].customSetting.$defaultUserAgent.url;
-      } else {
-        if (child.windowList[windowIndex].customSetting.session && child.windowList[windowIndex].customSetting.session.defaultUserAgent) {
-          child.windowList[windowIndex].customSetting.$defaultUserAgent = child.windowList[windowIndex].customSetting.session.defaultUserAgent;
-          child.windowList[windowIndex].customSetting.$userAgentURL = child.windowList[windowIndex].customSetting.$defaultUserAgent.url;
-        } else {
-          child.windowList[windowIndex].customSetting.$defaultUserAgent = child.parent.var.core.defaultUserAgent;
-          child.windowList[windowIndex].customSetting.$userAgentURL = child.windowList[windowIndex].customSetting.$defaultUserAgent.url;
-        }
-      }
-
-      win.customSetting.$defaultUserAgent = child.windowList[windowIndex].customSetting.$defaultUserAgent;
+    if (win.customSetting.userAgentURL) {
+      win.customSetting.$defaultUserAgent = child.parent.var.userAgentList.find((u) => u.url == win.customSetting.userAgentURL) || {
+        url: win.customSetting.userAgentURL,
+      };
+      win.customSetting.$userAgentURL = win.customSetting.userAgentURL;
+    } else if (win.customSetting.defaultUserAgent) {
+      win.customSetting.$defaultUserAgent = win.customSetting.defaultUserAgent;
       win.customSetting.$userAgentURL = win.customSetting.$defaultUserAgent.url;
-
-      if (url.like('*accounts.google.com*')) {
-        child.windowList[windowIndex].customSetting.iframe = false;
-        //  child.windowList[windowIndex].customSetting.$userAgentURL =
-        // ('Mozilla/5.0 (X11; U; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/131.0.0.0  Chrome/131.0.0.0  Safari/537.36');
-        // win.customSetting.$defaultUserAgent = {
-        //   url: child.windowList[windowIndex].customSetting.$userAgentURL,
-        //   name: 'Chrome Chromium',
-        //   platform: 'X11; U; Linux x86_64',
-        //   engine: {
-        //     name: 'Chrome',
-        //   },
-        //   device: {
-        //     name: 'Chrome',
-        //   },
-        //   vendor: 'Google Inc.',
-        // };
-      } else if (url.like('*youtube.com/embed*')) {
-        if (win.customSetting.userAgentURL) {
-          child.windowList[windowIndex].customSetting.$userAgentURL = win.customSetting.userAgentURL;
-        }
-        child.windowList[windowIndex].customSetting.iframe = true;
-      } else if (url.like('*youtube.com/watch*|*youtube.com/short*')) {
-        child.windowList[windowIndex].customSetting.$userAgentURL = 'Mozilla/5.0 (iPad; CPU OS 14_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/602.6.13 Mobile Safari/537.36';
-        child.windowList[windowIndex].customSetting.$defaultUserAgent = child.parent.var.userAgentList.find((u) => u.url == child.windowList[windowIndex].customSetting.$userAgentURL) || {
-          url: child.windowList[windowIndex].customSetting.$userAgentURL,
-        };
-        child.windowList[windowIndex].customSetting.iframe = true;
-        if (url !== win.lastYoutubeWatch) {
-          win.lastYoutubeWatch = url;
-          win.loadURL(url);
-        }
-      } else if (url.like('*60080*')) {
-        child.windowList[windowIndex].customSetting.allowDevTools = false;
-      } else if (url.like('*challenges.cloudflare.com*')) {
-        child.windowList[windowIndex].customSetting.iframe = true;
-        /*  Must Be Changed From Render Before call Window / all pages and iframes must have the same defaultUserAgent */
-        // child.windowList[windowIndex].customSetting.$defaultUserAgent = {
-        //   name: 'Edge',
-        //   vendor: '',
-        //   prefix: '',
-        //   device: {
-        //     name: 'PC',
-        //   },
-        //   screen: {
-        //     width: 1280,
-        //     height: 720,
-        //   },
-        //   platformInfo: {
-        //     name: 'Windows NT 11.0',
-        //     code: 'Win32',
-        //   },
-        //   platform: 'Win32',
-        //   major: 122,
-        //   minor: 2438,
-        //   patch: 170,
-        //   url: 'Mozilla/5.0 (Windows NT 11.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.2438.170  Safari/537.36 Edge/122.2438.170',
-        // };
-        // child.windowList[windowIndex].customSetting.$userAgentURL = child.windowList[windowIndex].customSetting.$defaultUserAgent.url;
-        // child.windowList[windowIndex].customSetting.iframe = false;
+    } else {
+      if (win.customSetting.session && win.customSetting.session.defaultUserAgent) {
+        win.customSetting.$defaultUserAgent = win.customSetting.session.defaultUserAgent;
+        win.customSetting.$userAgentURL = win.customSetting.$defaultUserAgent.url;
       } else {
-        // child.windowList[windowIndex].customSetting.$userAgentURL = win.customSetting.userAgentURL;
-        child.windowList[windowIndex].customSetting.iframe = true;
+        win.customSetting.$defaultUserAgent = child.parent.var.core.defaultUserAgent;
+        win.customSetting.$userAgentURL = win.customSetting.$defaultUserAgent.url;
+      }
+    }
+
+    win.customSetting.$userAgentURL = win.customSetting.$defaultUserAgent.url;
+
+    if (url.like('*accounts.google.com*')) {
+      win.customSetting.iframe = false;
+    } else if (url.like('*youtube.com/watch*|*youtube.com/short*')) {
+      win.customSetting.$userAgentURL = 'Mozilla/5.0 (iPad; CPU OS 14_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/602.6.13 Mobile Safari/537.36';
+      win.customSetting.$defaultUserAgent = child.parent.var.userAgentList.find((u) => u.url == win.customSetting.$userAgentURL) || {
+        url: win.customSetting.$userAgentURL,
+      };
+      win.customSetting.iframe = true;
+      if (url !== win.lastYoutubeWatch) {
+        win.lastYoutubeWatch = url;
+        win.loadURL(url);
+      }
+    } else if (url.like('*youtube.com*')) {
+      if (win.customSetting.userAgentURL) {
+        win.customSetting.$userAgentURL = win.customSetting.userAgentURL;
+      }
+      win.customSetting.iframe = true;
+    } else if (url.like('*60080*')) {
+      win.customSetting.allowDevTools = false;
+    } else if (url.like('*challenges.cloudflare.com*')) {
+      win.customSetting.iframe = true;
+    } else {
+      win.customSetting.iframe = true;
+    }
+
+    if (win.customSetting.$userAgentURL) {
+      if (win.customSetting.$userAgentURL.like('*chrome/*')) {
+        win.customSetting.uaFullVersion = win.customSetting.$userAgentURL.toLowerCase().split('chrome/')[1]?.split(' ')[0];
+        win.customSetting.uaVersion = win.customSetting.uaFullVersion?.split('.')[0];
+      } else if (win.customSetting.$userAgentURL.like('*firefox/*')) {
+        win.customSetting.uaFullVersion = win.customSetting.$userAgentURL.toLowerCase().split('firefox/')[1]?.split(' ')[0];
+        win.customSetting.uaVersion = win.customSetting.uaFullVersion?.split('.')[0];
+      } else if (win.customSetting.$userAgentURL.like('*edge/*')) {
+        win.customSetting.uaFullVersion = win.customSetting.$userAgentURL.toLowerCase().split('edge/')[1]?.split(' ')[0];
+        win.customSetting.uaVersion = win.customSetting.uaFullVersion?.split('.')[0];
       }
 
-      // child.electron.app.userAgentFallback = win.customSetting.$userAgentURL;
+      win.customSetting.headers['Sec-Ch-Ua'] = `"Not A(Brand";v="8", "Chromium";v="${win.customSetting.uaVersion}", "Google Chrome";v="${win.customSetting.uaVersion}"`;
+      win.customSetting.headers['Sec-Ch-Ua-Mobile'] = win.customSetting.$defaultUserAgent?.platform == 'Mobile' ? '?1' : '?0';
+      win.customSetting.headers['Sec-Ch-Ua-Platform'] = win.customSetting.$defaultUserAgent?.platform == 'Win32' ? '"Windows"' : win.customSetting.$defaultUserAgent?.platform;
+
+      win.customSetting.userAgentData = {
+        uaFullVersion: win.customSetting.uaFullVersion,
+        uaVersion: win.customSetting.uaVersion,
+        model: '',
+        architecture: 'x86',
+        bitness: '64',
+        wow64: true,
+        platformVersion: '19.0.0',
+        platform: win.customSetting.$defaultUserAgent?.platform == 'Win32' ? 'Windows' : win.customSetting.$defaultUserAgent?.platform,
+        mobile: win.customSetting.$defaultUserAgent?.platform == 'Mobile' ? true : false,
+        fullVersionList: [
+          {
+            brand: 'Chromium',
+            version: win.customSetting.uaFullVersion,
+          },
+          {
+            brand: 'Google Chrome',
+            version: win.customSetting.uaFullVersion,
+          },
+          {
+            brand: 'Not_A Brand',
+            version: '24',
+          },
+        ],
+        brands: [
+          {
+            brand: 'Chromium',
+            version: win.customSetting.uaVersion,
+          },
+          {
+            brand: 'Google Chrome',
+            version: win.customSetting.uaVersion,
+          },
+          {
+            brand: 'Not_A Brand',
+            version: '24',
+          },
+        ],
+      };
+    }
+
+    if (win.customSetting.vpc) {
+      win.customSetting.headers['Accept-Language'] = win.customSetting.vpc.languages;
+    }
+
+    if (win.customSetting.$defaultUserAgent) {
+      if (win.customSetting.$defaultUserAgent.name) {
+        if (win.customSetting.$defaultUserAgent.name.like('*edge*')) {
+          win.customSetting.userAgentData.brands = [
+            {
+              brand: 'Not(A:Brand',
+              version: '99',
+            },
+            {
+              brand: 'Microsoft Edge',
+              version: win.customSetting.uaVersion,
+            },
+            {
+              brand: 'Chromium',
+              version: win.customSetting.uaVersion,
+            },
+          ];
+          win.customSetting.userAgentData.fullVersionList = [
+            {
+              brand: 'Not(A:Brand',
+              version: '99',
+            },
+            {
+              brand: 'Microsoft Edge',
+              version: win.customSetting.uaFullVersion,
+            },
+            {
+              brand: 'Chromium',
+              version: win.customSetting.uaFullVersion,
+            },
+          ];
+          win.customSetting.headers['Sec-Ch-Ua'] = `"Not(A:Brand";v="99", "Microsoft Edge";v="${win.customSetting.uaVersion}", "Chromium";v="${win.customSetting.uaVersion}"`;
+          win.customSetting.headers['Sec-Ch-Ua-Arch'] = '"x86"';
+          win.customSetting.headers['Sec-Ch-Ua-Bitness'] = '"64"';
+          win.customSetting.headers['Sec-Ch-Ua-Full-Version'] = `"${win.customSetting.uaFullVersion}"`;
+          win.customSetting.headers['Sec-Ch-Ua-Mobile'] = win.customSetting.$defaultUserAgent.platform == 'Mobile' ? '?1' : '?0';
+          win.customSetting.headers['Sec-Ch-Ua-Model'] = '""';
+          win.customSetting.headers['Sec-Ch-Ua-Platform'] = win.customSetting.$defaultUserAgent.platform == 'Win32' ? '"Windows"' : win.customSetting.$defaultUserAgent.platform;
+          win.customSetting.headers['Sec-Ch-Ua-Platform-Version'] = '"19.0.0"';
+          win.customSetting.headers['X-Edge-Shopping-Flag'] = '1';
+        } else if (win.customSetting.$defaultUserAgent.name.like('*firefox*')) {
+          win.customSetting.userAgentData.brands = [
+            {
+              brand: 'Firefox',
+              version: win.customSetting.uaVersion,
+            },
+            {
+              brand: 'Not(A:Brand',
+              version: '24',
+            },
+          ];
+          win.customSetting.userAgentData.fullVersionList = [
+            {
+              brand: 'Firefox',
+              version: win.customSetting.uaFullVersion,
+            },
+            {
+              brand: 'Not(A:Brand',
+              version: '24',
+            },
+          ];
+
+          win.customSetting.headers['Sec-Ch-Ua'] = `"Not A(Brand";v="24", "Firefox";v="${win.customSetting.uaVersion}"`;
+          win.customSetting.headers['Sec-Ch-Ua-Mobile'] = win.customSetting.$defaultUserAgent.platform == 'Mobile' ? '?1' : '?0';
+          win.customSetting.headers['Sec-Ch-Ua-Platform'] = win.customSetting.$defaultUserAgent.platform == 'Win32' ? '"Windows"' : win.customSetting.$defaultUserAgent.platform;
+        } else {
+        }
+      }
+    }
+    if (windowIndex !== -1) {
+      child.windowList[windowIndex].customSetting = win.customSetting;
+      child.electron.app.userAgentFallback = win.customSetting.$userAgentURL;
     } else {
       console.log('handleCustomSeting Not Exists', url);
     }

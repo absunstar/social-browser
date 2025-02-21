@@ -122,6 +122,15 @@ child.fetch = function (...args) {
 //  child.electron.app.commandLine.appendSwitch('no-sandbox');
 // child.electron.app.disableHardwareAcceleration();
 
+require(child.path.join(child.dir, 'child', 'fn'))(child);
+require(child.path.join(child.dir, 'child', 'vars'))(child);
+require(child.path.join(child.dir, 'child', 'windows'))(child);
+require(child.path.join(child.dir, 'child', 'adsManager'))(child);
+require(child.path.join(child.dir, 'child', 'ipc'))(child);
+require(child.path.join(child.dir, 'child', 'session'))(child);
+require(child.path.join(child.dir, 'child', 'proxy_check'))(child);
+require(child.path.join(child.dir, 'child', 'plugins'))(child);
+
 child.remoteMain.initialize();
 
 child.shell = child.electron.shell;
@@ -132,15 +141,6 @@ child.electron.nativeTheme.themeSource = 'dark';
 if (child.theme == 'blue') {
   child.electron.nativeTheme.themeSource = 'light';
 }
-
-require(child.path.join(child.dir, 'child', 'fn'))(child);
-require(child.path.join(child.dir, 'child', 'vars'))(child);
-require(child.path.join(child.dir, 'child', 'windows'))(child);
-require(child.path.join(child.dir, 'child', 'adsManager'))(child);
-require(child.path.join(child.dir, 'child', 'ipc'))(child);
-require(child.path.join(child.dir, 'child', 'session'))(child);
-require(child.path.join(child.dir, 'child', 'plugins'))(child);
-require(child.path.join(child.dir, 'child', 'proxy_check'))(child);
 
 if (child.uuid == 'user-file') {
   child.log('Files Working ....');
@@ -174,7 +174,6 @@ if (child.electron.app.dock) {
 //child.electron.app.commandLine.appendSwitch('disable-site-isolation-trials');
 //child.electron.app.commandLine.appendSwitch('enable-features', 'PDFViewerUpdate');
 
-// child.allow_widevinecdm(app)
 child.mkdirSync(child.path.join(child.data_dir, child.uuid));
 child.electron.app.setPath('userData', child.path.join(child.data_dir, child.uuid));
 child.electron.protocol.registerSchemesAsPrivileged([
@@ -270,7 +269,7 @@ child.electron.app.whenReady().then(() => {
 
   child.sendToWindows = function (...args) {
     child.windowList.forEach((w) => {
-      if (w.window && !w.window.isDestroyed()) {
+      if (w.window && !w.window.isDestroyed() && w.window.webContents && !w.window.webContents.isDestroyed()) {
         w.window.webContents.send(...args);
       }
     });
@@ -321,6 +320,13 @@ child.electron.app.whenReady().then(() => {
 
     child.handleWindowBoundsBusy = false;
   };
-
   require(child.path.join(child.dir, 'child', 'ws'))(child);
+  // child.electron.components
+  //   .whenReady(() => {
+
+  //   })
+  //   .catch((err) => {
+  //     console.error(err);
+  //     require(child.path.join(child.dir, 'child', 'ws'))(child);
+  //   });
 });

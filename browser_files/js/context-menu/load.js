@@ -204,25 +204,6 @@ if (SOCIALBROWSER.defaultUserAgent) {
   }
   SOCIALBROWSER.defaultUserAgent.name = SOCIALBROWSER.defaultUserAgent.name || SOCIALBROWSER.defaultUserAgent.url;
   if (SOCIALBROWSER.defaultUserAgent.name.contains('Edge')) {
-    let version = SOCIALBROWSER.userAgentURL.split('Chrome/')[1].split(' ')[0].split('.')[0];
-    SOCIALBROWSER.userAgentData = {
-      brands: [
-        {
-          brand: 'Microsoft Edge',
-          version: version,
-        },
-        {
-          brand: 'Chromium',
-          version: version,
-        },
-        {
-          brand: 'Not_A Brand',
-          version: '24',
-        },
-      ],
-      mobile: false,
-      platform: 'Windows',
-    };
     let chrome = JSON.parse(
       '{"appPinningPrivate":{},"authPrivate":{"onServiceAuthStateChanged":{},"onSignInStateChanged":{},"AccountType":{"AAD":"AAD","MSA":"MSA","NO_ACCOUNT":"NO_ACCOUNT","UNSUPPORTED_SOVEREIGNTY":"UNSUPPORTED_SOVEREIGNTY"},"RegionScope":{"ARLINGTON":"ARLINGTON","BLACKFOREST":"BLACKFOREST","DOD":"DOD","DOJ":"DOJ","FAIRFAX":"FAIRFAX","GALLATIN":"GALLATIN","GCC_MODERATE":"GCC_MODERATE","GLOBAL":"GLOBAL","MAX_VALUE":"MAX_VALUE","OTHER":"OTHER","OTHER_US_GOV":"OTHER_US_GOV","UNKNOWN":"UNKNOWN"}},"ntpSettingsPrivate":{"onConfigDataChanged":{},"onPrefsChanged":{},"ControlledBy":{"DEVICE_POLICY":"DEVICE_POLICY","EXTENSION":"EXTENSION","OWNER":"OWNER","PRIMARY_USER":"PRIMARY_USER","USER_POLICY":"USER_POLICY"},"Enforcement":{"ENFORCED":"ENFORCED","RECOMMENDED":"RECOMMENDED"},"PrefType":{"BOOLEAN":"BOOLEAN","DICTIONARY":"DICTIONARY","LIST":"LIST","NUMBER":"NUMBER","STRING":"STRING","URL":"URL"}},"runtime":{"OnInstalledReason":{"CHROME_UPDATE":"chrome_update","INSTALL":"install","SHARED_MODULE_UPDATE":"shared_module_update","UPDATE":"update"},"OnRestartRequiredReason":{"APP_UPDATE":"app_update","OS_UPDATE":"os_update","PERIODIC":"periodic"},"PlatformArch":{"ARM":"arm","ARM64":"arm64","MIPS":"mips","MIPS64":"mips64","X86_32":"x86-32","X86_64":"x86-64"},"PlatformNaclArch":{"ARM":"arm","ARM64":"arm64","MIPS":"mips","MIPS64":"mips64","X86_32":"x86-32","X86_64":"x86-64"},"PlatformOs":{"ANDROID":"android","CROS":"cros","LINUX":"linux","MAC":"mac","OPENBSD":"openbsd","WIN":"win"},"RequestUpdateCheckStatus":{"NO_UPDATE":"no_update","THROTTLED":"throttled","UPDATE_AVAILABLE":"update_available"}},"shellIntegrationPrivate":{},"embeddedSearch":{"searchBox":{"rtl":false,"isFocused":false,"isKeyCaptureEnabled":false},"newTabPage":{"isInputInProgress":false,"mostVisited":[{"rid":1,"faviconUrl":"chrome-search://ntpicon/?size=48@1.000000x&url=https://wordpress.com/"},{"rid":2,"faviconUrl":"chrome-search://ntpicon/?size=48@1.000000x&url=https://javfinder.la/movie/watch/tre-148-b-prestige-losing-virginity-best-vol-05-the-best-first-experience-with-the-best-body-and-great-support-part-b.html"},{"rid":3,"faviconUrl":"chrome-search://ntpicon/?size=48@1.000000x&url=https://ae.godaddy.com/whois/results.aspx?checkAvail=1&domain=spicekingdom.com.eg&domainName=spicekingdom.com.eg"},{"rid":4,"faviconUrl":"chrome-search://ntpicon/?size=48@1.000000x&url=https://www.office.com/"}],"mostVisitedAvailable":true,"ntpTheme":{"usingDefaultTheme":true,"backgroundColorRgba":[247,247,247,255],"textColorRgba":[0,0,0,255],"textColorLightRgba":[102,102,102,255],"alternateLogo":false,"themeId":"","themeName":"","customBackgroundDisabledByPolicy":false,"customBackgroundConfigured":false,"isNtpBackgroundDark":false,"useTitleContainer":false,"iconBackgroundColor":[241,243,244,255],"useWhiteAddIcon":false,"logoColor":[238,238,238,255],"colorId":-1,"searchBox":{"bg":[255,0,0,255],"icon":[255,0,0,255],"iconSelected":[255,0,0,255],"placeholder":[255,0,0,255],"resultsBg":[255,0,0,255],"resultsBgHovered":[255,0,0,255],"resultsBgSelected":[255,0,0,255],"resultsDim":[255,0,0,255],"resultsDimSelected":[255,0,0,255],"resultsText":[255,0,0,255],"resultsTextSelected":[255,0,0,255],"resultsUrl":[255,0,0,255],"resultsUrlSelected":[255,0,0,255],"text":[255,0,0,255]}},"themeBackgroundInfo":{"usingDefaultTheme":true,"backgroundColorRgba":[247,247,247,255],"textColorRgba":[0,0,0,255],"textColorLightRgba":[102,102,102,255],"alternateLogo":false,"themeId":"","themeName":"","customBackgroundDisabledByPolicy":false,"customBackgroundConfigured":false,"isNtpBackgroundDark":false,"useTitleContainer":false,"iconBackgroundColor":[241,243,244,255],"useWhiteAddIcon":false,"logoColor":[238,238,238,255],"colorId":-1,"searchBox":{"bg":[255,0,0,255],"icon":[255,0,0,255],"iconSelected":[255,0,0,255],"placeholder":[255,0,0,255],"resultsBg":[255,0,0,255],"resultsBgHovered":[255,0,0,255],"resultsBgSelected":[255,0,0,255],"resultsDim":[255,0,0,255],"resultsDimSelected":[255,0,0,255],"resultsText":[255,0,0,255],"resultsTextSelected":[255,0,0,255],"resultsUrl":[255,0,0,255],"resultsUrlSelected":[255,0,0,255],"text":[255,0,0,255]}}}}}'
     );
@@ -234,21 +215,6 @@ if (SOCIALBROWSER.defaultUserAgent) {
     chrome.loadTimes = () => {};
     SOCIALBROWSER.__define(window, 'chrome', chrome);
   } else if (SOCIALBROWSER.defaultUserAgent.name.contains('Firefox')) {
-    let version = SOCIALBROWSER.userAgentURL.split('Firefox/')[1].split(' ')[0].split('.')[0];
-    SOCIALBROWSER.userAgentData = {
-      brands: [
-        {
-          brand: 'Firefox',
-          version: version,
-        },
-        {
-          brand: 'Not_A Brand',
-          version: '24',
-        },
-      ],
-      mobile: false,
-      platform: 'Windows',
-    };
     SOCIALBROWSER.__define(window, 'chrome', undefined);
     SOCIALBROWSER.__define(window, 'mozRTCIceCandidate', window.RTCIceCandidate);
     SOCIALBROWSER.__define(window, 'mozRTCPeerConnection', window.RTCPeerConnection);
@@ -264,42 +230,6 @@ if (SOCIALBROWSER.defaultUserAgent) {
     SOCIALBROWSER.__define(window, 'chrome', chrome);
   }
 
-  if (SOCIALBROWSER.userAgentURL.indexOf('Chrome/') !== -1) {
-    let version = SOCIALBROWSER.userAgentURL.split('Chrome/')[1].split(' ')[0].split('.')[0];
-    SOCIALBROWSER.userAgentData = SOCIALBROWSER.userAgentData || {
-      brands: [
-        {
-          brand: 'Chromium',
-          version: version,
-        },
-        {
-          brand: 'Google Chrome',
-          version: version,
-        },
-        {
-          brand: 'Not_A Brand',
-          version: '24',
-        },
-      ],
-      mobile: false,
-      platform: 'windows',
-    };
-  }
-
-  SOCIALBROWSER.userAgentData.getHighEntropyValues = function (arr) {
-    return new Promise((resolve, reject) => {
-      let obj = { ...navigator.userAgentData };
-      if (Array.isArray(arr)) {
-        arr.forEach((a) => {
-          if (!obj[a]) {
-            obj[a] = '';
-          }
-        });
-      }
-      resolve(obj);
-    });
-  };
-
   if (SOCIALBROWSER.defaultUserAgent.device && SOCIALBROWSER.defaultUserAgent.device.name === 'Mobile') {
     SOCIALBROWSER.userAgentData = SOCIALBROWSER.userAgentData || {};
     SOCIALBROWSER.userAgentData.mobile = true;
@@ -308,8 +238,32 @@ if (SOCIALBROWSER.defaultUserAgent) {
     SOCIALBROWSER.__define(navigator, 'maxTouchPoints', 5);
     SOCIALBROWSER.__define(window, 'ontouchstart', function () {});
   }
+
   if (SOCIALBROWSER.userAgentData) {
-    SOCIALBROWSER.__define(navigator, 'userAgentData', SOCIALBROWSER.userAgentData);
+    SOCIALBROWSER.__define(navigator, 'userAgentData', {
+      brands: SOCIALBROWSER.userAgentData.brands,
+      mobile: SOCIALBROWSER.userAgentData.mobile,
+      platform: SOCIALBROWSER.userAgentData.platform,
+
+      getHighEntropyValues: function (arr) {
+        return new Promise((resolve, reject) => {
+          let obj = {};
+          obj.brands = SOCIALBROWSER.userAgentData.brands;
+          obj.mobile = SOCIALBROWSER.userAgentData.mobile;
+          obj.platform = SOCIALBROWSER.userAgentData.platform;
+          if (Array.isArray(arr)) {
+            arr.forEach((a) => {
+              obj[a] = SOCIALBROWSER.userAgentData[a];
+            });
+          } else if (typeof arr == 'string') {
+            obj[arr] = SOCIALBROWSER.userAgentData[arr];
+          }
+          setTimeout(() => {
+            resolve(obj);
+          }, 0);
+        });
+      },
+    });
   }
 
   if (SOCIALBROWSER.defaultUserAgent.vendor) {
@@ -784,7 +738,6 @@ SOCIALBROWSER.onLoad(() => {
     window.$ = window.jQuery = SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/jquery.js');
   }
   setInterval(() => {
-
     document.querySelectorAll('video , video source').forEach((node) => {
       if (node.src) {
         SOCIALBROWSER.sendMessage({
@@ -794,7 +747,6 @@ SOCIALBROWSER.onLoad(() => {
       }
     });
   }, 1000);
-  
 });
 
 navigator.clipboard = { writeText: SOCIALBROWSER.copy };

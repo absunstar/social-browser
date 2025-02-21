@@ -424,13 +424,13 @@ function get_url_menu_list(url) {
     },
   });
   arr.push({
-    label: ' in ( Insecure window )',
+    label: ' in ( Ads window )',
     click() {
       SOCIALBROWSER.ipc('[open new popup]', {
         partition: SOCIALBROWSER.partition,
         url: url,
         referrer: document.location.href,
-        security: false,
+        allowAds: true,
         show: true,
         center: true,
       });
@@ -564,7 +564,7 @@ function add_a_menu(node) {
             url: u.replace('youtube', 'ssyoutube'),
             partition: SOCIALBROWSER.partition,
             referrer: document.location.href,
-            allowPopup: true,
+            allowAds: true,
             show: true,
             center: true,
           });
@@ -977,13 +977,13 @@ function get_options_menu(node) {
         },
       });
       arr2.push({
-        label: 'Open in ( Insecure window )',
+        label: 'Open in ( Ads window )',
         click() {
           SOCIALBROWSER.ipc('[open new popup]', {
             partition: SOCIALBROWSER.partition,
             url: f.src,
             referrer: document.location.href,
-            security: false,
+            allowAds: true,
             show: true,
             center: true,
           });
@@ -1072,14 +1072,14 @@ function get_options_menu(node) {
       },
     });
     arr3.push({
-      label: 'Open in ( Insecure window )',
+      label: 'Open in ( Ads window )',
       click() {
         SOCIALBROWSER.ipc('[open new popup]', {
           alwaysOnTop: true,
           partition: SOCIALBROWSER.partition,
           url: f.src,
           referrer: document.location.href,
-          security: false,
+          allowAds: true,
           show: true,
           center: true,
         });
@@ -1177,8 +1177,7 @@ function get_custom_menu() {
           referrer: document.location.href,
           url: document.location.href.replace('youtube', 'ssyoutube'),
           show: true,
-          allowNewWindows: false,
-          allowPopup: false,
+          allowAds : true,
           center: true,
           vip: true,
         });
