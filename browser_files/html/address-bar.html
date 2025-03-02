@@ -38,8 +38,7 @@
         float: right;
       }
     </style>
-        <link rel="stylesheet" href="http://127.0.0.1:60080/css/blue-theme.css" />
-
+    <link rel="stylesheet" href="http://127.0.0.1:60080/css/blue-theme.css" />
   </head>
 
   <body ng-controller="mainController">
@@ -93,7 +92,7 @@
       };
 
       SOCIALBROWSER.on('[set-address-url]', (e, data) => {
-        if (data.url) {
+        if (data.url && !data.url.like('http://127.0.0.1:60080*|browser*')) {
           try {
             scope().url = decodeURI(data.url);
           } catch (error) {

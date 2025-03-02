@@ -143,18 +143,11 @@ module.exports = function init(parent) {
       callback = callback || {};
       let exec = parent.child_process.exec;
       return exec(cmd, options, function (error, stdout, stderr) {
-        if (error) {
-          console.log(error, cmd);
-        }
-        if (stdout) {
-          callback(stdout, cmd);
-        }
-        if (stderr) {
-          console.log(stderr, cmd);
-        }
+        callback(error, stdout, stderr, cmd);
       });
     } catch (error) {
       console.log(error);
+      callback(error, null, null, cmd);
     }
   };
 

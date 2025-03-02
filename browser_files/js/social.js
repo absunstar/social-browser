@@ -18,7 +18,7 @@ function ipc(name, message) {
   message = message || {};
   message.tabID = message.tabID || SOCIALBROWSER.currentTabInfo.id;
   message.url = message.url || SOCIALBROWSER.currentTabInfo.url;
-  message.title = message.title || SOCIALBROWSER.currentTabInfo.title;
+  message.title = message.title || '';
   message.iconURL = message.iconURL || SOCIALBROWSER.currentTabInfo.iconURL;
   message.windowID = message.windowID || SOCIALBROWSER.currentTabInfo.windowID;
   message.childID = message.childID || SOCIALBROWSER.currentTabInfo.childProcessID;
@@ -253,8 +253,7 @@ function showSettingMenu() {
       ipc('[open new tab]', {
         url: 'http://127.0.0.1:60080/setting',
         partition: 'persist:setting',
-        user_name: 'Setting',
-        title: 'Setting',
+        user_name: 'setting',
         mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
         vip: true,
       }),
@@ -271,7 +270,7 @@ function showSettingMenu() {
         show: true,
         url: 'https://tools.social-browser.com/tools',
         title: 'Social Browser Tools',
-        partition: 'persist:tools',
+        partition: 'persist:social',
         center: true,
         vip: true,
         alwaysOnTop: true,
@@ -508,7 +507,7 @@ SOCIALBROWSER.showTempMails = function () {
   SOCIALBROWSER.ipc('[open new popup]', {
     show: true,
     url: 'https://emails.social-browser.com/vip',
-    partition: 'persist:tools',
+    partition: 'persist:social',
     trusted: true,
     iframe: true,
     center: true,
@@ -519,7 +518,7 @@ SOCIALBROWSER.showSocialTools = function () {
   SOCIALBROWSER.ipc('[open new popup]', {
     show: true,
     url: 'https://tools.social-browser.com/tools',
-    partition: 'persist:tools',
+    partition: 'persist:social',
     trusted: true,
     iframe: true,
     center: true,
@@ -749,8 +748,11 @@ socialTabsDom.addEventListener('activeTabChange', ({ detail }) => {
         .attr('url')
         .like('http://127.0.0.1:60080*|browser*')
     ) {
-      $('.address-input .protocol').html('');
-      setURL('');
+      $('.address-input .browser').html('browser');
+      $('.address-input .browser').css('display', 'inline-block');
+      url = $('#' + currentTabId).attr('url');
+      let arr = url.split('/');
+      setURL(arr[arr.length - 1], url);
     } else {
       let protocol = '';
       let url = '';
@@ -957,8 +959,11 @@ SOCIALBROWSER.on('[update-tab-properties]', (event, data) => {
     $('.address-input .browser').html('');
 
     if (data.url.like('http://127.0.0.1:60080*|browser*')) {
-      $('.address-input .protocol').html('');
-      setURL('');
+      $('.address-input .browser').html('browser');
+      $('.address-input .browser').css('display', 'inline-block');
+      url = $('#' + currentTabId).attr('url');
+      let arr = url.split('/');
+      setURL(arr[arr.length - 1], url);
     } else {
       let protocol = '';
       let url = '';
@@ -1015,7 +1020,7 @@ function renderMessage(cm) {
     renderNewTabData({
       url: 'http://127.0.0.1:60080/setting',
       partition: 'persist:setting',
-      user_name: 'Setting',
+      user_name: 'setting',
       vip: true,
     });
   } else if (cm.name == '[download-link]') {

@@ -287,7 +287,7 @@ module.exports = function (child) {
 
         // return js will crach if needed request not js
         if (!child.isAllowURL(url)) {
-          if (url.like('*.js|*/js/*') || details.resourceType == 'script') {
+          if (url.like('*.js') || details.resourceType == 'script') {
             let query = '';
             if (url.split('?')[1]) {
               query += url.split('?')[1] + '&x-url=' + url.split('?')[0];
@@ -298,6 +298,18 @@ module.exports = function (child) {
             callback({
               cancel: false,
               redirectURL: 'browser://js/fake.js?' + query,
+            });
+          } else if (url.like('*.css') || details.resourceType == 'stylesheet') {
+            let query = '';
+            if (url.split('?')[1]) {
+              query += url.split('?')[1] + '&x-url=' + url.split('?')[0];
+            } else {
+              query += 'x-url=' + url;
+            }
+
+            callback({
+              cancel: false,
+              redirectURL: 'browser://css/fake.css?' + query,
             });
           } else {
             callback({

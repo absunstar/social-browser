@@ -63,18 +63,22 @@ module.exports = function (child) {
       function (d) {
         console.log(d);
       };
-    let exec = child.child_process.exec;
-    return exec(cmd, function (error, stdout, stderr) {
-      if (error) {
-        callback(error);
-      }
-      if (stdout) {
-        callback(stdout);
-      }
-      if (stderr) {
-        callback(stderr);
-      }
-    });
+    try {
+      let exec = child.child_process.exec;
+      return exec(cmd, function (error, stdout, stderr) {
+        callback(error, stdout, stderr, cmd);
+
+        if (error) {
+          callback(error);
+        }
+        if (stderr) {
+          callback(stderr);
+        }
+      });
+    } catch (error) {
+      console.log(error);
+      callback(error, null, null, cmd);
+    }
   };
   child.mkdirSync = function (dirname) {
     try {

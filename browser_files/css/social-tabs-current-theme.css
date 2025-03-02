@@ -215,11 +215,12 @@ body,
 .address-input .browser {
   vertical-align: -webkit-baseline-middle;
   display: inline-block;
-  color: white;
+  color: #FFEB3B;
   font-weight: bold;
-  background: blue;
+  background: #272727;
   box-shadow: 1px 1px 1px #000;
   padding: 1px 7px;
+  border-radius: 3px;
 }
 
 .address-input .https {

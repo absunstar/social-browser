@@ -809,7 +809,7 @@ module.exports = function init(child) {
             w.window.webContents.send('[open new tab]', {
               url: 'http://127.0.0.1:60080/setting',
               partition: 'persist:setting',
-              user_name: 'Setting',
+              user_name: 'setting',
               vip: true,
             });
           }
@@ -821,7 +821,7 @@ module.exports = function init(child) {
           data: {
             url: 'http://127.0.0.1:60080/setting',
             partition: 'persist:setting',
-            user_name: 'Setting',
+            user_name: 'setting',
             vip: true,
           },
         });
