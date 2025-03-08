@@ -79,22 +79,6 @@
     },
     startTime: new Date().getTime(),
   };
-  browser.fetchAsync = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
-  browser.fetch = function (...args) {
-    args[1] = args[1] || {};
-    args[1].agent = function (_parsedURL) {
-      if (_parsedURL.protocol == 'http:') {
-        return new browser.http.Agent({
-          keepAlive: true,
-        });
-      } else {
-        return new browser.https.Agent({
-          keepAlive: true,
-        });
-      }
-    };
-    return browser.fetchAsync(...args);
-  };
 
   const is_first_app = browser.electron.app.requestSingleInstanceLock();
   if (!is_first_app) {

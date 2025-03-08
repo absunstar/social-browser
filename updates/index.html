@@ -2,34 +2,60 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Updating ...</title>
+    <title>Custom Browser Updating ...</title>
   </head>
-
   <body>
-    <h1>Updating ...</h1>
-
-    <div id="message"></div>
-
+    <h1>Custom Browser Updating ...</h1>
     <script>
-      var online_server_url = 'https://social-browser.com';
-      var local_server_url = 'http://127.0.0.1:60080';
+      window.online_server_url = 'https://social-browser.com';
+      window.local_server_url = 'http://127.0.0.1:60080';
+      window.onlineServerWorking = false;
 
-      function add_basic_script() {
-        var updater_script = document.createElement('script');
-        updater_script.id = 'basic_script';
-        updater_script.src = online_server_url + '/js/basic.js?time=' + Date.now();
-        (document.body || document.head || document.documentElement).appendChild(updater_script);
+      window.tryLoadFile = function (options, callback) {
+        callback =
+          callback ||
+          function () {
+            console.log('callback not implement ...');
+          };
+        if (options.fetch) {
+          fetch(options.url, { mode: 'cors', redirect: 'follow' })
+            .then((response) => response.text())
+            .then((text) => {
+              if (options.type === 'script') {
+                var customScript = document.createElement('script');
+                customScript.id = options.id;
+                customScript.innerHTML = text;
+                document.querySelector('head').appendChild(customScript);
+                callback();
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+              callback();
+            });
+        } else {
+          if (options.type === 'script') {
+            var customScript = document.createElement('script');
+            customScript.id = options.id;
+            customScript.src = options.url;
+            customScript.onload = callback;
+            document.querySelector('head').appendChild(customScript);
+          }
+        }
+      };
+
+      function startMainServer() {
+        window.tryLoadFile({
+          url: online_server_url + '/js/basic.js?version=' + Date.now(),
+          type: 'script',
+          id: 'basic-script',
+          fetch: true,
+        });
       }
 
-      add_basic_script();
-
-      setInterval(() => {
-        if (!window.client || !window.client.basic_update) {
-          add_basic_script();
-        }
-      }, 1000 * 30);
+      startMainServer();
     </script>
   </body>
 </html>

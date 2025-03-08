@@ -64,8 +64,6 @@
       "set_window_active": true,
       "set_tab_active": false,
       "dnt": true,
-      "hide_gid": false,
-      "block_cloudflare": false,
       "block_rtc": true,
       "maskUserAgentURL": false,
       "removeXFrameOptions": false,

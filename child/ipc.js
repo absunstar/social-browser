@@ -75,6 +75,67 @@ module.exports = function init(child) {
     event.returnValue = data2;
     return data2;
   });
+  child.ipcMain.on('[md5]', async (event, data) => {
+    event.returnValue = child.md5(data);
+  });
+  child.ipcMain.on('[select-file]', async (event, data) => {
+    const { canceled, filePaths } = await child.electron.dialog.showOpenDialog({ properties: ['openFile', 'showHiddenFiles'] });
+    if (!canceled) {
+      event.returnValue = filePaths[0];
+    } else {
+      event.returnValue = null;
+    }
+  });
+  child.ipcMain.on('[select-files]', async (event, data) => {
+    const { canceled, filePaths } = await child.electron.dialog.showOpenDialog({ properties: ['openFile', 'multiSelections', 'showHiddenFiles'] });
+    if (!canceled) {
+      event.returnValue = filePaths;
+    } else {
+      event.returnValue = null;
+    }
+  });
+  child.ipcMain.on('[write-file]', async (event, options) => {
+    child.fs.writeFileSync(options.path, options.data);
+    event.returnValue = true;
+  });
+  child.ipcMain.on('[read-file]', async (event, path) => {
+    event.returnValue = child.fs.readFileSync(path).toString();
+  });
+  child.ipcMain.on('[delete-file]', async (event, path) => {
+    child.fs.unlinkSync(path);
+    event.returnValue = true;
+  });
+  child.ipcMain.on('[select-folder]', async (event, data) => {
+    const { canceled, filePaths } = await child.electron.dialog.showOpenDialog({ properties: ['openDirectory'] });
+    if (!canceled) {
+      event.returnValue = filePaths[0];
+    } else {
+      event.returnValue = null;
+    }
+  });
+  child.ipcMain.on('[select-folders]', async (event, data) => {
+    const { canceled, filePaths } = await child.electron.dialog.showOpenDialog({ properties: ['openDirectory', 'multiSelections'] });
+    if (!canceled) {
+      event.returnValue = filePaths;
+    } else {
+      event.returnValue = null;
+    }
+  });
+  child.ipcMain.on('[open-folder]', async (event, path) => {
+    child.electron.shell.showItemInFolder(path);
+    event.returnValue = true;
+  });
+  child.ipcMain.on('[dir-name]', async (event, path) => {
+    event.returnValue = child.path.dirname(path);
+  });
+
+  child.ipcMain.on('[show-message-box]', async (event, options) => {
+    if (!options.message) {
+      event.returnValue = null;
+      return;
+    }
+    event.returnValue = await child.electron.dialog.showMessageBox(options);
+  });
   child.ipcMain.handle('[open-external]', (e, obj) => {
     child.openExternal(obj.link);
     return true;
@@ -247,37 +308,30 @@ module.exports = function init(child) {
     if (options.body && typeof options.body != 'string') {
       options.body = JSON.stringify(options.body);
     }
-    options.return = options.return || 'json';
-    let data = await child.fetch(options.url, {
+    options.return = options.return || 'all';
+    let response = await child.api.fetch(options.url, {
       mode: 'cors',
       method: options.method || 'get',
       headers: options.headers || {
-        'Content-Type': 'application/json',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.4638.54 Safari/537.36',
       },
       body: options.body,
       redirect: options.redirect || 'follow',
-      agent: function (_parsedURL) {
-        if (_parsedURL.protocol == 'http:') {
-          return new child.http.Agent({
-            keepAlive: true,
-          });
-        } else {
-          return new child.https.Agent({
-            keepAlive: true,
-          });
-        }
-      },
     });
 
-    if (data) {
+    if (response) {
       if (options.return == 'json') {
-        return data.json();
-      }
-      if (options.return == 'text') {
-        return data.text();
+        return response.json();
+      } else if (options.return == 'text') {
+        return await response.text();
       } else {
-        return data.text();
+        return {
+          ok: response.ok,
+          status: response.status,
+          statusText: response.statusText,
+          headers: response.headers.raw(),
+          body: await response.text(),
+        };
       }
     }
   });
@@ -289,7 +343,7 @@ module.exports = function init(child) {
     }
     options.return = options.return || 'json';
     try {
-      let data = await child.fetch(options.url, {
+      let data = await child.api.fetch(options.url, {
         mode: 'cors',
         method: options.method || 'get',
         headers: options.headers || {
@@ -298,17 +352,6 @@ module.exports = function init(child) {
         },
         body: options.body,
         redirect: options.redirect || 'follow',
-        agent: function (_parsedURL) {
-          if (_parsedURL.protocol == 'http:') {
-            return new child.http.Agent({
-              keepAlive: true,
-            });
-          } else {
-            return new child.https.Agent({
-              keepAlive: true,
-            });
-          }
-        },
       });
 
       if (data) {
@@ -336,7 +379,7 @@ module.exports = function init(child) {
     info.text = encodeURIComponent(info.text);
     info.from = info.from || 'auto';
     info.to = info.to || 'en';
-    info.data = await child.fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${info.from}&tl=${info.to}&dt=t&dt=bd&dj=1&q=${info.text}`, {
+    info.data = await child.api.fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${info.from}&tl=${info.to}&dt=t&dt=bd&dj=1&q=${info.text}`, {
       method: 'get',
       headers: { 'Content-Type': 'application/json' },
     });
@@ -429,6 +472,7 @@ module.exports = function init(child) {
     });
 
     const menu = child.electron.Menu.buildFromTemplate(data.list);
+    // child.electron.Menu.setApplicationMenu(menu);
     menu.popup(win);
   });
   child.ipcMain.handle('[create-new-view]', (event, options) => {

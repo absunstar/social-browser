@@ -338,10 +338,6 @@ module.exports = function (child) {
         _ss.user.privacy.vpc = _ss.user.privacy.vpc || {};
         details.requestHeaders['User-Agent'] = _ss.user.defaultUserAgent.url;
 
-        if (_ss.user.privacy.allowVPC && _ss.user.privacy.vpc.languages) {
-          details.requestHeaders['Accept-Language'] = _ss.user.privacy.vpc.languages;
-        }
-
         let exit = false;
         let url = details.url;
         let urlObject = child.url.parse(url);
@@ -376,6 +372,11 @@ module.exports = function (child) {
 
           if (customSetting.headers) {
             for (const key in customSetting.headers) {
+              for (const key2 in details.requestHeaders) {
+                if (key2.like(key)) {
+                  delete details.requestHeaders[key2];
+                }
+              }
               details.requestHeaders[key] = customSetting.headers[key];
             }
           }
@@ -493,38 +494,8 @@ module.exports = function (child) {
           details.requestHeaders['X-Browser'] = 'social.' + child.parent.var.core.id;
         }
 
-        if (customSetting && customSetting.vip) {
-        } else {
-          if (domainCookieObject) {
-            if (_ss.user.privacy.allowVPC && _ss.user.privacy.vpc.block_cloudflare) {
-              if (domainCookieObject['_cflb']) {
-                domainCookieObject['_cflb'] = 'cf.' + domainCookieObject['_gab'];
-              }
-
-              if (domainCookieObject['_cf_bm']) {
-                domainCookieObject['_cf_bm'] = 'cf.' + domainCookieObject['_gab'];
-              }
-
-              if (domainCookieObject['_cfduid']) {
-                domainCookieObject['_cfduid'] = 'cf.' + domainCookieObject['_gab'];
-              }
-
-              if (domainCookieObject['__cfduid']) {
-                domainCookieObject['__cfduid'] = 'cf.' + domainCookieObject['_gab'];
-              }
-            }
-
-            if (_ss.user.privacy.allowVPC && _ss.user.privacy.vpc.hide_gid) {
-              if (domainCookieObject['_gid']) {
-                delete domainCookieObject['_gid'];
-              }
-            }
-
-            details.requestHeaders['Cookie'] = child.cookieStringify(domainCookieObject);
-          }
-          if (_ss.user.privacy.vpc.dnt) {
-            details.requestHeaders['DNT'] = '1'; // dont track me
-          }
+        if (_ss.user.privacy.vpc.dnt) {
+          details.requestHeaders['DNT'] = '1'; // dont track me
         }
 
         if (url.like('browser*') || url.like('*127.0.0.1*')) {

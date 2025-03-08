@@ -45,18 +45,18 @@ if (!SOCIALBROWSER.screenHidden && SOCIALBROWSER.session.privacy.vpc.hide_screen
   SOCIALBROWSER.__define(screen, 'availWidth', SOCIALBROWSER.session.privacy.vpc.screen.availWidth);
   SOCIALBROWSER.__define(screen, 'availHeight', SOCIALBROWSER.session.privacy.vpc.screen.availHeight);
 
-
   SOCIALBROWSER.screenHidden = true;
 }
 
 if (SOCIALBROWSER.session.privacy.vpc.hide_lang) {
-  SOCIALBROWSER.session.privacy.vpc.languages = SOCIALBROWSER.session.privacy.vpc.languages || SOCIALBROWSER.languageList[0] || navigator.languages;
-  if (Array.isArray(SOCIALBROWSER.session.privacy.vpc.languages)) {
-    SOCIALBROWSER.__define(navigator, 'languages', SOCIALBROWSER.session.privacy.vpc.languages);
-    SOCIALBROWSER.__define(navigator, 'language', SOCIALBROWSER.session.privacy.vpc.languages[0]);
-  } else if (typeof SOCIALBROWSER.session.privacy.vpc.languages === 'string') {
-    SOCIALBROWSER.__define(navigator, 'languages', SOCIALBROWSER.session.privacy.vpc.languages.split(','));
-    SOCIALBROWSER.__define(navigator, 'language', SOCIALBROWSER.session.privacy.vpc.languages.split(',')[0]);
+  SOCIALBROWSER.session.privacy.vpc.language = SOCIALBROWSER.session.privacy.vpc.language || SOCIALBROWSER.languageList[0] || navigator.language;
+  if (typeof SOCIALBROWSER.session.privacy.vpc.language) {
+    SOCIALBROWSER.__define(navigator, 'language', SOCIALBROWSER.session.privacy.vpc.language.split(',')[0].split(';')[0]);
+    let arr = [];
+    SOCIALBROWSER.session.privacy.vpc.language.split(',').forEach((lang) => {
+      arr.push(lang.split(';')[0]);
+    });
+    SOCIALBROWSER.__define(navigator, 'languages', arr);
   }
   SOCIALBROWSER.__define(Navigator, 'language', navigator.language);
   SOCIALBROWSER.__define(Navigator, 'languages', navigator.languages);
@@ -232,7 +232,7 @@ if (SOCIALBROWSER.session.privacy.vpc.mask_date && SOCIALBROWSER.session.privacy
 
     Object.defineProperty(Intl.DateTimeFormat.prototype, 'resolvedOptions', {
       value: function () {
-        return Object.assign(resolvedOptions, { timeZone: o.text, locale: SOCIALBROWSER.session.privacy.vpc.languages });
+        return Object.assign(resolvedOptions, { timeZone: o.text, locale: navigator.language });
       },
     });
     Object.defineProperty(Date.prototype, 'toString', {

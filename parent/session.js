@@ -264,13 +264,7 @@ module.exports = function (parent) {
         }
       }
 
-      if (cookie_obj && !url.like('*google.com*|*youtube.com*')) {
-        if (parent.var.blocking.privacy.allowVPC && parent.var.blocking.privacy.vpc.hide_gid) {
-          if (cookie_obj['_gid']) {
-            delete cookie_obj['_gid'];
-          }
-        }
-      }
+     
 
       if (cookie_obj) {
         if (parent.cookies[name] && !details.url.contains('facebook.com|yahoo.com')) {

@@ -59,7 +59,7 @@
   { "url": "*m2track.co*|*specgoal.com*|*eu.get-things-done.info*|*linktrack123.com*|*sarseniraqian.com*|*bg4nxu2u5t.com*", "name": "service 13", "enabled": true },
   { "url": "*tour.eplay.com*|*adtng.com*|*jwpltx.com*|*revengemeantjackpot.com*", "name": "service 14", "enabled": true },
   { "url": "*adblockchecker.js|*cdn.onesignal.com*|*traffichaus.com*|*notify.solutions*|*newrelic.com*|*eyefuneve.com*", "name": "service 15", "enabled": true },
-  { "url": "*services.disqus.com*|*storeacdn.com*|*histats.com*|*raupsica.net*|*rtbrennab.com*|*g--o.info*|*s10.histats.com*", "name": "service 16", "enabled": true },
+  { "url": "*services.disqus.com*|*storeacdn.com*|*histats.com*|*raupsica.net*|*rtbrennab.com*|*g--o.info*|*s10.histats.com*|*advertising.yandex.ru*", "name": "service 16", "enabled": true },
   { "url": "*ad4point.nyc3.digitaloceanspaces.com*|*invisible.js*|*passwordssaturatepebble.com*|*onetouch10.com*|*vasstycom.com*|*twndo77864.com*", "name": "redirect 1", "enabled": true },
   { "url": "*incrediblewoedysfunctional.com*", "name": "media 1", "enabled": true },
   { "url": "*offfurreton.com*|*twinrdsrv.com*|*cool.sunporno.com*", "name": "direct link 1", "enabled": true },
@@ -78,5 +78,7 @@
     "url": "*shakingtacklingunpeeled.com*|*boodiecawquaw.top*|*zeecajichaiw.net*|*ileeckut.com*|*aiveemtomsaix.net*|*ewouwamsubsouvy.net*|*curiescores.com*|*goboksehee.net*|*safedragonapp.monster*|*specificallycries.com*|*peanutrefusesplit.com*",
     "name": "ad003"
   },
-  { "url": "*endscreen.js*", "name": "test 1", "enabled": true }
+  { "url": "*endscreen.js*", "name": "test 1", "enabled": true },
+  { "url": "*leanishscabble.shop*|*prioraslop.com*|*vizierspavan.com*|*betotodilea.com*", "name": "media 1", "enabled": true },
+  { "url": "*trafficjunky.com*", "name": "traffic 1", "enabled": true }
 ]

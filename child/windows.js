@@ -422,6 +422,8 @@ module.exports = function (child) {
       win.minimize();
     }
 
+    win.setContentProtection(win.customSetting.contentProtection || false);
+
     if (win.customSetting.parentSetting && win.customSetting.parentSetting.windowID) {
       child.assignWindows.push({
         parentWindowID: win.customSetting.parentSetting.windowID,
@@ -852,15 +854,15 @@ module.exports = function (child) {
       }
     });
 
-    win.webContents.on('did-start-loading', (e, urls) => {
+    win.webContents.on('did-start-loading', () => {
       win.customSetting.iconURL = win.customSetting.loading_icon;
       child.updateTab(win);
     });
-    win.webContents.on('did-stop-loading', (e) => {
+    win.webContents.on('did-stop-loading', () => {
       win.customSetting.iconURL = win.customSetting.favicon;
       child.updateTab(win);
     });
-    win.webContents.on('did-finish-load', (e) => {
+    win.webContents.on('did-finish-load', () => {
       win.customSetting.iconURL = win.customSetting.favicon;
       child.updateTab(win);
     });
@@ -918,29 +920,22 @@ module.exports = function (child) {
 
     win.on('unresponsive', async () => {
       child.log('window unresponsive');
-
-      // setTimeout(() => {
-      //   if (win && !win.isDestroyed()) {
-      //     win.webContents.forcefullyCrashRenderer();
-      //     win.webContents.reload();
-      //   }
-      // }, 1000 * 5);
-
-      // if (win && !win.isDestroyed()) {
-
-      //   const { response } = await child.dialog.showMessageBox({
-      //     message: 'This Window has become unresponsive',
-      //     title: 'Do you want to try forcefully reloading the window ?',
-      //     buttons: ['OK', 'Cancel'],
-      //     cancelId: 1,
-      //   });
-      //   if (response === 0) {
-      //     win.webContents.forcefullyCrashRenderer();
-      //     win.webContents.reload();
-      //   }
-      // }
+      win.customSetting.unresponsive = true;
+      setTimeout(() => {
+        if (win && !win.isDestroyed() && win.customSetting.unresponsive) {
+          win.webContents.forcefullyCrashRenderer();
+          win.webContents.reload();
+        }
+      }, 1000 * 5);
     });
-
+    win.on('responsive', async () => {
+      win.customSetting.unresponsive = false;
+    });
+    win.on('session-end', async () => {
+      if (win && !win.isDestroyed()) {
+        win.destroy();
+      }
+    });
     win.webContents.on('render-process-gone', (e, details) => {
       child.log('render-process-gone');
       // setTimeout(() => {

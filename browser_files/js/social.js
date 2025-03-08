@@ -536,7 +536,7 @@ SOCIALBROWSER.showUserProxyMenu = function () {
       SOCIALBROWSER.ws({ type: '[change-user-proxy]', partition: SOCIALBROWSER.currentTabInfo.partition, proxy: null });
       setTimeout(() => {
         ipc('[window-reload]');
-      }, 1000 * 0);
+      }, 1000 * 1);
     },
   });
   SOCIALBROWSER.menuList.push({
@@ -544,13 +544,13 @@ SOCIALBROWSER.showUserProxyMenu = function () {
   });
   SOCIALBROWSER.var.proxy_list.forEach((proxy) => {
     SOCIALBROWSER.menuList.push({
-      label: proxy.url,
+      label: proxy.url || proxy.ip + ':' + proxy.port,
       iconURL: 'http://127.0.0.1:60080/images/proxy.png',
       click: () => {
         SOCIALBROWSER.ws({ type: '[change-user-proxy]', partition: SOCIALBROWSER.currentTabInfo.partition, proxy: proxy });
         setTimeout(() => {
           ipc('[window-reload]');
-        }, 1000 * 0);
+        }, 1000 * 1);
       },
     });
   });

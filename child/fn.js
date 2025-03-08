@@ -370,20 +370,16 @@ module.exports = function (child) {
     }
 
     if (win.customSetting.$userAgentURL) {
-      if (win.customSetting.$userAgentURL.like('*chrome/*')) {
-        win.customSetting.uaFullVersion = win.customSetting.$userAgentURL.toLowerCase().split('chrome/')[1]?.split(' ')[0];
-        win.customSetting.uaVersion = win.customSetting.uaFullVersion?.split('.')[0];
-      } else if (win.customSetting.$userAgentURL.like('*firefox/*')) {
+      if (win.customSetting.$userAgentURL.like('*firefox/*')) {
         win.customSetting.uaFullVersion = win.customSetting.$userAgentURL.toLowerCase().split('firefox/')[1]?.split(' ')[0];
         win.customSetting.uaVersion = win.customSetting.uaFullVersion?.split('.')[0];
       } else if (win.customSetting.$userAgentURL.like('*edge/*')) {
         win.customSetting.uaFullVersion = win.customSetting.$userAgentURL.toLowerCase().split('edge/')[1]?.split(' ')[0];
         win.customSetting.uaVersion = win.customSetting.uaFullVersion?.split('.')[0];
+      } else if (win.customSetting.$userAgentURL.like('*chrome/*')) {
+        win.customSetting.uaFullVersion = win.customSetting.$userAgentURL.toLowerCase().split('chrome/')[1]?.split(' ')[0];
+        win.customSetting.uaVersion = win.customSetting.uaFullVersion?.split('.')[0];
       }
-
-      win.customSetting.headers['Sec-Ch-Ua'] = `"Not A(Brand";v="8", "Chromium";v="${win.customSetting.uaVersion}", "Google Chrome";v="${win.customSetting.uaVersion}"`;
-      win.customSetting.headers['Sec-Ch-Ua-Mobile'] = win.customSetting.$defaultUserAgent?.platform == 'Mobile' ? '?1' : '?0';
-      win.customSetting.headers['Sec-Ch-Ua-Platform'] = win.customSetting.$defaultUserAgent?.platform == 'Win32' ? '"Windows"' : win.customSetting.$defaultUserAgent?.platform;
 
       win.customSetting.userAgentData = {
         uaFullVersion: win.customSetting.uaFullVersion,
@@ -426,8 +422,8 @@ module.exports = function (child) {
       };
     }
 
-    if (win.customSetting.vpc) {
-      win.customSetting.headers['Accept-Language'] = win.customSetting.vpc.languages;
+    if (win.customSetting.vpc && win.customSetting.vpc.language) {
+      win.customSetting.headers['Accept-Language'] = win.customSetting.vpc.language;
     }
 
     if (win.customSetting.$defaultUserAgent) {
@@ -462,13 +458,20 @@ module.exports = function (child) {
             },
           ];
           win.customSetting.headers['Sec-Ch-Ua'] = `"Not(A:Brand";v="99", "Microsoft Edge";v="${win.customSetting.uaVersion}", "Chromium";v="${win.customSetting.uaVersion}"`;
+          win.customSetting.headers['Sec-Ch-Ua-Mobile'] = win.customSetting.$defaultUserAgent.platform == 'Mobile' ? '?1' : '?0';
+          win.customSetting.headers['Sec-Ch-Ua-Platform'] = win.customSetting.$defaultUserAgent.platform == 'Win32' ? '"Windows"' : win.customSetting.$defaultUserAgent.platform;
+
+          win.customSetting.headers['Sec-Ch-Prefers-Color-Scheme'] = 'dark';
+          win.customSetting.headers['Sec-Ch-Ua-Model'] = '""';
           win.customSetting.headers['Sec-Ch-Ua-Arch'] = '"x86"';
           win.customSetting.headers['Sec-Ch-Ua-Bitness'] = '"64"';
+          win.customSetting.headers['Sec-Ch-Ua-Form-Factors'] = 'Desktop';
           win.customSetting.headers['Sec-Ch-Ua-Full-Version'] = `"${win.customSetting.uaFullVersion}"`;
-          win.customSetting.headers['Sec-Ch-Ua-Mobile'] = win.customSetting.$defaultUserAgent.platform == 'Mobile' ? '?1' : '?0';
-          win.customSetting.headers['Sec-Ch-Ua-Model'] = '""';
-          win.customSetting.headers['Sec-Ch-Ua-Platform'] = win.customSetting.$defaultUserAgent.platform == 'Win32' ? '"Windows"' : win.customSetting.$defaultUserAgent.platform;
+          win.customSetting.headers[
+            'Sec-Ch-Ua-Full-Version-List'
+          ] = `"Not(A:Brand";v="99.0.0.0", "Microsoft Edge";v="${win.customSetting.uaFullVersion}", "Chromium";v="${win.customSetting.uaFullVersion}"`;
           win.customSetting.headers['Sec-Ch-Ua-Platform-Version'] = '"19.0.0"';
+          win.customSetting.headers['X-Client-Data'] = child.api.toBase64('{"1":"0","2":"0","3":"0","4":"-2884885963868665766","6":"stable","9":"desktop"}');
           win.customSetting.headers['X-Edge-Shopping-Flag'] = '1';
         } else if (win.customSetting.$defaultUserAgent.name.like('*firefox*')) {
           win.customSetting.userAgentData.brands = [
@@ -481,21 +484,15 @@ module.exports = function (child) {
               version: '24',
             },
           ];
-          win.customSetting.userAgentData.fullVersionList = [
-            {
-              brand: 'Firefox',
-              version: win.customSetting.uaFullVersion,
-            },
-            {
-              brand: 'Not(A:Brand',
-              version: '24',
-            },
-          ];
 
           win.customSetting.headers['Sec-Ch-Ua'] = `"Not A(Brand";v="24", "Firefox";v="${win.customSetting.uaVersion}"`;
           win.customSetting.headers['Sec-Ch-Ua-Mobile'] = win.customSetting.$defaultUserAgent.platform == 'Mobile' ? '?1' : '?0';
           win.customSetting.headers['Sec-Ch-Ua-Platform'] = win.customSetting.$defaultUserAgent.platform == 'Win32' ? '"Windows"' : win.customSetting.$defaultUserAgent.platform;
-        } else {
+        } else if (win.customSetting.$defaultUserAgent.name.like('*chrome*')) {
+          win.customSetting.headers['Sec-Ch-Ua'] = `"Not(A:Brand";v="99", "Google Chrome";v="${win.customSetting.uaVersion}", "Chromium";v="${win.customSetting.uaVersion}"`;
+          win.customSetting.headers['Sec-Ch-Ua-Mobile'] = win.customSetting.$defaultUserAgent?.platform == 'Mobile' ? '?1' : '?0';
+          win.customSetting.headers['Sec-Ch-Ua-Platform'] = win.customSetting.$defaultUserAgent?.platform == 'Win32' ? '"Windows"' : win.customSetting.$defaultUserAgent?.platform;
+         // win.customSetting.headers['Upgrade-Insecure-Requests'] = '1';
         }
       }
     }

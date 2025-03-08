@@ -397,7 +397,7 @@ if ((randomUserAgentSupport = true)) {
       name: 'Chrome',
       vendor: 'Google Inc.',
       prefix: '',
-      randomMajor: () => SOCIALBROWSER.randomNumber(100, 132),
+      randomMajor: () => SOCIALBROWSER.randomNumber(133, 136),
       randomMinor: () => SOCIALBROWSER.randomNumber(0, 5735),
       randomPatch: () => SOCIALBROWSER.randomNumber(0, 199),
     },
@@ -405,7 +405,7 @@ if ((randomUserAgentSupport = true)) {
       name: 'Edge',
       vendor: '',
       prefix: '',
-      randomMajor: () => SOCIALBROWSER.randomNumber(100, 132),
+      randomMajor: () => SOCIALBROWSER.randomNumber(133, 136),
       randomMinor: () => SOCIALBROWSER.randomNumber(0, 5735),
       randomPatch: () => SOCIALBROWSER.randomNumber(0, 199),
     },
@@ -413,7 +413,7 @@ if ((randomUserAgentSupport = true)) {
       name: 'Firefox',
       vendor: 'Mozilla',
       prefix: '',
-      randomMajor: () => SOCIALBROWSER.randomNumber(90, 133),
+      randomMajor: () => SOCIALBROWSER.randomNumber(133, 136),
       randomMinor: () => SOCIALBROWSER.randomNumber(0, 9),
       randomPatch: () => SOCIALBROWSER.randomNumber(0, 99),
     },
@@ -429,7 +429,7 @@ if ((randomUserAgentSupport = true)) {
       name: 'Opera',
       vendor: '',
       prefix: '',
-      randomMajor: () => SOCIALBROWSER.randomNumber(100, 132),
+      randomMajor: () => SOCIALBROWSER.randomNumber(133, 136),
       randomMinor: () => SOCIALBROWSER.randomNumber(0, 5735),
       randomPatch: () => SOCIALBROWSER.randomNumber(0, 199),
     },
@@ -619,8 +619,7 @@ SOCIALBROWSER.removeMenu = function (_menuItem) {
   }
 };
 SOCIALBROWSER.readFile = function (path) {
-  SOCIALBROWSER.fs = SOCIALBROWSER.fs || SOCIALBROWSER.require('fs');
-  return SOCIALBROWSER.fs.readFileSync(path).toString();
+  return SOCIALBROWSER.ipcSync('[read-file]', path);
 };
 
 SOCIALBROWSER.addHTML = SOCIALBROWSER.addhtml = function (code) {
@@ -628,7 +627,7 @@ SOCIALBROWSER.addHTML = SOCIALBROWSER.addhtml = function (code) {
     let _div = document.createElement('div');
     _div.id = '_div_' + Math.random();
     _div.innerHTML = SOCIALBROWSER.policy.createHTML(code);
-    (document.body || document.head || document.documentElement).appendChild(_div);
+    (document.body || document.documentElement).appendChild(_div);
   } catch (error) {
     SOCIALBROWSER.log(error);
   }
@@ -643,11 +642,31 @@ SOCIALBROWSER.addJS = SOCIALBROWSER.addjs = function (code) {
     SOCIALBROWSER.log(error);
   }
 };
+SOCIALBROWSER.addJSURL = SOCIALBROWSER.addjs = function (url) {
+  try {
+    let _script = document.createElement('script');
+    _script.id = '_script_' + Math.random();
+    _script.src = url;
+    (document.body || document.head || document.documentElement).appendChild(_script);
+  } catch (error) {
+    SOCIALBROWSER.log(error);
+  }
+};
 SOCIALBROWSER.addCSS = SOCIALBROWSER.addcss = function (code) {
   try {
     let _style = document.createElement('style');
     _style.id = '_style_' + Math.random();
     _style.innerText = code;
+    (document.body || document.head || document.documentElement).appendChild(_style);
+  } catch (error) {
+    SOCIALBROWSER.log(error);
+  }
+};
+SOCIALBROWSER.addCSSURL = SOCIALBROWSER.addcss = function (url) {
+  try {
+    let _style = document.createElement('style');
+    _style.id = '_style_' + Math.random();
+    _style.href = url;
     (document.body || document.head || document.documentElement).appendChild(_style);
   } catch (error) {
     SOCIALBROWSER.log(error);
@@ -751,44 +770,104 @@ SOCIALBROWSER.getOffset = function (el) {
     y: Math.round(rect.top * factor + (el.clientHeight / 4) * factor),
   };
 };
-SOCIALBROWSER.click = function (selector, realPerson = true) {
+SOCIALBROWSER.mouseMoveByPosition = function (x, y) {
+  x = Math.floor(x);
+  y = Math.floor(y);
+
+  if (x < 1 || y < 1) {
+    return;
+  }
+
+  SOCIALBROWSER.currentWindow.focus();
+
+  for (let index = 0; index < 200; index++) {
+    setTimeout(() => {
+      SOCIALBROWSER.webContents.sendInputEvent({
+        type: 'mouseMove',
+        x: x - 80 + index,
+        y: y - 80 + index,
+        movementX: x - 80 + index,
+        movementY: y - 80 + index,
+        globalX: x - 80 + index,
+        globalY: y - 80 + index,
+      });
+      SOCIALBROWSER.webContents.sendInputEvent({
+        type: 'mouseEnter',
+        x: x - 80 + index,
+        y: y - 80 + index,
+        movementX: x - 80 + index,
+        movementY: y - 80 + index,
+        globalX: x - 80 + index,
+        globalY: y - 80 + index,
+      });
+    }, 10 * index);
+  }
+};
+
+SOCIALBROWSER.clickByPosition = function (x, y, move = true) {
+  x = Math.floor(x);
+  y = Math.floor(y);
+  if (x < 1 || y < 1) {
+    return;
+  }
+  let time = 0;
+  if (move) {
+    SOCIALBROWSER.mouseMoveByPosition(x, y);
+    time = 1000 * 2;
+  }
+  setTimeout(() => {
+    SOCIALBROWSER.currentWindow.focus();
+
+    SOCIALBROWSER.webContents.sendInputEvent({ type: 'mouseDown', x: x, y: y, movementX: x, movementY: y, button: 'left', clickCount: 1 });
+    SOCIALBROWSER.webContents.sendInputEvent({ type: 'mouseUp', x: x, y: y, movementX: x, movementY: y, button: 'left', clickCount: 1 });
+  }, time);
+};
+
+SOCIALBROWSER.click = function (selector, realPerson = true, move = true) {
   if (!selector) {
     return;
   }
   let dom = typeof selector === 'string' ? SOCIALBROWSER.$(selector) : selector;
   if (dom) {
-    if (realPerson && SOCIALBROWSER.currentWindow && SOCIALBROWSER.webContents && SOCIALBROWSER.currentWindow.isVisible()) {
-      if (!SOCIALBROWSER.isViewable(dom)) {
-        dom.scrollIntoView();
-        window.scroll(window.scrollX, window.scrollY - (dom.clientHeight + window.innerHeight / 2));
-      }
+    if (!SOCIALBROWSER.isViewable(dom)) {
+      dom.scrollIntoView();
+      window.scroll(window.scrollX, window.scrollY - (dom.clientHeight + window.innerHeight / 2));
+    }
 
-      if (!SOCIALBROWSER.isViewable(dom)) {
-        dom.scrollIntoView();
-        if (window.scrollY !== 0) {
-          let y = window.scrollY - dom.clientHeight;
-          if (y < 0) {
-            y = 0;
-          }
-          window.scroll(window.scrollX, y);
+    if (!SOCIALBROWSER.isViewable(dom)) {
+      dom.scrollIntoView();
+      if (window.scrollY !== 0) {
+        let y = window.scrollY - dom.clientHeight;
+        if (y < 0) {
+          y = 0;
         }
+        window.scroll(window.scrollX, y);
       }
+    }
 
+    if (realPerson && SOCIALBROWSER.currentWindow && SOCIALBROWSER.webContents && SOCIALBROWSER.currentWindow.isVisible()) {
       let offset = SOCIALBROWSER.getOffset(dom);
-      SOCIALBROWSER.currentWindow.focus();
-      SOCIALBROWSER.webContents.sendInputEvent({ type: 'mouseMove', x: offset.x, y: offset.y });
-      SOCIALBROWSER.webContents.sendInputEvent({ type: 'mouseDown', x: offset.x, y: offset.y, button: 'left', clickCount: 1 });
-      SOCIALBROWSER.webContents.sendInputEvent({ type: 'mouseUp', x: offset.x, y: offset.y, button: 'left', clickCount: 1 });
+      SOCIALBROWSER.clickByPosition(offset.x, offset.y, move);
       return dom;
     } else {
-      SOCIALBROWSER.triggerMouseEvent(dom, 'mousemove');
-      SOCIALBROWSER.triggerMouseEvent(dom, 'mousedown');
-      SOCIALBROWSER.triggerMouseEvent(dom, 'mouseup');
-      dom.click();
+      const eventNames = ['mouseover', 'mouseenter', 'mousedown', 'mouseup', 'click', 'mouseout'];
+      eventNames.forEach((eventName) => {
+        const event = new MouseEvent(eventName, {
+          detail: eventName === 'mouseover' ? 0 : 1,
+          view: window,
+          bubbles: true,
+          cancelable: true,
+          clientX: clientX,
+          clientY: clientY,
+        });
+        element.dispatchEvent(event);
+      });
+
       return dom;
     }
   }
 };
+
 SOCIALBROWSER.$ = function (selector) {
   return document.querySelector(selector);
 };

@@ -641,7 +641,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
       $scope.setting.blocking.popup.white_list = $scope.setting.blocking.popup.white_list || [];
 
       if ($scope.setting.blocking.privacy.vpc.hide_lang !== true) {
-        $scope.setting.blocking.privacy.vpc.languages = SOCIALBROWSER.navigator.languages.toString();
+        $scope.setting.blocking.privacy.vpc.language = SOCIALBROWSER.navigator.language;
       }
       if ($scope.setting.blocking.privacy.vpc.hide_cpu !== true) {
         $scope.setting.blocking.privacy.vpc.cpu_count = SOCIALBROWSER.navigator.hardwareConcurrency;
@@ -679,7 +679,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
           s.privacy.vpc.cpu_count = $scope.setting.blocking.privacy.vpc.cpu_count;
         }
         if (s.privacy.vpc.hide_lang !== true) {
-          s.privacy.vpc.languages = $scope.setting.blocking.privacy.vpc.languages;
+          s.privacy.vpc.language = $scope.setting.blocking.privacy.vpc.language;
         }
 
         if (s.privacy.vpc.hide_screen !== true) {
@@ -794,7 +794,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         s.privacy.screen_MaxTouchPoints = $scope.setting.blocking.privacy.screen_MaxTouchPoints;
       }
       if (s.privacy.vpc.hide_lang !== true) {
-        s.privacy.vpc.languages = $scope.setting.blocking.privacy.vpc.languages;
+        s.privacy.vpc.language = $scope.setting.blocking.privacy.vpc.language;
       }
     });
 

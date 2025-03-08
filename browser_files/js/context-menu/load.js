@@ -4,15 +4,12 @@ if ((policy = true)) {
     createScriptURL: (string) => string,
     createScript: (string) => string,
   });
-
-  // window.trustedTypes.createPolicy('default', {
-  //   createHTML: (string) => string,
-  //   createScriptURL: (string) => string,
-  //   createScript: (string) => string,
-  // });
 }
+
 if (document.location.href.like('*://challenges.cloudflare.com/*')) {
-  SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/cloudflare.js');
+  if (SOCIALBROWSER.var.blocking.javascript.cloudflareON) {
+    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/cloudflare.js');
+  }
   return true;
 }
 

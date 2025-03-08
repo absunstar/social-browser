@@ -2,7 +2,6 @@ if (window.SOCIALBROWSER) {
   SOCIALBROWSER.showInfo('Blocked : ##query.x-url##');
 }
 window.canRunAds = true;
-document.cookie = 'adBlockClosed=1; ';
 
 window.grecaptcha = window.grecaptcha || {
   render: function (name, options) {

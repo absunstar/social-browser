@@ -296,8 +296,6 @@
                     </div>
                   </fieldset>
 
-                 
-
                   <fieldset>
                     <legend>Activation</legend>
                     <div class="row padding">
@@ -493,7 +491,7 @@
                     <div class="row padding border2">
                       <div class="col"><i-checkbox label="Hide Languages Information ( Custom )" ng-model="setting.blocking.privacy.vpc.hide_lang"></i-checkbox></div>
                       <div class="col">
-                        <i-control ng-disabled="setting.blocking.privacy.vpc.hide_lang !== true" ng-model="setting.blocking.privacy.vpc.languages" label="Custom Languages"></i-control>
+                        <i-control ng-disabled="setting.blocking.privacy.vpc.hide_lang !== true" ng-model="setting.blocking.privacy.vpc.language" label="Custom Languages"></i-control>
                       </div>
                     </div>
 
@@ -604,9 +602,7 @@
                         <legend>Options</legend>
                         <div class="row">
                           <i-checkbox class="col6" label="Remove X Frame Options (iframe)" ng-model="setting.blocking.privacy.vpc.removeXFrameOptions"></i-checkbox>
-                          <i-checkbox class="col6" label="Block Google ID in other sites" ng-model="setting.blocking.privacy.vpc.hide_gid"></i-checkbox>
                           <i-checkbox class="col6" label="Hide Social Media Info" ng-model="setting.blocking.privacy.vpc.hide_social_media_info"></i-checkbox>
-                          <i-checkbox class="col6" label="Block Cloud Flare Tracking" ng-model="setting.blocking.privacy.vpc.block_cloudflare"></i-checkbox>
                           <i-checkbox class="col6" label="Send Don't Track Header" ng-model="setting.blocking.privacy.vpc.dnt"></i-checkbox>
                         </div>
                       </fieldset>
@@ -632,6 +628,7 @@
                       </div>
                       <div class="col6">
                         <i-checkbox class="row" label="Allow Login By Passkey" ng-model="setting.core.loginByPasskey"></i-checkbox>
+                        <i-checkbox class="row" label="Allow CloudFlare Auto Solve " ng-model="setting.blocking.javascript.cloudflareON"></i-checkbox>
                         <i-checkbox class="row" label="Disabled ALL Browser Engines " ng-model="setting.core.enginOFF"></i-checkbox>
                         <i-checkbox class="row" label="Disabled ALL JavaScript Engines " ng-model="setting.core.javaScriptOFF"></i-checkbox>
                         <i-checkbox class="row" label="Custom Local Storage" ng-model="setting.blocking.javascript.custom_local_storage"> </i-checkbox>
@@ -980,7 +977,7 @@
                       <div ng-show="currentSession.privacy.allowVPC" class="row padding border">
                         <div class="col"><i-checkbox label="Hide Languages Information" ng-model="currentSession.privacy.vpc.hide_lang"></i-checkbox></div>
                         <div class="col">
-                          <i-control ng-disabled="currentSession.privacy.vpc.hide_lang !== true" ng-model="currentSession.privacy.vpc.languages" label="Custom Languages"></i-control>
+                          <i-control ng-disabled="currentSession.privacy.vpc.hide_lang !== true" ng-model="currentSession.privacy.vpc.language" label="Custom Languages"></i-control>
                         </div>
                       </div>
 
@@ -1075,9 +1072,7 @@
                           <legend>Options</legend>
                           <div class="row">
                             <i-checkbox class="col6" label="Remove X Frame Options (iframe)" ng-model="currentSession.privacy.vpc.removeXFrameOptions"></i-checkbox>
-                            <i-checkbox class="col6" label="Block Google ID in other sites" ng-model="currentSession.privacy.vpc.hide_gid"></i-checkbox>
                             <i-checkbox class="col6" label="Hide Social Media Info" ng-model="currentSession.privacy.vpc.hide_social_media_info"></i-checkbox>
-                            <i-checkbox class="col6" label="Block Cloud Flare Tracking" ng-model="currentSession.privacy.vpc.block_cloudflare"></i-checkbox>
                             <i-checkbox class="col6" label="Send Don't Track Header" ng-model="currentSession.privacy.vpc.dnt"></i-checkbox>
                           </div>
                         </fieldset>
@@ -1119,7 +1114,11 @@
                   <div class="row">
                     <table class="table hover">
                       <tr>
-                        <th>Index ({{setting.userAgentList.length}})</th>
+                        <th>
+                          Index ({{setting.userAgentList.length}})
+
+                          <i-button type="delete" ng-click="setting.userAgentList=[]" label="Delete All"></i-button>
+                        </th>
                         <th>
                           search
                           <i-control ng-model="_userAgent"></i-control>
@@ -1133,7 +1132,7 @@
                         </td>
 
                         <td>
-                          <div class="row padding  border">
+                          <div class="row padding border">
                             <div class="row">
                               <i-control label="Name" class="col4" type="text" ng-model="_se.name"></i-control>
                               <i-list label="Device" class="col3" primary="name" items="userAgentDeviceList" ng-model="_se.device"></i-list>

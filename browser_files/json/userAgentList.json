@@ -1,5 +1,47 @@
 [
   {
+    "url": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.536.100  Safari/537.36",
+    "device": {
+      "name": "PC",
+      "platformList": [
+        { "name": "Windows NT 6.1; WOW64", "code": "Win32" },
+        { "name": "Windows NT 10.0; Win64; x64", "code": "Win32" },
+        { "name": "Windows NT 11.0; Win64; x64", "code": "Win32" },
+        { "name": "Windows NT 10.0", "code": "Win32" },
+        { "name": "Windows NT 11.0", "code": "Win32" },
+        { "name": "MacIntel", "code": "MacIntel" },
+        { "name": "Macintosh; Intel Mac OS X 13_0", "code": "MacIntel" },
+        { "name": "Macintosh; Intel Mac OS X 14_0", "code": "MacIntel" },
+        { "name": "Macintosh; Intel Mac OS X 15_0", "code": "MacIntel" },
+        { "name": "Macintosh; Intel Mac OS X 16_0", "code": "MacIntel" },
+        { "name": "Linux x86_64", "code": "Linux x86_64" },
+        { "name": "X11; Ubuntu; Linux x86_64", "code": "Linux x86_64" }
+      ],
+      "screenList": [
+        "2560*1440",
+        "1920*1080",
+        "1792*1120",
+        "1680*1050",
+        "1600*900",
+        "1536*864",
+        "1440*900",
+        "1366*768",
+        "1280*800",
+        "1280*720",
+        "1024*768",
+        "1024*600",
+        "962*601",
+        "810*1080",
+        "800*1280",
+        "768*1024"
+      ]
+    },
+    "engine": { "name": "Chrome" },
+    "platform": "Win32",
+    "vendor": "Google Inc.",
+    "name": "Chrome PC Win32"
+  },
+  {
     "url": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0",
     "name": "Windows Firefox",
     "platform": "Win32",
@@ -332,7 +374,7 @@
     }
   },
   {
-    "url": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
+    "url": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36",
     "name": "Windows Chrome",
     "platform": "Win32",
     "oscpu": "",
@@ -662,7 +704,7 @@
     }
   },
   {
-    "url": "Mozilla/5.0 (iPad; CPU OS 15_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.4809.110 Mobile Safari/537.36",
+    "url": "Mozilla/5.0 (iPad; CPU OS 15_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.5429.122 Mobile Safari/537.36",
     "device": {
       "name": "Mobile",
       "platformList": [
@@ -688,7 +730,7 @@
     "name": "Opera Mobile iPad"
   },
   {
-    "url": "Mozilla/5.0 (Linux; Android 11; rv:132.6) Gecko/20100101 Firefox/132.6",
+    "url": "Mozilla/5.0 (Linux; Android 13; rv:103.6) Gecko/20100101 Firefox/103.6",
     "device": {
       "name": "Mobile",
       "platformList": [
@@ -714,7 +756,7 @@
     "name": "Firefox Mobile Android"
   },
   {
-    "url": "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.5590.142 Mobile Safari/537.36",
+    "url": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.367.34 Mobile Safari/537.36",
     "device": {
       "name": "Mobile",
       "platformList": [
@@ -740,7 +782,7 @@
     "name": "Opera Mobile iPhone"
   },
   {
-    "url": "Mozilla/5.0 (iPad; CPU OS 15_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.223.13 Mobile Safari/537.36",
+    "url": "Mozilla/5.0 (iPad; CPU OS 15_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.642.165 Mobile Safari/537.36",
     "device": {
       "name": "Mobile",
       "platformList": [
@@ -850,7 +892,7 @@
     "name": "Opera PC Linux x86_64"
   },
   {
-    "url": "Mozilla/5.0 (Macintosh; Intel Mac OS X 15_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.2429.66  Safari/537.36",
+    "url": "Mozilla/5.0 (MacIntel) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.5435.178  Safari/537.36",
     "device": {
       "name": "PC",
       "platformList": [
@@ -892,7 +934,7 @@
     "name": "Opera PC MacIntel"
   },
   {
-    "url": "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.116.97 Mobile Safari/537.36",
+    "url": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.367.34 Mobile Safari/537.36",
     "device": {
       "name": "Mobile",
       "platformList": [
@@ -944,7 +986,7 @@
     "name": "Safari Mobile iPad"
   },
   {
-    "url": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0; rv:127.8) Gecko/20100101 Firefox/127.8",
+    "url": "Mozilla/5.0 (Macintosh; Intel Mac OS X 15_0; rv:108.1) Gecko/20100101 Firefox/108.1",
     "device": {
       "name": "PC",
       "platformList": [
@@ -986,7 +1028,7 @@
     "name": "Firefox PC MacIntel"
   },
   {
-    "url": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.405.85  Safari/537.36",
+    "url": "Mozilla/5.0 (Windows NT 11.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.4890.158  Safari/537.36",
     "device": {
       "name": "PC",
       "platformList": [
@@ -1028,7 +1070,7 @@
     "name": "Opera PC Win32"
   },
   {
-    "url": "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.4387.103  Safari/537.36",
+    "url": "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.5133.148  Safari/537.36",
     "device": {
       "name": "PC",
       "platformList": [
@@ -1070,7 +1112,7 @@
     "name": "Chrome PC MacIntel"
   },
   {
-    "url": "Mozilla/5.0 (iPhone; CPU iPhone OS 13_0 like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/601.13.10 Mobile Safari/537.36",
+    "url": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/605.14.10 Mobile Safari/537.36",
     "device": {
       "name": "Mobile",
       "platformList": [
@@ -1096,7 +1138,7 @@
     "name": "Safari Mobile iPhone"
   },
   {
-    "url": "Mozilla/5.0 (Linux; Android 15) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.1083.47 Mobile Safari/537.36",
+    "url": "Mozilla/5.0 (Linux; Android 11) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.1168.141 Mobile Safari/537.36",
     "device": {
       "name": "Mobile",
       "platformList": [
@@ -1232,7 +1274,7 @@
     "name": "Edge Mobile Android"
   },
   {
-    "url": "Mozilla/5.0 (iPad; CPU OS 13_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.4055.102 Mobile Safari/537.36",
+    "url": "Mozilla/5.0 (iPad; CPU OS 15_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.642.165 Mobile Safari/537.36",
     "device": {
       "name": "Mobile",
       "platformList": [
@@ -1258,7 +1300,7 @@
     "name": "Chrome Mobile iPad"
   },
   {
-    "url": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.1692.131  Safari/537.36 Edge/128.1692.131",
+    "url": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.4244.85  Safari/537.36 Edge/105.4244.85",
     "device": {
       "name": "PC",
       "platformList": [
@@ -1384,7 +1426,7 @@
     "name": "Chrome PC MacIntel"
   },
   {
-    "url": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.732.115  Safari/537.36",
+    "url": "Mozilla/5.0 (MacIntel) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.5435.178  Safari/537.36",
     "device": {
       "name": "PC",
       "platformList": [
@@ -1426,7 +1468,7 @@
     "name": "Opera PC MacIntel"
   },
   {
-    "url": "Mozilla/5.0 (iPad; CPU OS 14_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.3514.82 Mobile Safari/537.36",
+    "url": "Mozilla/5.0 (iPad; CPU OS 15_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.5429.122 Mobile Safari/537.36",
     "device": {
       "name": "Mobile",
       "platformList": [
@@ -1452,7 +1494,7 @@
     "name": "Opera Mobile iPad"
   },
   {
-    "url": "Mozilla/5.0 (iPad; CPU OS 16_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.3357.107 Mobile Safari/537.36",
+    "url": "Mozilla/5.0 (iPad; CPU OS 15_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.5429.122 Mobile Safari/537.36",
     "device": {
       "name": "Mobile",
       "platformList": [
@@ -1478,7 +1520,7 @@
     "name": "Opera Mobile iPad"
   },
   {
-    "url": "Mozilla/5.0 (iPad; CPU OS 14_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.5637.82 Mobile Safari/537.36 Edge/103.5637.82",
+    "url": "Mozilla/5.0 (iPad; CPU OS 15_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.778.192 Mobile Safari/537.36 Edge/111.778.192",
     "device": {
       "name": "Mobile",
       "platformList": [
@@ -1504,7 +1546,7 @@
     "name": "Edge Mobile iPad"
   },
   {
-    "url": "Mozilla/5.0 (Linux; Android 11) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.4126.170 Mobile Safari/537.36",
+    "url": "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.659.122 Mobile Safari/537.36",
     "device": {
       "name": "Mobile",
       "platformList": [
@@ -1582,7 +1624,7 @@
     "name": "Firefox Mobile Android"
   },
   {
-    "url": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.831.67 Mobile Safari/537.36 Edge/113.831.67",
+    "url": "Mozilla/5.0 (iPhone; CPU iPhone OS 13_0 like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.4899.63 Mobile Safari/537.36 Edge/101.4899.63",
     "device": {
       "name": "Mobile",
       "platformList": [
@@ -1649,48 +1691,7 @@
     "vendor": "Apple Computer, Inc.",
     "name": "Opera PC MacIntel"
   },
-  {
-    "url": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.1136.145  Safari/537.36",
-    "device": {
-      "name": "PC",
-      "platformList": [
-        { "name": "Windows NT 6.1; WOW64", "code": "Win32" },
-        { "name": "Windows NT 10.0; Win64; x64", "code": "Win32" },
-        { "name": "Windows NT 11.0; Win64; x64", "code": "Win32" },
-        { "name": "Windows NT 10.0", "code": "Win32" },
-        { "name": "Windows NT 11.0", "code": "Win32" },
-        { "name": "MacIntel", "code": "MacIntel" },
-        { "name": "Macintosh; Intel Mac OS X 13_0", "code": "MacIntel" },
-        { "name": "Macintosh; Intel Mac OS X 14_0", "code": "MacIntel" },
-        { "name": "Macintosh; Intel Mac OS X 15_0", "code": "MacIntel" },
-        { "name": "Macintosh; Intel Mac OS X 16_0", "code": "MacIntel" },
-        { "name": "Linux x86_64", "code": "Linux x86_64" },
-        { "name": "X11; Ubuntu; Linux x86_64", "code": "Linux x86_64" }
-      ],
-      "screenList": [
-        "2560*1440",
-        "1920*1080",
-        "1792*1120",
-        "1680*1050",
-        "1600*900",
-        "1536*864",
-        "1440*900",
-        "1366*768",
-        "1280*800",
-        "1280*720",
-        "1024*768",
-        "1024*600",
-        "962*601",
-        "810*1080",
-        "800*1280",
-        "768*1024"
-      ]
-    },
-    "engine": { "name": "Chrome" },
-    "platform": "Win32",
-    "vendor": "Google Inc.",
-    "name": "Chrome PC Win32"
-  },
+
   {
     "url": "Mozilla/5.0 (iPad; CPU OS 15_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.642.165 Mobile Safari/537.36",
     "device": {
@@ -1718,7 +1719,7 @@
     "name": "Chrome Mobile iPad"
   },
   {
-    "url": "Mozilla/5.0 (Windows NT 11.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.4979.90  Safari/537.36",
+    "url": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.536.100  Safari/537.36",
     "device": {
       "name": "PC",
       "platformList": [
@@ -1802,7 +1803,7 @@
     "name": "Firefox PC Linux x86_64"
   },
   {
-    "url": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.3410.198  Safari/537.36",
+    "url": "Mozilla/5.0 (Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.1334.168  Safari/537.36",
     "device": {
       "name": "PC",
       "platformList": [
@@ -1886,7 +1887,7 @@
     "name": "Edge PC Linux x86_64"
   },
   {
-    "url": "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0  like Mac OS X; rv:103.1) Gecko/20100101 Firefox/103.1",
+    "url": "Mozilla/5.0 (iPhone; CPU iPhone OS 13_0 like Mac OS X; rv:119.9) Gecko/20100101 Firefox/119.9",
     "device": {
       "name": "Mobile",
       "platformList": [
@@ -2022,7 +2023,7 @@
     "name": "Chrome PC Linux x86_64"
   },
   {
-    "url": "Mozilla/5.0 (iPad; CPU OS 14_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.2329.131 Mobile Safari/537.36 Edge/104.2329.131",
+    "url": "Mozilla/5.0 (iPad; CPU OS 15_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.778.192 Mobile Safari/537.36 Edge/111.778.192",
     "device": {
       "name": "Mobile",
       "platformList": [

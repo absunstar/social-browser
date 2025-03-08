@@ -25,6 +25,7 @@
     navigator: {
       hardwareConcurrency: navigator.hardwareConcurrency,
       deviceMemory: navigator.deviceMemory,
+      language: navigator.language,
       languages: navigator.languages,
       connection: navigator.connection,
       MaxTouchPoints: navigator.MaxTouchPoints,
@@ -79,22 +80,16 @@
 
   SOCIALBROWSER.electron = SOCIALBROWSER.require('electron');
   SOCIALBROWSER.ipcRenderer = SOCIALBROWSER.require('electron/renderer').ipcRenderer;
-  SOCIALBROWSER.contextBridge = SOCIALBROWSER.require('electron/renderer').contextBridge;
   SOCIALBROWSER.remote = SOCIALBROWSER.require('@electron/remote');
-
-  SOCIALBROWSER.path = SOCIALBROWSER.require('path');
-  SOCIALBROWSER.url = SOCIALBROWSER.require('url');
-  SOCIALBROWSER.md5 = SOCIALBROWSER.require('md5');
-  SOCIALBROWSER.fs = SOCIALBROWSER.require('fs');
   SOCIALBROWSER.Buffer = Buffer;
 
   SOCIALBROWSER.eval = function (script) {
     if (typeof script === 'string' || script instanceof Buffer || script instanceof TrustedScript || script instanceof TypedArray || script instanceof DataView) {
       try {
         let path = SOCIALBROWSER.data_dir + '\\sessionData\\' + new Date().getTime() + '_tmp.js';
-        SOCIALBROWSER.fs.writeFileSync(path, script);
+        SOCIALBROWSER.ipcSync('[write-file]', { path: path, data: script });
         setTimeout(() => {
-          SOCIALBROWSER.fs.unlinkSync(path);
+          SOCIALBROWSER.ipcSync('[delete-file]', path);
         }, 1000 * 3);
         return SOCIALBROWSER.require(path);
       } catch (error) {
@@ -171,6 +166,10 @@
   };
   SOCIALBROWSER.on = function (name, callback) {
     return SOCIALBROWSER.ipcRenderer.on(name, callback);
+  };
+
+  SOCIALBROWSER.md5 = function (txt) {
+    return SOCIALBROWSER.ipcSync('[md5]', txt);
   };
 
   SOCIALBROWSER.set = function (key, value) {

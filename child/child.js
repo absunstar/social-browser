@@ -101,26 +101,9 @@ var child = {
   },
 };
 
-child.fetchAsync = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
-child.fetch = function (...args) {
-  args[1] = args[1] || {};
-  args[1].agent = function (_parsedURL) {
-    if (_parsedURL.protocol == 'http:') {
-      return new child.http.Agent({
-        keepAlive: true,
-      });
-    } else {
-      return new child.https.Agent({
-        keepAlive: true,
-      });
-    }
-  };
-  return child.fetchAsync(...args);
-};
-
 //  child.electron.app.commandLine.appendSwitch('in-process-gpu');
-//  child.electron.app.commandLine.appendSwitch('no-sandbox');
-// child.electron.app.disableHardwareAcceleration();
+child.electron.app.commandLine.appendSwitch('no-sandbox');
+child.electron.app.disableHardwareAcceleration();
 
 require(child.path.join(child.dir, 'child', 'fn'))(child);
 require(child.path.join(child.dir, 'child', 'vars'))(child);
@@ -129,7 +112,7 @@ require(child.path.join(child.dir, 'child', 'adsManager'))(child);
 require(child.path.join(child.dir, 'child', 'ipc'))(child);
 require(child.path.join(child.dir, 'child', 'session'))(child);
 require(child.path.join(child.dir, 'child', 'proxy_check'))(child);
-require(child.path.join(child.dir, 'child', 'plugins'))(child);
+// require(child.path.join(child.dir, 'child', 'plugins'))(child);
 
 child.remoteMain.initialize();
 
