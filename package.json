@@ -24,18 +24,14 @@
     "postinstall": "electron-builder install-app-deps",
     "reload": "electron-rebuild",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder",
-    "update": "npm i -D electron@latest",
-    "app:dir": "electron-builder --dir",
-    "app:dist": "electron-builder"
+    "dist": "electron-builder"
   },
   "build": {
     "appId": "com.social.browser",
     "productName": "Social Browser",
     "copyright": "Copyright©2025",
     "target": "NSIS",
-    "afterPack": "vm.js",
-    "afterSign": "vm.js",
+    "asar": true,
     "files": [
       "**/*",
       "!**/.vscode",
@@ -114,11 +110,11 @@
     }
   },
   "dependencies": {
-    "@electron/remote": "^2.1.2",
-    "isite": "^2025.1.3"
+    "@electron/remote": "*",
+    "isite": "*"
   },
   "devDependencies": {
-    "electron": "^35.0.0",
-    "electron-builder": "^25.1.8"
+    "electron": "^34.3.1",
+    "electron-builder": "^24.0.0"
   }
 }
