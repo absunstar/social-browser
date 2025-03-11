@@ -32,25 +32,29 @@ module.exports = function init(parent) {
     return allow;
   };
 
-  parent.importExtension = function () {
-    parent.electron.dialog
-      .showOpenDialog({
-        properties: ['openDirectory'],
-      })
-      .then((result) => {
-        parent.sendMessage({ type: 'share', message: '[show-main-window]' });
-        if (result.canceled === false && result.filePaths.length > 0) {
-          let path = result.filePaths[0] + '/index.js';
-          parent.loadExtension({ path: path });
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+  parent.importExtension = function (folder) {
+    if (folder) {
+      parent.loadExtension({ path: folder + '/index.js' });
+    } else {
+      parent.electron.dialog
+        .showOpenDialog({
+          properties: ['openDirectory'],
+        })
+        .then((result) => {
+          parent.sendMessage({ type: 'share', message: '[show-main-window]' });
+          if (result.canceled === false && result.filePaths.length > 0) {
+            let path = result.filePaths[0] + '/index.js';
+            parent.loadExtension({ path: path });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
 
   parent.loadExtension = function (_extension, isExists = false) {
-    if (!_extension || !_extension.path) {
+    if (!_extension || !_extension.path || !_extension.path.like('*index.js')) {
       return null;
     }
     let path = _extension.path.replace('{dir}', parent.dir);

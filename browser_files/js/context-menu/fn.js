@@ -678,6 +678,9 @@ SOCIALBROWSER.copy = function (text = '') {
 SOCIALBROWSER.paste = function () {
   SOCIALBROWSER.remote.getCurrentWindow().webContents.paste();
 };
+SOCIALBROWSER.readCopy = function(){
+ return SOCIALBROWSER.electron.clipboard.readText();
+}
 
 SOCIALBROWSER.triggerMouseEvent = function (node, eventType) {
   try {

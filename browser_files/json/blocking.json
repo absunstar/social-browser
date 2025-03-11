@@ -278,8 +278,12 @@
   "downloader": {
     "apps": [
       {
+        "name": "C:\\Program Files (x86)\\Internet Download Manager\\IDMan.exe",
+        "params": "/d $url /f $file_name"
+      },
+      {
         "name": "C:\\Program Files\\Softdeluxe\\Free Download Manager\\fdm.exe",
-        "params": "--url $url",
+        "params": "--url $url --path $file_name",
         "url": "https://www.freedownloadmanager.org/"
       }
     ],

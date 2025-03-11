@@ -171,6 +171,33 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     $scope.$applyAsync();
   };
 
+  $scope.importProxyList = function () {
+    let file = SOCIALBROWSER.ipcSync('[select-file]');
+    if (file) {
+      SOCIALBROWSER.ipc('[import-proxy-list]', { path: file });
+    }
+  };
+  $scope.importProxyList_text = function () {
+    SOCIALBROWSER.ipc('[import-proxy-list]', { text: SOCIALBROWSER.readCopy() });
+  };
+
+  $scope.importProxyList_search = function () {
+    SOCIALBROWSER.fetch({ url: 'https://api.proxyscrape.com/v4/free-proxy-list/get?request=display_proxies&proxy_format=protocolipport&format=text' }).then((res) => {
+      if (res.status == 200) {
+        let text = res.body;
+        SOCIALBROWSER.ipc('[import-proxy-list]', { text: text });
+      }
+    });
+  };
+  $scope.importProxyList_api = function () {
+    SOCIALBROWSER.fetch({ url: SOCIALBROWSER.readCopy() }).then((res) => {
+      if (res.status == 200) {
+        let text = res.body;
+        SOCIALBROWSER.ipc('[import-proxy-list]', { text: text });
+      }
+    });
+  };
+
   $scope.import = function (files, proxy) {
     var fd = new FormData();
     fd.append('proxyFile', files[0]);
@@ -607,8 +634,10 @@ app.controller('mainController', ($scope, $http, $timeout) => {
   };
 
   $scope.addExtension = function () {
-    SOCIALBROWSER.ipc('[import-extension]');
-    SOCIALBROWSER.share('[hide-main-window]');
+    let folder = SOCIALBROWSER.ipcSync('[select-folder]');
+    if (folder) {
+      SOCIALBROWSER.ipc('[import-extension]', folder);
+    }
   };
   $scope.enableExtension = function (_ex) {
     SOCIALBROWSER.ipc('[enable-extension]', { id: _ex.id });

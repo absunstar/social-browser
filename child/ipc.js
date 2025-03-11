@@ -78,8 +78,8 @@ module.exports = function init(child) {
   child.ipcMain.on('[md5]', async (event, data) => {
     event.returnValue = child.md5(data);
   });
-  child.ipcMain.on('[select-file]', async (event, data) => {
-    const { canceled, filePaths } = await child.electron.dialog.showOpenDialog({ properties: ['openFile', 'showHiddenFiles'] });
+  child.ipcMain.on('[select-file]', async (event, options) => {
+    const { canceled, filePaths } = await child.electron.dialog.showOpenDialog(options || { properties: ['openFile', 'showHiddenFiles'] });
     if (!canceled) {
       event.returnValue = filePaths[0];
     } else {
@@ -547,9 +547,14 @@ module.exports = function init(child) {
     });
   });
 
-  child.ipcMain.handle('[import-extension]', (e, options) => {
+  child.ipcMain.handle('[import-proxy-list]', (e, file) => {
+    child.importProxyList(file);
+  });
+
+  child.ipcMain.handle('[import-extension]', (e, folder) => {
     child.sendMessage({
       type: '[import-extension]',
+      folder: folder,
     });
   });
   child.ipcMain.handle('[enable-extension]', (e, options) => {

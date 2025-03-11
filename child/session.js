@@ -85,21 +85,21 @@ module.exports = function (child) {
       child.session_name_list[sessionIndex].proxy = proxy;
 
       if (proxy.mode == 'fixed_servers' && (proxy.url || (proxy.ip && proxy.port))) {
-        if (!proxy.url && proxy.ip && proxy.port) {
-          proxy.url = proxy.ip + ':' + proxy.port;
-        }
-
         if (proxy.url) {
-          proxy.url = proxy.url.replace('http://', '').replace('https://', '').replace('ftp://', '').replace('socks4://', '').replace('socks4://', '');
-        }
-
-        if (!proxy.ip || !proxy.port) {
-          let arr = proxy.url.split(':');
-          proxy.ip = arr[0];
-          proxy.port = arr[1];
-        }
-
-        if (proxy.ip && proxy.port) {
+          ss.closeAllConnections().then(() => {
+            ss.setProxy({
+              mode: proxy.mode,
+              proxyRules: proxy.url,
+              proxyBypassRules: proxy.ignore || 'localhost,127.0.0.1,::1,192.168.*',
+            })
+              .then(() => {
+                child.log(`session ${name} Proxy Set : ${proxy.url}`);
+              })
+              .catch((err) => {
+                child.log(err);
+              });
+          });
+        } else if (proxy.ip && proxy.port) {
           let proxyRules = '';
           let startline = ',';
           if (proxy.socks4) {

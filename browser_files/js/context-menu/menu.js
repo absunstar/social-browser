@@ -565,6 +565,7 @@ function add_a_menu(node) {
             partition: SOCIALBROWSER.partition,
             referrer: document.location.href,
             allowAds: true,
+            allowPopup : true,
             show: true,
             center: true,
           });
@@ -1177,7 +1178,8 @@ function get_custom_menu() {
           referrer: document.location.href,
           url: document.location.href.replace('youtube', 'ssyoutube'),
           show: true,
-          allowAds : true,
+          allowAds: true,
+          allowPopup : true,
           center: true,
           vip: true,
         });
@@ -1717,7 +1719,7 @@ SOCIALBROWSER.contextmenu = function (e) {
     }
 
     e = e || { x: 0, y: 0 };
-    SOCIALBROWSER.memoryText = SOCIALBROWSER.electron.clipboard.readText();
+    SOCIALBROWSER.memoryText = SOCIALBROWSER.readCopy();
     SOCIALBROWSER.selectedText = getSelection().toString().trim();
     SOCIALBROWSER.selectedURL = null;
 

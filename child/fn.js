@@ -492,7 +492,7 @@ module.exports = function (child) {
           win.customSetting.headers['Sec-Ch-Ua'] = `"Not(A:Brand";v="99", "Google Chrome";v="${win.customSetting.uaVersion}", "Chromium";v="${win.customSetting.uaVersion}"`;
           win.customSetting.headers['Sec-Ch-Ua-Mobile'] = win.customSetting.$defaultUserAgent?.platform == 'Mobile' ? '?1' : '?0';
           win.customSetting.headers['Sec-Ch-Ua-Platform'] = win.customSetting.$defaultUserAgent?.platform == 'Win32' ? '"Windows"' : win.customSetting.$defaultUserAgent?.platform;
-         // win.customSetting.headers['Upgrade-Insecure-Requests'] = '1';
+          // win.customSetting.headers['Upgrade-Insecure-Requests'] = '1';
         }
       }
     }
@@ -501,6 +501,141 @@ module.exports = function (child) {
       child.electron.app.userAgentFallback = win.customSetting.$userAgentURL;
     } else {
       console.log('handleCustomSeting Not Exists', url);
+    }
+  };
+
+  child.importProxyList = function (file) {
+    let docs = [];
+
+    if (file.path && child.api.isFileExistsSync(file.path)) {
+      if (file.path.like('*.xlsx') || file.path.like('*.xls')) {
+        let workbook = child.api.XLSX.readFile(file.path);
+        docs = child.api.XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+      } else if (file.path.like('*.csv')) {
+        let file = child.api.readFileSync(file.path);
+        file = file.split('\n');
+        if (file.length === 1) {
+          file = file[0].split(' ');
+        }
+
+        file.forEach(function (d, i) {
+          tmp = {};
+          let row = d.split(',');
+          if (row.length == 2) {
+            tmp.ip = row[0].replaceAll('"', '');
+            tmp.port = row[1].replaceAll('"', '');
+          } else if (row.length == 4) {
+            tmp.ip = row[0].replaceAll('"', '');
+            tmp.port = row[1].replaceAll('"', '');
+            tmp.username = row[0].replaceAll('"', '');
+            tmp.password = row[1].replaceAll('"', '');
+          } else {
+          }
+          docs.push(tmp);
+        });
+      } else if (file.path.like('*.txt')) {
+        let docs2 = child.api.readFileSync(file.path).toString().split('\r\n');
+        docs2.forEach((line) => {
+          if (line.like('*://*')) {
+            let parts = line.split('://')[1].split(':');
+            docs.push({
+              url: line,
+              ip: parts[0],
+              port: parts[1],
+              username: parts[2],
+              password: parts[3],
+            });
+          } else {
+            let parts = line.split(':');
+            docs.push({
+              ip: parts[0],
+              port: parts[1],
+              username: parts[2],
+              password: parts[3],
+            });
+          }
+        });
+      } else {
+        docs = child.api.fromJson(child.api.readFileSync(file.path).toString());
+      }
+    } else if (file.text) {
+      let arr = file.text.split('\r\n');
+
+      arr.forEach((line) => {
+        if (line.like('*://*')) {
+          let parts = line.split('://')[1].split(':');
+          docs.push({
+            url: line,
+            ip: parts[0],
+            port: parts[1],
+            username: parts[2],
+            password: parts[3],
+          });
+        } else {
+          let parts = line.split(':');
+          docs.push({
+            ip: parts[0],
+            port: parts[1],
+            username: parts[2],
+            password: parts[3],
+          });
+        }
+      });
+    }
+
+    if (Array.isArray(docs) && docs.length > 0) {
+      console.log('Importing Proxy Array Count : ' + docs.length);
+      child.parent.var.proxy_list = [];
+      docs.forEach((doc) => {
+        console.log('Importing Proxy : ', doc);
+        if (typeof doc === 'string') {
+          doc = { url: doc };
+        }
+
+        doc.ip = doc.ip || doc.IP || doc['IP Address'];
+        doc.port = doc.port || doc.Port || doc.PORT;
+        doc.username = doc.username || doc.Username || doc.USERNAME;
+        doc.password = doc.password || doc.Password || doc.PASSWORD;
+
+        if (!doc.url && doc.ip && doc.port) {
+          doc.url = doc.ip + ':' + doc.port;
+        } else if (doc.url && (!doc.ip || !doc.port)) {
+          let arr = doc.url.split(':');
+          if (arr.length == 2) {
+            doc.ip = arr[0];
+            doc.port = arr[1];
+          } else if (arr.length == 4) {
+            doc.ip = arr[0];
+            doc.port = arr[1];
+            doc.username = arr[2];
+            doc.password = arr[3];
+          }
+        }
+
+        if (doc.ip && doc.port) {
+          child.parent.var.proxy_list.push({
+            mode: 'fixed_servers',
+            url: doc.url,
+            ip: doc.ip,
+            port: doc.port,
+            username: doc.username,
+            password: doc.password,
+            socks5: false,
+            socks4: false,
+            http: false,
+            https: false,
+            direct: false,
+            ftp: false,
+          });
+        }
+      });
+      child.sendMessage({
+        type: '[update-browser-var]',
+        options: {
+          name: 'proxy_list',
+          data: child.parent.var.proxy_list,
+        },
+      });
     }
   };
 };

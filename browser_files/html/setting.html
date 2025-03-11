@@ -727,6 +727,9 @@
                             >
                             </i-list>
                             <div class="row border">
+                              <div class="row border">
+                                <i-control label="Proxy URL (option)" ng-model="setting.proxy.url"></i-control>
+                              </div>
                               <i-control class="col8" label="Proxy IP" type="text" ng-model="setting.proxy.ip"> </i-control>
                               <i-control class="col4" label="Proxy Port" type="text" ng-model="setting.proxy.port"> </i-control>
                               <i-control class="col6" label="User Name" type="text" ng-model="setting.proxy.username"> </i-control>
@@ -929,6 +932,9 @@
                                 >
                                 </i-list>
                                 <div class="row border">
+                                  <div class="row border">
+                                    <i-control label="Proxy URL (option)" ng-model="currentSession.proxy.url"></i-control>
+                                  </div>
                                   <i-control class="col8" label="Proxy IP" type="text" ng-model="currentSession.proxy.ip"> </i-control>
                                   <i-control class="col4" label="Proxy Port" type="text" ng-model="currentSession.proxy.port"> </i-control>
                                   <i-control class="col6" label="User Name" type="text" ng-model="currentSession.proxy.username"> </i-control>
@@ -1154,20 +1160,24 @@
 
               <div id="proxy_list_tab" class="tab-content">
                 <div class="row">
-                  <form class="form text-center pointer">
-                    <input id="input_proxy" class="hidden" type="file" name="proxyFile" ng-model="proxy.path" />
-                    <i-button type="import" fa="cloud-upload-alt" ng-click="do_click(proxy)" label="Import Proxy List ( CSV or XLSX or JSON) File"></i-button>
-                    <p class="bold white">{{proxy.uploadStatus}}</p>
-                  </form>
+                  <div class="row center"><i-button type="import" ng-click="importProxyList()" label="Import Proxy List from File"></i-button></div>
+                  <div class="row center"><i-button type="import" ng-click="importProxyList_text()" label="Import Proxy List from Copy Text"></i-button></div>
+                  <div class="row center"><i-button type="import" ng-click="importProxyList_api()" label="Import Proxy List from Copy API URL (Text Response)"></i-button></div>
+                  <div class="row center"><i-button type="search" ng-click="importProxyList_search()" label="Search and Download Free Proxy List "></i-button></div>
 
-                  <i-checkbox class="row" label="Show proxy options" ng-model="setting.blocking.context_menu.proxy_options"></i-checkbox>
-                  <i-checkbox class="row" label="Close Window on Proxy Error Loading" ng-model="setting.blocking.proxy_error_close_window"></i-checkbox>
-                  <i-checkbox class="row" label="Remove Proxy on Error Loading" ng-model="setting.blocking.proxy_error_remove_proxy"></i-checkbox>
+                  <div class="row center">
+                    <i-checkbox class="row" label="Show proxy options" ng-model="setting.blocking.context_menu.proxy_options"></i-checkbox>
+                    <i-checkbox class="row" label="Close Window on Proxy Error Loading" ng-model="setting.blocking.proxy_error_close_window"></i-checkbox>
+                    <i-checkbox class="row" label="Remove Proxy on Error Loading" ng-model="setting.blocking.proxy_error_remove_proxy"></i-checkbox>
+                  </div>
 
                   <div class="row padding margin">
                     <div class="col6">
                       <fieldset>
                         <legend>New Proxy</legend>
+                        <div class="row border">
+                          <i-control label="Proxy URL (option)" ng-model="$proxy.url"></i-control>
+                        </div>
                         <div class="row padding">
                           <i-control class="col8" label="Server IP" ng-model="$proxy.ip"></i-control>
                           <i-control class="col4" type="text" label="Server Port" ng-model="$proxy.port"></i-control>
@@ -1206,6 +1216,9 @@
                         </td>
                         <td>
                           <div class="row">
+                            <div class="row border">
+                              <i-control label="Proxy URL (option)" ng-model="_se.url"></i-control>
+                            </div>
                             <i-control class="col6" label="Server IP" ng-model="_se.ip"></i-control>
                             <i-control class="col6" label="Server Port" ng-model="_se.port"></i-control>
                             <i-control class="col6" label="User Name" ng-model="_se.username"></i-control>

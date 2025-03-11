@@ -258,7 +258,7 @@ module.exports = function (child) {
       defaultSetting.webPreferences.allowRunningInsecureContent = true;
       defaultSetting.webPreferences.webSecurity = false;
     } else if (setting.windowType.contains('popup')) {
-      defaultSetting.alwaysOnTop = true;
+      defaultSetting.alwaysOnTop = false;
       setting.frame = true;
     } else if (setting.windowType === 'view') {
       defaultSetting.show = false;
@@ -521,14 +521,22 @@ module.exports = function (child) {
 
     if ((proxy = win.customSetting.proxy)) {
       let ss = win.webContents.session;
-      proxy.url = proxy.url || '';
-      proxy.url = proxy.url.replace('http://', '').replace('https://', '').replace('ftp://', '').replace('socks4://', '').replace('socks4://', '');
-      let arr = proxy.url.split(':');
-      if (arr.length > 1) {
-        proxy.ip = arr[0];
-        proxy.port = arr[1];
-      }
-      if (proxy.ip && proxy.port) {
+
+      if (proxy.url) {
+        ss.closeAllConnections().then(() => {
+          ss.setProxy({
+            mode: proxy.mode,
+            proxyRules: proxy.url,
+            proxyBypassRules: proxy.ignore || 'localhost,127.0.0.1,::1,192.168.*',
+          })
+            .then(() => {
+              child.log(`window Proxy Set : ${proxy.url}`);
+            })
+            .catch((err) => {
+              child.log(err);
+            });
+        });
+      } else if (proxy.ip && proxy.port) {
         let proxyRules = '';
         let startline = '';
 
@@ -938,12 +946,14 @@ module.exports = function (child) {
     });
     win.webContents.on('render-process-gone', (e, details) => {
       child.log('render-process-gone');
-      // setTimeout(() => {
-      //   if (win && !win.isDestroyed()) {
-      //     win.webContents.forcefullyCrashRenderer();
-      //     win.webContents.reload();
-      //   }
-      // }, 1000 * 5);
+      win.customSetting.reloadCount = win.customSetting.reloadCount || 0;
+      win.customSetting.reloadCount++;
+      if (win.customSetting.reloadCount < 3) {
+        if (win && !win.isDestroyed()) {
+          win.webContents.forcefullyCrashRenderer();
+          win.webContents.reload();
+        }
+      }
     });
 
     win.webContents.on('did-start-navigation', (e) => {
@@ -1059,27 +1069,6 @@ module.exports = function (child) {
 
           return;
         }
-        let isPopup = false;
-        if (frameName) {
-          isPopup = true;
-        } else if (disposition && (disposition == 'new-window' || disposition == 'other')) {
-          isPopup = true;
-        } else if (features && features.contains('width|height|top|left|popup')) {
-          isPopup = true;
-        } else if (win.customSetting.windowType == 'popup') {
-          isPopup = true;
-        }
-
-        if (!win.customSetting.allowNewWindows || (!win.customSetting.allowAds && !child.isAllowURL(url))) {
-          child.log('Block-open-window', url);
-          return { action: 'deny' };
-        }
-
-        if (win.customSetting.allowSelfWindow && win.customSetting.allowRedirect) {
-          child.log('load in self window', url);
-          win.loadURL(url);
-          return { action: 'deny' };
-        }
 
         if (url.like('*youtube.com/watch*')) {
           url = 'https://www.youtube.com/embed/' + url.split('=')[1].split('&')[0];
@@ -1120,12 +1109,32 @@ module.exports = function (child) {
           return { action: 'deny' };
         }
 
+        let isPopup = false;
+        if (frameName) {
+          isPopup = true;
+        } else if (disposition && (disposition == 'new-window' || disposition == 'other')) {
+          isPopup = true;
+        } else if (features && features.contains('width|height|top|left|popup')) {
+          isPopup = true;
+        } else if (win.customSetting.windowType == 'popup') {
+          isPopup = true;
+        }
+
+        if (!win.customSetting.allowNewWindows || (isPopup && !win.customSetting.allowPopup) || (!win.customSetting.allowAds && !child.isAllowURL(url))) {
+          child.log('Block-open-window', url);
+          return { action: 'deny' };
+        }
+
+        if (win.customSetting.allowSelfWindow && win.customSetting.allowRedirect) {
+          child.log('load in self window', url);
+          win.loadURL(url);
+          return { action: 'deny' };
+        }
+
         let allow = false;
 
         if (url.like('*about:*')) {
           allow = parent.var.blocking.popup.allow_blank;
-        } else if (win.customSetting.allowAds) {
-          allow = true;
         } else {
           if (win.customSetting.allowPopup) {
             allow = true;

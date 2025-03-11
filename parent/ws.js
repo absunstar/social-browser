@@ -519,7 +519,7 @@ module.exports = function init(parent) {
           parent.downloadFavicon(message.url);
           break;
         case '[import-extension]':
-          parent.importExtension();
+          parent.importExtension(message.folder);
           break;
         case '[enable-extension]':
           parent.enableExtension(message.extension);
