@@ -518,6 +518,43 @@ module.exports = function init(parent) {
         case '[download-favicon]':
           parent.downloadFavicon(message.url);
           break;
+        case '[load-google-extension]':
+          parent.var.googleExtensionList = parent.var.googleExtensionList || [];
+          let extensionIndex = parent.var.googleExtensionList.findIndex((ex) => ex.path == message.extensionInfo.path);
+          if (extensionIndex === -1) {
+            parent.electron.session.defaultSession
+              .loadExtension(message.extensionInfo.path, { allowFileAccess: true })
+              .then((extension) => {
+                console.log(extension);
+                parent.var.googleExtensionList.push({
+                  id: extension.id,
+                  name: extension.name,
+                  path: extension.path,
+                  url: extension.url,
+                  manifest: extension.manifest,
+                });
+                parent.applay('googleExtensionList');
+                parent.electron.session.defaultSession
+                  .removeExtension(extension.id)
+                  .then((result) => {
+                    parent.log(result);
+                  })
+                  .catch((err) => {
+                    parent.log(err);
+                  });
+              })
+              .catch((err) => {
+                parent.log(err);
+              });
+          }
+
+          break;
+        case '[remove-google-extension]':
+          parent.var.googleExtensionList = parent.var.googleExtensionList || [];
+          parent.var.googleExtensionList = parent.var.googleExtensionList.filter((ex) => ex.id != message.extensionInfo.id);
+          parent.applay('googleExtensionList');
+
+          break;
         case '[import-extension]':
           parent.importExtension(message.folder);
           break;

@@ -10,7 +10,7 @@
         let a = like_btn.querySelector('a');
         if (a) {
           a.click();
-          alert('Auto Like Video - change from extentions')
+          alert('Auto Like Video - change from extensions')
         }
       }
     }

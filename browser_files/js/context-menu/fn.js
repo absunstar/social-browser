@@ -38,6 +38,57 @@ SOCIALBROWSER.on('message', (e, message) => {
   });
 });
 
+SOCIALBROWSER.toJson = (obj) => {
+  if (typeof obj === undefined || obj === null) {
+    return '';
+  }
+  return JSON.stringify(obj);
+};
+
+SOCIALBROWSER.fromJson = (str) => {
+  if (typeof str !== 'string') {
+    return str;
+  }
+  return JSON.parse(str);
+};
+
+SOCIALBROWSER.toBase64 = (str) => {
+  return SOCIALBROWSER.ipcSync('[toBase64]', str);
+};
+
+SOCIALBROWSER.fromBase64 = (str) => {
+  return SOCIALBROWSER.ipcSync('[fromBase64]', str);
+};
+
+SOCIALBROWSER.to123 = (data) => {
+  data = typeof data === 'object' ? SOCIALBROWSER.toJson(data) : data;
+  return SOCIALBROWSER.ipcSync('[to123]', data);
+};
+
+SOCIALBROWSER.from123 = (data) => {
+  return SOCIALBROWSER.ipcSync('[from123]', data);
+};
+
+SOCIALBROWSER.hideObject = (obj) => {
+  return SOCIALBROWSER.to123(obj);
+};
+SOCIALBROWSER.showObject = (obj) => {
+  return JSON.parse(SOCIALBROWSER.from123(obj));
+};
+SOCIALBROWSER.typeOf = SOCIALBROWSER.typeof = function type(elem) {
+  return Object.prototype.toString.call(elem).slice(8, -1);
+};
+SOCIALBROWSER.encryptText = function (text, password = '^^') {
+  if (text && password && typeof text == 'string' && typeof password == 'string') {
+    return SOCIALBROWSER.ipcSync('[encryptText]', { text: text, password, password });
+  }
+};
+SOCIALBROWSER.decryptText = function (text, password = '^^') {
+  if (text && password && typeof text == 'string' && typeof password == 'string') {
+    return SOCIALBROWSER.ipcSync('[decryptText]', { text: text, password, password });
+  }
+};
+
 SOCIALBROWSER.scope = function (selector = '[ng-controller]') {
   return angular.element(document.querySelector(selector)).scope();
 };
@@ -678,9 +729,9 @@ SOCIALBROWSER.copy = function (text = '') {
 SOCIALBROWSER.paste = function () {
   SOCIALBROWSER.remote.getCurrentWindow().webContents.paste();
 };
-SOCIALBROWSER.readCopy = function(){
- return SOCIALBROWSER.electron.clipboard.readText();
-}
+SOCIALBROWSER.readCopy = function () {
+  return SOCIALBROWSER.electron.clipboard.readText();
+};
 
 SOCIALBROWSER.triggerMouseEvent = function (node, eventType) {
   try {
@@ -767,7 +818,7 @@ SOCIALBROWSER.write = function (text, selector, timeout = 500) {
 };
 SOCIALBROWSER.getOffset = function (el) {
   const rect = el.getBoundingClientRect();
-  let factor = SOCIALBROWSER.currentWindow.webContents.zoomFactor || 1;
+  let factor = SOCIALBROWSER.webContents.zoomFactor || 1;
   return {
     x: Math.round(rect.left * factor + (el.clientWidth / 4) * factor),
     y: Math.round(rect.top * factor + (el.clientHeight / 4) * factor),
@@ -902,6 +953,21 @@ SOCIALBROWSER.getTimeZone = () => {
   return new window.Intl.DateTimeFormat().resolvedOptions().timeZone;
 };
 
+SOCIALBROWSER.replaceSelectedText = function (replacementText) {
+  let sel, range;
+  if (window.getSelection) {
+    sel = window.getSelection();
+    if (sel.rangeCount) {
+      range = sel.getRangeAt(0);
+      range.deleteContents();
+      range.insertNode(document.createTextNode(replacementText));
+    }
+  } else if (document.selection && document.selection.createRange) {
+    range = document.selection.createRange();
+    range.text = replacementText;
+  }
+};
+
 SOCIALBROWSER.downloadURL = function (url) {
   SOCIALBROWSER.webContents.downloadURL(url);
 };
@@ -938,21 +1004,15 @@ SOCIALBROWSER.isAllowURL = function (url) {
 };
 
 SOCIALBROWSER.isValidURL = SOCIALBROWSER.isURL = function (str) {
+  let url;
+
   try {
-    var pattern = new RegExp(
-      '^((ft|htt)ps?:\\/\\/)?' + // protocol
-        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|localhost|' + // domain name and extension
-        '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-        '(\\:\\d+)?' + // port
-        '(\\/[-a-z\\d%@_.~+&:]*)*' + // path
-        '(\\?[;&a-z\\d%@_.,~+&:=-]*)?' + // query string
-        '(\\#[-a-z\\d_]*)?$',
-      'i' // fragment locator
-    );
-    return !!pattern.test(encodeURI(str));
-  } catch (error) {
+    url = new URL(str);
+  } catch (_) {
     return false;
   }
+
+  return url.protocol === 'http:' || url.protocol === 'https:';
 };
 
 SOCIALBROWSER.handleURL = function (u) {
@@ -1143,8 +1203,8 @@ SOCIALBROWSER.on('[translate][data]', (e, info) => {
 
 SOCIALBROWSER.printerList = [];
 SOCIALBROWSER.getPrinters = function () {
-  if (SOCIALBROWSER.currentWindow.webContents.getPrintersAsync) {
-    SOCIALBROWSER.currentWindow.webContents.getPrintersAsync().then((arr0) => {
+  if (SOCIALBROWSER.webContents.getPrintersAsync) {
+    SOCIALBROWSER.webContents.getPrintersAsync().then((arr0) => {
       SOCIALBROWSER.printerList = arr0;
     });
   } else {
@@ -1296,7 +1356,7 @@ SOCIALBROWSER.showFind = function (from_key) {
   if (from_key) {
     if (__find.style.display == 'block') {
       __find.style.display = 'none';
-      SOCIALBROWSER.currentWindow.webContents.stopFindInPage('clearSelection');
+      SOCIALBROWSER.webContents.stopFindInPage('clearSelection');
       clearInterval(find_interval);
       find_interval = null;
       return;
@@ -1312,10 +1372,10 @@ SOCIALBROWSER.showFind = function (from_key) {
   }
 
   if (find_input.value) {
-    SOCIALBROWSER.currentWindow.webContents.findInPage(find_input.value, find_options);
+    SOCIALBROWSER.webContents.findInPage(find_input.value, find_options);
     find_options.findNext = true;
   } else {
-    SOCIALBROWSER.currentWindow.webContents.stopFindInPage('clearSelection');
+    SOCIALBROWSER.webContents.stopFindInPage('clearSelection');
     find_options.findNext = false;
   }
 };

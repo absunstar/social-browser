@@ -4,6 +4,43 @@ module.exports = function (child) {
   child.sessionBusy = false;
   child.allowSessionHandle = false;
 
+  child.loadGoogleExtension = function (extensionInfo) {
+    child.session_name_list.forEach((sessionInfo) => {
+      let session = child.electron.session.fromPartition(sessionInfo.name) || child.electron.session.defaultSession;
+      if (session.isPersistent()) {
+        session
+          .loadExtension(extensionInfo.path, { allowFileAccess: true })
+          .then((extension) => {
+            child.log(extension);
+          })
+          .catch((err) => {
+            child.log(err);
+          });
+      }
+    });
+  };
+  child.removeGoogleExtension = function (extension) {
+    child.session_name_list.forEach((sessionInfo) => {
+      let session = child.electron.session.fromPartition(sessionInfo.name) || child.electron.session.defaultSession;
+      if (session.isPersistent()) {
+        if (extension) {
+          session
+            .removeExtension(extension.id)
+            .then((result) => {
+              child.log(result);
+            })
+            .catch((err) => {
+              child.log(err);
+            });
+        } else {
+          session.getAllExtensions().forEach((ex) => {
+            session.removeExtension(ex.id);
+          });
+        }
+      }
+    });
+  };
+
   child.handleSession = function (sessionOptions) {
     if (child.sessionBusy) {
       // setTimeout(() => {
@@ -60,6 +97,11 @@ module.exports = function (child) {
       child.allowSessionHandle = false;
     } else {
       child.allowSessionHandle = true;
+      ss.registerPreloadScript({
+        type: 'frame',
+        id: 'app-preload',
+        filePath: child.parent.files_dir + '/js/context-menu.js',
+      });
       child.session_name_list.push({
         name: sessionOptions.isDefault ? null : name,
         user: user,

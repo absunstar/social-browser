@@ -361,8 +361,6 @@ module.exports = function (child) {
         win.customSetting.$userAgentURL = win.customSetting.userAgentURL;
       }
       win.customSetting.iframe = true;
-    } else if (url.like('*60080*')) {
-      win.customSetting.allowDevTools = false;
     } else if (url.like('*challenges.cloudflare.com*')) {
       win.customSetting.iframe = true;
     } else {

@@ -34,7 +34,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
   $scope.timezones2 = [...SOCIALBROWSER.timeZones];
 
   SOCIALBROWSER.onVarUpdated = function (name, data) {
-    if (name == 'proxy_list' || name == 'extension_list') {
+    if (name == 'proxy_list' || name == 'extension_list' || name == 'googleExtensionList') {
       $scope.setting[name] = data;
       $scope.$applyAsync();
     }
@@ -633,6 +633,16 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     });
   };
 
+  $scope.loadGoogleExtension = function () {
+    let path = SOCIALBROWSER.ipcSync('[select-folder]');
+    if (path) {
+      SOCIALBROWSER.ipc('[load-google-extension]', { path: path });
+    }
+  };
+  $scope.removeGoogleExtension = function (extensionInfo) {
+    SOCIALBROWSER.ipc('[remove-google-extension]', extensionInfo);
+  };
+
   $scope.addExtension = function () {
     let folder = SOCIALBROWSER.ipcSync('[select-folder]');
     if (folder) {
@@ -829,7 +839,6 @@ app.controller('mainController', ($scope, $http, $timeout) => {
 
     for (const key in $scope.setting) {
       if (key.indexOf('$') === -1 && key !== 'extension_list' && key !== 'preload_list') {
-        console.log(key);
         SOCIALBROWSER.ipc('[update-browser-var]', {
           name: key,
           data: $scope.setting[key],

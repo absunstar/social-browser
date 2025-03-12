@@ -1,4 +1,4 @@
-SOCIALBROWSER.log('.... [ Core Extention activated ] .... ' + document.location.href);
+SOCIALBROWSER.log('.... [ Core Extension activated ] .... ' + document.location.href);
 
 
 

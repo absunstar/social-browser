@@ -24,7 +24,6 @@
           enableRemoteModule: true,
           partition: SOCIALBROWSER.partition,
           webaudio: false,
-          preload2: SOCIALBROWSER.files_dir + '/js/context-menu.js',
         },
       });
 

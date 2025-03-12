@@ -1240,29 +1240,58 @@
               </div>
 
               <div id="extension_list_tab" class="tab-content">
-                <div class="row">
-                  <i-button type="import" ng-click="addExtension()" label="Import Extension"></i-button>
-
+                <fieldset>
+                  <legend>Custom Extentions</legend>
                   <div class="row">
-                    <table class="table hover">
-                      <tr>
-                        <th>Name</th>
-                        <th>Actions</th>
-                      </tr>
-                      <tr ng-repeat="_ex in setting.extension_list | filter:extension track by $index">
-                        <td>
-                          <p class="bold font-18">{{_ex.name}}</p>
-                          <p class="white">{{_ex.description}}</p>
-                        </td>
-                        <td>
-                          <i-button type="play" class2="" ng-show="_ex.isEnabled === false" ng-click="enableExtension(_ex)" label="Play"></i-button>
-                          <i-button type="stop" class2="btn-stop" ng-show="_ex.isEnabled === true" ng-click="disableExtension(_ex)" label="Stop"></i-button>
-                          <i-button type="delete" ng-show="_ex.canDelete === true" ng-click="removeExtension(_ex)" label="Remove"></i-button>
-                        </td>
-                      </tr>
-                    </table>
+                    <i-button type="import" ng-click="addExtension()" label="Import Extension"></i-button>
+
+                    <div class="row">
+                      <table class="table hover">
+                        <tr>
+                          <th>Name</th>
+                          <th>Actions</th>
+                        </tr>
+                        <tr ng-repeat="_ex in setting.extension_list | filter:extension track by $index">
+                          <td>
+                            <p class="bold font-18">{{_ex.name}}</p>
+                            <p class="white">{{_ex.description}}</p>
+                          </td>
+                          <td>
+                            <i-button type="play" class2="" ng-show="_ex.isEnabled === false" ng-click="enableExtension(_ex)" label="Play"></i-button>
+                            <i-button type="stop" class2="btn-stop" ng-show="_ex.isEnabled === true" ng-click="disableExtension(_ex)" label="Stop"></i-button>
+                            <i-button type="delete" ng-show="_ex.canDelete === true" ng-click="removeExtension(_ex)" label="Remove"></i-button>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
                   </div>
-                </div>
+                </fieldset>
+                <hr />
+                <fieldset>
+                  <legend>Google Extentions</legend>
+                  <div class="row">
+                    <i-button type="import" ng-click="loadGoogleExtension()" label="Load Google Extension From Folder"></i-button>
+
+                    <div class="row">
+                      <table class="table hover">
+                        <tr>
+                          <th>Information</th>
+                          <th>Actions</th>
+                        </tr>
+                        <tr ng-repeat="_ex in setting.googleExtensionList | filter:googleExtension track by $index">
+                          <td>
+                            <p class="bold font-18">{{_ex.name}}</p>
+                            <p class="bold white">{{_ex.manifest.description}}</p>
+                            <p class="black">{{_ex.path}}</p>
+                          </td>
+                          <td>
+                            <i-button type="delete" ng-click="removeGoogleExtension(_ex)" label="Remove"></i-button>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                  </div>
+                </fieldset>
               </div>
 
               <div id="passwords_tab" class="tab-content">

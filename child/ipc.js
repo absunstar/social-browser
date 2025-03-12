@@ -78,6 +78,44 @@ module.exports = function init(child) {
   child.ipcMain.on('[md5]', async (event, data) => {
     event.returnValue = child.md5(data);
   });
+  child.ipcMain.on('[to123]', async (event, data) => {
+    event.returnValue = child.api.to123(data);
+  });
+  child.ipcMain.on('[from123]', async (event, data) => {
+    event.returnValue = child.api.from123(data);
+  });
+  child.ipcMain.on('[toBase64]', async (event, data) => {
+    event.returnValue = child.api.toBase64(data);
+  });
+  child.ipcMain.on('[fromBase64]', async (event, data) => {
+    event.returnValue = child.api.fromBase64(data);
+  });
+  child.ipcMain.on('[encryptText]', async (event, data) => {
+    if (data.password) {
+      let l = child.parent.var.core.prefix[0] || 'S';
+      let l2 = child.parent.var.core.prefix[1] || 'B';
+      event.returnValue = child.api
+        .to123(data.password + data.text)
+        .replaceAll('1', l)
+        .replaceAll('2', l2);
+    } else {
+      event.returnValue = '';
+    }
+  });
+  child.ipcMain.on('[decryptText]', async (event, data) => {
+    if (data.password) {
+      let l = child.parent.var.core.prefix[0] || 'S';
+      let l2 = child.parent.var.core.prefix[1] || 'B';
+      data.text = child.api.from123(data.text.replaceAll(l, '1').replaceAll(l2, '2'));
+      if (data.text.startsWith(data.password)) {
+        event.returnValue = data.text.replace(data.password, '');
+      } else {
+        event.returnValue = '';
+      }
+    } else {
+      event.returnValue = '';
+    }
+  });
   child.ipcMain.on('[select-file]', async (event, options) => {
     const { canceled, filePaths } = await child.electron.dialog.showOpenDialog(options || { properties: ['openFile', 'showHiddenFiles'] });
     if (!canceled) {
@@ -550,7 +588,18 @@ module.exports = function init(child) {
   child.ipcMain.handle('[import-proxy-list]', (e, file) => {
     child.importProxyList(file);
   });
-
+  child.ipcMain.handle('[load-google-extension]', (e, extensionInfo) => {
+    child.sendMessage({
+      type: '[load-google-extension]',
+      extensionInfo: extensionInfo,
+    });
+  });
+  child.ipcMain.handle('[remove-google-extension]', (e, extensionInfo) => {
+    child.sendMessage({
+      type: '[remove-google-extension]',
+      extensionInfo: extensionInfo,
+    });
+  });
   child.ipcMain.handle('[import-extension]', (e, folder) => {
     child.sendMessage({
       type: '[import-extension]',

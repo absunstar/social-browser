@@ -102,6 +102,7 @@
 
   SOCIALBROWSER.currentWindow = SOCIALBROWSER.remote.getCurrentWindow();
   SOCIALBROWSER.webContents = SOCIALBROWSER.currentWindow.webContents;
+  SOCIALBROWSER.frame  = SOCIALBROWSER.webContents.mainFrame.frames.find((f) => f.url == document.location.href) || SOCIALBROWSER.webContents;
 
   if (SOCIALBROWSER.currentWindow.customSetting && SOCIALBROWSER.currentWindow.customSetting.webPreferences) {
     SOCIALBROWSER.webPreferences = SOCIALBROWSER.currentWindow.customSetting.webPreferences;
@@ -304,6 +305,8 @@
   SOCIALBROWSER.init = function () {
     SOCIALBROWSER.currentWindow = SOCIALBROWSER.remote.getCurrentWindow();
     SOCIALBROWSER.webContents = SOCIALBROWSER.currentWindow.webContents;
+    SOCIALBROWSER.frame  = SOCIALBROWSER.webContents.mainFrame.frames.find((f) => f.url == document.location.href) || SOCIALBROWSER.webContents;
+  
 
     SOCIALBROWSER.browserData = SOCIALBROWSER.ipcSync('[browser][data]', {
       hostname: SOCIALBROWSER.hostname,

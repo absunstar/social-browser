@@ -984,17 +984,17 @@ if (SOCIALBROWSER.var.core.id.like('*developer*')) {
   SOCIALBROWSER.menu_list.push({
     label: 'inspect Element',
     click() {
-      SOCIALBROWSER.currentWindow.webContents.openDevTools({
+      SOCIALBROWSER.webContents.openDevTools({
         mode: 'detach',
       });
-      SOCIALBROWSER.currentWindow.webContents.inspectElement(SOCIALBROWSER.rightClickPosition.x, SOCIALBROWSER.rightClickPosition.y);
+      SOCIALBROWSER.webContents.inspectElement(SOCIALBROWSER.rightClickPosition.x, SOCIALBROWSER.rightClickPosition.y);
     },
   });
 
   SOCIALBROWSER.menu_list.push({
     label: 'Developer Tools',
     click() {
-      SOCIALBROWSER.currentWindow.webContents.openDevTools({
+      SOCIALBROWSER.webContents.openDevTools({
         mode: 'detach',
       });
     },

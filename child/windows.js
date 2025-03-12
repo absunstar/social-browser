@@ -59,7 +59,6 @@ module.exports = function (child) {
         webPreferences: {
           contextIsolation: false,
           partition: 'addressbar',
-          preload: child.parent.files_dir + '/js/context-menu.js',
           nativeWindowOpen: false,
           nodeIntegration: true,
           experimentalFeatures: false,
@@ -115,7 +114,6 @@ module.exports = function (child) {
         webPreferences: {
           contextIsolation: false,
           partition: 'profiles',
-          preload: child.parent.files_dir + '/js/context-menu.js',
           nativeWindowOpen: false,
           nodeIntegration: true,
           experimentalFeatures: false,
@@ -221,7 +219,7 @@ module.exports = function (child) {
         sandbox: false,
         contextIsolation: false, // false -> can access preload window functions
         partition: setting.partition,
-        preload: setting.preload || child.parent.files_dir + '/js/context-menu.js',
+        preload: setting.preload,
         javascript: true,
         nativeWindowOpen: false,
         nodeIntegration: false,

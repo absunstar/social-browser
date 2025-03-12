@@ -103,6 +103,14 @@ module.exports = function (child) {
             if (child.parent.var.core.defaultUserAgent) {
               child.electron.app.userAgentFallback = child.parent.var.core.defaultUserAgent.url;
             }
+
+            if (message.options.name === 'googleExtensionList') {
+              child.removeGoogleExtension();
+              child.parent.var[message.options.name].forEach((extensionInfo) => {
+                child.loadGoogleExtension(extensionInfo);
+              });
+            }
+
             if (message.options.name === 'overwrite') {
               child.addOverwriteList(child.parent.var.overwrite.urls);
             }

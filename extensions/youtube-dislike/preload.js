@@ -7,7 +7,7 @@
       let subscribed_btn = document.querySelector('#subscribe-button.style-scope.ytd-video-secondary-info-renderer paper-button');
       if (subscribed_btn && !subscribed_btn.hasAttribute('subscribed')) {
         subscribed_btn.click();
-        alert('Auto Subscribe Channel - change from extentions')
+        alert('Auto Subscribe Channel - change from extensions')
       }
     }
   }, 1000 * 5);

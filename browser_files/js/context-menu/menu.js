@@ -318,7 +318,7 @@ function add_input_menu(node) {
       label: 'Cut',
 
       click() {
-        SOCIALBROWSER.currentWindow.webContents.cut();
+        SOCIALBROWSER.webContents.cut();
       },
       enabled: SOCIALBROWSER.selectedText.length > 0,
     });
@@ -334,21 +334,21 @@ function add_input_menu(node) {
     SOCIALBROWSER.menuList.push({
       label: 'Paste',
       click() {
-        SOCIALBROWSER.currentWindow.webContents.paste();
+        SOCIALBROWSER.webContents.paste();
       },
     });
 
     SOCIALBROWSER.menuList.push({
       label: 'Delete',
       click() {
-        SOCIALBROWSER.currentWindow.webContents.delete();
+        SOCIALBROWSER.webContents.delete();
       },
     });
 
     SOCIALBROWSER.menuList.push({
       label: 'Select All',
       click() {
-        SOCIALBROWSER.currentWindow.webContents.selectall();
+        SOCIALBROWSER.webContents.selectall();
       },
     });
 
@@ -565,7 +565,7 @@ function add_a_menu(node) {
             partition: SOCIALBROWSER.partition,
             referrer: document.location.href,
             allowAds: true,
-            allowPopup : true,
+            allowPopup: true,
             show: true,
             center: true,
           });
@@ -1179,7 +1179,7 @@ function get_custom_menu() {
           url: document.location.href.replace('youtube', 'ssyoutube'),
           show: true,
           allowAds: true,
-          allowPopup : true,
+          allowPopup: true,
           center: true,
           vip: true,
         });
@@ -1387,54 +1387,6 @@ function createMenuList(node) {
       }
     }
 
-    if (SOCIALBROWSER.selectedText && SOCIALBROWSER.isValidURL(SOCIALBROWSER.selectedText)) {
-      let arr = get_url_menu_list(SOCIALBROWSER.selectedText);
-      SOCIALBROWSER.menuList.push({
-        label: `Open link [ ${SOCIALBROWSER.selectedText.substring(0, 70)} ] `,
-        type: 'submenu',
-        submenu: arr,
-      });
-
-      SOCIALBROWSER.menuList.push({ type: 'separator' });
-    } else {
-      if (SOCIALBROWSER.selectedText) {
-        let stext = SOCIALBROWSER.selectedText.substring(0, 70);
-        SOCIALBROWSER.menuList.push({
-          label: `Copy [ ${stext} ] `,
-          click() {
-            SOCIALBROWSER.copy(SOCIALBROWSER.selectedText);
-          },
-        });
-
-        SOCIALBROWSER.menuList.push({
-          label: `Translate [ ${stext} ] `,
-          click() {
-            SOCIALBROWSER.ipc('[open new popup]', {
-              partition: SOCIALBROWSER.partition,
-              show: true,
-              center: true,
-              url: 'https://translate.google.com/?num=100&newwindow=1&um=1&ie=UTF-8&hl=en&client=tw-ob#auto/ar/' + encodeURIComponent(SOCIALBROWSER.selectedText),
-            });
-          },
-        });
-
-        SOCIALBROWSER.menuList.push({
-          label: `Search  [ ${stext} ] `,
-          click() {
-            SOCIALBROWSER.ipc('[open new tab]', {
-              referrer: document.location.href,
-              url: 'https://www.google.com/search?q=' + encodeURIComponent(SOCIALBROWSER.selectedText),
-              windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
-            });
-          },
-        });
-
-        SOCIALBROWSER.menuList.push({
-          type: 'separator',
-        });
-      }
-    }
-
     get_img_menu(node);
 
     if (SOCIALBROWSER.var.blocking.open_list?.length > 0) {
@@ -1478,7 +1430,7 @@ function createMenuList(node) {
       label: 'Refresh',
       accelerator: 'F5',
       click: function () {
-        SOCIALBROWSER.currentWindow.webContents.reload();
+        SOCIALBROWSER.webContents.reload();
       },
     });
 
@@ -1528,7 +1480,10 @@ function createMenuList(node) {
       SOCIALBROWSER.menuList.push({
         label: 'Inspect Element',
         click() {
-          SOCIALBROWSER.currentWindow.webContents.inspectElement(SOCIALBROWSER.rightClickPosition.x2, SOCIALBROWSER.rightClickPosition.y2);
+          SOCIALBROWSER.webContents.inspectElement(SOCIALBROWSER.rightClickPosition.x2, SOCIALBROWSER.rightClickPosition.y2);
+          if (SOCIALBROWSER.webContents.isDevToolsOpened()) {
+            SOCIALBROWSER.webContents.devToolsWebContents.focus();
+          }
         },
       });
     }
@@ -1538,7 +1493,7 @@ function createMenuList(node) {
         label: 'Developer Tools',
         accelerator: 'F12',
         click() {
-          SOCIALBROWSER.currentWindow.webContents.openDevTools();
+          SOCIALBROWSER.webContents.openDevTools();
         },
       });
     }
@@ -1675,7 +1630,10 @@ function createMenuList(node) {
         SOCIALBROWSER.menuList.push({
           label: 'Inspect Element',
           click() {
-            SOCIALBROWSER.currentWindow.webContents.inspectElement(SOCIALBROWSER.rightClickPosition.x2, SOCIALBROWSER.rightClickPosition.y2);
+            SOCIALBROWSER.webContents.inspectElement(SOCIALBROWSER.rightClickPosition.x2, SOCIALBROWSER.rightClickPosition.y2);
+            if (SOCIALBROWSER.webContents.isDevToolsOpened()) {
+              SOCIALBROWSER.webContents.devToolsWebContents.focus();
+            }
           },
         });
 
@@ -1683,7 +1641,7 @@ function createMenuList(node) {
           label: 'Developer Tools',
           accelerator: 'F12',
           click() {
-            SOCIALBROWSER.currentWindow.webContents.openDevTools({
+            SOCIALBROWSER.webContents.openDevTools({
               mode: 'detach',
             });
           },
@@ -1712,6 +1670,8 @@ SOCIALBROWSER.contextmenu = function (e) {
     try {
       SOCIALBROWSER.currentWindow = SOCIALBROWSER.remote.getCurrentWindow();
       SOCIALBROWSER.webContents = SOCIALBROWSER.currentWindow.webContents;
+      SOCIALBROWSER.frame = SOCIALBROWSER.webContents.mainFrame.frames.find((f) => f.url == document.location.href) || SOCIALBROWSER.webContents;
+
       SOCIALBROWSER.currentWindow.show();
     } catch (error) {
       console.log(error);
@@ -1720,10 +1680,12 @@ SOCIALBROWSER.contextmenu = function (e) {
 
     e = e || { x: 0, y: 0 };
     SOCIALBROWSER.memoryText = SOCIALBROWSER.readCopy();
-    SOCIALBROWSER.selectedText = getSelection().toString().trim();
+    SOCIALBROWSER.selectedText = (getSelection() || '').toString().trim();
     SOCIALBROWSER.selectedURL = null;
 
-    let factor = SOCIALBROWSER.currentWindow.webContents.zoomFactor || 1;
+    SOCIALBROWSER.menuList = [];
+
+    let factor = SOCIALBROWSER.webContents.zoomFactor || 1;
 
     SOCIALBROWSER.rightClickPosition = {
       x: Math.round(e.x / factor),
@@ -1734,13 +1696,100 @@ SOCIALBROWSER.contextmenu = function (e) {
 
     let node = document.elementFromPoint(SOCIALBROWSER.rightClickPosition.x, SOCIALBROWSER.rightClickPosition.y);
 
-    if (!node || !!node.oncontextmenu) {
-      return null;
+    if (SOCIALBROWSER.selectedText) {
+      if (SOCIALBROWSER.isValidURL(SOCIALBROWSER.selectedText)) {
+        let arr = get_url_menu_list(SOCIALBROWSER.selectedText);
+        SOCIALBROWSER.menuList.push({
+          label: `Open link [ ${SOCIALBROWSER.selectedText.substring(0, 70)} ] `,
+          type: 'submenu',
+          submenu: arr,
+        });
+
+        SOCIALBROWSER.menuList.push({ type: 'separator' });
+      }
+
+      let stext = SOCIALBROWSER.selectedText.substring(0, 70);
+
+      SOCIALBROWSER.menuList.push({
+        label: `Copy [ ${stext} ] `,
+        click() {
+          SOCIALBROWSER.copy(SOCIALBROWSER.selectedText);
+        },
+      });
+
+      SOCIALBROWSER.menuList.push({
+        label: `Translate [ ${stext} ] `,
+        click() {
+          SOCIALBROWSER.ipc('[open new popup]', {
+            partition: SOCIALBROWSER.partition,
+            show: true,
+            center: true,
+            url: 'https://translate.google.com/?num=100&newwindow=1&um=1&ie=UTF-8&hl=en&client=tw-ob#auto/ar/' + encodeURIComponent(SOCIALBROWSER.selectedText),
+          });
+        },
+      });
+
+      SOCIALBROWSER.menuList.push({
+        label: `Search  [ ${stext} ] `,
+        click() {
+          SOCIALBROWSER.ipc('[open new tab]', {
+            referrer: document.location.href,
+            url: 'https://www.google.com/search?q=' + encodeURIComponent(SOCIALBROWSER.selectedText),
+            windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
+          });
+        },
+      });
+
+      SOCIALBROWSER.menuList.push({
+        type: 'separator',
+      });
+
+      if (true) {
+        if (SOCIALBROWSER.selectedText.startsWith('_') && SOCIALBROWSER.selectedText.endsWith('_')) {
+          SOCIALBROWSER.menuList.push({
+            label: `Decrypt [ ${stext} ] `,
+            click() {
+              SOCIALBROWSER.decryptedText = SOCIALBROWSER.decryptText(SOCIALBROWSER.selectedText.replaceAll('_', ''));
+              if (SOCIALBROWSER.decryptText) {
+                if (node.value) {
+                  node.value = node.value.replace(SOCIALBROWSER.selectedText, SOCIALBROWSER.decryptedText);
+                } else if (node.innerText) {
+                  node.innerText = node.innerText.replace(SOCIALBROWSER.selectedText, SOCIALBROWSER.decryptedText);
+                } else {
+                  SOCIALBROWSER.replaceSelectedText(SOCIALBROWSER.decryptedText);
+                }
+              }
+            },
+          });
+        } else {
+          SOCIALBROWSER.menuList.push({
+            label: `Encrypt [ ${stext} ] `,
+            click() {
+              SOCIALBROWSER.encryptedText = SOCIALBROWSER.encryptText(SOCIALBROWSER.selectedText);
+              if (SOCIALBROWSER.encryptedText) {
+                SOCIALBROWSER.encryptedText = '_' + SOCIALBROWSER.encryptedText + '_';
+                if (node.value) {
+                  node.value = node.value.replace(SOCIALBROWSER.selectedText, SOCIALBROWSER.encryptedText);
+                } else if (node.innerText) {
+                  node.innerText = node.innerText.replace(SOCIALBROWSER.selectedText, SOCIALBROWSER.encryptedText);
+                } else {
+                  SOCIALBROWSER.replaceSelectedText(SOCIALBROWSER.encryptedText);
+                }
+              }
+            },
+          });
+        }
+
+        SOCIALBROWSER.menuList.push({
+          type: 'separator',
+        });
+      }
+    } else {
+      if (!node || !!node.oncontextmenu) {
+        return null;
+      }
+      createMenuList(node);
     }
-
-    SOCIALBROWSER.menuList = [];
-
-    createMenuList(node);
 
     SOCIALBROWSER.ipc('[show-menu]', {
       list: SOCIALBROWSER.menuList.map((m) => ({

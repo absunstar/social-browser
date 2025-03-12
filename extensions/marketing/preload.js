@@ -1,5 +1,5 @@
     if (document.location.hostname.like('*amazon.eg*')) {
-        SOCIALBROWSER.log(' >>> marketing Extention activated : ' + document.location.href);
+        SOCIALBROWSER.log(' >>> marketing Extension activated : ' + document.location.href);
         SOCIALBROWSER.onLoad(() => {
             SOCIALBROWSER.__showBotImage();
             SOCIALBROWSER.menu_list.push({
