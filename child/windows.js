@@ -45,6 +45,7 @@ module.exports = function (child) {
         }),
         windowType: 'addressbar',
         vip: true,
+        allowMenu : false,
         show: false,
         width: win.getBounds().width - 200,
         height: 500,
@@ -100,6 +101,7 @@ module.exports = function (child) {
         }),
         windowType: 'profiles',
         vip: true,
+        allowMenu : false,
         show: false,
         width: 800,
         height: 800,
@@ -769,9 +771,7 @@ module.exports = function (child) {
     win.webContents.on('context-menu', (event, params) => {
       event.preventDefault();
 
-      if (!win.customSetting.allowMenu) {
-        return;
-      }
+    
       if (win && !win.isDestroyed()) {
         win.webContents.send('context-menu', params);
         return;

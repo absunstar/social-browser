@@ -68,7 +68,11 @@
   { "url": "*adfpoint.com*|*acrvclk.com*|*extyoneplus-3.com*|*anon.ws*|*littlecutedogs.com*|*chaturbate.com*|*impactserving.com*|*adultgift.net*", "name": "redirect 3", "enabled": true },
   { "url": "*adsforcomputercity.com*|*tightendescendantcuddle.com*|*go.xlivrdr.com*|*1ts15.top*|*bigspyglass.com*|*srvpcn.com*|*agatarainpro.com*", "name": "redirect 4", "enabled": true },
   { "name": "service 17", "url": "*snugglethesheep.com*|*duckswillsmoochyou.com*|*conventforgotten.com*|*gositego.live*|*crazyp.cdnbucket.com*", "enabled": true },
-  { "name": "redirect 5", "url": "*magsrv.com*|*mnaspm.com*|*cannonclam.com*|*topsexmovs.com*|*o333o.com*|*diclotrans.com*|*pemsrv.com*", "enabled": true },
+  {
+    "name": "redirect 5",
+    "url": "*magsrv.com*|*mnaspm.com*|*cannonclam.com*|*topsexmovs.com*|*o333o.com*|*diclotrans.com*|*pemsrv.com*|*free-connecting-app.monster*|*trillerquelch.shop*",
+    "enabled": true
+  },
   { "url": "*/api/click/*|*adblocker*js", "name": "api", "enabled": true },
   { "url": "*gmxvmvptfm.com*|*12ezo5v60.com*|*lby2kd27c.com*|*ku42hjr2e.com*|*sadjklq.com*", "name": "ad001" },
   { "url": "*mutcheng.net*|*favorskhivan.com*|*uratekrait.com*|*psoroumukr.com*|*curatekrait.com*|*oonsouque.com*|*naupsakiwhy.com*", "name": "ad002" },

@@ -321,15 +321,6 @@ function add_input_menu(node) {
       },
     });
 
-
-
-    SOCIALBROWSER.menuList.push({
-      label: 'Select All',
-      click() {
-        SOCIALBROWSER.webContents.selectall();
-      },
-    });
-
     if (node.nodeName === 'INPUT' && (node.getAttribute('type') || '').toLowerCase() !== 'password' && node.value.length > 0) {
       SOCIALBROWSER.menuList.push({
         label: 'Hide Text',
@@ -344,11 +335,8 @@ function add_input_menu(node) {
     });
 
     getEmailMenu();
-
     return;
   }
-
-  add_input_menu(node.parentNode);
 }
 
 function get_url_menu_list(url) {
@@ -1272,23 +1260,26 @@ function getEmailMenu() {
       });
     }
 
-    arr.push({
-      label: 'paste Mail Password',
-      click() {
-        SOCIALBROWSER.copy(SOCIALBROWSER.var.core.emails.password);
-        SOCIALBROWSER.paste();
-      },
-    });
+    if (SOCIALBROWSER.var.core.emails.password) {
+      arr.push({
+        label: 'paste Mail Password',
+        click() {
+          SOCIALBROWSER.copy(SOCIALBROWSER.var.core.emails.password);
+          SOCIALBROWSER.paste();
+        },
+      });
+    }
+    if (arr.length > 0) {
+      SOCIALBROWSER.menuList.push({
+        label: 'Emails',
+        type: 'submenu',
+        submenu: arr,
+      });
 
-    SOCIALBROWSER.menuList.push({
-      label: 'Emails',
-      type: 'submenu',
-      submenu: arr,
-    });
-
-    SOCIALBROWSER.menuList.push({
-      type: 'separator',
-    });
+      SOCIALBROWSER.menuList.push({
+        type: 'separator',
+      });
+    }
   }
 }
 
@@ -1640,11 +1631,6 @@ function createMenuList(node) {
 
 SOCIALBROWSER.contextmenu = function (e) {
   try {
-    if (!SOCIALBROWSER.customSetting.allowMenu) {
-      SOCIALBROWSER.log('menu off');
-      return null;
-    }
-
     try {
       SOCIALBROWSER.currentWindow = SOCIALBROWSER.remote.getCurrentWindow();
       SOCIALBROWSER.webContents = SOCIALBROWSER.currentWindow.webContents;
@@ -1701,6 +1687,12 @@ SOCIALBROWSER.contextmenu = function (e) {
         },
       });
       SOCIALBROWSER.menuList.push({
+        label: 'Paste',
+        click() {
+          SOCIALBROWSER.webContents.paste();
+        },
+      });
+      SOCIALBROWSER.menuList.push({
         label: 'Delete',
         click() {
           SOCIALBROWSER.webContents.delete();
@@ -1733,7 +1725,7 @@ SOCIALBROWSER.contextmenu = function (e) {
         type: 'separator',
       });
 
-      if (true) {
+      if (false) {
         if (SOCIALBROWSER.selectedText.startsWith('_') && SOCIALBROWSER.selectedText.endsWith('_')) {
           SOCIALBROWSER.menuList.push({
             label: `Decrypt [ ${stext} ] `,
@@ -1777,26 +1769,33 @@ SOCIALBROWSER.contextmenu = function (e) {
       if (!node || !!node.oncontextmenu) {
         return null;
       }
-      createMenuList(node);
+
+      if (!SOCIALBROWSER.customSetting.allowMenu) {
+        add_input_menu(node);
+      } else {
+        createMenuList(node);
+      }
     }
 
-    SOCIALBROWSER.ipc('[show-menu]', {
-      list: SOCIALBROWSER.menuList.map((m) => ({
-        label: m.label,
-        sublabel: m.sublabel,
-        visible: m.visible,
-        type: m.type,
-        iconURL: m.iconURL,
-        submenu: m.submenu?.map((m2) => ({
-          label: m2.label,
-          type: m2.type,
-          sublabel: m2.sublabel,
-          visible: m2.visible,
-          iconURL: m2.iconURL,
-          submenu: m2.submenu?.map((m3) => ({ label: m3.label, type: m3.type, sublabel: m3.sublabel, visible: m3.visible, iconURL: m3.iconURL })),
+    if (SOCIALBROWSER.menuList.length > 0) {
+      SOCIALBROWSER.ipc('[show-menu]', {
+        list: SOCIALBROWSER.menuList.map((m) => ({
+          label: m.label,
+          sublabel: m.sublabel,
+          visible: m.visible,
+          type: m.type,
+          iconURL: m.iconURL,
+          submenu: m.submenu?.map((m2) => ({
+            label: m2.label,
+            type: m2.type,
+            sublabel: m2.sublabel,
+            visible: m2.visible,
+            iconURL: m2.iconURL,
+            submenu: m2.submenu?.map((m3) => ({ label: m3.label, type: m3.type, sublabel: m3.sublabel, visible: m3.visible, iconURL: m3.iconURL })),
+          })),
         })),
-      })),
-    });
+      });
+    }
   } catch (error) {
     SOCIALBROWSER.log(error);
   }
