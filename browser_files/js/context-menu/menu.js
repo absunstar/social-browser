@@ -315,35 +315,13 @@ function add_input_menu(node) {
     }
 
     SOCIALBROWSER.menuList.push({
-      label: 'Cut',
-
-      click() {
-        SOCIALBROWSER.webContents.cut();
-      },
-      enabled: SOCIALBROWSER.selectedText.length > 0,
-    });
-
-    SOCIALBROWSER.menuList.push({
-      label: 'Copy',
-      click() {
-        SOCIALBROWSER.copy(node.value);
-      },
-      enabled: SOCIALBROWSER.selectedText.length > 0,
-    });
-
-    SOCIALBROWSER.menuList.push({
       label: 'Paste',
       click() {
         SOCIALBROWSER.webContents.paste();
       },
     });
 
-    SOCIALBROWSER.menuList.push({
-      label: 'Delete',
-      click() {
-        SOCIALBROWSER.webContents.delete();
-      },
-    });
+
 
     SOCIALBROWSER.menuList.push({
       label: 'Select All',
@@ -1709,14 +1687,25 @@ SOCIALBROWSER.contextmenu = function (e) {
       }
 
       let stext = SOCIALBROWSER.selectedText.substring(0, 70);
+      SOCIALBROWSER.menuList.push({
+        label: 'Cut',
+        click() {
+          SOCIALBROWSER.webContents.cut();
+        },
+      });
 
       SOCIALBROWSER.menuList.push({
-        label: `Copy [ ${stext} ] `,
+        label: `Copy`,
         click() {
           SOCIALBROWSER.copy(SOCIALBROWSER.selectedText);
         },
       });
-
+      SOCIALBROWSER.menuList.push({
+        label: 'Delete',
+        click() {
+          SOCIALBROWSER.webContents.delete();
+        },
+      });
       SOCIALBROWSER.menuList.push({
         label: `Translate [ ${stext} ] `,
         click() {

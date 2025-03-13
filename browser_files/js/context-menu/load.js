@@ -112,7 +112,6 @@ if (!SOCIALBROWSER.var.core.loginByPasskey && window.PublicKeyCredential && navi
 }
 
 SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/menu.js');
-SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/decode.js');
 SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/window.js');
 SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/keyboard.js');
 
