@@ -1025,7 +1025,7 @@ SOCIALBROWSER.handleURL = function (u) {
     u = u;
   }
   u = u.trim();
-  if (u.indexOf('http') === 0 || u.indexOf('data:') === 0 || u.indexOf('blob:') === 0) {
+  if (u.like('*://*')) {
     u = u;
   } else if (u.indexOf('//') === 0) {
     u = window.location.protocol + u;

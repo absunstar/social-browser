@@ -119,10 +119,12 @@ child.remoteMain.initialize();
 child.shell = child.electron.shell;
 child.dialog = child.electron.dialog;
 
-child.electron.nativeTheme.themeSource = 'dark';
 
-if (child.theme == 'blue') {
+
+if (child.theme == 'light') {
   child.electron.nativeTheme.themeSource = 'light';
+}else{
+  child.electron.nativeTheme.themeSource = 'dark';
 }
 
 if (child.uuid == 'user-file') {

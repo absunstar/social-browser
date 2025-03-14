@@ -1280,11 +1280,14 @@
                         </tr>
                         <tr ng-repeat="_ex in setting.googleExtensionList | filter:googleExtension track by $index">
                           <td>
-                            <p class="bold font-18">{{_ex.name}}</p>
+                            <p class="bold font-18">{{_ex.name}} ( {{_ex.id}})</p>
                             <p class="bold white">{{_ex.manifest.description}}</p>
                             <p class="black">{{_ex.path}}</p>
                           </td>
                           <td>
+                            <i-button ng-show="_ex.manifest.options_ui.page" type="play" ng-click="pageGoogleExtension(_ex)" label="Page"></i-button>
+                            <i-button ng-show="_ex.manifest.action.default_popup" type="play" ng-click="popupGoogleExtension(_ex)" label="Popup"></i-button>
+
                             <i-button type="delete" ng-click="removeGoogleExtension(_ex)" label="Remove"></i-button>
                           </td>
                         </tr>

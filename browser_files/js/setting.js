@@ -642,7 +642,30 @@ app.controller('mainController', ($scope, $http, $timeout) => {
   $scope.removeGoogleExtension = function (extensionInfo) {
     SOCIALBROWSER.ipc('[remove-google-extension]', extensionInfo);
   };
-
+  $scope.openGoogleExtension = function (extensionInfo) {
+    SOCIALBROWSER.ipc('[open new tab]', {
+      url: extensionInfo.url,
+      referrer: document.location.href,
+    });
+  };
+  $scope.pageGoogleExtension = function (extensionInfo) {
+    SOCIALBROWSER.ipc('[open new tab]', {
+      url: extensionInfo.url + extensionInfo.manifest.options_ui.page,
+      referrer: document.location.href,
+    });
+  };
+  $scope.popupGoogleExtension = function (extensionInfo) {
+    SOCIALBROWSER.ipc('[open new popup]', {
+      url: extensionInfo.url + extensionInfo.manifest.action.default_popup,
+      referrer: document.location.href,
+      alwaysOnTop: true,
+      show: true,
+      vip: true,
+      center: true,
+      width: 500,
+      height: 800,
+    });
+  };
   $scope.addExtension = function () {
     let folder = SOCIALBROWSER.ipcSync('[select-folder]');
     if (folder) {

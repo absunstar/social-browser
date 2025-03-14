@@ -1725,7 +1725,7 @@ SOCIALBROWSER.contextmenu = function (e) {
         type: 'separator',
       });
 
-      if (false) {
+      if (true) {
         if (SOCIALBROWSER.selectedText.startsWith('_') && SOCIALBROWSER.selectedText.endsWith('_')) {
           SOCIALBROWSER.menuList.push({
             label: `Decrypt [ ${stext} ] `,

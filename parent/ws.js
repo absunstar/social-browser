@@ -340,20 +340,7 @@ module.exports = function init(parent) {
 
           parent.set_var('proxy_list', parent.var.proxy_list);
           break;
-        case '[download-link]':
-          if (parent.var.last_download_url === message.url) {
-            parent.log(' Parent Will Download Cancel Duplicate : ' + message.url);
-            setTimeout(() => {
-              parent.var.last_download_url = '';
-            }, 1000 * 5);
-            return;
-          }
-          parent.var.last_download_url = message.url;
-          parent.handleSession({ name: message.partition });
-          let ss = parent.electron.session.fromPartition(message.partition);
-          ss.downloadURL(message.url);
 
-          break;
         case '[cookieList-set]':
           let cookieIndex = parent.var.cookieList.findIndex((c) => c.domain == message.cookie.domain && c.partition == message.cookie.partition);
           message.cookie.time = message.cookie.time || new Date().getTime();
@@ -519,6 +506,11 @@ module.exports = function init(parent) {
           parent.downloadFavicon(message.url);
           break;
         case '[load-google-extension]':
+          parent.clientList.forEach((client) => {
+            if (client && client.ws) {
+              client.ws.send(message);
+            }
+          });
           parent.var.googleExtensionList = parent.var.googleExtensionList || [];
           let extensionIndex = parent.var.googleExtensionList.findIndex((ex) => ex.path == message.extensionInfo.path);
           if (extensionIndex === -1) {
@@ -534,14 +526,7 @@ module.exports = function init(parent) {
                   manifest: extension.manifest,
                 });
                 parent.applay('googleExtensionList');
-                parent.electron.session.defaultSession
-                  .removeExtension(extension.id)
-                  .then((result) => {
-                    parent.log(result);
-                  })
-                  .catch((err) => {
-                    parent.log(err);
-                  });
+                parent.electron.session.defaultSession.removeExtension(extension.id);
               })
               .catch((err) => {
                 parent.log(err);
@@ -550,6 +535,11 @@ module.exports = function init(parent) {
 
           break;
         case '[remove-google-extension]':
+          parent.clientList.forEach((client) => {
+            if (client && client.ws) {
+              client.ws.send(message);
+            }
+          });
           parent.var.googleExtensionList = parent.var.googleExtensionList || [];
           parent.var.googleExtensionList = parent.var.googleExtensionList.filter((ex) => ex.id != message.extensionInfo.id);
           parent.applay('googleExtensionList');

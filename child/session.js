@@ -24,14 +24,7 @@ module.exports = function (child) {
       let session = child.electron.session.fromPartition(sessionInfo.name) || child.electron.session.defaultSession;
       if (session.isPersistent()) {
         if (extension) {
-          session
-            .removeExtension(extension.id)
-            .then((result) => {
-              child.log(result);
-            })
-            .catch((err) => {
-              child.log(err);
-            });
+          session.removeExtension(extension.id);
         } else {
           session.getAllExtensions().forEach((ex) => {
             session.removeExtension(ex.id);
@@ -99,9 +92,15 @@ module.exports = function (child) {
       child.allowSessionHandle = true;
       ss.registerPreloadScript({
         type: 'frame',
-        id: 'app-preload',
+        id: 'frame-preload',
         filePath: child.parent.files_dir + '/js/context-menu.js',
       });
+      ss.registerPreloadScript({
+        type: 'service-worker',
+        id: 'service-preload',
+        filePath: child.parent.files_dir + '/js/service-preload.js',
+      });
+
       child.session_name_list.push({
         name: sessionOptions.isDefault ? null : name,
         user: user,

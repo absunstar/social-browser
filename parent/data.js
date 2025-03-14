@@ -630,6 +630,7 @@ module.exports = function init(parent) {
 
   parent.get_var('extension_list');
   parent.get_var('cookieList');
+  parent.get_var('googleExtensionList');
 
   parent.handleAdList();
 

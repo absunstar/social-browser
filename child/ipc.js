@@ -976,11 +976,8 @@ module.exports = function init(child) {
           });
         });
     } else if (data.name == '[download-link]') {
-      child.sendMessage({
-        type: '[download-link]',
-        partition: data.partition || data.customSetting.partition || child.parent.partition,
-        url: data.url,
-      });
+      let ss = child.electron.session.defaultSession;
+      ss.downloadURL(data.url);
     }
     return true;
   });

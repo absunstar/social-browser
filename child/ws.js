@@ -59,6 +59,7 @@ module.exports = function (child) {
               child.mainWindow.webContents.send('[open new tab]', message.newTabData);
             } else {
               child.sessionConfig(message.options.partition);
+
               child.createNewWindow({ ...child.parent.options, ...message.options });
             }
             if (true) {
@@ -78,6 +79,12 @@ module.exports = function (child) {
             }
           } else {
             child.sessionConfig(message.options.partition);
+            if (!child.partition.like('*setting*|*social*|*file*')) {
+              child.parent.var['googleExtensionList']?.forEach((extensionInfo) => {
+                child.loadGoogleExtension(extensionInfo);
+              });
+            }
+
             child.createNewWindow({ ...message.options });
           }
         } else if (message.type == '[re-browser-core-data]') {
@@ -102,13 +109,6 @@ module.exports = function (child) {
             child.parent.var[message.options.name] = message.options.data;
             if (child.parent.var.core.defaultUserAgent) {
               child.electron.app.userAgentFallback = child.parent.var.core.defaultUserAgent.url;
-            }
-
-            if (message.options.name === 'googleExtensionList') {
-              child.removeGoogleExtension();
-              child.parent.var[message.options.name].forEach((extensionInfo) => {
-                child.loadGoogleExtension(extensionInfo);
-              });
             }
 
             if (message.options.name === 'overwrite') {
@@ -153,6 +153,12 @@ module.exports = function (child) {
               data: child.parent.var.user_data,
             },
           });
+        } else if (message.type == '[load-google-extension]') {
+          if (!child.partition.like('*setting*|*social*|*file*')) {
+            child.loadGoogleExtension(message.extensionInfo);
+          }
+        } else if (message.type == '[remove-google-extension]') {
+          child.removeGoogleExtension(message.extensionInfo);
         } else if (message.type == 'share') {
           child.electron.BrowserWindow.getAllWindows().forEach((win) => {
             if (win && !win.isDestroyed()) {

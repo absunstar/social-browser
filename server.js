@@ -162,9 +162,9 @@
 
   /* App Ready */
   browser.electron.app.whenReady().then(() => {
-    browser.webContent = browser.electron.webContents.create({
-      contextIsolation: false,
-    });
+
+    browser.handleSession();
+
     browser.electron.protocol.handle('browser', (req) => {
       let url = req.url.replace('browser://', 'http://127.0.0.1:60080/').replace('/?', '?');
       return browser.electron.net.fetch(url, {
@@ -176,16 +176,7 @@
     if (!browser.electron.app.isDefaultProtocolClient('browser')) {
       browser.electron.app.setAsDefaultProtocolClient('browser');
     }
-    // browser.webContentList = [];
-    // for (let index = 0; index < 100; index++) {
-    //   browser.webContentList.push(
-    //     browser.electron.webContents.create({
-    //       contextIsolation: false,
-    //     }),
-    //   );
-    //   browser.webContentList[index].loadURL('https://google.com')
-    // }
-    // console.log(browser.webContentList.length);
+
     browser.electron.app.setAccessibilitySupportEnabled(true);
     if (!browser.var.core.id.like('*developer*')) {
       browser.electron.app.setLoginItemSettings({
@@ -283,12 +274,6 @@
   });
 
   if (browser.isAutoStartup) {
-    browser.createChildProcess({
-      url: 'https://www.google.com',
-      windowType: 'none',
-      vip: true,
-      partition: 'persist:social',
-    });
   } else {
     if (browser.isApp) {
       browser.createChildProcess({
