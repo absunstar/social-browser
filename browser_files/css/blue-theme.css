@@ -1,34 +1,34 @@
 /* :root {
-  --color: #fff;
-  --icon-color: #ffffffdb;
-  --fieldset-background: #0d4876;
-  --legend-color: #fff;
-  --social-box-shadow: 1px 1px 2px 1px #000000;
-  --social-background-color: #0d4876;
-  --social-current-tab-fill: #006bc1;
-  --social-other-tab-fill: #4dafff;
-  --social-tab-color: #ffffff;
-  --social-other-tab-color: #ffffffbd;
-  --social-address-background: #a8d9ff;
-  --social-address-color: #000000;
-  --scrollbar-background-color: #000000;
-  --scrollbar-color: #1a2a32;
+    --color: #fff;
+    --icon-color: #ffffffdb;
+    --fieldset-background: #0d4876;
+    --legend-color: #fff;
+    --social-box-shadow: 1px 1px 2px 1px #000000;
+    --social-background-color: #0d4876;
+    --social-current-tab-fill: #006bc1;
+    --social-other-tab-fill: #4dafff;
+    --social-tab-color: #ffffff;
+    --social-other-tab-color: #ffffffbd;
+    --social-address-background: #a8d9ff;
+    --social-address-color: #000000;
+    --scrollbar-background-color: #000000;
+    --scrollbar-color: #1a2a32;
 }
 span.btn {
-  background: #2196f3 !important;
-  color: #ffffff !important;
+    background: #2196f3 !important;
+    color: #ffffff !important;
 }
 .green {
-  color: #bdbdbd !important;
+    color: #bdbdbd !important;
 }
 
 .url-list ul li:hover,
 .url-list ul li.selected {
-  background-color: #0000002e !important;
+    background-color: #0000002e !important;
 }
 .user-box p {
-  color: #ffffff !important;
+    color: #ffffff !important;
 }
 .user-box p span {
-  color: #ffeb3b !important;
+    color: #ffeb3b !important;
 } */

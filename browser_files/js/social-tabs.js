@@ -238,7 +238,7 @@ class SocialTabs {
         windowType: 'view',
         url: tabProperties.url || defaultTapProperties.url,
         source: 'session',
-        mainWindowID: SOCIALBROWSER.remote.getCurrentWindow().id,
+        mainWindowID: SOCIALBROWSER.window.id,
       });
       return;
     }

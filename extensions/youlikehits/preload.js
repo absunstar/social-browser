@@ -141,7 +141,7 @@ SOCIALBROWSER.onLoad(() => {
   if (document.location.href.like('*viewwebsite*')) {
     setInterval(() => {
       if (document.getElementsByName('frame1')[0]?.contentDocument.body.innerText.like('*We could*locate the website*')) {
-        SOCIALBROWSER.currentWindow.close();
+        SOCIALBROWSER.window.close();
       }
     }, 1000 * 3);
   }

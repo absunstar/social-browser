@@ -23,7 +23,7 @@ SOCIALBROWSER.youtubeMaster = {
       SOCIALBROWSER.youtubeMaster.unsafeVideosCheck();
     }
     if (!SOCIALBROWSER.isIframe() && (titleEl = window.document.querySelector('title'))) {
-      SOCIALBROWSER.currentWindow.setTitle(titleEl.innerText);
+      SOCIALBROWSER.window.setTitle (titleEl.innerText);
     }
   },
   videoStatusChanged: function (state) {
@@ -108,7 +108,7 @@ SOCIALBROWSER.youtubeMaster = {
     }
   },
   blockPlayer: function () {
-    SOCIALBROWSER.ipc('[send-render-message]', { name: 'mute-audio', windowID: SOCIALBROWSER.remote.getCurrentWindow().id });
+    SOCIALBROWSER.ipc('[send-render-message]', { name: 'mute-audio', windowID: SOCIALBROWSER.window.id });
     if ((v = SOCIALBROWSER.youtubeMaster.player.querySelector('video'))) {
       if (v && v.currentTime > 0 && !v.paused && !v.ended && v.readyState > 2) {
         v.pause();

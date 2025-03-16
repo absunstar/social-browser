@@ -28,7 +28,6 @@
 
  const { writeFile } = SOCIALBROWSER.fs;
 
- const { dialog, Menu } = SOCIALBROWSER.remote;
 
  let mediaRecorder;
  let recordedChunks = [];
@@ -383,7 +382,7 @@
             // SOCIALBROWSER.ipc('[send-render-message]', {
         //   name: 'get_pdf',
         //   options: options || {},
-        //   windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
+        //   windowID: SOCIALBROWSER.window.id,
         // });
 
         // return;

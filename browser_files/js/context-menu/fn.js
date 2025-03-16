@@ -22,7 +22,7 @@ SOCIALBROWSER.sendMessage = SOCIALBROWSER.message = function (message) {
     message = { message: message };
   }
 
-  message.windowID = message.windowID || SOCIALBROWSER.currentWindow.id;
+  message.windowID = message.windowID || SOCIALBROWSER.window.id;
   SOCIALBROWSER.ipc('message', message);
 };
 SOCIALBROWSER.onMessageFnList = [];
@@ -221,25 +221,25 @@ SOCIALBROWSER.fetchJson = function (options, callback) {
 SOCIALBROWSER.rand = {
   noise: function () {
     let result;
-    let font_noise = SOCIALBROWSER.get('font_noise');
+    let font_noise = SOCIALBROWSER.getStorage('font_noise');
     if (font_noise) {
       result = font_noise;
     } else {
       let SIGN = Math.random() < Math.random() ? -1 : 1;
       result = Math.floor(Math.random() + SIGN * Math.random());
-      SOCIALBROWSER.set('font_noise', result);
+      SOCIALBROWSER.setStorage('font_noise', result);
     }
     return result;
   },
   sign: function () {
     const tmp = [-1, -1, -1, -1, -1, -1, +1, -1, -1, -1];
     let index;
-    let font_sign = SOCIALBROWSER.get('font_sign');
+    let font_sign = SOCIALBROWSER.getStorage('font_sign');
     if (font_sign) {
       index = font_sign;
     } else {
       index = Math.floor(Math.random() * tmp.length);
-      SOCIALBROWSER.set('font_sign', index);
+      SOCIALBROWSER.setStorage('font_sign', index);
     }
 
     return tmp[index];
@@ -727,7 +727,7 @@ SOCIALBROWSER.copy = function (text = '') {
   SOCIALBROWSER.electron.clipboard.writeText(text.toString());
 };
 SOCIALBROWSER.paste = function () {
-  SOCIALBROWSER.remote.getCurrentWindow().webContents.paste();
+  SOCIALBROWSER.webContents.paste();
 };
 SOCIALBROWSER.readCopy = function () {
   return SOCIALBROWSER.electron.clipboard.readText();
@@ -818,7 +818,7 @@ SOCIALBROWSER.write = function (text, selector, timeout = 500) {
 };
 SOCIALBROWSER.getOffset = function (el) {
   const rect = el.getBoundingClientRect();
-  let factor = SOCIALBROWSER.webContents.zoomFactor || 1;
+  let factor = SOCIALBROWSER.get('webContents.zoomFactor') || 1;
   return {
     x: Math.round(rect.left * factor + (el.clientWidth / 4) * factor),
     y: Math.round(rect.top * factor + (el.clientHeight / 4) * factor),
@@ -832,7 +832,7 @@ SOCIALBROWSER.mouseMoveByPosition = function (x, y) {
     return;
   }
 
-  SOCIALBROWSER.currentWindow.focus();
+  SOCIALBROWSER.window.focus();
 
   for (let index = 0; index < 200; index++) {
     setTimeout(() => {
@@ -870,7 +870,7 @@ SOCIALBROWSER.clickByPosition = function (x, y, move = true) {
     time = 1000 * 2;
   }
   setTimeout(() => {
-    SOCIALBROWSER.currentWindow.focus();
+    SOCIALBROWSER.window.focus();
 
     SOCIALBROWSER.webContents.sendInputEvent({ type: 'mouseDown', x: x, y: y, movementX: x, movementY: y, button: 'left', clickCount: 1 });
     SOCIALBROWSER.webContents.sendInputEvent({ type: 'mouseUp', x: x, y: y, movementX: x, movementY: y, button: 'left', clickCount: 1 });
@@ -899,7 +899,7 @@ SOCIALBROWSER.click = function (selector, realPerson = true, move = true) {
       }
     }
 
-    if (realPerson && SOCIALBROWSER.currentWindow && SOCIALBROWSER.webContents && SOCIALBROWSER.currentWindow.isVisible()) {
+    if (realPerson && SOCIALBROWSER.window.isVisible()) {
       let offset = SOCIALBROWSER.getOffset(dom);
       SOCIALBROWSER.clickByPosition(offset.x, offset.y, move);
       return dom;

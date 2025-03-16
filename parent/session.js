@@ -7,12 +7,12 @@ module.exports = function (parent) {
     ss.registerPreloadScript({
       type: 'frame',
       id: 'frame-preload',
-      filePath: parent.files_dir + '/js/context-menu.js',
+      filePath: parent.files_dir + '/js/preload.js',
     });
     ss.registerPreloadScript({
       type: 'service-worker',
       id: 'service-preload',
-      filePath: parent.files_dir + '/js/service-preload.js',
+      filePath: parent.files_dir + '/js/preload.js',
     });
 
     return ss;

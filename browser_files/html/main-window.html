@@ -232,7 +232,7 @@
         module = undefined;
       }
       function showMessage(msg) {
-        SOCIALBROWSER.ipc('show_message', { message: msg, windowID: SOCIALBROWSER.currentWindow.id });
+        SOCIALBROWSER.ipc('show_message', { message: msg, windowID: SOCIALBROWSER.window.id });
       }
     </script>
 

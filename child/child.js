@@ -79,7 +79,6 @@ var child = {
       object: false,
     },
   }),
-  md5: require('md5'),
   child_process: require('node:child_process'),
   WebSocket: require('ws'),
   id: process.pid,
@@ -92,6 +91,7 @@ var child = {
     }
   },
   cookies: {},
+  shared : {},
   startTime: new Date().getTime(),
   getWindow: () => {
     if (child.window && !child.window.isDestroyed()) {

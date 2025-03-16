@@ -40,7 +40,7 @@ app.controller('mainController', ($scope, $http, $interval, $timeout) => {
           partition: se.name,
           user_name: se.display,
         });
-        SOCIALBROWSER.currentWindow.hide();
+        SOCIALBROWSER.window.hide();
       }
     });
   };

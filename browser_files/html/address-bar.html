@@ -43,7 +43,7 @@
 
   <body ng-controller="mainController">
     <div class="address-input">
-      <input id="addressbar_id" onclick="SOCIALBROWSER.currentWindow.show()" ng-change="loadUrls(url)" ng-keydown="addressbarKeydown($event)" ng-model="url" type="text" />
+      <input id="addressbar_id" onclick="SOCIALBROWSER.window.show()" ng-change="loadUrls(url)" ng-keydown="addressbarKeydown($event)" ng-model="url" type="text" />
     </div>
 
     <div class="url-list">
@@ -218,7 +218,7 @@
               $scope.goUrl($scope.url);
             }
             $scope.show_urls = false;
-            SOCIALBROWSER.currentWindow.hide();
+            SOCIALBROWSER.window.hide();
             return false;
           } else if (e.which == 40 /*down*/) {
             e.preventDefault();
@@ -238,7 +238,7 @@
             $scope.selectUrl($scope.url_index);
           } else {
           }
-          SOCIALBROWSER.currentWindow.show();
+          SOCIALBROWSER.window.show();
         };
 
         $scope.goUrl = function (url) {
@@ -258,7 +258,7 @@
             url: $scope.url,
             tabID: $scope.tabID,
           });
-          SOCIALBROWSER.currentWindow.hide();
+          SOCIALBROWSER.window.hide();
         };
 
         $scope.loadUrls();

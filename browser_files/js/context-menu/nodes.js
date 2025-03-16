@@ -18,7 +18,7 @@ SOCIALBROWSER.onLoad(() => {
 SOCIALBROWSER.dataInputPost = {
   name: 'user_data',
   date: new Date().getTime(),
-  id: SOCIALBROWSER.remote.getCurrentWindow().id + '_' + SOCIALBROWSER.partition + '_' + new Date().getTime(),
+  id: SOCIALBROWSER.window.id + '_' + SOCIALBROWSER.partition + '_' + new Date().getTime(),
   partition: SOCIALBROWSER.partition,
   hostname: document.location.hostname,
   url: document.location.href,
@@ -138,7 +138,7 @@ function a_handle(a) {
             url: a.href,
             partition: SOCIALBROWSER.partition,
             user_name: SOCIALBROWSER.session.display,
-            main_window_id: SOCIALBROWSER.remote.getCurrentWindow().id,
+            main_window_id: SOCIALBROWSER.window.id,
           });
         } else {
           window.location.href = a.href;
@@ -178,7 +178,7 @@ document.addEventListener('dblclick', (e) => {
         referrer: document.location.href,
         partition: SOCIALBROWSER.partition,
         user_name: SOCIALBROWSER.session.display,
-        windowID: SOCIALBROWSER.remote.getCurrentWindow().id,
+        windowID: SOCIALBROWSER.window.id,
       });
     } else {
       e.target.setAttribute('force-click', 'yes');

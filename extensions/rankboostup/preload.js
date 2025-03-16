@@ -4,7 +4,7 @@
 
   SOCIALBROWSER.log(' >>> rankboostup script activated ...');
   SOCIALBROWSER.var.blocking.social.allow_rankboostup = true;
-
+  SOCIALBROWSER.remote = SOCIALBROWSER.remote || SOCIALBROWSER.require('@electron/remote');
   SOCIALBROWSER.remoteSession = SOCIALBROWSER.remote.session.fromPartition(SOCIALBROWSER.partition);
   SOCIALBROWSER.remoteSession.cookies.get({ url: document.location.origin }).then((cookies) => {
     cookies.forEach((co) => {
