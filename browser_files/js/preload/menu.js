@@ -665,17 +665,12 @@ function get_options_menu(node) {
         type: 'separator',
     });
     arr.push({
-        label: 'Copy Profile ID',
+        label: 'Copy Private Key',
         click() {
-            SOCIALBROWSER.copy(SOCIALBROWSER.session.name);
+            SOCIALBROWSER.copy('_KEY_' + SOCIALBROWSER.md5(SOCIALBROWSER.var.core.id) + '_');
         },
     });
-    arr.push({
-        label: 'Copy Profile Name',
-        click() {
-            SOCIALBROWSER.copy(SOCIALBROWSER.session.display);
-        },
-    });
+
     arr.push({
         type: 'separator',
     });
@@ -1314,18 +1309,18 @@ function createMenuList(node) {
             SOCIALBROWSER.menuList.push(m);
         });
 
-        if (SOCIALBROWSER.memoryText && SOCIALBROWSER.isValidURL(SOCIALBROWSER.memoryText)) {
-            let arr = get_url_menu_list(SOCIALBROWSER.memoryText);
+        if (SOCIALBROWSER.memoryText() && SOCIALBROWSER.isValidURL(SOCIALBROWSER.memoryText())) {
+            let arr = get_url_menu_list(SOCIALBROWSER.memoryText());
             SOCIALBROWSER.menuList.push({
-                label: `Open link [ ${SOCIALBROWSER.memoryText.substring(0, 70)} ] `,
+                label: `Open link [ ${SOCIALBROWSER.memoryText().substring(0, 70)} ] `,
                 type: 'submenu',
                 submenu: arr,
             });
 
             SOCIALBROWSER.menuList.push({ type: 'separator' });
         } else {
-            if (SOCIALBROWSER.memoryText) {
-                let stext = SOCIALBROWSER.memoryText.substring(0, 70);
+            if (SOCIALBROWSER.memoryText()) {
+                let stext = SOCIALBROWSER.memoryText().substring(0, 70);
 
                 SOCIALBROWSER.menuList.push({
                     label: `Translate [ ${stext} ] `,
@@ -1334,7 +1329,7 @@ function createMenuList(node) {
                             partition: SOCIALBROWSER.partition,
                             show: true,
                             center: true,
-                            url: 'https://translate.google.com/?num=100&newwindow=1&um=1&ie=UTF-8&hl=en&client=tw-ob#auto/ar/' + encodeURIComponent(SOCIALBROWSER.memoryText),
+                            url: 'https://translate.google.com/?num=100&newwindow=1&um=1&ie=UTF-8&hl=en&client=tw-ob#auto/ar/' + encodeURIComponent(SOCIALBROWSER.memoryText()),
                         });
                     },
                 });
@@ -1344,7 +1339,7 @@ function createMenuList(node) {
                     click() {
                         SOCIALBROWSER.ipc('[open new tab]', {
                             referrer: document.location.href,
-                            url: 'https://www.google.com/search?q=' + encodeURIComponent(SOCIALBROWSER.memoryText),
+                            url: 'https://www.google.com/search?q=' + encodeURIComponent(SOCIALBROWSER.memoryText()),
                             windowID: SOCIALBROWSER.window.id,
                         });
                     },
@@ -1634,8 +1629,8 @@ SOCIALBROWSER.contextmenu = function (e) {
         SOCIALBROWSER.window.show();
 
         e = e || { x: 0, y: 0 };
-        SOCIALBROWSER.memoryText = SOCIALBROWSER.readCopy();
-        SOCIALBROWSER.selectedText = (getSelection() || '').toString().trim();
+        SOCIALBROWSER.memoryText = () => SOCIALBROWSER.readCopy();
+        SOCIALBROWSER.selectedText = () => (getSelection() || '').toString().trim();
         SOCIALBROWSER.selectedURL = null;
 
         SOCIALBROWSER.menuList = [];
@@ -1651,11 +1646,11 @@ SOCIALBROWSER.contextmenu = function (e) {
 
         let node = document.elementFromPoint(SOCIALBROWSER.rightClickPosition.x, SOCIALBROWSER.rightClickPosition.y);
 
-        if (SOCIALBROWSER.selectedText) {
-            if (SOCIALBROWSER.isValidURL(SOCIALBROWSER.selectedText)) {
-                let arr = get_url_menu_list(SOCIALBROWSER.selectedText);
+        if (SOCIALBROWSER.selectedText()) {
+            if (SOCIALBROWSER.isValidURL(SOCIALBROWSER.selectedText())) {
+                let arr = get_url_menu_list(SOCIALBROWSER.selectedText());
                 SOCIALBROWSER.menuList.push({
-                    label: `Open link [ ${SOCIALBROWSER.selectedText.substring(0, 70)} ] `,
+                    label: `Open link [ ${SOCIALBROWSER.selectedText().substring(0, 70)} ] `,
                     type: 'submenu',
                     submenu: arr,
                 });
@@ -1663,7 +1658,7 @@ SOCIALBROWSER.contextmenu = function (e) {
                 SOCIALBROWSER.menuList.push({ type: 'separator' });
             }
 
-            let stext = SOCIALBROWSER.selectedText.substring(0, 70);
+            let stext = SOCIALBROWSER.selectedText().substring(0, 70);
             SOCIALBROWSER.menuList.push({
                 label: 'Cut',
                 click() {
@@ -1674,7 +1669,7 @@ SOCIALBROWSER.contextmenu = function (e) {
             SOCIALBROWSER.menuList.push({
                 label: `Copy`,
                 click() {
-                    SOCIALBROWSER.copy(SOCIALBROWSER.selectedText);
+                    SOCIALBROWSER.copy(SOCIALBROWSER.selectedText());
                 },
             });
             SOCIALBROWSER.menuList.push({
@@ -1696,7 +1691,7 @@ SOCIALBROWSER.contextmenu = function (e) {
                         partition: SOCIALBROWSER.partition,
                         show: true,
                         center: true,
-                        url: 'https://translate.google.com/?num=100&newwindow=1&um=1&ie=UTF-8&hl=en&client=tw-ob#auto/ar/' + encodeURIComponent(SOCIALBROWSER.selectedText),
+                        url: 'https://translate.google.com/?num=100&newwindow=1&um=1&ie=UTF-8&hl=en&client=tw-ob#auto/ar/' + encodeURIComponent(SOCIALBROWSER.selectedText()),
                     });
                 },
             });
@@ -1706,7 +1701,7 @@ SOCIALBROWSER.contextmenu = function (e) {
                 click() {
                     SOCIALBROWSER.ipc('[open new tab]', {
                         referrer: document.location.href,
-                        url: 'https://www.google.com/search?q=' + encodeURIComponent(SOCIALBROWSER.selectedText),
+                        url: 'https://www.google.com/search?q=' + encodeURIComponent(SOCIALBROWSER.selectedText()),
                         windowID: SOCIALBROWSER.window.id,
                     });
                 },
@@ -1716,40 +1711,133 @@ SOCIALBROWSER.contextmenu = function (e) {
                 type: 'separator',
             });
 
-            if (true) {
-                if (SOCIALBROWSER.selectedText.startsWith('_') && SOCIALBROWSER.selectedText.endsWith('_')) {
-                    SOCIALBROWSER.menuList.push({
-                        label: `Decrypt [ ${stext} ] `,
-                        click() {
-                            SOCIALBROWSER.decryptedText = SOCIALBROWSER.decryptText(SOCIALBROWSER.selectedText.replaceAll('_', ''));
-                            if (SOCIALBROWSER.decryptText) {
-                                if (node.value) {
-                                    node.value = node.value.replace(SOCIALBROWSER.selectedText, SOCIALBROWSER.decryptedText);
-                                } else if (node.innerText) {
-                                    node.innerText = node.innerText.replace(SOCIALBROWSER.selectedText, SOCIALBROWSER.decryptedText);
-                                } else {
-                                    SOCIALBROWSER.replaceSelectedText(SOCIALBROWSER.decryptedText);
-                                }
+            if (SOCIALBROWSER.var.core.prefix.like('*v2*')) {
+                if (SOCIALBROWSER.selectedText().startsWith('_') && SOCIALBROWSER.selectedText().endsWith('_')) {
+                    if (SOCIALBROWSER.selectedText().startsWith('_PUBLIC_')) {
+                        SOCIALBROWSER.menuList.push({
+                            label: 'Decrypt By [ Public Key ]',
+                            click() {
+                                SOCIALBROWSER.decryptedText = SOCIALBROWSER.decryptText(SOCIALBROWSER.selectedText().replace('_PUBLIC_', '').replace('_', ''));
+                                SOCIALBROWSER.replaceSelectedText(SOCIALBROWSER.decryptedText);
+                            },
+                        });
+                    } else if (SOCIALBROWSER.selectedText().startsWith('_SITE_')) {
+                        SOCIALBROWSER.menuList.push({
+                            label: 'Decrypt By [ Site Key ]',
+                            click() {
+                                SOCIALBROWSER.decryptedText = SOCIALBROWSER.decryptText(SOCIALBROWSER.selectedText().replace('_SITE_', '').replace('_', ''), document.location.hostname);
+                                SOCIALBROWSER.replaceSelectedText(SOCIALBROWSER.decryptedText);
+                            },
+                        });
+                    } else if (SOCIALBROWSER.selectedText().startsWith('_PRIVATE_')) {
+                        SOCIALBROWSER.menuList.push({
+                            label: 'Decrypt By [ Private Key ]',
+                            click() {
+                                SOCIALBROWSER.decryptedText = SOCIALBROWSER.decryptText(
+                                    SOCIALBROWSER.selectedText().replace('_PRIVATE_', '').replace('_', ''),
+                                    SOCIALBROWSER.md5(SOCIALBROWSER.var.core.id)
+                                );
+                                SOCIALBROWSER.replaceSelectedText(SOCIALBROWSER.decryptedText);
+                            },
+                        });
+                        if (SOCIALBROWSER.var.privateKeyList.length > 0) {
+                            SOCIALBROWSER.menuList.push({
+                                type: 'separator',
+                            });
+                            let arr = [];
+                            SOCIALBROWSER.var.privateKeyList.forEach((info) => {
+                                arr.push({
+                                    label: ' [ Key : ' + (info.name || info.key) + ' ]',
+                                    click() {
+                                        SOCIALBROWSER.decryptedText = SOCIALBROWSER.decryptText(SOCIALBROWSER.selectedText().replace('_PRIVATE_', '').replace('_', ''), info.key);
+                                        SOCIALBROWSER.replaceSelectedText(SOCIALBROWSER.decryptedText);
+                                    },
+                                });
+                            });
+                            if (arr.length > 0) {
+                                SOCIALBROWSER.menuList.push({
+                                    label: 'Decrypt By',
+                                    type: 'submenu',
+                                    submenu: arr,
+                                });
                             }
-                        },
-                    });
+                        }
+                    } else if (SOCIALBROWSER.selectedText().startsWith('_KEY_')) {
+                        SOCIALBROWSER.menuList.push({
+                            label: 'Add To Private Key List',
+                            click() {
+                                SOCIALBROWSER.var.privateKeyList = SOCIALBROWSER.var.privateKeyList || [];
+                                let key = SOCIALBROWSER.selectedText().replace('_KEY_', '').replace('_', '');
+                                if (!SOCIALBROWSER.var.privateKeyList.some((info) => info.key === key)) {
+                                    SOCIALBROWSER.var.privateKeyList.push({ name: key, key: key });
+                                    SOCIALBROWSER.ipc('[update-browser-var]', {
+                                        name: 'privateKeyList',
+                                        data: SOCIALBROWSER.var.privateKeyList,
+                                    });
+                                    alert('Private Key Added To Private Key List');
+                                } else {
+                                    alert('Private Key Exists');
+                                }
+                            },
+                        });
+                    }
                 } else {
-                    SOCIALBROWSER.menuList.push({
-                        label: `Encrypt [ ${stext} ] `,
+                    let arr = [];
+                    arr.push({
+                        label: 'Encrypt By [ Public Key ]',
                         click() {
-                            SOCIALBROWSER.encryptedText = SOCIALBROWSER.encryptText(SOCIALBROWSER.selectedText);
+                            SOCIALBROWSER.encryptedText = SOCIALBROWSER.encryptText(SOCIALBROWSER.selectedText());
                             if (SOCIALBROWSER.encryptedText) {
-                                SOCIALBROWSER.encryptedText = '_' + SOCIALBROWSER.encryptedText + '_';
-                                if (node.value) {
-                                    node.value = node.value.replace(SOCIALBROWSER.selectedText, SOCIALBROWSER.encryptedText);
-                                } else if (node.innerText) {
-                                    node.innerText = node.innerText.replace(SOCIALBROWSER.selectedText, SOCIALBROWSER.encryptedText);
-                                } else {
-                                    SOCIALBROWSER.replaceSelectedText(SOCIALBROWSER.encryptedText);
-                                }
+                                SOCIALBROWSER.encryptedText = '_PUBLIC_' + SOCIALBROWSER.encryptedText + '_';
+                                SOCIALBROWSER.replaceSelectedText(SOCIALBROWSER.encryptedText);
                             }
                         },
                     });
+                    arr.push({
+                        label: 'Encrypt By [ Site Key ]',
+                        click() {
+                            SOCIALBROWSER.encryptedText = SOCIALBROWSER.encryptText(SOCIALBROWSER.selectedText(), document.location.hostname);
+                            if (SOCIALBROWSER.encryptedText) {
+                                SOCIALBROWSER.encryptedText = '_SITE_' + SOCIALBROWSER.encryptedText + '_';
+                                SOCIALBROWSER.replaceSelectedText(SOCIALBROWSER.encryptedText);
+                            }
+                        },
+                    });
+                    arr.push({
+                        label: 'Encrypt By [ Private Key ]',
+                        click() {
+                            SOCIALBROWSER.encryptedText = SOCIALBROWSER.encryptText(SOCIALBROWSER.selectedText(), SOCIALBROWSER.md5(SOCIALBROWSER.var.core.id));
+                            if (SOCIALBROWSER.encryptedText) {
+                                SOCIALBROWSER.encryptedText = '_PRIVATE_' + SOCIALBROWSER.encryptedText + '_';
+                                SOCIALBROWSER.replaceSelectedText(SOCIALBROWSER.encryptedText);
+                            }
+                        },
+                    });
+                    if (SOCIALBROWSER.var.privateKeyList.length > 0) {
+                        arr.push({
+                            type: 'separator',
+                        });
+
+                        SOCIALBROWSER.var.privateKeyList.forEach((info) => {
+                            arr.push({
+                                label: ' [ Key : ' + (info.name || info.key) + ' ]',
+                                click() {
+                                    SOCIALBROWSER.encryptedText = SOCIALBROWSER.encryptText(SOCIALBROWSER.selectedText(), info.key);
+                                    if (SOCIALBROWSER.encryptedText) {
+                                        SOCIALBROWSER.encryptedText = '_PRIVATE_' + SOCIALBROWSER.encryptedText + '_';
+                                        SOCIALBROWSER.replaceSelectedText(SOCIALBROWSER.encryptedText);
+                                    }
+                                },
+                            });
+                        });
+                    }
+                    if (arr.length > 0) {
+                        SOCIALBROWSER.menuList.push({
+                            label: 'Encrypt By',
+                            type: 'submenu',
+                            submenu: arr,
+                        });
+                    }
                 }
 
                 SOCIALBROWSER.menuList.push({

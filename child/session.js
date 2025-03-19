@@ -597,16 +597,7 @@ module.exports = function (child) {
                 //   delete details.responseHeaders['x-frame-options'];
                 // }
 
-                if (child.parent.var.blocking.white_list.some((item) => url.like(item.url))) {
-                    callback({
-                        cancel: false,
-                        responseHeaders: {
-                            ...details.responseHeaders,
-                        },
-                        statusLine: details.statusLine,
-                    });
-                    return;
-                }
+        
 
                 // must delete values before re set
                 if ((headers = true)) {
@@ -683,6 +674,17 @@ module.exports = function (child) {
                         }
                         details.responseHeaders['Content-Security-Policy'] = s_policy;
                     }
+                }
+
+                if (child.parent.var.blocking.white_list.some((item) => url.like(item.url))) {
+                    callback({
+                        cancel: false,
+                        responseHeaders: {
+                            ...details.responseHeaders,
+                        },
+                        statusLine: details.statusLine,
+                    });
+                    return;
                 }
 
                 if ((info = child.getOverwriteInfo(url))) {

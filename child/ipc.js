@@ -251,21 +251,51 @@ module.exports = function init(child) {
     });
     child.ipcMain.on('[encryptText]', async (event, data) => {
         if (data.password) {
-            let l = child.parent.var.core.prefix[0] || 'S';
-            let l2 = child.parent.var.core.prefix[1] || 'B';
-            event.returnValue = child.api
-                .to123(data.password + data.text)
-                .replaceAll('1', l)
-                .replaceAll('2', l2);
+            let l1 = child.parent.var.core.prefix[0];
+            let l2 = child.parent.var.core.prefix[1];
+            let l3 = child.parent.var.core.prefix[2];
+            let l4 = child.parent.var.core.prefix[3];
+            let text = child.api.to123(data.password + data.text);
+
+            if (l1) {
+                text.replaceAll('1', l1);
+            }
+            if (l2 && l2 !== l1) {
+                text.replaceAll('2', l2);
+            }
+            if (l3 && l3 !== l1 && l3 !== l2) {
+                text.replaceAll('3', l3);
+            }
+            if (l4 && l4 !== l1 && l4 !== l2 && l4 !== l3) {
+                text.replaceAll('4', l4);
+            }
+            event.returnValue = text;
         } else {
             event.returnValue = '';
         }
     });
     child.ipcMain.on('[decryptText]', async (event, data) => {
         if (data.password) {
-            let l = child.parent.var.core.prefix[0] || 'S';
-            let l2 = child.parent.var.core.prefix[1] || 'B';
-            data.text = child.api.from123(data.text.replaceAll(l, '1').replaceAll(l2, '2'));
+            let l1 = child.parent.var.core.prefix[0];
+            let l2 = child.parent.var.core.prefix[1];
+            let l3 = child.parent.var.core.prefix[2];
+            let l4 = child.parent.var.core.prefix[3];
+
+            if (l1) {
+                data.text.replaceAll(l1, '1');
+            }
+            if (l2 && l2 !== l1) {
+                data.text.replaceAll(l2, '2');
+            }
+            if (l3 && l3 !== l1 && l3 !== l2) {
+                data.text.replaceAll(l3, '3');
+            }
+            if (l4 && l4 !== l1 && l4 !== l2 && l4 !== l3) {
+                data.text.replaceAll(l4, '4');
+            }
+
+            data.text = child.api.from123(data.text);
+
             if (data.text.startsWith(data.password)) {
                 event.returnValue = data.text.replace(data.password, '');
             } else {

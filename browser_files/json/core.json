@@ -1,8 +1,8 @@
 {
   "port": 60080,
   "enabled": true,
-  "version": "2025.03.20",
-  "prefix": "SB_",
+  "version": "2025.03.21",
+  "prefix": "",
   "full_version": true,
   "key": "free key",
   "brand": "Social Browser",

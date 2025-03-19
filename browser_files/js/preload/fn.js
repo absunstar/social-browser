@@ -744,10 +744,18 @@ SOCIALBROWSER.triggerMouseEvent = function (node, eventType) {
         }
     } catch (err) {}
 };
-SOCIALBROWSER.clickKey = function (key) {
-    SOCIALBROWSER.log('[ Try Click Key ] : ' + key);
+SOCIALBROWSER.sendKey = function (key) {
+    SOCIALBROWSER.log('sendKey : ' + key);
     SOCIALBROWSER.webContents.sendInputEvent({ type: 'keyDown', keyCode: key });
     SOCIALBROWSER.webContents.sendInputEvent({ type: 'char', keyCode: key });
+    SOCIALBROWSER.webContents.sendInputEvent({ type: 'keyUp', keyCode: key });
+};
+SOCIALBROWSER.sendKeys = function (keys) {
+    keys.split('').forEach((key, i) => {
+        setTimeout(() => {
+            SOCIALBROWSER.sendKey(key);
+        }, 100);
+    });
 };
 
 SOCIALBROWSER.triggerKey = function (el, keyCode) {
@@ -791,6 +799,7 @@ SOCIALBROWSER.write = function (text, selector, timeout = 500) {
 
         setTimeout(() => {
             selector = SOCIALBROWSER.select(selector);
+
             if (!selector) {
                 reject('No selector');
                 return false;
@@ -957,17 +966,23 @@ SOCIALBROWSER.getTimeZone = () => {
 };
 
 SOCIALBROWSER.replaceSelectedText = function (replacementText) {
-    let sel, range;
-    if (window.getSelection) {
-        sel = window.getSelection();
-        if (sel.rangeCount) {
-            range = sel.getRangeAt(0);
-            range.deleteContents();
-            range.insertNode(document.createTextNode(replacementText));
-        }
-    } else if (document.selection && document.selection.createRange) {
-        range = document.selection.createRange();
-        range.text = replacementText;
+    if (replacementText) {
+        SOCIALBROWSER.webContents.cut();
+        setTimeout(() => {
+            SOCIALBROWSER.copy(replacementText);
+            SOCIALBROWSER.paste();
+            setTimeout(() => {
+                if (SOCIALBROWSER.selectedText()) {
+                    let sel = window.getSelection();
+                    if (sel.rangeCount) {
+                        range = sel.getRangeAt(0);
+                        range.deleteContents();
+                        range.insertNode(document.createTextNode(replacementText));
+                    }
+                    SOCIALBROWSER.webContents.replace(replacementText);
+                }
+            }, 200);
+        }, 50);
     }
 };
 

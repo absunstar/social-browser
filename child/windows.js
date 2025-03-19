@@ -817,6 +817,7 @@ module.exports = function (child) {
         });
 
         win.webContents.on('before-input-event', (event, input) => {
+            console.log('input : ' , input);
             // For example, only enable application menu keyboard shortcuts when
             // Ctrl/Cmd are down.
             // if (win && !win.isDestroyed()) {
