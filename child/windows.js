@@ -623,20 +623,28 @@ module.exports = function (child) {
             sendCurrentData();
         });
 
-        // win.webContents.on('will-prevent-unload', (event) => {
-        //   const choice = child.electron.dialog.showMessageBoxSync(win, {
-        //     type: 'question',
-        //     buttons: ['Leave', 'Stay'],
-        //     title: 'Do you want to leave this site?',
-        //     message: 'Changes you made may not be saved.',
-        //     defaultId: 0,
-        //     cancelId: 1,
-        //   });
-        //   const leave = choice === 0;
-        //   if (leave) {
-        //     event.preventDefault();
-        //   }
-        // });
+        win.webContents.on('will-prevent-unload', async (event) => {
+            event.preventDefault();
+
+            // if (win.customSetting.windowType == 'view') {
+            //     const choice = await child.electron.dialog.showMessageBox(win, {
+            //         type: 'question',
+            //         buttons: ['Leave', 'Stay'],
+            //         title: 'Do you want to leave this site?',
+            //         message: 'Changes you made may not be saved.',
+            //         defaultId: 0,
+            //         cancelId: 1,
+            //     });
+            //     console.log(choice);
+            //     if (choice.response === 0) {
+            //         event.preventDefault();
+            //         console.log('will leave ........');
+            //         event.returnValue = true;
+            //     }
+            // } else {
+            //     event.preventDefault();
+            // }
+        });
 
         win.on('close', (e) => {
             // can be cancel here

@@ -1,18 +1,19 @@
 {
-  "port": 60080,
-  "enabled": true,
-  "version": "2025.03.21",
-  "prefix": "",
-  "full_version": true,
-  "key": "free key",
-  "brand": "Social Browser",
-  "home_page": "https://www.google.com",
-  "default_page": "https://www.google.com",
-  "autoClearCacheStorage": false,
-  "password": "",
-  "max_tabs": 20,
-  "emails": {
+    "port": 60080,
     "enabled": true,
-    "domain": "social-browser.com"
-  }
+    "version": "2025.03.21",
+    "prefix": "MAMA_",
+    "flags": "v2",
+    "full_version": true,
+    "key": "free key",
+    "brand": "Social Browser",
+    "home_page": "https://www.google.com",
+    "default_page": "https://www.google.com",
+    "autoClearCacheStorage": false,
+    "password": "",
+    "max_tabs": 20,
+    "emails": {
+        "enabled": true,
+        "domain": "social-browser.com"
+    }
 }

@@ -1711,7 +1711,7 @@ SOCIALBROWSER.contextmenu = function (e) {
                 type: 'separator',
             });
 
-            if (SOCIALBROWSER.var.core.prefix.like('*v2*')) {
+            if (SOCIALBROWSER.var.core.flags.like('*v2*')) {
                 if (SOCIALBROWSER.selectedText().startsWith('_') && SOCIALBROWSER.selectedText().endsWith('_')) {
                     if (SOCIALBROWSER.selectedText().startsWith('_PUBLIC_')) {
                         SOCIALBROWSER.menuList.push({

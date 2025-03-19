@@ -274,13 +274,13 @@ function showSettingMenu() {
             type: 'separator',
         });
     }
-    if (SOCIALBROWSER.var.core.prefix.like('*mama*')) {
+    if (SOCIALBROWSER.var.core.prefix.like(SOCIALBROWSER.from123('2458765245381663'))) {
         SOCIALBROWSER.menuList.push({
             label: 'Open Browser Site',
-            iconURL: 'http://127.0.0.1:60080/images/logo.png',
+            iconURL: 'http://127.0.0.1:60080/images/blue.png',
             click: () =>
                 ipc('[open new tab]', {
-                    url: 'https://mama-services.net/',
+                    url: SOCIALBROWSER.from123('431932754619268325738667413876522539275746594262417837742558825747148591'),
                     title: 'Browser',
                     mainWindowID: SOCIALBROWSER.window.id,
                 }),

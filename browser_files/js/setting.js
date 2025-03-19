@@ -19,7 +19,7 @@ setTimeout(() => {
 app.controller('mainController', ($scope, $http, $timeout) => {
     $scope.userAgentBrowserList = SOCIALBROWSER.userAgentBrowserList.map((b) => ({ name: b.name }));
     $scope.userAgentDeviceList = SOCIALBROWSER.userAgentDeviceList;
-    if (SOCIALBROWSER.var.core.prefix.like('*v2*')) {
+    if (SOCIALBROWSER.var.core.flags.like('*v2*')) {
         $scope.keysEnabled = true;
     }
     $scope.$proxy = {
