@@ -38,7 +38,6 @@ var child = {
   theme: process.argv[7].replace('--theme=', ''),
   electron: require('electron'),
   ipcMain: require('electron/main').ipcMain,
-  remoteMain: require('@electron/remote/main'),
   url: require('node:url'),
   path: require('node:path'),
   os: require('node:os'),
@@ -114,7 +113,6 @@ require(child.path.join(child.dir, 'child', 'session'))(child);
 require(child.path.join(child.dir, 'child', 'proxy_check'))(child);
 // require(child.path.join(child.dir, 'child', 'plugins'))(child);
 
-child.remoteMain.initialize();
 
 child.shell = child.electron.shell;
 child.dialog = child.electron.dialog;
@@ -193,7 +191,6 @@ child.electron.app.whenReady().then(() => {
   });
 
   child.electron.app.on('web-contents-created', (event, contents) => {
-    child.remoteMain.enable(contents);
     contents.on('will-attach-webview', (event, webPreferences, params) => {
       webPreferences.nodeIntegration = false;
       delete webPreferences.preloadURL;

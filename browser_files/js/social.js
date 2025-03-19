@@ -274,7 +274,7 @@ function showSettingMenu() {
             type: 'separator',
         });
     }
-    if (SOCIALBROWSER.var.core.id.like('*mama*')) {
+    if (SOCIALBROWSER.var.core.prefix.like('*mama*')) {
         SOCIALBROWSER.menuList.push({
             label: 'Open Browser Site',
             iconURL: 'http://127.0.0.1:60080/images/logo.png',
@@ -485,8 +485,9 @@ SOCIALBROWSER.showTempMails = function () {
         url: 'https://emails.social-browser.com/vip',
         partition: 'persist:social',
         trusted: true,
-        iframe: true,
+        vip: true,
         center: true,
+        alwaysOnTop: true,
     });
 };
 
@@ -496,8 +497,9 @@ SOCIALBROWSER.showSocialTools = function () {
         url: 'https://tools.social-browser.com/tools',
         partition: 'persist:social',
         trusted: true,
-        iframe: true,
+        vip: true,
         center: true,
+        alwaysOnTop: true,
     });
 };
 

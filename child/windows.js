@@ -227,8 +227,9 @@ module.exports = function (child) {
                 nodeIntegration: false,
                 nodeIntegrationInSubFrames: false, // google login error
                 nodeIntegrationInWorker: false,
-                experimentalFeatures: false,
-                experimentalCanvasFeatures: false,
+                experimentalCanvasFeatures: true,
+                experimentalFeatures: true,
+                enableBlinkFeatures: 'ExecutionContext',
                 navigateOnDragDrop: true,
                 webSecurity: true,
                 allowRunningInsecureContent: false,
@@ -355,7 +356,6 @@ module.exports = function (child) {
         }
 
         let win = new child.electron.BrowserWindow(customSetting);
-        child.remoteMain.enable(win.webContents);
 
         customSetting.windowID = win.id;
         win.customSetting = customSetting;

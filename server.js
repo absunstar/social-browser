@@ -42,7 +42,6 @@
   var browser = {
     speedMode: false,
     electron: require('electron'),
-    remoteMain: require('@electron/remote/main'),
     http: require('node:http'),
     https: require('node:https'),
     path: require('node:path'),
@@ -122,7 +121,6 @@
   browser.electron.app.setPath('userData', browser.path.join(browser.data_dir, 'default'));
   require(browser.path.join(browser.dir, '/parent/parent.js'))(browser);
 
-  browser.remoteMain.initialize();
 
   if (false) {
     browser.isApp = true;
@@ -268,7 +266,6 @@
         vip: true,
         windowType: 'main',
         partition: 'persist:social',
-        showDevTools: false,
       });
     }
   });
@@ -294,7 +291,6 @@
         vip: true,
         windowType: 'main',
         partition: 'persist:social',
-        showDevTools: false,
       });
     }
   }

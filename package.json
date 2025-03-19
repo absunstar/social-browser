@@ -1,120 +1,121 @@
 {
-  "name": "social.browser",
-  "productName": "Social Browser",
-  "homepage": "https://social-browser.com",
-  "version": "2025.03.15",
-  "description": "Browsing Social Platforms with Multiple Accounts without Ban",
-  "author": {
-    "name": "Social Teams",
-    "email": "social.browser.com@gmail.com"
-  },
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/absunstar/social-browser.git"
-  },
-  "main": "server.js",
-  "scripts": {
-    "start": "electron .",
-    "win": "electron-builder -w --x64 --ia32",
-    "linux": "electron-builder -l --x64 --ia32",
-    "mac": "electron-builder -m --x64",
-    "win32": "electron-builder -w --ia32",
-    "win64": "electron-builder -w --x64",
-    "postinstall": "electron-builder install-app-deps",
-    "reload": "electron-rebuild",
-    "pack": "electron-builder --dir",
-    "dist": "electron-builder"
-  },
-  "build": {
-    "appId": "com.social.browser",
+    "name": "social.browser",
     "productName": "Social Browser",
-    "copyright": "Copyright©2025",
-    "target": "NSIS",
-    "asar": true,
-    "files": [
-      "**/*",
-      "!**/.vscode",
-      "!**/.git",
-      "!**/node_modules",
-      "!**/social-data",
-      "!**/test",
-      "!**/downloads",
-      "!**/uploads"
-    ],
-    "protocols": [
-      {
-        "name": "Social Browser Explorer File URL",
-        "schemes": [
-          "HTTP",
-          "HTTPS",
-          "BROWSER"
+    "homepage": "https://social-browser.com",
+    "version": "2025.03.15",
+    "description": "Browsing Social Platforms with Multiple Accounts without Ban",
+    "author": {
+        "name": "Social Teams",
+        "email": "social.browser.com@gmail.com"
+    },
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/absunstar/social-browser.git"
+    },
+    "main": "server.js",
+    "scripts": {
+        "start": "electron .",
+        "win": "electron-builder -w --x64 --ia32",
+        "linux": "electron-builder -l --x64 --ia32",
+        "mac": "electron-builder -m --x64",
+        "win32": "electron-builder -w --ia32",
+        "win64": "electron-builder -w --x64",
+        "postinstall": "electron-builder install-app-deps",
+        "reload": "electron-rebuild",
+        "pack": "electron-builder --dir",
+        "dist": "electron-builder"
+    },
+    "build": {
+        "appId": "com.social.browser",
+        "productName": "Social Browser",
+        "copyright": "Copyright©2025",
+        "target": "NSIS",
+        "asar": true,
+        "CSC_LINK": "",
+        "CSC_KEY_PASSWORD": "",
+        "files": [
+            "**/*",
+            "!**/.vscode",
+            "!**/.git",
+            "!**/node_modules",
+            "!**/social-data",
+            "!**/test",
+            "!**/downloads",
+            "!**/uploads"
         ],
-        "role": "Viewer"
-      }
-    ],
-    "directories": {
-      "output": "../build"
-    },
-    "win": {
-      "target": "NSIS",
-      "legalTrademarks": "Social Browser",
-      "icon": "browser_files/images/logo.ico",
-      "fileAssociations": [
-        {
-          "ext": "html",
-          "icon": "browser_files/images/html.ico"
+        "protocols": [
+            {
+                "name": "Social Browser Explorer File URL",
+                "schemes": [
+                    "HTTP",
+                    "HTTPS",
+                    "BROWSER"
+                ],
+                "role": "Viewer"
+            }
+        ],
+        "directories": {
+            "output": "../build"
         },
-        {
-          "ext": "pdf",
-          "icon": "browser_files/images/pdf.ico"
+        "win": {
+            "target": "NSIS",
+            "legalTrademarks": "Social Browser",
+            "icon": "browser_files/images/logo.ico",
+            "fileAssociations": [
+                {
+                    "ext": "html",
+                    "icon": "browser_files/images/html.ico"
+                },
+                {
+                    "ext": "pdf",
+                    "icon": "browser_files/images/pdf.ico"
+                }
+            ]
+        },
+        "nsis": {
+            "guid": "sbrowser-0000-0000-0000-social.browser",
+            "perMachine": true,
+            "artifactName": "${productName} ${version} ${os} ${arch} Setup.${ext}",
+            "uninstallDisplayName": "${productName}",
+            "allowElevation": true,
+            "createDesktopShortcut": "always",
+            "createStartMenuShortcut": true,
+            "menuCategory": true,
+            "shortcutName": "${productName}",
+            "installerIcon": "browser_files/images/logo.ico",
+            "allowToChangeInstallationDirectory": true,
+            "oneClick": false
+        },
+        "squirrelWindows": {
+            "msi": true
+        },
+        "mac": {
+            "category": "public.app-category.entertainment",
+            "icon": "browser_files/images/logo.icns",
+            "target": [
+                "zip",
+                "dmg"
+            ]
+        },
+        "linux": {
+            "category": "Web",
+            "icon": "browser_files/images/logo.png",
+            "target": [
+                "deb",
+                "AppImage"
+            ]
+        },
+        "snap": {
+            "confinement": "classic",
+            "useTemplateApp": "false"
         }
-      ]
     },
-    "nsis": {
-      "guid": "sbrowser-0000-0000-0000-social.browser",
-      "perMachine": true,
-      "artifactName": "${productName} ${version} ${os} ${arch} Setup.${ext}",
-      "uninstallDisplayName": "${productName}",
-      "allowElevation": true,
-      "createDesktopShortcut": "always",
-      "createStartMenuShortcut": true,
-      "menuCategory": true,
-      "shortcutName": "${productName}",
-      "installerIcon": "browser_files/images/logo.ico",
-      "allowToChangeInstallationDirectory": true,
-      "oneClick": false
+    "dependencies": {
+        "isite": "^2025.1.6"
     },
-    "squirrelWindows": {
-      "msi": true
-    },
-    "mac": {
-      "category": "public.app-category.entertainment",
-      "icon": "browser_files/images/logo.icns",
-      "target": [
-        "zip",
-        "dmg"
-      ]
-    },
-    "linux": {
-      "category": "Web",
-      "icon": "browser_files/images/logo.png",
-      "target": [
-        "deb",
-        "AppImage"
-      ]
-    },
-    "snap": {
-      "confinement": "classic",
-      "useTemplateApp": "false"
+    "devDependencies": {
+        "electron": "^35.0.1",
+        "electron-builder": "^24.0.0"
     }
-  },
-  "dependencies": {
-    "@electron/remote": "*",
-    "isite": "^2025.1.6"
-  },
-  "devDependencies": {
-    "electron": "^35.0.1",
-    "electron-builder": "^24.0.0"
-  }
 }

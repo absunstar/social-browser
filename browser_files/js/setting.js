@@ -691,7 +691,6 @@ app.controller('mainController', ($scope, $http, $timeout) => {
       url: document.location.href,
       name: '*',
       windowID: SOCIALBROWSER.window.id,
-      partition: SOCIALBROWSER.partition,
     }).then((data) => {
       $scope.setting = data.var;
       $scope.$applyAsync();

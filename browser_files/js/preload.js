@@ -100,11 +100,6 @@ SOCIALBROWSER.eval = function (script) {
     return undefined;
 };
 
-if (SOCIALBROWSER.customSetting && SOCIALBROWSER.customSetting.webPreferences) {
-    SOCIALBROWSER.webPreferences = SOCIALBROWSER.customSetting.webPreferences;
-    SOCIALBROWSER.partition = SOCIALBROWSER.webPreferences.partition;
-}
-
 SOCIALBROWSER.isIframe = function () {
     return !process.isMainFrame;
     try {
@@ -128,31 +123,33 @@ if (SOCIALBROWSER.href.indexOf('http://127.0.0.1:60080') === 0) {
 }
 
 SOCIALBROWSER.callSync = SOCIALBROWSER.ipcSync = function (channel, value = {}) {
-    value.parentSetting = SOCIALBROWSER.customSetting;
-
-    if (value.parentSetting && value.parentSetting.parentSetting) {
-        value.parentSetting.parentSetting = undefined;
-    }
     if (channel == '[open new popup]' || channel == '[open new tab]') {
-        value.referrer = value.referrer || document.location.href;
+        if (typeof value == 'object') {
+            value.referrer = value.referrer || document.location.href;
+            value.parentSetting = SOCIALBROWSER.customSetting;
+
+            if (value.parentSetting && value.parentSetting.parentSetting) {
+                value.parentSetting.parentSetting = undefined;
+            }
+        }
     }
     return SOCIALBROWSER.ipcRenderer.sendSync(channel, value);
 };
 
 SOCIALBROWSER.invoke = SOCIALBROWSER.ipc = function (channel, value = {}, log = false) {
-    value.parentSetting = SOCIALBROWSER.customSetting;
-
-    value.windowID = value.windowID || SOCIALBROWSER.window.id;
-    value.windowID = parseInt(value.windowID);
-    value.processId = SOCIALBROWSER.webContents.getProcessId();
-    value.routingId = SOCIALBROWSER.electron.webFrame.routingId;
-
-    if (value.parentSetting && value.parentSetting.parentSetting) {
-        value.parentSetting.parentSetting = undefined;
+    if (typeof value == 'object') {
+        if (channel == '[open new popup]' || channel == '[open new tab]') {
+            value.parentSetting = SOCIALBROWSER.customSetting;
+            if (value.parentSetting && value.parentSetting.parentSetting) {
+                value.parentSetting.parentSetting = undefined;
+            }
+        }
+        value.windowID = value.windowID || SOCIALBROWSER._window.id;
+        value.windowID = parseInt(value.windowID);
+        value.processId = SOCIALBROWSER.webContents.getProcessId();
+        value.routingId = SOCIALBROWSER.electron.webFrame.routingId;
     }
-    if (log) {
-        console.log(value);
-    }
+
     return SOCIALBROWSER.ipcRenderer.invoke(channel, value);
 };
 SOCIALBROWSER.on = function (name, callback) {
@@ -247,50 +244,6 @@ SOCIALBROWSER.remove = function (key) {
     return false;
 };
 
-SOCIALBROWSER.window = SOCIALBROWSER.ipcSync('[window]', { id: 0 }) || {};
-SOCIALBROWSER.window.show = () => SOCIALBROWSER.fn('window.show');
-SOCIALBROWSER.window.hide = () => SOCIALBROWSER.fn('window.hide');
-SOCIALBROWSER.window.maximize = () => SOCIALBROWSER.fn('window.maximize');
-SOCIALBROWSER.window.close = () => SOCIALBROWSER.fn('window.close');
-SOCIALBROWSER.window.focus = () => SOCIALBROWSER.fn('window.focus');
-SOCIALBROWSER.window.destroy = () => SOCIALBROWSER.fn('window.destroy');
-SOCIALBROWSER.window.isVisible = () => SOCIALBROWSER.fn('window.isVisible');
-SOCIALBROWSER.window.isMinimized = () => SOCIALBROWSER.fn('window.isMinimized');
-SOCIALBROWSER.window.setTitle = (title) => SOCIALBROWSER.fn('window.setTitle', title);
-SOCIALBROWSER.window.setSkipTaskbar = (status) => SOCIALBROWSER.fn('window.setSkipTaskbar', status);
-SOCIALBROWSER.window.setAlwaysOnTop = (status) => SOCIALBROWSER.fn('window.setAlwaysOnTop', status);
-SOCIALBROWSER.window.setFullScreen = (status) => SOCIALBROWSER.fn('window.setFullScreen', status);
-SOCIALBROWSER.window.setProgressBar = (status) => SOCIALBROWSER.fn('window.setProgressBar', status);
-
-SOCIALBROWSER.webContents = SOCIALBROWSER.ipcSync('[webContents]', { id: 0, zoomFactor: 1 }) || {};
-
-SOCIALBROWSER.webContents.reload = (...params) => SOCIALBROWSER.fn('webContents.reload', ...params);
-SOCIALBROWSER.webContents.openDevTools = (...params) => SOCIALBROWSER.fn('webContents.openDevTools', ...params);
-SOCIALBROWSER.webContents.inspectElement = (...params) => SOCIALBROWSER.fn('webContents.inspectElement', ...params);
-SOCIALBROWSER.webContents.isDevToolsOpened = (...params) => SOCIALBROWSER.fn('webContents.isDevToolsOpened', ...params);
-SOCIALBROWSER.webContents.devToolsWebContents = { focus: () => SOCIALBROWSER.fn('webContents.devToolsWebContents.focus') };
-SOCIALBROWSER.webContents.setWebRTCIPHandlingPolicy = (...params) => SOCIALBROWSER.fn('webContents.setWebRTCIPHandlingPolicy', ...params);
-SOCIALBROWSER.webContents.sendInputEvent = (...params) => SOCIALBROWSER.fn('webContents.sendInputEvent', ...params);
-SOCIALBROWSER.webContents.downloadURL = (...params) => SOCIALBROWSER.fn('webContents.downloadURL', ...params);
-SOCIALBROWSER.webContents.sendInputEvent = (...params) => SOCIALBROWSER.fn('webContents.sendInputEvent', ...params);
-SOCIALBROWSER.webContents.setAudioMuted = (...params) => SOCIALBROWSER.fn('webContents.setAudioMuted', ...params);
-SOCIALBROWSER.webContents.cut = (...params) => SOCIALBROWSER.fn('webContents.cut', ...params);
-SOCIALBROWSER.webContents.copy = (...params) => SOCIALBROWSER.fn('webContents.copy', ...params);
-SOCIALBROWSER.webContents.paste = (...params) => SOCIALBROWSER.fn('webContents.paste', ...params);
-SOCIALBROWSER.webContents.delete = (...params) => SOCIALBROWSER.fn('webContents.delete', ...params);
-SOCIALBROWSER.webContents.getProcessId = (...params) => SOCIALBROWSER.fn('webContents.getProcessId', ...params);
-
-SOCIALBROWSER.webContents.getPrintersAsync = function () {
-    return new Promise((resolve, reject) => {
-        resolve(SOCIALBROWSER.fn('webContents.getPrintersAsync'));
-    });
-};
-
-SOCIALBROWSER.webContents.session = { isPersistent: () => SOCIALBROWSER.fn('session.isPersistent') };
-
-SOCIALBROWSER.isMemoryMode = !SOCIALBROWSER.webContents.session.isPersistent();
-SOCIALBROWSER.session_id = 0;
-
 SOCIALBROWSER.init2 = function () {
     SOCIALBROWSER.is_main_data = true;
     SOCIALBROWSER.childProcessID = SOCIALBROWSER.browserData.childProcessID;
@@ -307,6 +260,11 @@ SOCIALBROWSER.init2 = function () {
     SOCIALBROWSER.newTabData = SOCIALBROWSER.browserData.newTabData;
     SOCIALBROWSER.session = { ...SOCIALBROWSER.session, ...SOCIALBROWSER.browserData.session };
     SOCIALBROWSER.partition = SOCIALBROWSER.browserData.partition;
+
+    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/remote.js');
+
+    SOCIALBROWSER.isMemoryMode = !SOCIALBROWSER.webContents.session.isPersistent();
+    SOCIALBROWSER.session_id = 0;
 
     if (!SOCIALBROWSER.customSetting.iframe && SOCIALBROWSER.isIframe()) {
         delete SOCIALBROWSER;
@@ -327,9 +285,9 @@ SOCIALBROWSER.init2 = function () {
         SOCIALBROWSER.session.privacy.vpc = { ...SOCIALBROWSER.var.blocking.privacy.vpc };
     }
 
-    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/init.js');
-    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/event.js');
-    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/fn.js');
+    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/init.js');
+    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/event.js');
+    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/fn.js');
 
     SOCIALBROWSER.isWhiteSite = SOCIALBROWSER.var.blocking.white_list.some((site) => site.url.length > 2 && document.location.href.like(site.url));
 
@@ -343,7 +301,7 @@ SOCIALBROWSER.init2 = function () {
         SOCIALBROWSER.setStorage('vpc', SOCIALBROWSER.session.privacy.vpc);
     }
 
-    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/context-menu/load.js');
+    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/load.js');
 
     if (!SOCIALBROWSER.customSetting.allowSocialBrowser) {
         delete SOCIALBROWSER;
@@ -355,14 +313,20 @@ SOCIALBROWSER.init = function () {
         hostname: SOCIALBROWSER.hostname,
         url: SOCIALBROWSER.href,
         name: SOCIALBROWSER.selected_properties,
-        windowID: SOCIALBROWSER.window.id,
-        partition: SOCIALBROWSER.partition,
+        windowID: SOCIALBROWSER._window.id,
     });
     SOCIALBROWSER.init2();
 };
 
-if (globalThis) {
-    globalThis.SOCIALBROWSER = SOCIALBROWSER;
-}
+SOCIALBROWSER._window = SOCIALBROWSER._window || SOCIALBROWSER.ipcSync('[window]');
 
-SOCIALBROWSER.init();
+SOCIALBROWSER._window.fnList.forEach((fn) => {
+    SOCIALBROWSER._window[fn] = (...params) => SOCIALBROWSER.fn('window.' + fn, ...params);
+});
+
+if (SOCIALBROWSER._window.id) {
+    if (globalThis) {
+        globalThis.SOCIALBROWSER = SOCIALBROWSER;
+    }
+    SOCIALBROWSER.init();
+}

@@ -39,12 +39,8 @@ module.exports = function init(child) {
         let win = child.windowList.find((w) => w.id == data.windowID);
         if (win) {
             data2.customSetting = win.customSetting || {};
-            data2.partition = data2.customSetting.partition || data.partition;
+            data2.partition = data2.customSetting.partition;
             data2.session = child.parent.var.session_list.find((s) => s.name == data2.partition);
-        } else {
-            data2.partition = data.partition;
-            data2.session = child.parent.var.session_list.find((s) => s.name == data2.partition);
-            data2.customSetting = {};
         }
         return data2;
     };
@@ -77,6 +73,7 @@ module.exports = function init(child) {
     });
 
     child.ipcMain.on('[get]', async (event, data) => {
+        console.log(data.property);
         let arr = data.property.split('.');
         let obj = undefined;
         let prop = undefined;
@@ -90,7 +87,7 @@ module.exports = function init(child) {
             if (arr[0] == 'webContents') {
                 obj = event.sender;
             } else if (arr[0] == 'window') {
-                obj = child.electron.BrowserWindow.fromWebContents(event.sender);
+                obj = child.electron.BrowserWindow.fromWebContents(event.sender) || child.windowList[child.windowList.length - 1]?.window || child.lastWindow;
             } else if (arr[0] == 'session') {
                 obj = event.sender.session;
             } else if (arr[0] == 'shared') {
@@ -105,10 +102,17 @@ module.exports = function init(child) {
         }
 
         if (obj && prop) {
-            event.returnValue = obj[prop];
+            try {
+                event.returnValue = obj[prop];
+            } catch (error) {
+                console.log(error);
+                console.log(arr);
+                event.returnValue = undefined;
+            }
         }
     });
     child.ipcMain.on('[set]', async (event, data) => {
+        console.log(data.property);
         let arr = data.property.split('.');
         let obj = undefined;
         let prop = undefined;
@@ -122,7 +126,7 @@ module.exports = function init(child) {
             if (arr[0] == 'webContents') {
                 obj = event.sender;
             } else if (arr[0] == 'window') {
-                obj = child.electron.BrowserWindow.fromWebContents(event.sender);
+                obj = child.electron.BrowserWindow.fromWebContents(event.sender) || child.windowList[child.windowList.length - 1]?.window || child.lastWindow;
             } else if (arr[0] == 'session') {
                 obj = event.sender.session;
             } else if (arr[0] == 'shared') {
@@ -144,71 +148,90 @@ module.exports = function init(child) {
         }
     });
     child.ipcMain.on('[fn]', async (event, data) => {
-        let arr = data.fn.split('.');
-        let obj = undefined;
-        let fn = undefined;
-        let result = undefined;
+        try {
+            let arr = data.fn.split('.');
+            let obj = undefined;
+            let fn = undefined;
+            let result = undefined;
 
-        if (arr.length == 1) {
-            obj = child;
-            fn = arr[0];
-        } else if (arr.length == 2) {
-            fn = arr[1];
-
-            if (arr[0] == 'webContents') {
-                obj = event.sender;
-            } else if (arr[0] == 'window') {
-                obj = child.electron.BrowserWindow.fromWebContents(event.sender);
-            } else if (arr[0] == 'session') {
-                obj = event.sender.session;
-            } else if (arr[0] == 'api') {
-                obj = child.api;
-            } else if (arr[0] == 'child') {
+            if (arr.length == 1) {
                 obj = child;
+                fn = arr[0];
+            } else if (arr.length == 2) {
+                fn = arr[1];
+
+                if (arr[0] == 'webContents') {
+                    obj = event.sender;
+                } else if (arr[0] == 'window') {
+                    obj = child.electron.BrowserWindow.fromWebContents(event.sender) || child.windowList[child.windowList.length - 1]?.window || child.lastWindow;
+                } else if (arr[0] == 'session') {
+                    obj = event.sender.session;
+                } else if (arr[0] == 'cookies') {
+                    obj = event.sender.session.cookies;
+                } else if (arr[0] == 'api') {
+                    obj = child.api;
+                } else if (arr[0] == 'child') {
+                    obj = child;
+                } else {
+                    obj = null;
+                }
+            }
+
+            if (obj && fn) {
+                if (obj[fn] && typeof obj[fn] == 'function') {
+                    if (typeof data.params == 'string') {
+                        result = obj[fn](data.params);
+                    } else {
+                        result = obj[fn](...data.params);
+                    }
+                }
+            }
+
+            if (result instanceof Promise) {
+                result.then((res) => {
+                    event.returnValue = res;
+                });
             } else {
-                obj = null;
+                event.returnValue = result;
             }
-        }
-
-        if (obj && fn) {
-            if (obj[fn] && typeof obj[fn] == 'function') {
-                result = obj[fn](...data.params);
-            }
-        }
-
-        if (result instanceof Promise) {
-            result.then((res) => {
-                event.returnValue = res;
-            });
-        } else {
-            event.returnValue = result;
+        } catch (error) {
+            event.returnValue = undefined;
         }
     });
 
-    child.ipcMain.on('[window]', async (event, data = { id: 1 }) => {
-        let win = event.sender.getOwnerBrowserWindow();
-        if (win) {
-            for (const key in data) {
-                data[key] = win[key];
+    child.ipcMain.on('[window]', async (event, data = {}) => {
+        console.log('on [window]');
+        child.lastWindow = child.electron.BrowserWindow.fromWebContents(event.sender) || child.windowList[child.windowList.length - 1]?.window || child.lastWindow;
+        let obj = { fnList: [] };
+        if (child.lastWindow) {
+            obj.id = child.lastWindow.id;
+            for (const key in child.lastWindow) {
+                if (typeof child.lastWindow[key] === 'function') {
+                    obj.fnList.push(key);
+                }
             }
         } else {
-            console.log(event.sender);
+            console.log('[window]', event.sender);
         }
 
-        event.returnValue = data;
+        event.returnValue = obj;
     });
 
     child.ipcMain.on('[webContents]', async (event, data = { id: 1 }) => {
         let webContents = event.sender;
+        let obj = { fnList: [] };
         if (webContents) {
-            for (const key in data) {
-                data[key] = webContents[key];
+            obj.id = webContents.id;
+            for (const key in webContents) {
+                if (typeof webContents[key] === 'function') {
+                    obj.fnList.push(key);
+                }
             }
         } else {
-            console.log(event.sender);
+            console.log('[webContents]', event.sender);
         }
 
-        event.returnValue = data;
+        event.returnValue = obj;
     });
 
     child.ipcMain.on('[md5]', async (event, data) => {

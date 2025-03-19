@@ -15,40 +15,20 @@ function fake_hit(link) {
     if (link) {
         link = link.replace('surf::', '').replace('#___new_tab___', '');
         SOCIALBROWSER.log(link);
-        SOCIALBROWSER.remote = SOCIALBROWSER.remote || SOCIALBROWSER.require('@electron/remote');
-        let win = new SOCIALBROWSER.remote.BrowserWindow({
-            show: false,
+        SOCIALBROWSER.ipc('[open new popup]', {
+            url: link,
+            userAgentURL: 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.76 Safari/537.36 10KHits-Exchanger/0.9.8',
+            how: false,
             width: 800,
             height: 300,
-            webPreferences: {
-                contextIsolation: false,
-                enableRemoteModule: true,
-                partition: SOCIALBROWSER.partition,
-                webaudio: false,
-            },
-        });
-
-        win.setMenuBarVisibility(false);
-
-        win.loadURL(link, {
+            allowAudio: false,
             referrer: document.location.href,
-            userAgent: 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.76 Safari/537.36 10KHits-Exchanger/0.9.8',
+            partition: SOCIALBROWSER.partition,
+            show: true,
+            iframe: true,
+            center: true,
+            timeout: 1000 * 20,
         });
-
-        win.once('ready-to-show', () => {
-            // win.showInactive()
-        });
-
-        setTimeout(() => {
-            if (win && !win.isDestroyed()) {
-                win.close();
-            }
-            if (count == 10) {
-                document.location.reload();
-            } else {
-                fake_hit(link);
-            }
-        }, 1000 * 20);
     }
 }
 document.addEventListener('DOMContentLoaded', () => {
