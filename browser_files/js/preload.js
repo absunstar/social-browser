@@ -261,15 +261,14 @@ SOCIALBROWSER.init2 = function () {
     SOCIALBROWSER.session = { ...SOCIALBROWSER.session, ...SOCIALBROWSER.browserData.session };
     SOCIALBROWSER.partition = SOCIALBROWSER.browserData.partition;
 
-    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/remote.js');
-
-    SOCIALBROWSER.isMemoryMode = !SOCIALBROWSER.webContents.session.isPersistent();
-    SOCIALBROWSER.session_id = 0;
-
     if (!SOCIALBROWSER.customSetting.iframe && SOCIALBROWSER.isIframe()) {
         delete SOCIALBROWSER;
         return;
     }
+    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/remote.js');
+
+    SOCIALBROWSER.isMemoryMode = !SOCIALBROWSER.webContents.session.isPersistent();
+    SOCIALBROWSER.session_id = 0;
 
     if (!SOCIALBROWSER.partition && SOCIALBROWSER.isMemoryMode) {
         SOCIALBROWSER.partition = 'x-ghost';
@@ -327,6 +326,10 @@ SOCIALBROWSER._window.fnList.forEach((fn) => {
 if (SOCIALBROWSER._window.id) {
     if (globalThis) {
         globalThis.SOCIALBROWSER = SOCIALBROWSER;
+    } else if (window) {
+        window.SOCIALBROWSER = SOCIALBROWSER;
     }
     SOCIALBROWSER.init();
+} else {
+    console.log('NO WINDOW ID >>>>>>>>>>>>>>>>>>>>>>');
 }

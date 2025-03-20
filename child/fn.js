@@ -344,9 +344,7 @@ module.exports = function (child) {
 
         win.customSetting.$userAgentURL = win.customSetting.$defaultUserAgent.url;
 
-        if (url.like('*accounts.google.com*')) {
-            win.customSetting.iframe = false;
-        } else if (url.like('*youtube.com/watch*|*youtube.com/short*')) {
+        if (url.like('*youtube.com/watch*|*youtube.com/short*')) {
             win.customSetting.$userAgentURL = 'Mozilla/5.0 (iPad; CPU OS 14_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/602.6.13 Mobile Safari/537.36';
             win.customSetting.$defaultUserAgent = child.parent.var.userAgentList.find((u) => u.url == win.customSetting.$userAgentURL) || {
                 url: win.customSetting.$userAgentURL,
@@ -534,10 +532,10 @@ module.exports = function (child) {
                     docs.push(tmp);
                 });
             } else if (file.path.like('*.txt')) {
-                let docs2 = child.api.readFileSync(file.path).toString().split('\r\n');
+                let docs2 = child.api.readFileSync(file.path).toString().split('\n');
                 docs2.forEach((line) => {
                     if (line.like('*://*')) {
-                        let parts = line.split('://')[1].split(':');
+                        let parts = line.replace('\r').split('://')[1].split(':');
                         docs.push({
                             url: line,
                             ip: parts[0],
@@ -546,7 +544,7 @@ module.exports = function (child) {
                             password: parts[3],
                         });
                     } else {
-                        let parts = line.split(':');
+                        let parts = line.replace('\r').split(':');
                         docs.push({
                             ip: parts[0],
                             port: parts[1],
@@ -559,11 +557,11 @@ module.exports = function (child) {
                 docs = child.api.fromJson(child.api.readFileSync(file.path).toString());
             }
         } else if (file.text) {
-            let arr = file.text.split('\r\n');
+            let arr = file.text.split('\n');
 
             arr.forEach((line) => {
                 if (line.like('*://*')) {
-                    let parts = line.split('://')[1].split(':');
+                    let parts = line.replace('\r').split('://')[1].split(':');
                     docs.push({
                         url: line,
                         ip: parts[0],
@@ -572,7 +570,7 @@ module.exports = function (child) {
                         password: parts[3],
                     });
                 } else {
-                    let parts = line.split(':');
+                    let parts = line.replace('\r').split(':');
                     docs.push({
                         ip: parts[0],
                         port: parts[1],

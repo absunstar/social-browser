@@ -98,7 +98,7 @@ module.exports = function (child) {
             ss.registerPreloadScript({
                 type: 'service-worker',
                 id: 'service-preload',
-                filePath: child.parent.files_dir + '/js/preloadjs',
+                filePath: child.parent.files_dir + '/js/preload.js',
             });
             ss.serviceWorkers.on('console-message', (event, messageDetails) => {
                 console.log('Got service worker message', messageDetails);
@@ -676,6 +676,7 @@ module.exports = function (child) {
                     }
                 }
 
+             
                 if (child.parent.var.blocking.white_list.some((item) => url.like(item.url))) {
                     callback({
                         cancel: false,
@@ -686,7 +687,7 @@ module.exports = function (child) {
                     });
                     return;
                 }
-
+                
                 if ((info = child.getOverwriteInfo(url))) {
                     if (url.like(info.to) && info.rediect_from) {
                         details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = ['*'];

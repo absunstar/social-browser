@@ -251,33 +251,34 @@ window.print2 = function (options) {
 };
 
 let alert_idle = null;
-SOCIALBROWSER.alert = window.alert = function (msg, time = 1000 * 3) {
-    if (typeof msg !== 'string') {
-        return;
-    }
-    msg = msg.trim();
+SOCIALBROWSER.alert =
+    window.alert =
+    window.confirm =
+        function (msg, time = 1000 * 3) {
+            if (typeof msg !== 'string') {
+                return true;
+            }
+            msg = msg.trim();
 
-    SOCIALBROWSER.log(msg);
-    SOCIALBROWSER.injectDefault();
-    let div = document.querySelector('#__alertBox');
-    if (div) {
-        clearTimeout(alert_idle);
-        div.innerHTML = SOCIALBROWSER.policy.createHTML(msg);
-        div.style.display = 'block';
-        alert_idle = setTimeout(() => {
-            div.style.display = 'none';
-            div.innerHTML = SOCIALBROWSER.policy.createHTML('');
-        }, time);
-    }
+            SOCIALBROWSER.log(msg);
+            SOCIALBROWSER.injectDefault();
+            let div = document.querySelector('#__alertBox');
+            if (div) {
+                clearTimeout(alert_idle);
+                div.innerHTML = SOCIALBROWSER.policy.createHTML(msg);
+                div.style.display = 'block';
+                alert_idle = setTimeout(() => {
+                    div.style.display = 'none';
+                    div.innerHTML = SOCIALBROWSER.policy.createHTML('');
+                }, time);
+            }
 
-    return true;
-};
+            return true;
+        };
 
-window.prompt = function (...args) {
-    SOCIALBROWSER.log(args);
-};
-window.confirm = function (...args) {
-    SOCIALBROWSER.log(args);
+window.prompt = function (ask = '', answer = '') {
+    SOCIALBROWSER.log(ask, answer);
+    return answer;
 };
 
 /* Handle xhr then handel fetch */

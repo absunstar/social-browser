@@ -1882,16 +1882,17 @@ SOCIALBROWSER.contextmenu = function (e) {
 
 if (SOCIALBROWSER.isIframe()) {
     window.addEventListener('contextmenu', (e) => {
+        alert('iframe');
         if (SOCIALBROWSER.customSetting.allowMenu) {
             e.preventDefault();
             SOCIALBROWSER.contextmenu(e);
         }
     });
+} else {
+    SOCIALBROWSER.on('context-menu', (e, data) => {
+        SOCIALBROWSER.contextmenu(data);
+    });
 }
-
-SOCIALBROWSER.on('context-menu', (e, data) => {
-    SOCIALBROWSER.contextmenu(data);
-});
 
 SOCIALBROWSER.on('[run-menu]', (e, data) => {
     if (typeof data.index !== 'undefined' && typeof data.index2 !== 'undefined' && typeof data.index3 !== 'undefined') {

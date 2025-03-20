@@ -73,7 +73,6 @@ module.exports = function init(child) {
     });
 
     child.ipcMain.on('[get]', async (event, data) => {
-        console.log(data.property);
         let arr = data.property.split('.');
         let obj = undefined;
         let prop = undefined;
@@ -112,7 +111,6 @@ module.exports = function init(child) {
         }
     });
     child.ipcMain.on('[set]', async (event, data) => {
-        console.log(data.property);
         let arr = data.property.split('.');
         let obj = undefined;
         let prop = undefined;
@@ -200,7 +198,6 @@ module.exports = function init(child) {
     });
 
     child.ipcMain.on('[window]', async (event, data = {}) => {
-        console.log('on [window]');
         child.lastWindow = child.electron.BrowserWindow.fromWebContents(event.sender) || child.windowList[child.windowList.length - 1]?.window || child.lastWindow;
         let obj = { fnList: [] };
         if (child.lastWindow) {
@@ -667,6 +664,16 @@ module.exports = function init(child) {
                         if (f3.routingId == data.routingId) {
                             contents = f3;
                         }
+                        f3.frames.forEach((f4) => {
+                            if (f4.routingId == data.routingId) {
+                                contents = f4;
+                            }
+                            f4.frames.forEach((f5) => {
+                                if (f5.routingId == data.routingId) {
+                                    contents = f5;
+                                }
+                            });
+                        });
                     });
                 });
             });

@@ -225,7 +225,7 @@ module.exports = function (child) {
                 javascript: true,
                 nativeWindowOpen: false,
                 nodeIntegration: false,
-                nodeIntegrationInSubFrames: false, // google login error
+                nodeIntegrationInSubFrames: true, // google login error
                 nodeIntegrationInWorker: false,
                 experimentalCanvasFeatures: true,
                 experimentalFeatures: true,
@@ -340,8 +340,8 @@ module.exports = function (child) {
 
         let customSetting = { ...defaultSetting, ...setting };
 
-        if (customSetting.iframe === true) {
-            customSetting.webPreferences.nodeIntegrationInSubFrames = true;
+        if (customSetting.iframe === false) {
+            customSetting.webPreferences.nodeIntegrationInSubFrames = false;
         }
 
         customSetting.webPreferences.javascript = customSetting.allowJavascript;
@@ -936,7 +936,7 @@ module.exports = function (child) {
                     win.webContents.forcefullyCrashRenderer();
                     win.webContents.reload();
                 }
-            }, 1000 * 15);
+            }, 1000 * 30);
         });
         win.on('responsive', async () => {
             win.customSetting.unresponsive = false;
@@ -967,29 +967,48 @@ module.exports = function (child) {
             child.log('will-redirect : ', url);
             child.handleCustomSeting(url, win);
 
-            // if (url.like('*accounts.google.com*') && e.isMainFrame && win.customSetting.iframe) {
-            //   e.preventDefault();
-            //   child.createNewWindow({
-            //     ...win.customSetting,
-            //     webPreferences: null,
-            //     iframe: false, // Must , if not set will be unsafty browser
-            //     skipTaskbar: false,
-            //     windowType: 'popup',
-            //     alwaysOnTop: true,
-            //     resizable: true,
-            //     show: win.customSetting.windowType == 'view' ? true : win.isVisible(),
-            //     width: null,
-            //     height: null,
-            //     x: null,
-            //     y: null,
-            //     url: url,
-            //   });
-            //   if (win.customSetting.windowType == 'popup') {
-            //     win.close();
-            //   }
+            if (url.like('https://accounts.google.com*') && e.isMainFrame && win.customSetting.iframe) {
+                e.preventDefault();
+                let newWin = child.createNewWindow({
+                    ...win.customSetting,
+                    defaultUserAgent: {
+                        url: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0',
+                        name: 'Edge',
+                        platform: 'Win32',
+                        oscpu: '',
+                        engine: {
+                            name: 'Edge',
+                        },
+                        vendor: 'Google Inc.',
+                        device: {
+                            name: 'PC',
+                        },
+                    },
+                    webPreferences: null,
+                    iframe: false, // Must , if not set will be unsafty browser
+                    skipTaskbar: false,
+                    windowType: 'popup',
+                    alwaysOnTop: true,
+                    resizable: true,
+                    show: win.customSetting.windowType == 'view' ? true : win.isVisible(),
+                    width: null,
+                    height: null,
+                    x: null,
+                    y: null,
+                    url: url,
+                });
+                if (win.customSetting.windowType == 'popup') {
+                    win.close();
+                } else {
+                    newWin.on('close', (e) => {
+                        if (win && !win.isDestroyed()) {
+                            win.webContents.reload();
+                        }
+                    });
+                }
 
-            //   return;
-            // }
+                return;
+            }
 
             if ((!win.customSetting.allowAds && !child.isAllowURL(url)) || !win.customSetting.allowRedirect) {
                 e.preventDefault();
@@ -1128,7 +1147,7 @@ module.exports = function (child) {
                                 javascript: true,
                                 nativeWindowOpen: false,
                                 nodeIntegration: false,
-                                nodeIntegrationInSubFrames: false, // google login error
+                                nodeIntegrationInSubFrames: true, // google login error
                                 nodeIntegrationInWorker: false,
                                 experimentalFeatures: false,
                                 experimentalCanvasFeatures: false,
