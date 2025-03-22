@@ -112,10 +112,10 @@
         }
     },
     "dependencies": {
-        "isite": "^2025.1.6"
+        "isite": "^2025.1.11"
     },
     "devDependencies": {
-        "electron": "^35.0.1",
+        "electron": "^35.0.3",
         "electron-builder": "^24.0.0"
     }
 }

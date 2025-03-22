@@ -171,23 +171,23 @@ module.exports = function (child) {
     };
 
     child.get_dynamic_var = function (info) {
-        info.name = info.name || '*';
+        info.propertyList = info.propertyList || '*';
 
-        if (info.name == '*') {
-            info.name = '';
+        if (info.propertyList == '*') {
+            info.propertyList = '';
             for (const key in child.parent.var) {
-                info.name += key + ',';
+                info.propertyList += key + ',';
             }
         }
 
-        let arr = info.name.split(',');
+        let arr = info.propertyList.split(',');
         let obj = {};
         arr.forEach((k) => {
             if (k && child.parent.var[k]) {
-                if ((k == 'user_data' || k == 'user_data_input') && info.hostname) {
+                if ((k == 'user_data' || k == 'user_data_input') && info.domain) {
                     obj[k] = [];
                     child.parent.var[k].forEach((dd) => {
-                        if (dd.hostname && (dd.hostname.contains(info.hostname) || info.hostname.contains(dd.hostname))) {
+                        if (dd.hostname && dd.hostname.contains(info.domain)) {
                             obj[k].push(dd);
                         }
                     });
@@ -196,7 +196,7 @@ module.exports = function (child) {
                 }
             }
         });
-        return arr.length == 1 ? obj[info.name] : obj;
+        return arr.length == 1 ? obj[info.propertyList] : obj;
     };
 
     child.decodeURI = (value) => {

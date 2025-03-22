@@ -1154,7 +1154,7 @@ function get_custom_menu() {
 }
 
 function getEmailMenu() {
-    if (SOCIALBROWSER.var.core.emails && SOCIALBROWSER.var.core.emails.enabled) {
+    if (SOCIALBROWSER.var.core.emails && SOCIALBROWSER.var.core.emails.enabled && SOCIALBROWSER.session.display) {
         let arr = [];
 
         if (SOCIALBROWSER.session.display.contains('@')) {
@@ -1165,6 +1165,17 @@ function getEmailMenu() {
                     SOCIALBROWSER.paste();
                 },
             });
+            let currentLogin = SOCIALBROWSER.var.user_data_input.filter((d) => d.username == SOCIALBROWSER.session.display)[0];
+            if (currentLogin && currentLogin.password) {
+                arr.push({
+                    label: 'paste Current Password',
+                    click() {
+                        SOCIALBROWSER.copy(currentLogin.password);
+                        SOCIALBROWSER.paste();
+                    },
+                });
+            }
+
             let newEmail = SOCIALBROWSER.session.display.split('@')[0] + '@' + SOCIALBROWSER.var.core.emails.domain;
             arr.push({
                 label: 'paste Temp Mail',
@@ -1257,7 +1268,7 @@ function getEmailMenu() {
 
         if (SOCIALBROWSER.var.core.emails.password) {
             arr.push({
-                label: 'paste Mail Password',
+                label: 'paste Default Password',
                 click() {
                     SOCIALBROWSER.copy(SOCIALBROWSER.var.core.emails.password);
                     SOCIALBROWSER.paste();
@@ -1710,6 +1721,8 @@ SOCIALBROWSER.contextmenu = function (e) {
             SOCIALBROWSER.menuList.push({
                 type: 'separator',
             });
+
+            getEmailMenu();
 
             if (SOCIALBROWSER.var.core.flags.like('*v2*')) {
                 if (SOCIALBROWSER.selectedText().startsWith('_') && SOCIALBROWSER.selectedText().endsWith('_')) {

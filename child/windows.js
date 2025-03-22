@@ -967,7 +967,7 @@ module.exports = function (child) {
             child.log('will-redirect : ', url);
             child.handleCustomSeting(url, win);
 
-            if (url.like('https://accounts.google.com*') && e.isMainFrame && win.customSetting.iframe) {
+            if (url.like('https://accounts.google.com*') && e.isMainFrame && win.customSetting.iframe && win.customSetting.windowType === 'view') {
                 e.preventDefault();
                 let newWin = child.createNewWindow({
                     ...win.customSetting,
@@ -997,15 +997,12 @@ module.exports = function (child) {
                     y: null,
                     url: url,
                 });
-                if (win.customSetting.windowType == 'popup') {
-                    win.close();
-                } else {
-                    newWin.on('close', (e) => {
-                        if (win && !win.isDestroyed()) {
-                            win.webContents.reload();
-                        }
-                    });
-                }
+
+                newWin.on('close', (e) => {
+                    if (win && !win.isDestroyed()) {
+                        win.webContents.reload();
+                    }
+                });
 
                 return;
             }

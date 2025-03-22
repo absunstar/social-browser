@@ -228,9 +228,9 @@ function showSettingMenu() {
         click: () =>
             ipc('[open new tab]', {
                 url: 'http://127.0.0.1:60080/setting',
-                partition: 'persist:setting',
-                user_name: 'setting',
-                mainWindowID: SOCIALBROWSER.window.id,
+                partition: 'ghost',
+                user_name : 'Setting',
+                windowType: 'view',
                 vip: true,
             }),
         iconURL: 'http://127.0.0.1:60080/images/setting.png',
@@ -997,8 +997,9 @@ function renderMessage(cm) {
     } else if (cm.name == '[show-browser-setting]') {
         renderNewTabData({
             url: 'http://127.0.0.1:60080/setting',
-            partition: 'persist:setting',
-            user_name: 'setting',
+            partition: 'ghost',
+            user_name : 'Setting',
+            windowType: 'view',
             vip: true,
         });
     } else if (cm.name == '[download-link]') {

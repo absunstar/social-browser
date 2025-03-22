@@ -90,14 +90,16 @@ if (!SOCIALBROWSER.isWhiteSite) {
                 }
 
                 allow = false;
-                let toUrlParser = new URL(url);
-                let fromUrlParser = new URL(document.location.href);
-                if ((toUrlParser.host.contains(fromUrlParser.host) || fromUrlParser.host.contains(toUrlParser.host)) && SOCIALBROWSER.var.blocking.popup.allow_internal) {
-                    allow = true;
-                } else if (toUrlParser.host !== fromUrlParser.host && SOCIALBROWSER.var.blocking.popup.allow_external) {
-                    allow = true;
-                } else {
-                    allow = SOCIALBROWSER.var.blocking.popup.white_list.some((d) => toUrlParser.host.like(d.url) || fromUrlParser.host.like(d.url));
+                let toUrlParser = SOCIALBROWSER.isValidURL(url) ? new URL(url) : null;
+                let fromUrlParser = SOCIALBROWSER.isValidURL(document.location.href) ? new URL(document.location.href) : null;
+                if (toUrlParser && fromUrlParser) {
+                    if ((toUrlParser.host.contains(fromUrlParser.host) || fromUrlParser.host.contains(toUrlParser.host)) && SOCIALBROWSER.var.blocking.popup.allow_internal) {
+                        allow = true;
+                    } else if (toUrlParser.host !== fromUrlParser.host && SOCIALBROWSER.var.blocking.popup.allow_external) {
+                        allow = true;
+                    } else {
+                        allow = SOCIALBROWSER.var.blocking.popup.white_list.some((d) => toUrlParser.host.like(d.url) || fromUrlParser.host.like(d.url));
+                    }
                 }
             }
 

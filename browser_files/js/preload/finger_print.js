@@ -678,8 +678,12 @@ if (SOCIALBROWSER.isMemoryMode) {
             });
         });
     };
-    if (!window.localStorage) {
-        window.localStorage = window.sessionStorage;
+    try {
+        if (!window.localStorage) {
+            window.localStorage = window.sessionStorage;
+        }
+    } catch (error) {
+        console.log(error);
     }
 
     window.indexedDB = {

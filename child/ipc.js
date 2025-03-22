@@ -26,7 +26,6 @@ module.exports = function init(child) {
             childProcessID: child.id,
             child_index: child.index,
             information: child.parent.information,
-            var: child.get_dynamic_var(data),
             files_dir: child.parent.files_dir,
             dir: child.parent.dir,
             data_dir: child.parent.data_dir,
@@ -40,8 +39,10 @@ module.exports = function init(child) {
         if (win) {
             data2.customSetting = win.customSetting || {};
             data2.partition = data2.customSetting.partition;
-            data2.session = child.parent.var.session_list.find((s) => s.name == data2.partition);
+            data2.session = data2.customSetting.session || child.parent.var.session_list.find((s) => s.name == data2.partition);
         }
+        data.username = data2.session?.display;
+        data2.var = child.get_dynamic_var(data);
         return data2;
     };
 
@@ -95,6 +96,8 @@ module.exports = function init(child) {
                 obj = child.api;
             } else if (arr[0] == 'child') {
                 obj = child;
+            } else if (arr[0] == 'screen') {
+                obj = child.electron.screen;
             } else {
                 obj = child.shared;
             }
@@ -133,6 +136,8 @@ module.exports = function init(child) {
                 obj = child.api;
             } else if (arr[0] == 'child') {
                 obj = child;
+            } else if (arr[0] == 'screen') {
+                obj = child.electron.screen;
             } else {
                 obj = child.shared;
             }
@@ -168,8 +173,8 @@ module.exports = function init(child) {
                     obj = event.sender.session.cookies;
                 } else if (arr[0] == 'api') {
                     obj = child.api;
-                } else if (arr[0] == 'child') {
-                    obj = child;
+                } else if (arr[0] == 'screen') {
+                    obj = child.electron.screen;
                 } else {
                     obj = null;
                 }
@@ -226,6 +231,20 @@ module.exports = function init(child) {
             }
         } else {
             console.log('[webContents]', event.sender);
+        }
+
+        event.returnValue = obj;
+    });
+
+    child.ipcMain.on('[screen]', async (event, data = { id: 1 }) => {
+        let screen = child.electron.screen;
+        let obj = { fnList: [] };
+        if (screen) {
+            for (const key in screen) {
+                if (typeof screen[key] === 'function') {
+                    obj.fnList.push(key);
+                }
+            }
         }
 
         event.returnValue = obj;
@@ -1101,8 +1120,9 @@ module.exports = function init(child) {
                     if (w.customSetting.windowType == 'main' && !w.window.isDestroyed()) {
                         w.window.webContents.send('[open new tab]', {
                             url: 'http://127.0.0.1:60080/setting',
-                            partition: 'persist:setting',
-                            user_name: 'setting',
+                            partition: 'ghost',
+                            user_name: 'Setting',
+                            windowType: 'view',
                             vip: true,
                         });
                     }
@@ -1113,8 +1133,9 @@ module.exports = function init(child) {
                     type: '[open new tab]',
                     data: {
                         url: 'http://127.0.0.1:60080/setting',
-                        partition: 'persist:setting',
-                        user_name: 'setting',
+                        partition: 'ghost',
+                        user_name: 'Setting',
+                        windowType: 'view',
                         vip: true,
                     },
                 });

@@ -165,8 +165,9 @@ function showSettingMenu() {
         click: () =>
             ipc('[open new tab]', {
                 url: 'http://127.0.0.1:60080/setting',
-                partition: 'persist:social',
-                main_window_id: SOCIALBROWSER.window.id,
+                partition: 'ghost',
+                user_name : 'Setting',
+                windowType: 'view',
                 vip: true,
             }),
     });
@@ -239,9 +240,10 @@ function showSettingMenu() {
         label: 'Bookmark manager',
         click: () =>
             ipc('[open new tab]', {
-                url: 'http://127.0.0.1:60080/setting?open=bookmarks',
-                partition: 'persist:social',
-                main_window_id: SOCIALBROWSER.window.id,
+                url: 'http://127.0.0.1:60080/setting',
+                partition: 'ghost',
+                user_name : 'Setting',
+                windowType: 'view',
                 vip: true,
             }),
     });
@@ -392,9 +394,10 @@ function showBookmarksMenu() {
         label: 'Bookmark manager',
         click: () =>
             ipc('[open new tab]', {
-                url: 'http://127.0.0.1:60080/setting?open=bookmarks',
-                partition: 'persist:social',
-                main_window_id: SOCIALBROWSER.window.id,
+                url: 'http://127.0.0.1:60080/setting',
+                partition: 'ghost',
+                user_name : 'Setting',
+                windowType: 'view',
                 vip: true,
             }),
     });
@@ -835,7 +838,9 @@ function renderMessage(cm) {
     } else if (cm.name == '[show-browser-setting]') {
         render_new_tab({
             url: 'http://127.0.0.1:60080/setting',
-            partition: 'persist:social',
+            partition: 'ghost',
+            user_name : 'Setting',
+            windowType: 'view',
             vip: true,
         });
     } else if (cm.name == '[download-link]') {

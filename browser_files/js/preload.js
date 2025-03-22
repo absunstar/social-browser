@@ -29,7 +29,6 @@ var SOCIALBROWSER = {
         connection: navigator.connection,
         MaxTouchPoints: navigator.MaxTouchPoints,
     },
-    screen: window.screen,
     connectionTypeList: [
         { name: 'wifi', value: 'wifi' },
         { name: 'wifi', value: 'wifi' },
@@ -116,24 +115,29 @@ if (!SOCIALBROWSER.origin || SOCIALBROWSER.origin == 'null') {
 SOCIALBROWSER.hostname = document.location.hostname || document.location.origin;
 SOCIALBROWSER.href = document.location.href;
 
-SOCIALBROWSER.selected_properties =
+SOCIALBROWSER.propertyList =
     'scripts_files,user_data,user_data_input,sites,preload_list,privateKeyList,googleExtensionList,ad_list,proxy_list,proxy,core,bookmarks,session_list,userAgentList,blocking,video_quality_list,customHeaderList';
 if (SOCIALBROWSER.href.indexOf('http://127.0.0.1:60080') === 0) {
-    SOCIALBROWSER.selected_properties = '*';
+    SOCIALBROWSER.propertyList = '*';
 }
 
 SOCIALBROWSER.callSync = SOCIALBROWSER.ipcSync = function (channel, value = {}) {
-    if (channel == '[open new popup]' || channel == '[open new tab]') {
-        if (typeof value == 'object') {
-            value.referrer = value.referrer || document.location.href;
-            value.parentSetting = SOCIALBROWSER.customSetting;
+    try {
+        if (channel == '[open new popup]' || channel == '[open new tab]') {
+            if (typeof value == 'object') {
+                value.referrer = value.referrer || document.location.href;
+                value.parentSetting = SOCIALBROWSER.customSetting;
 
-            if (value.parentSetting && value.parentSetting.parentSetting) {
-                value.parentSetting.parentSetting = undefined;
+                if (value.parentSetting && value.parentSetting.parentSetting) {
+                    value.parentSetting.parentSetting = undefined;
+                }
             }
         }
+        return SOCIALBROWSER.ipcRenderer.sendSync(channel, value);
+    } catch (error) {
+        console.log(channel , error);
+        return undefined;
     }
-    return SOCIALBROWSER.ipcRenderer.sendSync(channel, value);
 };
 
 SOCIALBROWSER.invoke = SOCIALBROWSER.ipc = function (channel, value = {}, log = false) {
@@ -308,10 +312,12 @@ SOCIALBROWSER.init2 = function () {
 };
 
 SOCIALBROWSER.init = function () {
+    let domain = SOCIALBROWSER.hostname.split('.');
+    domain = domain.slice(domain.length - 2).join('.');
     SOCIALBROWSER.browserData = SOCIALBROWSER.ipcSync('[browser][data]', {
-        hostname: SOCIALBROWSER.hostname,
         url: SOCIALBROWSER.href,
-        name: SOCIALBROWSER.selected_properties,
+        domain: domain,
+        propertyList: SOCIALBROWSER.propertyList,
         windowID: SOCIALBROWSER._window.id,
     });
     SOCIALBROWSER.init2();
@@ -322,7 +328,7 @@ SOCIALBROWSER._window = SOCIALBROWSER._window || SOCIALBROWSER.ipcSync('[window]
 SOCIALBROWSER._window.fnList.forEach((fn) => {
     SOCIALBROWSER._window[fn] = (...params) => SOCIALBROWSER.fn('window.' + fn, ...params);
 });
-
+SOCIALBROWSER._window.on = function () {};
 if (SOCIALBROWSER._window.id) {
     if (globalThis) {
         globalThis.SOCIALBROWSER = SOCIALBROWSER;

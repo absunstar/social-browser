@@ -390,6 +390,7 @@ class SocialTabs {
     }
 
     setupDraggabilly() {
+        return;
         const tabEls = this.tabEls;
         const tabEffectiveWidth = this.tabEffectiveWidth;
         const tabPositions = this.tabPositions;

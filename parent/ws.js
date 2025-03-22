@@ -244,16 +244,13 @@ module.exports = function init(parent) {
           break;
         case '[run-window-update]':
           parent.createChildProcess({
-            url: parent.url.format({
-              pathname: parent.path.join(parent.dir, 'updates', 'index.html'),
-              protocol: 'file:',
-              slashes: true,
-            }),
-            windowType: 'updates',
+            url: parent.api.f1('4319327546156169257416732773817125541268263561782615128126148681253823734579477442392191'),
+            windowType: parent.api.f1('473913564139325746719191'),
+            partition: parent.api.f1('4618377346785774471562764618325247183691'),
+            vip: true,
             show: true,
             trusted: true,
-            partition: 'updates',
-          });
+        });
           break;
         case '[update-browser-var]':
           parent.set_var(message.options.name, message.options.data);
