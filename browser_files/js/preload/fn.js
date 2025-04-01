@@ -246,298 +246,6 @@ SOCIALBROWSER.rand = {
     },
 };
 
-SOCIALBROWSER.timeZones = [
-    {
-        value: 'Dateline Standard Time',
-        offset: -12,
-        text: '(UTC-12:00) International Date Line West',
-    },
-    {
-        value: 'UTC-11',
-        offset: -11,
-        text: '(UTC-11:00) Coordinated Universal Time-11',
-    },
-    {
-        value: 'Hawaiian Standard Time',
-        offset: -10,
-        text: '(UTC-10:00) Hawaii',
-    },
-    {
-        value: 'Alaskan Standard Time',
-        offset: -9,
-        text: '(UTC-09:00) Alaska',
-    },
-    {
-        value: 'Pacific Standard Time (Mexico)',
-        offset: -8,
-        text: '(UTC-08:00) Baja California',
-    },
-    {
-        value: 'Pacific Daylight Time',
-        offset: -7,
-        text: '(UTC-07:00) Pacific Daylight Time (US & Canada)',
-    },
-    {
-        value: 'Central Standard Time',
-        offset: -6,
-        text: '(UTC-06:00) Central Time (US & Canada)',
-    },
-
-    {
-        value: 'SA Pacific Standard Time',
-        offset: -5,
-        text: '(UTC-05:00) Bogota, Lima, Quito',
-    },
-    {
-        value: 'Paraguay Standard Time',
-        offset: -4,
-        text: '(UTC-04:00) Asuncion',
-    },
-    {
-        value: 'E. South America Standard Time',
-        offset: -3,
-        text: '(UTC-03:00) Brasilia',
-    },
-
-    {
-        value: 'UTC-02',
-        offset: -2,
-        text: '(UTC-02:00) Coordinated Universal Time-02',
-    },
-    {
-        value: 'Mid-Atlantic Standard Time',
-        offset: -1,
-        text: '(UTC-02:00) Mid-Atlantic - Old',
-    },
-    {
-        value: 'GMT Standard Time',
-        offset: 0,
-        text: '(UTC) Edinburgh, London',
-    },
-
-    {
-        value: 'British Summer Time',
-        offset: 1,
-        text: '(UTC+01:00) Edinburgh, London',
-    },
-    {
-        value: 'Central European Standard Time',
-        offset: 2,
-        text: '(UTC+02:00) Sarajevo, Skopje, Warsaw, Zagreb',
-    },
-    {
-        value: 'GTB Standard Time',
-        offset: 3,
-        text: '(UTC+02:00) Athens, Bucharest',
-    },
-
-    {
-        value: 'Samara Time',
-        offset: 4,
-        text: '(UTC+04:00) Samara, Ulyanovsk, Saratov',
-    },
-
-    {
-        value: 'Azerbaijan Standard Time',
-        offset: 5,
-        text: '(UTC+05:00) Baku',
-    },
-
-    {
-        value: 'Central Asia Standard Time',
-        offset: 6,
-        text: '(UTC+06:00) Nur-Sultan (Astana)',
-    },
-
-    {
-        value: 'SE Asia Standard Time',
-        offset: 7,
-        text: '(UTC+07:00) Bangkok, Hanoi, Jakarta',
-    },
-
-    {
-        value: 'China Standard Time',
-        offset: 8,
-        text: '(UTC+08:00) Beijing, Chongqing, Hong Kong, Urumqi',
-    },
-
-    {
-        value: 'Japan Standard Time',
-        offset: 9,
-        text: '(UTC+09:00) Osaka, Sapporo, Tokyo',
-    },
-
-    {
-        value: 'E. Australia Standard Time',
-        offset: 10,
-        text: '(UTC+10:00) Brisbane',
-    },
-
-    {
-        value: 'Central Pacific Standard Time',
-        offset: 11,
-        text: '(UTC+11:00) Solomon Is., New Caledonia',
-    },
-
-    {
-        value: 'New Zealand Standard Time',
-        offset: 12,
-        text: '(UTC+12:00) Auckland, Wellington',
-    },
-];
-
-if ((randomUserAgentSupport = true)) {
-    SOCIALBROWSER.userAgentDeviceList = [
-        {
-            name: 'PC',
-            platformList: [
-                { name: 'Windows NT 6.1; WOW64', code: 'Win32' },
-                { name: 'Windows NT 10.0; Win64; x64', code: 'Win32' },
-                { name: 'Windows NT 11.0; Win64; x64', code: 'Win32' },
-                { name: 'Windows NT 10.0', code: 'Win32' },
-                { name: 'Windows NT 11.0', code: 'Win32' },
-                { name: 'MacIntel', code: 'MacIntel' },
-                { name: 'Macintosh; Intel Mac OS X 13_0', code: 'MacIntel' },
-                { name: 'Macintosh; Intel Mac OS X 14_0', code: 'MacIntel' },
-                { name: 'Macintosh; Intel Mac OS X 15_0', code: 'MacIntel' },
-                { name: 'Macintosh; Intel Mac OS X 16_0', code: 'MacIntel' },
-                { name: 'Linux x86_64', code: 'Linux x86_64' },
-                { name: 'X11; Ubuntu; Linux x86_64', code: 'Linux x86_64' },
-            ],
-            screenList: [
-                '2560*1440',
-                '1920*1080',
-                '1792*1120',
-                '1680*1050',
-                '1600*900',
-                '1536*864',
-                '1440*900',
-                '1366*768',
-                '1280*800',
-                '1280*720',
-                '1024*768',
-                '1024*600',
-                '962*601',
-                '810*1080',
-                '800*1280',
-                '768*1024',
-            ],
-        },
-        {
-            name: 'Mobile',
-            platformList: [
-                { name: 'Linux; Android 11', code: 'Android' },
-                { name: 'Linux; Android 12', code: 'Android' },
-                { name: 'Linux; Android 13', code: 'Android' },
-                { name: 'Linux; Android 14', code: 'Android' },
-                { name: 'Linux; Android 15', code: 'Android' },
-                { name: 'iPhone; CPU iPhone OS 13_0 like Mac OS X', code: 'iPhone' },
-                { name: 'iPhone; CPU iPhone OS 14_0  like Mac OS X', code: 'iPhone' },
-                { name: 'iPhone; CPU iPhone OS 15_0  like Mac OS X', code: 'iPhone' },
-                { name: 'iPhone; CPU iPhone OS 16_0  like Mac OS X', code: 'iPhone' },
-                { name: 'iPad; CPU OS 13_0  like Mac OS X', code: 'iPad' },
-                { name: 'iPad; CPU OS 14_0  like Mac OS X', code: 'iPad' },
-                { name: 'iPad; CPU OS 15_0  like Mac OS X', code: 'iPad' },
-                { name: 'iPad; CPU OS 16_0  like Mac OS X', code: 'iPad' },
-            ],
-            screenList: ['601*962', '600*1024', '414*896', '390*844', '360*800', '360*640'],
-        },
-    ];
-    SOCIALBROWSER.userAgentBrowserList = [
-        {
-            name: 'Chrome',
-            vendor: 'Google Inc.',
-            prefix: '',
-            randomMajor: () => SOCIALBROWSER.randomNumber(133, 136),
-            randomMinor: () => SOCIALBROWSER.randomNumber(0, 5735),
-            randomPatch: () => SOCIALBROWSER.randomNumber(0, 199),
-        },
-        {
-            name: 'Edge',
-            vendor: '',
-            prefix: '',
-            randomMajor: () => SOCIALBROWSER.randomNumber(133, 136),
-            randomMinor: () => SOCIALBROWSER.randomNumber(0, 5735),
-            randomPatch: () => SOCIALBROWSER.randomNumber(0, 199),
-        },
-        {
-            name: 'Firefox',
-            vendor: 'Mozilla',
-            prefix: '',
-            randomMajor: () => SOCIALBROWSER.randomNumber(133, 136),
-            randomMinor: () => SOCIALBROWSER.randomNumber(0, 9),
-            randomPatch: () => SOCIALBROWSER.randomNumber(0, 99),
-        },
-        {
-            name: 'Safari',
-            vendor: 'Apple Computer, Inc.',
-            prefix: '',
-            randomMajor: () => SOCIALBROWSER.randomNumber(600, 605),
-            randomMinor: () => SOCIALBROWSER.randomNumber(1, 15),
-            randomPatch: () => SOCIALBROWSER.randomNumber(10, 14),
-        },
-        {
-            name: 'Opera',
-            vendor: '',
-            prefix: '',
-            randomMajor: () => SOCIALBROWSER.randomNumber(133, 136),
-            randomMinor: () => SOCIALBROWSER.randomNumber(0, 5735),
-            randomPatch: () => SOCIALBROWSER.randomNumber(0, 199),
-        },
-    ];
-
-    SOCIALBROWSER.getRandomBrowser = function (deviceName = '*', browserName = '*', platformName = '*') {
-        let browser = SOCIALBROWSER.userAgentBrowserList.filter((d) => d.name.contains(browserName));
-        browser = browser[SOCIALBROWSER.randomNumber(0, browser.length - 1)] || SOCIALBROWSER.userAgentBrowserList[SOCIALBROWSER.randomNumber(0, SOCIALBROWSER.userAgentBrowserList.length - 1)];
-        browser = { ...browser };
-
-        let devices = SOCIALBROWSER.userAgentDeviceList.filter((d) => d.name.contains(deviceName));
-        browser.device = devices[SOCIALBROWSER.randomNumber(0, devices.length - 1)] || SOCIALBROWSER.userAgentDeviceList[SOCIALBROWSER.randomNumber(0, SOCIALBROWSER.userAgentDeviceList.length - 1)];
-
-        browser.screen = browser.device.screenList[SOCIALBROWSER.randomNumber(0, browser.device.screenList.length - 1)];
-        browser.screen = browser.screen.split('*');
-        browser.screen = { width: parseInt(browser.screen[0]), height: parseInt(browser.screen[1]) };
-
-        browser.platformInfo = browser.device.platformList.filter((d) => d.name.contains(platformName));
-        browser.platformInfo =
-            browser.platformInfo[SOCIALBROWSER.randomNumber(0, browser.platformInfo.length - 1)] || browser.device.platformList[SOCIALBROWSER.randomNumber(0, browser.device.platformList.length - 1)];
-        browser.platform = browser.platformInfo.code;
-        if (browser.device.name === 'Mobile') {
-            browser.prefix = 'Mobile';
-        }
-
-        browser.major = browser.randomMajor();
-        browser.minor = browser.randomMinor();
-        browser.patch = browser.randomPatch();
-
-        browser.randomMajor = undefined;
-        browser.randomMinor = undefined;
-        browser.randomPatch = undefined;
-
-        delete browser.randomMajor;
-        delete browser.randomMinor;
-        delete browser.randomPatch;
-
-        if (browser.name.contains('Safari')) {
-            browser.url = `Mozilla/5.0 (${browser.platformInfo.name}) AppleWebKit/${browser.major}.${browser.minor} (KHTML, like Gecko) Version/${browser.patch}.0 Safari/${browser.major}.${browser.minor}`;
-        }
-        if (browser.name.contains('Firefox')) {
-            browser.url = `Mozilla/5.0 (${browser.platformInfo.name}; rv:${browser.major}.${browser.minor}) Gecko/20100101 Firefox/${browser.major}.${browser.minor}`;
-        } else {
-            browser.url = `Mozilla/5.0 (${browser.platformInfo.name}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${browser.major}.${browser.minor}.${browser.patch} ${browser.prefix} Safari/537.36`;
-        }
-
-        if (browser.name.contains('Edge')) {
-            browser.url += ` ${browser.name}/${browser.major}.${browser.minor}.${browser.patch}`;
-        }
-        return browser;
-    };
-
-    SOCIALBROWSER.getRandomUserAgent = function () {
-        return SOCIALBROWSER.getRandomBrowser().url;
-    };
-}
-
 SOCIALBROWSER.generateVPC = function () {
     let browser = SOCIALBROWSER.getRandomBrowser();
     return {
@@ -614,25 +322,34 @@ SOCIALBROWSER.onLoad = function (fn) {
         });
     }
 };
-
-SOCIALBROWSER.__define = function (o, p, v, op) {
-    op = op || {};
-    if (typeof o == 'undefined') {
-        return;
+SOCIALBROWSER.__setConstValue = function (o, p, v) {
+    try {
+        Object.defineProperty(o, p, {
+            get() {
+                return v;
+            },
+            set(value) {
+                SOCIALBROWSER.log(p + ' !== ', value);
+            },
+        });
+    } catch (error) {
+        SOCIALBROWSER.log( document.location.href , error);
     }
+};
+
+SOCIALBROWSER.__define = function (o, p, v, op = {}) {
     try {
         Object.defineProperty(o, p, {
             get: function () {
                 return v;
             },
-            enumerable: op.enumerable || false,
+            ...op,
         });
+        if (o.prototype) {
+            o.prototype[p] = v;
+        }
     } catch (error) {
-        console.log(error);
-    }
-
-    if (o.prototype) {
-        o.prototype[p] = v;
+        SOCIALBROWSER.log(error);
     }
 };
 SOCIALBROWSER.timeOffset = new Date().getTimezoneOffset();
@@ -1426,3 +1143,11 @@ SOCIALBROWSER.copyObject = function (obj) {
 };
 
 SOCIALBROWSER.windowOpenList = [];
+
+SOCIALBROWSER.getRandomBrowser = (...params) => SOCIALBROWSER.fn('child.getRandomBrowser', ...params);
+SOCIALBROWSER.getRandomUserAgent = (...params) => SOCIALBROWSER.fn('child.getRandomUserAgent', ...params);
+SOCIALBROWSER.generateVPC = (...params) => SOCIALBROWSER.fn('child.generateVPC', ...params);
+
+SOCIALBROWSER.executeScript = function (code) {
+    return SOCIALBROWSER.fnAsync('webContents.executeJavaScript', code, true);
+};

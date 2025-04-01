@@ -29,18 +29,7 @@ var SOCIALBROWSER = {
         connection: navigator.connection,
         MaxTouchPoints: navigator.MaxTouchPoints,
     },
-    connectionTypeList: [
-        { name: 'wifi', value: 'wifi' },
-        { name: 'wifi', value: 'wifi' },
-        { name: 'ethernet', value: 'ethernet' },
-        { name: 'mixed', value: 'mixed' },
-        { name: 'bluetooth', value: 'bluetooth' },
-        { name: 'other', value: 'other' },
-        { name: 'unknown', value: 'unknown' },
-        { name: 'wimax', value: 'wimax' },
-        { name: 'cellular', value: 'cellular' },
-    ],
-    effectiveTypeList: ['slow-2g', '2g', '3g', '4g'],
+
     session: {
         name: 'ghost_' + new Date().getTime(),
         display: 'ghost',
@@ -135,7 +124,7 @@ SOCIALBROWSER.callSync = SOCIALBROWSER.ipcSync = function (channel, value = {}) 
         }
         return SOCIALBROWSER.ipcRenderer.sendSync(channel, value);
     } catch (error) {
-        console.log(channel , error);
+        console.log(channel, error);
         return undefined;
     }
 };
@@ -171,6 +160,9 @@ SOCIALBROWSER.md5 = function (txt) {
 
 SOCIALBROWSER.get = function (property) {
     return SOCIALBROWSER.ipcSync('[get]', { property: property });
+};
+SOCIALBROWSER.fnAsync = function (fn, ...params) {
+    return SOCIALBROWSER.ipc('[fn]', { fn: fn, params: params });
 };
 SOCIALBROWSER.fn = function (fn, ...params) {
     return SOCIALBROWSER.ipcSync('[fn]', { fn: fn, params: params });
@@ -264,6 +256,13 @@ SOCIALBROWSER.init2 = function () {
     SOCIALBROWSER.newTabData = SOCIALBROWSER.browserData.newTabData;
     SOCIALBROWSER.session = { ...SOCIALBROWSER.session, ...SOCIALBROWSER.browserData.session };
     SOCIALBROWSER.partition = SOCIALBROWSER.browserData.partition;
+
+    SOCIALBROWSER.userAgentBrowserList = SOCIALBROWSER.browserData.userAgentBrowserList;
+    SOCIALBROWSER.timeZones = SOCIALBROWSER.browserData.timeZones;
+    SOCIALBROWSER.languageList = SOCIALBROWSER.browserData.languageList;
+    SOCIALBROWSER.effectiveTypeList = SOCIALBROWSER.browserData.effectiveTypeList;
+    SOCIALBROWSER.connectionTypeList = SOCIALBROWSER.browserData.connectionTypeList;
+    SOCIALBROWSER.userAgentDeviceList = SOCIALBROWSER.browserData.userAgentDeviceList;
 
     if (!SOCIALBROWSER.customSetting.iframe && SOCIALBROWSER.isIframe()) {
         delete SOCIALBROWSER;

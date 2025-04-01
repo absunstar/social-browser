@@ -118,7 +118,7 @@ SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/keyboard.js');
 SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/doms.js');
 
 SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/nodes.js');
-SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/videos.js');
+// SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/videos.js');
 SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/embed.js');
 // SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/youtube.js');
 // SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/facebook.com.js');
@@ -200,20 +200,6 @@ if (SOCIALBROWSER.defaultUserAgent) {
     }
     SOCIALBROWSER.defaultUserAgent.name = SOCIALBROWSER.defaultUserAgent.name || SOCIALBROWSER.defaultUserAgent.url;
     if (SOCIALBROWSER.defaultUserAgent.name.contains('Edge')) {
-        chrome =
-            globalThis.chrome ||
-            JSON.parse(
-                '{"appPinningPrivate":{},"authPrivate":{"onServiceAuthStateChanged":{},"onSignInStateChanged":{},"AccountType":{"AAD":"AAD","MSA":"MSA","NO_ACCOUNT":"NO_ACCOUNT","UNSUPPORTED_SOVEREIGNTY":"UNSUPPORTED_SOVEREIGNTY"},"RegionScope":{"ARLINGTON":"ARLINGTON","BLACKFOREST":"BLACKFOREST","DOD":"DOD","DOJ":"DOJ","FAIRFAX":"FAIRFAX","GALLATIN":"GALLATIN","GCC_MODERATE":"GCC_MODERATE","GLOBAL":"GLOBAL","MAX_VALUE":"MAX_VALUE","OTHER":"OTHER","OTHER_US_GOV":"OTHER_US_GOV","UNKNOWN":"UNKNOWN"}},"ntpSettingsPrivate":{"onConfigDataChanged":{},"onPrefsChanged":{},"ControlledBy":{"DEVICE_POLICY":"DEVICE_POLICY","EXTENSION":"EXTENSION","OWNER":"OWNER","PRIMARY_USER":"PRIMARY_USER","USER_POLICY":"USER_POLICY"},"Enforcement":{"ENFORCED":"ENFORCED","RECOMMENDED":"RECOMMENDED"},"PrefType":{"BOOLEAN":"BOOLEAN","DICTIONARY":"DICTIONARY","LIST":"LIST","NUMBER":"NUMBER","STRING":"STRING","URL":"URL"}},"runtime":{"OnInstalledReason":{"CHROME_UPDATE":"chrome_update","INSTALL":"install","SHARED_MODULE_UPDATE":"shared_module_update","UPDATE":"update"},"OnRestartRequiredReason":{"APP_UPDATE":"app_update","OS_UPDATE":"os_update","PERIODIC":"periodic"},"PlatformArch":{"ARM":"arm","ARM64":"arm64","MIPS":"mips","MIPS64":"mips64","X86_32":"x86-32","X86_64":"x86-64"},"PlatformNaclArch":{"ARM":"arm","ARM64":"arm64","MIPS":"mips","MIPS64":"mips64","X86_32":"x86-32","X86_64":"x86-64"},"PlatformOs":{"ANDROID":"android","CROS":"cros","LINUX":"linux","MAC":"mac","OPENBSD":"openbsd","WIN":"win"},"RequestUpdateCheckStatus":{"NO_UPDATE":"no_update","THROTTLED":"throttled","UPDATE_AVAILABLE":"update_available"}},"shellIntegrationPrivate":{},"embeddedSearch":{"searchBox":{"rtl":false,"isFocused":false,"isKeyCaptureEnabled":false},"newTabPage":{"isInputInProgress":false,"mostVisited":[{"rid":1,"faviconUrl":"chrome-search://ntpicon/?size=48@1.000000x&url=https://wordpress.com/"},{"rid":2,"faviconUrl":"chrome-search://ntpicon/?size=48@1.000000x&url=https://javfinder.la/movie/watch/tre-148-b-prestige-losing-virginity-best-vol-05-the-best-first-experience-with-the-best-body-and-great-support-part-b.html"},{"rid":3,"faviconUrl":"chrome-search://ntpicon/?size=48@1.000000x&url=https://ae.godaddy.com/whois/results.aspx?checkAvail=1&domain=spicekingdom.com.eg&domainName=spicekingdom.com.eg"},{"rid":4,"faviconUrl":"chrome-search://ntpicon/?size=48@1.000000x&url=https://www.office.com/"}],"mostVisitedAvailable":true,"ntpTheme":{"usingDefaultTheme":true,"backgroundColorRgba":[247,247,247,255],"textColorRgba":[0,0,0,255],"textColorLightRgba":[102,102,102,255],"alternateLogo":false,"themeId":"","themeName":"","customBackgroundDisabledByPolicy":false,"customBackgroundConfigured":false,"isNtpBackgroundDark":false,"useTitleContainer":false,"iconBackgroundColor":[241,243,244,255],"useWhiteAddIcon":false,"logoColor":[238,238,238,255],"colorId":-1,"searchBox":{"bg":[255,0,0,255],"icon":[255,0,0,255],"iconSelected":[255,0,0,255],"placeholder":[255,0,0,255],"resultsBg":[255,0,0,255],"resultsBgHovered":[255,0,0,255],"resultsBgSelected":[255,0,0,255],"resultsDim":[255,0,0,255],"resultsDimSelected":[255,0,0,255],"resultsText":[255,0,0,255],"resultsTextSelected":[255,0,0,255],"resultsUrl":[255,0,0,255],"resultsUrlSelected":[255,0,0,255],"text":[255,0,0,255]}},"themeBackgroundInfo":{"usingDefaultTheme":true,"backgroundColorRgba":[247,247,247,255],"textColorRgba":[0,0,0,255],"textColorLightRgba":[102,102,102,255],"alternateLogo":false,"themeId":"","themeName":"","customBackgroundDisabledByPolicy":false,"customBackgroundConfigured":false,"isNtpBackgroundDark":false,"useTitleContainer":false,"iconBackgroundColor":[241,243,244,255],"useWhiteAddIcon":false,"logoColor":[238,238,238,255],"colorId":-1,"searchBox":{"bg":[255,0,0,255],"icon":[255,0,0,255],"iconSelected":[255,0,0,255],"placeholder":[255,0,0,255],"resultsBg":[255,0,0,255],"resultsBgHovered":[255,0,0,255],"resultsBgSelected":[255,0,0,255],"resultsDim":[255,0,0,255],"resultsDimSelected":[255,0,0,255],"resultsText":[255,0,0,255],"resultsTextSelected":[255,0,0,255],"resultsUrl":[255,0,0,255],"resultsUrlSelected":[255,0,0,255],"text":[255,0,0,255]}}}}}'
-            );
-        chrome.appPinningPrivate = chrome.appPinningPrivate || {
-            getPins: () => {},
-            pinPage: () => {},
-        };
-        chrome.csi = chrome.csi || function () {};
-        chrome.loadTimes = chrome.loadTimes || function () {};
-        if (!globalThis.chrome) {
-            SOCIALBROWSER.__define(window, 'chrome', chrome);
-        }
     } else if (SOCIALBROWSER.defaultUserAgent.name.contains('Firefox')) {
         SOCIALBROWSER.__define(window, 'mozRTCIceCandidate', window.RTCIceCandidate);
         SOCIALBROWSER.__define(window, 'mozRTCPeerConnection', window.RTCPeerConnection);
@@ -221,16 +207,6 @@ if (SOCIALBROWSER.defaultUserAgent) {
         window.mozInnerScreenX = 0;
         window.mozInnerScreenY = 74;
     } else if (SOCIALBROWSER.defaultUserAgent.name.contains('Chrome')) {
-        chrome =
-            globalThis.chrome ||
-            JSON.parse(
-                '{"app":{"isInstalled":false,"InstallState":{"DISABLED":"disabled","INSTALLED":"installed","NOT_INSTALLED":"not_installed"},"RunningState":{"CANNOT_RUN":"cannot_run","READY_TO_RUN":"ready_to_run","RUNNING":"running"}},"runtime":{"OnInstalledReason":{"CHROME_UPDATE":"chrome_update","INSTALL":"install","SHARED_MODULE_UPDATE":"shared_module_update","UPDATE":"update"},"OnRestartRequiredReason":{"APP_UPDATE":"app_update","OS_UPDATE":"os_update","PERIODIC":"periodic"},"PlatformArch":{"ARM":"arm","ARM64":"arm64","MIPS":"mips","MIPS64":"mips64","X86_32":"x86-32","X86_64":"x86-64"},"PlatformNaclArch":{"ARM":"arm","MIPS":"mips","MIPS64":"mips64","X86_32":"x86-32","X86_64":"x86-64"},"PlatformOs":{"ANDROID":"android","CROS":"cros","LINUX":"linux","MAC":"mac","OPENBSD":"openbsd","WIN":"win"},"RequestUpdateCheckStatus":{"NO_UPDATE":"no_update","THROTTLED":"throttled","UPDATE_AVAILABLE":"update_available"}}}'
-            );
-        chrome.csi = chrome.csi || function () {};
-        chrome.loadTimes = chrome.loadTimes || function () {};
-        if (!globalThis.chrome) {
-            SOCIALBROWSER.__define(window, 'chrome', chrome);
-        }
     }
 
     if (SOCIALBROWSER.defaultUserAgent.device && SOCIALBROWSER.defaultUserAgent.device.name === 'Mobile') {
@@ -377,14 +353,14 @@ SOCIALBROWSER.on('[window-action]', (e, data) => {
     } else if (data.name == 'toggle-page-content') {
         SOCIALBROWSER.togglePageContent();
     } else if (data.name == 'new-window') {
-        let browser = SOCIALBROWSER.getRandomBrowser('pc');
+        let defaultUserAgent = SOCIALBROWSER.getRandomBrowser('pc');
         SOCIALBROWSER.ipc('[open new popup]', {
             partition: SOCIALBROWSER.partition,
             url: document.location.href,
             referrer: document.location.href,
-            defaultUserAgent: browser,
-            width: browser.screen.width,
-            height: browser.screen.height,
+            defaultUserAgent: defaultUserAgent,
+            width: defaultUserAgent.screen.width,
+            height: defaultUserAgent.screen.height,
             show: true,
             center: true,
         });
@@ -444,7 +420,7 @@ SOCIALBROWSER.on('[window-action]', (e, data) => {
             url: document.location.href,
             referrer: document.location.href,
             allowAds: true,
-            allowPopup: false,
+            allowPopup: true,
             show: true,
             center: true,
         });
@@ -754,8 +730,10 @@ SOCIALBROWSER.onLoad(() => {
 
 navigator.clipboard = { writeText: SOCIALBROWSER.copy };
 
-if (document.location.href.like('*chrome-extension://*')) {
+if (true /** to work in background.js */ || SOCIALBROWSER.userAgentURL.like('*chrome*') || document.location.href.like('*chrome-extension://*')) {
     SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/chrome-extension.js');
+} else {
+    chrome = undefined;
 }
 
 if (SOCIALBROWSER.customSetting.eval) {

@@ -94,7 +94,7 @@
   browser.electron.app.clearRecentDocuments();
   // browser.electron.app.commandLine.appendSwitch('no-sandbox');
   // browser.electron.app.commandLine.appendSwitch('in-process-gpu');
-  browser.electron.app.disableHardwareAcceleration();
+  // browser.electron.app.disableHardwareAcceleration();
 
   browser.dir = process.resourcesPath + '/app.asar';
   if (!browser.fs.existsSync(browser.dir)) {

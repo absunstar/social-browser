@@ -101,8 +101,8 @@ var child = {
 };
 
 //  child.electron.app.commandLine.appendSwitch('in-process-gpu');
-child.electron.app.commandLine.appendSwitch('no-sandbox');
-child.electron.app.disableHardwareAcceleration();
+// child.electron.app.commandLine.appendSwitch('no-sandbox');
+// child.electron.app.disableHardwareAcceleration();
 
 require(child.path.join(child.dir, 'child', 'fn'))(child);
 require(child.path.join(child.dir, 'child', 'vars'))(child);

@@ -32,8 +32,6 @@
         "copyright": "Copyright©2025",
         "target": "NSIS",
         "asar": true,
-        "CSC_LINK": "",
-        "CSC_KEY_PASSWORD": "",
         "files": [
             "**/*",
             "!**/.vscode",
@@ -112,10 +110,11 @@
         }
     },
     "dependencies": {
-        "isite": "^2025.1.11"
+        "isite": "^2025.1.12",
+        "puppeteer-core": "^24.4.0"
     },
     "devDependencies": {
-        "electron": "^35.0.3",
+        "electron": "^35.1.2",
         "electron-builder": "^24.0.0"
     }
 }

@@ -44,7 +44,7 @@ var injectExtensionAPIs = () => {
         }
         let result;
         try {
-            result = await SOCIALBROWSER.invoke('crx-msg', extensionId, fnName, ...args);
+            result = await SOCIALBROWSER.invoke('[crx]', { extensionId: extensionId, fnName: fnName, args: args });
         } catch (e) {
             console.error(e);
             result = void 0;
@@ -91,7 +91,7 @@ var injectExtensionAPIs = () => {
         const chrome = globalThis.chrome || {};
         const extensionId = chrome.runtime?.id;
         const manifest = (extensionId && chrome.runtime.getManifest?.()) || {};
-        const invokeExtension2 =
+        const invokeExtensionHandle =
             (fnName, opts = {}) =>
             (...args) =>
                 electronContext.invokeExtension(extensionId, fnName, opts, ...args);
@@ -199,9 +199,9 @@ var injectExtensionAPIs = () => {
         const browserActionFactory = (base) => {
             const api = {
                 ...base,
-                setTitle: invokeExtension2('browserAction.setTitle'),
-                getTitle: invokeExtension2('browserAction.getTitle'),
-                setIcon: invokeExtension2('browserAction.setIcon', {
+                setTitle: invokeExtensionHandle('browserAction.setTitle'),
+                getTitle: invokeExtensionHandle('browserAction.getTitle'),
+                setIcon: invokeExtensionHandle('browserAction.setIcon', {
                     serialize: (details) => {
                         if (details.imageData) {
                             if (manifest.manifest_version === 3) {
@@ -219,16 +219,16 @@ var injectExtensionAPIs = () => {
                         return [details];
                     },
                 }),
-                setPopup: invokeExtension2('browserAction.setPopup'),
-                getPopup: invokeExtension2('browserAction.getPopup'),
-                setBadgeText: invokeExtension2('browserAction.setBadgeText'),
-                getBadgeText: invokeExtension2('browserAction.getBadgeText'),
-                setBadgeBackgroundColor: invokeExtension2('browserAction.setBadgeBackgroundColor'),
-                getBadgeBackgroundColor: invokeExtension2('browserAction.getBadgeBackgroundColor'),
-                getUserSettings: invokeExtension2('browserAction.getUserSettings'),
-                enable: invokeExtension2('browserAction.enable', { noop: true }),
-                disable: invokeExtension2('browserAction.disable', { noop: true }),
-                openPopup: invokeExtension2('browserAction.openPopup'),
+                setPopup: invokeExtensionHandle('browserAction.setPopup'),
+                getPopup: invokeExtensionHandle('browserAction.getPopup'),
+                setBadgeText: invokeExtensionHandle('browserAction.setBadgeText'),
+                getBadgeText: invokeExtensionHandle('browserAction.getBadgeText'),
+                setBadgeBackgroundColor: invokeExtensionHandle('browserAction.setBadgeBackgroundColor'),
+                getBadgeBackgroundColor: invokeExtensionHandle('browserAction.getBadgeBackgroundColor'),
+                getUserSettings: invokeExtensionHandle('browserAction.getUserSettings'),
+                enable: invokeExtensionHandle('browserAction.enable', { noop: true }),
+                disable: invokeExtensionHandle('browserAction.disable', { noop: true }),
+                openPopup: invokeExtensionHandle('browserAction.openPopup'),
                 onClicked: new ExtensionEvent('browserAction.onClicked'),
             };
             return api;
@@ -247,7 +247,7 @@ var injectExtensionAPIs = () => {
                 factory: (base) => {
                     return {
                         ...base,
-                        getAll: invokeExtension2('commands.getAll'),
+                        getAll: invokeExtensionHandle('commands.getAll'),
                         onCommand: new ExtensionEvent('commands.onCommand'),
                     };
                 },
@@ -256,7 +256,7 @@ var injectExtensionAPIs = () => {
                 factory: (base) => {
                     let menuCounter = 0;
                     const menuCallbacks = {};
-                    const menuCreate = invokeExtension2('contextMenus.create');
+                    const menuCreate = invokeExtensionHandle('contextMenus.create');
                     let hasInternalListener = false;
                     const addInternalListener = () => {
                         api.onClicked.addListener((info, tab) => {
@@ -279,9 +279,9 @@ var injectExtensionAPIs = () => {
                             menuCreate(createProperties, callback);
                             return createProperties.id;
                         },
-                        update: invokeExtension2('contextMenus.update', { noop: true }),
-                        remove: invokeExtension2('contextMenus.remove'),
-                        removeAll: invokeExtension2('contextMenus.removeAll'),
+                        update: invokeExtensionHandle('contextMenus.update', { noop: true }),
+                        remove: invokeExtensionHandle('contextMenus.remove'),
+                        removeAll: invokeExtensionHandle('contextMenus.removeAll'),
                         onClicked: new ExtensionEvent('contextMenus.onClicked'),
                     };
                     return api;
@@ -291,11 +291,11 @@ var injectExtensionAPIs = () => {
                 factory: (base) => {
                     return {
                         ...base,
-                        get: invokeExtension2('cookies.get'),
-                        getAll: invokeExtension2('cookies.getAll'),
-                        set: invokeExtension2('cookies.set'),
-                        remove: invokeExtension2('cookies.remove'),
-                        getAllCookieStores: invokeExtension2('cookies.getAllCookieStores'),
+                        get: invokeExtensionHandle('cookies.get'),
+                        getAll: invokeExtensionHandle('cookies.getAll'),
+                        set: invokeExtensionHandle('cookies.set'),
+                        remove: invokeExtensionHandle('cookies.remove'),
+                        getAllCookieStores: invokeExtensionHandle('cookies.getAllCookieStores'),
                         onChanged: new ExtensionEvent('cookies.onChanged'),
                     };
                 },
@@ -305,19 +305,19 @@ var injectExtensionAPIs = () => {
                 factory: (base) => {
                     return {
                         ...base,
-                        acceptDanger: invokeExtension2('downloads.acceptDanger', { noop: true }),
-                        cancel: invokeExtension2('downloads.cancel', { noop: true }),
-                        download: invokeExtension2('downloads.download', { noop: true }),
-                        erase: invokeExtension2('downloads.erase', { noop: true }),
-                        getFileIcon: invokeExtension2('downloads.getFileIcon', { noop: true }),
-                        open: invokeExtension2('downloads.open', { noop: true }),
-                        pause: invokeExtension2('downloads.pause', { noop: true }),
-                        removeFile: invokeExtension2('downloads.removeFile', { noop: true }),
-                        resume: invokeExtension2('downloads.resume', { noop: true }),
-                        search: invokeExtension2('downloads.search', { noop: true }),
-                        setUiOptions: invokeExtension2('downloads.setUiOptions', { noop: true }),
-                        show: invokeExtension2('downloads.show', { noop: true }),
-                        showDefaultFolder: invokeExtension2('downloads.showDefaultFolder', { noop: true }),
+                        acceptDanger: invokeExtensionHandle('downloads.acceptDanger', { noop: true }),
+                        cancel: invokeExtensionHandle('downloads.cancel', { noop: true }),
+                        download: invokeExtensionHandle('downloads.download', { noop: true }),
+                        erase: invokeExtensionHandle('downloads.erase', { noop: true }),
+                        getFileIcon: invokeExtensionHandle('downloads.getFileIcon', { noop: true }),
+                        open: invokeExtensionHandle('downloads.open', { noop: true }),
+                        pause: invokeExtensionHandle('downloads.pause', { noop: true }),
+                        removeFile: invokeExtensionHandle('downloads.removeFile', { noop: true }),
+                        resume: invokeExtensionHandle('downloads.resume', { noop: true }),
+                        search: invokeExtensionHandle('downloads.search', { noop: true }),
+                        setUiOptions: invokeExtensionHandle('downloads.setUiOptions', { noop: true }),
+                        show: invokeExtensionHandle('downloads.show', { noop: true }),
+                        showDefaultFolder: invokeExtensionHandle('downloads.showDefaultFolder', { noop: true }),
                         onChanged: new ExtensionEvent('downloads.onChanged'),
                         onCreated: new ExtensionEvent('downloads.onCreated'),
                         onDeterminingFilename: new ExtensionEvent('downloads.onDeterminingFilename'),
@@ -329,11 +329,11 @@ var injectExtensionAPIs = () => {
                 factory: (base) => {
                     return {
                         ...base,
-                        isAllowedFileSchemeAccess: invokeExtension2('extension.isAllowedFileSchemeAccess', {
+                        isAllowedFileSchemeAccess: invokeExtensionHandle('extension.isAllowedFileSchemeAccess', {
                             noop: true,
                             defaultResponse: false,
                         }),
-                        isAllowedIncognitoAccess: invokeExtension2('extension.isAllowedIncognitoAccess', {
+                        isAllowedIncognitoAccess: invokeExtensionHandle('extension.isAllowedIncognitoAccess', {
                             noop: true,
                             defaultResponse: false,
                         }),
@@ -366,11 +366,11 @@ var injectExtensionAPIs = () => {
                 factory: (base) => {
                     return {
                         ...base,
-                        clear: invokeExtension2('notifications.clear'),
-                        create: invokeExtension2('notifications.create'),
-                        getAll: invokeExtension2('notifications.getAll'),
-                        getPermissionLevel: invokeExtension2('notifications.getPermissionLevel'),
-                        update: invokeExtension2('notifications.update'),
+                        clear: invokeExtensionHandle('notifications.clear'),
+                        create: invokeExtensionHandle('notifications.create'),
+                        getAll: invokeExtensionHandle('notifications.getAll'),
+                        getPermissionLevel: invokeExtensionHandle('notifications.getPermissionLevel'),
+                        update: invokeExtensionHandle('notifications.update'),
                         onClicked: new ExtensionEvent('notifications.onClicked'),
                         onButtonClicked: new ExtensionEvent('notifications.onButtonClicked'),
                         onClosed: new ExtensionEvent('notifications.onClosed'),
@@ -381,10 +381,10 @@ var injectExtensionAPIs = () => {
                 factory: (base) => {
                     return {
                         ...base,
-                        contains: invokeExtension2('permissions.contains'),
-                        getAll: invokeExtension2('permissions.getAll'),
-                        remove: invokeExtension2('permissions.remove'),
-                        request: invokeExtension2('permissions.request'),
+                        contains: invokeExtensionHandle('permissions.contains'),
+                        getAll: invokeExtensionHandle('permissions.getAll'),
+                        remove: invokeExtensionHandle('permissions.remove'),
+                        request: invokeExtensionHandle('permissions.request'),
                         onAdded: new ExtensionEvent('permissions.onAdded'),
                         onRemoved: new ExtensionEvent('permissions.onRemoved'),
                     };
@@ -423,8 +423,10 @@ var injectExtensionAPIs = () => {
                             electronContext.connectNative(extensionId, application, receive, disconnect, callback);
                             return port;
                         },
-                        openOptionsPage: invokeExtension2('runtime.openOptionsPage'),
-                        sendNativeMessage: invokeExtension2('runtime.sendNativeMessage'),
+                        openOptionsPage: invokeExtensionHandle('runtime.openOptionsPage'),
+                        sendNativeMessage: invokeExtensionHandle('runtime.sendNativeMessage'),
+                        connect: null,
+                        sendMessage: null,
                     };
                 },
             },
@@ -443,7 +445,7 @@ var injectExtensionAPIs = () => {
                 factory: (base) => {
                     const api = {
                         ...base,
-                        create: invokeExtension2('tabs.create'),
+                        create: invokeExtensionHandle('tabs.create'),
                         executeScript: async function (arg1, arg2, arg3) {
                             if (typeof arg1 === 'object') {
                                 const [activeTab] = await api.query({
@@ -455,16 +457,16 @@ var injectExtensionAPIs = () => {
                                 return base.executeScript(arg1, arg2, arg3);
                             }
                         },
-                        get: invokeExtension2('tabs.get'),
-                        getCurrent: invokeExtension2('tabs.getCurrent'),
-                        getAllInWindow: invokeExtension2('tabs.getAllInWindow'),
-                        insertCSS: invokeExtension2('tabs.insertCSS'),
-                        query: invokeExtension2('tabs.query'),
-                        reload: invokeExtension2('tabs.reload'),
-                        update: invokeExtension2('tabs.update'),
-                        remove: invokeExtension2('tabs.remove'),
-                        goBack: invokeExtension2('tabs.goBack'),
-                        goForward: invokeExtension2('tabs.goForward'),
+                        get: invokeExtensionHandle('tabs.get'),
+                        getCurrent: invokeExtensionHandle('tabs.getCurrent'),
+                        getAllInWindow: invokeExtensionHandle('tabs.getAllInWindow'),
+                        insertCSS: invokeExtensionHandle('tabs.insertCSS'),
+                        query: invokeExtensionHandle('tabs.query'),
+                        reload: invokeExtensionHandle('tabs.reload'),
+                        update: invokeExtensionHandle('tabs.update'),
+                        remove: invokeExtensionHandle('tabs.remove'),
+                        goBack: invokeExtensionHandle('tabs.goBack'),
+                        goForward: invokeExtensionHandle('tabs.goForward'),
                         onCreated: new ExtensionEvent('tabs.onCreated'),
                         onRemoved: new ExtensionEvent('tabs.onRemoved'),
                         onUpdated: new ExtensionEvent('tabs.onUpdated'),
@@ -477,7 +479,7 @@ var injectExtensionAPIs = () => {
             topSites: {
                 factory: () => {
                     return {
-                        get: invokeExtension2('topSites.get', { noop: true, defaultResponse: [] }),
+                        get: invokeExtensionHandle('topSites.get', { noop: true, defaultResponse: [] }),
                     };
                 },
             },
@@ -485,8 +487,8 @@ var injectExtensionAPIs = () => {
                 factory: (base) => {
                     return {
                         ...base,
-                        getFrame: invokeExtension2('webNavigation.getFrame'),
-                        getAllFrames: invokeExtension2('webNavigation.getAllFrames'),
+                        getFrame: invokeExtensionHandle('webNavigation.getFrame'),
+                        getAllFrames: invokeExtensionHandle('webNavigation.getAllFrames'),
                         onBeforeNavigate: new ExtensionEvent('webNavigation.onBeforeNavigate'),
                         onCommitted: new ExtensionEvent('webNavigation.onCommitted'),
                         onCompleted: new ExtensionEvent('webNavigation.onCompleted'),
@@ -512,14 +514,14 @@ var injectExtensionAPIs = () => {
                     return {
                         ...base,
                         WINDOW_ID_NONE: -1,
-                        WINDOW_ID_CURRENT: -2,
-                        get: invokeExtension2('windows.get'),
-                        getCurrent: invokeExtension2('windows.getCurrent'),
-                        getLastFocused: invokeExtension2('windows.getLastFocused'),
-                        getAll: invokeExtension2('windows.getAll'),
-                        create: invokeExtension2('windows.create'),
-                        update: invokeExtension2('windows.update'),
-                        remove: invokeExtension2('windows.remove'),
+                        WINDOW_ID_CURRENT: SOCIALBROWSER.window.id,
+                        get: invokeExtensionHandle('windows.get'),
+                        getCurrent: invokeExtensionHandle('windows.getCurrent'),
+                        getLastFocused: invokeExtensionHandle('windows.getLastFocused'),
+                        getAll: invokeExtensionHandle('windows.getAll'),
+                        create: invokeExtensionHandle('windows.create'),
+                        update: invokeExtensionHandle('windows.update'),
+                        remove: invokeExtensionHandle('windows.remove'),
                         onCreated: new ExtensionEvent('windows.onCreated'),
                         onRemoved: new ExtensionEvent('windows.onRemoved'),
                         onFocusChanged: new ExtensionEvent('windows.onFocusChanged'),
@@ -539,6 +541,110 @@ var injectExtensionAPIs = () => {
                 configurable: true,
             });
         });
+
+        chrome.csi = function () {
+            return {
+                onloadT: window.performance.timing.domContentLoadedEventEnd,
+                startE: window.performance.timing.navigationStart,
+                pageT: Date.now() - window.performance.timing.navigationStart,
+                tran: 15, // Transition type or something
+            };
+        };
+        const ntEntryFallback = {
+            nextHopProtocol: 'h2',
+            type: 'other',
+        };
+        function toFixed(num, fixed) {
+            var re = new RegExp('^-?\\d+(?:.\\d{0,' + (fixed || -1) + '})?');
+            return num.toString().match(re)[0];
+        }
+
+        chrome.loadTimes = function () {
+            return {
+                get connectionInfo() {
+                    const ntEntry = window.performance.getEntriesByType('navigation')[0] || ntEntryFallback;
+                    return ntEntry.nextHopProtocol;
+                },
+                get npnNegotiatedProtocol() {
+                    const ntEntry = window.performance.getEntriesByType('navigation')[0] || ntEntryFallback;
+                    return ['h2', 'hq'].includes(ntEntry.nextHopProtocol) ? ntEntry.nextHopProtocol : 'unknown';
+                },
+                get navigationType() {
+                    const ntEntry = window.performance.getEntriesByType('navigation')[0] || ntEntryFallback;
+                    return ntEntry.type;
+                },
+                get wasAlternateProtocolAvailable() {
+                    return false;
+                },
+                get wasFetchedViaSpdy() {
+                    const ntEntry = window.performance.getEntriesByType('navigation')[0] || ntEntryFallback;
+                    return ['h2', 'hq'].includes(ntEntry.nextHopProtocol);
+                },
+                get wasNpnNegotiated() {
+                    const ntEntry = window.performance.getEntriesByType('navigation')[0] || ntEntryFallback;
+                    return ['h2', 'hq'].includes(ntEntry.nextHopProtocol);
+                },
+                get firstPaintAfterLoadTime() {
+                    return 0;
+                },
+                get requestTime() {
+                    return window.performance.timing.navigationStart / 1000;
+                },
+                get startLoadTime() {
+                    return window.performance.timing.navigationStart / 1000;
+                },
+                get commitLoadTime() {
+                    return window.performance.timing.responseStart / 1000;
+                },
+                get finishDocumentLoadTime() {
+                    return window.performance.timing.domContentLoadedEventEnd / 1000;
+                },
+                get finishLoadTime() {
+                    return window.performance.timing.loadEventEnd / 1000;
+                },
+                get firstPaintTime() {
+                    const fpEntry = window.performance.getEntriesByType('paint')[0] || {
+                        startTime: window.performance.timing.loadEventEnd / 1000, // Fallback if no navigation occured (`about:blank`)
+                    };
+                    return toFixed((fpEntry.startTime + window.performance.timeOrigin) / 1000, 3);
+                },
+            };
+        };
+        chrome.app = {
+            isInstalled: false,
+            InstallState: {
+                DISABLED: 'disabled',
+                INSTALLED: 'installed',
+                NOT_INSTALLED: 'not_installed',
+            },
+            RunningState: {
+                CANNOT_RUN: 'cannot_run',
+                READY_TO_RUN: 'ready_to_run',
+                RUNNING: 'running',
+            },
+            isInstalled: function () {
+                return false;
+            },
+
+            getDetails: function () {
+                return null;
+            },
+            getIsInstalled: function () {
+                return false;
+            },
+            runningState: function () {
+                return 'cannot_run';
+            },
+        };
+
+        chrome.appPinningPrivate = chrome.appPinningPrivate || {
+            getPins: () => {},
+            pinPage: () => {},
+        };
+
+        if (!globalThis.chrome) {
+            SOCIALBROWSER.__define(window, 'chrome', chrome);
+        }
     }
 
     mainWorldScript();

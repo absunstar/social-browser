@@ -78,7 +78,6 @@ module.exports = function (child) {
                             }
                         }
                     } else {
-                      
                         if (!child.partition.like('*setting*|*social*|*file*')) {
                             child.parent.var['googleExtensionList']?.forEach((extensionInfo) => {
                                 child.loadGoogleExtension(extensionInfo);
@@ -384,6 +383,8 @@ module.exports = function (child) {
                             } else if (message.data.name == 'window-zoom') {
                                 w.window.webContents.zoomFactor = 1;
                                 w.window.show();
+                            } else if (message.data.name == 'open-external' && message.data.url) {
+                                child.openExternal(message.data.url);
                             } else {
                                 w.window.webContents.send('[window-action]', message.data);
                                 if (message.data.levels) {

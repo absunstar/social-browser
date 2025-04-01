@@ -9,6 +9,27 @@ if (
 }
 SOCIALBROWSER.log('.... [ Ads Manager Activated ] .... ' + document.location.href);
 
-window.canRunAds = true;
+function changeAdsVAR() {
+  SOCIALBROWSER.__setConstValue(window, 'googleAd', true);
+  SOCIALBROWSER.__setConstValue(window, 'canRunAds', true);
+  SOCIALBROWSER.__setConstValue(window, 'adsNotBlocked', true);
+  SOCIALBROWSER.__setConstValue(window, '$tieE3', true);
+  SOCIALBROWSER.__setConstValue(window, '$zfgformats', []);
+  SOCIALBROWSER.__setConstValue(window, 'adbDetectorLoaded', 'loaded');
+  SOCIALBROWSER.__setConstValue(window, 'adblock', false);
+  SOCIALBROWSER.__setConstValue(window, '_AdBlock_init', {});
+  SOCIALBROWSER.__setConstValue(window, '_AdBlock', () => {});
+  SOCIALBROWSER.__setConstValue(window, 'NativeAd', () => {});
+  SOCIALBROWSER.__setConstValue(window, 'TsInPagePush', () => {});
+  SOCIALBROWSER.__setConstValue(window, 'ExoLoader', {
+      addZone: () => {},
+      serve: () => {},
+  });
+  SOCIALBROWSER.__setConstValue(window, 'ExoVideoSlider', {
+      init: () => {},
+  });
+}
+
+changeAdsVAR();
 
 SOCIALBROWSER.onLoad(() => {});

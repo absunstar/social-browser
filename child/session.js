@@ -597,8 +597,6 @@ module.exports = function (child) {
                 //   delete details.responseHeaders['x-frame-options'];
                 // }
 
-        
-
                 // must delete values before re set
                 if ((headers = true)) {
                     let a_orgin = details.responseHeaders['Access-Control-Allow-Origin'] || details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()];
@@ -671,12 +669,13 @@ module.exports = function (child) {
                             if (s_policy.contains('script-src') && !s_policy.contains('unsafe-inline')) {
                                 s_policy = s_policy + " 'unsafe-inline'";
                             }
+                        } else {
+                            console.log(typeof s_policy, s_policy);
                         }
                         details.responseHeaders['Content-Security-Policy'] = s_policy;
                     }
                 }
 
-             
                 if (child.parent.var.blocking.white_list.some((item) => url.like(item.url))) {
                     callback({
                         cancel: false,
@@ -687,7 +686,7 @@ module.exports = function (child) {
                     });
                     return;
                 }
-                
+
                 if ((info = child.getOverwriteInfo(url))) {
                     if (url.like(info.to) && info.rediect_from) {
                         details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = ['*'];

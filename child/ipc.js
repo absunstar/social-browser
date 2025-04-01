@@ -33,6 +33,12 @@ module.exports = function init(child) {
             injectCSS: child.parent.injectCSS,
             newTabData: child.parent.newTabData,
             parentAssignWindow: child.assignWindows.find((w) => w.childWindowID == data.windowID),
+            userAgentBrowserList: child.userAgentBrowserList.map((b) => ({ name: b.name, vendor: b.vendor, prefix: b.prefix })),
+            timeZones: child.timeZones,
+            languageList: child.languageList,
+            effectiveTypeList: child.effectiveTypeList,
+            connectionTypeList: child.connectionTypeList,
+            userAgentDeviceList: child.userAgentDeviceList,
         };
 
         let win = child.windowList.find((w) => w.id == data.windowID);
@@ -47,30 +53,16 @@ module.exports = function init(child) {
     };
 
     child.ipcMain.handle('[browser][data]', async (event, data) => {
-        try {
-            let data2 = child.handleBrowserData(data);
-            return data2;
-        } catch (ex) {
-            event.returnValue = {
-                childProcessID: child.id,
-                child_index: child.index,
-                information: child.parent.information,
-                var: child.parent.var,
-                files_dir: child.parent.files_dir,
-                dir: child.parent.dir,
-                data_dir: child.parent.data_dir,
-                injectHTML: child.parent.injectHTML,
-                injectCSS: child.parent.injectCSS,
-                newTabData: child.parent.newTabData,
-                windows: null,
-            };
-            return data2;
-        }
+        let data2 = child.handleBrowserData(data);
+        return data2;
+    });
+    child.ipcMain.handle('[crx]', async (event, data) => {
+        console.log('[crx]', data);
+        return undefined;
     });
     child.ipcMain.on('[browser][data]', async (event, data) => {
         let data2 = child.handleBrowserData(data);
         event.returnValue = data2;
-        return data2;
     });
 
     child.ipcMain.on('[get]', async (event, data) => {
@@ -150,12 +142,11 @@ module.exports = function init(child) {
             event.returnValue = false;
         }
     });
-    child.ipcMain.on('[fn]', async (event, data) => {
+    child.handleRenderFn = function (event, data) {
         try {
             let arr = data.fn.split('.');
             let obj = undefined;
             let fn = undefined;
-            let result = undefined;
 
             if (arr.length == 1) {
                 obj = child;
@@ -175,6 +166,8 @@ module.exports = function init(child) {
                     obj = child.api;
                 } else if (arr[0] == 'screen') {
                     obj = child.electron.screen;
+                } else if (arr[0] == 'child') {
+                    obj = child;
                 } else {
                     obj = null;
                 }
@@ -183,22 +176,44 @@ module.exports = function init(child) {
             if (obj && fn) {
                 if (obj[fn] && typeof obj[fn] == 'function') {
                     if (typeof data.params == 'string') {
-                        result = obj[fn](data.params);
+                        return obj[fn](data.params);
                     } else {
-                        result = obj[fn](...data.params);
+                        return obj[fn](...data.params);
                     }
                 }
-            }
-
-            if (result instanceof Promise) {
-                result.then((res) => {
-                    event.returnValue = res;
-                });
             } else {
-                event.returnValue = result;
+                return undefined;
             }
         } catch (error) {
-            event.returnValue = undefined;
+            return undefined;
+        }
+    };
+    child.ipcMain.on('[fn]', async (event, data) => {
+        let result = child.handleRenderFn(event, data);
+        if (result instanceof Promise) {
+            result
+                .then((res) => {
+                    event.returnValue = res;
+                })
+                .catch((err) => {
+                    event.returnValue = err;
+                });
+        } else {
+            event.returnValue = result;
+        }
+    });
+    child.ipcMain.handle('[fn]', async (event, data) => {
+        let result = child.handleRenderFn(event, data);
+        if (result instanceof Promise) {
+            result
+                .then((res) => {
+                    return res;
+                })
+                .catch((err) => {
+                    return err;
+                });
+        } else {
+            return result;
         }
     });
 
@@ -698,6 +713,7 @@ module.exports = function init(child) {
             });
             contents = contents || win.webContents;
         }
+        
         data.list.forEach((m, i) => {
             m.click = function () {
                 contents.send('[run-menu]', { index: i });
