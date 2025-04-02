@@ -452,7 +452,7 @@ module.exports = function init(parent) {
                     if (client.ws) {
                         if (name == 'urls') {
                             if (client.uuid == 'user-file' || client.uuid == 'user-social' || client.uuid == 'user-setting') {
-                               // parent.log(`update private var ( ${name} ) to client : ${client.uuid}`);
+                                // parent.log(`update private var ( ${name} ) to client : ${client.uuid}`);
                                 client.ws.send({
                                     type: '[update-browser-var]',
                                     options: {
@@ -463,7 +463,7 @@ module.exports = function init(parent) {
                             }
                         } else if (name == 'cookieList') {
                             if (client.uuid == 'user-file' || client.uuid == 'user-setting') {
-                              //  parent.log(`update private var ( ${name} ) to client : ${client.uuid}`);
+                                //  parent.log(`update private var ( ${name} ) to client : ${client.uuid}`);
                                 client.ws.send({
                                     type: '[update-browser-var]',
                                     options: {
@@ -472,7 +472,7 @@ module.exports = function init(parent) {
                                     },
                                 });
                             } else {
-                             //   parent.log(`update custom var ( ${name} ) to client : ${client.uuid}`);
+                                //   parent.log(`update custom var ( ${name} ) to client : ${client.uuid}`);
                                 if (client.partition.like('*ghost*')) {
                                     client.ws.send({
                                         type: '[update-browser-var]',
@@ -493,7 +493,7 @@ module.exports = function init(parent) {
                             }
                         } else if (name == 'download_list') {
                             if (client.windowType == 'files') {
-                              //  parent.log(`update private var ( ${name} ) to client : ${client.uuid}`);
+                                //  parent.log(`update private var ( ${name} ) to client : ${client.uuid}`);
                                 client.ws.send({
                                     type: '[update-browser-var]',
                                     options: {
@@ -513,7 +513,7 @@ module.exports = function init(parent) {
                                 });
                             }
                         } else {
-                          //  parent.log(`update public var ( ${name} ) to client : ${client.uuid}`);
+                            //  parent.log(`update public var ( ${name} ) to client : ${client.uuid}`);
                             client.ws.send({
                                 type: '[update-browser-var]',
                                 options: {
@@ -766,8 +766,6 @@ module.exports = function init(parent) {
                         // error when server down or no internet or site blocked for any reson ( online key only)
                         console.log(err);
                         parent.var.core.activeMessage = err;
-                        parent.var.core.browserActivated = false;
-                        parent.var.core.max_tabs = 2;
                     });
             } else {
                 if (parent.var.session_list.length <= parent.freeUsersCount) {
@@ -780,9 +778,6 @@ module.exports = function init(parent) {
                     parent.var.core.browserActivated = false;
                     parent.var.core.max_tabs = 2;
                     parent.var.core.activeMessage = 'Need Device Key or Online Key';
-                    // if (parent.var.session_list.length > parent.freeUsersCount) {
-                    //   parent.var.core.activeMessage = `More Than ( ${parent.freeUsersCount} ) Profile Not Free`;
-                    // }
                 }
             }
         }

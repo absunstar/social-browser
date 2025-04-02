@@ -20,7 +20,7 @@
         "enabled": true
     },
     {
-        "url": "*addthis.com*|*adskeeper.co*|*brightonclick.com*|*gigaonclick.com*|*padsdel.com*|*cdn4ads*|/ad.js|*bestcontentproject.top*|*popsoffer.com*|*ppfrlfe.com*|*awmserve.com*|*labeldollars.com*|*wpadmngr.com*",
+        "url": "*addthis.com*|*adskeeper.co*|*brightonclick.com*|*gigaonclick.com*|*padsdel.com*|*cdn4ads*|/ad.js|*bestcontentproject.top*|*popsoffer.com*|*ppfrlfe.com*|*awmserve.com*|*labeldollars.com*|*wpadmngr.com*|*diagramjawlineunhappy.com*|*leedsneurite.com*|*s0-greate.net*|*ptichoolsougn.net*|*labadena.com*|*tapioni.com*|*wmgtr.com*",
         "name": "cdn",
         "enabled": true
     },
@@ -75,11 +75,11 @@
     },
     { "url": "*/api/click/*|*adblocker*js", "name": "api", "enabled": true },
     { "url": "*gmxvmvptfm.com*|*12ezo5v60.com*|*lby2kd27c.com*|*ku42hjr2e.com*|*sadjklq.com*", "name": "ad001" },
-    { "url": "*mutcheng.net*|*favorskhivan.com*|*uratekrait.com*|*psoroumukr.com*|*curatekrait.com*|*oonsouque.com*|*naupsakiwhy.com*", "name": "ad002" },
+    { "url": "*mutcheng.net*|*favorskhivan.com*|*uratekrait.com*|*psoroumukr.com*|*curatekrait.com*|*oonsouque.com*|*naupsakiwhy.com*|*affordedseasick.com*", "name": "ad002" },
     { "name": "redirect 6", "url": "*tr-boost.com*|*consciousnesshear.com*|*mcpuwpsh.com*|*jsmcrptjmp.com*|*s.orbsrv.com*|*twinrdack.com*|*t.pimiji.xyz*", "enabled": true },
     { "url": "https://ad.*|*pagead.js|*widget/ads.*|*pixeltrey.com*|*clicks2apk.com*|*floitcarites.com*|*geogenyveered.com*", "name": "ad-block", "enabled": true },
     {
-        "url": "*shakingtacklingunpeeled.com*|*boodiecawquaw.top*|*zeecajichaiw.net*|*ileeckut.com*|*aiveemtomsaix.net*|*ewouwamsubsouvy.net*|*curiescores.com*|*goboksehee.net*|*safedragonapp.monster*|*specificallycries.com*|*peanutrefusesplit.com*",
+        "url": "*shakingtacklingunpeeled.com*|*boodiecawquaw.top*|*zeecajichaiw.net*|*ileeckut.com*|*aiveemtomsaix.net*|*ewouwamsubsouvy.net*|*curiescores.com*|*goboksehee.net*|*safedragonapp.monster*|*specificallycries.com*|*peanutrefusesplit.com*|*zygoticroud.shop*",
         "name": "ad003"
     },
     { "url": "*endscreen.js*", "name": "test 1", "enabled": true },

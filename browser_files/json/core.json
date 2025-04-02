@@ -1,7 +1,7 @@
 {
     "port": 60080,
     "enabled": true,
-    "version": "2025.03.21",
+    "version": "2025.04.04",
     "prefix": "SB_",
     "flags": "",
     "full_version": true,
