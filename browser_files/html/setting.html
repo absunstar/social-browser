@@ -11,7 +11,7 @@
                 --theme-color: #212529;
                 --form-color: #212529;
 
-                --bs-body-color: #d1d1d1;
+                --bs-body-color: #212529;
                 --bs-body-font-family: var(--font-family);
 
                 --input-color: #795548;
@@ -45,6 +45,8 @@
                 --input-focus-border-color: #212529;
 
                 --table-hover-background-color: #4caf5070;
+         
+                --bs-body-bg: #fff;
             }
             html,
             body,
@@ -64,6 +66,7 @@
             .table {
                 --bs-table-bg: #283e4a;
                 --table-color: #ffc107;
+                --bs-table-color-state: #fff;
                 margin: 5px;
             }
             .tabs .tabs-header .tab-link {
@@ -312,7 +315,7 @@
                                         <div class="row padding">
                                             <h2 class="bold red" ng-hide="setting.core.browserActivated">Browser Not Active</h2>
                                             <h2 class="bold white" ng-show="setting.core.browserActivated">Browser Active</h2>
-                                            <p class="bold">{{setting.core.activeMessage}}</p>
+                                            <p class="bold orange">{{setting.core.activeMessage}}</p>
                                         </div>
 
                                         <div class="row padding">

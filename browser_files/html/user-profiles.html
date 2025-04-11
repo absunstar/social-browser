@@ -1,113 +1,113 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="myApp">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <link rel="stylesheet" href="http://127.0.0.1:60080/x-css/bootstrap-5-support.css" />
-    <link rel="stylesheet" href="http://127.0.0.1:60080/x-css/theme_paper.css" />
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/social-tabs-current-theme.css" />
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <link rel="stylesheet" href="http://127.0.0.1:60080/x-css/bootstrap-5-support.css" />
+        <link rel="stylesheet" href="http://127.0.0.1:60080/x-css/theme_paper.css" />
+        <link rel="stylesheet" href="http://127.0.0.1:60080/css/social-tabs-current-theme.css" />
 
-    <style>
-      :root {
-        --input-focus-border-color: #030303;
-        --btn-min-width: 50px;
-      }
-      body {
-        font-size: 12px;
-        margin: 0px;
-        padding: 20px;
-        font-family: monospace, 'Cairo';
-      }
-      fieldset {
-        border: 1px solid #ddd;
-      }
-      fieldset legend {
-        font-size: 14px;
-        text-shadow: none;
-        font-weight: normal;
-        border: none;
-      }
-      .user-box {
-        background-color: var(--social-current-tab-fill);
-        padding: 3px;
-        margin: 3px;
-        text-align: left;
-        border: 1px solid #dddddd;
-        cursor: pointer;
-        transition: all 0.4s ease;
-        border-radius: 3px;
-      }
+        <style>
+            :root {
+                --input-focus-border-color: #030303;
+                --btn-min-width: 50px;
+                --bs-body-color: #cddc39;
+            }
+            body {
+                font-size: 12px;
+                margin: 0px;
+                padding: 20px;
+                font-family: monospace, 'Cairo';
+            }
+            fieldset {
+                border: 1px solid #ddd;
+            }
+            fieldset legend {
+                font-size: 14px;
+                text-shadow: none;
+                font-weight: normal;
+                border: none;
+            }
+            .user-box {
+                background-color: var(--social-current-tab-fill);
+                padding: 3px;
+                margin: 3px;
+                text-align: left;
+                border: 1px solid #dddddd;
+                cursor: pointer;
+                transition: all 0.4s ease;
+                border-radius: 3px;
+            }
 
-      .user-box:hover {
-        transform: scale(1.05);
-      }
-      .user-box:hover p2 {
-        color: var(--social-current-tab-fill);
-      }
-      .user-box p {
-        display: inline-block;
-        font-size: 16px;
-        text-align: center;
-        color: #cddc39;
-        padding: 3px;
-        margin: 3px;
-        vertical-align: top;
-      }
-      .user-box p span {
-        color: #4caf50;
-      }
-      .user-box img {
-        display: inline-block;
-        width: 28px;
-        height: 28px;
-      }
-      a.btn {
-        background-color: #4182e2 !important;
-      }
-      i-button button {
-        margin-top: 0px !important;
-      }
-    </style>
-    <title>Document</title>
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/blue-theme.css" />
+            .user-box:hover {
+                transform: scale(1.05);
+            }
+            .user-box:hover p2 {
+                color: var(--social-current-tab-fill);
+            }
+            .user-box p {
+                display: inline-block;
+                font-size: 16px;
+                text-align: center;
+                color: #cddc39;
+                padding: 3px;
+                margin: 3px;
+                vertical-align: top;
+            }
+            .user-box p span {
+                color: #4caf50;
+            }
+            .user-box img {
+                display: inline-block;
+                width: 28px;
+                height: 28px;
+            }
+            a.btn {
+                background-color: #4182e2 !important;
+            }
+            i-button button {
+                margin-top: 0px !important;
+            }
+        </style>
+        <title>Document</title>
+        <link rel="stylesheet" href="http://127.0.0.1:60080/css/blue-theme.css" />
+    </head>
+    <body ng-controller="mainController" class="container">
+        <div class="row padding margin">
+            <fieldset>
+                <legend>Search in Profiles</legend>
+                <div class="row">
+                    <i-control ng-model="session.display"></i-control>
+                </div>
+            </fieldset>
+        </div>
 
-  </head>
-  <body ng-controller="mainController" class="container">
-    <div class="row padding margin">
-      <fieldset>
-        <legend>Search in Profiles</legend>
         <div class="row">
-          <i-control ng-model="session.display"></i-control>
+            <div class="row" ng-repeat="_se in setting.session_list | orderBy : 'time'| filter:session.display track by $index  ">
+                <div class="col-11">
+                    <div class="user-box" ng-click="selectSession(_se)">
+                        <img src="http://127.0.0.1:60080/images/user.png" />
+                        <p><span class="bold"> ( {{$index + 1}} / {{setting.session_list.length}} ) </span> {{_se.display}}</p>
+                    </div>
+                </div>
+                <div class="col-1">
+                    <i-button type="delete" ng-click="removeSession(_se)"></i-button>
+                </div>
+            </div>
         </div>
-      </fieldset>
-    </div>
 
-    <div class="row">
-      <div class="row" ng-repeat="_se in setting.session_list | orderBy : 'time'| filter:session.display track by $index  ">
-        <div class="col-11">
-          <div class="user-box" ng-click="selectSession(_se)">
-            <img src="http://127.0.0.1:60080/images/user.png" />
-            <p><span class="bold"> ( {{$index + 1}} / {{setting.session_list.length}} ) </span> {{_se.display}}</p>
-          </div>
+        <div class="row padding margin">
+            <fieldset>
+                <legend>New Profile Name</legend>
+                <div class="row">
+                    <i-control ng-model="session.display"></i-control>
+                    <i-button type="add" ng-click="addSession()" label="Create New Profile"></i-button>
+                </div>
+            </fieldset>
         </div>
-        <div class="col-1">
-          <i-button type="delete" ng-click="removeSession(_se)"></i-button>
-        </div>
-      </div>
-    </div>
 
-    <div class="row padding margin">
-      <fieldset>
-        <legend>New Profile Name</legend>
-        <div class="row">
-          <i-control ng-model="session.display"></i-control>
-          <i-button type="add" ng-click="addSession()" label="Create New Profile"></i-button>
-        </div>
-      </fieldset>
-    </div>
-
-    <script src="http://127.0.0.1:60080/x-js/bootstrap-5-support.js"></script>
-    <script src="http://127.0.0.1:60080/js/user-profiles.js"></script>
-  </body>
+        <script src="http://127.0.0.1:60080/x-js/bootstrap-5-support.js"></script>
+        <script src="http://127.0.0.1:60080/js/user-profiles.js"></script>
+    </body>
 </html>

@@ -152,6 +152,7 @@ module.exports = function init(parent) {
     parent.save_var(name);
   };
 
+  require(parent.path.join(parent.dir, 'child', 'shared.js'))(parent);
   require(parent.path.join(parent.dir, 'parent', 'fn.js'))(parent);
   require(parent.path.join(parent.dir, 'parent', 'file.js'))(parent);
   require(parent.path.join(parent.dir, 'parent', 'download.js'))(parent);

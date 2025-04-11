@@ -713,7 +713,7 @@ module.exports = function init(child) {
             });
             contents = contents || win.webContents;
         }
-        
+
         data.list.forEach((m, i) => {
             m.click = function () {
                 contents.send('[run-menu]', { index: i });
@@ -762,6 +762,13 @@ module.exports = function init(child) {
     });
 
     child.ipcMain.handle('[show-view]', (e, options) => {
+        if (child.addressbarWindow && !child.addressbarWindow.isDestroyed()) {
+            child.addressbarWindow.hide();
+        }
+        if (child.profilesWindow && !child.profilesWindow.isDestroyed()) {
+            child.profilesWindow.hide();
+        }
+
         if (child.speedMode) {
             child.currentView = options;
             child.windowList.forEach((w) => {
@@ -773,13 +780,6 @@ module.exports = function init(child) {
                     }
                 }
             });
-
-            if (child.addressbarWindow && !child.addressbarWindow.isDestroyed()) {
-                child.addressbarWindow.hide();
-            }
-            if (child.profilesWindow && !child.profilesWindow.isDestroyed()) {
-                child.profilesWindow.hide();
-            }
         } else {
             delete options.parentSetting;
             // let w = child.windowList.find((w) => w.customSetting.windowType == 'main');

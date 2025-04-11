@@ -104,6 +104,7 @@ var child = {
 // child.electron.app.commandLine.appendSwitch('no-sandbox');
 // child.electron.app.disableHardwareAcceleration();
 
+require(child.path.join(child.dir, 'child', 'shared'))(child);
 require(child.path.join(child.dir, 'child', 'fn'))(child);
 require(child.path.join(child.dir, 'child', 'vars'))(child);
 require(child.path.join(child.dir, 'child', 'windows'))(child);
