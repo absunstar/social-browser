@@ -36,9 +36,6 @@ module.exports = function (child) {
 
     child.handleSession = function (sessionOptions) {
         if (child.sessionBusy) {
-            // setTimeout(() => {
-            //   child.handleSession(obj);
-            // }, 1000 * 5);
             return;
         }
 
@@ -49,6 +46,10 @@ module.exports = function (child) {
             return;
         }
         let name = sessionOptions.name;
+        if (name.like('*_off')) {
+            child.sessionBusy = false;
+            return;
+        }
 
         let user = child.parent.var.session_list.find((s) => s.name == name) ?? {};
         user.privacy = user.privacy || child.parent.var.blocking.privacy;
@@ -276,6 +277,13 @@ module.exports = function (child) {
                     }
                 }
 
+                if (customSetting.$cloudFlare) {
+                    callback({
+                        cancel: false,
+                    });
+                    return;
+                }
+
                 if (customSetting.allowAds) {
                     callback({
                         cancel: false,
@@ -425,6 +433,14 @@ module.exports = function (child) {
                     }
                 }
 
+                // if (customSetting.$cloudFlare) {
+                //     callback({
+                //         cancel: false,
+                //         requestHeaders: details.requestHeaders,
+                //     });
+                //     return;
+                // }
+
                 if (customSetting && customSetting.vip) {
                     // child.log('VIP Ignore cookieList');
                 } else if (customSetting && Array.isArray(customSetting.cookieList)) {
@@ -570,6 +586,28 @@ module.exports = function (child) {
                 let urlObject = child.url.parse(url);
                 let _ss = child.session_name_list.find((s) => s.name == name);
                 _ss.user.privacy.vpc = _ss.user.privacy.vpc || {};
+                let customSetting = null;
+
+                if (details.webContents) {
+                    win = child.electron.BrowserWindow.fromWebContents(details.webContents);
+                    if (win) {
+                        wIndex = child.windowList.findIndex((w) => w.id === win.id);
+                        if (wIndex !== -1) {
+                            customSetting = child.windowList[wIndex].customSetting;
+                        }
+                    }
+                }
+
+                // if ((customSetting && customSetting.$cloudFlare)) {
+                //     callback({
+                //         cancel: false,
+                //         responseHeaders: {
+                //             ...details.responseHeaders,
+                //         },
+                //         statusLine: details.statusLine,
+                //     });
+                //     return;
+                // }
 
                 // custom header response
                 child.parent.var.customHeaderList.forEach((r) => {
@@ -651,6 +689,7 @@ module.exports = function (child) {
                     if (s_policy) {
                         if (Array.isArray(s_policy)) {
                             for (var key in s_policy) {
+                                s_policy[key] = s_policy[key].replaceAll("default-src 'none'", '');
                                 s_policy[key] = s_policy[key].replaceAll('data: ', 'data: browser://* ');
                                 s_policy[key] = s_policy[key].replaceAll('default-src ', 'default-src browser://* ');
                                 s_policy[key] = s_policy[key].replaceAll('img-src ', 'img-src browser://* ');
@@ -661,6 +700,7 @@ module.exports = function (child) {
                                 }
                             }
                         } else if (typeof s_policy == 'string') {
+                            s_policy[key] = s_policy[key].replaceAll("default-src 'none'", '');
                             s_policy = s_policy.replaceAll('data: ', 'data: browser://* ');
                             s_policy = s_policy.replaceAll('default-src ', 'default-src browser://* ');
                             s_policy = s_policy.replaceAll('img-src ', 'img-src browser://* ');

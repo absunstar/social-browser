@@ -57,9 +57,13 @@ SOCIALBROWSER.random = SOCIALBROWSER.randomNumber = function (min = 1, max = 100
     return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
-SOCIALBROWSER.require = function (name) {
+SOCIALBROWSER.require = function (name, ...args) {
     try {
-        return require(name);
+        if (args.length > 0) {
+            return require(name)(...args);
+        } else {
+            return require(name);
+        }
     } catch (error) {
         console.log(error);
     }
@@ -265,10 +269,10 @@ SOCIALBROWSER.init2 = function () {
     SOCIALBROWSER.userAgentDeviceList = SOCIALBROWSER.browserData.userAgentDeviceList;
 
     if (!SOCIALBROWSER.customSetting.iframe && SOCIALBROWSER.isIframe()) {
-        delete SOCIALBROWSER;
         return;
     }
-    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/remote.js');
+
+    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/remote.js')(SOCIALBROWSER);
 
     SOCIALBROWSER.isMemoryMode = !SOCIALBROWSER.webContents.session.isPersistent();
     SOCIALBROWSER.session_id = 0;
@@ -287,15 +291,16 @@ SOCIALBROWSER.init2 = function () {
         SOCIALBROWSER.session.privacy.vpc = { ...SOCIALBROWSER.var.blocking.privacy.vpc };
     }
 
-    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/init.js');
-    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/event.js');
-    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/fn.js');
+    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/init.js')(SOCIALBROWSER);
+    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/event.js')(SOCIALBROWSER);
+    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/fn.js')(SOCIALBROWSER);
 
     SOCIALBROWSER.isWhiteSite = SOCIALBROWSER.var.blocking.white_list.some((site) => site.url.length > 2 && document.location.href.like(site.url));
 
     if (SOCIALBROWSER.var.core.id.like('*developer*')) {
         SOCIALBROWSER.developerMode = true;
     }
+
     SOCIALBROWSER.log(` ... ${document.location.href} ... `);
     if (SOCIALBROWSER.sessionId() == 0 && !SOCIALBROWSER.session.privacy.vpc) {
         SOCIALBROWSER.session.privacy.allowVPC = true;
@@ -303,11 +308,22 @@ SOCIALBROWSER.init2 = function () {
         SOCIALBROWSER.setStorage('vpc', SOCIALBROWSER.session.privacy.vpc);
     }
 
-    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/load.js');
-
-    if (!SOCIALBROWSER.customSetting.allowSocialBrowser) {
-        delete SOCIALBROWSER;
+    if (document.location.href.like('*://challenges.cloudflare.com/*')) {
+        if (SOCIALBROWSER.var.blocking.javascript.cloudflareON) {
+            SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/cloudflare.js')(SOCIALBROWSER);
+        }
+        return true;
     }
+
+    if (SOCIALBROWSER._window.id && !SOCIALBROWSER.customSetting.$cloudFlare && SOCIALBROWSER.customSetting.allowSocialBrowser) {
+        if (globalThis) {
+            globalThis.SOCIALBROWSER = SOCIALBROWSER;
+        } else if (window) {
+            window.SOCIALBROWSER = SOCIALBROWSER;
+        }
+    }
+
+    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/load.js')(SOCIALBROWSER);
 };
 
 SOCIALBROWSER.init = function () {
@@ -328,13 +344,5 @@ SOCIALBROWSER._window.fnList.forEach((fn) => {
     SOCIALBROWSER._window[fn] = (...params) => SOCIALBROWSER.fn('window.' + fn, ...params);
 });
 SOCIALBROWSER._window.on = function () {};
-if (SOCIALBROWSER._window.id) {
-    if (globalThis) {
-        globalThis.SOCIALBROWSER = SOCIALBROWSER;
-    } else if (window) {
-        window.SOCIALBROWSER = SOCIALBROWSER;
-    }
-    SOCIALBROWSER.init();
-} else {
-    console.log('NO WINDOW ID >>>>>>>>>>>>>>>>>>>>>>');
-}
+
+SOCIALBROWSER.init();

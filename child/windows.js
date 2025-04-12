@@ -195,6 +195,7 @@ module.exports = function (child) {
             allowJavascript: true,
             allowAudio: true,
             allowPopup: false,
+            cloudFlare: false,
             show: setting.show === true ? true : false,
             alwaysOnTop: false,
             skipTaskbar: setting.skipTaskbar || false,
@@ -227,10 +228,10 @@ module.exports = function (child) {
                 nodeIntegration: false,
                 nodeIntegrationInSubFrames: true, // google login error
                 nodeIntegrationInWorker: false,
-               // experimentalCanvasFeatures: true,
-               // experimentalFeatures: true,
-               // enableBlinkFeatures: 'ExecutionContext',
-               // navigateOnDragDrop: true,
+                // experimentalCanvasFeatures: true,
+                // experimentalFeatures: true,
+                // enableBlinkFeatures: 'ExecutionContext',
+                // navigateOnDragDrop: true,
                 webSecurity: true,
                 allowRunningInsecureContent: false,
                 plugins: true,
@@ -339,6 +340,8 @@ module.exports = function (child) {
         }
 
         let customSetting = { ...defaultSetting, ...setting };
+
+        customSetting.$cloudFlare = customSetting.cloudFlare;
 
         if (customSetting.iframe === false) {
             customSetting.webPreferences.nodeIntegrationInSubFrames = false;
@@ -464,7 +467,7 @@ module.exports = function (child) {
         }
 
         if (win.customSetting.url) {
-            child.handleCustomSeting(win.customSetting.url, win);
+            child.handleCustomSeting(win.customSetting.url, win, true);
             win.loadURL(win.customSetting.url, {
                 httpReferrer: win.customSetting.referrer || win.customSetting.referer,
                 userAgent: win.customSetting.$userAgentURL,
@@ -959,13 +962,13 @@ module.exports = function (child) {
         });
 
         win.webContents.on('did-start-navigation', (e) => {
-            console.log('did-start-navigation : ' + e.url);
-            child.handleCustomSeting(e.url, win);
+            console.log('did-start-navigation : MainFrame=' + e.isMainFrame + ' : ' + e.url);
+            child.handleCustomSeting(e.url, win, e.isMainFrame);
         });
         win.webContents.on('will-redirect', (e) => {
             let url = e.url;
             child.log('will-redirect : ', url);
-            child.handleCustomSeting(url, win);
+            child.handleCustomSeting(url, win, e.isMainFrame);
 
             if (url.like('https://accounts.google.com*') && e.isMainFrame && win.customSetting.iframe && win.customSetting.windowType === 'view') {
                 e.preventDefault();
@@ -1025,29 +1028,29 @@ module.exports = function (child) {
                 }
             }
         });
-        win.webContents.on('will-navigate', (details) => {
-            child.log('will-navigate : ' + details.url);
-            child.handleCustomSeting(details.url, win);
-            win.customSetting.title = details.url;
+        win.webContents.on('will-navigate', (e) => {
+            child.log('will-navigate : ' + e.url);
+            child.handleCustomSeting(e.url, win, e.isMainFrame);
+            win.customSetting.title = e.url;
             win.customSetting.iconURL = win.customSetting.loading_icon;
             child.updateTab(win);
         });
 
-        win.webContents.on('will-frame-navigate', (details) => {
-            child.log('will-frame-navigate : ' + details.url);
-            child.handleCustomSeting(details.url, win);
+        win.webContents.on('will-frame-navigate', (e) => {
+            child.log('will-frame-navigate : ' + e.url);
+            child.handleCustomSeting(e.url, win, e.isMainFrame);
 
-            if (details.url.like('ftp*|mail*')) {
-                details.preventDefault();
+            if (e.url.like('ftp*|mail*')) {
+                e.preventDefault();
                 if (win.customSetting.allowOpenExternal) {
-                    child.openExternal(details.url);
+                    child.openExternal(e.url);
                 }
                 return;
             }
 
-            if (!win.customSetting.allowRedirect || (!win.customSetting.allowAds && !child.isAllowURL(details.url))) {
-                details.preventDefault();
-                child.log('Block-frame-navigate', details.url);
+            if (!win.customSetting.allowRedirect || (!win.customSetting.allowAds && !child.isAllowURL(e.url))) {
+                e.preventDefault();
+                child.log('Block-frame-navigate', e.url);
                 return;
             }
         });

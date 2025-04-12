@@ -1,6 +1,4 @@
 module.exports = function (child) {
-    
-
     child.openExternal = function (link) {
         child.shell.openExternal(link);
     };
@@ -146,7 +144,6 @@ module.exports = function (child) {
         return arr.length == 1 ? obj[info.propertyList] : obj;
     };
 
-
     child.cookieParse2 = (cookie) => {
         if (typeof cookie === 'undefined') return [];
         return cookie.split(';').reduce(function (prev, curr) {
@@ -243,7 +240,9 @@ module.exports = function (child) {
 
         return allow;
     };
-    child.handleCustomSeting = function (url, win) {
+
+    child.cloudFlareURLs = [];
+    child.handleCustomSeting = function (url, win, isMainFrame = false) {
         let windowIndex = child.windowList.findIndex((w) => w.id == win.id);
 
         win.customSetting.headers = {};
@@ -283,8 +282,6 @@ module.exports = function (child) {
             if (win.customSetting.userAgentURL) {
                 win.customSetting.$userAgentURL = win.customSetting.userAgentURL;
             }
-            win.customSetting.iframe = true;
-        } else if (url.like('*challenges.cloudflare.com*')) {
             win.customSetting.iframe = true;
         } else {
             win.customSetting.iframe = true;
@@ -412,18 +409,49 @@ module.exports = function (child) {
                     win.customSetting.headers['Sec-Ch-Ua-Mobile'] = win.customSetting.$defaultUserAgent.platform == 'Mobile' ? '?1' : '?0';
                     win.customSetting.headers['Sec-Ch-Ua-Platform'] = win.customSetting.$defaultUserAgent.platform == 'Win32' ? '"Windows"' : win.customSetting.$defaultUserAgent.platform;
                 } else if (win.customSetting.$defaultUserAgent.name.like('*chrome*')) {
-                    win.customSetting.headers['Sec-Ch-Ua'] = `"Not(A:Brand";v="99", "Google Chrome";v="${win.customSetting.uaVersion}", "Chromium";v="${win.customSetting.uaVersion}"`;
+                    win.customSetting.headers['Sec-Ch-Ua'] = `"Google Chrome";v="${win.customSetting.uaVersion}", "Not-A.Brand";v="8", "Chromium";v="${win.customSetting.uaVersion}"`;
                     win.customSetting.headers['Sec-Ch-Ua-Mobile'] = win.customSetting.$defaultUserAgent?.platform == 'Mobile' ? '?1' : '?0';
                     win.customSetting.headers['Sec-Ch-Ua-Platform'] = win.customSetting.$defaultUserAgent?.platform == 'Win32' ? '"Windows"' : win.customSetting.$defaultUserAgent?.platform;
-                    // win.customSetting.headers['Upgrade-Insecure-Requests'] = '1';
+                    win.customSetting.headers['Sec-Ch-Ua-Full-Version'] = `"${win.customSetting.uaFullVersion}"`;
+                    win.customSetting.headers[
+                        'Sec-Ch-Ua-Full-Version-List'
+                    ] = `"Google Chrome";v="${win.customSetting.uaFullVersion}", "Not-A.Brand";v="8.0.0.0", "Chromium";v="${win.customSetting.uaFullVersion}"`;
+                    win.customSetting.headers['Sec-Ch-Ua-Model'] = '""';
+                    win.customSetting.headers['Sec-Ch-Ua-Arch'] = '"x86"';
+                    win.customSetting.headers['Sec-Ch-Ua-Bitness'] = '"64"';
+                    win.customSetting.headers['Sec-Fetch-Site'] = 'none';
                 }
             }
         }
+
+        let currentURL = win.getURL();
+        let reload = false;
+        if (child.cloudFlareURLs.some((f) => f.url === currentURL)) {
+            win.customSetting.$cloudFlare = true;
+            win.customSetting.iframe = true;
+        } else if (url.like('*cloudflare.com*|*__cf_chl_rt_tk*') && !win.customSetting.$cloudFlare) {
+            child.cloudFlareURLs.push({ url: currentURL });
+            win.customSetting.$cloudFlare = true;
+            win.customSetting.iframe = true;
+            win.customSetting.$currrentURL = currentURL;
+            reload = true;
+        } else {
+            if (win.customSetting.$cloudFlare !== win.customSetting.cloudFlare) {
+                if (win.customSetting.$currrentURL !== currentURL) {
+                    win.customSetting.$currrentURL = currentURL;
+                    win.customSetting.$cloudFlare = win.customSetting.cloudFlare;
+                }
+            }
+        }
+
         if (windowIndex !== -1) {
             child.windowList[windowIndex].customSetting = win.customSetting;
             child.electron.app.userAgentFallback = win.customSetting.$userAgentURL;
         } else {
             console.log('handleCustomSeting Not Exists', url);
+        }
+        if (reload) {
+            win.webContents.loadURL(currentURL);
         }
     };
 
@@ -561,7 +589,6 @@ module.exports = function (child) {
             });
         }
     };
- 
 
     child.test = async function () {
         const puppeteer = require('puppeteer-core');
