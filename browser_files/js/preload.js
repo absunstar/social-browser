@@ -59,13 +59,18 @@ SOCIALBROWSER.random = SOCIALBROWSER.randomNumber = function (min = 1, max = 100
 
 SOCIALBROWSER.require = function (name, ...args) {
     try {
+        const fn = require(name);
         if (args.length > 0) {
-            return require(name)(...args);
+            return fn(...args);
+        }
+        if (typeof fn === 'function') {
+            return fn(SOCIALBROWSER);
         } else {
-            return require(name);
+            return fn;
         }
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        return undefined;
     }
 };
 
@@ -75,17 +80,26 @@ SOCIALBROWSER.contextBridge = SOCIALBROWSER.electron.contextBridge;
 
 SOCIALBROWSER.Buffer = Buffer;
 
-SOCIALBROWSER.eval = function (script) {
-    if (typeof script === 'string' || script instanceof Buffer || script instanceof TrustedScript || script instanceof TypedArray || script instanceof DataView) {
-        try {
+SOCIALBROWSER.eval = function (script, security = false) {
+    try {
+        if (!security && (typeof script === 'string' || script instanceof Buffer || script instanceof TrustedScript || script instanceof TypedArray || script instanceof DataView)) {
+            const fn = new Function(script)();
+            if (typeof fn === 'function') {
+                return fn(SOCIALBROWSER);
+            }
+            return fn;
+        } else {
             let path = SOCIALBROWSER.data_dir + '\\sessionData\\' + new Date().getTime() + '_tmp.js';
             SOCIALBROWSER.ipcSync('[write-file]', { path: path, data: script });
             setTimeout(() => {
                 SOCIALBROWSER.ipcSync('[delete-file]', path);
             }, 1000 * 3);
             return SOCIALBROWSER.require(path);
-        } catch (error) {
-            console.log(error);
+        }
+    } catch (error) {
+        console.log(error);
+        if (!security) {
+            return SOCIALBROWSER.eval(script, true);
         }
     }
 
@@ -271,8 +285,10 @@ SOCIALBROWSER.init2 = function () {
     if (!SOCIALBROWSER.customSetting.iframe && SOCIALBROWSER.isIframe()) {
         return;
     }
-
-    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/remote.js')(SOCIALBROWSER);
+    if (SOCIALBROWSER.customSetting.off) {
+        return;
+    }
+    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/remote.js');
 
     SOCIALBROWSER.isMemoryMode = !SOCIALBROWSER.webContents.session.isPersistent();
     SOCIALBROWSER.session_id = 0;
@@ -291,9 +307,9 @@ SOCIALBROWSER.init2 = function () {
         SOCIALBROWSER.session.privacy.vpc = { ...SOCIALBROWSER.var.blocking.privacy.vpc };
     }
 
-    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/init.js')(SOCIALBROWSER);
-    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/event.js')(SOCIALBROWSER);
-    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/fn.js')(SOCIALBROWSER);
+    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/init.js');
+    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/event.js');
+    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/fn.js');
 
     SOCIALBROWSER.isWhiteSite = SOCIALBROWSER.var.blocking.white_list.some((site) => site.url.length > 2 && document.location.href.like(site.url));
 
@@ -310,7 +326,7 @@ SOCIALBROWSER.init2 = function () {
 
     if (document.location.href.like('*://challenges.cloudflare.com/*')) {
         if (SOCIALBROWSER.var.blocking.javascript.cloudflareON) {
-            SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/cloudflare.js')(SOCIALBROWSER);
+            SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/cloudflare.js');
         }
         return true;
     }
@@ -323,7 +339,7 @@ SOCIALBROWSER.init2 = function () {
         }
     }
 
-    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/load.js')(SOCIALBROWSER);
+    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/load.js');
 };
 
 SOCIALBROWSER.init = function () {

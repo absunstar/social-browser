@@ -60,7 +60,11 @@
     { "url": "*tour.eplay.com*|*adtng.com*|*jwpltx.com*|*revengemeantjackpot.com*", "name": "service 14", "enabled": true },
     { "url": "*adblockchecker.js|*cdn.onesignal.com*|*traffichaus.com*|*notify.solutions*|*newrelic.com*|*eyefuneve.com*", "name": "service 15", "enabled": true },
     { "url": "*services.disqus.com*|*storeacdn.com*|*histats.com*|*raupsica.net*|*rtbrennab.com*|*g--o.info*|*s10.histats.com*|*advertising.yandex.ru*", "name": "service 16", "enabled": true },
-    { "url": "*ad4point.nyc3.digitaloceanspaces.com*|*invisible.js*|*passwordssaturatepebble.com*|*onetouch10.com*|*vasstycom.com*|*twndo77864.com*", "name": "redirect 1", "enabled": true },
+    {
+        "url": "*ad4point.nyc3.digitaloceanspaces.com*|*invisible.js*|*passwordssaturatepebble.com*|*onetouch10.com*|*vasstycom.com*|*twndo77864.com*|*clungfellow.com*",
+        "name": "redirect 1",
+        "enabled": true
+    },
     { "url": "*leanishscabble.shop*|*prioraslop.com*|*vizierspavan.com*|*betotodilea.com*", "name": "media 1", "enabled": true },
     { "url": "*offfurreton.com*|*twinrdsrv.com*|*cool.sunporno.com*", "name": "direct link 1", "enabled": true },
     { "url": "*wiztube.xyz*|*bypassprofessordemonstrate.com*", "name": "tools 2", "enabled": true },
@@ -74,15 +78,22 @@
         "enabled": true
     },
     { "url": "*/api/click/*|*adblocker*js", "name": "api", "enabled": true },
-    { "url": "*gmxvmvptfm.com*|*12ezo5v60.com*|*lby2kd27c.com*|*ku42hjr2e.com*|*sadjklq.com*", "name": "ad001" },
-    { "url": "*mutcheng.net*|*favorskhivan.com*|*uratekrait.com*|*psoroumukr.com*|*curatekrait.com*|*oonsouque.com*|*naupsakiwhy.com*|*affordedseasick.com*", "name": "ad002" },
+    { "url": "*gmxvmvptfm.com*|*12ezo5v60.com*|*lby2kd27c.com*|*ku42hjr2e.com*|*sadjklq.com*", "name": "ad001", "enabled": true },
+    {
+        "url": "*mutcheng.net*|*favorskhivan.com*|*uratekrait.com*|*psoroumukr.com*|*curatekrait.com*|*oonsouque.com*|*naupsakiwhy.com*|*affordedseasick.com*|*tommyholysnapped.com*|*oapseegluls.com*",
+        "name": "ad002",
+        "enabled": true
+    },
     { "name": "redirect 6", "url": "*tr-boost.com*|*consciousnesshear.com*|*mcpuwpsh.com*|*jsmcrptjmp.com*|*s.orbsrv.com*|*twinrdack.com*|*t.pimiji.xyz*", "enabled": true },
     { "url": "https://ad.*|*pagead.js|*widget/ads.*|*pixeltrey.com*|*clicks2apk.com*|*floitcarites.com*|*geogenyveered.com*", "name": "ad-block", "enabled": true },
     {
         "url": "*shakingtacklingunpeeled.com*|*boodiecawquaw.top*|*zeecajichaiw.net*|*ileeckut.com*|*aiveemtomsaix.net*|*ewouwamsubsouvy.net*|*curiescores.com*|*goboksehee.net*|*safedragonapp.monster*|*specificallycries.com*|*peanutrefusesplit.com*|*zygoticroud.shop*",
-        "name": "ad003"
+        "name": "ad003",
+        "enabled": true
     },
     { "url": "*endscreen.js*", "name": "test 1", "enabled": true },
     { "url": "*leanishscabble.shop*|*prioraslop.com*|*vizierspavan.com*|*betotodilea.com*", "name": "media 1", "enabled": true },
-    { "url": "*trafficjunky.com*", "name": "traffic 1", "enabled": true }
+    { "url": "*trafficjunky.com*", "name": "traffic 1", "enabled": true },
+    { "url": "*saukutoapsoag.net*", "enabled": true, "name": "POST001" },
+    { "url": "*amithoutsoo.ne*", "name": "OPTIONS001", "enabled": true }
 ]

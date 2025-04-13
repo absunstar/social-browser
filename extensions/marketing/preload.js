@@ -1,3 +1,4 @@
+module.exports = function (SOCIALBROWSER) {
     if (document.location.hostname.like('*amazon.eg*')) {
         SOCIALBROWSER.log(' >>> marketing Extension activated : ' + document.location.href);
         SOCIALBROWSER.onLoad(() => {
@@ -5,7 +6,7 @@
             SOCIALBROWSER.menu_list.push({
                 label: ' ( Price Comparison ) ',
                 click: () => {
-                    SOCIALBROWSER.ipc('[open new popup]',{
+                    SOCIALBROWSER.ipc('[open new popup]', {
                         url: 'https://www.kanbkam.com/eg/ar/search/l?q=' + document.location.href,
                         referrer: document.location.href,
                         partition: SOCIALBROWSER.partition,
@@ -16,4 +17,4 @@
             });
         });
     }
-
+};

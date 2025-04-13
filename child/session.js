@@ -277,7 +277,7 @@ module.exports = function (child) {
                     }
                 }
 
-                if (customSetting.$cloudFlare) {
+                if (customSetting.off) {
                     callback({
                         cancel: false,
                     });
@@ -433,13 +433,13 @@ module.exports = function (child) {
                     }
                 }
 
-                // if (customSetting.$cloudFlare) {
-                //     callback({
-                //         cancel: false,
-                //         requestHeaders: details.requestHeaders,
-                //     });
-                //     return;
-                // }
+                if (customSetting.off) {
+                    callback({
+                        cancel: false,
+                        requestHeaders: details.requestHeaders,
+                    });
+                    return;
+                }
 
                 if (customSetting && customSetting.vip) {
                     // child.log('VIP Ignore cookieList');
@@ -598,16 +598,16 @@ module.exports = function (child) {
                     }
                 }
 
-                // if ((customSetting && customSetting.$cloudFlare)) {
-                //     callback({
-                //         cancel: false,
-                //         responseHeaders: {
-                //             ...details.responseHeaders,
-                //         },
-                //         statusLine: details.statusLine,
-                //     });
-                //     return;
-                // }
+                if ((customSetting && customSetting.off)) {
+                    callback({
+                        cancel: false,
+                        responseHeaders: {
+                            ...details.responseHeaders,
+                        },
+                        statusLine: details.statusLine,
+                    });
+                    return;
+                }
 
                 // custom header response
                 child.parent.var.customHeaderList.forEach((r) => {

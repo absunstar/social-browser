@@ -196,6 +196,7 @@ module.exports = function (child) {
             allowAudio: true,
             allowPopup: false,
             cloudFlare: false,
+            off: false,
             show: setting.show === true ? true : false,
             alwaysOnTop: false,
             skipTaskbar: setting.skipTaskbar || false,

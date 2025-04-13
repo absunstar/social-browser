@@ -105,31 +105,31 @@ module.exports = function (SOCIALBROWSER) {
         };
     }
 
-    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/menu.js')(SOCIALBROWSER);
+    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/menu.js');
 
-    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/window.js')(SOCIALBROWSER);
-    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/keyboard.js')(SOCIALBROWSER);
+    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/window.js');
+    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/keyboard.js');
 
-    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/doms.js')(SOCIALBROWSER);
+    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/doms.js');
 
-    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/nodes.js')(SOCIALBROWSER);
-    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/embed.js')(SOCIALBROWSER);
+    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/nodes.js');
+    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/embed.js');
 
     // SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/videos.js');
     // SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/youtube.js');
     // SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/facebook.com.js');
 
-    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/safty.js')(SOCIALBROWSER);
-    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/adsManager.js')(SOCIALBROWSER);
+    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/safty.js');
+    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/adsManager.js');
 
-    if (!SOCIALBROWSER.var.core.javaScriptOFF && !SOCIALBROWSER.customSetting.$cloudFlare) {
+    if (!SOCIALBROWSER.var.core.javaScriptOFF) {
         if (true) {
             // load user preload list
             SOCIALBROWSER.var.preload_list.forEach((p) => {
                 try {
                     SOCIALBROWSER.require(p.path.replace('{dir}', SOCIALBROWSER.dir));
                 } catch (error) {
-                    SOCIALBROWSER.log(error);
+                    SOCIALBROWSER.log(error, p);
                 }
             });
         }
@@ -268,7 +268,7 @@ module.exports = function (SOCIALBROWSER) {
     SOCIALBROWSER.userAgent = navigator.userAgent;
     SOCIALBROWSER.__define(navigator, 'userAgent', SOCIALBROWSER.userAgentURL);
 
-    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/finger_print.js')(SOCIALBROWSER);
+    SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/finger_print.js');
 
     try {
         if (SOCIALBROWSER.var.blocking.javascript.custom_local_storage && localStorage) {
@@ -422,7 +422,7 @@ module.exports = function (SOCIALBROWSER) {
                 show: true,
                 center: true,
             });
-        }  else if (data.name == 'new-off-window') {
+        } else if (data.name == 'new-off-window') {
             SOCIALBROWSER.ipc('[open new popup]', {
                 partition: SOCIALBROWSER.partition,
                 url: document.location.href,
@@ -431,7 +431,7 @@ module.exports = function (SOCIALBROWSER) {
                 show: true,
                 center: true,
             });
-        }else if (data.name == 'new-mobile-window') {
+        } else if (data.name == 'new-mobile-window') {
             let browser = SOCIALBROWSER.getRandomBrowser('mobile');
             SOCIALBROWSER.ipc('[open new popup]', {
                 partition: SOCIALBROWSER.partition,
@@ -738,7 +738,7 @@ module.exports = function (SOCIALBROWSER) {
     navigator.clipboard = { writeText: SOCIALBROWSER.copy };
 
     if (true /** to work in background.js */ || SOCIALBROWSER.userAgentURL.like('*chrome*') || document.location.href.like('*chrome-extension://*')) {
-        SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/chrome-extension.js')(SOCIALBROWSER);
+        SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/chrome-extension.js');
     } else {
         chrome = undefined;
     }
@@ -746,8 +746,4 @@ module.exports = function (SOCIALBROWSER) {
     if (SOCIALBROWSER.customSetting.eval) {
         SOCIALBROWSER.eval(SOCIALBROWSER.customSetting.eval);
     }
-
-    // URL.createObjectURL = function (data) {
-    //   console.log(data);
-    // };
 };
