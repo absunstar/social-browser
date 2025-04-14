@@ -325,7 +325,7 @@ SOCIALBROWSER.init2 = function () {
     }
 
     if (document.location.href.like('*://challenges.cloudflare.com/*')) {
-        if (SOCIALBROWSER.var.blocking.javascript.cloudflareON) {
+        if (SOCIALBROWSER.var.blocking.javascript.cloudflareON || SOCIALBROWSER.customSetting.cloudFlare) {
             SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/cloudflare.js');
         }
         return true;

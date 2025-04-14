@@ -544,11 +544,15 @@ module.exports = function (SOCIALBROWSER) {
         });
     };
     SOCIALBROWSER.getOffset = function (el) {
-        const rect = el.getBoundingClientRect();
+        const box = el.getBoundingClientRect();
         let factor = SOCIALBROWSER.webContents.zoomFactor || 1;
+
+        let left = box.left * factor;
+        let top = box.top * factor;
+
         return {
-            x: Math.round(rect.left * factor + (el.clientWidth / 4) * factor),
-            y: Math.round(rect.top * factor + (el.clientHeight / 4) * factor),
+            x: SOCIALBROWSER.randomNumber(left, left + box.width),
+            y: SOCIALBROWSER.randomNumber(top, top + box.height),
         };
     };
     SOCIALBROWSER.mouseMoveByPosition = function (x, y) {
@@ -560,26 +564,27 @@ module.exports = function (SOCIALBROWSER) {
         }
 
         SOCIALBROWSER.window.focus();
+        let steps = 300;
 
-        for (let index = 0; index < 200; index++) {
+        for (let index = 0; index < steps; index++) {
             setTimeout(() => {
                 SOCIALBROWSER.webContents.sendInputEvent({
                     type: 'mouseMove',
-                    x: x - 80 + index,
-                    y: y - 80 + index,
-                    movementX: x - 80 + index,
-                    movementY: y - 80 + index,
-                    globalX: x - 80 + index,
-                    globalY: y - 80 + index,
+                    x: x - steps + index,
+                    y: y - steps + index,
+                    movementX: x - steps + index,
+                    movementY: y - steps + index,
+                    globalX: x - steps + index,
+                    globalY: y - steps + index,
                 });
                 SOCIALBROWSER.webContents.sendInputEvent({
                     type: 'mouseEnter',
-                    x: x - 80 + index,
-                    y: y - 80 + index,
-                    movementX: x - 80 + index,
-                    movementY: y - 80 + index,
-                    globalX: x - 80 + index,
-                    globalY: y - 80 + index,
+                    x: x - steps + index,
+                    y: y - steps + index,
+                    movementX: x - steps + index,
+                    movementY: y - steps + index,
+                    globalX: x - steps + index,
+                    globalY: y - steps + index,
                 });
             }, 10 * index);
         }
@@ -594,13 +599,15 @@ module.exports = function (SOCIALBROWSER) {
         let time = 0;
         if (move) {
             SOCIALBROWSER.mouseMoveByPosition(x, y);
-            time = 1000 * 2;
+            time = 1000 * 3;
         }
         setTimeout(() => {
             SOCIALBROWSER.window.focus();
 
             SOCIALBROWSER.webContents.sendInputEvent({ type: 'mouseDown', x: x, y: y, movementX: x, movementY: y, button: 'left', clickCount: 1 });
-            SOCIALBROWSER.webContents.sendInputEvent({ type: 'mouseUp', x: x, y: y, movementX: x, movementY: y, button: 'left', clickCount: 1 });
+            setTimeout(() => {
+                SOCIALBROWSER.webContents.sendInputEvent({ type: 'mouseUp', x: x, y: y, movementX: x, movementY: y, button: 'left', clickCount: 1 });
+            }, 50);
         }, time);
     };
 

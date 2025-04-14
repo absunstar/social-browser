@@ -10,6 +10,7 @@ module.exports = function (SOCIALBROWSER) {
                     return Math.floor(Math.random() * (r - n + 1)) + n;
                 };
                 const simulateMouseClick = (element, box, clientX = null, clientY = null) => {
+                    return SOCIALBROWSER.click(element);
                     box = element.getBoundingClientRect();
 
                     clientX = randomInteger(box.left, box.left + box.width);

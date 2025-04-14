@@ -427,8 +427,10 @@ module.exports = function (child) {
         let currentURL = win.getURL();
         let reload = false;
         if (child.cloudFlareURLs.some((f) => f.url === currentURL)) {
-            win.customSetting.$cloudFlare = true;
-            win.customSetting.iframe = true;
+            if (!win.customSetting.$cloudFlare) {
+                win.customSetting.$cloudFlare = true;
+                win.customSetting.iframe = true;
+            }
         } else if (url.like('*cloudflare.com*|*__cf_chl_rt_tk*') && !win.customSetting.$cloudFlare) {
             child.cloudFlareURLs.push({ url: currentURL });
             win.customSetting.$cloudFlare = true;
@@ -451,7 +453,9 @@ module.exports = function (child) {
             console.log('handleCustomSeting Not Exists', url);
         }
         if (reload) {
-            win.webContents.loadURL(currentURL);
+            setTimeout(() => {
+                win.webContents.loadURL(currentURL);
+            }, 1000);
         }
     };
 

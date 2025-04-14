@@ -935,12 +935,13 @@ module.exports = function (child) {
         win.on('unresponsive', async () => {
             child.log('window unresponsive');
             win.customSetting.unresponsive = true;
+            let timeout = win.customSetting.$cloudFlare ? 1000 : 1000 * 30
             setTimeout(() => {
                 if (win && !win.isDestroyed() && win.customSetting.unresponsive) {
                     win.webContents.forcefullyCrashRenderer();
                     win.webContents.reload();
                 }
-            }, 1000 * 30);
+            }, timeout);
         });
         win.on('responsive', async () => {
             win.customSetting.unresponsive = false;
