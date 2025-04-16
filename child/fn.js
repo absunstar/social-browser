@@ -425,14 +425,15 @@ module.exports = function (child) {
         }
 
         let currentURL = win.getURL();
+        let currentHostname = child.url.parse(currentURL).hostname;
         let reload = false;
-        if (child.cloudFlareURLs.some((f) => f.url === currentURL)) {
+        if (child.cloudFlareURLs.some((f) => f.url === currentHostname)) {
             if (!win.customSetting.$cloudFlare) {
                 win.customSetting.$cloudFlare = true;
                 win.customSetting.iframe = true;
             }
         } else if (url.like('*cloudflare.com*|*__cf_chl_rt_tk*') && !win.customSetting.$cloudFlare) {
-            child.cloudFlareURLs.push({ url: currentURL });
+            child.cloudFlareURLs.push({ url: currentHostname });
             win.customSetting.$cloudFlare = true;
             win.customSetting.iframe = true;
             win.customSetting.$currrentURL = currentURL;
@@ -454,7 +455,7 @@ module.exports = function (child) {
         }
         if (reload) {
             setTimeout(() => {
-                win.webContents.loadURL(currentURL);
+                win.webContents.reload();
             }, 1000);
         }
     };

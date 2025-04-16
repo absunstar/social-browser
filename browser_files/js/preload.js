@@ -97,7 +97,7 @@ SOCIALBROWSER.eval = function (script, security = false) {
             return SOCIALBROWSER.require(path);
         }
     } catch (error) {
-        console.log(error);
+        SOCIALBROWSER.log(error);
         if (!security) {
             return SOCIALBROWSER.eval(script, true);
         }
