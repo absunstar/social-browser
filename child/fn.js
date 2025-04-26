@@ -492,6 +492,7 @@ module.exports = function (child) {
             } else if (file.path.like('*.txt')) {
                 let docs2 = child.api.readFileSync(file.path).toString().split('\n');
                 docs2.forEach((line) => {
+                    line = line.replace('\r', '');
                     if (line.like('*://*')) {
                         let parts = line.replace('\r').split('://')[1].split(':');
                         docs.push({
@@ -518,6 +519,7 @@ module.exports = function (child) {
             let arr = file.text.split('\n');
 
             arr.forEach((line) => {
+                line = line.replace('\r', '');
                 if (line.like('*://*')) {
                     let parts = line.replace('\r').split('://')[1].split(':');
                     docs.push({
@@ -550,8 +552,9 @@ module.exports = function (child) {
 
                 doc.ip = doc.ip || doc.IP || doc['IP Address'];
                 doc.port = doc.port || doc.Port || doc.PORT;
-                doc.username = doc.username || doc.Username || doc.USERNAME;
-                doc.password = doc.password || doc.Password || doc.PASSWORD;
+                
+                doc.username = doc.username || doc.Username || doc.USERNAME || '';
+                doc.password = doc.password || doc.Password || doc.PASSWORD || '';
 
                 if (!doc.url && doc.ip && doc.port) {
                     doc.url = doc.ip + ':' + doc.port;

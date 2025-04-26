@@ -1058,6 +1058,25 @@ module.exports = function init(child) {
         }
     });
 
+    child.ipcMain.handle('[run-script]', (event, data) => {
+        let win = child.electron.BrowserWindow.fromId(data.windowID);
+        if (win && !win.isDestroyed()) {
+            win.webContents.send('[run-script]', data.script);
+            win.webContents.mainFrame.frames.forEach((f) => {
+                f.send('[run-script]', data.script);
+                f.frames.forEach((f2) => {
+                    f2.send('[run-script]', data.script);
+                    f2.frames.forEach((f3) => {
+                        f3.send('[run-script]', data.script);
+                        f3.frames.forEach((f4) => {
+                            f4.send('[run-script]', data.script);
+                        });
+                    });
+                });
+            });
+        }
+    });
+
     child.ipcMain.handle('[show-window-dev-tools]', (event, data) => {
         if (data.tabID && data.childID && data.windowID) {
             child.sendMessage({ type: '[show-window-dev-tools]', data: data });

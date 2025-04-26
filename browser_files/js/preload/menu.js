@@ -356,7 +356,8 @@ module.exports = function (SOCIALBROWSER) {
                         center: true,
                     });
                 },
-            }); arr.push({
+            });
+            arr.push({
                 label: ' in CloudFlare window',
                 click() {
                     SOCIALBROWSER.ipc('[open new popup]', {
@@ -366,8 +367,8 @@ module.exports = function (SOCIALBROWSER) {
                         show: true,
                         iframe: true,
                         cloudFlare: true,
-                        allowAds : true,
-                        allowPopup : true,
+                        allowAds: true,
+                        allowPopup: true,
                         center: true,
                     });
                 },
@@ -1886,6 +1887,26 @@ module.exports = function (SOCIALBROWSER) {
                 } else {
                     createMenuList(node);
                 }
+            }
+
+            let scriptList = SOCIALBROWSER.var.scriptList.filter((s) => s.show && document.location.href.like(s.url));
+            if (scriptList.length > 0) {
+                let arr = [];
+                scriptList.forEach((script) => {
+                    arr.push({
+                        label: script.title,
+                        iconURL: 'http://127.0.0.1:60080/images/code.png',
+                        click: () => {
+                            SOCIALBROWSER.ipc('[run-script]', { windowID: SOCIALBROWSER.window.id, script: script });
+                        },
+                    });
+                });
+                SOCIALBROWSER.menuList.push({ type: 'separator' });
+                SOCIALBROWSER.menuList.push({
+                    label: 'Script Manager',
+                    type: 'submenu',
+                    submenu: arr,
+                });
             }
 
             if (SOCIALBROWSER.menuList.length > 0) {

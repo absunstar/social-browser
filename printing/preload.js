@@ -50,7 +50,7 @@ window.loadPrintOptions = function (info) {
     }
 
     if (window.print_options.print) {
-        SOCIALBROWSER.window.webContents.print(window.print_options, (success, failureReason) => {
+        SOCIALBROWSER.webContents.print(window.print_options, (success, failureReason) => {
             if (!success) {
                 SOCIALBROWSER.window.show();
                 SOCIALBROWSER.window.openDevTools();

@@ -169,6 +169,24 @@ module.exports = function (child) {
                             w.window.webContents.send('[tracking-info]', message);
                         }
                     });
+                } else if (message.type == '[run-script]') {
+                    child.windowList.forEach((w) => {
+                        if (w.window && !w.window.isDestroyed() && w.id == message.tabInfo.windowID) {
+                            w.window.webContents.send('[run-script]', message.script);
+                            w.window.webContents.mainFrame.frames.forEach((f) => {
+                                f.send('[run-script]', message.script);
+                                f.frames.forEach((f2) => {
+                                    f2.send('[run-script]', message.script);
+                                    f2.frames.forEach((f3) => {
+                                        f3.send('[run-script]', message.script);
+                                        f3.frames.forEach((f4) => {
+                                            f4.send('[run-script]', message.script);
+                                        });
+                                    });
+                                });
+                            });
+                        }
+                    });
                 } else if (message.type == '[send-render-message]') {
                     child.sendToWindow('[send-render-message]', message.data);
                 } else if (message.type == '[open new tab]') {

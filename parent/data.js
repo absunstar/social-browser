@@ -537,7 +537,7 @@ module.exports = function init(parent) {
             save_var_quee = save_var_quee.filter((s) => s !== name);
             parent.save_var(name);
         }
-    }, 1000 * 0.5);
+    }, 100);
 
     parent.downloadFaviconList = [];
 
@@ -642,6 +642,7 @@ module.exports = function init(parent) {
     parent.get_var('cookieList');
     parent.get_var('googleExtensionList');
     parent.get_var('privateKeyList');
+    parent.get_var('scriptList');
 
     parent.handleAdList();
 

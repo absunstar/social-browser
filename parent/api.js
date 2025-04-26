@@ -365,7 +365,7 @@ module.exports = function init(parent) {
             windowType: 'popup',
             show: false,
             partition: 'persist:print',
-            preload: parent.dir + '/printing/preload.js',
+            eval: parent.api.readFileSync(parent.dir + '/printing/preload.js'),
             allowAudio: false,
             showDevTools: false,
         });

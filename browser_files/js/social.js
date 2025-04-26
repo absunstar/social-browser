@@ -506,6 +506,59 @@ SOCIALBROWSER.showSocialTools = function () {
     });
 };
 
+SOCIALBROWSER.showScriptListMenu = function () {
+    SOCIALBROWSER.window.show();
+    SOCIALBROWSER.menuList = [];
+
+    SOCIALBROWSER.menuList.push({
+        label: 'Open Script Manager',
+        iconURL: 'http://127.0.0.1:60080/images/code.png',
+        click: () => {
+            ipc('[open new tab]', {
+                url: 'http://127.0.0.1:60080/setting#scripts',
+                partition: 'ghost',
+                user_name: 'Setting',
+                windowType: 'view',
+                vip: true,
+            });
+        },
+    });
+
+    SOCIALBROWSER.menuList.push({
+        type: 'separator',
+    });
+    SOCIALBROWSER.var.scriptList
+        .filter((s) => s.show)
+        .forEach((script) => {
+            SOCIALBROWSER.menuList.push({
+                label: script.title,
+                iconURL: 'http://127.0.0.1:60080/images/code.png',
+                click: () => {
+                    SOCIALBROWSER.ws({ type: '[run-script]', tabInfo: SOCIALBROWSER.currentTabInfo, script: script });
+                },
+            });
+        });
+
+    ipc('[show-menu]', {
+        windowID: SOCIALBROWSER.window.id,
+        list: SOCIALBROWSER.menuList.map((m) => ({
+            label: m.label,
+            sublabel: m.sublabel,
+            visible: m.visible,
+            type: m.type,
+            iconURL: m.iconURL,
+            submenu: m.submenu?.map((m2) => ({
+                label: m2.label,
+                type: m2.type,
+                sublabel: m2.sublabel,
+                visible: m2.visible,
+                iconURL: m2.iconURL,
+                submenu: m2.submenu?.map((m3) => ({ label: m3.label, type: m3.type, sublabel: m3.sublabel, visible: m3.visible, iconURL: m3.iconURL })),
+            })),
+        })),
+    });
+};
+
 SOCIALBROWSER.showUserProxyMenu = function () {
     SOCIALBROWSER.window.show();
     SOCIALBROWSER.menuList = [];

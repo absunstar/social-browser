@@ -296,6 +296,13 @@ module.exports = function init(parent) {
                         }
                     });
                     break;
+                case '[run-script]':
+                    parent.clientList.forEach((client) => {
+                        if (client.ws && client.option_list.some((op) => op.tabID === message.tabInfo.id && op.windowType == 'view')) {
+                            client.ws.send(message);
+                        }
+                    });
+                    break;
                 case '$download_item':
                     let index = parent.var.download_list.findIndex((d) => d.id == message.data.id);
                     if (index !== -1) {

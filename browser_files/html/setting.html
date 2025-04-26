@@ -17,6 +17,7 @@
                 --input-color: #795548;
                 --input-font-size: 14px;
                 --input-font-wight: normal;
+                --input-height: auto;
                 --label-color: #ffc107;
                 --label-font-weight: normal;
 
@@ -45,7 +46,7 @@
                 --input-focus-border-color: #212529;
 
                 --table-hover-background-color: #4caf5070;
-         
+
                 --bs-body-bg: #fff;
             }
             html,
@@ -84,9 +85,9 @@
                 color: #fff;
             }
             .form-control {
-                background-color: #6c757d;
-                color: #fff;
-                font-size: 1.2rem;
+                background-color: #6c757d !important;
+                color: #fff !important;
+                font-size: 1.2rem !important;
             }
             .form-control:disabled {
                 background-color: #000;
@@ -222,39 +223,64 @@
                 <div ng-show="knowPassword === true">
                     <div class="tabs">
                         <div class="tabs-header">
-                            <a class="tab-link" onclick="site.showTabContent(event, '#basic_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-info-circle"></i> Basic </a>
+                            <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#basic_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                                <i class="fa fa-info-circle"></i> Basic
+                            </a>
 
-                            <a class="tab-link" onclick="site.showTabContent(event, '#users_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-users"></i> Users Profile </a>
-                            <a class="tab-link" onclick="site.showTabContent(event, '#passwords_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-key"></i> Passwords </a>
-                            <a ng-show="keysEnabled" class="tab-link" onclick="site.showTabContent(event, '#keys_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-key"></i> Private Keys </a>
+                            <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#users_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                                <i class="fa fa-users"></i> Users Profile
+                            </a>
+                            <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#passwords_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                                <i class="fa fa-key"></i> Passwords
+                            </a>
+                            <a id="basic" ng-show="keysEnabled" class="tab-link" onclick="site.showTabContent(event, '#keys_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                                <i class="fa fa-key"></i> Private Keys
+                            </a>
 
-                            <a class="tab-link" onclick="site.showTabContent(event, '#extension_list_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-list"></i> Extensions </a>
+                            <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#extension_list_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                                <i class="fa fa-list"></i> Extensions
+                            </a>
 
-                            <a class="tab-link" id="safty_btn" onclick="site.showTabContent(event, '#safty_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                            <a id="basic" class="tab-link" id="safty_btn" onclick="site.showTabContent(event, '#safty_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
                                 <i class="fa fa-lock"></i> Children Safty Mode
                             </a>
-                            <a class="tab-link" onclick="site.showTabContent(event, '#blocking_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-ban"></i> Blocking Engine</a>
-                            <a class="tab-link" onclick="site.showTabContent(event, '#privacy_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                            <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#blocking_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                                <i class="fa fa-ban"></i> Blocking Engine</a
+                            >
+                            <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#privacy_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
                                 <i class="fa fa-laptop"></i> Virtual PC [Browser FingerPrint]</a
                             >
-                            <a class="tab-link" onclick="site.showTabContent(event, '#javascript_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-code"></i> Java Script </a>
+                            <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#javascript_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                                <i class="fa fa-code"></i> Java Script
+                            </a>
+                            <a id="scripts" class="tab-link" onclick="site.showTabContent(event, '#scripts_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                                <i class="fa fa-code"></i> Script Manager</a
+                            >
 
-                            <a class="tab-link hidden" onclick="site.showTabContent(event, '#youtube_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                            <a id="basic" class="tab-link hidden" onclick="site.showTabContent(event, '#youtube_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
                                 <i class="fab fa-youtube"></i> Youtube
                             </a>
-                            <a class="tab-link" onclick="site.showTabContent(event, '#user_data_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-file"></i> User Data </a>
+                            <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#user_data_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                                <i class="fa fa-file"></i> User Data
+                            </a>
 
-                            <a class="tab-link" id="bookmarks_btn" onclick="site.showTabContent(event, '#bookmarks_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                            <a id="basic" class="tab-link" id="bookmarks_btn" onclick="site.showTabContent(event, '#bookmarks_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
                                 <i class="fa fa-bookmark"></i> Bookmarks
                             </a>
-                            <a class="tab-link" onclick="site.showTabContent(event, '#urls_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-sitemap"></i> URLs </a>
-                            <a ng-hide="true" class="tab-link" onclick="site.showTabContent(event, '#internet_speed_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                            <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#urls_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-sitemap"></i> URLs </a>
+                            <a id="basic" ng-hide="true" class="tab-link" onclick="site.showTabContent(event, '#internet_speed_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
                                 <i class="fa fa-cloud-download"></i> Internet Speed
                             </a>
-                            <a class="tab-link" onclick="site.showTabContent(event, '#proxy_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-desktop"></i> Proxy </a>
-                            <a class="tab-link" onclick="site.showTabContent(event, '#proxy_list_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-list"></i> Proxy List </a>
-                            <a class="tab-link" onclick="site.showTabContent(event, '#menu_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-bars"></i> Context Menu </a>
-                            <a class="tab-link" onclick="site.showTabContent(event, '#downloader_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-download"></i> Downloader </a>
+                            <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#proxy_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-desktop"></i> Proxy </a>
+                            <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#proxy_list_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                                <i class="fa fa-list"></i> Proxy List
+                            </a>
+                            <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#menu_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                                <i class="fa fa-bars"></i> Context Menu
+                            </a>
+                            <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#downloader_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                                <i class="fa fa-download"></i> Downloader
+                            </a>
 
                             <a id="userAgentButton" class="tab-link" onclick="site.showTabContent(event, '#userAgentTab');window.scrollTo({ top: 0, behavior: 'smooth' });">
                                 <i class="fa fa-list"></i> User Agent List
@@ -1262,6 +1288,53 @@
                                 </div>
                             </div>
 
+                            <div id="scripts_tab" class="tab-content">
+                                <div class="row">
+                                    <h2>Script Manager</h2>
+
+                                    <div class="row padding margin">
+                                        <i-button type="add" label="New Script" ng-click="showAddScript()"></i-button>
+                                    </div>
+
+                                    <div class="row">
+                                        <table class="table hover">
+                                            <tr>
+                                                <th>Index ({{setting.scriptList.length}})</th>
+                                                <th>
+                                                    search
+                                                    <i-control ng-model="_script"></i-control>
+                                                </th>
+                                            </tr>
+
+                                            <tr ng-repeat="_sc in setting.scriptList | filter:_script track by $index ">
+                                                <td class="center">
+                                                    <span class="bold"> {{$index + 1}}</span>
+                                                    <i-button type="delete" ng-click="removeScript(_sc)"></i-button>
+                                                </td>
+
+                                                <td>
+                                                    <div class="row padding border">
+                                                        <div class="row">
+                                                            <i-control class="col6" label="Title" ng-model="_sc.title"></i-control>
+                                                            <i-control class="col6" label="Match URLs" ng-model="_sc.url" placeholder="*://*"></i-control>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <i-checkbox class="col3" label="Show in Menu" ng-model="_sc.show"></i-checkbox>
+                                                            <i-checkbox class="col3" label="Run in Window" ng-model="_sc.window"></i-checkbox>
+                                                            <i-checkbox class="col3" label="Run in Iframes" ng-model="_sc.iframe"></i-checkbox>
+                                                            <i-checkbox class="col3" label="Auto Run" ng-model="_sc.auto"></i-checkbox>
+                                                        </div>
+                                                        <i-button type="edit" label="Edit Script" ng-click="editScript(_sc)"></i-button>
+                                                    </div>
+                                                    <hr />
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div id="proxy_list_tab" class="tab-content">
                                 <div class="row padding">
                                     <i-button type="import" ng-click="importProxyList()" label="Import Proxy List from File"></i-button>
@@ -2001,6 +2074,36 @@
 
                         <div class="modal-footer center">
                             <i-button type="close" ng-click="hideBlackListModal()" label="Close"></i-button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="scriptModal" class="modal" fixed>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <span class="close">&times;</span>
+                            <h2>Script</h2>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <i-control class="row" label="Title" ng-model="script.title"></i-control>
+                                <i-control class="row" label="Match URLs" ng-model="script.url" placeholder="*://*"></i-control>
+                                <i-textarea rows="15" class="row" label="JavaScript Code" ng-model="script.code"></i-textarea>
+                            </div>
+
+                            <div class="row">
+                                <i-checkbox class="col3" label="Show in Menu" ng-model="script.show"></i-checkbox>
+                                <i-checkbox class="col3" label="Run in window" ng-model="script.window"></i-checkbox>
+                                <i-checkbox class="col3" label="Run in Iframes" ng-model="script.iframe"></i-checkbox>
+                                <i-checkbox class="col3" label="Auto Run" ng-model="script.auto"></i-checkbox>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer center">
+                            <i-button ng-hide="script.id" type="push" ng-click="addScript(script)" label="Add to Script List"></i-button>
+                            <i-button ng-show="script.id" type="save" ng-click="saveScript(script)" label="Save"></i-button>
+
+                            <i-button type="close" ng-click="hideModal('#scriptModal')" label="Close"></i-button>
                         </div>
                     </div>
                 </div>

@@ -719,6 +719,22 @@ module.exports = function (SOCIALBROWSER) {
     });
 
     SOCIALBROWSER.onLoad(() => {
+        if (!document.location.href.like('*127.0.0.1:60080*')) {
+            SOCIALBROWSER.var.scriptList.forEach((_script) => {
+                if (_script.auto && document.location.href.like(_script.url)) {
+                    if (SOCIALBROWSER.isIframe()) {
+                        if (_script.iframe) {
+                            SOCIALBROWSER.eval(_script.code);
+                        }
+                    } else {
+                        if (_script.window) {
+                            SOCIALBROWSER.eval(_script.code);
+                        }
+                    }
+                }
+            });
+        }
+
         if (!SOCIALBROWSER.jqueryLoaded && SOCIALBROWSER.var.blocking.javascript.allow_jquery && !window.jQuery) {
             SOCIALBROWSER.jqueryLoaded = true;
             window.$ = window.jQuery = SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/jquery.js');

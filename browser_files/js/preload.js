@@ -97,7 +97,6 @@ SOCIALBROWSER.eval = function (script, security = false) {
             return SOCIALBROWSER.require(path);
         }
     } catch (error) {
-        SOCIALBROWSER.log(error);
         if (!security) {
             return SOCIALBROWSER.eval(script, true);
         }
@@ -123,7 +122,7 @@ SOCIALBROWSER.hostname = document.location.hostname || document.location.origin;
 SOCIALBROWSER.href = document.location.href;
 
 SOCIALBROWSER.propertyList =
-    'scripts_files,user_data,user_data_input,sites,preload_list,privateKeyList,googleExtensionList,ad_list,proxy_list,proxy,core,bookmarks,session_list,userAgentList,blocking,video_quality_list,customHeaderList';
+    'scripts_files,user_data,user_data_input,sites,preload_list,scriptList,privateKeyList,googleExtensionList,ad_list,proxy_list,proxy,core,bookmarks,session_list,userAgentList,blocking,video_quality_list,customHeaderList';
 if (SOCIALBROWSER.href.indexOf('http://127.0.0.1:60080') === 0) {
     SOCIALBROWSER.propertyList = '*';
 }

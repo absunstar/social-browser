@@ -1,21 +1,3 @@
-window.setting = window.setting || {};
-
-var app = app || angular.module('myApp', []);
-
-setTimeout(() => {
-    if (document.location.href.like('*bookmarks*')) {
-        let btn1 = document.querySelector('#bookmarks_btn');
-        if (btn1) {
-            btn1.click();
-        }
-    } else if (document.location.href.like('*safty*')) {
-        let btn1 = document.querySelector('#safty_btn');
-        if (btn1) {
-            btn1.click();
-        }
-    }
-}, 1000 * 2);
-
 app.controller('mainController', ($scope, $http, $timeout) => {
     $scope.userAgentBrowserList = SOCIALBROWSER.userAgentBrowserList.map((b) => ({ name: b.name }));
     $scope.userAgentDeviceList = SOCIALBROWSER.userAgentDeviceList;
@@ -259,6 +241,12 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         $scope.setting.session_list.sort((a, b) => (a.display < b.display ? -1 : 1));
     };
 
+    $scope.showModal = function (id) {
+        site.showModal(id);
+    };
+    $scope.hideModal = function (id) {
+        site.hideModal(id);
+    };
     $scope.showProfiles = function () {
         site.showModal('#profileModal');
     };
@@ -562,6 +550,35 @@ app.controller('mainController', ($scope, $http, $timeout) => {
                 $scope.setting.userAgentList.splice(i, 1);
             }
         });
+    };
+
+    $scope.showAddScript = function () {
+        $scope.script = { url: '*://*' , show : true , window : true };
+        $scope.showModal('#scriptModal');
+    };
+
+    $scope.addScript = function (_script) {
+        _script.id = new Date().getTime();
+        $scope.setting.scriptList.push({ ..._script });
+        $scope.hideModal('#scriptModal');
+    };
+    $scope.editScript = function (_script) {
+        $scope.script = _script;
+        $scope.showModal('#scriptModal');
+    };
+    $scope.saveScript = function (_script) {
+        let index = $scope.setting.scriptList.findIndex((s) => s.id == _script.id);
+        if (index !== -1) {
+            $scope.setting.scriptList[index] = { ..._script };
+        }
+        $scope.hideModal('#scriptModal');
+    };
+
+    $scope.removeScript = function (_sc) {
+        let index = $scope.setting.scriptList.findIndex((s) => s.id == _sc.id);
+        if (index !== -1) {
+            $scope.setting.scriptList.splice(index, 1);
+        }
     };
 
     $scope.addProxy = function () {
@@ -1110,4 +1127,15 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     $scope.importSessionList = function () {};
 
     $scope.loadSetting();
+});
+
+site.onLoad(() => {
+    if (document.location.hash) {
+        setTimeout(() => {
+            let btn1 = document.querySelector(document.location.hash);
+            if (btn1) {
+                btn1.click();
+            }
+        }, 1000 * 2);
+    }
 });

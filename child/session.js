@@ -550,7 +550,7 @@ module.exports = function (child) {
                 }
 
                 if (domainCookieObject && child.parent.var.blocking.core.send_browser_id) {
-                    details.requestHeaders['X-Browser'] = 'social.' + child.parent.var.core.id;
+                    details.requestHeaders['X-Browser'] = (child.parent.var.core.brand || 'social') + '.' + child.parent.var.core.id;
                 }
 
                 if (_ss.user.privacy.vpc.dnt) {
@@ -598,7 +598,7 @@ module.exports = function (child) {
                     }
                 }
 
-                if ((customSetting && customSetting.off)) {
+                if (customSetting && customSetting.off) {
                     callback({
                         cancel: false,
                         responseHeaders: {

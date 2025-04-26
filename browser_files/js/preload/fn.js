@@ -31,12 +31,29 @@ module.exports = function (SOCIALBROWSER) {
         SOCIALBROWSER.onMessageFnList.push(fn);
     };
     SOCIALBROWSER.on('message', (e, message) => {
-        if (message.eval) {
+        if (typeof message === 'object' && message.eval) {
             SOCIALBROWSER.eval(message.eval);
+        } else {
+            SOCIALBROWSER.onMessageFnList.forEach((fn) => {
+                fn(message);
+            });
         }
-        SOCIALBROWSER.onMessageFnList.forEach((fn) => {
-            fn(message);
-        });
+    });
+
+    SOCIALBROWSER.on('[run-script]', (e, _script) => {
+        if (!document.location.href.like('*127.0.0.1:60080*')) {
+            if (document.location.href.like(_script.url)) {
+                if (SOCIALBROWSER.isIframe()) {
+                    if (_script.iframe) {
+                        SOCIALBROWSER.eval(_script.code);
+                    }
+                } else {
+                    if (_script.window) {
+                        SOCIALBROWSER.eval(_script.code);
+                    }
+                }
+            }
+        }
     });
 
     SOCIALBROWSER.toJson = (obj) => {

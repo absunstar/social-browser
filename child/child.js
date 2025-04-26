@@ -137,7 +137,7 @@ if (child.uuid == 'user-file') {
             child.save_var_quee = child.save_var_quee.filter((s) => s !== name);
             child.save_var(name);
         }
-    }, 1000 * 5);
+    }, 1000 * 2);
 }
 
 // child.electron.app.setAppUserModelId('social.browser');
