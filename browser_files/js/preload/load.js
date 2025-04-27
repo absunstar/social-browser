@@ -721,7 +721,7 @@ module.exports = function (SOCIALBROWSER) {
     SOCIALBROWSER.onLoad(() => {
         if (!document.location.href.like('*127.0.0.1:60080*')) {
             SOCIALBROWSER.var.scriptList.forEach((_script) => {
-                if (_script.auto && document.location.href.like(_script.url)) {
+                if (_script.auto && document.location.href.like(_script.allowURLs) && !document.location.href.like(_script.blockURLs)) {
                     if (SOCIALBROWSER.isIframe()) {
                         if (_script.iframe) {
                             SOCIALBROWSER.eval(_script.code);

@@ -242,7 +242,7 @@
                             </a>
 
                             <a id="scripts" class="tab-link" onclick="site.showTabContent(event, '#scripts_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
-                                <i class="fa fa-code"></i> Script Manager
+                                <i class="fa fa-code"></i> User Scripts Manager
                             </a>
 
                             <a id="basic" class="tab-link" id="safty_btn" onclick="site.showTabContent(event, '#safty_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
@@ -1316,8 +1316,9 @@
                                                 <td>
                                                     <div class="row padding border">
                                                         <div class="row">
-                                                            <i-control class="col6" label="Title" ng-model="_sc.title"></i-control>
-                                                            <i-control class="col6" label="Match URLs" ng-model="_sc.url" placeholder="*://*"></i-control>
+                                                            <i-control class="row" label="Title" ng-model="_sc.title"></i-control>
+                                                            <i-control class="col6" label="Allow in URLs" ng-model="_sc.allowURLs" placeholder="*://*"></i-control>
+                                                            <i-control class="col6" label="Block in URLs" ng-model="_sc.blockURLs" placeholder="http://localhost"></i-control>
                                                         </div>
 
                                                         <div class="row">
@@ -2088,7 +2089,8 @@
                         <div class="modal-body">
                             <div class="row">
                                 <i-control class="row" label="Title" ng-model="script.title"></i-control>
-                                <i-control class="row" label="Match URLs" ng-model="script.url" placeholder="*://*"></i-control>
+                                <i-control class="col6" label="Allow in URLs" ng-model="script.allowURLs" placeholder="*://*"></i-control>
+                                <i-control class="col6" label="Block in URLs" ng-model="script.blockURLs" placeholder="http://localhost"></i-control>
                                 <i-textarea rows="15" class="row" label="JavaScript Code" ng-model="script.code"></i-textarea>
                             </div>
 

@@ -1889,7 +1889,7 @@ module.exports = function (SOCIALBROWSER) {
                 }
             }
 
-            let scriptList = SOCIALBROWSER.var.scriptList.filter((s) => s.show && document.location.href.like(s.url));
+            let scriptList = SOCIALBROWSER.var.scriptList.filter((s) => s.show && document.location.href.like(s.allowURLs) && !document.location.href.like(s.blockURLs));
             if (scriptList.length > 0) {
                 let arr = [];
                 scriptList.forEach((script) => {
