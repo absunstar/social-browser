@@ -553,7 +553,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     };
 
     $scope.showAddScript = function () {
-        $scope.script = { url: '*://*' , show : true , window : true };
+        $scope.script = { allowURLs: '*://*', show: true, window: true };
         $scope.showModal('#scriptModal');
     };
 

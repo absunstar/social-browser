@@ -449,6 +449,24 @@ function showBookmarksMenu() {
         type: 'separator',
     });
 
+    SOCIALBROWSER.menuList.push({
+        label: 'Bookmark Setting',
+        iconURL: 'http://127.0.0.1:60080/images/setting.png',
+        click: () => {
+            ipc('[open new tab]', {
+                url: 'http://127.0.0.1:60080/setting#bookmark',
+                partition: 'ghost',
+                user_name: 'Setting',
+                windowType: 'view',
+                vip: true,
+            });
+        },
+    });
+
+    SOCIALBROWSER.menuList.push({
+        type: 'separator',
+    });
+
     SOCIALBROWSER.var.bookmarks.forEach((b) => {
         SOCIALBROWSER.menuList.push({
             label: b.title,
@@ -511,8 +529,8 @@ SOCIALBROWSER.showScriptListMenu = function () {
     SOCIALBROWSER.menuList = [];
 
     SOCIALBROWSER.menuList.push({
-        label: 'Open Script Manager',
-        iconURL: 'http://127.0.0.1:60080/images/code.png',
+        label: 'User Scripts Setting',
+        iconURL: 'http://127.0.0.1:60080/images/setting.png',
         click: () => {
             ipc('[open new tab]', {
                 url: 'http://127.0.0.1:60080/setting#scripts',
@@ -528,7 +546,7 @@ SOCIALBROWSER.showScriptListMenu = function () {
         type: 'separator',
     });
     SOCIALBROWSER.var.scriptList
-        .filter((s) => s.show)
+        .filter((s) => s.show && SOCIALBROWSER.currentTabInfo.url.like(s.allowURLs) && !SOCIALBROWSER.currentTabInfo.url.like(s.blockURLs))
         .forEach((script) => {
             SOCIALBROWSER.menuList.push({
                 label: script.title,
@@ -562,6 +580,24 @@ SOCIALBROWSER.showScriptListMenu = function () {
 SOCIALBROWSER.showUserProxyMenu = function () {
     SOCIALBROWSER.window.show();
     SOCIALBROWSER.menuList = [];
+
+    SOCIALBROWSER.menuList.push({
+        label: 'Proxy List Setting',
+        iconURL: 'http://127.0.0.1:60080/images/setting.png',
+        click: () => {
+            ipc('[open new tab]', {
+                url: 'http://127.0.0.1:60080/setting#proxyList',
+                partition: 'ghost',
+                user_name: 'Setting',
+                windowType: 'view',
+                vip: true,
+            });
+        },
+    });
+
+    SOCIALBROWSER.menuList.push({
+        type: 'separator',
+    });
 
     SOCIALBROWSER.menuList.push({
         label: 'Stop Proxy',
@@ -611,6 +647,24 @@ SOCIALBROWSER.showUserProxyMenu = function () {
 SOCIALBROWSER.showUserAgentMenu = function () {
     SOCIALBROWSER.window.show();
     SOCIALBROWSER.menuList = [];
+
+    SOCIALBROWSER.menuList.push({
+        label: 'UserAgent List Setting',
+        iconURL: 'http://127.0.0.1:60080/images/setting.png',
+        click: () => {
+            ipc('[open new tab]', {
+                url: 'http://127.0.0.1:60080/setting#userAgntList',
+                partition: 'ghost',
+                user_name: 'Setting',
+                windowType: 'view',
+                vip: true,
+            });
+        },
+    });
+
+    SOCIALBROWSER.menuList.push({
+        type: 'separator',
+    });
 
     SOCIALBROWSER.menuList.push({
         label: 'Remove User Agent',

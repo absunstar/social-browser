@@ -242,7 +242,7 @@
                             </a>
 
                             <a id="scripts" class="tab-link" onclick="site.showTabContent(event, '#scripts_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
-                                <i class="fa fa-code"></i> User Scripts Manager
+                                <i class="fa fa-code"></i> User Scripts
                             </a>
 
                             <a id="basic" class="tab-link" id="safty_btn" onclick="site.showTabContent(event, '#safty_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
@@ -265,15 +265,15 @@
                                 <i class="fa fa-file"></i> User Data
                             </a>
 
-                            <a id="basic" class="tab-link" id="bookmarks_btn" onclick="site.showTabContent(event, '#bookmarks_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                            <a id="bookmark" class="tab-link" id="bookmarks_btn" onclick="site.showTabContent(event, '#bookmarks_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
                                 <i class="fa fa-bookmark"></i> Bookmarks
                             </a>
                             <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#urls_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-sitemap"></i> URLs </a>
                             <a id="basic" ng-hide="true" class="tab-link" onclick="site.showTabContent(event, '#internet_speed_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
                                 <i class="fa fa-cloud-download"></i> Internet Speed
                             </a>
-                            <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#proxy_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-desktop"></i> Proxy </a>
-                            <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#proxy_list_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                            <a id="proxy" class="tab-link" onclick="site.showTabContent(event, '#proxy_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-desktop"></i> Proxy </a>
+                            <a id="proxyList" class="tab-link" onclick="site.showTabContent(event, '#proxy_list_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
                                 <i class="fa fa-list"></i> Proxy List
                             </a>
                             <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#menu_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
@@ -283,7 +283,7 @@
                                 <i class="fa fa-download"></i> Downloader
                             </a>
 
-                            <a id="userAgentButton" class="tab-link" onclick="site.showTabContent(event, '#userAgentTab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                            <a id="userAgntList" class="tab-link" onclick="site.showTabContent(event, '#userAgentTab');window.scrollTo({ top: 0, behavior: 'smooth' });">
                                 <i class="fa fa-list"></i> User Agent List
                             </a>
                         </div>
@@ -331,7 +331,7 @@
                                                 label="Default User Agent"
                                             ></i-list>
                                             <div class="col">
-                                                <i-button label="Edit User Agent List" type="edit" onclick="document.querySelector('#userAgentButton').click()"></i-button>
+                                                <i-button label="Edit User Agent List" type="edit" onclick="document.querySelector('#userAgntList').click()"></i-button>
                                             </div>
                                             <i-control disabled class="row" label="User Agent URL" ng-model="setting.core.defaultUserAgent.url"></i-control>
                                         </div>
@@ -1326,6 +1326,7 @@
                                                             <i-checkbox class="col3" label="Run in Window" ng-model="_sc.window"></i-checkbox>
                                                             <i-checkbox class="col3" label="Run in Iframes" ng-model="_sc.iframe"></i-checkbox>
                                                             <i-checkbox class="col3" label="Auto Run" ng-model="_sc.auto"></i-checkbox>
+                                                            <i-checkbox class="row" label="Preload (Run Before Page Render)" ng-model="_sc.preload"></i-checkbox>
                                                         </div>
                                                         <i-button type="edit" label="Edit Script" ng-click="editScript(_sc)"></i-button>
                                                     </div>
@@ -2099,6 +2100,7 @@
                                 <i-checkbox class="col3" label="Run in window" ng-model="script.window"></i-checkbox>
                                 <i-checkbox class="col3" label="Run in Iframes" ng-model="script.iframe"></i-checkbox>
                                 <i-checkbox class="col3" label="Auto Run" ng-model="script.auto"></i-checkbox>
+                                <i-checkbox class="row" label="Preload (Run Before Page Render)" ng-model="script.preload"></i-checkbox>
                             </div>
                         </div>
 

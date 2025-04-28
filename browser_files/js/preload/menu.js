@@ -489,6 +489,7 @@ module.exports = function (SOCIALBROWSER) {
 
                 SOCIALBROWSER.menuList.push({
                     label: `Open link ${u_string} in ( new tab ) `,
+                    iconURL: 'http://127.0.0.1:60080/images/link.png',
                     click() {
                         SOCIALBROWSER.ipc('[open new tab]', {
                             referrer: document.location.href,
@@ -503,6 +504,7 @@ module.exports = function (SOCIALBROWSER) {
 
                 SOCIALBROWSER.menuList.push({
                     label: `Open link ${u_string} in ( current window ) `,
+                    iconURL: 'http://127.0.0.1:60080/images/link.png',
                     click() {
                         document.location.href = u;
                     },
@@ -522,6 +524,7 @@ module.exports = function (SOCIALBROWSER) {
                 let arr = get_url_menu_list(u);
                 SOCIALBROWSER.menuList.push({
                     label: `Open link ${u_string} `,
+                    iconURL: 'http://127.0.0.1:60080/images/link.png',
                     type: 'submenu',
                     submenu: arr,
                 });
@@ -920,6 +923,7 @@ module.exports = function (SOCIALBROWSER) {
 
         let m = {
             label: 'Page',
+            iconURL: 'http://127.0.0.1:60080/images/page.png',
             type: 'submenu',
             submenu: arr,
         };
@@ -995,6 +999,7 @@ module.exports = function (SOCIALBROWSER) {
         if (arr2.length > 0) {
             let m2 = {
                 label: 'Page Frames',
+                iconURL: 'http://127.0.0.1:60080/images/page.png',
                 type: 'submenu',
                 submenu: arr2,
             };
@@ -1325,6 +1330,7 @@ module.exports = function (SOCIALBROWSER) {
         if (arr.length > 0) {
             SOCIALBROWSER.menuList.push({
                 label: 'Development Menu',
+                iconURL: 'http://127.0.0.1:60080/images/dev.png',
                 type: 'submenu',
                 submenu: arr,
             });
@@ -1344,6 +1350,7 @@ module.exports = function (SOCIALBROWSER) {
                 let arr = get_url_menu_list(SOCIALBROWSER.memoryText());
                 SOCIALBROWSER.menuList.push({
                     label: `Open link [ ${SOCIALBROWSER.memoryText().substring(0, 70)} ] `,
+                    iconURL: 'http://127.0.0.1:60080/images/link.png',
                     type: 'submenu',
                     submenu: arr,
                 });
@@ -1355,6 +1362,7 @@ module.exports = function (SOCIALBROWSER) {
 
                     SOCIALBROWSER.menuList.push({
                         label: `Translate [ ${stext} ] `,
+                        iconURL: 'http://127.0.0.1:60080/images/translate.png',
                         click() {
                             SOCIALBROWSER.ipc('[open new popup]', {
                                 partition: SOCIALBROWSER.partition,
@@ -1367,6 +1375,7 @@ module.exports = function (SOCIALBROWSER) {
 
                     SOCIALBROWSER.menuList.push({
                         label: `Search  [ ${stext} ] `,
+                        iconURL: 'http://127.0.0.1:60080/images/search.png',
                         click() {
                             SOCIALBROWSER.ipc('[open new tab]', {
                                 referrer: document.location.href,
@@ -1390,6 +1399,7 @@ module.exports = function (SOCIALBROWSER) {
                         if (o.multi) {
                             let arr = get_url_menu_list(o.url || document.location.href);
                             SOCIALBROWSER.menuList.push({
+                                iconURL: 'http://127.0.0.1:60080/images/menu.png',
                                 label: o.name,
                                 type: 'submenu',
                                 submenu: arr,
@@ -1397,6 +1407,7 @@ module.exports = function (SOCIALBROWSER) {
                         } else {
                             SOCIALBROWSER.menuList.push({
                                 label: o.name,
+                                iconURL: 'http://127.0.0.1:60080/images/menu.png',
                                 click() {
                                     SOCIALBROWSER.ipc('[open new tab]', {
                                         partition: SOCIALBROWSER.partition,
@@ -1424,6 +1435,7 @@ module.exports = function (SOCIALBROWSER) {
             SOCIALBROWSER.menuList.push({
                 label: 'Refresh',
                 accelerator: 'F5',
+                iconURL: 'http://127.0.0.1:60080/images/reload.png',
                 click: function () {
                     SOCIALBROWSER.webContents.reload();
                 },
@@ -1474,6 +1486,7 @@ module.exports = function (SOCIALBROWSER) {
 
                 SOCIALBROWSER.menuList.push({
                     label: 'Inspect Element',
+                    iconURL: 'http://127.0.0.1:60080/images/dev.png',
                     click() {
                         SOCIALBROWSER.webContents.inspectElement(SOCIALBROWSER.rightClickPosition.x2, SOCIALBROWSER.rightClickPosition.y2);
                         if (SOCIALBROWSER.webContents.isDevToolsOpened()) {
@@ -1486,6 +1499,7 @@ module.exports = function (SOCIALBROWSER) {
             if (SOCIALBROWSER.var.blocking.context_menu.dev_tools && SOCIALBROWSER.customSetting.allowDevTools) {
                 SOCIALBROWSER.menuList.push({
                     label: 'Developer Tools',
+                    iconURL: 'http://127.0.0.1:60080/images/dev.png',
                     accelerator: 'F12',
                     click() {
                         SOCIALBROWSER.webContents.openDevTools();
@@ -1624,6 +1638,7 @@ module.exports = function (SOCIALBROWSER) {
 
                     SOCIALBROWSER.menuList.push({
                         label: 'Inspect Element',
+                        iconURL: 'http://127.0.0.1:60080/images/dev.png',
                         click() {
                             SOCIALBROWSER.webContents.inspectElement(SOCIALBROWSER.rightClickPosition.x2, SOCIALBROWSER.rightClickPosition.y2);
                             if (SOCIALBROWSER.webContents.isDevToolsOpened()) {
@@ -1634,6 +1649,7 @@ module.exports = function (SOCIALBROWSER) {
 
                     SOCIALBROWSER.menuList.push({
                         label: 'Developer Tools',
+                        iconURL: 'http://127.0.0.1:60080/images/dev.png',
                         accelerator: 'F12',
                         click() {
                             SOCIALBROWSER.webContents.openDevTools({
@@ -1682,6 +1698,7 @@ module.exports = function (SOCIALBROWSER) {
                     let arr = get_url_menu_list(SOCIALBROWSER.selectedText());
                     SOCIALBROWSER.menuList.push({
                         label: `Open link [ ${SOCIALBROWSER.selectedText().substring(0, 70)} ] `,
+                        iconURL: 'http://127.0.0.1:60080/images/link.png',
                         type: 'submenu',
                         submenu: arr,
                     });
@@ -1717,6 +1734,7 @@ module.exports = function (SOCIALBROWSER) {
                 });
                 SOCIALBROWSER.menuList.push({
                     label: `Translate [ ${stext} ] `,
+                    iconURL: 'http://127.0.0.1:60080/images/translate.png',
                     click() {
                         SOCIALBROWSER.ipc('[open new popup]', {
                             partition: SOCIALBROWSER.partition,
@@ -1729,6 +1747,7 @@ module.exports = function (SOCIALBROWSER) {
 
                 SOCIALBROWSER.menuList.push({
                     label: `Search  [ ${stext} ] `,
+                    iconURL: 'http://127.0.0.1:60080/images/search.png',
                     click() {
                         SOCIALBROWSER.ipc('[open new tab]', {
                             referrer: document.location.href,
@@ -1903,7 +1922,8 @@ module.exports = function (SOCIALBROWSER) {
                 });
                 SOCIALBROWSER.menuList.push({ type: 'separator' });
                 SOCIALBROWSER.menuList.push({
-                    label: 'Script Manager',
+                    label: 'User Scripts',
+                    iconURL: 'http://127.0.0.1:60080/images/code.png',
                     type: 'submenu',
                     submenu: arr,
                 });

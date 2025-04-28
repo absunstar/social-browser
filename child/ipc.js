@@ -21,6 +21,31 @@ module.exports = function init(child) {
         });
     };
 
+    child.sendToWebContents = function (webContents, channel, data) {
+        webContents.send(channel, data);
+        webContents.mainFrame.frames.forEach((f) => {
+            f.send(channel, data);
+            f.frames.forEach((f2) => {
+                f2.send(channel, data);
+                f2.frames.forEach((f3) => {
+                    f3.send(channel, data);
+                    f3.frames.forEach((f4) => {
+                        f4.send(channel, data);
+                        f4.frames.forEach((f5) => {
+                            f5.send(channel, data);
+                            f5.frames.forEach((f6) => {
+                                f6.send(channel, data);
+                                f6.frames.forEach((f7) => {
+                                    f7.send(channel, data);
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    };
+
     child.handleBrowserData = function (data) {
         let data2 = {
             childProcessID: child.id,
@@ -468,10 +493,7 @@ module.exports = function init(child) {
     child.ipcMain.handle('message', (e, message) => {
         let win = child.electron.BrowserWindow.fromId(message.windowID);
         if (win) {
-            win.webContents.send('message', message);
-            win.webContents.mainFrame.frames.forEach((f) => {
-                f.send('message', message);
-            });
+            child.sendToWebContents(win.webContents, 'message', message);
         }
     });
     child.ipcMain.handle('window.message', (e, message) => {
@@ -706,6 +728,16 @@ module.exports = function init(child) {
                                 if (f5.routingId == data.routingId) {
                                     contents = f5;
                                 }
+                                f5.frames.forEach((f6) => {
+                                    if (f6.routingId == data.routingId) {
+                                        contents = f6;
+                                    }
+                                    f6.frames.forEach((f7) => {
+                                        if (f7.routingId == data.routingId) {
+                                            contents = f7;
+                                        }
+                                    });
+                                });
                             });
                         });
                     });
@@ -1061,19 +1093,7 @@ module.exports = function init(child) {
     child.ipcMain.handle('[run-script]', (event, data) => {
         let win = child.electron.BrowserWindow.fromId(data.windowID);
         if (win && !win.isDestroyed()) {
-            win.webContents.send('[run-script]', data.script);
-            win.webContents.mainFrame.frames.forEach((f) => {
-                f.send('[run-script]', data.script);
-                f.frames.forEach((f2) => {
-                    f2.send('[run-script]', data.script);
-                    f2.frames.forEach((f3) => {
-                        f3.send('[run-script]', data.script);
-                        f3.frames.forEach((f4) => {
-                            f4.send('[run-script]', data.script);
-                        });
-                    });
-                });
-            });
+            child.sendToWebContents(win.webContents, '[run-script]', data.script);
         }
     });
 

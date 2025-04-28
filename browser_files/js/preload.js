@@ -57,13 +57,14 @@ SOCIALBROWSER.random = SOCIALBROWSER.randomNumber = function (min = 1, max = 100
     return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
-SOCIALBROWSER.require = function (name, ...args) {
+SOCIALBROWSER.require = function (path, ...args) {
     try {
-        const fn = require(name);
-        if (args.length > 0) {
-            return fn(...args);
-        }
+        const fn = require(path);
+
         if (typeof fn === 'function') {
+            if (args.length > 0) {
+                return fn(...args);
+            }
             return fn(SOCIALBROWSER);
         } else {
             return fn;
@@ -82,7 +83,7 @@ SOCIALBROWSER.Buffer = Buffer;
 
 SOCIALBROWSER.eval = function (script, security = false) {
     try {
-        if (!security && (typeof script === 'string' || script instanceof Buffer || script instanceof TrustedScript || script instanceof TypedArray || script instanceof DataView)) {
+        if (!security && typeof script === 'string') {
             const fn = new Function(script)();
             if (typeof fn === 'function') {
                 return fn(SOCIALBROWSER);

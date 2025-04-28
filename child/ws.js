@@ -172,19 +172,7 @@ module.exports = function (child) {
                 } else if (message.type == '[run-script]') {
                     child.windowList.forEach((w) => {
                         if (w.window && !w.window.isDestroyed() && w.id == message.tabInfo.windowID) {
-                            w.window.webContents.send('[run-script]', message.script);
-                            w.window.webContents.mainFrame.frames.forEach((f) => {
-                                f.send('[run-script]', message.script);
-                                f.frames.forEach((f2) => {
-                                    f2.send('[run-script]', message.script);
-                                    f2.frames.forEach((f3) => {
-                                        f3.send('[run-script]', message.script);
-                                        f3.frames.forEach((f4) => {
-                                            f4.send('[run-script]', message.script);
-                                        });
-                                    });
-                                });
-                            });
+                            child.sendToWebContents(w.window.webContents, '[run-script]', message.script);
                         }
                     });
                 } else if (message.type == '[send-render-message]') {
@@ -404,20 +392,10 @@ module.exports = function (child) {
                             } else if (message.data.name == 'open-external' && message.data.url) {
                                 child.openExternal(message.data.url);
                             } else {
-                                w.window.webContents.send('[window-action]', message.data);
                                 if (message.data.levels) {
-                                    w.window.webContents.mainFrame.frames.forEach((f) => {
-                                        f.send('[window-action]', message.data);
-                                        f.frames.forEach((f2) => {
-                                            f2.send('[window-action]', message.data);
-                                            f2.frames.forEach((f3) => {
-                                                f3.send('[window-action]', message.data);
-                                                f3.frames.forEach((f4) => {
-                                                    f4.send('[window-action]', message.data);
-                                                });
-                                            });
-                                        });
-                                    });
+                                    child.sendToWebContents(w.window.webContents, '[window-action]', message.data);
+                                } else {
+                                    w.window.webContents.send('[window-action]', message.data);
                                 }
                             }
                         }

@@ -718,17 +718,45 @@ module.exports = function (SOCIALBROWSER) {
         }
     });
 
+    navigator.clipboard = { writeText: SOCIALBROWSER.copy };
+
+    if (true /** to work in background.js */ || SOCIALBROWSER.userAgentURL.like('*chrome*') || document.location.href.like('*chrome-extension://*')) {
+        SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/chrome-extension.js');
+    } else {
+        chrome = undefined;
+    }
+
+    if (SOCIALBROWSER.customSetting.eval) {
+        SOCIALBROWSER.eval(SOCIALBROWSER.customSetting.eval);
+    }
+
+    if (!document.location.href.like('*127.0.0.1:60080*')) {
+        SOCIALBROWSER.var.scriptList.forEach((_script) => {
+            if (_script.auto && _script.code && _script.preload && document.location.href.like(_script.allowURLs) && !document.location.href.like(_script.blockURLs)) {
+                if (SOCIALBROWSER.isIframe()) {
+                    if (_script.iframe) {
+                        SOCIALBROWSER.eval('module.exports = function (SOCIALBROWSER) {' + _script.code + '}');
+                    }
+                } else {
+                    if (_script.window) {
+                        SOCIALBROWSER.eval('module.exports = function (SOCIALBROWSER) {' + _script.code + '}');
+                    }
+                }
+            }
+        });
+    }
+
     SOCIALBROWSER.onLoad(() => {
         if (!document.location.href.like('*127.0.0.1:60080*')) {
             SOCIALBROWSER.var.scriptList.forEach((_script) => {
-                if (_script.auto && document.location.href.like(_script.allowURLs) && !document.location.href.like(_script.blockURLs)) {
+                if (_script.auto && _script.code && !_script.preload && document.location.href.like(_script.allowURLs) && !document.location.href.like(_script.blockURLs)) {
                     if (SOCIALBROWSER.isIframe()) {
                         if (_script.iframe) {
-                            SOCIALBROWSER.eval(_script.code);
+                            SOCIALBROWSER.eval('module.exports = function (SOCIALBROWSER) {' + _script.code + '}');
                         }
                     } else {
                         if (_script.window) {
-                            SOCIALBROWSER.eval(_script.code);
+                            SOCIALBROWSER.eval('module.exports = function (SOCIALBROWSER) {' + _script.code + '}');
                         }
                     }
                 }
@@ -750,16 +778,4 @@ module.exports = function (SOCIALBROWSER) {
             });
         }, 1000);
     });
-
-    navigator.clipboard = { writeText: SOCIALBROWSER.copy };
-
-    if (true /** to work in background.js */ || SOCIALBROWSER.userAgentURL.like('*chrome*') || document.location.href.like('*chrome-extension://*')) {
-        SOCIALBROWSER.require(SOCIALBROWSER.files_dir + '/js/preload/chrome-extension.js');
-    } else {
-        chrome = undefined;
-    }
-
-    if (SOCIALBROWSER.customSetting.eval) {
-        SOCIALBROWSER.eval(SOCIALBROWSER.customSetting.eval);
-    }
 };
