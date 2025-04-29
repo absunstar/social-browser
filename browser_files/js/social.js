@@ -546,13 +546,13 @@ SOCIALBROWSER.showScriptListMenu = function () {
         type: 'separator',
     });
     SOCIALBROWSER.var.scriptList
-        .filter((s) => s.show && SOCIALBROWSER.currentTabInfo.url.like(s.allowURLs) && !SOCIALBROWSER.currentTabInfo.url.like(s.blockURLs))
+        .filter((s) => s.show && !SOCIALBROWSER.currentTabInfo.url.like('*127.0.0.1:60080*') && SOCIALBROWSER.currentTabInfo.url.like(s.allowURLs) && !SOCIALBROWSER.currentTabInfo.url.like(s.blockURLs))
         .forEach((script) => {
             SOCIALBROWSER.menuList.push({
                 label: script.title,
                 iconURL: 'http://127.0.0.1:60080/images/code.png',
                 click: () => {
-                    SOCIALBROWSER.ws({ type: '[run-script]', tabInfo: SOCIALBROWSER.currentTabInfo, script: script });
+                    SOCIALBROWSER.ws({ type: '[run-user-script]', tabInfo: SOCIALBROWSER.currentTabInfo, script: script });
                 },
             });
         });

@@ -65,7 +65,7 @@ SOCIALBROWSER.require = function (path, ...args) {
             if (args.length > 0) {
                 return fn(...args);
             }
-            return fn(SOCIALBROWSER);
+            return fn(SOCIALBROWSER, window, document);
         } else {
             return fn;
         }
@@ -86,7 +86,7 @@ SOCIALBROWSER.eval = function (script, security = false) {
         if (!security && typeof script === 'string') {
             const fn = new Function(script)();
             if (typeof fn === 'function') {
-                return fn(SOCIALBROWSER);
+                return fn(SOCIALBROWSER, window, document);
             }
             return fn;
         } else {
@@ -104,6 +104,18 @@ SOCIALBROWSER.eval = function (script, security = false) {
     }
 
     return undefined;
+};
+
+SOCIALBROWSER.runUserScript = function (_script) {
+    if (SOCIALBROWSER.isIframe()) {
+        if (_script.iframe) {
+            SOCIALBROWSER.eval('module.exports = function (SOCIALBROWSER , window , document) {' + _script.code + '}', SOCIALBROWSER, window, document);
+        }
+    } else {
+        if (_script.window) {
+            SOCIALBROWSER.eval('module.exports = function (SOCIALBROWSER , window , document) {' + _script.code + '}', SOCIALBROWSER, window, document);
+        }
+    }
 };
 
 SOCIALBROWSER.isIframe = function () {

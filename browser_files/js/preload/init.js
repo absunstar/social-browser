@@ -1,4 +1,4 @@
-module.exports = function (SOCIALBROWSER) {
+module.exports = function (SOCIALBROWSER, window, document) {
     function escape(s) {
         if (!s) {
             return '';

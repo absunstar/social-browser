@@ -1,4 +1,4 @@
-module.exports = function (SOCIALBROWSER) {
+module.exports = function (SOCIALBROWSER, window, document) {
     SOCIALBROWSER.log('chrome-extension Init ...');
     var injectExtensionAPIs = () => {
         var formatIpcName = (name) => `crx-${name}`;

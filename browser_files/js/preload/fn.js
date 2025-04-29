@@ -1,4 +1,4 @@
-module.exports = function (SOCIALBROWSER) {
+module.exports = function (SOCIALBROWSER, window, document) {
     SOCIALBROWSER.ws = function (message) {
         SOCIALBROWSER.ipc('ws', message);
     };
@@ -40,20 +40,8 @@ module.exports = function (SOCIALBROWSER) {
         }
     });
 
-    SOCIALBROWSER.on('[run-script]', (e, _script) => {
-        if (!document.location.href.like('*127.0.0.1:60080*')) {
-            if (document.location.href.like(_script.allowURLs) && !document.location.href.like(_script.blockURLs)) {
-                if (SOCIALBROWSER.isIframe()) {
-                    if (_script.iframe) {
-                        SOCIALBROWSER.eval(_script.code);
-                    }
-                } else {
-                    if (_script.window) {
-                        SOCIALBROWSER.eval(_script.code);
-                    }
-                }
-            }
-        }
+    SOCIALBROWSER.on('[run-user-script]', (e, _script) => {
+        SOCIALBROWSER.runUserScript(_script);
     });
 
     SOCIALBROWSER.toJson = (obj) => {

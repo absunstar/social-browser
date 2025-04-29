@@ -1,4 +1,4 @@
-module.exports = function (SOCIALBROWSER) {
+module.exports = function (SOCIALBROWSER, window, document) {
     SOCIALBROWSER.log('.... [ Core Extension activated ] .... ' + document.location.href);
 
     // if (SOCIALBROWSER.isIframe()) {

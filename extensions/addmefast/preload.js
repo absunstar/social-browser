@@ -1,4 +1,4 @@
-module.exports = function (SOCIALBROWSER) {
+module.exports = function (SOCIALBROWSER, window, document) {
     if (document.location.hostname.contains('addmefast.com')) {
         SOCIALBROWSER.onLoad(() => {
             SOCIALBROWSER.log(' :: Addmefast Activated :: ' + document.location.href);

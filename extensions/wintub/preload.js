@@ -1,4 +1,4 @@
-module.exports = function (SOCIALBROWSER) {
+module.exports = function (SOCIALBROWSER, window, document) {
     if (!document.location.hostname.like('*wintub.com*')) {
         return;
     }

@@ -1,4 +1,4 @@
-module.exports = function (SOCIALBROWSER) {
+module.exports = function (SOCIALBROWSER, window, document) {
     SOCIALBROWSER.window = new Proxy(SOCIALBROWSER._window, {
         get(target, name, receiver) {
             if (!Reflect.has(target, name)) {

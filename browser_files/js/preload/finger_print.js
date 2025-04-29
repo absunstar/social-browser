@@ -17,7 +17,7 @@
  *  browser permissions random
  *  current location hide
  */
-module.exports = function (SOCIALBROWSER) {
+module.exports = function (SOCIALBROWSER, window, document) {
     if (SOCIALBROWSER.var.core.javaScriptOFF || SOCIALBROWSER.customSetting.windowType === 'main' || !SOCIALBROWSER.session.privacy.allowVPC) {
         SOCIALBROWSER.log('.... [ Finger Printing OFF ] .... ' + document.location.href);
         return;

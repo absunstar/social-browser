@@ -1,4 +1,4 @@
-module.exports = function (SOCIALBROWSER) {
+module.exports = function (SOCIALBROWSER, window, document) {
     let full_screen = false;
     SOCIALBROWSER.menuList = [];
 
@@ -1908,28 +1908,29 @@ module.exports = function (SOCIALBROWSER) {
                 }
             }
 
-            let scriptList = SOCIALBROWSER.var.scriptList.filter((s) => s.show && document.location.href.like(s.allowURLs) && !document.location.href.like(s.blockURLs));
-            if (scriptList.length > 0) {
-                let arr = [];
-                scriptList.forEach((script) => {
-                    arr.push({
-                        label: script.title,
-                        iconURL: 'http://127.0.0.1:60080/images/code.png',
-                        click: () => {
-                            SOCIALBROWSER.ipc('[run-script]', { windowID: SOCIALBROWSER.window.id, script: script });
-                        },
-                    });
-                });
-                SOCIALBROWSER.menuList.push({ type: 'separator' });
-                SOCIALBROWSER.menuList.push({
-                    label: 'User Scripts',
-                    iconURL: 'http://127.0.0.1:60080/images/code.png',
-                    type: 'submenu',
-                    submenu: arr,
-                });
-            }
-
             if (SOCIALBROWSER.menuList.length > 0) {
+                let scriptList = SOCIALBROWSER.var.scriptList.filter(
+                    (s) => s.show && !document.location.href.like('*127.0.0.1:60080*|*file://*') && document.location.href.like(s.allowURLs) && !document.location.href.like(s.blockURLs)
+                );
+                if (scriptList.length > 0) {
+                    let arr = [];
+                    scriptList.forEach((script) => {
+                        arr.push({
+                            label: script.title,
+                            iconURL: 'http://127.0.0.1:60080/images/code.png',
+                            click: () => {
+                                SOCIALBROWSER.ipc('[run-user-script]', { windowID: SOCIALBROWSER.window.id, script: script });
+                            },
+                        });
+                    });
+                    SOCIALBROWSER.menuList.push({ type: 'separator' });
+                    SOCIALBROWSER.menuList.push({
+                        label: 'User Scripts',
+                        iconURL: 'http://127.0.0.1:60080/images/code.png',
+                        type: 'submenu',
+                        submenu: arr,
+                    });
+                }
                 SOCIALBROWSER.ipc('[show-menu]', {
                     list: SOCIALBROWSER.menuList.map((m) => ({
                         label: m.label,

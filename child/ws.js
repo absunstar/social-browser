@@ -169,10 +169,10 @@ module.exports = function (child) {
                             w.window.webContents.send('[tracking-info]', message);
                         }
                     });
-                } else if (message.type == '[run-script]') {
+                } else if (message.type == '[run-user-script]') {
                     child.windowList.forEach((w) => {
                         if (w.window && !w.window.isDestroyed() && w.id == message.tabInfo.windowID) {
-                            child.sendToWebContents(w.window.webContents, '[run-script]', message.script);
+                            child.sendToWebContents(w.window.webContents, '[run-user-script]', message.script);
                         }
                     });
                 } else if (message.type == '[send-render-message]') {

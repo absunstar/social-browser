@@ -1,4 +1,4 @@
-module.exports = function (SOCIALBROWSER) {
+module.exports = function (SOCIALBROWSER, window, document) {
     SOCIALBROWSER.events_list = [];
     SOCIALBROWSER.quee_list = [];
     SOCIALBROWSER.quee_busy_list = [];

@@ -1,4 +1,4 @@
-module.exports = function (SOCIALBROWSER) {
+module.exports = function (SOCIALBROWSER, window, document) {
     window.open0 = window.open;
     if (!SOCIALBROWSER.isWhiteSite) {
         window.open = function (...args /*url, target, windowFeatures*/) {

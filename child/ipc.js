@@ -1090,10 +1090,10 @@ module.exports = function init(child) {
         }
     });
 
-    child.ipcMain.handle('[run-script]', (event, data) => {
+    child.ipcMain.handle('[run-user-script]', (event, data) => {
         let win = child.electron.BrowserWindow.fromId(data.windowID);
         if (win && !win.isDestroyed()) {
-            child.sendToWebContents(win.webContents, '[run-script]', data.script);
+            child.sendToWebContents(win.webContents, '[run-user-script]', data.script);
         }
     });
 

@@ -1,4 +1,4 @@
-module.exports = function (SOCIALBROWSER) {
+module.exports = function (SOCIALBROWSER, window, document) {
     if ((policy = true)) {
         SOCIALBROWSER.policy = window.trustedTypes.createPolicy('social', {
             createHTML: (string) => string,
@@ -735,11 +735,11 @@ module.exports = function (SOCIALBROWSER) {
             if (_script.auto && _script.code && _script.preload && document.location.href.like(_script.allowURLs) && !document.location.href.like(_script.blockURLs)) {
                 if (SOCIALBROWSER.isIframe()) {
                     if (_script.iframe) {
-                        SOCIALBROWSER.eval('module.exports = function (SOCIALBROWSER) {' + _script.code + '}');
+                        SOCIALBROWSER.runUserScript(_script);
                     }
                 } else {
                     if (_script.window) {
-                        SOCIALBROWSER.eval('module.exports = function (SOCIALBROWSER) {' + _script.code + '}');
+                        SOCIALBROWSER.runUserScript(_script);
                     }
                 }
             }
@@ -752,11 +752,11 @@ module.exports = function (SOCIALBROWSER) {
                 if (_script.auto && _script.code && !_script.preload && document.location.href.like(_script.allowURLs) && !document.location.href.like(_script.blockURLs)) {
                     if (SOCIALBROWSER.isIframe()) {
                         if (_script.iframe) {
-                            SOCIALBROWSER.eval('module.exports = function (SOCIALBROWSER) {' + _script.code + '}');
+                            SOCIALBROWSER.runUserScript(_script);
                         }
                     } else {
                         if (_script.window) {
-                            SOCIALBROWSER.eval('module.exports = function (SOCIALBROWSER) {' + _script.code + '}');
+                            SOCIALBROWSER.runUserScript(_script);
                         }
                     }
                 }

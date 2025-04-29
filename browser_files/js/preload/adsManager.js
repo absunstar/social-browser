@@ -1,4 +1,4 @@
-module.exports = function (SOCIALBROWSER) {
+module.exports = function (SOCIALBROWSER , window , document) {
     if (
         SOCIALBROWSER.var.core.javaScriptOFF ||
         !SOCIALBROWSER.var.blocking.block_ads ||

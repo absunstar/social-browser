@@ -1325,10 +1325,12 @@
                                                             <i-checkbox class="col3" label="Show in Menu" ng-model="_sc.show"></i-checkbox>
                                                             <i-checkbox class="col3" label="Run in Window" ng-model="_sc.window"></i-checkbox>
                                                             <i-checkbox class="col3" label="Run in Iframes" ng-model="_sc.iframe"></i-checkbox>
-                                                            <i-checkbox class="col3" label="Auto Run" ng-model="_sc.auto"></i-checkbox>
-                                                            <i-checkbox class="row" label="Preload (Run Before Page Render)" ng-model="_sc.preload"></i-checkbox>
+                                                            <div class="row">
+                                                                <i-checkbox class="col3" label="Auto Run" ng-model="_sc.auto"></i-checkbox>
+                                                                <i-checkbox ng-show="_sc.auto == true" class="col" label="Preload (Run Before Page Render)" ng-model="_sc.preload"></i-checkbox>
+                                                                <i-button class="col" type="edit" label="Edit Script" ng-click="editScript(_sc)"></i-button>
+                                                            </div>
                                                         </div>
-                                                        <i-button type="edit" label="Edit Script" ng-click="editScript(_sc)"></i-button>
                                                     </div>
                                                     <hr />
                                                 </td>
@@ -2099,8 +2101,10 @@
                                 <i-checkbox class="col3" label="Show in Menu" ng-model="script.show"></i-checkbox>
                                 <i-checkbox class="col3" label="Run in window" ng-model="script.window"></i-checkbox>
                                 <i-checkbox class="col3" label="Run in Iframes" ng-model="script.iframe"></i-checkbox>
-                                <i-checkbox class="col3" label="Auto Run" ng-model="script.auto"></i-checkbox>
-                                <i-checkbox class="row" label="Preload (Run Before Page Render)" ng-model="script.preload"></i-checkbox>
+                                <div class="row">
+                                    <i-checkbox class="col3" label="Auto Run" ng-model="script.auto"></i-checkbox>
+                                    <i-checkbox ng-show="script.auto == true" class="col" label="Preload (Run Before Page Render)" ng-model="script.preload"></i-checkbox>
+                                </div>
                             </div>
                         </div>
 

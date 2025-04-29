@@ -1,4 +1,4 @@
-module.exports = function (SOCIALBROWSER) {
+module.exports = function (SOCIALBROWSER, window, document) {
     if (document.location.hostname.like('*jawaker.com*')) {
         (function () {
             let pushState = history.pushState;
