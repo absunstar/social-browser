@@ -276,6 +276,20 @@ module.exports = function init(parent) {
                 });
 
                 parent.var[name] = userVarContent;
+            } else if (name == 'scriptList') {
+                browserVarContent.forEach((d) => {
+                    let exists = false;
+                    userVarContent.forEach((d2) => {
+                        if (d.id == d2.id) {
+                            exists = true;
+                        }
+                    });
+                    if (!exists) {
+                        userVarContent.push(d);
+                    }
+                });
+
+                parent.var[name] = userVarContent;
             } else if (name == 'ad_list') {
                 browserVarContent.forEach((d) => {
                     let exists = false;
