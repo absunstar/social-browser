@@ -179,6 +179,7 @@ module.exports = function (child) {
             vip: false,
             iframe: true,
             trackingID: 'main_tracking_' + new Date().getTime(),
+            sandbox: false,
             parent: setting.parent || null,
             allowOpenExternal: true,
             allowMenu: true,
@@ -220,7 +221,6 @@ module.exports = function (child) {
                 enableRemoteModule: true,
                 devTools: true,
                 spellcheck: false,
-                sandbox: false,
                 contextIsolation: false, // false -> can access preload window functions
                 partition: setting.partition,
                 preload: setting.preload,
@@ -321,11 +321,10 @@ module.exports = function (child) {
             defaultSetting.webPreferences.allowRunningInsecureContent = true;
         }
 
-        if (setting.sandbox === true) {
-            defaultSetting.webPreferences.sandbox = true;
-            defaultSetting.webPreferences.contextIsolation = true;
-
-            defaultSetting.webPreferences.preload = undefined;
+        if (setting.sandbox === false) {
+            defaultSetting.webPreferences.sandbox = false;
+        }else{
+            defaultSetting.webPreferences.sandbox = defaultSetting.sandbox ;
         }
 
         if (setting.security === false) {
@@ -1142,7 +1141,7 @@ module.exports = function (child) {
                                 enableRemoteModule: true,
                                 devTools: true,
                                 spellcheck: false,
-                                sandbox: false,
+                                sandbox: true,
                                 contextIsolation: false, // false -> can access preload window functions
                                 partition: setting.partition,
                                 preload: setting.preload,

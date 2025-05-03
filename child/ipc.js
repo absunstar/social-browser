@@ -191,9 +191,11 @@ module.exports = function init(child) {
                     obj = child.api;
                 } else if (arr[0] == 'screen') {
                     obj = child.electron.screen;
-                } else if (arr[0] == 'child') {
+                } else if (arr[0] == 'clipboard') {
+                    obj = child.electron.clipboard;
+                }  else if (arr[0] == 'child') {
                     obj = child;
-                } else {
+                }else {
                     obj = null;
                 }
             }
@@ -275,6 +277,9 @@ module.exports = function init(child) {
 
         event.returnValue = obj;
     });
+    child.ipcMain.on('[customSetting]', async (event, data = {}) => {
+        event.returnValue = child.windowList[child.windowList.length - 1]?.customSetting || {};
+    });
 
     child.ipcMain.on('[screen]', async (event, data = { id: 1 }) => {
         let screen = child.electron.screen;
@@ -282,6 +287,20 @@ module.exports = function init(child) {
         if (screen) {
             for (const key in screen) {
                 if (typeof screen[key] === 'function') {
+                    obj.fnList.push(key);
+                }
+            }
+        }
+
+        event.returnValue = obj;
+    });
+
+    child.ipcMain.on('[clipboard]', async (event, data = { id: 1 }) => {
+        let clipboard = child.electron.clipboard;
+        let obj = { fnList: [] };
+        if (clipboard) {
+            for (const key in clipboard) {
+                if (typeof clipboard[key] === 'function') {
                     obj.fnList.push(key);
                 }
             }

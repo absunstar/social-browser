@@ -1,11 +1,5 @@
 module.exports = function (SOCIALBROWSER, window, document) {
-    if ((policy = true)) {
-        SOCIALBROWSER.policy = window.trustedTypes.createPolicy('social', {
-            createHTML: (string) => string,
-            createScriptURL: (string) => string,
-            createScript: (string) => string,
-        });
-    }
+
 
     if (!SOCIALBROWSER.customSetting.$cloudFlare) {
         if (!SOCIALBROWSER.isWhiteSite) {

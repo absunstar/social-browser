@@ -1,6 +1,6 @@
 module.exports = function (browser) {
   let extension = {};
-  extension.id = browser.md5(__filename);
+  extension.id = '__Jawaker';
   extension.name = 'jawaker Bot';
   extension.description = ' .................... ';
   extension.paid = false;

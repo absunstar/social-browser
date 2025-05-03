@@ -99,7 +99,14 @@ module.exports = function (child) {
             ss.registerPreloadScript({
                 type: 'service-worker',
                 id: 'service-preload',
-                filePath: child.parent.files_dir + '/js/preload.js',
+                filePath: child.parent.files_dir + '/js/preload-service-worker.js',
+            });
+            child.parent.var.preload_list.forEach((p) => {
+                ss.registerPreloadScript({
+                    type: 'frame',
+                    id: 'frame-preload_' + p.id,
+                    filePath: p.path.replace('{dir}', child.parent.dir),
+                });
             });
             ss.serviceWorkers.on('console-message', (event, messageDetails) => {
                 console.log('Got service worker message', messageDetails);
@@ -693,22 +700,26 @@ module.exports = function (child) {
                                 s_policy[key] = s_policy[key].replaceAll('data: ', 'data: browser://* ');
                                 s_policy[key] = s_policy[key].replaceAll('default-src ', 'default-src browser://* ');
                                 s_policy[key] = s_policy[key].replaceAll('img-src ', 'img-src browser://* ');
-                                s_policy[key] = s_policy[key].replaceAll('script-src ', 'script-src browser://* ');
-                                s_policy[key] = s_policy[key].replaceAll('frame-src ', 'frame-src browser://* ');
-                                if (s_policy[key].contains('script-src') && !s_policy[key].contains('unsafe-inline')) {
-                                    s_policy[key] = s_policy[key] + " 'unsafe-inline'";
+                                if (s_policy[key].contains('unsafe-inline') && !s_policy[key].contains('nonce')) {
+                                    s_policy[key] = s_policy[key].replaceAll('script-src ', 'script-src browser://* ');
+                                } else {
+                                    s_policy[key] = s_policy[key].replaceAll('script-src ', "script-src browser://* 'nonce-social' ");
                                 }
+
+                                s_policy[key] = s_policy[key].replaceAll('frame-src ', 'frame-src browser://* ');
                             }
                         } else if (typeof s_policy == 'string') {
                             s_policy[key] = s_policy[key].replaceAll("default-src 'none'", '');
                             s_policy = s_policy.replaceAll('data: ', 'data: browser://* ');
                             s_policy = s_policy.replaceAll('default-src ', 'default-src browser://* ');
                             s_policy = s_policy.replaceAll('img-src ', 'img-src browser://* ');
-                            s_policy = s_policy.replaceAll('script-src ', 'script-src browser://* ');
-                            s_policy = s_policy.replaceAll('frame-src ', 'frame-src browser://* ');
-                            if (s_policy.contains('script-src') && !s_policy.contains('unsafe-inline')) {
-                                s_policy = s_policy + " 'unsafe-inline'";
+                            if (s_policy.contains('unsafe-inline') && !s_policy.contains('nonce')) {
+                                s_policy = s_policy.replaceAll('script-src ', 'script-src browser://* ');
+                            } else {
+                                s_policy = s_policy.replaceAll('script-src ', "script-src browser://* 'nonce-social' ");
                             }
+
+                            s_policy = s_policy.replaceAll('frame-src ', 'frame-src browser://* ');
                         } else {
                             console.log(typeof s_policy, s_policy);
                         }
