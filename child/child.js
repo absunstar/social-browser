@@ -100,13 +100,11 @@ var child = {
     },
 };
 
-
-
 // child.electron.app.commandLine.appendSwitch('disable-blink-features' , 'AutomationControlled');
 // child.electron.app.commandLine.appendSwitch('in-process-gpu');
 // child.electron.app.commandLine.appendSwitch('no-sandbox');
 // child.electron.app.commandLine.appendSwitch('disable-setuid-sandbox');
- child.electron.app.commandLine.appendSwitch('disable-dev-mode');
+child.electron.app.commandLine.appendSwitch('disable-dev-mode');
 // child.electron.app.commandLine.appendSwitch('disable-debug-mode');
 // child.electron.app.disableHardwareAcceleration(); ## real human has this //
 
@@ -182,6 +180,20 @@ child.electron.app.whenReady().then(() => {
 
     // child.electron.app.on('session-created', (session) => {
     //   child.log(`session-created`);
+    // });
+    child.workerScopeList = [];
+    // child.electron.app.on('browser-window-created', async (event, window) => {
+    //     console.log('browser-window-created');
+    //     child.workerScopeList.forEach(async (scope) => {
+    //         try {
+    //             console.log('try scope : ', scope);
+    //             const serviceWorker = await child.electron.session.defaultSession.serviceWorkers.startWorkerForScope(scope);
+    //             child.electron.session.defaultSession.serviceWorkers.send('window-created', { windowId: window.id });
+    //         } catch (error) {
+    //             console.error(`Failed to start service worker for ${scope}`);
+    //             console.error(error);
+    //         }
+    //     });
     // });
 
     child.electron.app.on('certificate-error', (event, webContents, url, error, certificate, callback) => {

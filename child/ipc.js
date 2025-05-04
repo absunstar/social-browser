@@ -278,7 +278,7 @@ module.exports = function init(child) {
         event.returnValue = obj;
     });
     child.ipcMain.on('[customSetting]', async (event, data = {}) => {
-        event.returnValue = child.windowList[child.windowList.length - 1]?.customSetting || {};
+        event.reply('[customSetting-replay]', 'xxxxxxxxxx' || child.windowList[child.windowList.length - 1]?.customSetting || {})
     });
 
     child.ipcMain.on('[screen]', async (event, data = { id: 1 }) => {

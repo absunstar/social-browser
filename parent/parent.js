@@ -224,7 +224,7 @@ module.exports = function init(parent) {
 
             child.stdout.on('data', function (data) {
                 parent.log('\n-------------------------------- [stdout]');
-                parent.log(` [ child:${child.pid} ${uuid} / ${parent.clientList.length} ] Log \n  ${data}`);
+                parent.log(` [ child:${child.pid} ${uuid} / ${parent.clientList.length} ] Logging \n  ${data}`);
                 parent.log('\n\n');
             });
 
@@ -246,7 +246,7 @@ module.exports = function init(parent) {
                 // parent.log(` [ child ${uuid} / ${parent.clientList.length} ] spawn`, err);
             });
             child.on('message', (msg) => {
-                // parent.log(` [ child ${uuid} / ${parent.clientList.length} ] message`, msg);
+                 parent.log(` [ child ${uuid} / ${parent.clientList.length} ] message`, msg);
             });
             child.on('close', (code, signal) => {
                 parent.log(`\n [ Exit :: child:${child.pid} ${uuid} / ${parent.clientList.length} ] close with code ( ${code} ) and signal ( ${signal} ) \n`);

@@ -1,7 +1,6 @@
 module.exports = function (child) {
     child.cookieList = [];
     child.session_name_list = [];
-    child.sessionBusy = false;
     child.allowSessionHandle = false;
 
     child.loadGoogleExtension = function (extensionInfo) {
@@ -34,24 +33,28 @@ module.exports = function (child) {
         });
     };
 
-    child.handleSession = function (sessionOptions) {
-        if (child.sessionBusy) {
+    child.busySessionList = [];
+
+    child.handleSession = function (sessionOptions = {}) {
+        console.log('Handle Session', sessionOptions);
+        let sessionUUID = child.api.md5(JSON.stringify(sessionOptions));
+
+        if (child.busySessionList.some((s) => s.uuid === sessionUUID)) {
+            console.log('Session Busy : ', sessionOptions);
             return;
         }
+        child.busySessionList.push({ uuid: sessionUUID });
 
-        child.sessionBusy = true;
+        sessionOptions.name = sessionOptions.name || child.partition;
 
-        if (!sessionOptions || !sessionOptions.name) {
-            child.sessionBusy = false;
-            return;
-        }
         let name = sessionOptions.name;
+
         if (name.like('*_off')) {
-            child.sessionBusy = false;
+            child.busySessionList = child.busySessionList.filter((s) => s.uuid !== sessionUUID);
             return;
         }
 
-        let user = child.parent.var.session_list.find((s) => s.name == name) ?? {};
+        let user = child.parent.var.session_list.find((s) => s.name == name) || child.parent.var.session_list.find((s) => s.name == child.partition) || {};
         user.privacy = user.privacy || child.parent.var.blocking.privacy;
         user.privacy.vpc = user.privacy.vpc || {};
         if (!user.privacy.allowVPC) {
@@ -64,8 +67,12 @@ module.exports = function (child) {
         }
 
         let ss = sessionOptions.isDefault ? child.electron.session.defaultSession : child.electron.session.fromPartition(name);
-        ss.name = name;
+
         ss.setUserAgent(user.defaultUserAgent.url);
+        let scopeList = Object.values(ss.serviceWorkers.getAllRunning()).map((info) => info.scope);
+        scopeList.forEach((scope) => {
+            child.workerScopeList.push(scope);
+        });
 
         if (child.parent.var.core.autoClearCacheStorage) {
             ss.clearStorageData({
@@ -96,6 +103,7 @@ module.exports = function (child) {
                 id: 'frame-preload',
                 filePath: child.parent.files_dir + '/js/preload.js',
             });
+
             ss.registerPreloadScript({
                 type: 'service-worker',
                 id: 'service-preload',
@@ -109,8 +117,9 @@ module.exports = function (child) {
                 });
             });
             ss.serviceWorkers.on('console-message', (event, messageDetails) => {
-                console.log('Got service worker message', messageDetails);
+                console.log('Got service worker message : ', messageDetails.message);
             });
+
             child.session_name_list.push({
                 name: sessionOptions.isDefault ? null : name,
                 user: user,
@@ -927,18 +936,12 @@ module.exports = function (child) {
                 });
             });
         }
-
-        setTimeout(() => {
-            child.sessionBusy = false;
-            if (!sessionOptions.isDefault) {
-                // child.handleSession({ ...sessionOptions, isDefault: true });
-            }
-        }, 1000 * 3);
-
+        child.busySessionList = child.busySessionList.filter((s) => s.uuid !== sessionUUID);
         return ss;
     };
 
     child.sessionConfig = (partition) => {
         child.handleSession({ name: partition || child.partition });
+       // child.handleSession({ name: partition || child.partition, isDefault: true });
     };
 };

@@ -179,7 +179,7 @@ module.exports = function (child) {
             vip: false,
             iframe: true,
             trackingID: 'main_tracking_' + new Date().getTime(),
-            sandbox: false,
+            sandbox: true,
             parent: setting.parent || null,
             allowOpenExternal: true,
             allowMenu: true,
@@ -288,6 +288,8 @@ module.exports = function (child) {
             defaultSetting.allowAudio = false;
             setting.backgroundColor = child.theme == 'light' ? '#ffffff' : '#1a2a32';
         } else if (setting.windowType === 'updates') {
+            defaultSetting.sandbox = false;
+            setting.sandbox = false;
             defaultSetting.show = false;
             defaultSetting.alwaysOnTop = false;
             defaultSetting.skipTaskbar = true;

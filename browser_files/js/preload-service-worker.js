@@ -1,4 +1,4 @@
-console.log(' my service worker code init ...');
+console.log('service worker Preload Run in Sandbox Mode Only... Type : ' + process.type);
 
 var SOCIALBROWSER = {};
 SOCIALBROWSER.electron = require('electron');
@@ -12,14 +12,14 @@ SOCIALBROWSER.ipcSync = function (channel, value = {}) {
         return undefined;
     }
 };
- //SOCIALBROWSER.customSetting = SOCIALBROWSER.ipcSync('[customSetting]' , {source : 'service worker'});
- //console.log(SOCIALBROWSER.customSetting);
+SOCIALBROWSER.ipcRenderer.send('[customSetting]', { source: 'service worker' });
+SOCIALBROWSER.ipcRenderer.on('[customSetting-replay]', ()=>{
+    console.log('xxxxxxxxxxxxxxxxxxxxxxxxxx')
+});
 
- console.log(process.type);
+SOCIALBROWSER.ipcRenderer.on('window-created', () => {
+    console.log('window creating for service worker');
+});
 
- if(typeof navigator !== 'undefined'){
 
-     navigator.language = 'aa';
- }
-
-console.log(' my service worker code init 2 ...');
+console.log('End of Service Worker Code ...');
