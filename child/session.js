@@ -107,7 +107,7 @@ module.exports = function (child) {
             ss.registerPreloadScript({
                 type: 'service-worker',
                 id: 'service-preload',
-                filePath: child.parent.files_dir + '/js/preload-service-worker.js',
+                filePath: child.parent.files_dir + '/js/preload-sw.js',
             });
             child.parent.var.preload_list.forEach((p) => {
                 ss.registerPreloadScript({
@@ -240,7 +240,16 @@ module.exports = function (child) {
         };
 
         if (child.allowSessionHandle === true) {
-            child.log(`\n\n [ Handle Session ......  ( ${name} ) ]  / ${child.session_name_list.length} \n\n `);
+            child.log(`\n\n [ Start allow Handle Session ......  ( ${name} ) ]  / ${child.session_name_list.length} \n\n `);
+            ss.serviceWorkers.on("running-status-changed", details => {
+                if (details.runningStatus === "running") {
+                  const sw = ss.serviceWorkers.getWorkerFromVersionID(details.versionId);
+                  if (!sw) return;
+                  sw.ipc.handle("[window]", (event, data) => {
+                    console.log('service worker [window]' , data)
+                  });
+                }
+              });
 
             try {
                 ss.protocol.handle('browser', (req) => {

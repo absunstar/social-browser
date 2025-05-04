@@ -65,7 +65,6 @@ module.exports = function init(browser) {
                 nodeIntegration: false,
                 nodeIntegrationInWorker: false,
                 experimentalFeatures: false,
-                sandbox: false,
                 webSecurity: false,
                 allowRunningInsecureContent: true,
                 plugins: false,

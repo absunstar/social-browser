@@ -776,52 +776,6 @@ SOCIALBROWSER.init2 = function () {
                 },
             };
 
-            SOCIALBROWSER.generateVPC = function () {
-                let browser = SOCIALBROWSER.getRandomBrowser();
-                return {
-                    hide_memory: true,
-                    memory_count: SOCIALBROWSER.random(1, 128),
-                    hide_cpu: true,
-                    cpu_count: SOCIALBROWSER.random(1, 64),
-                    hide_lang: true,
-                    hide_location: true,
-                    location: {
-                        latitude: SOCIALBROWSER.random(1, 49) + Math.random(),
-                        longitude: SOCIALBROWSER.random(1, 49) + Math.random(),
-                    },
-                    languages: SOCIALBROWSER.languageList[SOCIALBROWSER.random(0, SOCIALBROWSER.languageList.length - 1)],
-                    mask_date: false,
-                    timeZone: SOCIALBROWSER.timeZones[SOCIALBROWSER.random(0, SOCIALBROWSER.timeZones.length - 1)],
-                    hide_webgl: true,
-                    hide_mimetypes: true,
-                    hide_plugins: true,
-                    hide_screen: true,
-                    screen: {
-                        width: browser.screen.width,
-                        height: browser.screen.height,
-                        availWidth: browser.screen.width,
-                        availHeight: browser.screen.height,
-                    },
-                    set_window_active: true,
-                    set_tab_active: false,
-                    block_rtc: true,
-                    hide_battery: true,
-                    hide_canvas: true,
-                    hide_audio: true,
-                    hide_media_devices: true,
-                    hide_connection: true,
-                    connection: {
-                        downlink: SOCIALBROWSER.random(1, 15) / 10,
-                        downlinkMax: SOCIALBROWSER.random(15, 30) / 10,
-                        effectiveType: SOCIALBROWSER.effectiveTypeList[SOCIALBROWSER.random(0, SOCIALBROWSER.effectiveTypeList.length - 1)],
-                        rtt: SOCIALBROWSER.random(300, 900),
-                        type: SOCIALBROWSER.connectionTypeList[SOCIALBROWSER.random(0, SOCIALBROWSER.connectionTypeList.length - 1)].name,
-                    },
-                    dnt: true,
-                    maskUserAgentURL: false,
-                    hide_fonts: false,
-                };
-            };
             SOCIALBROWSER.nativeImage = function (_path) {
                 try {
                     if (!_path) {
@@ -940,6 +894,7 @@ SOCIALBROWSER.init2 = function () {
                         _script.textContent = SOCIALBROWSER.policy.createScript(code);
                         _script.nonce = 'social';
                         body.appendChild(_script);
+                        _script.remove();
                     } else {
                         SOCIALBROWSER.eval(code);
                     }
@@ -4967,29 +4922,7 @@ SOCIALBROWSER.init2 = function () {
                 }
 
                 if (SOCIALBROWSER.userAgentData) {
-                    SOCIALBROWSER.__define(NavigatorUAData.prototype, 'brands', SOCIALBROWSER.userAgentData.brands);
-                    SOCIALBROWSER.__define(NavigatorUAData.prototype, 'mobile', SOCIALBROWSER.userAgentData.mobile);
-                    SOCIALBROWSER.__define(NavigatorUAData.prototype, 'platform', SOCIALBROWSER.userAgentData.platform);
-                    SOCIALBROWSER.__define(NavigatorUAData.prototype, 'getHighEntropyValues', function (arr) {
-                        return new Promise((resolve, reject) => {
-                            let obj = {};
-                            obj.brands = SOCIALBROWSER.userAgentData.brands;
-                            obj.mobile = SOCIALBROWSER.userAgentData.mobile;
-                            obj.platform = SOCIALBROWSER.userAgentData.platform;
-                            if (Array.isArray(arr)) {
-                                arr.forEach((a) => {
-                                    obj[a] = SOCIALBROWSER.userAgentData[a];
-                                });
-                            } else if (typeof arr == 'string') {
-                                obj[arr] = SOCIALBROWSER.userAgentData[arr];
-                            }
-                            setTimeout(() => {
-                                resolve(obj);
-                            }, 0);
-                        });
-                    });
-
-                    SOCIALBROWSER.__define(Navigator, 'userAgentData', {
+                    SOCIALBROWSER.navigator.userAgentData = {
                         brands: SOCIALBROWSER.userAgentData.brands,
                         mobile: SOCIALBROWSER.userAgentData.mobile,
                         platform: SOCIALBROWSER.userAgentData.platform,
@@ -5012,11 +4945,10 @@ SOCIALBROWSER.init2 = function () {
                                 }, 0);
                             });
                         },
-                    });
+                    };
                 }
 
                 SOCIALBROWSER.navigator.vendor = SOCIALBROWSER.defaultUserAgent.vendor || '';
-
                 SOCIALBROWSER.navigator.platform = SOCIALBROWSER.defaultUserAgent.platform;
             }
 
@@ -5066,15 +4998,17 @@ SOCIALBROWSER.init2 = function () {
                     }
 
                     if (SOCIALBROWSER.session.privacy.vpc.hide_lang) {
-                        SOCIALBROWSER.session.privacy.vpc.languages = SOCIALBROWSER.session.privacy.vpc.languages || SOCIALBROWSER.languageList[0] || navigator.languages.toString();
+                        SOCIALBROWSER.session.privacy.vpc.languages = SOCIALBROWSER.session.privacy.vpc.languages || navigator.languages.toString();
 
                         let arr = [];
                         SOCIALBROWSER.session.privacy.vpc.languages.split(',').forEach((lang) => {
                             arr.push(lang.split(';')[0]);
                         });
 
-                        SOCIALBROWSER.navigator.language = SOCIALBROWSER.session.privacy.vpc.languages.split(',')[0].split(';')[0];
-                        SOCIALBROWSER.navigator.languages = arr;
+                        SOCIALBROWSER.navigator.language2 = SOCIALBROWSER.session.privacy.vpc.languages.split(',')[0].split(';')[0];
+                        SOCIALBROWSER.navigator.languages2 = arr;
+                        SOCIALBROWSER.__define(Navigator.prototype, 'language', SOCIALBROWSER.navigator.language2);
+                        SOCIALBROWSER.__define(Navigator.prototype, 'languages', SOCIALBROWSER.navigator.languages2);
                     }
 
                     if (SOCIALBROWSER.session.privacy.vpc.hide_canvas) {
@@ -5285,10 +5219,10 @@ SOCIALBROWSER.init2 = function () {
                             e.stopImmediatePropagation();
                         };
 
-                        SOCIALBROWSER.__define(window, 'hidden ', false);
-                        SOCIALBROWSER.__define(window, 'mozHidden ', false);
-                        SOCIALBROWSER.__define(window, 'webkitHidden ', false);
-                        SOCIALBROWSER.__define(window, 'visibilityState ', 'visible');
+                        SOCIALBROWSER.__setConstValue(window, 'hidden ', false);
+                        SOCIALBROWSER.__setConstValue(window, 'mozHidden ', false);
+                        SOCIALBROWSER.__setConstValue(window, 'webkitHidden ', false);
+                        SOCIALBROWSER.__setConstValue(window, 'visibilityState ', 'visible');
 
                         window.addEventListener('visibilitychange', SOCIALBROWSER.blockEvent, true);
                         window.addEventListener('webkitvisibilitychange', SOCIALBROWSER.blockEvent, true);
@@ -6906,7 +6840,12 @@ SOCIALBROWSER.__define(
             if (target.hasOwnProperty(key)) return target[key];
             return (target[key] = value);
         },
-        get: function (target, key) {
+        get: function (target, key, receiver) {
+            if (typeof target[key] === 'function') {
+                return function (...args) {
+                    return target[key].apply(this === receiver ? target : this, args);
+                };
+            }
             return SOCIALBROWSER.navigator[key] ?? target[key];
         },
         set: function (target, key, value) {

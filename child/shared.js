@@ -72,7 +72,7 @@ module.exports = function (owner) {
     }
 
     if ((vpc = true)) {
-        owner.effectiveTypeList = ['slow-2g', '2g', '3g', '4g'];
+        owner.effectiveTypeList = ['slow-2g', '2g', '3g', '4g' , '5g'];
         owner.timeZones = [
             {
                 value: 'Dateline Standard Time',
@@ -1105,13 +1105,13 @@ module.exports = function (owner) {
                 memory_count: owner.randomNumber(1, 128),
                 hide_cpu: true,
                 cpu_count: owner.randomNumber(1, 64),
-                hide_lang: true,
+                hide_lang: false,
                 hide_location: true,
                 location: {
                     latitude: owner.randomNumber(1, 49) + Math.random(),
                     longitude: owner.randomNumber(1, 49) + Math.random(),
                 },
-                languages: owner.languageList[owner.randomNumber(0, owner.languageList.length - 1)],
+                languages: 'en-US,' + owner.languageList[owner.randomNumber(0, owner.languageList.length - 1)] + ';q=0.9,' + owner.languageList[owner.randomNumber(0, owner.languageList.length - 1)]+';q=0.8',
                 mask_date: false,
                 timeZone: owner.timeZones[owner.randomNumber(0, owner.timeZones.length - 1)],
                 hide_webgl: true,
