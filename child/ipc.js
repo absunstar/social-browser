@@ -195,6 +195,10 @@ module.exports = function init(child) {
                     obj = child.electron.clipboard;
                 }  else if (arr[0] == 'child') {
                     obj = child;
+                }else if (arr[0] == 'fs') {
+                    obj = child.fs;
+                }else if (arr[0] == 'path') {
+                    obj = child.path;
                 }else {
                     obj = null;
                 }
@@ -429,6 +433,12 @@ module.exports = function init(child) {
     });
     child.ipcMain.on('[dir-name]', async (event, path) => {
         event.returnValue = child.path.dirname(path);
+    });
+    child.ipcMain.on('[create-folder]', async (event, path) => {
+        if (!child.fs.existsSync(path)) {
+            child.fs.mkdirSync(path);
+          }
+        event.returnValue = true;
     });
 
     child.ipcMain.on('[show-message-box]', async (event, options) => {

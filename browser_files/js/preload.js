@@ -4207,7 +4207,7 @@ SOCIALBROWSER.init2 = function () {
                         };
                     }
 
-                    if (SOCIALBROWSER.var.blocking.javascript.block_navigator_service_worker) {
+                    if (SOCIALBROWSER.var.blocking.javascript.block_navigator_service_worker && navigator.serviceWorker) {
                         navigator.serviceWorker.register = function () {
                             return new Promise((resolve, reject) => {});
                         };

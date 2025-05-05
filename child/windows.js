@@ -321,6 +321,7 @@ module.exports = function (child) {
             defaultSetting.webPreferences.nodeIntegrationInWorker = true;
             defaultSetting.webPreferences.webSecurity = false;
             defaultSetting.webPreferences.allowRunningInsecureContent = true;
+            setting.sandbox = false;
         }
 
         if (setting.sandbox === false) {
