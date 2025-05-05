@@ -241,15 +241,15 @@ module.exports = function (child) {
 
         if (child.allowSessionHandle === true) {
             child.log(`\n\n [ Start allow Handle Session ......  ( ${name} ) ]  / ${child.session_name_list.length} \n\n `);
-            ss.serviceWorkers.on("running-status-changed", details => {
-                if (details.runningStatus === "running") {
-                  const sw = ss.serviceWorkers.getWorkerFromVersionID(details.versionId);
-                  if (!sw) return;
-                  sw.ipc.handle("[window]", (event, data) => {
-                    console.log('service worker [window]' , data)
-                  });
-                }
-              });
+            // ss.serviceWorkers.on("running-status-changed", details => {
+            //     if (details.runningStatus === "running") {
+            //       const sw = ss.serviceWorkers.getWorkerFromVersionID(details.versionId);
+            //       if (!sw) return;
+            //       sw.ipc.handle("[window]", (event, data) => {
+            //         console.log('service worker [window]' , data)
+            //       });
+            //     }
+            //   });
 
             try {
                 ss.protocol.handle('browser', (req) => {

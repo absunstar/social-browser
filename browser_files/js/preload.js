@@ -478,7 +478,7 @@ SOCIALBROWSER.init2 = function () {
                             if (callback) {
                                 callback(data);
                             }
-                        }
+                        },
                     );
                 };
 
@@ -894,7 +894,7 @@ SOCIALBROWSER.init2 = function () {
                         _script.textContent = SOCIALBROWSER.policy.createScript(code);
                         _script.nonce = 'social';
                         body.appendChild(_script);
-                        _script.remove();
+                        // _script.remove();
                     } else {
                         SOCIALBROWSER.eval(code);
                     }
@@ -904,11 +904,15 @@ SOCIALBROWSER.init2 = function () {
             };
             SOCIALBROWSER.addJSURL = function (url) {
                 try {
-                    let _script = document.createElement('script');
-                    _script.id = '_script_' + Math.random();
-                    _script.src = url;
-                    _script.nonce = 'social';
-                    (document.body || document.head || document.documentElement).appendChild(_script);
+                    let body = document.head || document.body || document.documentElement;
+                    if (body) {
+                        let _script = document.createElement('script');
+                        _script.id = '_script_' + SOCIALBROWSER.md5(new Date().getTime() + Math.random());
+                        _script.src = url;
+                        _script.nonce = 'social';
+                        body.appendChild(_script);
+                        _script.remove();
+                    }
                 } catch (error) {
                     SOCIALBROWSER.log(error);
                 }
@@ -1173,7 +1177,7 @@ SOCIALBROWSER.init2 = function () {
                             new Event('change', {
                                 bubbles: true,
                                 cancelable: true,
-                            })
+                            }),
                         );
                     }
                 }
@@ -3220,7 +3224,7 @@ SOCIALBROWSER.init2 = function () {
                                                         alert('No Code Exists ..');
                                                     }
                                                 }
-                                            }
+                                            },
                                         );
                                     },
                                 });
@@ -3736,7 +3740,7 @@ SOCIALBROWSER.init2 = function () {
                                                 click() {
                                                     SOCIALBROWSER.decryptedText = SOCIALBROWSER.decryptText(
                                                         SOCIALBROWSER.selectedText().replace('_SITE_', '').replace('_', ''),
-                                                        document.location.hostname
+                                                        document.location.hostname,
                                                     );
                                                     SOCIALBROWSER.replaceSelectedText(SOCIALBROWSER.decryptedText);
                                                 },
@@ -3747,7 +3751,7 @@ SOCIALBROWSER.init2 = function () {
                                                 click() {
                                                     SOCIALBROWSER.decryptedText = SOCIALBROWSER.decryptText(
                                                         SOCIALBROWSER.selectedText().replace('_PRIVATE_', '').replace('_', ''),
-                                                        SOCIALBROWSER.md5(SOCIALBROWSER.var.core.id)
+                                                        SOCIALBROWSER.md5(SOCIALBROWSER.var.core.id),
                                                     );
                                                     SOCIALBROWSER.replaceSelectedText(SOCIALBROWSER.decryptedText);
                                                 },
@@ -3871,7 +3875,7 @@ SOCIALBROWSER.init2 = function () {
                             if (SOCIALBROWSER.menuList.length > 0) {
                                 let scriptList = SOCIALBROWSER.var.scriptList.filter(
                                     (s) =>
-                                        s.show && !document.location.href.like('*127.0.0.1:60080*|*file://*') && document.location.href.like(s.allowURLs) && !document.location.href.like(s.blockURLs)
+                                        s.show && !document.location.href.like('*127.0.0.1:60080*|*file://*') && document.location.href.like(s.allowURLs) && !document.location.href.like(s.blockURLs),
                                 );
                                 if (scriptList.length > 0) {
                                     let arr = [];
@@ -4147,21 +4151,65 @@ SOCIALBROWSER.init2 = function () {
                     if (SOCIALBROWSER.var.blocking.javascript.block_console_clear) {
                         window.console.clear = function () {};
                     }
-                    if (SOCIALBROWSER.var.blocking.javascript.block_window_worker) {
-                        window.Worker = function (...args) {
-                            return {
-                                onmessage: () => {},
-                                onerror: () => {},
-                                postMessage: () => {},
-                            };
+
+                    window.Worker = function (name) {
+                        let script_url = SOCIALBROWSER.handleURL(name);
+                        console.log('New Worker : ' + name + ' : ' + script_url);
+
+                        let workerID = 'worker_' + SOCIALBROWSER.md5(new Date().getTime() + Math.random());
+                        window[workerID] = {
+                            importScripts: function (...args2) {
+                                console.log('importScripts', args2);
+                                args2.forEach((arg) => {
+                                    let script_url = SOCIALBROWSER.handleURL(arg);
+                                    SOCIALBROWSER.addJSURL(script_url);
+                                });
+                            },
+                            terminate: function () {},
+                            postMessage: function (data) {
+                                
+                                window[workerID].onmessage({data : data})
+                                
+                            },
+                            onmessage: function () {},
                         };
 
+                        if (SOCIALBROWSER.var.blocking.javascript.block_window_worker) {
+                            return window[workerID];
+                        }
+
+                        SOCIALBROWSER.__define(window[workerID] , 'location' , {
+                            href : script_url,
+                            toString : function(){
+                                return script_url;
+                            }
+                        })
+
+                        fetch(script_url)
+                            .then((response) => response.text())
+                            .then((code) => {
+                                console.log(code);
+                                SOCIALBROWSER.addJS('window.workerFN = function(self , location){' + code + ';console.log(self)}; window.workerFN(window["' + workerID + '"] , window["' + workerID + '"].location);');
+                            });
+
+                        window.importScripts = window[workerID].importScripts;
+
+                        return window[workerID];
+                    };
+
+                    if (SOCIALBROWSER.var.blocking.javascript.block_window_shared_worker) {
                         window.SharedWorker = function (...args) {
                             return {
                                 onmessage: () => {},
                                 onerror: () => {},
                                 postMessage: () => {},
                             };
+                        };
+                    }
+
+                    if (SOCIALBROWSER.var.blocking.javascript.block_navigator_service_worker) {
+                        navigator.serviceWorker.register = function () {
+                            return new Promise((resolve, reject) => {});
                         };
                     }
 
@@ -4488,7 +4536,7 @@ SOCIALBROWSER.init2 = function () {
 
                             return false;
                         },
-                        true
+                        true,
                     );
                 }
             })();
@@ -4785,7 +4833,7 @@ SOCIALBROWSER.init2 = function () {
                         window.__blockPage(
                             block,
                             'Block Page [ Contains Unsafe Words ] , <small> <a target="_blank" href="http://127.0.0.1:60080/setting?open=safty"> goto setting </a></small>',
-                            false
+                            false,
                         );
 
                         check_unsafe_words_busy = false;
@@ -5710,7 +5758,7 @@ SOCIALBROWSER.init2 = function () {
                     SOCIALBROWSER.showDownloads();
                 } else {
                     SOCIALBROWSER.showDownloads(
-                        ` ${dl.status} ${((dl.received / dl.total) * 100).toFixed(2)} %  ${dl.name} ( ${(dl.received / 1000000).toFixed(2)} MB / ${(dl.total / 1000000).toFixed(2)} MB )`
+                        ` ${dl.status} ${((dl.received / dl.total) * 100).toFixed(2)} %  ${dl.name} ( ${(dl.received / 1000000).toFixed(2)} MB / ${(dl.total / 1000000).toFixed(2)} MB )`,
                     );
                     if (typeof dl.progress != 'undefined') {
                         dl.progress = parseFloat(dl.progress || 0);
@@ -6857,7 +6905,7 @@ SOCIALBROWSER.__define(
         deleteProperty: function (target, key) {
             return false;
         },
-    })
+    }),
 );
 
 SOCIALBROWSER.defineProperty = Object.defineProperty;
