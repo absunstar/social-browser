@@ -324,11 +324,17 @@ module.exports = function (child) {
             setting.sandbox = false;
         }
 
+        if (setting.eval) {
+            setting.sandbox = false;
+        }
+
         if (setting.sandbox === false) {
             defaultSetting.webPreferences.sandbox = false;
         }else{
             defaultSetting.webPreferences.sandbox = defaultSetting.sandbox ;
         }
+
+      
 
         if (setting.security === false) {
             defaultSetting.webPreferences.webSecurity = false;

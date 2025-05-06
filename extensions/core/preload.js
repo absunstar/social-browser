@@ -1,4 +1,4 @@
-SOCIALBROWSER.log('.... [ Core Extension activated ] .... ' + document.location.href);
+// SOCIALBROWSER.log('.... [ Core Extension activated ] .... ' + document.location.href);
 
 // if (SOCIALBROWSER.isIframe()) {
 //   SOCIALBROWSER.onLoad(() => {

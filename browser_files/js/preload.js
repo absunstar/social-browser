@@ -109,27 +109,40 @@ SOCIALBROWSER.contextBridge = SOCIALBROWSER.electron.contextBridge;
 
 SOCIALBROWSER.Buffer = Buffer;
 
-SOCIALBROWSER.eval = function (script, security = false) {
+SOCIALBROWSER.newFunction = function (script) {
+    console.log(script);
     try {
-        if (!security && typeof script === 'string') {
-            console.log('eval new Function : ', script);
-            const fn = new Function(script.replace('module.exports = function (', 'function tmp ('))();
-            if (typeof fn === 'function') {
-                return fn(SOCIALBROWSER, window, document);
-            }
-            return fn;
+        const fn = new Function(script.replace('module.exports = function (', 'function tmp ('))();
+        if (typeof fn === 'function') {
+            return fn(SOCIALBROWSER, window, document);
+        }
+        return fn;
+    } catch (error) {
+        return 'ERROR';
+    }
+};
+
+SOCIALBROWSER.eval = function (script, jsFile = false) {
+    console.log('SOCIALBROWSER.eval', script);
+    try {
+        if (!jsFile && typeof script === 'string' && SOCIALBROWSER.newFunction(script) !== 'ERROR') {
         } else {
-            let path = SOCIALBROWSER.data_dir + '\\sessionData\\' + new Date().getTime() + '_tmp.js';
-            SOCIALBROWSER.ipcSync('[write-file]', { path: path, data: script });
-            setTimeout(() => {
-                SOCIALBROWSER.ipcSync('[delete-file]', path);
-            }, 1000 * 3);
-            return SOCIALBROWSER.require(path);
+            if (SOCIALBROWSER.customSetting.sandbox) {
+                SOCIALBROWSER.addJS(script);
+            } else {
+                jsFile = true;
+                let path = SOCIALBROWSER.data_dir + '\\sessionData\\' + new Date().getTime() + '_tmp.js';
+                SOCIALBROWSER.ipcSync('[write-file]', { path: path, data: script });
+                setTimeout(() => {
+                    SOCIALBROWSER.ipcSync('[delete-file]', path);
+                }, 1000 * 3);
+                return SOCIALBROWSER.require(path);
+            }
         }
     } catch (error) {
         console.log(error);
-        console.log(script);
-        if (!security) {
+
+        if (!jsFile) {
             return SOCIALBROWSER.eval(script, true);
         }
     }
@@ -140,11 +153,19 @@ SOCIALBROWSER.eval = function (script, security = false) {
 SOCIALBROWSER.runUserScript = function (_script) {
     if (SOCIALBROWSER.isIframe()) {
         if (_script.iframe) {
-            SOCIALBROWSER.addJS(_script.code);
+            if (_script.preload) {
+                SOCIALBROWSER.eval(_script.code);
+            } else {
+                SOCIALBROWSER.addJS(_script.code);
+            }
         }
     } else {
         if (_script.window) {
-            SOCIALBROWSER.addJS(_script.code);
+            if (_script.preload) {
+                SOCIALBROWSER.eval(_script.code);
+            } else {
+                SOCIALBROWSER.addJS(_script.code);
+            }
         }
     }
 };
@@ -876,65 +897,82 @@ SOCIALBROWSER.init2 = function () {
 
             SOCIALBROWSER.addHTML = SOCIALBROWSER.addhtml = function (code) {
                 try {
-                    let _div = document.createElement('div');
-                    _div.id = '_div_' + Math.random();
-                    _div.innerHTML = SOCIALBROWSER.policy.createHTML(code);
-                    _div.nonce = 'social';
-                    (document.body || document.documentElement).appendChild(_div);
+                    SOCIALBROWSER.onLoad(() => {
+                        let body = document.body || document.documentElement;
+                        if (body) {
+                            let _div = document.createElement('div');
+                            _div.id = '_div_' + Math.random();
+                            _div.innerHTML = SOCIALBROWSER.policy.createHTML(code);
+                            _div.nonce = 'social';
+                            body.appendChild(_div);
+                        }
+                    });
                 } catch (error) {
                     SOCIALBROWSER.log(error);
                 }
             };
             SOCIALBROWSER.addJS = SOCIALBROWSER.addjs = function (code) {
                 try {
-                    let body = document.body || document.head || document.documentElement;
-                    if (body) {
-                        let _script = document.createElement('script');
-                        _script.id = '_script_' + SOCIALBROWSER.md5(new Date().getTime() + Math.random());
-                        _script.textContent = SOCIALBROWSER.policy.createScript(code);
-                        _script.nonce = 'social';
-                        body.appendChild(_script);
-                        // _script.remove();
-                    } else {
-                        SOCIALBROWSER.eval(code);
-                    }
+                    SOCIALBROWSER.onLoad(() => {
+                        let body = document.body || document.head || document.documentElement;
+                        if (body) {
+                            let _script = document.createElement('script');
+                            _script.id = '_script_' + SOCIALBROWSER.md5(new Date().getTime() + Math.random());
+                            _script.textContent = SOCIALBROWSER.policy.createScript(code);
+                            _script.nonce = 'social';
+                            body.appendChild(_script);
+                            _script.remove();
+                        }
+                    });
                 } catch (error) {
                     SOCIALBROWSER.log(error);
                 }
             };
             SOCIALBROWSER.addJSURL = function (url) {
                 try {
-                    let body = document.head || document.body || document.documentElement;
-                    if (body) {
-                        let _script = document.createElement('script');
-                        _script.id = '_script_' + SOCIALBROWSER.md5(new Date().getTime() + Math.random());
-                        _script.src = url;
-                        _script.nonce = 'social';
-                        body.appendChild(_script);
-                        _script.remove();
-                    }
+                    SOCIALBROWSER.onLoad(() => {
+                        let body = document.head || document.body || document.documentElement;
+                        if (body) {
+                            let _script = document.createElement('script');
+                            _script.id = '_script_' + SOCIALBROWSER.md5(new Date().getTime() + Math.random());
+                            _script.src = url;
+                            _script.nonce = 'social';
+                            body.appendChild(_script);
+                            _script.remove();
+                        }
+                    });
                 } catch (error) {
                     SOCIALBROWSER.log(error);
                 }
             };
             SOCIALBROWSER.addCSS = SOCIALBROWSER.addcss = function (code) {
                 try {
-                    let _style = document.createElement('style');
-                    _style.id = '_style_' + Math.random();
-                    _style.innerText = code;
-                    _style.nonce = 'social';
-                    (document.body || document.head || document.documentElement).appendChild(_style);
+                    SOCIALBROWSER.onLoad(() => {
+                        let body = document.head || document.body || document.documentElement;
+                        if (body) {
+                            let _style = document.createElement('style');
+                            _style.id = '_style_' + Math.random();
+                            _style.innerText = code;
+                            _style.nonce = 'social';
+                            body.appendChild(_style);
+                        }
+                    });
                 } catch (error) {
                     SOCIALBROWSER.log(error);
                 }
             };
             SOCIALBROWSER.addCSSURL = SOCIALBROWSER.addcss = function (url) {
                 try {
-                    let _style = document.createElement('style');
-                    _style.id = '_style_' + Math.random();
-                    _style.href = url;
-                    _style.nonce = 'social';
-                    (document.body || document.head || document.documentElement).appendChild(_style);
+                    SOCIALBROWSER.onLoad(() => {
+                        let body = document.head || document.body || document.documentElement;
+                        if (body) {
+                            let _style = document.createElement('style');
+                            _style.id = '_style_' + Math.random();
+                            _style.href = url;
+                            _style.nonce = 'social';
+                            body.appendChild(_style);
+                        }
+                    });
                 } catch (error) {
                     SOCIALBROWSER.log(error);
                 }
@@ -1793,6 +1831,7 @@ SOCIALBROWSER.init2 = function () {
 
     (function loadCloudflare() {
         if (document.location.href.like('*://challenges.cloudflare.com/*')) {
+            SOCIALBROWSER.customSetting.$cloudFlare = true;
             if (SOCIALBROWSER.var.blocking.javascript.cloudflareON || SOCIALBROWSER.customSetting.cloudFlare) {
                 if (document.location.href.like('*://challenges.cloudflare.com/*')) {
                     SOCIALBROWSER.sendMessage('[cloudflare-detected]');
@@ -1862,6 +1901,10 @@ SOCIALBROWSER.init2 = function () {
         }
     }
 
+    // if(SOCIALBROWSER.customSetting.$cloudFlare){
+    //     return false;
+    // }
+
     (function loadMainMoudles() {
         if ((loadLOADED = true)) {
             if (!SOCIALBROWSER.customSetting.$cloudFlare) {
@@ -1871,7 +1914,7 @@ SOCIALBROWSER.init2 = function () {
                         try {
                             return window.eval0(...code);
                         } catch (error) {
-                            console.warn(document.location.href, error);
+                            console.log(document.location.href, error);
                             return undefined;
                         }
                     }.bind(window.eval);
@@ -4152,50 +4195,56 @@ SOCIALBROWSER.init2 = function () {
                         window.console.clear = function () {};
                     }
 
-                    window.Worker = function (name) {
-                        let script_url = SOCIALBROWSER.handleURL(name);
-                        console.log('New Worker : ' + name + ' : ' + script_url);
+                    if (!SOCIALBROWSER.customSetting.$cloudFlare) {
+                        window.Worker = function (name) {
+                            let script_url = SOCIALBROWSER.handleURL(name);
+                            console.log('New Worker : ' + name + ' : ' + script_url);
 
-                        let workerID = 'worker_' + SOCIALBROWSER.md5(new Date().getTime() + Math.random());
-                        window[workerID] = {
-                            importScripts: function (...args2) {
-                                console.log('importScripts', args2);
-                                args2.forEach((arg) => {
-                                    let script_url = SOCIALBROWSER.handleURL(arg);
-                                    SOCIALBROWSER.addJSURL(script_url);
-                                });
-                            },
-                            terminate: function () {},
-                            postMessage: function (data) {
-                                
-                                window[workerID].onmessage({data : data})
-                                
-                            },
-                            onmessage: function () {},
-                        };
+                            let workerID = 'worker_' + SOCIALBROWSER.md5(new Date().getTime() + Math.random());
+                            window[workerID] = {
+                                importScripts: function (...args2) {
+                                    args2.forEach((arg) => {
+                                        let script_url = SOCIALBROWSER.handleURL(arg);
+                                        SOCIALBROWSER.addJSURL(script_url);
+                                    });
+                                },
+                                terminate: function () {},
+                                postMessage: function (data) {
+                                    window[workerID].onmessage({ data: data });
+                                },
+                                onmessage: function () {},
+                            };
 
-                        if (SOCIALBROWSER.var.blocking.javascript.block_window_worker) {
-                            return window[workerID];
-                        }
-
-                        SOCIALBROWSER.__define(window[workerID] , 'location' , {
-                            href : script_url,
-                            toString : function(){
-                                return script_url;
+                            if (SOCIALBROWSER.var.blocking.javascript.block_window_worker) {
+                                return window[workerID];
                             }
-                        })
 
-                        fetch(script_url)
-                            .then((response) => response.text())
-                            .then((code) => {
-                                console.log(code);
-                                SOCIALBROWSER.addJS('window.workerFN = function(self , location){' + code + ';console.log(self)}; window.workerFN(window["' + workerID + '"] , window["' + workerID + '"].location);');
+                            SOCIALBROWSER.__define(window[workerID], 'location', {
+                                href: script_url,
+                                toString: function () {
+                                    return script_url;
+                                },
                             });
 
-                        window.importScripts = window[workerID].importScripts;
+                            fetch(script_url)
+                                .then((response) => response.text())
+                                .then((code) => {
+                                    SOCIALBROWSER.addJS(
+                                        'window.workerFN = function(self , location){' +
+                                            code +
+                                            ';console.log(self)}; window.workerFN(window["' +
+                                            workerID +
+                                            '"] , window["' +
+                                            workerID +
+                                            '"].location);',
+                                    );
+                                });
 
-                        return window[workerID];
-                    };
+                            window.importScripts = window[workerID].importScripts;
+
+                            return window[workerID];
+                        };
+                    }
 
                     if (SOCIALBROWSER.var.blocking.javascript.block_window_shared_worker) {
                         window.SharedWorker = function (...args) {

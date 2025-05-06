@@ -70,7 +70,7 @@ module.exports = function init(child) {
         if (win) {
             data2.customSetting = win.customSetting || {};
             data2.partition = data2.customSetting.partition;
-            data2.session = data2.customSetting.session || child.parent.var.session_list.find((s) => s.name == data2.partition);
+            data2.session = data2.customSetting.session || child.parent.var.session_list.find((s) => s.name == data2.partition) || { name: data2.partition, display: data2.partition };
         }
         data.username = data2.session?.display;
         data2.var = child.get_dynamic_var(data);
@@ -193,13 +193,13 @@ module.exports = function init(child) {
                     obj = child.electron.screen;
                 } else if (arr[0] == 'clipboard') {
                     obj = child.electron.clipboard;
-                }  else if (arr[0] == 'child') {
+                } else if (arr[0] == 'child') {
                     obj = child;
-                }else if (arr[0] == 'fs') {
+                } else if (arr[0] == 'fs') {
                     obj = child.fs;
-                }else if (arr[0] == 'path') {
+                } else if (arr[0] == 'path') {
                     obj = child.path;
-                }else {
+                } else {
                     obj = null;
                 }
             }
@@ -282,7 +282,7 @@ module.exports = function init(child) {
         event.returnValue = obj;
     });
     child.ipcMain.on('[customSetting]', async (event, data = {}) => {
-        event.reply('[customSetting-replay]', 'xxxxxxxxxx' || child.windowList[child.windowList.length - 1]?.customSetting || {})
+        event.reply('[customSetting-replay]', 'xxxxxxxxxx' || child.windowList[child.windowList.length - 1]?.customSetting || {});
     });
 
     child.ipcMain.on('[screen]', async (event, data = { id: 1 }) => {
@@ -437,7 +437,7 @@ module.exports = function init(child) {
     child.ipcMain.on('[create-folder]', async (event, path) => {
         if (!child.fs.existsSync(path)) {
             child.fs.mkdirSync(path);
-          }
+        }
         event.returnValue = true;
     });
 
@@ -998,7 +998,7 @@ module.exports = function init(child) {
                   }
                 })()
                 `,
-                false
+                false,
             );
         }
     });
