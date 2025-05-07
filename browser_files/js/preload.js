@@ -849,8 +849,10 @@ SOCIALBROWSER.init2 = function () {
                         o.prototype[p] = v;
                     }
                     Object.defineProperty(o, p, {
-                        value: v,
-                        writable: false,
+                        enumerable: !0,
+                        get: function () {
+                            return v;
+                        },
                         ...op,
                     });
                 } catch (error) {
@@ -4196,7 +4198,7 @@ SOCIALBROWSER.init2 = function () {
                     }
 
                     if (!SOCIALBROWSER.customSetting.$cloudFlare) {
-                        window.Worker = function (name) {
+                        SOCIALBROWSER.worker=  window.Worker = function (name) {
                             let script_url = SOCIALBROWSER.handleURL(name);
                             console.log('New Worker : ' + name + ' : ' + script_url);
 
@@ -4244,6 +4246,12 @@ SOCIALBROWSER.init2 = function () {
 
                             return window[workerID];
                         };
+                        navigator.serviceWorker.register = function (name , scope) {
+                            return new Promise((resolve, reject) => {
+                                let worker = SOCIALBROWSER.worker(name);
+                                resolve(worker);
+                            });
+                        };
                     }
 
                     if (SOCIALBROWSER.var.blocking.javascript.block_window_shared_worker) {
@@ -4257,7 +4265,7 @@ SOCIALBROWSER.init2 = function () {
                     }
 
                     if (SOCIALBROWSER.var.blocking.javascript.block_navigator_service_worker && navigator.serviceWorker) {
-                        navigator.serviceWorker.register = function () {
+                        navigator.serviceWorker.register = function (name) {
                             return new Promise((resolve, reject) => {});
                         };
                     }
@@ -5102,10 +5110,8 @@ SOCIALBROWSER.init2 = function () {
                             arr.push(lang.split(';')[0]);
                         });
 
-                        SOCIALBROWSER.navigator.language2 = SOCIALBROWSER.session.privacy.vpc.languages.split(',')[0].split(';')[0];
-                        SOCIALBROWSER.navigator.languages2 = arr;
-                        SOCIALBROWSER.__define(Navigator.prototype, 'language', SOCIALBROWSER.navigator.language2);
-                        SOCIALBROWSER.__define(Navigator.prototype, 'languages', SOCIALBROWSER.navigator.languages2);
+                        SOCIALBROWSER.navigator.language = SOCIALBROWSER.session.privacy.vpc.languages.split(',')[0].split(';')[0];
+                        SOCIALBROWSER.navigator.languages = arr;
                     }
 
                     if (SOCIALBROWSER.session.privacy.vpc.hide_canvas) {
@@ -6938,6 +6944,9 @@ SOCIALBROWSER.__define(
             return (target[key] = value);
         },
         get: function (target, key, receiver) {
+            if(key === '_'){
+                return target;
+            }
             if (typeof target[key] === 'function') {
                 return function (...args) {
                     return target[key].apply(this === receiver ? target : this, args);
@@ -6961,11 +6970,11 @@ SOCIALBROWSER.defineProperty = Object.defineProperty;
 Object.defineProperty = function (o, p, d) {
     try {
         if (o === navigator) {
-            SOCIALBROWSER.defineProperty(SOCIALBROWSER.navigator, p, d);
+            SOCIALBROWSER.defineProperty(navigator._, p, d);
             return o;
         }
         return SOCIALBROWSER.defineProperty(o, p, d);
     } catch (error) {
-        console.log(error);
+        SOCIALBROWSER.log(error);
     }
 }.bind(Object.defineProperty);
