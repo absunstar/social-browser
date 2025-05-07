@@ -1869,12 +1869,15 @@ SOCIALBROWSER.init2 = function () {
                                 if (shadowRoot.querySelector('div[style*="display: grid"] > div > label')) {
                                     const element = shadowRoot.querySelector('div[style*="display: grid"] > div input');
 
-                                    if (element && element.getAttribute('aria-checked') !== null) {
-                                    } else {
-                                        simulateMouseClick(element);
+                                    if (element) {
+                                        console.log(element)
+                                        if (element.getAttribute('aria-checked') !== null) {
+                                        } else {
+                                            simulateMouseClick(element);
+                                        }
                                     }
                                 }
-                                await delay(randomInteger(500, 2000));
+                                await delay(randomInteger(200, 4000));
                                 Click2(shadowRoot);
                             }
 
@@ -1885,17 +1888,16 @@ SOCIALBROWSER.init2 = function () {
                                 return shadowRoot;
                             };
                         }
-
-                        const attachShadowReplacement = '(' + ShadowFinder.toString().replace('ShadowFinder', '') + ')();';
-                        SOCIALBROWSER.eval(attachShadowReplacement);
+                        ShadowFinder();
+                        // const attachShadowReplacement = '(' + ShadowFinder.toString().replace('ShadowFinder', '') + ')();';
+                        // SOCIALBROWSER.eval(attachShadowReplacement);
                     });
                 }
             }
-            return true;
         }
     })();
 
-    if (SOCIALBROWSER._window.id && !SOCIALBROWSER.customSetting.$cloudFlare && SOCIALBROWSER.customSetting.allowSocialBrowser) {
+    if (SOCIALBROWSER.customSetting.allowSocialBrowser) {
         if (globalThis) {
             globalThis.SOCIALBROWSER = SOCIALBROWSER;
         } else if (window) {
@@ -4197,62 +4199,74 @@ SOCIALBROWSER.init2 = function () {
                         window.console.clear = function () {};
                     }
 
-                    if (!SOCIALBROWSER.customSetting.$cloudFlare) {
-                        SOCIALBROWSER.worker=  window.Worker = function (name) {
-                            let script_url = SOCIALBROWSER.handleURL(name);
-                            console.log('New Worker : ' + name + ' : ' + script_url);
+                    SOCIALBROWSER.worker = window.Worker;
+                    window.Worker = function (...args) {
+                        let name = args[0];
 
-                            let workerID = 'worker_' + SOCIALBROWSER.md5(new Date().getTime() + Math.random());
-                            window[workerID] = {
-                                importScripts: function (...args2) {
-                                    args2.forEach((arg) => {
-                                        let script_url = SOCIALBROWSER.handleURL(arg);
-                                        SOCIALBROWSER.addJSURL(script_url);
-                                    });
-                                },
-                                terminate: function () {},
-                                postMessage: function (data) {
-                                    window[workerID].onmessage({ data: data });
-                                },
-                                onmessage: function () {},
-                            };
+                        SOCIALBROWSER.log('New Worker : ' + name);
 
-                            if (SOCIALBROWSER.var.blocking.javascript.block_window_worker) {
-                                return window[workerID];
-                            }
+                        if (name.indexOf('blob') === 0) {
+                            return new SOCIALBROWSER.worker(...args);
+                        }
 
-                            SOCIALBROWSER.__define(window[workerID], 'location', {
-                                href: script_url,
-                                toString: function () {
-                                    return script_url;
-                                },
-                            });
+                        let script_url = SOCIALBROWSER.handleURL(name);
 
-                            fetch(script_url)
-                                .then((response) => response.text())
-                                .then((code) => {
-                                    SOCIALBROWSER.addJS(
-                                        'window.workerFN = function(self , location){' +
-                                            code +
-                                            ';console.log(self)}; window.workerFN(window["' +
-                                            workerID +
-                                            '"] , window["' +
-                                            workerID +
-                                            '"].location);',
-                                    );
+                        let workerID = 'worker_' + SOCIALBROWSER.md5(new Date().getTime() + Math.random());
+                        window[workerID] = {
+                            importScripts: function (...args2) {
+                                args2.forEach((arg) => {
+                                    let script_url = SOCIALBROWSER.handleURL(arg);
+                                    SOCIALBROWSER.addJSURL(script_url);
                                 });
+                            },
+                            terminate: function () {},
+                            postMessage: function (data) {
+                                window[workerID].onmessage({ data: data });
+                            },
+                            onmessage: function () {},
+                        };
 
-                            window.importScripts = window[workerID].importScripts;
-
+                        if (SOCIALBROWSER.var.blocking.javascript.block_window_worker) {
                             return window[workerID];
-                        };
-                        navigator.serviceWorker.register = function (name , scope) {
-                            return new Promise((resolve, reject) => {
-                                let worker = SOCIALBROWSER.worker(name);
-                                resolve(worker);
+                        }
+
+                        SOCIALBROWSER.__define(window[workerID], 'location', {
+                            href: script_url,
+                            toString: function () {
+                                return script_url;
+                            },
+                        });
+
+                        fetch(script_url)
+                            .then((response) => response.text())
+                            .then((code) => {
+                                SOCIALBROWSER.addJS(
+                                    'window.workerFN = function(self , location){' + code + ';console.log(self)}; window.workerFN(window["' + workerID + '"] , window["' + workerID + '"].location);',
+                                );
                             });
-                        };
+
+                        window.importScripts = window[workerID].importScripts;
+
+                        return window[workerID];
+                    };
+
+                    SOCIALBROWSER.serviceWorker = {
+                        register: navigator.serviceWorker ? navigator.serviceWorker.register : {}, 
+                    };
+
+                    if(navigator.serviceWorker){
+                          navigator.serviceWorker.register = function (...args) {
+                        SOCIALBROWSER.log('New service Worker : ' + args[0]);
+
+                        return new Promise((resolve, reject) => {
+                            if (!SOCIALBROWSER.var.blocking.javascript.block_navigator_service_worker) {
+                                let worker = new window.Worker(...args);
+                                resolve(worker);
+                            }
+                        });
+                    };
                     }
+                  
 
                     if (SOCIALBROWSER.var.blocking.javascript.block_window_shared_worker) {
                         window.SharedWorker = function (...args) {
@@ -6944,7 +6958,7 @@ SOCIALBROWSER.__define(
             return (target[key] = value);
         },
         get: function (target, key, receiver) {
-            if(key === '_'){
+            if (key === '_') {
                 return target;
             }
             if (typeof target[key] === 'function') {
@@ -6976,5 +6990,6 @@ Object.defineProperty = function (o, p, d) {
         return SOCIALBROWSER.defineProperty(o, p, d);
     } catch (error) {
         SOCIALBROWSER.log(error);
+        return o;
     }
 }.bind(Object.defineProperty);

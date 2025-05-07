@@ -72,7 +72,7 @@ module.exports = function (owner) {
     }
 
     if ((vpc = true)) {
-        owner.effectiveTypeList = ['slow-2g', '2g', '3g', '4g' , '5g'];
+        owner.effectiveTypeList = ['slow-2g', '2g', '3g', '4g', '5g'];
         owner.timeZones = [
             {
                 value: 'Dateline Standard Time',
@@ -964,24 +964,7 @@ module.exports = function (owner) {
                     { name: 'Linux x86_64', code: 'Linux x86_64' },
                     { name: 'X11; Ubuntu; Linux x86_64', code: 'Linux x86_64' },
                 ],
-                screenList: [
-                    '2560*1440',
-                    '1920*1080',
-                    '1792*1120',
-                    '1680*1050',
-                    '1600*900',
-                    '1536*864',
-                    '1440*900',
-                    '1366*768',
-                    '1280*800',
-                    '1280*720',
-                    '1024*768',
-                    '1024*600',
-                    '962*601',
-                    '810*1080',
-                    '800*1280',
-                    '768*1024',
-                ],
+                screenList: ['2560*1440', '1920*1080', '1792*1120', '1680*1050', '1600*900', '1536*864', '1440*900', '1366*768', '1280*800', '1280*720', '1024*768', '1024*600'],
             },
             {
                 name: 'Mobile',
@@ -1111,7 +1094,13 @@ module.exports = function (owner) {
                     latitude: owner.randomNumber(1, 49) + Math.random(),
                     longitude: owner.randomNumber(1, 49) + Math.random(),
                 },
-                languages: owner.languageList[owner.randomNumber(0, owner.languageList.length - 1)] + ',' + owner.languageList[owner.randomNumber(0, owner.languageList.length - 1)] + ';q=0.9,' + owner.languageList[owner.randomNumber(0, owner.languageList.length - 1)]+';q=0.8',
+                languages:
+                    owner.languageList[owner.randomNumber(0, owner.languageList.length - 1)] +
+                    ',' +
+                    owner.languageList[owner.randomNumber(0, owner.languageList.length - 1)] +
+                    ';q=0.9,' +
+                    owner.languageList[owner.randomNumber(0, owner.languageList.length - 1)] +
+                    ';q=0.8',
                 mask_date: false,
                 timeZone: owner.timeZones[owner.randomNumber(0, owner.timeZones.length - 1)],
                 hide_webgl: true,
@@ -1177,5 +1166,4 @@ module.exports = function (owner) {
             }
         };
     }
-    
 };
