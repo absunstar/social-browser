@@ -269,10 +269,10 @@ module.exports = function (child) {
         win.customSetting.$userAgentURL = win.customSetting.$defaultUserAgent.url;
 
         if (url.like('*youtube.com/watch*|*youtube.com/short*')) {
-            win.customSetting.$userAgentURL = 'Mozilla/5.0 (iPad; CPU OS 14_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/602.6.13 Mobile Safari/537.36';
-            win.customSetting.$defaultUserAgent = child.parent.var.userAgentList.find((u) => u.url == win.customSetting.$userAgentURL) || {
-                url: win.customSetting.$userAgentURL,
-            };
+            // win.customSetting.$userAgentURL = 'Mozilla/5.0 (iPad; CPU OS 14_0  like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/602.6.13 Mobile Safari/537.36';
+            // win.customSetting.$defaultUserAgent = child.parent.var.userAgentList.find((u) => u.url == win.customSetting.$userAgentURL) || {
+            //     url: win.customSetting.$userAgentURL,
+            // };
             win.customSetting.iframe = true;
             if (url !== win.lastYoutubeWatch) {
                 win.lastYoutubeWatch = url;
