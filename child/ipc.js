@@ -491,7 +491,7 @@ module.exports = function init(child) {
         return true;
     });
     child.ipcMain.handle('[request-cookie]', (e, obj) => {
-        return child.cookieList.find((c) => obj.domain.like(c.domain) && c.partition == obj.partition);
+        return child.cookieList.find((c) => obj.domain.like(c.domain) && c.partition == obj.partition) || {cookie : ''};
     });
 
     child.ipcMain.handle('online-status', (e, obj) => {

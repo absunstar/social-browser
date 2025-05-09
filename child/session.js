@@ -93,6 +93,26 @@ module.exports = function (child) {
             sessionIndex = child.session_name_list.findIndex((s) => s.name === name);
         }
 
+        setTimeout(() => {
+            child.parent.var.preload_list.forEach((p) => {
+                if (!ss.getPreloadScripts().some((pr) => pr.id === 'frame-preload_' + p.id)) {
+                    ss.registerPreloadScript({
+                        type: 'frame',
+                        id: 'frame-preload_' + p.id,
+                        filePath: p.path.replace('{dir}', child.parent.dir),
+                    });
+                }
+            });
+
+            ss.getPreloadScripts().forEach((pr) => {
+                if (!child.parent.var.preload_list.some((p) => pr.id === 'frame-preload_' + p.id)) {
+                    if (pr.id !== 'frame-preload' && pr.id !== 'service-preload') {
+                        ss.unregisterPreloadScript(pr.id);
+                    }
+                }
+            });
+        }, 1000);
+
         if (sessionIndex !== -1) {
             child.session_name_list[sessionIndex].user = user;
             child.allowSessionHandle = false;
@@ -109,13 +129,7 @@ module.exports = function (child) {
                 id: 'service-preload',
                 filePath: child.parent.files_dir + '/js/preload-sw.js',
             });
-            child.parent.var.preload_list.forEach((p) => {
-                ss.registerPreloadScript({
-                    type: 'frame',
-                    id: 'frame-preload_' + p.id,
-                    filePath: p.path.replace('{dir}', child.parent.dir),
-                });
-            });
+
             ss.serviceWorkers.on('console-message', (event, messageDetails) => {
                 console.log('Got service worker message : ', messageDetails.message);
             });
@@ -726,7 +740,6 @@ module.exports = function (child) {
 
                                 s_policy[key] = s_policy[key].replaceAll('frame-src ', 'frame-src browser://* ');
                                 s_policy[key] = s_policy[key].replaceAll('connect-src ', 'connect-src browser://* ');
-                                
                             }
                         } else if (typeof s_policy == 'string') {
                             s_policy[key] = s_policy[key].replaceAll("default-src 'none'", '');
@@ -954,6 +967,6 @@ module.exports = function (child) {
 
     child.sessionConfig = (partition) => {
         child.handleSession({ name: partition || child.partition });
-       // child.handleSession({ name: partition || child.partition, isDefault: true });
+        // child.handleSession({ name: partition || child.partition, isDefault: true });
     };
 };
