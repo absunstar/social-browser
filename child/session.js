@@ -7,7 +7,7 @@ module.exports = function (child) {
         child.session_name_list.forEach((sessionInfo) => {
             let session = child.electron.session.fromPartition(sessionInfo.name) || child.electron.session.defaultSession;
             if (session.isPersistent()) {
-                session
+                session.extensions
                     .loadExtension(extensionInfo.path, { allowFileAccess: true })
                     .then((extension) => {
                         child.log(extension);
@@ -23,10 +23,10 @@ module.exports = function (child) {
             let session = child.electron.session.fromPartition(sessionInfo.name) || child.electron.session.defaultSession;
             if (session.isPersistent()) {
                 if (extension) {
-                    session.removeExtension(extension.id);
+                    session.extensions.removeExtension(extension.id);
                 } else {
                     session.getAllExtensions().forEach((ex) => {
-                        session.removeExtension(ex.id);
+                        session.extensions.removeExtension(ex.id);
                     });
                 }
             }

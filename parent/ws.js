@@ -522,7 +522,7 @@ module.exports = function init(parent) {
                     parent.var.googleExtensionList = parent.var.googleExtensionList || [];
                     let extensionIndex = parent.var.googleExtensionList.findIndex((ex) => ex.path == message.extensionInfo.path);
                     if (extensionIndex === -1) {
-                        parent.electron.session.defaultSession
+                        parent.electron.session.defaultSession.extensions
                             .loadExtension(message.extensionInfo.path, { allowFileAccess: true })
                             .then((extension) => {
                                 console.log(extension);

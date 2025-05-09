@@ -156,6 +156,8 @@ SOCIALBROWSER.runUserScript = function (_script) {
             if (_script.preload) {
                 SOCIALBROWSER.eval(_script.code);
             } else {
+                SOCIALBROWSER.addCSS(_script.css);
+                SOCIALBROWSER.addHTML(_script.html);
                 SOCIALBROWSER.addJS(_script.code);
             }
         }
@@ -164,6 +166,8 @@ SOCIALBROWSER.runUserScript = function (_script) {
             if (_script.preload) {
                 SOCIALBROWSER.eval(_script.code);
             } else {
+                SOCIALBROWSER.addCSS(_script.css);
+                SOCIALBROWSER.addHTML(_script.html);
                 SOCIALBROWSER.addJS(_script.code);
             }
         }
@@ -901,12 +905,14 @@ SOCIALBROWSER.init2 = function () {
                 try {
                     SOCIALBROWSER.onLoad(() => {
                         let body = document.body || document.documentElement;
-                        if (body) {
+                        if (body && code) {
                             let _div = document.createElement('div');
-                            _div.id = '_div_' + Math.random();
+                            _div.id = '_div_' + SOCIALBROWSER.md5(code);
                             _div.innerHTML = SOCIALBROWSER.policy.createHTML(code);
                             _div.nonce = 'social';
-                            body.appendChild(_div);
+                            if (!document.querySelector('#' + _div.id)) {
+                                body.appendChild(_div);
+                            }
                         }
                     });
                 } catch (error) {
@@ -917,13 +923,14 @@ SOCIALBROWSER.init2 = function () {
                 try {
                     SOCIALBROWSER.onLoad(() => {
                         let body = document.body || document.head || document.documentElement;
-                        if (body) {
+                        if (body && code) {
                             let _script = document.createElement('script');
-                            _script.id = '_script_' + SOCIALBROWSER.md5(new Date().getTime() + Math.random());
+                            _script.id = '_script_' + SOCIALBROWSER.md5(code);
                             _script.textContent = SOCIALBROWSER.policy.createScript(code);
                             _script.nonce = 'social';
-                            body.appendChild(_script);
-                            _script.remove();
+                            if (!document.querySelector('#' + _script.id)) {
+                                body.appendChild(_script);
+                            }
                         }
                     });
                 } catch (error) {
@@ -932,16 +939,17 @@ SOCIALBROWSER.init2 = function () {
             };
             SOCIALBROWSER.addJSURL = function (url) {
                 try {
-                    url = SOCIALBROWSER.handleURL(url);
                     SOCIALBROWSER.onLoad(() => {
                         let body = document.head || document.body || document.documentElement;
-                        if (body) {
+                        if (body && url) {
+                            url = SOCIALBROWSER.handleURL(url);
                             let _script = document.createElement('script');
-                            _script.id = '_script_' + SOCIALBROWSER.md5(new Date().getTime() + Math.random());
+                            _script.id = '_script_' + SOCIALBROWSER.md5(code);
                             _script.src = SOCIALBROWSER.policy.createScriptURL(url);
                             _script.nonce = 'social';
-                            body.appendChild(_script);
-                            _script.remove();
+                            if (!document.querySelector('#' + _script.id)) {
+                                body.appendChild(_script);
+                            }
                         }
                     });
                 } catch (error) {
@@ -952,12 +960,14 @@ SOCIALBROWSER.init2 = function () {
                 try {
                     SOCIALBROWSER.onLoad(() => {
                         let body = document.head || document.body || document.documentElement;
-                        if (body) {
+                        if (body && code) {
                             let _style = document.createElement('style');
-                            _style.id = '_style_' + Math.random();
+                            _style.id = '_style_' + SOCIALBROWSER.md5(code);
                             _style.innerText = code;
                             _style.nonce = 'social';
-                            body.appendChild(_style);
+                            if (!document.querySelector('#' + _style.id)) {
+                                body.appendChild(_style);
+                            }
                         }
                     });
                 } catch (error) {
@@ -968,12 +978,15 @@ SOCIALBROWSER.init2 = function () {
                 try {
                     SOCIALBROWSER.onLoad(() => {
                         let body = document.head || document.body || document.documentElement;
-                        if (body) {
+                        if (body && url) {
+                            url = SOCIALBROWSER.handleURL(url);
                             let _style = document.createElement('style');
-                            _style.id = '_style_' + Math.random();
+                            _style.id = '_style_' + SOCIALBROWSER.md5(code);
                             _style.href = url;
                             _style.nonce = 'social';
-                            body.appendChild(_style);
+                            if (!document.querySelector('#' + _style.id)) {
+                                body.appendChild(_style);
+                            }
                         }
                     });
                 } catch (error) {
@@ -1298,7 +1311,6 @@ SOCIALBROWSER.init2 = function () {
             };
 
             SOCIALBROWSER.handleURL = function (u) {
-
                 if (typeof u !== 'string') {
                     return u;
                 }
@@ -1524,22 +1536,8 @@ SOCIALBROWSER.init2 = function () {
             };
 
             SOCIALBROWSER.injectDefault = function () {
-                try {
-                    if (document.body && !document.querySelector('#social_browser_html')) {
-                        let social_browser_html = document.createElement('div');
-                        social_browser_html.id = 'social_browser_html';
-                        social_browser_html.innerHTML = SOCIALBROWSER.policy.createHTML(Buffer.from(SOCIALBROWSER.injectHTML).toString());
-                        document.body.appendChild(social_browser_html);
-                    }
-                    if ((document.body || document.head || document.documentElement) && !document.querySelector('#social_browser_css')) {
-                        let social_browser_css = document.createElement('style');
-                        social_browser_css.id = 'social_browser_css';
-                        social_browser_css.innerText = Buffer.from(SOCIALBROWSER.injectCSS).toString();
-                        (document.body || document.head || document.documentElement).appendChild(social_browser_css);
-                    }
-                } catch (error) {
-                    SOCIALBROWSER.log(error);
-                }
+                SOCIALBROWSER.addHTML(Buffer.from(SOCIALBROWSER.injectHTML).toString());
+                SOCIALBROWSER.addCSS(Buffer.from(SOCIALBROWSER.injectCSS).toString());
             };
 
             SOCIALBROWSER.__showWarningImage = function () {
@@ -4206,7 +4204,7 @@ SOCIALBROWSER.init2 = function () {
                         let url = args[0].toString();
                         url = SOCIALBROWSER.handleURL(url);
 
-                        SOCIALBROWSER.log('New Worker : ' + url );
+                        SOCIALBROWSER.log('New Worker : ' + url);
 
                         if (url.indexOf('blob:') === 0) {
                             return new SOCIALBROWSER.Worker(...args);
@@ -4215,6 +4213,7 @@ SOCIALBROWSER.init2 = function () {
                         let workerID = 'worker_' + SOCIALBROWSER.md5(new Date().getTime() + Math.random()) + '_';
                         globalThis[workerID] = {
                             url: url,
+                            addEventListener: function () {},
                             importScripts: function (...args2) {
                                 args2.forEach((arg) => {
                                     console.log('Import Script : ' + arg);
@@ -4261,7 +4260,7 @@ SOCIALBROWSER.init2 = function () {
                                 code = code.replaceAll('location', workerID + '.location');
                                 code = code.replaceAll('this', workerID);
                                 code = code.replaceAll(workerID + '.' + workerID, workerID);
-                               
+
                                 SOCIALBROWSER.copy(code);
                                 SOCIALBROWSER.addJS('(()=>{ try { ' + code + ' } catch (err) {console.log(err)} })();');
                             });
