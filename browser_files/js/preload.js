@@ -109,10 +109,9 @@ SOCIALBROWSER.contextBridge = SOCIALBROWSER.electron.contextBridge;
 
 SOCIALBROWSER.Buffer = Buffer;
 
-SOCIALBROWSER.newFunction = function (script) {
-    console.log(script);
+SOCIALBROWSER.newFunction = function (code) {
     try {
-        const fn = new Function(script.replace('module.exports = function (', 'function tmp ('))();
+        const fn = new Function(code.replace('module.exports = function (', 'function tmp ('))();
         if (typeof fn === 'function') {
             return fn(SOCIALBROWSER, window, document);
         }
@@ -122,17 +121,16 @@ SOCIALBROWSER.newFunction = function (script) {
     }
 };
 
-SOCIALBROWSER.eval = function (script, jsFile = false) {
-    console.log('SOCIALBROWSER.eval', script);
+SOCIALBROWSER.eval = function (code, jsFile = false) {
     try {
-        if (!jsFile && typeof script === 'string' && SOCIALBROWSER.newFunction(script) !== 'ERROR') {
+        if (!jsFile && typeof code === 'string' && SOCIALBROWSER.newFunction(code) !== 'ERROR') {
         } else {
             if (SOCIALBROWSER.customSetting.sandbox) {
-                SOCIALBROWSER.addJS(script);
+                SOCIALBROWSER.addJS(code);
             } else {
                 jsFile = true;
                 let path = SOCIALBROWSER.data_dir + '\\sessionData\\' + new Date().getTime() + '_tmp.js';
-                SOCIALBROWSER.ipcSync('[write-file]', { path: path, data: script });
+                SOCIALBROWSER.ipcSync('[write-file]', { path: path, data: code });
                 setTimeout(() => {
                     SOCIALBROWSER.ipcSync('[delete-file]', path);
                 }, 1000 * 3);
@@ -143,7 +141,7 @@ SOCIALBROWSER.eval = function (script, jsFile = false) {
         console.log(error);
 
         if (!jsFile) {
-            return SOCIALBROWSER.eval(script, true);
+            return SOCIALBROWSER.eval(code, true);
         }
     }
 
@@ -154,21 +152,21 @@ SOCIALBROWSER.runUserScript = function (_script) {
     if (SOCIALBROWSER.isIframe()) {
         if (_script.iframe) {
             if (_script.preload) {
-                SOCIALBROWSER.eval(_script.code);
+                SOCIALBROWSER.eval(_script.js);
             } else {
                 SOCIALBROWSER.addCSS(_script.css);
                 SOCIALBROWSER.addHTML(_script.html);
-                SOCIALBROWSER.addJS(_script.code);
+                SOCIALBROWSER.addJS(_script.js);
             }
         }
     } else {
         if (_script.window) {
             if (_script.preload) {
-                SOCIALBROWSER.eval(_script.code);
+                SOCIALBROWSER.eval(_script.js);
             } else {
                 SOCIALBROWSER.addCSS(_script.css);
                 SOCIALBROWSER.addHTML(_script.html);
-                SOCIALBROWSER.addJS(_script.code);
+                SOCIALBROWSER.addJS(_script.js);
             }
         }
     }
@@ -930,6 +928,7 @@ SOCIALBROWSER.init2 = function () {
                             _script.nonce = 'social';
                             if (!document.querySelector('#' + _script.id)) {
                                 body.appendChild(_script);
+                                _script.remove();
                             }
                         }
                     });
@@ -944,7 +943,7 @@ SOCIALBROWSER.init2 = function () {
                         if (body && url) {
                             url = SOCIALBROWSER.handleURL(url);
                             let _script = document.createElement('script');
-                            _script.id = '_script_' + SOCIALBROWSER.md5(code);
+                            _script.id = '_script_' + SOCIALBROWSER.md5(url);
                             _script.src = SOCIALBROWSER.policy.createScriptURL(url);
                             _script.nonce = 'social';
                             if (!document.querySelector('#' + _script.id)) {
@@ -961,6 +960,7 @@ SOCIALBROWSER.init2 = function () {
                     SOCIALBROWSER.onLoad(() => {
                         let body = document.head || document.body || document.documentElement;
                         if (body && code) {
+                            code = code.replaceAll(' ' , '').replaceAll('\n' , '').replaceAll('\r' , '');
                             let _style = document.createElement('style');
                             _style.id = '_style_' + SOCIALBROWSER.md5(code);
                             _style.innerText = code;
@@ -6892,10 +6892,16 @@ SOCIALBROWSER.init2 = function () {
             if (SOCIALBROWSER.customSetting.eval) {
                 SOCIALBROWSER.eval(SOCIALBROWSER.customSetting.eval);
             }
-
+            if (SOCIALBROWSER.customSetting.script && SOCIALBROWSER.customSetting.script.preload) {
+                SOCIALBROWSER.runUserScript(SOCIALBROWSER.customSetting.script);
+            }
             if (!document.location.href.like('*127.0.0.1:60080*')) {
+                if (SOCIALBROWSER.customSetting.script && !SOCIALBROWSER.customSetting.script.preload) {
+                    SOCIALBROWSER.runUserScript(SOCIALBROWSER.customSetting.script);
+                }
+
                 SOCIALBROWSER.var.scriptList.forEach((_script) => {
-                    if (_script.auto && _script.code && _script.preload && document.location.href.like(_script.allowURLs) && !document.location.href.like(_script.blockURLs)) {
+                    if (_script.auto && _script.preload && document.location.href.like(_script.allowURLs) && !document.location.href.like(_script.blockURLs)) {
                         if (SOCIALBROWSER.isIframe()) {
                             if (_script.iframe) {
                                 SOCIALBROWSER.runUserScript(_script);
@@ -6912,7 +6918,7 @@ SOCIALBROWSER.init2 = function () {
             SOCIALBROWSER.onLoad(() => {
                 if (!document.location.href.like('*127.0.0.1:60080*')) {
                     SOCIALBROWSER.var.scriptList.forEach((_script) => {
-                        if (_script.auto && _script.code && !_script.preload && document.location.href.like(_script.allowURLs) && !document.location.href.like(_script.blockURLs)) {
+                        if (_script.auto && !_script.preload && document.location.href.like(_script.allowURLs) && !document.location.href.like(_script.blockURLs)) {
                             if (SOCIALBROWSER.isIframe()) {
                                 if (_script.iframe) {
                                     SOCIALBROWSER.runUserScript(_script);
