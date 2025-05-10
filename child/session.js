@@ -732,10 +732,12 @@ module.exports = function (child) {
                                 s_policy[key] = s_policy[key].replaceAll('data: ', 'data: browser://* ');
                                 s_policy[key] = s_policy[key].replaceAll('default-src ', 'default-src browser://* ');
                                 s_policy[key] = s_policy[key].replaceAll('img-src ', 'img-src browser://* ');
-                                if (s_policy[key].contains('unsafe-inline') && !s_policy[key].contains('nonce')) {
+                                if (s_policy[key].contains("'unsafe-inline'") && !s_policy[key].contains('nonce') && !s_policy[key].contains('sha256-')) {
                                     s_policy[key] = s_policy[key].replaceAll('script-src ', 'script-src browser://* ');
+                                    s_policy[key] = s_policy[key].replaceAll('script-src-elem ', 'script-src-elem browser://* ');
                                 } else {
                                     s_policy[key] = s_policy[key].replaceAll('script-src ', "script-src browser://* 'nonce-social' ");
+                                    s_policy[key] = s_policy[key].replaceAll('script-src-elem ', "script-src-elem browser://* 'nonce-social' ");
                                 }
 
                                 s_policy[key] = s_policy[key].replaceAll('frame-src ', 'frame-src browser://* ');
@@ -746,10 +748,12 @@ module.exports = function (child) {
                             s_policy = s_policy.replaceAll('data: ', 'data: browser://* ');
                             s_policy = s_policy.replaceAll('default-src ', 'default-src browser://* ');
                             s_policy = s_policy.replaceAll('img-src ', 'img-src browser://* ');
-                            if (s_policy.contains('unsafe-inline') && !s_policy.contains('nonce')) {
+                            if (s_policy.contains("'unsafe-inline'") && !s_policy.contains('nonce') && !s_policy[key].contains('sha256-')) {
                                 s_policy = s_policy.replaceAll('script-src ', 'script-src browser://* ');
+                                s_policy = s_policy.replaceAll('script-src-elem ', 'script-src-elem browser://* ');
                             } else {
                                 s_policy = s_policy.replaceAll('script-src ', "script-src browser://* 'nonce-social' ");
+                                s_policy = s_policy.replaceAll('script-src-elem ', "script-src-elem browser://* 'nonce-social' ");
                             }
 
                             s_policy = s_policy.replaceAll('frame-src ', 'frame-src browser://* ');

@@ -960,7 +960,7 @@ SOCIALBROWSER.init2 = function () {
                     SOCIALBROWSER.onLoad(() => {
                         let body = document.head || document.body || document.documentElement;
                         if (body && code) {
-                            code = code.replaceAll(' ' , '').replaceAll('\n' , '').replaceAll('\r' , '');
+                            code = code.replaceAll(' ', '').replaceAll('\n', '').replaceAll('\r', '');
                             let _style = document.createElement('style');
                             _style.id = '_style_' + SOCIALBROWSER.md5(code);
                             _style.innerText = code;
@@ -1904,10 +1904,6 @@ SOCIALBROWSER.init2 = function () {
             window.SOCIALBROWSER = SOCIALBROWSER;
         }
     }
-
-    // if(SOCIALBROWSER.customSetting.$cloudFlare){
-    //     return false;
-    // }
 
     (function loadMainMoudles() {
         if ((loadLOADED = true)) {
@@ -4019,8 +4015,8 @@ SOCIALBROWSER.init2 = function () {
                 }
             })();
 
-            (function loadWindow() {
-                if ((windowLOADED = true)) {
+            if (!SOCIALBROWSER.customSetting.$cloudFlare) {
+                (function loadWindow() {
                     window.open0 = window.open;
                     if (!SOCIALBROWSER.isWhiteSite) {
                         window.open = function (...args /*url, target, windowFeatures*/) {
@@ -4269,7 +4265,10 @@ SOCIALBROWSER.init2 = function () {
 
                         return globalThis[workerID];
                     };
-
+                    
+                    SOCIALBROWSER.__define(window.Worker, 'toString', function () {
+                        return 'Worker() { [native code] }';
+                    });
                     SOCIALBROWSER.serviceWorker = {
                         register: navigator.serviceWorker ? navigator.serviceWorker.register : {},
                     };
@@ -4492,8 +4491,8 @@ SOCIALBROWSER.init2 = function () {
                         });
                         SOCIALBROWSER.cookiesRaw = SOCIALBROWSER.getCookieRaw();
                     };
-                }
-            })();
+                })();
+            }
 
             (function loadKeyboard() {
                 if ((keyboardLOADED = true)) {
