@@ -364,7 +364,7 @@ module.exports = function init(parent) {
             url: 'http://127.0.0.1:60080/print-content/' + content.id,
             windowType: 'popup',
             show: false,
-            partition: 'persist:print',
+            partition: 'print',
             sandbox : false,
             eval: parent.api.readFileSync(parent.dir + '/printing/preload.js'),
             allowAudio: false,
