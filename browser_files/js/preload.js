@@ -208,7 +208,8 @@ SOCIALBROWSER.callSync = SOCIALBROWSER.ipcSync = function (channel, value = {}) 
         }
         return SOCIALBROWSER.ipcRenderer.sendSync(channel, value);
     } catch (error) {
-        console.log(channel, error);
+        SOCIALBROWSER.log(channel, error);
+        SOCIALBROWSER.log(value);
         return undefined;
     }
 };
