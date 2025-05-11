@@ -704,7 +704,7 @@ SOCIALBROWSER.init2 = function () {
                     if (!session.name.like('persist*')) {
                         session.name = 'persist:' + session.name;
                     }
-                    let oldSession = SOCIALBROWSER.var.session_list.find((s) => s.name == session.name)
+                    let oldSession = SOCIALBROWSER.var.session_list.find((s) => s.name == session.name);
                     if (oldSession) {
                         return oldSession;
                     }
@@ -4202,14 +4202,13 @@ SOCIALBROWSER.init2 = function () {
                         url = SOCIALBROWSER.handleURL(url.toString());
                         SOCIALBROWSER.log('New Worker : ' + url);
 
-
                         if (url.indexOf('blob:') === 0) {
                             return new SOCIALBROWSER.Worker(url, options, _worker);
                         }
 
                         let workerID = 'worker_' + SOCIALBROWSER.md5(url) + '_';
 
-                          fetch(url)
+                        fetch(url)
                             .then((response) => response.text())
                             .then((code) => {
                                 let _id = _worker ? _worker.id : workerID;
@@ -4217,11 +4216,10 @@ SOCIALBROWSER.init2 = function () {
                                 code = code.replaceAll('window.location', 'location');
                                 code = code.replaceAll('document.location', 'location');
                                 code = code.replaceAll('self.trustedTypes', _id + '.trustedTypes');
-                                code = code.replaceAll('self',  _id + '');
+                                code = code.replaceAll('self', _id + '');
                                 code = code.replaceAll('location', _id + '.location');
-                                if(!_worker){
-
-                                     code = code.replaceAll('this', _id);
+                                if (!_worker) {
+                                    code = code.replaceAll('this', _id);
                                 }
                                 code = code.replaceAll(_id + '.' + _id, _id);
 
@@ -4229,11 +4227,9 @@ SOCIALBROWSER.init2 = function () {
                                 SOCIALBROWSER.addJS('(()=>{ try { ' + code + ' } catch (err) {console.log(err)} })();');
                             });
 
-                        
                         if (_worker) {
                             return _worker;
                         } else {
-                            
                             globalThis[workerID] = {
                                 id: workerID,
                                 url: url,
@@ -4241,7 +4237,7 @@ SOCIALBROWSER.init2 = function () {
                                 importScripts: function (...args2) {
                                     args2.forEach((arg) => {
                                         console.log('Import Script : ' + arg);
-                                        new Worker(arg , null , globalThis[workerID]);
+                                        new Worker(arg, null, globalThis[workerID]);
                                     });
                                 },
                                 terminate: function () {},
@@ -4275,10 +4271,8 @@ SOCIALBROWSER.init2 = function () {
                             SOCIALBROWSER.__define(globalThis[workerID], 'trustedTypes', window.trustedTypes);
 
                             globalThis.importScripts = globalThis[workerID].importScripts;
-                              return globalThis[workerID];
-
+                            return globalThis[workerID];
                         }
-                      
                     };
 
                     SOCIALBROWSER.__define(window.Worker, 'toString', function () {
