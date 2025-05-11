@@ -4015,7 +4015,7 @@ SOCIALBROWSER.init2 = function () {
                 }
             })();
 
-            if (!SOCIALBROWSER.customSetting.$cloudFlare && !SOCIALBROWSER.isWhiteSite) {
+            if (!SOCIALBROWSER.customSetting.$cloudFlare) {
                 (function loadWindow() {
                     window.open0 = window.open;
                     if (!SOCIALBROWSER.isWhiteSite) {
