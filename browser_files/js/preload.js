@@ -139,7 +139,7 @@ SOCIALBROWSER.eval = function (code, jsFile = false) {
             }
         }
     } catch (error) {
-        SOCIALBROWSER.log(error , code);
+        SOCIALBROWSER.log(error, code);
         if (!jsFile) {
             return SOCIALBROWSER.eval(code, true);
         }
@@ -1700,7 +1700,158 @@ SOCIALBROWSER.init2 = function () {
             SOCIALBROWSER.executeScript = function (code) {
                 return SOCIALBROWSER.fnAsync('webContents.executeJavaScript', code, true);
             };
+
+            let alert_idle = null;
+            SOCIALBROWSER.alert =
+                window.alert =
+                window.confirm =
+                    function (msg, time = 1000 * 3) {
+                        if (typeof msg !== 'string') {
+                            return true;
+                        }
+                        msg = msg.trim();
+
+                        SOCIALBROWSER.log(msg);
+                        SOCIALBROWSER.injectDefault();
+                        let div = document.querySelector('#__alertBox');
+                        if (div) {
+                            clearTimeout(alert_idle);
+                            div.innerHTML = SOCIALBROWSER.policy.createHTML(msg);
+                            div.style.display = 'block';
+                            alert_idle = setTimeout(() => {
+                                div.style.display = 'none';
+                                div.innerHTML = SOCIALBROWSER.policy.createHTML('');
+                            }, time);
+                        }
+
+                        return true;
+                    };
+
+            window.prompt = function (ask = '', answer = '') {
+                SOCIALBROWSER.log(ask, answer);
+                return answer;
+            };
         }
+
+        if (!SOCIALBROWSER.var.blocking.javascript.allowConsoleLogs) {
+            window.console.log = function () {};
+            window.console.error = function () {};
+            window.console.dir = function () {};
+            window.console.dirxml = function () {};
+            window.console.info = function () {};
+            window.console.warn = function () {};
+            window.console.table = function () {};
+            window.console.trace = function () {};
+            window.console.debug = function () {};
+            window.console.assert = function () {};
+            window.console.clear = function () {};
+        }
+
+        if (SOCIALBROWSER.var.blocking.javascript.block_console_clear) {
+            window.console.clear = function () {};
+        }
+
+        if (!SOCIALBROWSER.customSetting.$cloudFlare) {
+            if (!SOCIALBROWSER.isWhiteSite) {
+                window.eval0 = window.eval;
+                window.eval = function (...code) {
+                    try {
+                        return window.eval0(...code);
+                    } catch (error) {
+                        SOCIALBROWSER.log(document.location.href, error);
+                        return undefined;
+                    }
+                }.bind(window.eval);
+            }
+            if (SOCIALBROWSER.var.blocking.javascript.block_eval) {
+                window.eval = function () {
+                    SOCIALBROWSER.log('eval block', code);
+                    return undefined;
+                };
+            }
+        }
+
+        if (!SOCIALBROWSER.var.core.loginByPasskey && window.PublicKeyCredential && navigator) {
+            window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable = function () {
+                return new Promise((resolve, reject) => {
+                    resolve(false);
+                });
+            };
+            window.PublicKeyCredential.isConditionalMediationAvailable = function () {
+                return new Promise((resolve, reject) => {
+                    resolve(false);
+                });
+            };
+
+            SOCIALBROWSER.navigator.credentials.create = function (options) {
+                return new Promise((resolve, reject) => {
+                    if (options.password) {
+                        const pwdCredential = new PasswordCredential({ ...options.password });
+                        resolve(pwdCredential);
+                    } else if (options.federated) {
+                        const fedCredential = new FederatedCredential({ ...options.password });
+                        resolve(fedCredential);
+                    } else if (options.publicKey) {
+                        let pk = {
+                            rp: {
+                                id: 'google.com',
+                                name: 'Google',
+                            },
+                            user: {
+                                id: {},
+                                displayName: 'hany kamal',
+                                name: 'kamally356@gmail.com',
+                            },
+                            challenge: {},
+                            pubKeyCredParams: [
+                                {
+                                    type: 'public-key',
+                                    alg: -7,
+                                },
+                                {
+                                    type: 'public-key',
+                                    alg: -257,
+                                },
+                            ],
+                            excludeCredentials: [],
+                            authenticatorSelection: {
+                                authenticatorAttachment: 'platform',
+                                residentKey: 'preferred',
+                                userVerification: 'preferred',
+                            },
+                            attestation: 'direct',
+                            extensions: {
+                                appidExclude: 'https://www.gstatic.com/securitykey/origins.json',
+                                googleLegacyAppidSupport: false,
+                            },
+                        };
+
+                        const pkCredential = {
+                            publicKey: SOCIALBROWSER.md5(options.publicKey.user.name),
+                            id: SOCIALBROWSER.md5(options.publicKey.user.name),
+                            rawId: SOCIALBROWSER.md5(options.publicKey.user.name),
+
+                            response: {
+                                clientDataJSON: JSON.stringify(options.publicKey),
+                            },
+                        };
+                        SOCIALBROWSER.log(pkCredential);
+                        resolve(pkCredential);
+                    } else {
+                        reject('AbortError');
+                    }
+                });
+            };
+            SOCIALBROWSER.navigator.credentials.get = function () {
+                return new Promise((resolve, reject) => {
+                    reject('AbortError');
+                });
+            };
+        }
+        SOCIALBROWSER.on('window.message', (e, message) => {
+            message.origin = message.origin || '*';
+            window.postMessage(message.data, message.origin, message.transfer);
+        });
     })();
 
     (function loaRemote() {
@@ -1910,104 +2061,6 @@ SOCIALBROWSER.init2 = function () {
 
     (function loadMainMoudles() {
         if ((loadLOADED = true)) {
-            if (!SOCIALBROWSER.customSetting.$cloudFlare) {
-                if (!SOCIALBROWSER.isWhiteSite) {
-                    window.eval0 = window.eval;
-                    window.eval = function (...code) {
-                        try {
-                            return window.eval0(...code);
-                        } catch (error) {
-                            SOCIALBROWSER.log(document.location.href, error);
-                            return undefined;
-                        }
-                    }.bind(window.eval);
-                }
-                if (SOCIALBROWSER.var.blocking.javascript.block_eval) {
-                    window.eval = function () {
-                        SOCIALBROWSER.log('eval block', code);
-                        return undefined;
-                    };
-                }
-            }
-
-            if (!SOCIALBROWSER.var.core.loginByPasskey && window.PublicKeyCredential && navigator) {
-                window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable = function () {
-                    return new Promise((resolve, reject) => {
-                        resolve(false);
-                    });
-                };
-                window.PublicKeyCredential.isConditionalMediationAvailable = function () {
-                    return new Promise((resolve, reject) => {
-                        resolve(false);
-                    });
-                };
-
-                SOCIALBROWSER.navigator.credentials.create = function (options) {
-                    return new Promise((resolve, reject) => {
-                        if (options.password) {
-                            const pwdCredential = new PasswordCredential({ ...options.password });
-                            resolve(pwdCredential);
-                        } else if (options.federated) {
-                            const fedCredential = new FederatedCredential({ ...options.password });
-                            resolve(fedCredential);
-                        } else if (options.publicKey) {
-                            let pk = {
-                                rp: {
-                                    id: 'google.com',
-                                    name: 'Google',
-                                },
-                                user: {
-                                    id: {},
-                                    displayName: 'hany kamal',
-                                    name: 'kamally356@gmail.com',
-                                },
-                                challenge: {},
-                                pubKeyCredParams: [
-                                    {
-                                        type: 'public-key',
-                                        alg: -7,
-                                    },
-                                    {
-                                        type: 'public-key',
-                                        alg: -257,
-                                    },
-                                ],
-                                excludeCredentials: [],
-                                authenticatorSelection: {
-                                    authenticatorAttachment: 'platform',
-                                    residentKey: 'preferred',
-                                    userVerification: 'preferred',
-                                },
-                                attestation: 'direct',
-                                extensions: {
-                                    appidExclude: 'https://www.gstatic.com/securitykey/origins.json',
-                                    googleLegacyAppidSupport: false,
-                                },
-                            };
-
-                            const pkCredential = {
-                                publicKey: SOCIALBROWSER.md5(options.publicKey.user.name),
-                                id: SOCIALBROWSER.md5(options.publicKey.user.name),
-                                rawId: SOCIALBROWSER.md5(options.publicKey.user.name),
-
-                                response: {
-                                    clientDataJSON: JSON.stringify(options.publicKey),
-                                },
-                            };
-                            SOCIALBROWSER.log(pkCredential);
-                            resolve(pkCredential);
-                        } else {
-                            reject('AbortError');
-                        }
-                    });
-                };
-                SOCIALBROWSER.navigator.credentials.get = function () {
-                    return new Promise((resolve, reject) => {
-                        reject('AbortError');
-                    });
-                };
-            }
-
             (function loadMenu() {
                 if ((menuLOADED = true)) {
                     SOCIALBROWSER.menuList = [];
@@ -4018,7 +4071,7 @@ SOCIALBROWSER.init2 = function () {
                 }
             })();
 
-            if (!SOCIALBROWSER.customSetting.$cloudFlare) {
+            if (!SOCIALBROWSER.customSetting.$cloudFlare && !SOCIALBROWSER.isWhiteSite) {
                 (function loadWindow() {
                     window.open0 = window.open;
                     if (!SOCIALBROWSER.isWhiteSite) {
@@ -4180,24 +4233,6 @@ SOCIALBROWSER.init2 = function () {
                         };
                     }
 
-                    if (!SOCIALBROWSER.var.blocking.javascript.allowConsoleLogs) {
-                        window.console.log = function () {};
-                        window.console.error = function () {};
-                        window.console.dir = function () {};
-                        window.console.dirxml = function () {};
-                        window.console.info = function () {};
-                        window.console.warn = function () {};
-                        window.console.table = function () {};
-                        window.console.trace = function () {};
-                        window.console.debug = function () {};
-                        window.console.assert = function () {};
-                        window.console.clear = function () {};
-                    }
-
-                    if (SOCIALBROWSER.var.blocking.javascript.block_console_clear) {
-                        window.console.clear = function () {};
-                    }
-
                     SOCIALBROWSER.Worker = window.Worker;
                     window.Worker = function (url, options, _worker) {
                         url = SOCIALBROWSER.handleURL(url.toString());
@@ -4318,11 +4353,6 @@ SOCIALBROWSER.init2 = function () {
                         };
                     }
 
-                    SOCIALBROWSER.on('window.message', (e, message) => {
-                        message.origin = message.origin || '*';
-                        window.postMessage(message.data, message.origin, message.transfer);
-                    });
-
                     if (SOCIALBROWSER.parentAssignWindow) {
                         window.opener = window.opener || {
                             closed: false,
@@ -4369,37 +4399,6 @@ SOCIALBROWSER.init2 = function () {
                             .catch((err) => {
                                 SOCIALBROWSER.log(err);
                             });
-                    };
-
-                    let alert_idle = null;
-                    SOCIALBROWSER.alert =
-                        window.alert =
-                        window.confirm =
-                            function (msg, time = 1000 * 3) {
-                                if (typeof msg !== 'string') {
-                                    return true;
-                                }
-                                msg = msg.trim();
-
-                                SOCIALBROWSER.log(msg);
-                                SOCIALBROWSER.injectDefault();
-                                let div = document.querySelector('#__alertBox');
-                                if (div) {
-                                    clearTimeout(alert_idle);
-                                    div.innerHTML = SOCIALBROWSER.policy.createHTML(msg);
-                                    div.style.display = 'block';
-                                    alert_idle = setTimeout(() => {
-                                        div.style.display = 'none';
-                                        div.innerHTML = SOCIALBROWSER.policy.createHTML('');
-                                    }, time);
-                                }
-
-                                return true;
-                            };
-
-                    window.prompt = function (ask = '', answer = '') {
-                        SOCIALBROWSER.log(ask, answer);
-                        return answer;
                     };
 
                     /* Handle xhr then handel fetch */
