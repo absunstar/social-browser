@@ -2,7 +2,7 @@ window.print = function (options) {
     console.log('window.print() OFF :: ...');
 };
 
-window.print_options = {
+SOCIALBROWSER.print_options = {
     show: false,
     print: true,
     silent: true,
@@ -26,31 +26,31 @@ window.print_options = {
     deviceName: 'Microsoft Print to PDF',
 };
 
-window.loadPrintOptions = function (info) {
-    window.print_options = {
-        ...window.print_options,
+SOCIALBROWSER.loadPrintOptions = function (info) {
+    SOCIALBROWSER.print_options = {
+        ...SOCIALBROWSER.print_options,
         ...info.options,
     };
 
-    if (typeof window.print_options.pageSize == 'object') {
-        if (!window.print_options.pageSize.height) {
-            window.print_options.pageSize.height = document.querySelector('html').clientHeight * 264.5833;
+    if (typeof SOCIALBROWSER.print_options.pageSize == 'object') {
+        if (!SOCIALBROWSER.print_options.pageSize.height) {
+            SOCIALBROWSER.print_options.pageSize.height = document.querySelector('html').clientHeight * 264.5833;
         }
-        if (!window.print_options.pageSize.width) {
-            window.print_options.pageSize.width = document.querySelector('html').clientWidth * 264.5833;
+        if (!SOCIALBROWSER.print_options.pageSize.width) {
+            SOCIALBROWSER.print_options.pageSize.width = document.querySelector('html').clientWidth * 264.5833;
         }
     }
 
-    if (window.print_options.width) {
-        SOCIALBROWSER.window.setSize(window.print_options.width, 720);
+    if (SOCIALBROWSER.print_options.width) {
+        SOCIALBROWSER.window.setSize(SOCIALBROWSER.print_options.width, 720);
     }
 
-    if (window.print_options.show) {
+    if (SOCIALBROWSER.print_options.show) {
         SOCIALBROWSER.window.show();
     }
 
-    if (window.print_options.print) {
-        SOCIALBROWSER.webContents.print(window.print_options);
+    if (SOCIALBROWSER.print_options.print) {
+        SOCIALBROWSER.webContents.print(SOCIALBROWSER.print_options);
     }
 };
 
@@ -67,9 +67,9 @@ window.addEventListener('load', () => {
     })
         .then((res) => res.json())
         .then((data) => {
-            window.loadPrintOptions(data);
+            SOCIALBROWSER.loadPrintOptions(data);
         })
         .catch((err) => {
-            console.log('loadPrintOptions', err);
+            SOCIALBROWSER.log('loadPrintOptions', err);
         });
 });
