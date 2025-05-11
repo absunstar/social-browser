@@ -130,6 +130,7 @@ SOCIALBROWSER.eval = function (code, jsFile = false) {
             } else {
                 jsFile = true;
                 let path = SOCIALBROWSER.data_dir + '\\sessionData\\' + new Date().getTime() + '_tmp.js';
+
                 SOCIALBROWSER.ipcSync('[write-file]', { path: path, data: code });
                 setTimeout(() => {
                     SOCIALBROWSER.ipcSync('[delete-file]', path);
@@ -138,8 +139,7 @@ SOCIALBROWSER.eval = function (code, jsFile = false) {
             }
         }
     } catch (error) {
-        console.log(error);
-
+        console.log(error , code);
         if (!jsFile) {
             return SOCIALBROWSER.eval(code, true);
         }
