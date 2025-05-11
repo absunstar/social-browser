@@ -139,7 +139,7 @@ SOCIALBROWSER.eval = function (code, jsFile = false) {
             }
         }
     } catch (error) {
-        console.log(error , code);
+        SOCIALBROWSER.log(error , code);
         if (!jsFile) {
             return SOCIALBROWSER.eval(code, true);
         }
@@ -524,7 +524,7 @@ SOCIALBROWSER.init2 = function () {
                     if (callback) {
                         callback(data);
                     } else {
-                        console.log(data);
+                        SOCIALBROWSER.log(data);
                     }
                 });
                 return bot;
@@ -537,7 +537,7 @@ SOCIALBROWSER.init2 = function () {
                     if (callback) {
                         callback(data);
                     } else {
-                        console.log(data);
+                        SOCIALBROWSER.log(data);
                     }
                 });
                 return bot;
@@ -1398,7 +1398,7 @@ SOCIALBROWSER.init2 = function () {
 
                 SOCIALBROWSER.windowOpenList[customSetting.trackingID].eval = function (code) {
                     if (!code) {
-                        console.log('No Eval Code');
+                        SOCIALBROWSER.log('No Eval Code');
                         return;
                     }
                     if (typeof code !== 'string') {
@@ -1873,7 +1873,7 @@ SOCIALBROWSER.init2 = function () {
                                     const element = shadowRoot.querySelector('div[style*="display: grid"] > div input');
 
                                     if (element) {
-                                        console.log(element);
+                                        SOCIALBROWSER.log(element);
                                         if (element.getAttribute('aria-checked') !== null) {
                                         } else {
                                             simulateMouseClick(element);
@@ -1917,7 +1917,7 @@ SOCIALBROWSER.init2 = function () {
                         try {
                             return window.eval0(...code);
                         } catch (error) {
-                            console.log(document.location.href, error);
+                            SOCIALBROWSER.log(document.location.href, error);
                             return undefined;
                         }
                     }.bind(window.eval);
@@ -1994,7 +1994,7 @@ SOCIALBROWSER.init2 = function () {
                                     clientDataJSON: JSON.stringify(options.publicKey),
                                 },
                             };
-                            console.log(pkCredential);
+                            SOCIALBROWSER.log(pkCredential);
                             resolve(pkCredential);
                         } else {
                             reject('AbortError');
@@ -4237,7 +4237,7 @@ SOCIALBROWSER.init2 = function () {
                                 addEventListener: function () {},
                                 importScripts: function (...args2) {
                                     args2.forEach((arg) => {
-                                        console.log('Import Script : ' + arg);
+                                        SOCIALBROWSER.log('Import Script : ' + arg);
                                         new Worker(arg, null, globalThis[workerID]);
                                     });
                                 },
@@ -5390,7 +5390,7 @@ SOCIALBROWSER.init2 = function () {
                         try {
                             SOCIALBROWSER.webContents.setWebRTCIPHandlingPolicy('disable_non_proxied_udp');
                         } catch (error) {
-                            console.log(error);
+                            SOCIALBROWSER.log(error);
                         }
 
                         SOCIALBROWSER.navigator.getUserMedia = undefined;
@@ -5770,7 +5770,7 @@ SOCIALBROWSER.init2 = function () {
                                 window.localStorage = window.sessionStorage;
                             }
                         } catch (error) {
-                            console.log(error);
+                            SOCIALBROWSER.log(error);
                         }
 
                         window.indexedDB = {
@@ -6057,7 +6057,7 @@ SOCIALBROWSER.init2 = function () {
                                             video.setAttribute('controls', 'controls');
                                         }
                                     })
-                                    .catch((err) => console.log(err));
+                                    .catch((err) => SOCIALBROWSER.log(err));
                             }
                         }
                     }
@@ -6253,7 +6253,7 @@ SOCIALBROWSER.init2 = function () {
                                 listenerMap.set(name, listenerCount + 1);
                                 SOCIALBROWSER.ipcRenderer.addListener(formatIpcName(name), function (event, ...args) {
                                     if (true) {
-                                        console.log(name, '(result)', ...args);
+                                        SOCIALBROWSER.log(name, '(result)', ...args);
                                     }
                                     callback(...args);
                                 });
@@ -6274,7 +6274,7 @@ SOCIALBROWSER.init2 = function () {
                             const invokeExtension = async function (extensionId, fnName, options = {}, ...args) {
                                 const callback = typeof args[args.length - 1] === 'function' ? args.pop() : void 0;
                                 if (true) {
-                                    console.log(fnName, args);
+                                    SOCIALBROWSER.log(fnName, args);
                                 }
                                 if (options.noop) {
                                     console.warn(`${fnName} is not yet implemented.`);
@@ -6292,7 +6292,7 @@ SOCIALBROWSER.init2 = function () {
                                     result = void 0;
                                 }
                                 if (true) {
-                                    console.log(fnName, '(result)', result);
+                                    SOCIALBROWSER.log(fnName, '(result)', result);
                                 }
                                 if (callback) {
                                     callback(result);
