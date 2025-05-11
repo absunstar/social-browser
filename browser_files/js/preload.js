@@ -960,7 +960,7 @@ SOCIALBROWSER.init2 = function () {
                     SOCIALBROWSER.onLoad(() => {
                         let body = document.head || document.body || document.documentElement;
                         if (body && code) {
-                            code = code.replaceAll(' ', '').replaceAll('\n', '').replaceAll('\r', '');
+                            code = code.replaceAll('\n', '').replaceAll('\r', '').replaceAll('  ', '');
                             let _style = document.createElement('style');
                             _style.id = '_style_' + SOCIALBROWSER.md5(code);
                             _style.innerText = code;
@@ -4015,7 +4015,7 @@ SOCIALBROWSER.init2 = function () {
                 }
             })();
 
-            if (!SOCIALBROWSER.customSetting.$cloudFlare) {
+            if (!SOCIALBROWSER.customSetting.$cloudFlare && !SOCIALBROWSER.isWhiteSite) {
                 (function loadWindow() {
                     window.open0 = window.open;
                     if (!SOCIALBROWSER.isWhiteSite) {
