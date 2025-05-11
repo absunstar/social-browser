@@ -708,7 +708,7 @@ SOCIALBROWSER.init2 = function () {
                     if (oldSession) {
                         return oldSession;
                     }
-                    
+
                     session.can_delete = true;
                     session.time = session.time || new Date().getTime();
                     if (!session.privacy) {
@@ -4213,12 +4213,16 @@ SOCIALBROWSER.init2 = function () {
                             .then((response) => response.text())
                             .then((code) => {
                                 let _id = _worker ? _worker.id : workerID;
+                                _id = 'globalThis.' + _id;
                                 code = code.replaceAll('window.location', 'location');
                                 code = code.replaceAll('document.location', 'location');
                                 code = code.replaceAll('self.trustedTypes', _id + '.trustedTypes');
-                                code = code.replaceAll('self', '' + _id + '');
+                                code = code.replaceAll('self',  _id + '');
                                 code = code.replaceAll('location', _id + '.location');
-                                code = code.replaceAll('this', _id);
+                                if(!_worker){
+
+                                     code = code.replaceAll('this', _id);
+                                }
                                 code = code.replaceAll(_id + '.' + _id, _id);
 
                                 SOCIALBROWSER.copy(code);
