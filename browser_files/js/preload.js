@@ -704,9 +704,11 @@ SOCIALBROWSER.init2 = function () {
                     if (!session.name.like('persist*')) {
                         session.name = 'persist:' + session.name;
                     }
-                    if (SOCIALBROWSER.var.session_list.find((s) => s.name == session.name || s.display == session.display)) {
-                        return null;
+                    let oldSession = SOCIALBROWSER.var.session_list.find((s) => s.name == session.name)
+                    if (oldSession) {
+                        return oldSession;
                     }
+                    
                     session.can_delete = true;
                     session.time = session.time || new Date().getTime();
                     if (!session.privacy) {
@@ -4196,76 +4198,85 @@ SOCIALBROWSER.init2 = function () {
                     }
 
                     SOCIALBROWSER.Worker = window.Worker;
-                    window.Worker = function (...args) {
-                        let url = args[0].toString();
-                        url = SOCIALBROWSER.handleURL(url);
-
+                    window.Worker = function (url, options, _worker) {
+                        url = SOCIALBROWSER.handleURL(url.toString());
                         SOCIALBROWSER.log('New Worker : ' + url);
 
+
                         if (url.indexOf('blob:') === 0) {
-                            return new SOCIALBROWSER.Worker(...args);
+                            return new SOCIALBROWSER.Worker(url, options, _worker);
                         }
 
-                        let workerID = 'worker_' + SOCIALBROWSER.md5(new Date().getTime() + Math.random()) + '_';
-                        globalThis[workerID] = {
-                            url: url,
-                            addEventListener: function () {},
-                            importScripts: function (...args2) {
-                                args2.forEach((arg) => {
-                                    console.log('Import Script : ' + arg);
-                                    new Worker(arg);
-                                });
-                            },
-                            terminate: function () {},
-                            postMessage: function (data) {
-                                globalThis[workerID].onmessage({ data: data });
-                            },
-                            onmessage: function () {},
-                        };
+                        let workerID = 'worker_' + SOCIALBROWSER.md5(url) + '_';
 
-                        if (SOCIALBROWSER.var.blocking.javascript.block_window_worker) {
-                            return globalThis[workerID];
-                        }
-                        let loc = new URL(globalThis[workerID].url);
-                        globalThis[workerID].location = loc;
-                        SOCIALBROWSER.__define(globalThis[workerID], 'location', {
-                            protocol: loc.protocol,
-                            host: loc.host,
-                            hostname: loc.hostname,
-                            origin: loc.origin,
-                            port: loc.port,
-                            pathname: loc.pathname,
-                            hash: loc.hash,
-                            search: loc.search,
-                            href: globalThis[workerID].url,
-                            toString: function () {
-                                return globalThis[workerID].url;
-                            },
-                        });
-                        SOCIALBROWSER.__define(globalThis[workerID], 'window', {});
-                        SOCIALBROWSER.__define(globalThis[workerID], 'document', {});
-                        SOCIALBROWSER.__define(globalThis[workerID], 'trustedTypes', window.trustedTypes);
-
-                        fetch(globalThis[workerID].url)
+                          fetch(url)
                             .then((response) => response.text())
                             .then((code) => {
+                                let _id = _worker ? _worker.id : workerID;
                                 code = code.replaceAll('window.location', 'location');
                                 code = code.replaceAll('document.location', 'location');
-                                code = code.replaceAll('self.trustedTypes', workerID + '.trustedTypes');
-                                code = code.replaceAll('self', '' + workerID + '');
-                                code = code.replaceAll('location', workerID + '.location');
-                                code = code.replaceAll('this', workerID);
-                                code = code.replaceAll(workerID + '.' + workerID, workerID);
+                                code = code.replaceAll('self.trustedTypes', _id + '.trustedTypes');
+                                code = code.replaceAll('self', '' + _id + '');
+                                code = code.replaceAll('location', _id + '.location');
+                                code = code.replaceAll('this', _id);
+                                code = code.replaceAll(_id + '.' + _id, _id);
 
                                 SOCIALBROWSER.copy(code);
                                 SOCIALBROWSER.addJS('(()=>{ try { ' + code + ' } catch (err) {console.log(err)} })();');
                             });
 
-                        globalThis.importScripts = globalThis[workerID].importScripts;
+                        
+                        if (_worker) {
+                            return _worker;
+                        } else {
+                            
+                            globalThis[workerID] = {
+                                id: workerID,
+                                url: url,
+                                addEventListener: function () {},
+                                importScripts: function (...args2) {
+                                    args2.forEach((arg) => {
+                                        console.log('Import Script : ' + arg);
+                                        new Worker(arg , null , globalThis[workerID]);
+                                    });
+                                },
+                                terminate: function () {},
+                                postMessage: function (data) {
+                                    globalThis[workerID].onmessage({ data: data });
+                                },
+                                onmessage: function () {},
+                            };
 
-                        return globalThis[workerID];
+                            if (SOCIALBROWSER.var.blocking.javascript.block_window_worker) {
+                                return globalThis[workerID];
+                            }
+                            let loc = new URL(globalThis[workerID].url);
+                            globalThis[workerID].location = loc;
+                            SOCIALBROWSER.__define(globalThis[workerID], 'location', {
+                                protocol: loc.protocol,
+                                host: loc.host,
+                                hostname: loc.hostname,
+                                origin: loc.origin,
+                                port: loc.port,
+                                pathname: loc.pathname,
+                                hash: loc.hash,
+                                search: loc.search,
+                                href: globalThis[workerID].url,
+                                toString: function () {
+                                    return globalThis[workerID].url;
+                                },
+                            });
+                            SOCIALBROWSER.__define(globalThis[workerID], 'window', {});
+                            SOCIALBROWSER.__define(globalThis[workerID], 'document', {});
+                            SOCIALBROWSER.__define(globalThis[workerID], 'trustedTypes', window.trustedTypes);
+
+                            globalThis.importScripts = globalThis[workerID].importScripts;
+                              return globalThis[workerID];
+
+                        }
+                      
                     };
-                    
+
                     SOCIALBROWSER.__define(window.Worker, 'toString', function () {
                         return 'Worker() { [native code] }';
                     });
