@@ -359,7 +359,7 @@ SOCIALBROWSER.init2 = function () {
 
     SOCIALBROWSER.log(` ... ${document.location.href} ... `);
 
-       if (SOCIALBROWSER.customSetting.allowSocialBrowser) {
+    if (SOCIALBROWSER.customSetting.allowSocialBrowser) {
         if (globalThis) {
             globalThis.SOCIALBROWSER = SOCIALBROWSER;
         } else if (window) {
@@ -7088,11 +7088,7 @@ SOCIALBROWSER.init = function () {
         windowID: SOCIALBROWSER._window.id,
     });
 
-  
-
     SOCIALBROWSER.init2();
-
-   
 };
 
 SOCIALBROWSER._window = SOCIALBROWSER._window || SOCIALBROWSER.ipcSync('[window]');
