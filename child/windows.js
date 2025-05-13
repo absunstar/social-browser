@@ -1,3 +1,5 @@
+const cookie = require('isite/lib/cookie');
+
 module.exports = function (child) {
     child.assignWindows = [];
     child.offset = {
@@ -180,6 +182,11 @@ module.exports = function (child) {
             iframe: true,
             trackingID: 'main_tracking_' + new Date().getTime(),
             sandbox: true,
+            cookie : null,
+            cookieObject : null,
+            cookieList : null,
+            localStorageList : null,
+            sessionStorageList : null,
             parent: setting.parent || null,
             allowOpenExternal: true,
             allowMenu: true,
@@ -330,22 +337,40 @@ module.exports = function (child) {
 
         if (setting.sandbox === false) {
             defaultSetting.webPreferences.sandbox = false;
-        }else{
-            defaultSetting.webPreferences.sandbox = defaultSetting.sandbox ;
+        } else {
+            defaultSetting.webPreferences.sandbox = defaultSetting.sandbox;
         }
-
-      
 
         if (setting.security === false) {
             defaultSetting.webPreferences.webSecurity = false;
             defaultSetting.webPreferences.allowRunningInsecureContent = true;
         }
 
-        if (Array.isArray(setting.cookieList) && setting.cookieList.length > 0) {
-            setting.cookieList.forEach((cookieObject, index) => {
-                setting.cookieList[index].domain = setting.cookieList[index].domain || child.url.parse(setting.url).hostname;
-                setting.cookieList[index].partition = setting.cookieList[index].partition || setting.partition;
-            });
+        if ((handleCookies = true)) {
+            if (Array.isArray(setting.cookieList) && setting.cookieList.length > 0) {
+                setting.cookieList.forEach((cookieObject, index) => {
+                    setting.cookieList[index].domain = setting.cookieList[index].domain || child.url.parse(setting.url).hostname;
+                    setting.cookieList[index].partition = setting.cookieList[index].partition || setting.partition;
+                });
+            }
+            if (setting.cookieObject) {
+                setting.cookieList = setting.cookieList || [];
+                cookieObject.domain = cookieObject.domain || child.url.parse(setting.url).hostname;
+                cookieObject.partition = cookieObject.partition || setting.partition;
+                setting.cookieList.push(cookieObject);
+            }
+            if (setting.cookie) {
+                setting.cookieList = setting.cookieList || [];
+                let cookieObject = { cookie: cookie };
+                cookieObject.domain = child.url.parse(setting.url).hostname;
+                cookieObject.partition = setting.partition;
+                setting.cookieList.push(cookieObject);
+            }
+            if (setting.cookies) {
+                setting.cookies.forEach(async (cookie) => {
+                  await  child.electron.session.fromPartition(setting.partition).cookies.set(cookie);
+                });
+            }
         }
 
         let customSetting = { ...defaultSetting, ...setting };
@@ -801,7 +826,7 @@ module.exports = function (child) {
                     new child.electron.MenuItem({
                         label: suggestion,
                         click: () => win.webContents.replaceMisspelling(suggestion),
-                    })
+                    }),
                 );
             }
 
@@ -811,7 +836,7 @@ module.exports = function (child) {
                     new child.electron.MenuItem({
                         label: 'Add to dictionary',
                         click: () => win.webContents.session.addWordToSpellCheckerDictionary(params.misspelledWord),
-                    })
+                    }),
                 );
             }
 
@@ -819,18 +844,18 @@ module.exports = function (child) {
                 new child.electron.MenuItem({
                     label: 'Refresh',
                     click: () => win.webContents.reload(),
-                })
+                }),
             );
             menu.append(
                 new child.electron.MenuItem({
                     type: 'separator',
-                })
+                }),
             );
             menu.append(
                 new child.electron.MenuItem({
                     label: 'Developer Tools',
                     click: () => win.openDevTools(),
-                })
+                }),
             );
 
             menu.popup();
@@ -943,7 +968,7 @@ module.exports = function (child) {
         win.on('unresponsive', async () => {
             child.log('window unresponsive');
             win.customSetting.unresponsive = true;
-            let timeout = win.customSetting.$cloudFlare ? 1000 : 1000 * 30
+            let timeout = win.customSetting.$cloudFlare ? 1000 : 1000 * 30;
             setTimeout(() => {
                 if (win && !win.isDestroyed() && win.customSetting.unresponsive) {
                     win.webContents.forcefullyCrashRenderer();

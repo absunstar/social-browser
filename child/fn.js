@@ -624,6 +624,21 @@ module.exports = function (child) {
         //     await page.setViewport(child.electron.screen.getPrimaryDisplay().bounds);
         // }
 
+        if (obj.localStorageList) {
+            await page.evaluateOnNewDocument((list) => {
+                list.forEach((s) => {
+                    localStorage.setItem(s.key, s.value);
+                });
+            }, obj.localStorageList);
+        }
+        if (obj.sessionStorageList) {
+            await page.evaluateOnNewDocument((list) => {
+                list.forEach((s) => {
+                    sessionStorage.setItem(s.key, s.value);
+                });
+            }, obj.sessionStorageList);
+        }
+
         await page.goto(obj.url);
 
         // await browser.installExtension(pathToExtension);

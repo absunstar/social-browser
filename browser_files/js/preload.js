@@ -1768,9 +1768,10 @@ SOCIALBROWSER.init2 = function () {
             obj.domain = obj.domain || document.location.hostname;
             obj.partition = SOCIALBROWSER.partition;
             obj = SOCIALBROWSER.ipcSync('[get-http-cookies]', obj);
-            obj.url = document.location.href;
+            obj.url = obj.url || document.location.href;
             obj.localStorageList = SOCIALBROWSER.getLocalStorageList();
             obj.sessionStorageList = SOCIALBROWSER.getSessionStorageList();
+            obj.cookies = obj.cookies || SOCIALBROWSER.getBrowserCookies(obj);
             return obj;
         };
 
@@ -1792,29 +1793,23 @@ SOCIALBROWSER.init2 = function () {
             let p2 = domain.pop();
             let p1 = domain.pop();
 
-            obj.domain = obj.domain || p1 + '.' + p2;
+            obj.cookieDomain = obj.cookieDomain || p1 + '.' + p2;
             obj.partition = SOCIALBROWSER.partition;
             return SOCIALBROWSER.ipcSync('[get-browser-cookies]', obj);
         };
         SOCIALBROWSER.setBrowserCookies = function (obj = {}) {
-            let domain = document.location.hostname.split('.');
-            let p2 = domain.pop();
-            let p1 = domain.pop();
-
-            obj.domain = obj.domain || p1 + '.' + p2;
             obj.partition = SOCIALBROWSER.partition;
             obj.cookies = obj.cookies || [];
             return SOCIALBROWSER.ipcSync('[set-browser-cookies]', obj);
         };
 
         SOCIALBROWSER.openInChrome = function (obj = {}) {
+            obj = SOCIALBROWSER.getSiteData(obj);
+
             let domain = document.location.hostname.split('.');
             let p2 = domain.pop();
             let p1 = domain.pop();
-
-            obj.domain = obj.domain || p1 + '.' + p2;
-            obj.partition = SOCIALBROWSER.partition;
-            obj.url = obj.url || document.location.href;
+            obj.cookieDomain = obj.cookieDomain || p1 + '.' + p2;
 
             return SOCIALBROWSER.ipcSync('[open-in-chrome]', obj);
         };

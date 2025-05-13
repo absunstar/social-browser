@@ -464,10 +464,10 @@ module.exports = function init(child) {
     child.ipcMain.on('[get-browser-cookies]', (event, obj) => {
         child.electron.session
             .fromPartition(obj.partition)
-            .cookies.get({ domain: obj.domain })
+            .cookies.get({ domain: obj.cookieDomain })
             .then((cookies) => {
                 let cookieInfo = {
-                    domain: obj.domain,
+                    domain: obj.cookieDomain,
                     partition: obj.partition,
                     cookies: cookies,
                 };
@@ -493,17 +493,8 @@ module.exports = function init(child) {
     });
 
     child.ipcMain.on('[open-in-chrome]', (event, obj) => {
-        child.electron.session
-            .fromPartition(obj.partition)
-            .cookies.get({ domain: obj.domain })
-            .then((cookies) => {
-                obj.cookies = cookies;
-                child.openInChrome(obj);
-                event.returnValue = true;
-            })
-            .catch((error) => {
-                event.returnValue = null;
-            });
+        child.openInChrome(obj);
+
     });
 
     child.ipcMain.handle('[open-external]', (e, obj) => {
