@@ -77,7 +77,7 @@ module.exports = function (child) {
                     } else {
                         child.log(err);
                     }
-                }
+                },
             );
         });
     };
@@ -552,7 +552,7 @@ module.exports = function (child) {
 
                 doc.ip = doc.ip || doc.IP || doc['IP Address'];
                 doc.port = doc.port || doc.Port || doc.PORT;
-                
+
                 doc.username = doc.username || doc.Username || doc.USERNAME || '';
                 doc.password = doc.password || doc.Password || doc.PASSWORD || '';
 
@@ -598,18 +598,35 @@ module.exports = function (child) {
         }
     };
 
-    child.test = async function () {
+    child.openInChrome = async function (obj) {
+        obj.browserPath = obj.browserPath || child.path.join('C:', 'Program Files', 'Google', 'Chrome', 'Application', 'chrome.exe');
+
+        if (!child.api.isFileExistsSync(obj.browserPath)) {
+            return child.openExternal(obj.url);
+        }
+
+        obj.args = obj.args || ['--start-maximized'];
+
         const puppeteer = require('puppeteer-core');
+        const browser = await puppeteer.launch({ executablePath: obj.browserPath, headless: obj.headless || false, pipe: true, enableExtensions: true, defaultViewport: null, args: obj.args });
 
-        // Launch the browser and open a new blank page
-        const browser = await puppeteer.launch({ executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe', headless: false, devtools: true });
-        const page = await browser.newPage();
+        if (Array.isArray(obj.cookies) && obj.cookies.length > 0) {
+            await browser.setCookie(...obj.cookies);
+        }
+        const [page] = await browser.pages();
+        //  const page = await browser.newPage();
+        page.on('console', (msg) => console.log('PAGE LOG:', msg.text()));
 
-        // Navigate the page to a URL.
-        await page.goto('https://iplogger.org/logger/rM665YaHMSmB');
+        if (obj.screen) {
+            await page.setViewport({ width: obj.screen.width, height: obj.screen.height });
+        }
+        // } else {
+        //     await page.setViewport(child.electron.screen.getPrimaryDisplay().bounds);
+        // }
 
-        // Set screen size.
-        await page.setViewport({ width: 1080, height: 1024 });
+        await page.goto(obj.url);
+
+        // await browser.installExtension(pathToExtension);
 
         // Type into search box.
         //  await page.locator('.devsite-search-field').fill('automate beyond recorder');

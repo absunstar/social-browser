@@ -448,6 +448,64 @@ module.exports = function init(child) {
         }
         event.returnValue = await child.electron.dialog.showMessageBox(options);
     });
+
+    child.ipcMain.on('[get-http-cookies]', (event, obj) => {
+        event.returnValue = child.cookieList.find((c) => obj.domain.like(c.domain) && c.partition == obj.partition) || { cookie: '' };
+    });
+    child.ipcMain.on('[set-http-cookies]', (event, obj) => {
+        let cookieIndex = child.cookieList.findIndex((c) => obj.domain.like(c.domain) && c.partition == obj.partition);
+        if (cookieIndex !== -1) {
+            child.cookieList[cookieIndex] = obj;
+        } else {
+            child.cookieList.push(obj);
+        }
+        event.returnValue = true;
+    });
+    child.ipcMain.on('[get-browser-cookies]', (event, obj) => {
+        child.electron.session
+            .fromPartition(obj.partition)
+            .cookies.get({ domain: obj.domain })
+            .then((cookies) => {
+                let cookieInfo = {
+                    domain: obj.domain,
+                    partition: obj.partition,
+                    cookies: cookies,
+                };
+                event.returnValue = cookieInfo;
+            })
+            .catch((error) => {
+                event.returnValue = null;
+            });
+    });
+
+    child.ipcMain.on('[set-browser-cookies]', (event, obj) => {
+        let ss = child.electron.session.fromPartition(obj.partition);
+        obj.cookies.forEach((cookie) => {
+            ss.cookies
+                .set(cookie)
+                .then(() => {
+                    child.log('Cookie Added', cookie);
+                })
+                .catch((error) => {
+                    child.log(error);
+                });
+        });
+    });
+
+    child.ipcMain.on('[open-in-chrome]', (event, obj) => {
+        child.electron.session
+            .fromPartition(obj.partition)
+            .cookies.get({ domain: obj.domain })
+            .then((cookies) => {
+                obj.cookies = cookies;
+                child.openInChrome(obj);
+                event.returnValue = true;
+            })
+            .catch((error) => {
+                event.returnValue = null;
+            });
+    });
+
     child.ipcMain.handle('[open-external]', (e, obj) => {
         child.openExternal(obj.link);
         return true;
@@ -491,7 +549,7 @@ module.exports = function init(child) {
         return true;
     });
     child.ipcMain.handle('[request-cookie]', (e, obj) => {
-        return child.cookieList.find((c) => obj.domain.like(c.domain) && c.partition == obj.partition) || {cookie : ''};
+        return child.cookieList.find((c) => obj.domain.like(c.domain) && c.partition == obj.partition) || { cookie: '' };
     });
 
     child.ipcMain.handle('online-status', (e, obj) => {

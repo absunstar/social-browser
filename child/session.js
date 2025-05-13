@@ -414,7 +414,7 @@ module.exports = function (child) {
                 });
             });
 
-            ss.webRequest.onBeforeSendHeaders(filter, function (details, callback) {
+            ss.webRequest.onBeforeSendHeaders(filter, async function (details, callback) {
                 if (child.parent.var.core.enginOFF) {
                     callback({
                         cancel: false,
@@ -513,6 +513,9 @@ module.exports = function (child) {
                                 cookie: domainCookie,
                                 time: new Date().getTime(),
                             };
+                            let cookieDomain = domainName.split('.');
+                            cookieDomain = cookieDomain[cookieDomain.length - 2] + '.' + cookieDomain[cookieDomain.length - 1];
+                            co.cookies = await ss.cookies.get({ domain: cookieDomain });
                             child.cookieList.push(co);
                             child.sendMessage({
                                 type: '[cookieList-set]',
@@ -536,6 +539,9 @@ module.exports = function (child) {
 
                             if (child.cookieList[cookieIndex].cookie !== details.requestHeaders['Cookie']) {
                                 child.cookieList[cookieIndex].cookie = details.requestHeaders['Cookie'];
+                                let cookieDomain = domainName.split('.');
+                                cookieDomain = cookieDomain[cookieDomain.length - 2] + '.' + cookieDomain[cookieDomain.length - 1];
+                                child.cookieList[cookieIndex].cookies = await ss.cookies.get({ domain: cookieDomain });
                                 child.sendMessage({
                                     type: '[cookieList-set]',
                                     cookie: child.cookieList[cookieIndex],
