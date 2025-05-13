@@ -359,6 +359,14 @@ SOCIALBROWSER.init2 = function () {
 
     SOCIALBROWSER.log(` ... ${document.location.href} ... `);
 
+       if (SOCIALBROWSER.customSetting.allowSocialBrowser) {
+        if (globalThis) {
+            globalThis.SOCIALBROWSER = SOCIALBROWSER;
+        } else if (window) {
+            window.SOCIALBROWSER = SOCIALBROWSER;
+        }
+    }
+
     (function loadInit() {
         if ((initLOADED = true)) {
             function escape(s) {
@@ -7080,15 +7088,11 @@ SOCIALBROWSER.init = function () {
         windowID: SOCIALBROWSER._window.id,
     });
 
+  
+
     SOCIALBROWSER.init2();
 
-    if (SOCIALBROWSER.customSetting.allowSocialBrowser) {
-        if (globalThis) {
-            globalThis.SOCIALBROWSER = SOCIALBROWSER;
-        } else if (window) {
-            window.SOCIALBROWSER = SOCIALBROWSER;
-        }
-    }
+   
 };
 
 SOCIALBROWSER._window = SOCIALBROWSER._window || SOCIALBROWSER.ipcSync('[window]');
