@@ -110,7 +110,7 @@
         }
     },
     "dependencies": {
-        "isite": "^2025.1.20",
+        "isite": "^2025.5.1",
         "puppeteer-core": "^24.8.2"
     },
     "devDependencies": {

@@ -931,8 +931,8 @@ SOCIALBROWSER.init2 = function () {
                 }
             };
             SOCIALBROWSER.addJS = SOCIALBROWSER.addjs = function (code) {
-                try {
-                    SOCIALBROWSER.onLoad(() => {
+                SOCIALBROWSER.onLoad(() => {
+                    try {
                         let body = document.body || document.head || document.documentElement;
                         if (body && code) {
                             let _script = document.createElement('script');
@@ -944,10 +944,10 @@ SOCIALBROWSER.init2 = function () {
                                 _script.remove();
                             }
                         }
-                    });
-                } catch (error) {
-                    SOCIALBROWSER.log(error, code);
-                }
+                    } catch (error) {
+                        SOCIALBROWSER.log(error, code);
+                    }
+                });
             };
             SOCIALBROWSER.addJSURL = function (url) {
                 try {
