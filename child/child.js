@@ -158,9 +158,9 @@ if (child.electron.app.dock) {
 // child.electron.app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
 //child.electron.app.commandLine.appendSwitch('disable-site-isolation-trials');
 //child.electron.app.commandLine.appendSwitch('enable-features', 'PDFViewerUpdate');
-
-child.mkdirSync(child.path.join(child.data_dir, child.uuid));
-child.electron.app.setPath('userData', child.path.join(child.data_dir, child.uuid));
+child.userDataDir = child.path.join(child.data_dir, child.uuid)
+child.mkdirSync(child.userDataDir);
+child.electron.app.setPath('userData', child.userDataDir);
 child.electron.protocol.registerSchemesAsPrivileged([
     { scheme: 'child', privileges: { bypassCSP: true, standard: true, secure: true, supportFetchAPI: true, allowServiceWorkers: true, corsEnabled: true, stream: true } },
 ]);

@@ -599,47 +599,312 @@ module.exports = function (child) {
     };
 
     child.openInChrome = async function (obj) {
-        obj.browserPath = obj.browserPath || child.path.join('C:', 'Program Files', 'Google', 'Chrome', 'Application', 'chrome.exe');
+        try {
+            obj.browserPath = obj.browserPath || child.path.join('C:', 'Program Files', 'Google', 'Chrome', 'Application', 'chrome.exe');
 
-        if (!child.api.isFileExistsSync(obj.browserPath)) {
-            return child.openExternal(obj.url);
+            if (!child.api.isFileExistsSync(obj.browserPath)) {
+                return child.openExternal(obj.url);
+            }
+
+            obj.args = obj.args || ['--start-maximized'];
+
+            const puppeteer = require('puppeteer-core');
+            const browser = await puppeteer.launch({
+                userDataDir: obj.userDataDir,
+                executablePath: obj.browserPath,
+                headless: obj.headless || false,
+                pipe: true,
+                enableExtensions: true,
+                defaultViewport: null,
+                args: obj.args,
+            });
+
+            if (Array.isArray(obj.cookies) && obj.cookies.length > 0) {
+                await browser.setCookie(...obj.cookies);
+            }
+
+            const [page] = await browser.pages();
+
+            await page.evaluateOnNewDocument((obj) => {
+                globalThis.__define = function (o, p, v, op = {}) {
+                    try {
+                        o[p] = v;
+                        if (o.prototype) {
+                            o.prototype[p] = v;
+                        }
+                        Object.defineProperty(o, p, {
+                            enumerable: !0,
+                            get: function () {
+                                return v;
+                            },
+                            ...op,
+                        });
+                    } catch (error) {
+                        console.log(error);
+                    }
+                };
+
+                if (!window.chrome || !window.chrome.runtime) {
+                    window.chrome = {
+                        runtime: {},
+                        // etc.
+                    };
+                }
+
+                const originalQuery = window.navigator.permissions.query;
+                window.navigator.permissions.query = (parameters) => {
+                    return parameters.name === 'notifications' ? Promise.resolve({ state: Notification.permission }) : originalQuery(parameters);
+                };
+
+                if (obj.localStorageList) {
+                    obj.localStorageList.forEach((s) => {
+                        localStorage.setItem(s.key, s.value);
+                    });
+                }
+                if (obj.sessionStorageList) {
+                    obj.sessionStorageList.forEach((s) => {
+                        sessionStorage.setItem(s.key, s.value);
+                    });
+                }
+                globalThis.navigator2 = obj.navigator || {};
+                globalThis.navigator2.webdriver = false;
+
+                if (!navigator.languages || navigator.languages.length === 0) {
+                    globalThis.navigator2.languages = globalThis.navigator2.languages || ['en-US', 'en'];
+                }
+                if (navigator.plugins.length === 0) {
+                    globalThis.navigator2.plugins = globalThis.navigator2.plugins || {
+                        get: () => [1, 2, 3, 4, 5],
+                    };
+                }
+                globalThis.__define(
+                    globalThis,
+                    'navigator',
+                    new Proxy(navigator, {
+                        setProperty: function (target, key, value) {
+                            if (target.hasOwnProperty(key)) return target[key];
+                            return (target[key] = value);
+                        },
+                        get: function (target, key, receiver) {
+                            if (key === '_') {
+                                return target;
+                            }
+                            if (typeof target[key] === 'function') {
+                                return function (...args) {
+                                    return target[key].apply(this === receiver ? target : this, args);
+                                };
+                            }
+                            return globalThis.navigator2[key] ?? target[key];
+                        },
+                        set: function (target, key, value) {
+                            return this.setProperty(target, key, value);
+                        },
+                        defineProperty: function (target, key, desc) {
+                            return this.setProperty(target, key, desc.value);
+                        },
+                        deleteProperty: function (target, key) {
+                            return false;
+                        },
+                    }),
+                );
+
+                globalThis.privatePolicy = window.trustedTypes.createPolicy('social', {
+                    createHTML: (string) => string,
+                    createScriptURL: (string) => string,
+                    createScript: (string) => string,
+                });
+
+                globalThis.handleURL = function (u) {
+                    if (typeof u !== 'string') {
+                        return u;
+                    }
+
+                    u = u.trim();
+                    if (u.indexOf('//') === 0) {
+                        u = document.location.protocol + u;
+                    } else if (u.indexOf('/') === 0) {
+                        u = document.location.origin + u;
+                    } else if (u.indexOf('http') !== 0) {
+                        u = document.location.href + u;
+                    }
+
+                    try {
+                        u = decodeURI(u);
+                    } catch (error) {
+                        u = u;
+                    }
+
+                    return u;
+                };
+                globalThis.addJS = function (code) {
+                    try {
+                        let body = document.body || document.head || document.documentElement;
+                        if (body && code) {
+                            let _script = document.createElement('script');
+                            _script.id = '_script_' + Math.random().toString().replace('.', '');
+                            _script.textContent = globalThis.privatePolicy.createScript(code);
+                            _script.nonce = 'social';
+                            if (!document.querySelector('#' + _script.id)) {
+                                body.appendChild(_script);
+                                _script.remove();
+                            }
+                        }
+                    } catch (error) {
+                        console.log(error, code);
+                    }
+                };
+
+                globalThis.Worker2 = window.Worker;
+                window.Worker = function (url, options, _worker) {
+                    url = globalThis.handleURL(url.toString());
+
+                    if (url.indexOf('blob:') === 0) {
+                        return new globalThis.Worker2(url, options, _worker);
+                    }
+
+                    let workerID = 'worker_' + Math.random().toString().replace('.', '') + '_';
+
+                    fetch(url)
+                        .then((response) => response.text())
+                        .then((code) => {
+                            let _id = _worker ? _worker.id : workerID;
+                            _id = 'globalThis.' + _id;
+                            code = code.replaceAll('window.location', 'location');
+                            code = code.replaceAll('document.location', 'location');
+                            code = code.replaceAll('self.trustedTypes', _id + '.trustedTypes');
+                            code = code.replaceAll('self', _id + '');
+                            code = code.replaceAll('location', _id + '.location');
+                            if (!_worker) {
+                                code = code.replaceAll('this', _id);
+                            }
+                            code = code.replaceAll(_id + '.' + _id, _id);
+
+                            globalThis.addJS('(()=>{ try { ' + code + ' } catch (err) {console.log(err)} })();');
+                        });
+
+                    if (_worker) {
+                        return _worker;
+                    } else {
+                        globalThis[workerID] = {
+                            id: workerID,
+                            url: url,
+                            addEventListener: function () {},
+                            importScripts: function (...args2) {
+                                args2.forEach((arg) => {
+                                    new Worker(arg, null, globalThis[workerID]);
+                                });
+                            },
+                            terminate: function () {},
+                            postMessage: function (data) {
+                                globalThis[workerID].onmessage({ data: data });
+                            },
+                            onmessage: function () {},
+                        };
+
+                        let loc = new URL(globalThis[workerID].url);
+                        globalThis[workerID].location = loc;
+                        globalThis.__define(globalThis[workerID], 'location', {
+                            protocol: loc.protocol,
+                            host: loc.host,
+                            hostname: loc.hostname,
+                            origin: loc.origin,
+                            port: loc.port,
+                            pathname: loc.pathname,
+                            hash: loc.hash,
+                            search: loc.search,
+                            href: globalThis[workerID].url,
+                            toString: function () {
+                                return globalThis[workerID].url;
+                            },
+                        });
+                        globalThis.__define(globalThis[workerID], 'window', {});
+                        globalThis.__define(globalThis[workerID], 'document', {});
+                        globalThis.__define(globalThis[workerID], 'trustedTypes', window.trustedTypes);
+
+                        globalThis.importScripts = globalThis[workerID].importScripts;
+                        return globalThis[workerID];
+                    }
+                };
+
+                globalThis.__define(window.Worker, 'toString', function () {
+                    return 'Worker() { [native code] }';
+                });
+                globalThis.serviceWorker = {
+                    register: navigator.serviceWorker ? navigator.serviceWorker.register : {},
+                };
+
+                if (navigator.serviceWorker) {
+                    navigator.serviceWorker.register = function (...args) {
+                        return new Promise((resolve, reject) => {
+                            let worker = new window.Worker(...args);
+                            resolve(worker);
+                        });
+                    };
+                }
+                globalThis.defineProperty2 = Object.defineProperty;
+                Object.defineProperty = function (o, p, d) {
+                    try {
+                        if (p == 'stack' || p == 'platform') {
+                            return 0;
+                        }
+                        if (o === navigator) {
+                            globalThis.defineProperty2(navigator._, p, d);
+                            return o;
+                        }
+                        return globalThis.defineProperty2(o, p, d);
+                    } catch (error) {
+                        console.log(error);
+                        return o;
+                    }
+                }.bind(Object.defineProperty);
+            }, obj);
+
+            // await page.evaluateOnNewDocument(() => {
+
+            //     // (function () {
+            //     //     try {
+            //     //         let originalError = Error;
+
+            //     //         // Proxy the Error constructor to prevent any instance-specific stack modifications
+            //     //         window.Error = new Proxy(originalError, {
+            //     //             construct(target, args) {
+            //     //                 let instance = new target(...args);
+            //     //                 return Object.freeze(instance);
+            //     //             },
+            //     //         });
+
+            //     //         // Lock down the stack property on Error.prototype to prevent modification
+            //     //         globalThis.__define(Error.prototype, 'stack2', {
+            //     //             configurable: false,
+            //     //             enumerable: true,
+            //     //             writable: false,
+            //     //             value: (function () {
+            //     //                 try {
+            //     //                     throw new originalError();
+            //     //                 } catch (e) {
+            //     //                     return e.stack;
+            //     //                 }
+            //     //             })(),
+            //     //         });
+            //     //     } catch (error) {
+            //     //         console.log(error);
+            //     //     }
+            //     // })();
+            // });
+
+            if (obj.screen) {
+                await page.setViewport({ width: obj.screen.width, height: obj.screen.height });
+            }
+
+            if (obj.url) {
+                page.goto(obj.url);
+            }
+        } catch (error) {
+            child.log(error);
         }
 
-        obj.args = obj.args || ['--start-maximized'];
-
-        const puppeteer = require('puppeteer-core');
-        const browser = await puppeteer.launch({ executablePath: obj.browserPath, headless: obj.headless || false, pipe: true, enableExtensions: true, defaultViewport: null, args: obj.args });
-
-        if (Array.isArray(obj.cookies) && obj.cookies.length > 0) {
-            await browser.setCookie(...obj.cookies);
-        }
-        const [page] = await browser.pages();
         //  const page = await browser.newPage();
-        page.on('console', (msg) => console.log('PAGE LOG:', msg.text()));
-
-        if (obj.screen) {
-            await page.setViewport({ width: obj.screen.width, height: obj.screen.height });
-        }
-        // } else {
-        //     await page.setViewport(child.electron.screen.getPrimaryDisplay().bounds);
-        // }
-
-        if (obj.localStorageList) {
-            await page.evaluateOnNewDocument((list) => {
-                list.forEach((s) => {
-                    localStorage.setItem(s.key, s.value);
-                });
-            }, obj.localStorageList);
-        }
-        if (obj.sessionStorageList) {
-            await page.evaluateOnNewDocument((list) => {
-                list.forEach((s) => {
-                    sessionStorage.setItem(s.key, s.value);
-                });
-            }, obj.sessionStorageList);
-        }
-
-        await page.goto(obj.url);
+        // page.on('console', (msg) => console.log('PAGE LOG:', msg.text()));
 
         // await browser.installExtension(pathToExtension);
 

@@ -334,6 +334,7 @@ SOCIALBROWSER.init2 = function () {
     SOCIALBROWSER.var = SOCIALBROWSER.browserData.var;
     SOCIALBROWSER.dir = SOCIALBROWSER.browserData.dir;
     SOCIALBROWSER.data_dir = SOCIALBROWSER.browserData.data_dir;
+    SOCIALBROWSER.userDataDir = SOCIALBROWSER.browserData.userDataDir;
     SOCIALBROWSER.files_dir = SOCIALBROWSER.browserData.files_dir;
     SOCIALBROWSER.injectHTML = SOCIALBROWSER.browserData.injectHTML;
     SOCIALBROWSER.injectCSS = SOCIALBROWSER.browserData.injectCSS;
@@ -1697,7 +1698,7 @@ SOCIALBROWSER.init2 = function () {
 
                 return table;
             };
-            SOCIALBROWSER.copyObject = function (obj) {
+            SOCIALBROWSER.copyObject = SOCIALBROWSER.clone = function (obj) {
                 return JSON.parse(JSON.stringify(obj));
             };
 
@@ -1811,13 +1812,14 @@ SOCIALBROWSER.init2 = function () {
             return SOCIALBROWSER.ipcSync('[set-browser-cookies]', obj);
         };
 
-        SOCIALBROWSER.openInChrome = function (obj = {}) {
-            obj = SOCIALBROWSER.getSiteData(obj);
+        SOCIALBROWSER.openInChrome = function (obj = { auto: true }) {
+            obj.url = obj.url || document.location.href;
 
-            let domain = document.location.hostname.split('.');
-            let p2 = domain.pop();
-            let p1 = domain.pop();
-            obj.cookieDomain = obj.cookieDomain || p1 + '.' + p2;
+            if (obj.auto) {
+                obj = SOCIALBROWSER.getSiteData(obj);
+                obj.userDataDir = obj.userDataDir || SOCIALBROWSER.userDataDir + '/chrome';
+                obj.navigator = SOCIALBROWSER.clone(SOCIALBROWSER.navigator);
+            }
 
             return SOCIALBROWSER.ipcSync('[open-in-chrome]', obj);
         };
@@ -2094,7 +2096,7 @@ SOCIALBROWSER.init2 = function () {
         }
 
         if (!SOCIALBROWSER.customSetting.$cloudFlare && !SOCIALBROWSER.isWhiteSite) {
-           // SOCIALBROWSER.log('edit eval : ' + document.location.href);
+            // SOCIALBROWSER.log('edit eval : ' + document.location.href);
             // window.eval0 = window.eval;
             // window.eval = function (...code) {
             //     try {
@@ -3493,6 +3495,61 @@ SOCIALBROWSER.init2 = function () {
                 }
             }
 
+            function createChromeMenu() {
+                let arr = [];
+
+                arr.push({
+                    label: 'With Default Profile',
+                    click() {
+                        SOCIALBROWSER.openInChrome({
+                            args: ['--start-maximized'],
+                        });
+                    },
+                });
+
+                arr.push({
+                    label: 'With Amr Profile 1',
+                    click() {
+                        SOCIALBROWSER.openInChrome({
+                            args: ['--start-maximized', '--profile-directory=Profile 1'],
+                        });
+                    },
+                });
+                arr.push({
+                    label: 'With Amr Profile 2',
+                    click() {
+                        SOCIALBROWSER.openInChrome({
+                            args: ['--start-maximized', '--profile-directory=Profile 2'],
+                        });
+                    },
+                });
+                arr.push({ type: 'separator' });
+
+                SOCIALBROWSER.var.session_list.forEach((s, i) => {
+                    let currentID = SOCIALBROWSER.partition.replace('persist:', '');
+                    let userID = s.name.replace('persist:', '');
+                    arr.push({
+                        label: ` As ( ${i + 1} ) [ ${s.display} ] `,
+                        click() {
+                            SOCIALBROWSER.openInChrome({
+                                userDataDir: SOCIALBROWSER.userDataDir.replace(currentID, userID) + '/chrome',
+                                //  args: ['--start-maximized', '--profile-directory=' + s.name],
+                            });
+                        },
+                    });
+                });
+
+                if (arr.length > 0) {
+                    SOCIALBROWSER.menuList.push({
+                        label: 'Open in Google Chrome',
+                        iconURL: 'http://127.0.0.1:60080/images/chrome.png',
+                        type: 'submenu',
+                        submenu: arr,
+                    });
+                    SOCIALBROWSER.menuList.push({ type: 'separator' });
+                }
+            }
+
             function createDevelopmentMenu() {
                 if (SOCIALBROWSER.menuTestOFF) {
                     return;
@@ -3605,7 +3662,7 @@ SOCIALBROWSER.init2 = function () {
                             }
                         });
                     }
-
+                    //  createChromeMenu();
                     get_custom_menu();
                     if (SOCIALBROWSER.var.blocking.context_menu.copy_div_content) {
                         add_div_menu(node);
@@ -3654,6 +3711,7 @@ SOCIALBROWSER.init2 = function () {
                             });
                         }
                     }
+
                     if (SOCIALBROWSER.var.blocking.context_menu.page_options) {
                         get_options_menu(node);
                     }
@@ -7147,6 +7205,10 @@ if (!SOCIALBROWSER.isWhiteSite) {
 SOCIALBROWSER.defineProperty = Object.defineProperty;
 Object.defineProperty = function (o, p, d) {
     try {
+        if (p == 'stack') {
+            console.log(o, p);
+            return o;
+        }
         if (o === navigator) {
             SOCIALBROWSER.defineProperty(navigator._, p, d);
             return o;

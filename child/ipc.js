@@ -54,6 +54,7 @@ module.exports = function init(child) {
             files_dir: child.parent.files_dir,
             dir: child.parent.dir,
             data_dir: child.parent.data_dir,
+            userDataDir: child.userDataDir,
             injectHTML: child.parent.injectHTML,
             injectCSS: child.parent.injectCSS,
             newTabData: child.parent.newTabData,
@@ -485,16 +486,18 @@ module.exports = function init(child) {
                 .set(cookie)
                 .then(() => {
                     child.log('Cookie Added', cookie);
+                    event.returnValue = true;
                 })
                 .catch((error) => {
                     child.log(error);
+                    event.returnValue = null;
                 });
         });
     });
 
     child.ipcMain.on('[open-in-chrome]', (event, obj) => {
+         event.returnValue = true;
         child.openInChrome(obj);
-
     });
 
     child.ipcMain.handle('[open-external]', (e, obj) => {
