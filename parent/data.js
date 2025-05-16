@@ -338,7 +338,7 @@ module.exports = function init(parent) {
                 parent.var.core.started_date = Date.now();
             } else {
                 if (parent.var.core.prefix && !parent.var.core.id.contains(parent.var.core.prefix)) {
-                    parent.var.core.id = parent.var.core.prefix + parent.var.core.id;
+                    parent.var.core.id = parent.var.core.prefix + parent.var.core.id.split('_').pop();
                 }
                 parent.var.id = parent.var.core.id;
             }

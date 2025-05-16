@@ -426,6 +426,7 @@ module.exports = function (child) {
 
         let currentURL = win.getURL();
         let currentHostname = child.url.parse(currentURL).hostname;
+
         let reload = false;
         if (child.cloudFlareURLs.some((f) => f.url === currentHostname)) {
             if (!win.customSetting.$cloudFlare) {
@@ -624,7 +625,7 @@ module.exports = function (child) {
             }
 
             const [page] = await browser.pages();
-
+            page.setBypassCSP();
             await page.evaluateOnNewDocument((obj) => {
                 globalThis.__define = function (o, p, v, op = {}) {
                     try {
@@ -644,8 +645,8 @@ module.exports = function (child) {
                     }
                 };
 
-                if (!window.chrome || !window.chrome.runtime) {
-                    window.chrome = {
+                if (!globalThis.chrome || !globalThis.chrome.runtime) {
+                    globalThis.chrome = {
                         runtime: {},
                         // etc.
                     };
@@ -716,11 +717,16 @@ module.exports = function (child) {
 
                 globalThis.handleURL = function (u) {
                     if (typeof u !== 'string') {
-                        return u;
+                        if (u) {
+                            u = u.toString();
+                        } else {
+                            return u;
+                        }
                     }
-
                     u = u.trim();
-                    if (u.indexOf('//') === 0) {
+                    if (u.indexOf('blob') === 0) {
+                        u = u;
+                    } else if (u.indexOf('//') === 0) {
                         u = document.location.protocol + u;
                     } else if (u.indexOf('/') === 0) {
                         u = document.location.origin + u;
@@ -753,14 +759,15 @@ module.exports = function (child) {
                         console.log(error, code);
                     }
                 };
+                globalThis.Worker2 = globalThis.Worker;
+                globalThis.Worker = function (url, options, _worker) {
+                    url = globalThis.handleURL(url);
 
-                globalThis.Worker2 = window.Worker;
-                window.Worker = function (url, options, _worker) {
-                    url = globalThis.handleURL(url.toString());
-
-                    if (url.indexOf('blob:') === 0) {
+                    if (!url || url.indexOf('blob:') === 0) {
                         return new globalThis.Worker2(url, options, _worker);
                     }
+
+                    console.log('New Worker : ' + url);
 
                     let workerID = 'worker_' + Math.random().toString().replace('.', '') + '_';
 
@@ -774,9 +781,9 @@ module.exports = function (child) {
                             code = code.replaceAll('self.trustedTypes', _id + '.trustedTypes');
                             code = code.replaceAll('self', _id + '');
                             code = code.replaceAll('location', _id + '.location');
-                            if (!_worker) {
-                                code = code.replaceAll('this', _id);
-                            }
+                            // if (!_worker) {
+                            //     code = code.replaceAll('this', _id);
+                            // }
                             code = code.replaceAll(_id + '.' + _id, _id);
 
                             globalThis.addJS('(()=>{ try { ' + code + ' } catch (err) {console.log(err)} })();');
@@ -826,7 +833,7 @@ module.exports = function (child) {
                     }
                 };
 
-                globalThis.__define(window.Worker, 'toString', function () {
+                globalThis.__define(globalThis.Worker, 'toString', function () {
                     return 'Worker() { [native code] }';
                 });
                 globalThis.serviceWorker = {
@@ -836,17 +843,19 @@ module.exports = function (child) {
                 if (navigator.serviceWorker) {
                     navigator.serviceWorker.register = function (...args) {
                         return new Promise((resolve, reject) => {
-                            let worker = new window.Worker(...args);
+                            let worker = new globalThis.Worker(...args);
                             resolve(worker);
                         });
                     };
                 }
+
                 globalThis.defineProperty2 = Object.defineProperty;
                 Object.defineProperty = function (o, p, d) {
                     try {
                         if (p == 'stack' || p == 'platform') {
-                            return 0;
+                            return o;
                         }
+
                         if (o === navigator) {
                             globalThis.defineProperty2(navigator._, p, d);
                             return o;

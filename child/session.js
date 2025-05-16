@@ -311,7 +311,7 @@ module.exports = function (child) {
                     let win = child.electron.BrowserWindow.fromWebContents(details.webContents);
                     if (win) {
                         if ((w = child.windowList.find((w) => w.id === win.id))) {
-                            customSetting = w.customSetting;
+                            customSetting = w.customSetting || {};
                         }
                     }
                 }
@@ -472,7 +472,7 @@ module.exports = function (child) {
                     }
                 }
 
-                if (customSetting.off) {
+                if (customSetting && customSetting.off) {
                     callback({
                         cancel: false,
                         requestHeaders: details.requestHeaders,

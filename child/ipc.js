@@ -45,7 +45,9 @@ module.exports = function init(child) {
             });
         });
     };
-
+    child.cloneObject = function(obj){
+        return JSON.parse(JSON.stringify(obj))
+    }
     child.handleBrowserData = function (data) {
         let data2 = {
             childProcessID: child.id,
@@ -80,7 +82,7 @@ module.exports = function init(child) {
 
     child.ipcMain.handle('[browser][data]', async (event, data) => {
         let data2 = child.handleBrowserData(data);
-        return data2;
+        return child.cloneObject(data2);
     });
     child.ipcMain.handle('[crx]', async (event, data) => {
         console.log('[crx]', data);
@@ -88,7 +90,7 @@ module.exports = function init(child) {
     });
     child.ipcMain.on('[browser][data]', async (event, data) => {
         let data2 = child.handleBrowserData(data);
-        event.returnValue = data2;
+        event.returnValue = child.cloneObject(data2);
     });
 
     child.ipcMain.on('[get]', async (event, data) => {

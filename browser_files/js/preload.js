@@ -44,6 +44,10 @@ var SOCIALBROWSER = {
     },
 };
 
+// if(document.location.href.indexOf('blob') === 0){
+//     return;
+// }
+
 // if (typeof window === 'undefined') {
 //     var window = globalThis;
 // }
@@ -62,6 +66,13 @@ if (typeof navigator !== 'undefined') {
         MaxTouchPoints: navigator.MaxTouchPoints,
     };
 }
+
+SOCIALBROWSER.copyObject =
+    SOCIALBROWSER.clone =
+    SOCIALBROWSER.cloneObject =
+        function (obj) {
+            return JSON.parse(JSON.stringify(obj));
+        };
 
 SOCIALBROWSER.random = SOCIALBROWSER.randomNumber = function (min = 1, max = 1000) {
     min = Math.ceil(min);
@@ -196,15 +207,18 @@ if (SOCIALBROWSER.href.indexOf('http://127.0.0.1:60080') === 0) {
 
 SOCIALBROWSER.callSync = SOCIALBROWSER.ipcSync = function (channel, value = {}) {
     try {
-        if (channel == '[open new popup]' || channel == '[open new tab]') {
-            if (typeof value == 'object') {
-                value.referrer = value.referrer || document.location.href;
-                value.parentSetting = SOCIALBROWSER.customSetting;
+        if (typeof value == 'object') {
+            if (channel == '[open new popup]' || channel == '[open new tab]') {
+                if (typeof value == 'object') {
+                    value.referrer = value.referrer || document.location.href;
+                    value.parentSetting = SOCIALBROWSER.customSetting;
 
-                if (value.parentSetting && value.parentSetting.parentSetting) {
-                    value.parentSetting.parentSetting = undefined;
+                    if (value.parentSetting && value.parentSetting.parentSetting) {
+                        value.parentSetting.parentSetting = undefined;
+                    }
                 }
             }
+            value = SOCIALBROWSER.cloneObject(value);
         }
         return SOCIALBROWSER.ipcRenderer.sendSync(channel, value);
     } catch (error) {
@@ -226,6 +240,7 @@ SOCIALBROWSER.invoke = SOCIALBROWSER.ipc = function (channel, value = {}, log = 
         value.windowID = parseInt(value.windowID);
         value.processId = SOCIALBROWSER.webContents.getProcessId();
         value.routingId = SOCIALBROWSER.electron.webFrame.routingId;
+        value = SOCIALBROWSER.cloneObject(value);
     }
 
     return SOCIALBROWSER.ipcRenderer.invoke(channel, value);
@@ -1326,11 +1341,16 @@ SOCIALBROWSER.init2 = function () {
 
             SOCIALBROWSER.handleURL = function (u) {
                 if (typeof u !== 'string') {
-                    return u;
+                    if (u) {
+                        u = u.toString();
+                    } else {
+                        return u;
+                    }
                 }
-
                 u = u.trim();
-                if (u.indexOf('//') === 0) {
+                if (u.indexOf('blob') === 0) {
+                    u = u;
+                } else if (u.indexOf('//') === 0) {
                     u = window.location.protocol + u;
                 } else if (u.indexOf('/') === 0) {
                     u = window.location.origin + u;
@@ -1698,9 +1718,6 @@ SOCIALBROWSER.init2 = function () {
 
                 return table;
             };
-            SOCIALBROWSER.copyObject = SOCIALBROWSER.clone = function (obj) {
-                return JSON.parse(JSON.stringify(obj));
-            };
 
             SOCIALBROWSER.windowOpenList = [];
 
@@ -1819,6 +1836,7 @@ SOCIALBROWSER.init2 = function () {
                 obj = SOCIALBROWSER.getSiteData(obj);
                 obj.userDataDir = obj.userDataDir || SOCIALBROWSER.userDataDir + '/chrome';
                 obj.navigator = SOCIALBROWSER.clone(SOCIALBROWSER.navigator);
+                obj.customSetting = SOCIALBROWSER.customSetting;
             }
 
             return SOCIALBROWSER.ipcSync('[open-in-chrome]', obj);
@@ -4959,9 +4977,9 @@ SOCIALBROWSER.init2 = function () {
                             code = code.replaceAll('self.trustedTypes', _id + '.trustedTypes');
                             code = code.replaceAll('self', _id + '');
                             code = code.replaceAll('location', _id + '.location');
-                            if (!_worker) {
-                                code = code.replaceAll('this', _id);
-                            }
+                            // if (!_worker) {
+                            //     code = code.replaceAll('this', _id);
+                            // }
                             code = code.replaceAll(_id + '.' + _id, _id);
 
                             SOCIALBROWSER.copy(code);
@@ -7205,10 +7223,6 @@ if (!SOCIALBROWSER.isWhiteSite) {
 SOCIALBROWSER.defineProperty = Object.defineProperty;
 Object.defineProperty = function (o, p, d) {
     try {
-        if (p == 'stack') {
-            console.log(o, p);
-            return o;
-        }
         if (o === navigator) {
             SOCIALBROWSER.defineProperty(navigator._, p, d);
             return o;

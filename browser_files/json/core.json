@@ -1,8 +1,8 @@
 {
     "port": 60080,
     "enabled": true,
-    "version": "2025.05.13",
-    "prefix": "SB_",
+    "version": "2025.05.15",
+    "prefix": "SB_Chrome_",
     "flags": "",
     "full_version": true,
     "key": "free key",
