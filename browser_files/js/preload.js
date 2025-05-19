@@ -607,7 +607,7 @@ SOCIALBROWSER.init2 = function () {
             };
             SOCIALBROWSER.on('message', (e, message) => {
                 if (typeof message === 'object' && message.eval) {
-                    SOCIALBROWSER.eval(message.eval);
+                    SOCIALBROWSER.eval(message.eval , true);
                 } else {
                     SOCIALBROWSER.onMessageFnList.forEach((fn) => {
                         fn(message);
@@ -7095,7 +7095,7 @@ SOCIALBROWSER.init2 = function () {
         }
 
         if (SOCIALBROWSER.customSetting.eval) {
-            SOCIALBROWSER.eval(SOCIALBROWSER.customSetting.eval);
+            SOCIALBROWSER.eval(SOCIALBROWSER.customSetting.eval , true);
         }
 
         if (SOCIALBROWSER.customSetting.script && SOCIALBROWSER.customSetting.script.preload) {
