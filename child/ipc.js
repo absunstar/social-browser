@@ -45,9 +45,9 @@ module.exports = function init(child) {
             });
         });
     };
-    child.cloneObject = function(obj){
-        return JSON.parse(JSON.stringify(obj))
-    }
+    child.cloneObject = function (obj) {
+        return JSON.parse(JSON.stringify(obj));
+    };
     child.handleBrowserData = function (data) {
         let data2 = {
             childProcessID: child.id,
@@ -404,7 +404,11 @@ module.exports = function init(child) {
         }
     });
     child.ipcMain.on('[write-file]', async (event, options) => {
-        child.fs.writeFileSync(options.path, options.data);
+        try {
+            child.fs.writeFileSync(options.path, options.data);
+        } catch (error) {
+            child.log(error);
+        }
         event.returnValue = true;
     });
     child.ipcMain.on('[read-file]', async (event, path) => {
@@ -498,7 +502,7 @@ module.exports = function init(child) {
     });
 
     child.ipcMain.on('[open-in-chrome]', (event, obj) => {
-         event.returnValue = true;
+        event.returnValue = true;
         child.openInChrome(obj);
     });
 

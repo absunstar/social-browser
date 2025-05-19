@@ -937,7 +937,6 @@ module.exports = function (child) {
         });
 
         win.webContents.on('update-target-url', (e, url) => {
-            url = url.replace('#___new_tab___', '').replace('#___new_popup___', '');
             if (win && !win.isDestroyed()) {
                 win.webContents.send('[send-render-message]', {
                     name: 'update-target-url',
