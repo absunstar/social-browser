@@ -328,7 +328,9 @@ module.exports = function init(parent) {
 
             parent.var.core.flags = browserVarContent.flags || '';
             parent.var.core.prefix = browserVarContent.prefix || '';
+            parent.var.core.pinCode = browserVarContent.pinCode || '';
 
+            
             if (!parent.var.core.id) {
                 parent.var.id = parent.md5(process.platform + '_' + parent.package.version + '_' + new Date().getTime() + '_' + Math.random());
                 if (parent.var.core.prefix) {

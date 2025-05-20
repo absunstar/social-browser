@@ -275,7 +275,7 @@ function showSettingMenu() {
             type: 'separator',
         });
     }
-    if (SOCIALBROWSER.var.core.prefix.like(SOCIALBROWSER.from123('2458765245381663'))) {
+    if (SOCIALBROWSER.var.core.brand.like(SOCIALBROWSER.from123('2458765245381663'))) {
         SOCIALBROWSER.menuList.push({
             label: 'Open Browser Site',
             iconURL: 'http://127.0.0.1:60080/images/blue.png',

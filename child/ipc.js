@@ -333,10 +333,10 @@ module.exports = function init(child) {
     });
     child.ipcMain.on('[encryptText]', async (event, data) => {
         if (data.password) {
-            let l1 = child.parent.var.core.prefix[0];
-            let l2 = child.parent.var.core.prefix[1];
-            let l3 = child.parent.var.core.prefix[2];
-            let l4 = child.parent.var.core.prefix[3];
+            let l1 = child.parent.var.core.pinCode[0];
+            let l2 = child.parent.var.core.pinCode[1];
+            let l3 = child.parent.var.core.pinCode[2];
+            let l4 = child.parent.var.core.pinCode[3];
             let text = child.api.to123(data.password + data.text);
 
             if (l1) {
@@ -358,10 +358,10 @@ module.exports = function init(child) {
     });
     child.ipcMain.on('[decryptText]', async (event, data) => {
         if (data.password) {
-            let l1 = child.parent.var.core.prefix[0];
-            let l2 = child.parent.var.core.prefix[1];
-            let l3 = child.parent.var.core.prefix[2];
-            let l4 = child.parent.var.core.prefix[3];
+            let l1 = child.parent.var.core.pinCode[0];
+            let l2 = child.parent.var.core.pinCode[1];
+            let l3 = child.parent.var.core.pinCode[2];
+            let l4 = child.parent.var.core.pinCode[3];
 
             if (l1) {
                 data.text.replaceAll(l1, '1');
