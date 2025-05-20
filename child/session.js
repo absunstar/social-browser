@@ -741,13 +741,14 @@ module.exports = function (child) {
                                 if (s_policy[key].contains("'unsafe-inline'") && !s_policy[key].contains('nonce') && !s_policy[key].contains('sha256-')) {
                                     s_policy[key] = s_policy[key].replaceAll('script-src ', 'script-src browser://* ');
                                     s_policy[key] = s_policy[key].replaceAll('script-src-elem ', 'script-src-elem browser://* ');
+                                    s_policy[key] = s_policy[key].replaceAll('connect-src ', 'connect-src browser://* ');
+                                    s_policy[key] = s_policy[key].replaceAll('frame-src ', 'frame-src browser://* ');
                                 } else {
                                     s_policy[key] = s_policy[key].replaceAll('script-src ', "script-src browser://* 'nonce-social' ");
                                     s_policy[key] = s_policy[key].replaceAll('script-src-elem ', "script-src-elem browser://* 'nonce-social' ");
+                                    s_policy[key] = s_policy[key].replaceAll('connect-src ', "connect-src browser://* 'nonce-social' ");
+                                    s_policy[key] = s_policy[key].replaceAll('frame-src ', "frame-src browser://* 'nonce-social' ");
                                 }
-
-                                s_policy[key] = s_policy[key].replaceAll('frame-src ', 'frame-src browser://* ');
-                                s_policy[key] = s_policy[key].replaceAll('connect-src ', 'connect-src browser://* ');
                             }
                         } else if (typeof s_policy == 'string') {
                             s_policy[key] = s_policy[key].replaceAll("default-src 'none'", '');
@@ -757,13 +758,14 @@ module.exports = function (child) {
                             if (s_policy.contains("'unsafe-inline'") && !s_policy.contains('nonce') && !s_policy[key].contains('sha256-')) {
                                 s_policy = s_policy.replaceAll('script-src ', 'script-src browser://* ');
                                 s_policy = s_policy.replaceAll('script-src-elem ', 'script-src-elem browser://* ');
+                                s_policy = s_policy.replaceAll('frame-src ', 'frame-src browser://* ');
+                                s_policy = s_policy.replaceAll('connect-src ', 'connect-src browser://* ');
                             } else {
                                 s_policy = s_policy.replaceAll('script-src ', "script-src browser://* 'nonce-social' ");
+                                s_policy = s_policy.replaceAll('frame-src ', "frame-src browser://* 'nonce-social' ");
+                                s_policy = s_policy.replaceAll('connect-src ', "connect-src browser://* 'nonce-social' ");
                                 s_policy = s_policy.replaceAll('script-src-elem ', "script-src-elem browser://* 'nonce-social' ");
                             }
-
-                            s_policy = s_policy.replaceAll('frame-src ', 'frame-src browser://* ');
-                            s_policy = s_policy.replaceAll('connect-src ', 'connect-src browser://* ');
                         } else {
                             console.log(typeof s_policy, s_policy);
                         }

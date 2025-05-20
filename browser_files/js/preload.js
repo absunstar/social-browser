@@ -1621,7 +1621,7 @@ SOCIALBROWSER.init2 = function () {
                         showinfoTimeout = setTimeout(() => {
                             div.innerHTML = SOCIALBROWSER.policy.createHTML('');
                             div.style.display = 'none';
-                        }, time | (1000 * 3));
+                        }, time | (1000 * 5));
                     }
                 } else {
                     if (div) {
@@ -4982,7 +4982,6 @@ SOCIALBROWSER.init2 = function () {
                             // }
                             code = code.replaceAll(_id + '.' + _id, _id);
 
-                            SOCIALBROWSER.copy(code);
                             SOCIALBROWSER.addJS('(()=>{ try { ' + code + ' } catch (err) {console.log(err)} })();');
                         });
 
