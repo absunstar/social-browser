@@ -217,7 +217,7 @@ module.exports = function (child) {
             minHeight: 200,
             fullscreenable: true,
             title: 'New Window',
-            backgroundColor: '#FFFFFF',
+            backgroundColor: setting.backgroundColor|| '#FFFFFF',
             icon: parent.icon,
             autoHideMenuBar: true,
             enableLargerThanScreen: true,

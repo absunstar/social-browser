@@ -1,252 +1,234 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,social=1" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-    <title>Social Browser</title>
-    <meta name="description" content="Social Browser" />
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,social=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+        <title>Social Browser</title>
+        <meta name="description" content="Social Browser" />
 
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/layout.css" />
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/modal.css" />
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/form.css" />
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/color.css" />
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/effect.css" />
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/table.css" />
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/theme.css" />
+        <link rel="stylesheet" href="http://127.0.0.1:60080/css/layout.css" />
+        <link rel="stylesheet" href="http://127.0.0.1:60080/css/modal.css" />
+        <link rel="stylesheet" href="http://127.0.0.1:60080/css/form.css" />
+        <link rel="stylesheet" href="http://127.0.0.1:60080/css/color.css" />
+        <link rel="stylesheet" href="http://127.0.0.1:60080/css/effect.css" />
+        <link rel="stylesheet" href="http://127.0.0.1:60080/css/table.css" />
+        <link rel="stylesheet" href="http://127.0.0.1:60080/css/theme.css" />
 
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/social.css" />
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/social-tabs.css" />
+        <link rel="stylesheet" href="http://127.0.0.1:60080/css/social.css" />
+        <link rel="stylesheet" href="http://127.0.0.1:60080/css/social-tabs.css" />
 
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/font-awesome-6.css" />
+        <link rel="stylesheet" href="http://127.0.0.1:60080/css/font-awesome-6.css" />
 
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/fonts.css" />
+        <link rel="stylesheet" href="http://127.0.0.1:60080/css/fonts.css" />
 
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/social-tabs-current-theme.css" />
+        <link rel="stylesheet" href="http://127.0.0.1:60080/css/social-tabs-current-theme.css" />
 
-    <style>
-      html,
-      body {
-        font-family: 'Arabic';
-        background: var(--social-background-color);
-      }
-      #body {
-        top: 100px;
-        left: 0px;
-        right: 0px;
-        height: 100%;
-        bottom: 30px;
-        position: fixed;
-        width: 100%;
-        opacity: 0.1;
-      }
-      .footer {
-        top: 70px;
-        left: 0px;
-        right: 0px;
-        height: 30px;
-        position: fixed;
-        opacity: 1;
-        background: var(--social-current-tab-fill);
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        align-content: center;
-        justify-content: flex-start;
-        align-items: center;
-      }
-      a.space,
-      a.space:hover {
-        color: #435259;
-        font-weight: bold;
-        cursor: default;
-      }
-    </style>
-    <link rel="stylesheet" href="http://127.0.0.1:60080/css/blue-theme.css" />
+        <style>
+            html,
+            body {
+                font-family: 'Arabic';
+                background: var(--social-background-color);
+            }
+            #body {
+                top: 100px;
+                left: 0px;
+                right: 0px;
+                height: 100%;
+                bottom: 30px;
+                position: fixed;
+                width: 100%;
+                opacity: 0.1;
+            }
+            .footer {
+                top: 70px;
+                left: 0px;
+                right: 0px;
+                height: 30px;
+                position: fixed;
+                opacity: 1;
+                background: var(--social-current-tab-fill);
+                display: flex;
+                flex-direction: row;
+                flex-wrap: nowrap;
+                align-content: center;
+                justify-content: flex-start;
+                align-items: center;
+            }
+            a.space,
+            a.space:hover {
+                color: #435259;
+                font-weight: bold;
+                cursor: default;
+            }
+        </style>
+        <link rel="stylesheet" href="http://127.0.0.1:60080/css/blue-theme.css" />
+    </head>
 
-  </head>
+    <body>
+        <div class="social-tabs">
+            <div title="Close Browser" class="social-close">
+                <i class="fa-solid fa-xmark"></i>
+            </div>
+            <div title="Maximize Browser" class="social-maxmize">
+                <i class="fa-regular fa-window-maximize"></i>
+            </div>
+            <div title="minimize Browser" class="social-minmize">
+                <i class="fa fa-window-minimize"></i>
+            </div>
 
-  <body>
-    <div class="social-tabs">
-      <div title="Close Browser" class="social-close">
-        <i class="fa-solid fa-xmark"></i>
-      </div>
-      <div title="Maximize Browser" class="social-maxmize">
-        <i class="fa-regular fa-window-maximize"></i>
-      </div>
-      <div title="minimize Browser" class="social-minmize">
-        <i class="fa fa-window-minimize"></i>
-      </div>
+            <div onclick="ipc('[show-profiles]')" id="user_name"></div>
 
-      <div onclick="ipc('[show-profiles]')" id="user_name"></div>
+            <div class="social-tabs-content"></div>
 
-      <div class="social-tabs-content"></div>
-
-      <div class="social-tabs-bottom-bar"></div>
-    </div>
-
-    <div class="row social-address-bar">
-      <div class="window-actions">
-        <a title="Go Back Page" class="go-back" onclick="ipc('[window-go-back]' )">
-          <i class="fa fa-arrow-left"></i>
-        </a>
-        <a title="Go Forward Page" class="go-forward" onclick="ipc('[window-go-forward]')">
-          <i class="fa fa-arrow-right"></i>
-        </a>
-        <a class="reload" title="Reload All Page Files" onclick="ipc('[window-reload]')">
-          <i class="fa fa-refresh"></i>
-        </a>
-        <div class="address-input pointer">
-          <div class="https protocol"></div>
-          <div class="http protocol"></div>
-          <div class="ftp protocol"></div>
-          <div class="file protocol"></div>
-          <div class="browser protocol"></div>
-          <p class="url" onclick="ipc('[show-addressbar]' , {url : this.getAttribute('title')})"></p>
+            <div class="social-tabs-bottom-bar"></div>
         </div>
 
-        <a title="Bookmarks" class="bookmarks" onclick="showBookmarksMenu();">
-          <i class="fa fa-star"></i>
-        </a>
+        <div class="row social-address-bar">
+            <div class="window-actions">
+                <a title="Go Back Page" class="go-back" onclick="ipc('[window-go-back]' )">
+                    <i class="fa fa-arrow-left"></i>
+                </a>
+                <a title="Go Forward Page" class="go-forward" onclick="ipc('[window-go-forward]')">
+                    <i class="fa fa-arrow-right"></i>
+                </a>
+                <a class="reload" title="Reload All Page Files" onclick="ipc('[window-reload]')">
+                    <i class="fa fa-refresh"></i>
+                </a>
+                <div class="address-input pointer">
+                    <div class="https protocol"></div>
+                    <div class="http protocol"></div>
+                    <div class="ftp protocol"></div>
+                    <div class="file protocol"></div>
+                    <div class="browser protocol"></div>
+                    <p class="url" onclick="ipc('[show-addressbar]' , {url : this.getAttribute('title')})"></p>
+                </div>
 
-        <a class="space"> | </a>
+                <a title="Bookmarks" class="bookmarks" onclick="showBookmarksMenu();">
+                    <i class="fa fa-star"></i>
+                </a>
 
-        <a title="Downloads" onclick="showDownloads()">
-          <i class="fa fa-download"></i>
-        </a>
+                <a class="space"> | </a>
 
-        <a class="space"> | </a>
-        <a class="developer-tools" title="Developer Tools" onclick="ipc('[show-window-dev-tools]')">
-          <i class="fa fa-bug"></i>
-        </a>
+                <a title="Downloads" onclick="showDownloads()">
+                    <i class="fa fa-download"></i>
+                </a>
 
-        <a title="Show Setting" id="setting" onclick="showSettingMenu();">
-          <i class="fa fa-bars"></i>
-        </a>
-      </div>
-    </div>
+                <a class="space"> | </a>
+                <a class="developer-tools" title="Developer Tools" onclick="ipc('[show-window-dev-tools]')">
+                    <i class="fa fa-bug"></i>
+                </a>
 
-    <div id="body"></div>
+                <a title="Show Setting" id="setting" onclick="showSettingMenu();">
+                    <i class="fa fa-bars"></i>
+                </a>
+            </div>
+        </div>
 
-    <div class="footer">
-      <div class="window-actions">
-        <a title="open current Window in Random PC Browser" onclick="ipc('[window-action]' , {name : 'new-window' })">
-          <i class="fa-solid fa-window-restore"></i>
-        </a>
+        <div id="body"></div>
 
-        <a title="open current Window in Random Mobile Browser" onclick="ipc('[window-action]' , {name : 'new-mobile-window'})">
-          <i class="fa-solid fa-mobile-screen-button"></i>
-        </a>
+        <div class="footer">
+            <div class="window-actions">
+                <a title="Show Window Menu List " onclick="SOCIALBROWSER.showWindowsMenu()">
+                    <i class="fa-solid fa-window-restore"></i>
+                </a>
 
-        <a title="open in Allow Ads Window" onclick="ipc('[window-action]' , {name : 'new-ads-window'})">
-          <i class="fa-solid fa-rectangle-ad"></i>
-        </a>
-       
-        <a title="open current Site in Google Chrome Browser ( Shared Session & User Data )" onclick="ipc('[window-action]' , {name : 'open-in-chrome'})">
-          <i class="fa-brands fa-chrome"></i>
-        </a>
-        <a class="space"> | </a>
-        <a title="open current Window in Random PC Ghost Browser" onclick="ipc('[window-action]' , {name : 'new-ghost-window'})">
-          <i class="fa-solid fa-ghost"></i>
-        </a>
-        <a title="open current Window in Random Mobile Ghost Browser" onclick="ipc('[window-action]' , {name : 'new-ghost-mobile-window'})">
-          <i class="fa-solid fa-mobile-screen-button"></i>
-        </a>
-        <a class="space"> | </a>
-        <a title="Edit Page Content" onclick="ipc('[toggle-window-edit]')">
-          <i class="fa-solid fa-pen-to-square"></i>
-        </a>
-        <a title="Hide / Show - Images" onclick="ipc('[window-action]' , {name : 'toggle-page-images'})">
-          <i class="fa-solid fa-images"></i>
-        </a>
+                <a class="space"> | </a>
 
-        <a title="Hide / Show - Page Content" onclick="ipc('[window-action]' , {name : 'toggle-page-content'})">
-          <i class="fa-solid fa-eye-slash"></i>
-        </a>
+                <a title="Edit Page Content" onclick="ipc('[toggle-window-edit]')">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </a>
+                <a title="Hide / Show - Images" onclick="ipc('[window-action]' , {name : 'toggle-page-images'})">
+                    <i class="fa-solid fa-images"></i>
+                </a>
 
-        <a class="space"> | </a>
+                <a title="Hide / Show - Page Content" onclick="ipc('[window-action]' , {name : 'toggle-page-content'})">
+                    <i class="fa-solid fa-eye-slash"></i>
+                </a>
 
-        <a title="Mute Page Audio" class="Page-audio" onclick="ipc('[window-action]' , {name : 'toggle-window-audio'})">
-          <i class="fa fa-volume-up"></i>
-        </a>
+                <a class="space"> | </a>
 
-        <a class="space"> | </a>
+                <a title="User Scripts" onclick="SOCIALBROWSER.showScriptListMenu();">
+                    <i class="fa-solid fa-code brown"></i>
+                </a>
+                <a title="Change User Proxy" onclick="SOCIALBROWSER.showUserProxyMenu();">
+                    <i class="fa-solid fa-location-dot"></i>
+                </a>
+                <a title="Change User Agent" onclick="SOCIALBROWSER.showUserAgentMenu();">
+                    <i class="fa-solid fa-globe"></i>
+                </a>
+                <a title="Free Social Tools" onclick="SOCIALBROWSER.showSocialTools();">
+                    <i class="fa-solid fa-toolbox"></i>
+                </a>
+                <a title="Social Temp Mails" onclick="SOCIALBROWSER.showTempMails();">
+                    <i class="fa-solid fa-envelope"></i>
+                </a>
+                <a class="space"> | </a>
 
-        <a title="Re-Play" onclick="ipc('[window-action]' , {name : 'reset-video' , levels : true})">
-          <i class="fa-solid fa-backward-step"></i>
-        </a>
-        <a title="-60 sec" onclick="ipc('[window-action]' , {name : '-60s-video', levels : true})">
-          <i class="fa-solid fa-backward-fast"></i>
-        </a>
-        <a title="-10 sec" onclick="ipc('[window-action]' , {name : '-10s-video', levels : true})">
-          <i class="fa-solid fa-backward"></i>
-        </a>
-        <a title="Play video" onclick="ipc('[window-action]' , {name : 'play-video', levels : true})">
-          <i class="fa-solid fa-play"></i>
-        </a>
-        <a title="Pause Video" onclick="ipc('[window-action]' , {name : 'pause-video', levels : true})">
-          <i class="fa-solid fa-pause"></i>
-        </a>
-        <a title="+10 sec" onclick="ipc('[window-action]' , {name : '+10s-video', levels : true})">
-          <i class="fa-solid fa-forward"></i>
-        </a>
-        <a title="+60 sec" onclick="ipc('[window-action]' , {name : '+60s-video', levels : true})">
-          <i class="fa-solid fa-forward-fast"></i>
-        </a>
-        <a title="Skip Video" onclick="ipc('[window-action]' , {name : 'skip-video', levels : true})">
-          <i class="fa-solid fa-forward-step orange"></i>
-        </a>
-        <a title="Show Video in TV Mode" onclick="ipc('[window-action]' , {name : 'tv-mode', levels : true})">
-          <i class="fa-solid fa-tv"></i>
-        </a>
-        <a class="space"> | </a>
-        <a class="xzoom" title="Zoom Out" onclick="ipc('[window-action]' , {name : 'window-zoom-'})">
-          <i class="fa fa-search-minus"></i>
-        </a>
-        <a class="xzoom" title="Zoom In" onclick="ipc('[window-action]' , {name : 'window-zoom+'})">
-          <i class="fa fa-search-plus"></i>
-        </a>
-        <a class="space"> | </a>
-        <a title="User Scripts" onclick="SOCIALBROWSER.showScriptListMenu();">
-          <i class="fa-solid fa-code brown"></i>
-        </a>
-        <a title="Change User Proxy" onclick="SOCIALBROWSER.showUserProxyMenu();">
-          <i class="fa-solid fa-location-dot"></i>
-        </a>
-        <a title="Change User Agent" onclick="SOCIALBROWSER.showUserAgentMenu();">
-          <i class="fa-solid fa-globe"></i>
-        </a>
-        <a title="Free Social Tools" onclick="SOCIALBROWSER.showSocialTools();">
-          <i class="fa-solid fa-toolbox"></i>
-        </a>
-        <a title="Social Temp Mails" onclick="SOCIALBROWSER.showTempMails();">
-          <i class="fa-solid fa-envelope"></i>
-        </a>
-        <a class="space"> | </a>
-      </div>
-    </div>
+                <a title="Mute Page Audio" class="Page-audio" onclick="ipc('[window-action]' , {name : 'toggle-window-audio'})">
+                    <i class="fa fa-volume-up"></i>
+                </a>
 
-    <script src="http://127.0.0.1:60080/js/an.min.js"></script>
+                <a class="space"> | </a>
 
-    <script>
-      if (typeof module === 'object') {
-        window.module = module;
-        module = undefined;
-      }
-      function showMessage(msg) {
-        SOCIALBROWSER.ipc('show_message', { message: msg, windowID: SOCIALBROWSER.window.id });
-      }
-    </script>
+                <a title="Re-Play" onclick="ipc('[window-action]' , {name : 'reset-video' , levels : true})">
+                    <i class="fa-solid fa-backward-step"></i>
+                </a>
+                <a title="-60 sec" onclick="ipc('[window-action]' , {name : '-60s-video', levels : true})">
+                    <i class="fa-solid fa-backward-fast"></i>
+                </a>
+                <a title="-10 sec" onclick="ipc('[window-action]' , {name : '-10s-video', levels : true})">
+                    <i class="fa-solid fa-backward"></i>
+                </a>
+                <a title="Play video" onclick="ipc('[window-action]' , {name : 'play-video', levels : true})">
+                    <i class="fa-solid fa-play"></i>
+                </a>
+                <a title="Pause Video" onclick="ipc('[window-action]' , {name : 'pause-video', levels : true})">
+                    <i class="fa-solid fa-pause"></i>
+                </a>
+                <a title="+10 sec" onclick="ipc('[window-action]' , {name : '+10s-video', levels : true})">
+                    <i class="fa-solid fa-forward"></i>
+                </a>
+                <a title="+60 sec" onclick="ipc('[window-action]' , {name : '+60s-video', levels : true})">
+                    <i class="fa-solid fa-forward-fast"></i>
+                </a>
+                <a title="Skip Video" onclick="ipc('[window-action]' , {name : 'skip-video', levels : true})">
+                    <i class="fa-solid fa-forward-step orange"></i>
+                </a>
+                <a title="Show Video in TV Mode" onclick="ipc('[window-action]' , {name : 'tv-mode', levels : true})">
+                    <i class="fa-solid fa-tv"></i>
+                </a>
+                <a class="space"> | </a>
+                <a class="xzoom" title="Zoom Out" onclick="ipc('[window-action]' , {name : 'window-zoom-'})">
+                    <i class="fa fa-search-minus"></i>
+                </a>
+                <a class="xzoom" title="Zoom In" onclick="ipc('[window-action]' , {name : 'window-zoom+'})">
+                    <i class="fa fa-search-plus"></i>
+                </a>
+            </div>
+        </div>
 
-    <script src="http://127.0.0.1:60080/js/client.js"></script>
-    <script src="http://127.0.0.1:60080/js/jquery.js"></script>
+        <script src="http://127.0.0.1:60080/js/an.min.js"></script>
 
-    <script src="http://127.0.0.1:60080/js/draggabilly.js"></script>
-    <script src="http://127.0.0.1:60080/js/social-tabs.js"></script>
-    <script src="http://127.0.0.1:60080/js/social.js"></script>
+        <script>
+            if (typeof module === 'object') {
+                window.module = module;
+                module = undefined;
+            }
+            function showMessage(msg) {
+                SOCIALBROWSER.ipc('show_message', { message: msg, windowID: SOCIALBROWSER.window.id });
+            }
+        </script>
 
-    <script>
-      if (window.module) module = window.module;
-    </script>
-  </body>
+        <script src="http://127.0.0.1:60080/js/client.js"></script>
+        <script src="http://127.0.0.1:60080/js/jquery.js"></script>
+
+        <script src="http://127.0.0.1:60080/js/draggabilly.js"></script>
+        <script src="http://127.0.0.1:60080/js/social-tabs.js"></script>
+        <script src="http://127.0.0.1:60080/js/social.js"></script>
+
+        <script>
+            if (window.module) module = window.module;
+        </script>
+    </body>
 </html>

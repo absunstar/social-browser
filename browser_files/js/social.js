@@ -217,7 +217,7 @@ document.addEventListener(
 
         return false;
     },
-    true
+    true,
 );
 
 function showSettingMenu() {
@@ -546,7 +546,9 @@ SOCIALBROWSER.showScriptListMenu = function () {
         type: 'separator',
     });
     SOCIALBROWSER.var.scriptList
-        .filter((s) => s.show && !SOCIALBROWSER.currentTabInfo.url.like('*127.0.0.1:60080*') && SOCIALBROWSER.currentTabInfo.url.like(s.allowURLs) && !SOCIALBROWSER.currentTabInfo.url.like(s.blockURLs))
+        .filter(
+            (s) => s.show && !SOCIALBROWSER.currentTabInfo.url.like('*127.0.0.1:60080*') && SOCIALBROWSER.currentTabInfo.url.like(s.allowURLs) && !SOCIALBROWSER.currentTabInfo.url.like(s.blockURLs),
+        )
         .forEach((script) => {
             SOCIALBROWSER.menuList.push({
                 label: script.title,
@@ -711,6 +713,113 @@ SOCIALBROWSER.showUserAgentMenu = function () {
         })),
     });
 };
+
+SOCIALBROWSER.showWindowsMenu = function () {
+    SOCIALBROWSER.window.show();
+
+    SOCIALBROWSER.menuList = [];
+
+    SOCIALBROWSER.menuList.push({
+        label: 'Open URL in  [ Random - PC - Window ]' ,
+        iconURL: 'http://127.0.0.1:60080/images/page.png',
+        sublabel : SOCIALBROWSER.currentTabInfo.url,
+        click: () => {
+            ipc('[window-action]', { name: 'new-window' });
+        },
+    });
+    SOCIALBROWSER.menuList.push({
+        label: 'Open URL in  [ Random - Mobile - Window ]',
+        sublabel : SOCIALBROWSER.currentTabInfo.url,
+        iconURL: 'http://127.0.0.1:60080/images/page.png',
+        click: () => {
+            ipc('[window-action]', { name: 'new-mobile-window' });
+        },
+    });
+
+    SOCIALBROWSER.menuList.push({
+        type: 'separator',
+    });
+    SOCIALBROWSER.menuList.push({
+        label: 'Open URL in  [ Random - PC - Ghost - Window ]',
+        sublabel : SOCIALBROWSER.currentTabInfo.url,
+        iconURL: 'http://127.0.0.1:60080/images/page.png',
+        click: () => {
+            ipc('[window-action]', { name: 'new-ghost-window' });
+        },
+    });
+
+    SOCIALBROWSER.menuList.push({
+        label: 'Open URL in  [ Random - Mobile - Ghost  - Window ]',
+        sublabel : SOCIALBROWSER.currentTabInfo.url,
+        iconURL: 'http://127.0.0.1:60080/images/page.png',
+        click: () => {
+            ipc('[window-action]', { name: 'new-ghost-mobile-window' });
+        },
+    });
+    SOCIALBROWSER.menuList.push({
+        type: 'separator',
+    });
+    SOCIALBROWSER.menuList.push({
+        label: 'Open URL in  [ Ads - Window ]',
+        sublabel : SOCIALBROWSER.currentTabInfo.url,
+        iconURL: 'http://127.0.0.1:60080/images/page.png',
+        click: () => {
+            ipc('[window-action]', { name: 'new-ads-window' });
+        },
+    });
+    SOCIALBROWSER.menuList.push({
+        type: 'separator',
+    });
+    SOCIALBROWSER.menuList.push({
+        label: 'Open URL in  [ Google - Chrome Browser ] ',
+        sublabel : SOCIALBROWSER.currentTabInfo.url,
+        iconURL: 'http://127.0.0.1:60080/images/chrome.png',
+        click: () => {
+            ipc('[window-action]', { name: 'open-in-chrome' });
+        },
+    });
+
+       SOCIALBROWSER.menuList.push({
+        label: 'Open URL in  [ Google - Chrome Browser ] ( Shared Session & User Data )',
+        sublabel : SOCIALBROWSER.currentTabInfo.url,
+        iconURL: 'http://127.0.0.1:60080/images/chrome.png',
+        click: () => {
+            ipc('[window-action]', { name: 'open-in-chrome-session' });
+        },
+    });
+
+     SOCIALBROWSER.menuList.push({
+        type: 'separator',
+    });
+    SOCIALBROWSER.menuList.push({
+        label: 'Open URL in  [ External - Browser ] ',
+        sublabel : SOCIALBROWSER.currentTabInfo.url,
+        iconURL: 'http://127.0.0.1:60080/images/html.png',
+        click: () => {
+            ipc('[window-action]', { name: 'open-external' , url : SOCIALBROWSER.currentTabInfo.url });
+        },
+    });
+
+    ipc('[show-menu]', {
+        windowID: SOCIALBROWSER.window.id,
+        list: SOCIALBROWSER.menuList.map((m) => ({
+            label: m.label,
+            sublabel: m.sublabel,
+            visible: m.visible,
+            type: m.type,
+            iconURL: m.iconURL,
+            submenu: m.submenu?.map((m2) => ({
+                label: m2.label,
+                type: m2.type,
+                sublabel: m2.sublabel,
+                visible: m2.visible,
+                iconURL: m2.iconURL,
+                submenu: m2.submenu?.map((m3) => ({ label: m3.label, type: m3.type, sublabel: m3.sublabel, visible: m3.visible, iconURL: m3.iconURL })),
+            })),
+        })),
+    });
+};
+
 socialTabs.init(socialTabsDom, {
     tabOverlapDistance: 14,
     minWidth: 35,
