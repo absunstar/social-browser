@@ -2738,6 +2738,7 @@ SOCIALBROWSER.init2 = function () {
                             click() {
                                 SOCIALBROWSER.ipc('[open new popup]', {
                                     windowType: 'youtube',
+                                    alwaysOnTop : true,
                                     url: 'https://www.youtube.com/embed/' + u.split('=')[1].split('&')[0],
                                     partition: SOCIALBROWSER.partition,
                                     referrer: document.location.href,
@@ -3146,6 +3147,7 @@ SOCIALBROWSER.init2 = function () {
                                     show: true,
                                     vip: true,
                                     center: true,
+                                    alwaysOnTop: true,
                                 });
                             },
                         });
@@ -3158,6 +3160,7 @@ SOCIALBROWSER.init2 = function () {
                                     referrer: document.location.href,
                                     show: true,
                                     center: true,
+                                    alwaysOnTop: true,
                                 });
                             },
                         });
@@ -3171,6 +3174,7 @@ SOCIALBROWSER.init2 = function () {
                                     allowAds: true,
                                     show: true,
                                     center: true,
+                                    alwaysOnTop: true,
                                 });
                             },
                         });
@@ -3351,6 +3355,7 @@ SOCIALBROWSER.init2 = function () {
                                 partition: SOCIALBROWSER.partition,
                                 referrer: document.location.href,
                                 show: true,
+                                alwaysOnTop: true,
                             });
                         },
                     });
@@ -4959,7 +4964,7 @@ SOCIALBROWSER.init2 = function () {
                 SOCIALBROWSER.Worker = window.Worker;
                 window.Worker = function (url, options, _worker) {
                     url = SOCIALBROWSER.handleURL(url.toString());
-                    
+
                     SOCIALBROWSER.log('New Worker : ' + url);
 
                     if (url.indexOf('blob:') === 0) {
@@ -6164,7 +6169,7 @@ SOCIALBROWSER.init2 = function () {
                 SOCIALBROWSER.openExternal(data.url);
             } else if (data.name == 'open-in-chrome') {
                 SOCIALBROWSER.openInChrome({ auto: false });
-            }else if (data.name == 'open-in-chrome-session') {
+            } else if (data.name == 'open-in-chrome-session') {
                 SOCIALBROWSER.openInChrome({ auto: true });
             } else if (data.name == 'play-video') {
                 let video = document.querySelector('video');

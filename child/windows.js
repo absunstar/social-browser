@@ -182,11 +182,11 @@ module.exports = function (child) {
             iframe: true,
             trackingID: 'main_tracking_' + new Date().getTime(),
             sandbox: true,
-            cookie : null,
-            cookieObject : null,
-            cookieList : null,
-            localStorageList : null,
-            sessionStorageList : null,
+            cookie: null,
+            cookieObject: null,
+            cookieList: null,
+            localStorageList: null,
+            sessionStorageList: null,
             parent: setting.parent || null,
             allowOpenExternal: true,
             allowMenu: true,
@@ -217,7 +217,7 @@ module.exports = function (child) {
             minHeight: 200,
             fullscreenable: true,
             title: 'New Window',
-            backgroundColor: setting.backgroundColor|| '#FFFFFF',
+            backgroundColor: setting.backgroundColor || '#FFFFFF',
             icon: parent.icon,
             autoHideMenuBar: true,
             enableLargerThanScreen: true,
@@ -368,7 +368,7 @@ module.exports = function (child) {
             }
             if (setting.cookies) {
                 setting.cookies.forEach(async (cookie) => {
-                  await  child.electron.session.fromPartition(setting.partition).cookies.set(cookie);
+                    await child.electron.session.fromPartition(setting.partition).cookies.set(cookie);
                 });
             }
         }
@@ -1106,6 +1106,7 @@ module.exports = function (child) {
 
                     child.createNewWindow({
                         windowType: 'youtube',
+                        alwaysOnTop: true,
                         title: 'YouTube',
                         url: url,
                         partition: win.customSetting.partition,
@@ -1117,6 +1118,7 @@ module.exports = function (child) {
                 } else if (url.like('https://www.youtube.com/embed*')) {
                     child.createNewWindow({
                         windowType: 'youtube',
+                        alwaysOnTop: true,
                         title: 'YouTube',
                         url: url,
                         partition: win.customSetting.partition,
@@ -1128,6 +1130,7 @@ module.exports = function (child) {
                     child.createNewWindow({
                         windowType: 'popup',
                         title: 'YouTube',
+                        alwaysOnTop: true,
                         url: url,
                         center: true,
                         width: 550,
@@ -1266,6 +1269,7 @@ module.exports = function (child) {
 
                 child.createNewWindow({
                     windowType: 'youtube',
+                    alwaysOnTop: true,
                     title: 'YouTube',
                     url: real_url,
                     partition: win.customSetting.partition,
@@ -1276,6 +1280,7 @@ module.exports = function (child) {
             } else if (real_url.like('https://www.youtube.com/embed*')) {
                 child.createNewWindow({
                     windowType: 'youtube',
+                    alwaysOnTop: true,
                     title: 'YouTube',
                     url: real_url,
                     partition: win.customSetting.partition,

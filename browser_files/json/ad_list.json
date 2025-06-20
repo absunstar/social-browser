@@ -95,5 +95,7 @@
     { "url": "*leanishscabble.shop*|*prioraslop.com*|*vizierspavan.com*|*betotodilea.com*", "name": "media 1", "enabled": true },
     { "url": "*trafficjunky.com*", "name": "traffic 1", "enabled": true },
     { "url": "*saukutoapsoag.net*", "enabled": true, "name": "POST001" },
-    { "url": "*amithoutsoo.ne*", "name": "OPTIONS001", "enabled": true }
+    { "url": "*amithoutsoo.ne*", "name": "OPTIONS001", "enabled": true },
+    { "name": "Monitor 001", "url": "*clarity.ms*clarity.js", "enabled": true },
+    { "name": "ad004", "url": "*commentarybumpbankrupt.co*", "enabled": true }
 ]
