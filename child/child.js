@@ -162,15 +162,15 @@ child.userDataDir = child.path.join(child.data_dir, child.uuid)
 child.mkdirSync(child.userDataDir);
 child.electron.app.setPath('userData', child.userDataDir);
 child.electron.protocol.registerSchemesAsPrivileged([
-    { scheme: 'child', privileges: { bypassCSP: true, standard: true, secure: true, supportFetchAPI: true, allowServiceWorkers: true, corsEnabled: true, stream: true } },
+    { scheme: 'browser', privileges: { bypassCSP: true, standard: true, secure: true, supportFetchAPI: true, allowServiceWorkers: true, corsEnabled: true, stream: true } },
 ]);
 
 child.electron.app.whenReady().then(() => {
     child.electron.globalShortcut.unregisterAll();
     child.electron.app.setAccessibilitySupportEnabled(false);
 
-    child.electron.protocol.handle('child', (req) => {
-        let url = req.url.replace('child://', 'http://127.0.0.1:60080/').replace('/?', '?');
+    child.electron.protocol.handle('browser', (req) => {
+        let url = req.url.replace('browser://', 'http://127.0.0.1:60080/').replace('/?', '?');
         return child.electron.net.fetch(url, {
             method: req.method,
             headers: req.headers,
