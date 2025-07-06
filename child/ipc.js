@@ -67,12 +67,13 @@ module.exports = function init(child) {
             effectiveTypeList: child.effectiveTypeList,
             connectionTypeList: child.connectionTypeList,
             userAgentDeviceList: child.userAgentDeviceList,
+            partition : data.partition
         };
 
         let win = child.windowList.find((w) => w.id == data.windowID);
         if (win) {
             data2.customSetting = win.customSetting || {};
-            data2.partition = data2.customSetting.partition;
+            data2.partition = data.partition = data2.customSetting.partition;
             data2.session = data2.customSetting.session || child.parent.var.session_list.find((s) => s.name == data2.partition) || { name: data2.partition, display: data2.partition };
         }
         data.username = data2.session?.display;

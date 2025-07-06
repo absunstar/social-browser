@@ -136,6 +136,13 @@ module.exports = function (child) {
                             obj[k].push(dd);
                         }
                     });
+                }else if (k == 'faList' && info.domain && info.partition) {
+                    obj[k] = [];
+                    child.parent.var[k].forEach((dd) => {
+                        if (dd.domain && dd.domain == info.domain && dd.partition == info.partition) {
+                            obj[k].push(dd);
+                        }
+                    });
                 } else {
                     obj[k] = child.parent.var[k];
                 }

@@ -330,7 +330,6 @@ module.exports = function init(parent) {
             parent.var.core.prefix = browserVarContent.prefix || '';
             parent.var.core.pinCode = browserVarContent.pinCode || '';
 
-            
             if (!parent.var.core.id) {
                 parent.var.id = parent.md5(process.platform + '_' + parent.package.version + '_' + new Date().getTime() + '_' + Math.random());
                 if (parent.var.core.prefix) {
@@ -659,6 +658,7 @@ module.exports = function init(parent) {
     parent.get_var('googleExtensionList');
     parent.get_var('privateKeyList');
     parent.get_var('scriptList');
+    parent.get_var('faList');
 
     parent.handleAdList();
 

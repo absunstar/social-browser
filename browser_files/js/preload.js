@@ -197,10 +197,12 @@ if (!SOCIALBROWSER.origin || SOCIALBROWSER.origin == 'null') {
     SOCIALBROWSER.origin = document.location.hostname;
 }
 SOCIALBROWSER.hostname = document.location.hostname || document.location.origin;
+SOCIALBROWSER.domain = SOCIALBROWSER.hostname.split('.');
+SOCIALBROWSER.domain = SOCIALBROWSER.domain.slice(SOCIALBROWSER.domain.length - 2).join('.');
 SOCIALBROWSER.href = document.location.href;
 
 SOCIALBROWSER.propertyList =
-    'scripts_files,user_data,user_data_input,sites,preload_list,scriptList,privateKeyList,googleExtensionList,ad_list,proxy_list,proxy,core,bookmarks,session_list,userAgentList,blocking,video_quality_list,customHeaderList';
+    'faList,scripts_files,user_data,user_data_input,sites,preload_list,scriptList,privateKeyList,googleExtensionList,ad_list,proxy_list,proxy,core,bookmarks,session_list,userAgentList,blocking,video_quality_list,customHeaderList';
 if (SOCIALBROWSER.href.indexOf('http://127.0.0.1:60080') === 0) {
     SOCIALBROWSER.propertyList = '*';
 }
@@ -758,6 +760,19 @@ SOCIALBROWSER.init2 = function () {
                 SOCIALBROWSER.ws({ type: '[remove-session]', session: session });
 
                 return session;
+            };
+            SOCIALBROWSER.add2faCode = function (fa) {
+                if (typeof fa == 'string') {
+                    fa = {
+                        code: fa,
+                        domain: SOCIALBROWSER.domain,
+                        partition: SOCIALBROWSER.partition,
+                    };
+                }
+
+                SOCIALBROWSER.ws({ type: '[add-fa]', fa: fa });
+
+                return fa;
             };
             SOCIALBROWSER.fetch = function (options, callback) {
                 options.id = new Date().getTime() + Math.random();
@@ -1815,11 +1830,7 @@ SOCIALBROWSER.init2 = function () {
             }
         };
         SOCIALBROWSER.getBrowserCookies = function (obj = {}) {
-            let domain = document.location.hostname.split('.');
-            let p2 = domain.pop();
-            let p1 = domain.pop();
-
-            obj.cookieDomain = obj.cookieDomain || p1 + '.' + p2;
+            obj.cookieDomain = SOCIALBROWSER.domain;
             obj.partition = SOCIALBROWSER.partition;
             return SOCIALBROWSER.ipcSync('[get-browser-cookies]', obj);
         };
@@ -1849,18 +1860,12 @@ SOCIALBROWSER.init2 = function () {
             return true;
         };
         SOCIALBROWSER.clearAllCookies = function () {
-            let domain = document.location.hostname.split('.');
-            let p2 = domain.pop();
-            let p1 = domain.pop();
-            SOCIALBROWSER.ipcSync('[cookies-clear]', { domain: p1 + '.' + p2, partition: SOCIALBROWSER.partition });
+            SOCIALBROWSER.ipcSync('[cookies-clear]', { domain: SOCIALBROWSER.domain, partition: SOCIALBROWSER.partition });
             SOCIALBROWSER.cookiesRaw = SOCIALBROWSER.getCookieRaw();
             return true;
         };
         SOCIALBROWSER.getAllCookies = function () {
-            let domain = document.location.hostname.split('.');
-            let p2 = domain.pop();
-            let p1 = domain.pop();
-            return SOCIALBROWSER.ipcSync('[cookie-get-all]', { domain: p1 + '.' + p2, partition: SOCIALBROWSER.partition });
+            return SOCIALBROWSER.ipcSync('[cookie-get-all]', { domain: SOCIALBROWSER.domain, partition: SOCIALBROWSER.partition });
         };
         SOCIALBROWSER.getCookieRaw = function () {
             return SOCIALBROWSER.ipcSync('[cookie-get-raw]', {
@@ -2738,7 +2743,7 @@ SOCIALBROWSER.init2 = function () {
                             click() {
                                 SOCIALBROWSER.ipc('[open new popup]', {
                                     windowType: 'youtube',
-                                    alwaysOnTop : true,
+                                    alwaysOnTop: true,
                                     url: 'https://www.youtube.com/embed/' + u.split('=')[1].split('&')[0],
                                     partition: SOCIALBROWSER.partition,
                                     referrer: document.location.href,
@@ -3382,6 +3387,38 @@ SOCIALBROWSER.init2 = function () {
                 }
             }
 
+            function get2faMenu() {
+                let arr = [];
+                SOCIALBROWSER.var.faList.forEach((fa) => {
+                    arr.push({
+                        label: 'paste New Token Domain : ' + fa.domain + ' , Code : ' + fa.code,
+                        click() {
+                            SOCIALBROWSER.fetchJson({ url: 'https://2fa.live/tok/' + fa.code.replaceAll(' ', '') }).then((data) => {
+                                if (data && data.token) {
+                                    SOCIALBROWSER.copy(data.token);
+                                    SOCIALBROWSER.paste();
+                                } else {
+                                    alert('Error While Get Token');
+                                    SOCIALBROWSER.log(data);
+                                }
+                            });
+                        },
+                    });
+                });
+
+                if (arr.length > 0) {
+                    SOCIALBROWSER.menuList.push({
+                        label: '2FA Codes',
+                        type: 'submenu',
+                        submenu: arr,
+                    });
+
+                    SOCIALBROWSER.menuList.push({
+                        type: 'separator',
+                    });
+                }
+            }
+
             function getEmailMenu() {
                 if (SOCIALBROWSER.var.core.emails && SOCIALBROWSER.var.core.emails.enabled && SOCIALBROWSER.session.display) {
                     let arr = [];
@@ -3966,6 +4003,43 @@ SOCIALBROWSER.init2 = function () {
                             SOCIALBROWSER.menuList.push({ type: 'separator' });
                         }
 
+                        let faMatch = SOCIALBROWSER.selectedText().match(/\w{4}\s\w{4}\s\w{4}\s\w{4}\s\w{4}\s\w{4}\s\w{4}\s\w{4}/);
+                        if (faMatch) {
+                            let code = faMatch[0].replaceAll(' ', '');
+                            SOCIALBROWSER.menuList.push({
+                                label: `Save as 2FA Code : [ ${code} ] `,
+                                click() {
+                                    SOCIALBROWSER.add2faCode(code);
+                                    SOCIALBROWSER.fetchJson({ url: 'https://2fa.live/tok/' + code }).then((data) => {
+                                        if (data && data.token) {
+                                            SOCIALBROWSER.copy(data.token);
+                                            alert('Saved as 2FA Code & Copy New Token : ' + data.token);
+                                        } else {
+                                            alert('Saved But : Error While Checking Token');
+                                            SOCIALBROWSER.log(data);
+                                        }
+                                    });
+                                },
+                            });
+                            SOCIALBROWSER.menuList.push({
+                                label: `Get 2FA Code : [ ${code} ] `,
+                                click() {
+                                    SOCIALBROWSER.fetchJson({
+                                        url: 'https://2fa.live/tok/' + code,
+                                    }).then((data) => {
+                                        if (data && data.token) {
+                                            alert('New Token : ' + data.token);
+                                        } else {
+                                            alert('Error While Checking Token');
+                                            SOCIALBROWSER.log(data);
+                                        }
+                                    });
+                                },
+                            });
+
+                            SOCIALBROWSER.menuList.push({ type: 'separator' });
+                        }
+
                         let stext = SOCIALBROWSER.selectedText().substring(0, 70);
                         SOCIALBROWSER.menuList.push({
                             label: 'Cut',
@@ -4167,6 +4241,8 @@ SOCIALBROWSER.init2 = function () {
                             createMenuList(node);
                         }
                     }
+
+                    get2faMenu();
 
                     if (SOCIALBROWSER.menuList.length > 0) {
                         let scriptList = SOCIALBROWSER.var.scriptList.filter(
@@ -5043,6 +5119,16 @@ SOCIALBROWSER.init2 = function () {
                     return 'Worker() { [native code] }';
                 });
                 try {
+                    if (SOCIALBROWSER.var.blocking.javascript.block_window_shared_worker) {
+                        window.SharedWorker = function (...args) {
+                            return {
+                                onmessage: () => {},
+                                onerror: () => {},
+                                postMessage: () => {},
+                            };
+                        };
+                    }
+
                     SOCIALBROWSER.serviceWorker = {
                         register: navigator.serviceWorker ? navigator.serviceWorker.register : {},
                     };
@@ -5057,16 +5143,6 @@ SOCIALBROWSER.init2 = function () {
                                     resolve(worker);
                                 }
                             });
-                        };
-                    }
-
-                    if (SOCIALBROWSER.var.blocking.javascript.block_window_shared_worker) {
-                        window.SharedWorker = function (...args) {
-                            return {
-                                onmessage: () => {},
-                                onerror: () => {},
-                                postMessage: () => {},
-                            };
                         };
                     }
 
@@ -7165,11 +7241,10 @@ SOCIALBROWSER.init2 = function () {
 };
 
 SOCIALBROWSER.init = function () {
-    let domain = SOCIALBROWSER.hostname.split('.');
-    domain = domain.slice(domain.length - 2).join('.');
     SOCIALBROWSER.browserData = SOCIALBROWSER.ipcSync('[browser][data]', {
+        partition: SOCIALBROWSER.partition,
         url: SOCIALBROWSER.href,
-        domain: domain,
+        domain: SOCIALBROWSER.domain,
         propertyList: SOCIALBROWSER.propertyList,
         windowID: SOCIALBROWSER._window.id,
     });

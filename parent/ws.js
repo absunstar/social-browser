@@ -361,18 +361,18 @@ module.exports = function init(parent) {
                 case '[cookieList-delete]':
                     if (message.cookie.domain && !message.cookie.partition) {
                         parent.var.cookieList = parent.var.cookieList.filter(
-                            (c) => c.domain !== message.cookie.domain && !c.domain.like(message.cookie.domain) && !message.cookie.domain.like(c.domain)
+                            (c) => c.domain !== message.cookie.domain && !c.domain.like(message.cookie.domain) && !message.cookie.domain.like(c.domain),
                         );
                     } else if (!message.cookie.domain && message.cookie.partition) {
                         parent.var.cookieList = parent.var.cookieList.filter(
-                            (c) => c.partition !== message.cookie.partition && !c.partition.like(message.cookie.partition) && !message.cookie.partition.like(c.partition)
+                            (c) => c.partition !== message.cookie.partition && !c.partition.like(message.cookie.partition) && !message.cookie.partition.like(c.partition),
                         );
                     } else if (message.cookie.domain && message.cookie.partition) {
                         parent.var.cookieList = parent.var.cookieList.filter(
-                            (c) => c.partition !== message.cookie.partition && !c.partition.like(message.cookie.partition) && !message.cookie.partition.like(c.partition)
+                            (c) => c.partition !== message.cookie.partition && !c.partition.like(message.cookie.partition) && !message.cookie.partition.like(c.partition),
                         );
                         parent.var.cookieList = parent.var.cookieList.filter(
-                            (c) => c.domain !== message.cookie.domain && !c.domain.like(message.cookie.domain) && !message.cookie.domain.like(c.domain)
+                            (c) => c.domain !== message.cookie.domain && !c.domain.like(message.cookie.domain) && !message.cookie.domain.like(c.domain),
                         );
                     }
                     parent.var.cookieList.sort((a, b) => {
@@ -449,6 +449,17 @@ module.exports = function init(parent) {
                         }
                     });
                     parent.save_var(session4);
+                    break;
+                case '[add-fa]':
+                    let fa = message.fa;
+                    if (fa.code) {
+                        let faIndex = parent.var.faList.findIndex((s) => s.code == fa.code);
+                        if (faIndex === -1) {
+                            parent.var.faList.push(fa);
+                            parent.applay('faList');
+                        }
+                    }
+
                     break;
                 case '[add-session]':
                     let newSession = message.session;
