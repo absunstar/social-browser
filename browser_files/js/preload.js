@@ -1450,10 +1450,12 @@ SOCIALBROWSER.init2 = function () {
                     return false;
                 }
                 const rect = element.getBoundingClientRect();
-                rect.top >= 0 &&
+                return (
+                    rect.top >= 0 &&
                     rect.left >= 0 &&
                     rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-                    rect.right <= (window.innerWidth || document.documentElement.clientWidth);
+                    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+                );
             };
 
             SOCIALBROWSER.openWindow = function (_customSetting) {
