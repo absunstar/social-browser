@@ -1208,34 +1208,39 @@ SOCIALBROWSER.init2 = function () {
             };
 
             SOCIALBROWSER.click = function (selector, realPerson = true, move = true) {
-                if (!selector) {
-                    return;
-                }
-                let dom = typeof selector === 'string' ? SOCIALBROWSER.$(selector) : selector;
-                if (dom) {
-                    if (!SOCIALBROWSER.isViewable(dom)) {
-                        dom.scrollIntoView();
-                        window.scroll(window.scrollX, window.scrollY - (dom.clientHeight + window.innerHeight / 2));
+                const element = SOCIALBROWSER.$(selector);
+                if (element) {
+                    if (!SOCIALBROWSER.isElementViewable(element) || !SOCIALBROWSER.isElementInViewArea(element)) {
+                        element.scrollIntoView({
+                            behavior: 'auto',
+                            block: 'center',
+                            inline: 'center',
+                        });
+                        window.scroll(window.scrollX, window.scrollY - (element.clientHeight + window.innerHeight / 2));
                     }
 
-                    if (!SOCIALBROWSER.isViewable(dom)) {
-                        dom.scrollIntoView();
+                    if (!SOCIALBROWSER.isElementViewable(element) || !SOCIALBROWSER.isElementInViewArea(element)) {
+                        element.scrollIntoView({
+                            behavior: 'auto',
+                            block: 'center',
+                            inline: 'center',
+                        });
                         if (window.scrollY !== 0) {
-                            let y = window.scrollY - dom.clientHeight;
+                            let y = window.scrollY - element.clientHeight;
                             if (y < 0) {
                                 y = 0;
                             }
                             window.scroll(window.scrollX, y);
                         }
                     }
-                    if (!SOCIALBROWSER.isViewable(dom)) {
+                    if (!SOCIALBROWSER.isElementViewable(element) || !SOCIALBROWSER.isElementInViewArea(element)) {
                         realPerson = false;
                     }
 
-                    let offset = SOCIALBROWSER.getOffset(dom);
+                    let offset = SOCIALBROWSER.getOffset(element);
                     if (realPerson && SOCIALBROWSER.window.isVisible()) {
                         SOCIALBROWSER.clickByPosition(offset.x, offset.y, move);
-                        return dom;
+                        return element;
                     } else {
                         const eventNames = ['mouseover', 'mouseenter', 'mousedown', 'mouseup', 'click', 'mouseout'];
                         eventNames.forEach((eventName) => {
@@ -1244,18 +1249,24 @@ SOCIALBROWSER.init2 = function () {
                                 view: window,
                                 bubbles: true,
                                 cancelable: true,
-                                clientX: dom.clientX,
-                                clientY: dom.clientY,
+                                clientX: element.clientX,
+                                clientY: element.clientY,
                             });
-                            dom.dispatchEvent(event);
+                            element.dispatchEvent(event);
                         });
 
-                        return dom;
+                        return element;
                     }
                 }
             };
 
             SOCIALBROWSER.$ = function (selector) {
+                if (selector instanceof HTMLElement) {
+                    return selector;
+                }
+                if (typeof selector !== 'string') {
+                    return null;
+                }
                 return document.querySelector(selector);
             };
             SOCIALBROWSER.$$ = function (selector) {
@@ -1282,8 +1293,46 @@ SOCIALBROWSER.init2 = function () {
                 return selector;
             };
 
+            SOCIALBROWSER.getElementStyle = function (element) {
+                element = SOCIALBROWSER.$(element);
+                if (!element) {
+                    return null;
+                }
+                return window.getComputedStyle(element);
+            };
+
+            SOCIALBROWSER.isElementHasScroll = function (element) {
+                element = SOCIALBROWSER.$(element);
+
+                if (!element) {
+                    return false;
+                }
+                const style = SOCIALBROWSER.getElementStyle(element);
+                const hasVerticalScrollbar = element.scrollHeight > element.clientHeight;
+                const canScrollVertically = style.overflowY === 'scroll' || style.overflowY === 'auto' || style.overflow === 'scroll' || style.overflow === 'auto';
+
+                return hasVerticalScrollbar && canScrollVertically;
+            };
+
             SOCIALBROWSER.getTimeZone = () => {
                 return new window.Intl.DateTimeFormat().resolvedOptions().timeZone;
+            };
+
+            SOCIALBROWSER.goBack = function () {
+                SOCIALBROWSER.webContents.goBack();
+            };
+            SOCIALBROWSER.goForward = function () {
+                SOCIALBROWSER.webContents.goForward();
+            };
+            SOCIALBROWSER.scroll2y = function (yPercent = 100) {
+                const scrollHeight = document.documentElement.scrollHeight;
+                const viewportHeight = window.visualViewport?.height || window.innerHeight;
+                const scrollTop = (scrollHeight - viewportHeight) * (yPercent / 100);
+                window.scrollTo({
+                    top: scrollTop,
+                    left: window.scrollX,
+                    behavior: 'smooth',
+                });
             };
 
             SOCIALBROWSER.replaceSelectedText = function (replacementText) {
@@ -1384,20 +1433,27 @@ SOCIALBROWSER.init2 = function () {
                 return u;
             };
 
-            SOCIALBROWSER.isViewable = function (element) {
+            SOCIALBROWSER.isViewable = SOCIALBROWSER.isElementViewable = function (element) {
+                element = SOCIALBROWSER.$(element);
                 if (!element) {
                     return false;
                 }
-                if (typeof element == 'string') {
-                    element = document.querySelector(element);
+                const style = SOCIALBROWSER.getElementStyle(element);
+                const rect = element.getBoundingClientRect();
+
+                return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0' && rect.width > 0 && rect.height > 0;
+            };
+
+            SOCIALBROWSER.isElementInViewArea = function (element) {
+                element = SOCIALBROWSER.$(element);
+                if (!element) {
+                    return false;
                 }
-                var rect = element.getBoundingClientRect();
-                var html = document.documentElement;
-                let t1 = rect.top >= 0;
-                let t2 = rect.left >= 0;
-                let t3 = rect.bottom <= (html.clientHeight || window.innerHeight);
-                let t4 = rect.right <= (html.clientWidth || window.innerWidth);
-                return t1 && t2 && t3 && t4;
+                const rect = element.getBoundingClientRect();
+                rect.top >= 0 &&
+                    rect.left >= 0 &&
+                    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                    rect.right <= (window.innerWidth || document.documentElement.clientWidth);
             };
 
             SOCIALBROWSER.openWindow = function (_customSetting) {
