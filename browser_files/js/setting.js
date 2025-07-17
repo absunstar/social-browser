@@ -39,13 +39,13 @@ app.controller('mainController', ($scope, $http, $timeout) => {
             $scope.setting.session_list.forEach((s, i) => {
                 $scope.setting.session_list[i].privacy.vpc = SOCIALBROWSER.generateVPC();
                 $scope.setting.session_list[i].privacy.allowVPC = true;
-                $scope.setting.session_list[i].defaultUserAgent = $scope.setting.userAgentList[SOCIALBROWSER.random(0, $scope.setting.userAgentList.length - 1)];
+                $scope.setting.session_list[i].defaultUserAgent = SOCIALBROWSER.getRandomBrowser('pc');
             });
         } else {
             if (session) {
                 session.privacy.vpc = SOCIALBROWSER.generateVPC();
                 session.privacy.allowVPC = true;
-                session.defaultUserAgent = $scope.setting.userAgentList[SOCIALBROWSER.random(0, $scope.setting.userAgentList.length - 1)];
+                session.defaultUserAgent = SOCIALBROWSER.getRandomBrowser('pc');
             } else {
                 SOCIALBROWSER.var.blocking.privacy.vpc = SOCIALBROWSER.generateVPC();
                 $scope.setting.blocking.privacy.vpc = { ...SOCIALBROWSER.var.blocking.privacy.vpc };
@@ -55,18 +55,13 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         $scope.$applyAsync();
     };
     $scope.generateUserAgent = function (session) {
-        let index = SOCIALBROWSER.randomNumber(0, $scope.setting.userAgentList.length - 1);
         if (typeof session == 'string' && session == '*') {
             $scope.setting.session_list.forEach((s, i) => {
-                $scope.setting.session_list[i].defaultUserAgent = $scope.setting.userAgentList[index];
-                index++;
-                if (index >= $scope.setting.userAgentList.length) {
-                    index = 0;
-                }
+                $scope.setting.session_list[i].defaultUserAgent = $SOCIALBROWSER.getRandomBrowser('pc');
             });
         } else {
             if (session) {
-                session.defaultUserAgent = $scope.setting.userAgentList[index];
+                session.defaultUserAgent = SOCIALBROWSER.getRandomBrowser('pc');
             }
         }
 
@@ -210,7 +205,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
                 },
                 function (error) {
                     proxy.uploadStatus = error;
-                }
+                },
             );
     };
 

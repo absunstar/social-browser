@@ -743,7 +743,7 @@ SOCIALBROWSER.init2 = function () {
                         };
                     }
                     if (!session.defaultUserAgent) {
-                        session.defaultUserAgent = SOCIALBROWSER.var.userAgentList[SOCIALBROWSER.random(0, SOCIALBROWSER.var.userAgentList.length - 1)];
+                        session.defaultUserAgent = SOCIALBROWSER.getRandomBrowser('pc');
                     }
                     SOCIALBROWSER.ws({ type: '[add-session]', session: session });
                 }
@@ -1863,51 +1863,65 @@ SOCIALBROWSER.init2 = function () {
             return arr;
         };
 
-        SOCIALBROWSER.getSiteData = function (obj = {}) {
+        SOCIALBROWSER.getHttpCookie = function (obj = {}) {
             obj.domain = obj.domain || document.location.hostname;
             obj.partition = SOCIALBROWSER.partition;
-            obj = SOCIALBROWSER.ipcSync('[get-http-cookies]', obj);
-            obj.url = obj.url || document.location.href;
-            obj.localStorageList = SOCIALBROWSER.getLocalStorageList();
-            obj.sessionStorageList = SOCIALBROWSER.getSessionStorageList();
-            obj.cookies = obj.cookies || SOCIALBROWSER.getBrowserCookies(obj);
-            return obj;
+            return SOCIALBROWSER.ipcSync('[get-http-cookies]', obj).cookie;
         };
-
-        SOCIALBROWSER.getCookies = SOCIALBROWSER.getHttpCookies = function (obj = {}) {
-            obj.domain = obj.domain || document.location.hostname;
-            obj.partition = SOCIALBROWSER.partition;
-            obj = SOCIALBROWSER.ipcSync('[get-http-cookies]', obj);
-            return obj;
-        };
-        SOCIALBROWSER.setCookies = SOCIALBROWSER.setHttpCookies = function (obj = {}) {
+        SOCIALBROWSER.setHttpCookie = function (obj = {}) {
             obj.domain = obj.domain || document.location.hostname;
             obj.partition = SOCIALBROWSER.partition;
             if (obj.cookie) {
                 return SOCIALBROWSER.ipcSync('[set-http-cookies]', obj);
             }
         };
-        SOCIALBROWSER.getBrowserCookies = function (obj = {}) {
+        SOCIALBROWSER.getDomainCookies = function (obj = {}) {
             obj.cookieDomain = SOCIALBROWSER.domain;
             obj.partition = SOCIALBROWSER.partition;
-            return SOCIALBROWSER.ipcSync('[get-browser-cookies]', obj);
+            return SOCIALBROWSER.ipcSync('[get-domain-cookies]', obj);
         };
-        SOCIALBROWSER.setBrowserCookies = function (obj = {}) {
+        SOCIALBROWSER.setDomainCookies = function (obj = {}) {
             obj.partition = SOCIALBROWSER.partition;
             obj.cookies = obj.cookies || [];
-            return SOCIALBROWSER.ipcSync('[set-browser-cookies]', obj);
+            return SOCIALBROWSER.ipcSync('[set-domain-cookies]', obj);
+        };
+
+        SOCIALBROWSER.getSessionCookies = function (obj = {}) {
+            obj.partition = SOCIALBROWSER.partition;
+            return SOCIALBROWSER.ipcSync('[get-session-cookies]', obj);
+        };
+        SOCIALBROWSER.setSessionCookies = function (obj = {}) {
+            obj.partition = SOCIALBROWSER.partition;
+            obj.cookies = obj.cookies || [];
+            return SOCIALBROWSER.ipcSync('[set-session-cookies]', obj);
+        };
+
+        SOCIALBROWSER.getSiteData = function (obj = {}) {
+            obj.domain = obj.domain || document.location.hostname;
+            obj.partition = SOCIALBROWSER.partition;
+            obj.url = obj.url || document.location.href;
+            obj.cookie = obj.cookie || SOCIALBROWSER.getHttpCookie();
+            obj.cookies = obj.cookies || SOCIALBROWSER.getDomainCookies().cookies;
+            obj.localStorageList = SOCIALBROWSER.getLocalStorageList();
+            obj.sessionStorageList = SOCIALBROWSER.getSessionStorageList();
+            return obj;
         };
 
         SOCIALBROWSER.openInChrome = function (obj = { auto: true }) {
+            obj.domain = obj.domain || document.location.hostname;
+            obj.partition = SOCIALBROWSER.partition;
             obj.url = obj.url || document.location.href;
 
             if (obj.auto) {
-                obj = SOCIALBROWSER.getSiteData(obj);
+                obj.cookie = obj.cookie || SOCIALBROWSER.getHttpCookie();
+                obj.cookies = SOCIALBROWSER.getSessionCookies().cookies;
+                obj.localStorageList = SOCIALBROWSER.getLocalStorageList();
+                obj.sessionStorageList = SOCIALBROWSER.getSessionStorageList();
                 obj.userDataDir = obj.userDataDir || SOCIALBROWSER.userDataDir + '/chrome';
                 obj.navigator = SOCIALBROWSER.clone(SOCIALBROWSER.navigator);
                 obj.customSetting = SOCIALBROWSER.customSetting;
             }
-
+            console.log(obj);
             return SOCIALBROWSER.ipcSync('[open-in-chrome]', obj);
         };
 

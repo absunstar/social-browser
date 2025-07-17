@@ -780,7 +780,7 @@ SOCIALBROWSER.showWindowsMenu = function () {
     });
 
        SOCIALBROWSER.menuList.push({
-        label: 'Open URL in  [ Google - Chrome Browser ] ( Shared Session & User Data )',
+        label: 'Open URL in  [ Google - Chrome Browser ] ( Shared Session and User Data )',
         sublabel : SOCIALBROWSER.currentTabInfo.url,
         iconURL: 'http://127.0.0.1:60080/images/chrome.png',
         click: () => {

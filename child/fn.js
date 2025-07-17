@@ -136,7 +136,7 @@ module.exports = function (child) {
                             obj[k].push(dd);
                         }
                     });
-                }else if (k == 'faList' && info.domain && info.partition) {
+                } else if (k == 'faList' && info.domain && info.partition) {
                     obj[k] = [];
                     child.parent.var[k].forEach((dd) => {
                         if (dd.domain && dd.domain == info.domain && dd.partition == info.partition) {
@@ -628,6 +628,7 @@ module.exports = function (child) {
             });
 
             if (Array.isArray(obj.cookies) && obj.cookies.length > 0) {
+                console.log('Chrome Cookie Count : ' + obj.cookies.length);
                 await browser.setCookie(...obj.cookies);
             }
 

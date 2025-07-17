@@ -67,7 +67,7 @@ module.exports = function init(child) {
             effectiveTypeList: child.effectiveTypeList,
             connectionTypeList: child.connectionTypeList,
             userAgentDeviceList: child.userAgentDeviceList,
-            partition : data.partition
+            partition: data.partition,
         };
 
         let win = child.windowList.find((w) => w.id == data.windowID);
@@ -469,7 +469,7 @@ module.exports = function init(child) {
         }
         event.returnValue = true;
     });
-    child.ipcMain.on('[get-browser-cookies]', (event, obj) => {
+    child.ipcMain.on('[get-domain-cookies]', (event, obj) => {
         child.electron.session
             .fromPartition(obj.partition)
             .cookies.get({ domain: obj.cookieDomain })
@@ -486,7 +486,39 @@ module.exports = function init(child) {
             });
     });
 
-    child.ipcMain.on('[set-browser-cookies]', (event, obj) => {
+    child.ipcMain.on('[set-domain-cookies]', (event, obj) => {
+        let ss = child.electron.session.fromPartition(obj.partition);
+        obj.cookies.forEach((cookie) => {
+            ss.cookies
+                .set(cookie)
+                .then(() => {
+                    child.log('Cookie Added', cookie);
+                    event.returnValue = true;
+                })
+                .catch((error) => {
+                    child.log(error);
+                    event.returnValue = null;
+                });
+        });
+    });
+
+    child.ipcMain.on('[get-session-cookies]', (event, obj) => {
+        child.electron.session
+            .fromPartition(obj.partition)
+            .cookies.get({})
+            .then((cookies) => {
+                let cookieInfo = {
+                    partition: obj.partition,
+                    cookies: cookies,
+                };
+                event.returnValue = cookieInfo;
+            })
+            .catch((error) => {
+                event.returnValue = null;
+            });
+    });
+
+    child.ipcMain.on('[set-session-cookies]', (event, obj) => {
         let ss = child.electron.session.fromPartition(obj.partition);
         obj.cookies.forEach((cookie) => {
             ss.cookies
