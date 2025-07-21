@@ -74,7 +74,9 @@ module.exports = function (child) {
                                             icon: child.electron.nativeImage.createFromPath(path).resize({ width: 16 }),
                                         });
                                     }
-                                } catch (error) {}
+                                } catch (error) {
+                                    child.log(error);
+                                }
                             }
                         }
                     } else {
@@ -112,7 +114,7 @@ module.exports = function (child) {
                         if (message.options.name === 'overwrite') {
                             child.addOverwriteList(child.parent.var.overwrite.urls);
                         }
-                        if (message.options.name == 'core' || message.options.name == 'proxy' || message.options.name == 'session_list' || message.options.name == 'preload_list')  {
+                        if (message.options.name == 'core' || message.options.name == 'proxy' || message.options.name == 'session_list' || message.options.name == 'preload_list') {
                             child.sessionConfig(message.options.partition);
                         }
                         if (message.options.name == 'cookieList') {
@@ -478,7 +480,7 @@ module.exports = function (child) {
                           }
                         })()
                         `,
-                                false
+                                false,
                             );
                         }
                     });

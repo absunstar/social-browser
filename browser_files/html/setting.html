@@ -233,6 +233,9 @@
                             <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#passwords_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
                                 <i class="fa fa-key"></i> Passwords
                             </a>
+                            <a id="emails" class="tab-link" onclick="site.showTabContent(event, '#emails_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                                <i class="fas fa-envelope"></i> Temp Emails
+                            </a>
                             <a id="basic" ng-show="keysEnabled" class="tab-link" onclick="site.showTabContent(event, '#keys_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
                                 <i class="fa fa-key"></i> Private Keys
                             </a>
@@ -291,23 +294,29 @@
                             <div class="row center">
                                 <i-button loading="{{setting_busy}}" class="big-button" type="save" ng-click="saveSetting(true)" label="Save All Setting"></i-button>
                             </div>
+                            <div id="emails_tab" class="tab-content">
+                                <fieldset>
+                                    <legend>Temp Email Setting</legend>
+                                    <div class="row margin padding">
+                                        <i-checkbox class="" label="Enabled Temp Mail ( create new email for every profile ) " ng-model="setting.core.emails.enabled"></i-checkbox>
+                                        <div class="row" ng-show="setting.core.emails.enabled">
+                                            <i-control class="col3" label="Emails Domain" ng-model="setting.core.emails.domain"> </i-control>
+                                            <div class="row">
+                                                <i-control class="col3" type="password" label="Default Password" ng-model="setting.core.emails.password"> </i-control>
+                                                <i-control class="col3" type="password" label="Default Password 2" ng-model="setting.core.emails.password2"> </i-control>
+                                                <i-control class="col3" type="password" label="Default Password 3" ng-model="setting.core.emails.password3"> </i-control>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+
                             <div id="basic_tab" class="tab-content">
                                 <div class="row">
                                     <fieldset>
                                         <div class="row">
                                             <i-checkbox class="" label="send X-BROWSER Headers" ng-model="setting.blocking.core.send_browser_id"></i-checkbox>
                                             <i-checkbox class="" label="Auto Clear Cache Storage" ng-model="setting.core.autoClearCacheStorage"></i-checkbox>
-                                        </div>
-                                    </fieldset>
-
-                                    <fieldset>
-                                        <legend>Email Setting</legend>
-                                        <div class="row">
-                                            <i-checkbox class="" label="Enabled Temp Mail ( create new email for every profile ) " ng-model="setting.core.emails.enabled"></i-checkbox>
-                                            <div class="row" ng-show="setting.core.emails.enabled">
-                                                <i-control class="col3" label="Emails Domain" ng-model="setting.core.emails.domain"> </i-control>
-                                                <i-control class="col3" type="password" label="Default Password" ng-model="setting.core.emails.password"> </i-control>
-                                            </div>
                                         </div>
                                     </fieldset>
 

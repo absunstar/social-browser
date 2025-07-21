@@ -110,11 +110,11 @@
         }
     },
     "dependencies": {
-        "isite": "^2025.5.1",
+        "isite": "^2025.7.1",
         "puppeteer-core": "^24.8.2"
     },
     "devDependencies": {
-        "electron": "^37.2.0",
+        "electron": "^37.2.3",
         "electron-builder": "^24.0.0"
     }
 }

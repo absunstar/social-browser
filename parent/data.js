@@ -367,7 +367,7 @@ module.exports = function init(parent) {
         }
 
         if (name == 'user_data_input') {
-            parent.var.user_data_input = parent.var.user_data_input.filter((v, i, a) => a.findIndex((t) => t.hostname === v.hostname && t.password === v.password && t.username === v.username) === i);
+            parent.var.user_data_input = parent.var.user_data_input.filter((v, i, a) => a.findIndex((t) => t && v && t.hostname === v.hostname && t.password === v.password && t.username === v.username) === i);
             parent.var.user_data_input.forEach((d, i) => {
                 delete parent.var.user_data_input[i].options;
                 delete parent.var.user_data_input[i].parentSetting;
@@ -379,7 +379,7 @@ module.exports = function init(parent) {
             });
         }
         if (name == 'user_data') {
-            parent.var.user_data = parent.var.user_data.filter((v, i, a) => a.findIndex((t) => t.hostname === v.hostname && JSON.stringify(t.data || {}) === JSON.stringify(v.data || {})) === i);
+            parent.var.user_data = parent.var.user_data.filter((v, i, a) => a.findIndex((t) => t && v && t.hostname === v.hostname && JSON.stringify(t.data || {}) === JSON.stringify(v.data || {})) === i);
             parent.var.user_data.forEach((d, i) => {
                 delete parent.var.user_data[i].options;
                 delete parent.var.user_data[i].parentSetting;

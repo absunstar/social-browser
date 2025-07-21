@@ -39,7 +39,7 @@ var SOCIALBROWSER = {
     developerMode: false,
     log: function (...args) {
         if (this.developerMode) {
-            console.log(...args);
+            console.log(...args, document.location.href);
         }
     },
 };
@@ -140,13 +140,14 @@ SOCIALBROWSER.eval = function (code, jsFile = false) {
                 SOCIALBROWSER.addJS(code);
             } else {
                 jsFile = true;
-                let path = SOCIALBROWSER.data_dir + '\\sessionData\\' + new Date().getTime() + '_tmp.js';
+                let name = SOCIALBROWSER.md5(SOCIALBROWSER.partition + new Date().getTime().toString() + Math.random().toString());
+                let path = SOCIALBROWSER.data_dir + '\\sessionData\\' + name + '_tmp.js';
 
                 SOCIALBROWSER.ipcSync('[write-file]', { path: path, data: code });
-                setTimeout(() => {
-                    SOCIALBROWSER.ipcSync('[delete-file]', path);
-                }, 1000 * 3);
-                return SOCIALBROWSER.require(path);
+                let result = SOCIALBROWSER.require(path);
+                SOCIALBROWSER.ipcSync('[delete-file]', path);
+
+                return result;
             }
         }
     } catch (error) {
@@ -366,6 +367,8 @@ SOCIALBROWSER.init2 = function () {
     SOCIALBROWSER.effectiveTypeList = SOCIALBROWSER.browserData.effectiveTypeList;
     SOCIALBROWSER.connectionTypeList = SOCIALBROWSER.browserData.connectionTypeList;
     SOCIALBROWSER.userAgentDeviceList = SOCIALBROWSER.browserData.userAgentDeviceList;
+
+    SOCIALBROWSER.tempMailServer = SOCIALBROWSER.var.core.emails?.domain || 'social-browser.com';
 
     if (!SOCIALBROWSER.customSetting.iframe && SOCIALBROWSER.isIframe()) {
         return;
@@ -2012,8 +2015,8 @@ SOCIALBROWSER.init2 = function () {
                             },
                             user: {
                                 id: {},
-                                displayName: 'hany kamal',
-                                name: 'kamally356@gmail.com',
+                                displayName: '_______',
+                                name: '______@gmail.com',
                             },
                             challenge: {},
                             pubKeyCredParams: [
@@ -2701,7 +2704,7 @@ SOCIALBROWSER.init2 = function () {
                 arr.push({
                     label: ' in ( Ghost window )',
                     click() {
-                        let ghost = 'x-ghost_' + (new Date().getTime().toString() + Math.random().toString()).replace('.', '');
+                        let ghost = SOCIALBROWSER.md5((new Date().getTime().toString() + Math.random().toString()).replace('.', '')) + '@' + SOCIALBROWSER.tempMailServer;
 
                         SOCIALBROWSER.ipc('[open new popup]', {
                             url: url,
@@ -3323,7 +3326,7 @@ SOCIALBROWSER.init2 = function () {
                     arr3.push({
                         label: 'Open in ( Ghost window )',
                         click() {
-                            let ghost = 'x-ghost_' + (new Date().getTime().toString() + Math.random().toString()).replace('.', '');
+                            let ghost = SOCIALBROWSER.md5((new Date().getTime().toString() + Math.random().toString()).replace('.', '')) + '@' + SOCIALBROWSER.tempMailServer;
                             SOCIALBROWSER.ipc('[open new popup]', {
                                 alwaysOnTop: true,
                                 partition: ghost,
@@ -3513,95 +3516,91 @@ SOCIALBROWSER.init2 = function () {
                                 },
                             });
                         }
+                        if (SOCIALBROWSER.session.display.contains('@gmail.com')) {
+                            arr.push({
+                                label: 'Open Gmail Inbox',
+                                click() {
+                                    SOCIALBROWSER.ipc('[open new popup]', {
+                                        partition: SOCIALBROWSER.partition,
+                                        referrer: document.location.href,
+                                        url: 'https://mail.google.com/mail/u/0',
+                                        show: true,
+                                        allowDevTools: false,
+                                        allowNewWindows: true,
+                                        allowPopup: true,
+                                        center: true,
+                                        vip: true,
+                                    });
+                                },
+                            });
+                        }
 
-                        let newEmail = SOCIALBROWSER.session.display.split('@')[0] + '@' + SOCIALBROWSER.var.core.emails.domain;
-                        arr.push({
-                            label: 'paste Temp Mail',
-                            click() {
-                                SOCIALBROWSER.copy(newEmail);
-                                SOCIALBROWSER.paste();
-                            },
-                        });
-                        arr.push({
-                            label: 'paste Code from Temp Mail',
-                            click() {
-                                let _url = 'http://emails.' + SOCIALBROWSER.var.core.emails.domain + '/api/emails/view';
-                                SOCIALBROWSER.fetchJson(
-                                    {
-                                        url: _url,
-                                        method: 'POST',
-                                        body: { to: newEmail },
+                        if (SOCIALBROWSER.var.core.emails.domain) {
+                            let newEmail = SOCIALBROWSER.session.display.split('@')[0] + '@' + SOCIALBROWSER.var.core.emails.domain;
+                            if (newEmail !== SOCIALBROWSER.session.display) {
+                                arr.push({
+                                    label: 'paste Temp Mail',
+                                    click() {
+                                        SOCIALBROWSER.copy(newEmail);
+                                        SOCIALBROWSER.paste();
                                     },
-                                    (data) => {
-                                        if (data.done && data.doc) {
-                                            let email = data.doc;
-                                            let code = email.subject.split(':')[1];
-                                            if (code) {
-                                                code = code.trim();
-                                                SOCIALBROWSER.copy(code);
-                                                SOCIALBROWSER.paste();
-                                            }
-                                            if (!code && email.html) {
-                                                let message = email.html;
-                                                var html = document.createElement('html');
-                                                html.innerHTML = SOCIALBROWSER.policy.createHTML(message);
-                                                code = html.querySelector('strong')?.innerText;
-                                                if (!code) {
-                                                    html.querySelectorAll('p').forEach((el) => {
-                                                        if (el.style.fontSize && el.style.fontWeight) {
-                                                            code = el.innerText;
-                                                        }
-                                                    });
-                                                }
-                                                if (!code) {
-                                                    html.querySelectorAll('div').forEach((el) => {
-                                                        if (el.style.fontSize == '36px') {
-                                                            code = el.innerText;
-                                                        }
-                                                    });
-                                                }
-                                                if (!code) {
-                                                    html.querySelectorAll('td').forEach((el) => {
-                                                        if (el.style.fontSize && el.style.backgroundColor) {
-                                                            code = el.innerText;
-                                                        }
-                                                    });
-                                                }
-                                            }
-
-                                            if (code) {
-                                                SOCIALBROWSER.copy(code);
-                                                SOCIALBROWSER.paste();
-                                            } else {
-                                                alert('No Code Exists ..');
-                                            }
-                                        }
-                                    },
-                                );
-                            },
-                        });
-                        arr.push({
-                            type: 'separator',
-                        });
-                        arr.push({
-                            label: 'Show All Temp Mail Messages',
-                            click() {
-                                SOCIALBROWSER.ipc('[open new popup]', {
-                                    partition: SOCIALBROWSER.partition,
-                                    referrer: document.location.href,
-                                    url: 'http://emails.' + SOCIALBROWSER.var.core.emails.domain + '/vip?email=' + newEmail,
-                                    show: true,
-                                    allowDevTools: false,
-                                    allowNewWindows: true,
-                                    allowPopup: true,
-                                    center: true,
-                                    vip: true,
                                 });
-                            },
-                        });
-                        arr.push({
-                            type: 'separator',
-                        });
+                            }
+
+                            arr.push({
+                                label: 'paste Code from Temp Mail Message',
+                                click() {
+                                    let _url = 'http://emails.' + SOCIALBROWSER.var.core.emails.domain + '/api/emails/view';
+                                    SOCIALBROWSER.fetchJson(
+                                        {
+                                            url: _url,
+                                            method: 'POST',
+                                            body: { to: newEmail },
+                                        },
+                                        (data) => {
+                                            SOCIALBROWSER.log(data);
+                                            if (data.done && data.doc) {
+                                                var codeRex = /(?:[-+() ]*\d){5,10}/gm;
+
+                                                let email = data.doc;
+                                                let code = email.subject?.match(codeRex) || email.html?.match(codeRex);
+                                                if (code) {
+                                                    code = code[0];
+                                                    SOCIALBROWSER.copy(code);
+                                                    SOCIALBROWSER.paste();
+                                                    return true;
+                                                } else {
+                                                    alert('No Code Exists ..');
+                                                }
+                                            }
+                                        },
+                                    );
+                                },
+                            });
+
+                            arr.push({
+                                type: 'separator',
+                            });
+                            arr.push({
+                                label: 'Show All Temp Mail Messages',
+                                click() {
+                                    SOCIALBROWSER.ipc('[open new popup]', {
+                                        partition: SOCIALBROWSER.partition,
+                                        referrer: document.location.href,
+                                        url: 'http://emails.' + SOCIALBROWSER.var.core.emails.domain + '/vip?email=' + newEmail,
+                                        show: true,
+                                        allowDevTools: false,
+                                        allowNewWindows: true,
+                                        allowPopup: true,
+                                        center: true,
+                                        vip: true,
+                                    });
+                                },
+                            });
+                            arr.push({
+                                type: 'separator',
+                            });
+                        }
                     }
 
                     if (SOCIALBROWSER.var.core.emails.password) {
@@ -3609,6 +3608,24 @@ SOCIALBROWSER.init2 = function () {
                             label: 'paste Default Password',
                             click() {
                                 SOCIALBROWSER.copy(SOCIALBROWSER.var.core.emails.password);
+                                SOCIALBROWSER.paste();
+                            },
+                        });
+                    }
+                    if (SOCIALBROWSER.var.core.emails.password2) {
+                        arr.push({
+                            label: 'paste Default Password 2',
+                            click() {
+                                SOCIALBROWSER.copy(SOCIALBROWSER.var.core.emails.password2);
+                                SOCIALBROWSER.paste();
+                            },
+                        });
+                    }
+                    if (SOCIALBROWSER.var.core.emails.password3) {
+                        arr.push({
+                            label: 'paste Default Password 3',
+                            click() {
+                                SOCIALBROWSER.copy(SOCIALBROWSER.var.core.emails.password3);
                                 SOCIALBROWSER.paste();
                             },
                         });
@@ -3934,14 +3951,14 @@ SOCIALBROWSER.init2 = function () {
                         SOCIALBROWSER.menuList.push({
                             label: 'New Ghost tab',
                             click() {
-                                let ghost = 'x-ghost_' + (new Date().getTime().toString() + Math.random().toString()).replace('.', '');
+                                let ghost = SOCIALBROWSER.md5((new Date().getTime().toString() + Math.random().toString()).replace('.', '')) + '@' + SOCIALBROWSER.tempMailServer;
                                 SOCIALBROWSER.ipc('[open new tab]', { partition: ghost, iframe: true, user_name: ghost, main_window_id: SOCIALBROWSER.window.id });
                             },
                         });
                         SOCIALBROWSER.menuList.push({
                             label: 'Duplicate tab in Ghost tab',
                             click() {
-                                let ghost = 'x-ghost_' + (new Date().getTime().toString() + Math.random().toString()).replace('.', '');
+                                let ghost = SOCIALBROWSER.md5((new Date().getTime().toString() + Math.random().toString()).replace('.', '')) + '@' + SOCIALBROWSER.tempMailServer;
                                 SOCIALBROWSER.ipc('[open new tab]', { url: url, partition: ghost, user_name: ghost, main_window_id: SOCIALBROWSER.window.id });
                             },
                         });
@@ -3966,7 +3983,7 @@ SOCIALBROWSER.init2 = function () {
                         SOCIALBROWSER.menuList.push({
                             label: 'Duplicate tab in Ghost window',
                             click() {
-                                let ghost = 'x-ghost_' + new Date().getTime() + Math.random();
+                                let ghost = SOCIALBROWSER.md5((new Date().getTime().toString() + Math.random().toString()).replace('.', '')) + '@' + SOCIALBROWSER.tempMailServer;
                                 SOCIALBROWSER.ipc('[open new popup]', {
                                     childProcessID: childProcessID,
                                     show: true,
@@ -4597,6 +4614,12 @@ SOCIALBROWSER.init2 = function () {
             SOCIALBROWSER.log('.... [ HTML Elements Script Activated ].... ' + document.location.href);
 
             SOCIALBROWSER.onLoad(() => {
+                document.addEventListener('dblclick', () => {
+                    if (SOCIALBROWSER.var.blocking.javascript.auto_paste) {
+                        SOCIALBROWSER.paste();
+                    }
+                });
+
                 document.querySelectorAll('a,input,iframe').forEach((node) => {
                     if (node && node.tagName == 'A') {
                         a_handle(node);
@@ -4700,12 +4723,6 @@ SOCIALBROWSER.init2 = function () {
                     return;
                 }
                 input.setAttribute('x-handled', 'true');
-
-                input.addEventListener('dblclick', () => {
-                    if (SOCIALBROWSER.var.blocking.javascript.auto_paste && !input.value && SOCIALBROWSER.electron.clipboard.readText()) {
-                        SOCIALBROWSER.paste();
-                    }
-                });
             }
 
             function a_handle(a) {
@@ -6234,7 +6251,7 @@ SOCIALBROWSER.init2 = function () {
                 });
             } else if (data.name == 'new-ghost-window') {
                 let browser = SOCIALBROWSER.getRandomBrowser('pc');
-                let ghost = 'x-ghost_' + (new Date().getTime().toString() + Math.random().toString()).replace('.', '');
+                let ghost = SOCIALBROWSER.md5((new Date().getTime().toString() + Math.random().toString()).replace('.', '')) + '@' + SOCIALBROWSER.tempMailServer;
                 SOCIALBROWSER.ipc('[open new popup]', {
                     partition: ghost,
                     user_name: ghost,
@@ -6250,7 +6267,7 @@ SOCIALBROWSER.init2 = function () {
                 });
             } else if (data.name == 'new-ghost-mobile-window') {
                 let browser = SOCIALBROWSER.getRandomBrowser('mobile');
-                let ghost = 'x-ghost_' + (new Date().getTime().toString() + Math.random().toString()).replace('.', '');
+                let ghost = SOCIALBROWSER.md5((new Date().getTime().toString() + Math.random().toString()).replace('.', '')) + '@' + SOCIALBROWSER.tempMailServer;
                 SOCIALBROWSER.ipc('[open new popup]', {
                     partition: ghost,
                     user_name: ghost,

@@ -18,9 +18,9 @@ console.log('service worker Preload Run in Sandbox Mode Only... Type : ' + proce
 //     console.log('window creating for service worker');
 // });
 
-console.log('globalThis : ' + typeof globalThis);
-console.log('window : ' + typeof window);
-console.log('document : ' + typeof document);
-console.log('location : ' + typeof location);
+// console.log('globalThis : ' + typeof globalThis);
+// console.log('window : ' + typeof window);
+// console.log('document : ' + typeof document);
+// console.log('location : ' + typeof location);
 
-console.log('End of Service Worker Code ...');
+// console.log('End of Service Worker Code ...');

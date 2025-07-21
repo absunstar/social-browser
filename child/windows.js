@@ -398,8 +398,17 @@ module.exports = function (child) {
         win.customSetting = customSetting;
         win.customSetting.windowSetting = win.customSetting.windowSetting || [];
 
-        win.customSetting.session = parent.var.session_list.find((s) => s.name == win.customSetting.partition);
-
+        win.customSetting.session = parent.var.session_list.find((s) => s.name == win.customSetting.partition) || {
+            name: win.customSetting.partition,
+            display: win.customSetting.user_name || win.customSetting.partition,
+        };
+        
+        if (win.customSetting.vpc) {
+            win.customSetting.session.privacy = {
+                allowVPC: true,
+                vpc: win.customSetting.vpc,
+            };
+        }
         if (win.customSetting.userAgentURL) {
             win.customSetting.$defaultUserAgent = parent.var.userAgentList.find((u) => u.url == win.customSetting.userAgentURL) || { url: win.customSetting.userAgentURL };
             win.customSetting.$userAgentURL = win.customSetting.$defaultUserAgent.url;

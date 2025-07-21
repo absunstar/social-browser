@@ -40,8 +40,9 @@ module.exports = function (child) {
         }
     };
     child.deleteFile = function (path, callback) {
-        child.fs.stat(path, (err, stats) => {
-            if (!err && stats.isFile()) {
+        try {
+            let stats = child.fs.statSync(path);
+            if (stats.isFile()) {
                 child.fs.unlink(path, (err) => {
                     if (!err) {
                         callback(path);
@@ -52,7 +53,10 @@ module.exports = function (child) {
             } else {
                 callback(path);
             }
-        });
+        } catch (error) {
+           // child.log(error);
+            callback(path);
+        }
     };
     child.writeFile = function (path, data, encode = 'utf8') {
         let path2 = path + '_tmp';
