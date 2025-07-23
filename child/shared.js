@@ -1095,7 +1095,7 @@ module.exports = function (owner) {
                     longitude: owner.randomNumber(1, 49) + Math.random(),
                 },
                 languages:
-                    owner.languageList[owner.randomNumber(0, owner.languageList.length - 1)] +
+                    'en-US' +
                     ',' +
                     owner.languageList[owner.randomNumber(0, owner.languageList.length - 1)] +
                     ';q=0.9,' +

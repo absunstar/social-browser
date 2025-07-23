@@ -474,6 +474,11 @@ module.exports = function init(child) {
             .fromPartition(obj.partition)
             .cookies.get({ domain: obj.cookieDomain })
             .then((cookies) => {
+                cookies.forEach((c) => {
+                    const scheme = c.secure ? 'https' : 'http';
+                    const host = c.domain[0] === '.' ? c.domain.substr(1) : c.domain;
+                    c.url = scheme + '://' + host;
+                });
                 let cookieInfo = {
                     domain: obj.cookieDomain,
                     partition: obj.partition,
@@ -489,6 +494,9 @@ module.exports = function init(child) {
     child.ipcMain.on('[set-domain-cookies]', (event, obj) => {
         let ss = child.electron.session.fromPartition(obj.partition);
         obj.cookies.forEach((cookie) => {
+            const scheme = cookie.secure ? 'https' : 'http';
+            const host = cookie.domain[0] === '.' ? cookie.domain.substr(1) : cookie.domain;
+            cookie.url = cookie.url || scheme + '://' + host;
             ss.cookies
                 .set(cookie)
                 .then(() => {
@@ -521,6 +529,9 @@ module.exports = function init(child) {
     child.ipcMain.on('[set-session-cookies]', (event, obj) => {
         let ss = child.electron.session.fromPartition(obj.partition);
         obj.cookies.forEach((cookie) => {
+            const scheme = cookie.secure ? 'https' : 'http';
+            const host = cookie.domain[0] === '.' ? cookie.domain.substr(1) : cookie.domain;
+            cookie.url = cookie.url || scheme + '://' + host;
             ss.cookies
                 .set(cookie)
                 .then(() => {

@@ -1,81 +1,85 @@
 setTimeout(() => {
-  $('.loaded').css('visibility', 'visible');
+    $('.loaded').css('visibility', 'visible');
 }, 1000 * 1);
 
 var scope = function () {
-  return angular.element(document.querySelector('body')).scope();
+    return angular.element(document.querySelector('body')).scope();
 };
 
 var app = app || angular.module('myApp', []);
 
 app.controller('mainController', ($scope, $http, $interval, $timeout) => {
-  $scope.session = {};
-  $scope.setting = {
-    core: {},
-    session_list: [],
-  };
+    $scope.session = {};
+    $scope.setting = {
+        core: {},
+        session_list: [],
+    };
 
-  SOCIALBROWSER.onEvent('updated', (p) => {
-    if (p.name == 'session_list') {
-      $scope.setting.session_list = [];
-      SOCIALBROWSER.var.session_list.forEach((s) => {
-        $scope.setting.session_list.push({ ...s });
-      });
-    } else if (p.name == 'core') {
-      $scope.setting.core = SOCIALBROWSER.var.core;
-    }
+    SOCIALBROWSER.onEvent('updated', (p) => {
+        if (p.name == 'session_list') {
+            $scope.setting.session_list = [];
+            SOCIALBROWSER.var.session_list.forEach((s) => {
+                $scope.setting.session_list.push({ ...s });
+            });
+        } else if (p.name == 'core') {
+            $scope.setting.core = SOCIALBROWSER.var.core;
+        }
 
-    $scope.$applyAsync();
-  });
+        $scope.$applyAsync();
+    });
 
-  $scope.selectSession = function (_se) {
-    $scope.setting.session_list.forEach((se, i) => {
-      if (se.name === _se.name) {
-        $scope.setting.core.session = se;
-        $scope.saveSessions();
-        $scope.session = {};
-        SOCIALBROWSER.ipc('[open new tab]', {
-          referrer: document.location.href,
-          url: $scope.setting.core.default_page,
-          partition: se.name,
-          user_name: se.display,
+    $scope.selectSession = function (_se) {
+        $scope.setting.session_list.forEach((se, i) => {
+            if (se.name === _se.name) {
+                $scope.setting.core.session = se;
+                $scope.saveSessions();
+                $scope.session = {};
+                SOCIALBROWSER.ipc('[open new tab]', {
+                    referrer: document.location.href,
+                    url: $scope.setting.core.default_page,
+                    partition: se.name,
+                    user_name: se.display,
+                });
+                SOCIALBROWSER.window.hide();
+            }
         });
-        SOCIALBROWSER.window.hide();
-      }
-    });
-  };
+    };
 
-  $scope.addSession = function () {
-    let ss = SOCIALBROWSER.addSession($scope.session.display);
-    $scope.setting.session_list.push(ss);
-  };
+    $scope.addSession = function () {
+        let name = $scope.session.display;
+        if (!name) {
+            SOCIALBROWSER.tempMailServer = SOCIALBROWSER.var.core.emails?.domain || 'social-browser.com';
+            name = SOCIALBROWSER.md5((new Date().getTime().toString() + Math.random().toString()).replace('.', '')) + '@' + SOCIALBROWSER.tempMailServer;
+        }
+        SOCIALBROWSER.addSession(name);
+    };
 
-  $scope.removeSession = function (_se) {
-    SOCIALBROWSER.removeSession(_se);
-  };
+    $scope.removeSession = function (_se) {
+        SOCIALBROWSER.removeSession(_se);
+    };
 
-  $scope.loadSetting = function () {
-    $scope.setting.session_list = [];
-    SOCIALBROWSER.var.session_list.forEach((s) => {
-      $scope.setting.session_list.push({ ...s });
-    });
-    $scope.setting.core = SOCIALBROWSER.var.core;
-  };
+    $scope.loadSetting = function () {
+        $scope.setting.session_list = [];
+        SOCIALBROWSER.var.session_list.forEach((s) => {
+            $scope.setting.session_list.push({ ...s });
+        });
+        $scope.setting.core = SOCIALBROWSER.var.core;
+    };
 
-  $scope.saveSessions = function () {
-    $scope.saveSetting();
-  };
+    $scope.saveSessions = function () {
+        $scope.saveSetting();
+    };
 
-  $scope.saveSetting = function () {
-    SOCIALBROWSER.ipc('[update-browser-var]', {
-      name: 'core',
-      data: $scope.setting.core,
-    });
-    SOCIALBROWSER.ipc('[update-browser-var]', {
-      name: 'session_list',
-      data: $scope.setting.session_list,
-    });
-  };
+    $scope.saveSetting = function () {
+        SOCIALBROWSER.ipc('[update-browser-var]', {
+            name: 'core',
+            data: $scope.setting.core,
+        });
+        SOCIALBROWSER.ipc('[update-browser-var]', {
+            name: 'session_list',
+            data: $scope.setting.session_list,
+        });
+    };
 
-  $scope.loadSetting();
+    $scope.loadSetting();
 });

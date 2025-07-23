@@ -1,5 +1,3 @@
-const cookie = require('isite/lib/cookie');
-
 module.exports = function (child) {
     child.assignWindows = [];
     child.offset = {
@@ -183,6 +181,7 @@ module.exports = function (child) {
             trackingID: 'main_tracking_' + new Date().getTime(),
             sandbox: true,
             cookie: null,
+            cookies: null,
             cookieObject: null,
             cookieList: null,
             localStorageList: null,
@@ -353,12 +352,14 @@ module.exports = function (child) {
                     setting.cookieList[index].partition = setting.cookieList[index].partition || setting.partition;
                 });
             }
+
             if (setting.cookieObject) {
                 setting.cookieList = setting.cookieList || [];
                 cookieObject.domain = cookieObject.domain || child.url.parse(setting.url).hostname;
                 cookieObject.partition = cookieObject.partition || setting.partition;
                 setting.cookieList.push(cookieObject);
             }
+
             if (setting.cookie) {
                 setting.cookieList = setting.cookieList || [];
                 let cookieObject = { cookie: cookie };
@@ -366,9 +367,11 @@ module.exports = function (child) {
                 cookieObject.partition = setting.partition;
                 setting.cookieList.push(cookieObject);
             }
+
             if (setting.cookies) {
                 setting.cookies.forEach(async (cookie) => {
-                    await child.electron.session.fromPartition(setting.partition).cookies.set(cookie);
+                    let cookieResult = await child.electron.session.fromPartition(setting.partition).cookies.set(cookie);
+                    child.log(cookieResult);
                 });
             }
         }
@@ -402,7 +405,7 @@ module.exports = function (child) {
             name: win.customSetting.partition,
             display: win.customSetting.user_name || win.customSetting.partition,
         };
-        
+
         if (win.customSetting.vpc) {
             win.customSetting.session.privacy = {
                 allowVPC: true,

@@ -1881,6 +1881,7 @@ SOCIALBROWSER.init2 = function () {
         SOCIALBROWSER.getDomainCookies = function (obj = {}) {
             obj.cookieDomain = SOCIALBROWSER.domain;
             obj.partition = SOCIALBROWSER.partition;
+            obj.url = obj.url || document.location.href;
             return SOCIALBROWSER.ipcSync('[get-domain-cookies]', obj);
         };
         SOCIALBROWSER.setDomainCookies = function (obj = {}) {
@@ -1904,7 +1905,7 @@ SOCIALBROWSER.init2 = function () {
             obj.partition = SOCIALBROWSER.partition;
             obj.url = obj.url || document.location.href;
             obj.cookie = obj.cookie || SOCIALBROWSER.getHttpCookie();
-            obj.cookies = obj.cookies || SOCIALBROWSER.getDomainCookies().cookies;
+            obj.cookies = obj.cookies || SOCIALBROWSER.getDomainCookies(obj).cookies;
             obj.localStorageList = SOCIALBROWSER.getLocalStorageList();
             obj.sessionStorageList = SOCIALBROWSER.getSessionStorageList();
             return obj;
@@ -2959,6 +2960,39 @@ SOCIALBROWSER.init2 = function () {
                     },
                 });
                 arr.push({
+                    label: 'Copy Seesion Name',
+                    click() {
+                        SOCIALBROWSER.copy(SOCIALBROWSER.session.display);
+                    },
+                });
+                arr.push({
+                    label: 'Copy Seesion ID',
+                    click() {
+                        SOCIALBROWSER.copy(SOCIALBROWSER.session.name);
+                    },
+                });
+                arr.push({
+                    type: 'separator',
+                });
+                arr.push({
+                    label: 'Copy Site Data',
+                    click() {
+                        SOCIALBROWSER.copy(SOCIALBROWSER.toJson(SOCIALBROWSER.getSiteData()));
+                        alert('Site Data Copied !!');
+                    },
+                });
+                arr.push({
+                    label: 'Import Site Data from Clipboard',
+                    click() {
+                        let data = SOCIALBROWSER.fromJson(SOCIALBROWSER.clipboard.readText());
+                        SOCIALBROWSER.window.customSetting.localStorageList = data.localStorageList;
+                        SOCIALBROWSER.window.customSetting.sessionStorageList = data.sessionStorageList;
+                        SOCIALBROWSER.setDomainCookies({ cookies: data.cookies });
+                        SOCIALBROWSER.window.storaeAdded = false;
+                        SOCIALBROWSER.window.reload();
+                    },
+                });
+                arr.push({
                     label: 'Sound on/off',
                     click() {
                         SOCIALBROWSER.webContents.setAudioMuted(!SOCIALBROWSER.webContents.audioMuted);
@@ -3143,13 +3177,13 @@ SOCIALBROWSER.init2 = function () {
                 });
 
                 arr.push({
-                    label: 'Hide Pointer Tag',
+                    label: 'Hide HTML Tag',
                     click() {
                         node.style.display = 'none';
                     },
                 });
                 arr.push({
-                    label: 'Remove Pointer Tag',
+                    label: 'Remove HTML Tag',
                     accelerator: 'CommandOrControl+Delete',
                     click() {
                         node.remove();
@@ -7339,6 +7373,20 @@ SOCIALBROWSER.init = function () {
     });
 
     SOCIALBROWSER.init2();
+
+    if (!SOCIALBROWSER.window.storaeAdded) {
+        if (SOCIALBROWSER.customSetting.localStorageList) {
+            SOCIALBROWSER.customSetting.localStorageList.forEach((s) => {
+                localStorage[s.key] = s.value;
+            });
+        }
+        if (SOCIALBROWSER.customSetting.sessionStorageList) {
+            SOCIALBROWSER.customSetting.sessionStorageList.forEach((s) => {
+                sessionStorage[s.key] = s.value;
+            });
+        }
+        SOCIALBROWSER.window.storaeAdded = true;
+    }
 };
 
 SOCIALBROWSER._window = SOCIALBROWSER._window || SOCIALBROWSER.ipcSync('[window]');

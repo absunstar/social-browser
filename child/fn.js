@@ -54,7 +54,7 @@ module.exports = function (child) {
                 callback(path);
             }
         } catch (error) {
-           // child.log(error);
+            // child.log(error);
             callback(path);
         }
     };
@@ -123,6 +123,7 @@ module.exports = function (child) {
         info.propertyList = info.propertyList || '*';
 
         if (info.propertyList == '*') {
+            info.all = true;
             info.propertyList = '';
             for (const key in child.parent.var) {
                 info.propertyList += key + ',';
@@ -132,7 +133,9 @@ module.exports = function (child) {
         let arr = info.propertyList.split(',');
         let obj = {};
         arr.forEach((k) => {
-            if (k && child.parent.var[k]) {
+            if (info.all) {
+                obj[k] = child.parent.var[k];
+            } else if (k && child.parent.var[k]) {
                 if ((k == 'user_data' || k == 'user_data_input') && info.domain) {
                     obj[k] = [];
                     child.parent.var[k].forEach((dd) => {

@@ -733,12 +733,14 @@ module.exports = function init(parent) {
                 if (parent.var.core.max_tabs < 3) {
                     parent.var.core.max_tabs = 20;
                 }
+                parent.save_var('core')
             } else if (parent.var.core['DeviceKey'] && parent.md5(parent.api.to123(parent.var.core['DeviceId'])) === parent.var.core['DeviceKey']) {
                 parent.var.core.browserActivated = true;
                 parent.var.core.activeMessage = 'Browser Activated By ( Device Key )';
                 if (parent.var.core.max_tabs < 3) {
                     parent.var.core.max_tabs = 20;
                 }
+                parent.save_var('core')
             } else if (parent.var.core['OnlineKey']) {
                 parent.api
                     .fetch('https://social-browser.com/api/activated', {
@@ -778,11 +780,13 @@ module.exports = function init(parent) {
                             parent.var.core.browserActivated = false;
                             parent.var.core.max_tabs = 2;
                         }
+                        parent.save_var('core')
                     })
                     .catch((err) => {
                         // error when server down or no internet or site blocked for any reson ( online key only)
                         console.log(err);
                         parent.var.core.activeMessage = err;
+                        parent.save_var('core')
                     });
             } else {
                 if (parent.var.session_list.length <= parent.freeUsersCount) {
@@ -796,6 +800,7 @@ module.exports = function init(parent) {
                     parent.var.core.max_tabs = 2;
                     parent.var.core.activeMessage = 'Need Device Key or Online Key';
                 }
+                parent.save_var('core')
             }
         }
     };
