@@ -2686,6 +2686,7 @@ SOCIALBROWSER.init2 = function () {
                             show: true,
                             iframe: true,
                             center: true,
+                            alwaysOnTop: true,
                         });
                     },
                 });
@@ -2699,6 +2700,7 @@ SOCIALBROWSER.init2 = function () {
                             allowAds: true,
                             show: true,
                             center: true,
+                            alwaysOnTop: true,
                         });
                     },
                 });
@@ -2718,6 +2720,7 @@ SOCIALBROWSER.init2 = function () {
                             iframe: true,
                             iframe: true,
                             center: true,
+                            alwaysOnTop: true,
                         });
                     },
                 });
@@ -3001,16 +3004,19 @@ SOCIALBROWSER.init2 = function () {
                 arr.push({
                     type: 'separator',
                 });
-                arr.push({
-                    label: 'Copy Private Key',
-                    click() {
-                        SOCIALBROWSER.copy('_KEY_' + SOCIALBROWSER.md5(SOCIALBROWSER.var.core.id) + '_');
-                    },
-                });
+                if (SOCIALBROWSER.var.core.flags.like('*v2*')) {
+                    arr.push({
+                        label: 'Copy Private Key',
+                        click() {
+                            SOCIALBROWSER.copy('_KEY_' + SOCIALBROWSER.md5(SOCIALBROWSER.var.core.id) + '_');
+                        },
+                    });
 
-                arr.push({
-                    type: 'separator',
-                });
+                    arr.push({
+                        type: 'separator',
+                    });
+                }
+
                 arr.push({
                     label: 'Save page',
                     accelerator: 'CommandOrControl+s',

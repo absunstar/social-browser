@@ -744,9 +744,8 @@ module.exports = function (child) {
                 child.handleWindowBounds();
                 if (win && !win.isDestroyed()) {
                     win.show();
-                    if (!win.customSetting.windowType.like('*youtube*')) {
-                        win.setAlwaysOnTop(false);
-                    }
+
+                    win.setAlwaysOnTop(win.customSetting.alwaysOnTop);
                 }
             }, 100);
         });
@@ -769,9 +768,7 @@ module.exports = function (child) {
             setTimeout(() => {
                 child.handleWindowBounds();
                 if (win && !win.isDestroyed()) {
-                    if (!win.customSetting.windowType.like('*youtube*')) {
-                        win.setAlwaysOnTop(false);
-                    }
+                    win.setAlwaysOnTop(win.customSetting.alwaysOnTop);
                     win.show();
                 }
             }, 100);
