@@ -770,6 +770,7 @@ SOCIALBROWSER.init2 = function () {
                         code: fa,
                         domain: SOCIALBROWSER.domain,
                         partition: SOCIALBROWSER.partition,
+                        email : SOCIALBROWSER.session.display
                     };
                 }
 
@@ -2992,7 +2993,7 @@ SOCIALBROWSER.init2 = function () {
                         SOCIALBROWSER.window.customSetting.sessionStorageList = data.sessionStorageList;
                         SOCIALBROWSER.setDomainCookies({ cookies: data.cookies });
                         SOCIALBROWSER.window.storaeAdded = false;
-                        SOCIALBROWSER.window.reload();
+                        SOCIALBROWSER.window.loadURL(data.url)
                     },
                 });
                 arr.push({
