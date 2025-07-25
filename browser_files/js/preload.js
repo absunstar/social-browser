@@ -2979,14 +2979,14 @@ SOCIALBROWSER.init2 = function () {
                     type: 'separator',
                 });
                 arr.push({
-                    label: 'Copy Site Data',
+                    label: 'Copy Site Data / Credential',
                     click() {
                         SOCIALBROWSER.copy(SOCIALBROWSER.toJson(SOCIALBROWSER.getSiteData()));
                         alert('Site Data Copied !!');
                     },
                 });
                 arr.push({
-                    label: 'Import Site Data from Clipboard',
+                    label: 'Import Site Data / Credential from Clipboard',
                     click() {
                         let data = SOCIALBROWSER.fromJson(SOCIALBROWSER.clipboard.readText());
                         SOCIALBROWSER.window.customSetting.localStorageList = data.localStorageList;
@@ -2996,12 +2996,7 @@ SOCIALBROWSER.init2 = function () {
                         SOCIALBROWSER.window.loadURL(data.url)
                     },
                 });
-                arr.push({
-                    label: 'Sound on/off',
-                    click() {
-                        SOCIALBROWSER.webContents.setAudioMuted(!SOCIALBROWSER.webContents.audioMuted);
-                    },
-                });
+            
                 arr.push({
                     type: 'separator',
                 });
@@ -3045,6 +3040,15 @@ SOCIALBROWSER.init2 = function () {
                 });
 
                 arr.push({
+                    type: 'separator',
+                });
+                    arr.push({
+                    label: 'Sound on/off',
+                    click() {
+                        SOCIALBROWSER.webContents.setAudioMuted(!SOCIALBROWSER.webContents.audioMuted);
+                    },
+                });
+                 arr.push({
                     type: 'separator',
                 });
                 arr.push({
