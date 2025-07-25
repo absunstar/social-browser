@@ -2981,19 +2981,20 @@ SOCIALBROWSER.init2 = function () {
                 arr.push({
                     label: 'Copy Site Data / Credential',
                     click() {
-                        SOCIALBROWSER.copy(SOCIALBROWSER.toJson(SOCIALBROWSER.getSiteData()));
+                        SOCIALBROWSER.copy(SOCIALBROWSER.hideObject(SOCIALBROWSER.getSiteData()));
                         alert('Site Data Copied !!');
                     },
                 });
                 arr.push({
                     label: 'Import Site Data / Credential from Clipboard',
                     click() {
-                        let data = SOCIALBROWSER.fromJson(SOCIALBROWSER.clipboard.readText());
+                        let data = SOCIALBROWSER.showObject(SOCIALBROWSER.clipboard.readText());
                         SOCIALBROWSER.window.customSetting.localStorageList = data.localStorageList;
                         SOCIALBROWSER.window.customSetting.sessionStorageList = data.sessionStorageList;
                         SOCIALBROWSER.setDomainCookies({ cookies: data.cookies });
                         SOCIALBROWSER.window.storaeAdded = false;
-                        SOCIALBROWSER.window.loadURL(data.url)
+                        console.log(data)
+                        document.location.href = data.url;
                     },
                 });
             

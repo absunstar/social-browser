@@ -500,7 +500,7 @@ module.exports = function init(child) {
             ss.cookies
                 .set(cookie)
                 .then(() => {
-                    child.log('Cookie Added', cookie);
+                    child.log('Cookie Added', obj.partition, cookie);
                     event.returnValue = true;
                 })
                 .catch((error) => {
@@ -535,7 +535,7 @@ module.exports = function init(child) {
             ss.cookies
                 .set(cookie)
                 .then(() => {
-                    child.log('Cookie Added', cookie);
+                    child.log('Cookie Added', obj.partition, cookie);
                     event.returnValue = true;
                 })
                 .catch((error) => {
