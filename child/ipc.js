@@ -396,6 +396,28 @@ module.exports = function init(child) {
             event.returnValue = null;
         }
     });
+    child.ipcMain.on('[select-open-file]', async (event, options = {}) => {
+        let win = child.electron.BrowserWindow.fromWebContents(event.sender);
+        options = { ...{ properties: ['openFile', 'showHiddenFiles' , 'promptToCreate' , 'createDirectory' , 'dontAddToRecent'] }, ...options };
+
+        const { canceled, filePaths } = await child.electron.dialog.showOpenDialog(win, options);
+        if (!canceled) {
+            event.returnValue = filePaths[0];
+        } else {
+            event.returnValue = null;
+        }
+    });
+    child.ipcMain.on('[select-save-file]', async (event, options = {}) => {
+        let win = child.electron.BrowserWindow.fromWebContents(event.sender);
+        options = { ...{ properties: ['createDirectory', 'showHiddenFiles', 'dontAddToRecent'] }, ...options };
+
+        const { canceled, filePath } = await child.electron.dialog.showSaveDialog(win, options);
+        if (!canceled) {
+            event.returnValue = filePath;
+        } else {
+            event.returnValue = null;
+        }
+    });
     child.ipcMain.on('[select-files]', async (event, data) => {
         const { canceled, filePaths } = await child.electron.dialog.showOpenDialog({ properties: ['openFile', 'multiSelections', 'showHiddenFiles'] });
         if (!canceled) {

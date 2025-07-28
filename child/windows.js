@@ -305,7 +305,6 @@ module.exports = function (child) {
             defaultSetting.center = true;
             setting.backgroundColor = child.theme == 'light' ? '#ffffff' : '#1a2a32';
         } else if (setting.windowType === 'none') {
-            setting.url = 'https://www.google.com';
             defaultSetting.show = false;
             defaultSetting.alwaysOnTop = false;
             defaultSetting.skipTaskbar = true;
@@ -369,9 +368,19 @@ module.exports = function (child) {
             }
 
             if (setting.cookies) {
-                setting.cookies.forEach(async (cookie) => {
-                    let cookieResult = await child.electron.session.fromPartition(setting.partition).cookies.set(cookie);
-                    child.log(cookieResult);
+                setting.cookies.forEach((cookie) => {
+                    const scheme = cookie.secure ? 'https' : 'http';
+                    const host = cookie.domain[0] === '.' ? cookie.domain.substr(1) : cookie.domain;
+                    cookie.url = cookie.url || scheme + '://' + host;
+                    child.electron.session
+                        .fromPartition(setting.partition)
+                        .cookies.set(cookie)
+                        .then(() => {
+                            child.log('Cookie Added', setting.partition, cookie);
+                        })
+                        .catch((error) => {
+                            child.log(error);
+                        });
                 });
             }
         }
@@ -510,19 +519,6 @@ module.exports = function (child) {
                     win.setBounds(new_bounds);
                 }
             }
-        }
-
-        if (win.customSetting.url) {
-            child.handleCustomSeting(win.customSetting.url, win, true);
-            win.loadURL(win.customSetting.url, {
-                httpReferrer: win.customSetting.referrer || win.customSetting.referer,
-                userAgent: win.customSetting.$userAgentURL,
-            });
-        } else {
-            win.loadURL(parent.var.core.default_page || 'http://127.0.0.1:60080/newTab', {
-                httpReferrer: win.customSetting.referrer || win.customSetting.referer,
-                userAgent: win.customSetting.$userAgentURL,
-            });
         }
 
         if (win.customSetting.trackingID) {
@@ -1410,6 +1406,14 @@ module.exports = function (child) {
                 });
             }
         });
+
+        if (win.customSetting.url) {
+            child.handleCustomSeting(win.customSetting.url, win, true);
+            win.loadURL(win.customSetting.url, {
+                httpReferrer: win.customSetting.referrer || win.customSetting.referer,
+                userAgent: win.customSetting.$userAgentURL,
+            });
+        }
 
         return win;
     };

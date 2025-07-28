@@ -18,7 +18,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     $scope.timezones2 = [...SOCIALBROWSER.timeZones];
 
     SOCIALBROWSER.onVarUpdated = function (name, data) {
-        if (name == 'proxy_list' || name == 'extension_list' || name == 'googleExtensionList') {
+        if (name == 'session_list' || name == 'proxy_list' || name == 'extension_list' || name == 'googleExtensionList') {
             $scope.setting[name] = data;
             $scope.$applyAsync();
         }
@@ -36,11 +36,13 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     };
     $scope.generateVPC = function (session) {
         if (typeof session == 'string' && session == '*') {
-            $scope.setting.session_list.forEach((s, i) => {
-                $scope.setting.session_list[i].privacy.vpc = SOCIALBROWSER.generateVPC();
-                $scope.setting.session_list[i].privacy.allowVPC = true;
-                $scope.setting.session_list[i].defaultUserAgent = SOCIALBROWSER.getRandomBrowser('pc');
-            });
+            $scope.setting.session_list
+                .filter((s) => s.$selected)
+                .forEach((s, i) => {
+                    $scope.setting.session_list[i].privacy.vpc = SOCIALBROWSER.generateVPC();
+                    $scope.setting.session_list[i].privacy.allowVPC = true;
+                    $scope.setting.session_list[i].defaultUserAgent = SOCIALBROWSER.getRandomBrowser('pc');
+                });
         } else {
             if (session) {
                 session.privacy.vpc = SOCIALBROWSER.generateVPC();
@@ -56,9 +58,11 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     };
     $scope.generateUserAgent = function (session) {
         if (typeof session == 'string' && session == '*') {
-            $scope.setting.session_list.forEach((s, i) => {
-                $scope.setting.session_list[i].defaultUserAgent = $SOCIALBROWSER.getRandomBrowser('pc');
-            });
+            $scope.setting.session_list
+                .filter((s) => s.$selected)
+                .forEach((s, i) => {
+                    $scope.setting.session_list[i].defaultUserAgent = $SOCIALBROWSER.getRandomBrowser('pc');
+                });
         } else {
             if (session) {
                 session.defaultUserAgent = SOCIALBROWSER.getRandomBrowser('pc');
@@ -70,16 +74,18 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     $scope.generateProxy = function (session) {
         let index = SOCIALBROWSER.randomNumber(0, $scope.setting.proxy_list.length - 1);
         if (typeof session == 'string' && session == '*') {
-            $scope.setting.session_list.forEach((s, i) => {
-                $scope.setting.session_list[i].selected_proxy_mode = $scope.setting.proxy_mode_list[3];
-                $scope.setting.session_list[i].selected_proxy = $scope.setting.proxy_list[index];
-                $scope.setting.session_list[i].proxy = $scope.setting.proxy_list[index];
-                $scope.setting.session_list[i].proxy.enabled = true;
-                index++;
-                if (index >= $scope.setting.proxy_list.length) {
-                    index = 0;
-                }
-            });
+            $scope.setting.session_list
+                .filter((s) => s.$selected)
+                .forEach((s, i) => {
+                    $scope.setting.session_list[i].selected_proxy_mode = $scope.setting.proxy_mode_list[3];
+                    $scope.setting.session_list[i].selected_proxy = $scope.setting.proxy_list[index];
+                    $scope.setting.session_list[i].proxy = $scope.setting.proxy_list[index];
+                    $scope.setting.session_list[i].proxy.enabled = true;
+                    index++;
+                    if (index >= $scope.setting.proxy_list.length) {
+                        index = 0;
+                    }
+                });
         } else {
             if (session) {
                 session.proxy.selected_proxy_mode = $scope.setting.proxy_mode_list[3];
@@ -93,9 +99,11 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     };
     $scope.stopAllVPC = function (session) {
         if (typeof session == 'string' && session == '*') {
-            $scope.setting.session_list.forEach((s) => {
-                s.privacy.allowVPC = false;
-            });
+            $scope.setting.session_list
+                .filter((s) => s.$selected)
+                .forEach((s) => {
+                    s.privacy.allowVPC = false;
+                });
         } else {
             if (session) {
                 session.privacy.allowVPC = false;
@@ -108,9 +116,11 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     };
     $scope.stopAllUserAgent = function (session) {
         if (typeof session == 'string' && session == '*') {
-            $scope.setting.session_list.forEach((s) => {
-                s.defaultUserAgent = null;
-            });
+            $scope.setting.session_list
+                .filter((s) => s.$selected)
+                .forEach((s) => {
+                    s.defaultUserAgent = null;
+                });
         } else {
             if (session) {
                 session.defaultUserAgent = null;
@@ -123,9 +133,11 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     };
     $scope.stopAllProxy = function (session) {
         if (typeof session == 'string' && session == '*') {
-            $scope.setting.session_list.forEach((s) => {
-                s.proxy = null;
-            });
+            $scope.setting.session_list
+                .filter((s) => s.$selected)
+                .forEach((s) => {
+                    s.proxy = null;
+                });
         } else {
             if (session) {
                 session.proxy = null;
@@ -234,6 +246,88 @@ app.controller('mainController', ($scope, $http, $timeout) => {
 
     $scope.sortSessionListByName = function () {
         $scope.setting.session_list.sort((a, b) => (a.display < b.display ? -1 : 1));
+    };
+    $scope.exportSelectedProfiles = function () {
+        let file = SOCIALBROWSER.ipcSync('[select-save-file]', { defaultPath: 'profiles.social' });
+        if (file) {
+            let arr = $scope.setting.session_list.filter((s) => s.$selected);
+            SOCIALBROWSER.ipcSync('[write-file]', { path: file, data: SOCIALBROWSER.hideObject(arr) });
+        }
+    };
+    $scope.importSelectedProfiles = function () {
+        let file = SOCIALBROWSER.ipcSync('[select-open-file]', {
+            filters: [
+                { name: 'Social Files', extensions: ['social'] },
+                { name: 'All Files', extensions: ['*'] },
+            ],
+        });
+        if (file) {
+            let data = SOCIALBROWSER.ipcSync('[read-file]', file);
+            let arr = SOCIALBROWSER.showObject(data);
+            arr.forEach((profile) => {
+                let index = $scope.setting.session_list.findIndex((s) => s.name == profile.name);
+                if (index === -1) {
+                    console.log('Profile Not Exists : ' + profile.name);
+                    $scope.setting.session_list.push(profile);
+                } else {
+                    console.log('Profile Exists : ' + profile.name);
+                }
+            });
+        }
+    };
+
+    $scope.exportSelectedProfilesAndData = function () {
+        let file = SOCIALBROWSER.ipcSync('[select-save-file]', { defaultPath: 'profilesAndData.social' });
+        if (file) {
+            let arr = $scope.setting.session_list.filter((s) => s.$selected);
+            arr.forEach((profile) => {
+                profile.cookieList = $scope.setting.cookieList.filter((c) => c.partition == profile.name);
+            });
+            SOCIALBROWSER.ipcSync('[write-file]', { path: file, data: SOCIALBROWSER.hideObject(arr) });
+        }
+    };
+    $scope.importSelectedProfilesAndData = function () {
+        let file = SOCIALBROWSER.ipcSync('[select-open-file]', {
+            filters: [
+                { name: 'Social Files', extensions: ['social'] },
+                { name: 'All Files', extensions: ['*'] },
+            ],
+        });
+        if (file) {
+            let data = SOCIALBROWSER.ipcSync('[read-file]', file);
+            let arr = SOCIALBROWSER.showObject(data);
+            let profileIndex = 0;
+
+            arr.forEach((profile) => {
+                let cookies = [];
+                if (profile.cookieList) {
+                    profile.cookieList.forEach((c) => {
+                        cookies = [...cookies, ...c.cookies];
+                    });
+                    delete profile.cookieList;
+                }
+
+                let index = $scope.setting.session_list.findIndex((s) => s.name == profile.name);
+                if (index === -1) {
+                    console.log('Profile Not Exists : ' + profile.name);
+                    SOCIALBROWSER.addSession(profile);
+                    if (cookies.length > 0) {
+                        console.log(cookies);
+                        profileIndex++;
+                        $timeout(() => {
+                            alert('Seting Profile Data : ' + profile.display);
+                            SOCIALBROWSER.ipc('[open new popup]', {
+                                partition: profile.name,
+                                cookies: cookies,
+                                timeout: 1000 * 30,
+                            });
+                        }, 1000 * 5 * profileIndex);
+                    }
+                } else {
+                    console.log('Profile Exists : ' + profile.name);
+                }
+            });
+        }
     };
 
     $scope.showModal = function (id) {
@@ -492,6 +586,12 @@ app.controller('mainController', ($scope, $http, $timeout) => {
 
     $scope.hideSessionsModal = function () {
         site.hideModal('#sessionsModal');
+    };
+
+    $scope.toggleselectedProfiles = function () {
+        $scope.setting.session_list.forEach((se, i) => {
+            se.$selected = !se.$selected;
+        });
     };
 
     $scope.addSession = function () {
