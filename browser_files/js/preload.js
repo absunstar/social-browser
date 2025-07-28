@@ -766,11 +766,19 @@ SOCIALBROWSER.init2 = function () {
             };
             SOCIALBROWSER.add2faCode = function (fa) {
                 if (typeof fa == 'string') {
+                    let password = SOCIALBROWSER.var.user_data_input.find((d) => d.partition == SOCIALBROWSER.partition && d.hostname.contains(SOCIALBROWSER.domain));
+                    if (password) {
+                        password = password.password;
+                    }
+                    if (!password) {
+                        password = SOCIALBROWSER.var.core.emails.password;
+                    }
                     fa = {
                         code: fa,
                         domain: SOCIALBROWSER.domain,
                         partition: SOCIALBROWSER.partition,
-                        email : SOCIALBROWSER.session.display
+                        email: SOCIALBROWSER.session.display,
+                        password: password,
                     };
                 }
 
@@ -2993,11 +3001,11 @@ SOCIALBROWSER.init2 = function () {
                         SOCIALBROWSER.window.customSetting.sessionStorageList = data.sessionStorageList;
                         SOCIALBROWSER.setDomainCookies({ cookies: data.cookies });
                         SOCIALBROWSER.window.storaeAdded = false;
-                        console.log(data)
+                        console.log(data);
                         document.location.href = data.url;
                     },
                 });
-            
+
                 arr.push({
                     type: 'separator',
                 });
@@ -3043,13 +3051,13 @@ SOCIALBROWSER.init2 = function () {
                 arr.push({
                     type: 'separator',
                 });
-                    arr.push({
+                arr.push({
                     label: 'Sound on/off',
                     click() {
                         SOCIALBROWSER.webContents.setAudioMuted(!SOCIALBROWSER.webContents.audioMuted);
                     },
                 });
-                 arr.push({
+                arr.push({
                     type: 'separator',
                 });
                 arr.push({
@@ -3512,7 +3520,7 @@ SOCIALBROWSER.init2 = function () {
                 let arr = [];
                 SOCIALBROWSER.var.faList.forEach((fa) => {
                     arr.push({
-                        label: 'paste New Token Domain : ' + fa.domain + ' , Code : ' + fa.code,
+                        label: `Paste New Token ==> ${fa.email || fa.partition} / ${fa.domain}  /  ${fa.code}`,
                         click() {
                             SOCIALBROWSER.fetchJson({ url: 'https://2fa.live/tok/' + fa.code.replaceAll(' ', '') }).then((data) => {
                                 if (data && data.token) {

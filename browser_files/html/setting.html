@@ -11,7 +11,7 @@
                 --theme-color: #212529;
                 --form-color: #212529;
 
-                --bs-body-color: #212529;
+                --bs-body-color: #3f9dff;
                 --bs-body-font-family: var(--font-family);
 
                 --input-color: #795548;
@@ -28,8 +28,6 @@
                 --tabs-background-color: #000000;
                 --tabs-background-color2: #000000;
                 --tabs-header-link-radius: 5px;
-
-                --dropdown-background: #6c757d;
 
                 --fieldset-background: #283e4a;
                 --fieldset-border: 1px solid #d1d1d1;
@@ -48,6 +46,8 @@
                 --table-hover-background-color: #4caf5070;
 
                 --bs-body-bg: #fff;
+                --color: #3f9dff;
+                --dropdown-background: #272727;
             }
             html,
             body,
@@ -233,6 +233,7 @@
                             <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#passwords_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
                                 <i class="fa fa-key"></i> Passwords
                             </a>
+                            <a id="facodes" class="tab-link" onclick="site.showTabContent(event, '#fa_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-key"></i> 2FA Codes </a>
                             <a id="emails" class="tab-link" onclick="site.showTabContent(event, '#emails_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
                                 <i class="fas fa-envelope"></i> Temp Emails
                             </a>
@@ -349,9 +350,9 @@
                                     <fieldset>
                                         <legend>Activation</legend>
                                         <div class="row padding">
-                                            <h2 class="bold red" ng-hide="setting.core.browserActivated">Browser Not Active</h2>
-                                            <h2 class="bold white" ng-show="setting.core.browserActivated">Browser Active</h2>
-                                            <p class="bold orange">{{setting.core.activeMessage}}</p>
+                                            <h2 class="bold red" ng-hide="setting.core.browserActivated">Browser Not Active <span>&#215;</span></h2>
+                                            <h2 class="bold green" ng-show="setting.core.browserActivated">Browser Active <span>&#10003;</span></h2>
+                                            <p class="bold font-16 orange">{{setting.core.activeMessage}}</p>
                                         </div>
 
                                         <div class="row padding">
@@ -369,21 +370,21 @@
                                         </div>
 
                                         <div class="row padding">
-                                            <i-control class="col8" label="Browser Key ( Only This Browser Version )" ng-model="setting.core.BrowserKey"> </i-control>
+                                            <i-control class="col8" type="password" label="Browser Key ( Only This Browser Version )" ng-model="setting.core.BrowserKey"> </i-control>
                                             <div class="col">
                                                 <i-button type="approve" label="Activate" ng-click="activated()"></i-button>
                                             </div>
                                         </div>
 
                                         <div class="row padding">
-                                            <i-control class="col8" label="Device Key ( Any Browser on This PC )" ng-model="setting.core.DeviceKey"> </i-control>
+                                            <i-control class="col8" type="password" label="Device Key ( Any Browser on This PC )" ng-model="setting.core.DeviceKey"> </i-control>
                                             <div class="col">
                                                 <i-button type="approve" label="Activate" ng-click="activated()"></i-button>
                                             </div>
                                         </div>
 
                                         <div class="row padding">
-                                            <i-control class="col8" label="Online Key ( For Any Browser or PC )" ng-model="setting.core.OnlineKey"> </i-control>
+                                            <i-control class="col8" type="password" label="Online Key ( For Any Browser or PC )" ng-model="setting.core.OnlineKey"> </i-control>
                                             <div class="col">
                                                 <i-button type="approve" label="Activate" ng-click="activated()"></i-button>
                                             </div>
@@ -899,80 +900,81 @@
 
                             <div id="users_tab" class="tab-content">
                                 <div class="row">
-                                    <ul>
-                                        <li>
-                                            <p>Manage Profiles [ Add , Edit , Delete]</p>
-                                        </li>
+                                    <h2 class="center">Users Profiles</h2>
 
-                                        <li>
-                                            <p>Every Profile Has Own [ Sessions , Cache , Storage , Logins , ... ]</p>
-                                        </li>
-                                    </ul>
-
-                                    <div class="row padding margin">
-                                        <div class="col5">
-                                            <fieldset>
-                                                <legend>New User Profile</legend>
-                                                <div class="row">
-                                                    <i-control label="Name" ng-model="session.display"></i-control>
-                                                    <div class="row">
-                                                        <label> example : user@yoursite.com</label>
-                                                    </div>
-                                                    <i-button type="push" ng-click="addSession()" label="Add to profiles"></i-button>
-                                                </div>
-                                            </fieldset>
-                                        </div>
-                                        <div class="col1"></div>
-                                        <div class="col5">
-                                            <fieldset>
-                                                <legend>Generate Profiles</legend>
-                                                <div class="row">
-                                                    <div class="col8"><i-control label="Name" ng-model="newSessionDisplay"></i-control></div>
-                                                    <div class="col4"><i-control type="number" label="Count" ng-model="newSessionCount"></i-control></div>
-                                                </div>
-                                                <div class="row">
-                                                    <label> example : user_{count}@yoursite.com</label>
-                                                </div>
-                                                <i-button type="reset" ng-click="generateSession()" label="Start Generate"></i-button>
-                                            </fieldset>
-                                        </div>
+                                    <div class="row">
+                                        <i-button ng-click="setting.$showProfilesControlPanel =!setting.$showProfilesControlPanel " label="Show /  Hide Profiles Control Panel"></i-button>
                                     </div>
 
-                                    <fieldset>
-                                        <legend>Bulk Actions for Selected Profiles</legend>
+                                    <fieldset ng-show="setting.$showProfilesControlPanel">
+                                        <legend>Profiles Control Panel</legend>
                                         <div class="row">
-                                             <div class="row">
-                                                <div class="col"><i-button ng-click="exportSelectedProfilesAndData()" label="Export Selected Profiles + All Data"></i-button></div>
-                                                <div class="col"><i-button ng-click="importSelectedProfilesAndData()" label="Import Profiles + All Data"></i-button></div>
+                                            <div class="row padding margin">
+                                                <div class="col5">
+                                                    <fieldset>
+                                                        <legend>New User Profile</legend>
+                                                        <div class="row">
+                                                            <i-control label="Name" ng-model="session.display"></i-control>
+                                                            <div class="row">
+                                                                <label> example : user@yoursite.com</label>
+                                                            </div>
+                                                            <i-button type="push" ng-click="addSession()" label="Add to profiles"></i-button>
+                                                        </div>
+                                                    </fieldset>
+                                                </div>
+                                                <div class="col1"></div>
+                                                <div class="col5">
+                                                    <fieldset>
+                                                        <legend>Generate Profiles</legend>
+                                                        <div class="row">
+                                                            <div class="col8"><i-control label="Name" ng-model="newSessionDisplay"></i-control></div>
+                                                            <div class="col4"><i-control type="number" label="Count" ng-model="newSessionCount"></i-control></div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <label> example : user_{count}@yoursite.com</label>
+                                                        </div>
+                                                        <i-button type="reset" ng-click="generateSession()" label="Start Generate"></i-button>
+                                                    </fieldset>
+                                                </div>
                                             </div>
-                                            <div class="row">
-                                                <div class="col"><i-button ng-click="exportSelectedProfiles()" label="Export Selected Profiles"></i-button></div>
-                                                <div class="col"><i-button ng-click="importSelectedProfiles()" label="Import Profiles"></i-button></div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col"><i-button type="reset" label="Generate Virual PC" ng-click="generateVPC('*')"></i-button></div>
-                                                <div class="col"><i-button type="stop" label="Stop AllVirual PC " ng-click="stopAllVPC('*')"></i-button></div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col"><i-button type="reset" label="Assign Random User Agent" ng-click="generateUserAgent('*')"></i-button></div>
-                                                <div class="col"><i-button type="stop" label="Stop All User Agent" ng-click="stopAllUserAgent('*')"></i-button></div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col"><i-button type="reset" label="Assign Random Proxy" ng-click="generateProxy('*')"></i-button></div>
-                                                <div class="col"><i-button type="stop" label="Stop All Proxy" ng-click="stopAllProxy('*')"></i-button></div>
-                                            </div>
+
+                                            <fieldset>
+                                                <legend>Bulk Actions for Selected Profiles</legend>
+                                                <div class="row">
+                                                    <div class="row">
+                                                        <div class="col4"><i-button ng-click="exportSelectedProfilesAndData()" label="Export Selected Profiles + All Data"></i-button></div>
+                                                        <div class="col4"><i-button ng-click="importSelectedProfilesAndData()" label="Import Profiles + All Data"></i-button></div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col4"><i-button ng-click="exportSelectedProfiles()" label="Export Selected Profiles"></i-button></div>
+                                                        <div class="col4"><i-button ng-click="importSelectedProfiles()" label="Import Profiles"></i-button></div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col4"><i-button type="reset" label="Generate Virual PC" ng-click="generateVPC('*')"></i-button></div>
+                                                        <div class="col4"><i-button type="stop" label="Stop AllVirual PC " ng-click="stopAllVPC('*')"></i-button></div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col4"><i-button type="reset" label="Assign Random User Agent" ng-click="generateUserAgent('*')"></i-button></div>
+                                                        <div class="col4"><i-button type="stop" label="Stop All User Agent" ng-click="stopAllUserAgent('*')"></i-button></div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col4"><i-button type="reset" label="Assign Random Proxy" ng-click="generateProxy('*')"></i-button></div>
+                                                        <div class="col4"><i-button type="stop" label="Stop All Proxy" ng-click="stopAllProxy('*')"></i-button></div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                        <div class="row">
+                                            <i-button ng-click="sortSessionListByName()" label="Sort Profiles By Name"></i-button>
                                         </div>
                                     </fieldset>
 
                                     <div class="row">
-                                        <i-button ng-click="sortSessionListByName()" label="Sort Profiles By Name"></i-button>
-                                    </div>
-                                    <div class="row">
                                         <table class="table hover">
                                             <tr>
-                                                <th>
-                                                    Index
-                                                    <i-button label="Toggle Select" ng-click="toggleselectedProfiles()"></i-button>
+                                                <th class="">
+                                                    <div class="row center">Index</div>
+                                                    <div class="row center"><i-button label="Toggle Select" ng-click="toggleselectedProfiles()"></i-button></div>
                                                 </th>
                                                 <th>ID <i-control ng-model="session.name"></i-control></th>
                                                 <th>Name <i-control ng-model="session.display"></i-control></th>
@@ -981,9 +983,11 @@
                                                 </th>
                                             </tr>
                                             <tr ng-repeat="_se in setting.session_list | filter:session track by $index">
-                                                <td class="bold center">
-                                                    {{$index + 1}}
-                                                    <i-checkbox ng-model="_se.$selected"></i-checkbox>
+                                                <td class="bold ">
+                                                    <div class="row center">
+                                                        <div class="col">{{$index + 1}}</div>
+                                                        <div class="col"><i-checkbox ng-model="_se.$selected"></i-checkbox></div>
+                                                    </div>
                                                 </td>
                                                 <td>
                                                     <i-control ng-model="_se.name"></i-control>
@@ -1550,6 +1554,41 @@
                                 </table>
                             </div>
 
+                            <div id="fa_tab" class="tab-content">
+                                <div class="row">
+                                    <fieldset>
+                                        <legend>New 2FA Code</legend>
+
+                                        <div class="row">
+                                            <div class="col"><i-control label="Site Domain Name" ng-model="faCode.domain"></i-control></div>
+                                            <div class="col"><i-control label="2FA Code" ng-model="faCode.code"></i-control></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col"><i-list items="setting.session_list" primary="name" display="display" label="Profile" ng-model="faCode.$profile"></i-list></div>
+                                            <div class="col"><i-control label="User Password" ng-model="faCode.password"></i-control></div>
+                                        </div>
+
+                                        <i-button type="push" ng-click="add2FACode(faCode)" label="Add to 2FA Codes"></i-button>
+                                    </fieldset>
+                                </div>
+
+                                <table class="table hover">
+                                    <tr>
+                                        <th>( {{setting.faList.length}} ) Index</th>
+                                        <th>Site Domain <i-control ng-model="fa2.domain"></i-control></th>
+                                        <th>Code <i-control ng-model="fa2.code"></i-control></th>
+                                        <th>Email <i-control ng-model="fa2.email"></i-control></th>
+                                        <th>Password <i-control type="password" ng-model="fa2.password"></i-control></th>
+                                    </tr>
+                                    <tr ng-repeat="fa in setting.faList | filter : fa2 | limitTo:500 track by $index">
+                                        <td class="center">{{$index +1 }} <i-button type="remove" ng-click="remove2FACode(fa)"></i-button></td>
+                                        <td><i-control ng-model="fa.domain"></i-control></td>
+                                        <td><i-control ng-model="fa.code"></i-control></td>
+                                        <td><i-control ng-model="fa.email"></i-control></td>
+                                        <td><i-control type="password" ng-model="fa.password"></i-control></td>
+                                    </tr>
+                                </table>
+                            </div>
                             <div id="keys_tab" class="tab-content">
                                 <div class="row">
                                     <fieldset>

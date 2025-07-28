@@ -282,6 +282,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
             let arr = $scope.setting.session_list.filter((s) => s.$selected);
             arr.forEach((profile) => {
                 profile.cookieList = $scope.setting.cookieList.filter((c) => c.partition == profile.name);
+                profile.faList = $scope.setting.faList.filter((c) => c.partition == profile.name || c.email == profile.display);
             });
             SOCIALBROWSER.ipcSync('[write-file]', { path: file, data: SOCIALBROWSER.hideObject(arr) });
         }
@@ -307,6 +308,15 @@ app.controller('mainController', ($scope, $http, $timeout) => {
                     delete profile.cookieList;
                 }
 
+                if (profile.faList) {
+                    profile.faList.forEach((fa) => {
+                        let index = $scope.setting.faList.findIndex((f) => f.code == fa.code);
+                        if (index == -1) {
+                            $scope.setting.faList.push(fa);
+                        }
+                    });
+                    delete profile.faList;
+                }
                 let index = $scope.setting.session_list.findIndex((s) => s.name == profile.name);
                 if (index === -1) {
                     console.log('Profile Not Exists : ' + profile.name);
@@ -606,6 +616,22 @@ app.controller('mainController', ($scope, $http, $timeout) => {
                 $scope.setting.session_list.splice(i, 1);
             }
         });
+    };
+
+    $scope.add2FACode = function (fa) {
+        if (fa.$profile) {
+            fa.email = fa.$profile.display;
+            fa.partition = fa.$profile.name;
+            delete fa.$profile;
+            $scope.setting.faList.push({ ...fa });
+            fa = {};
+            $scope.faCode = {};
+        }
+    };
+
+    $scope.remove2FACode = function (fa) {
+        $scope.setting.faList = $scope.setting.faList.filter((f) => f.code !== fa.code);
+        $scope.$applyAsync();
     };
 
     $scope.addZero = function (code, count) {
