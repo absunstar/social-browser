@@ -1911,7 +1911,12 @@ SOCIALBROWSER.init2 = function () {
 
         SOCIALBROWSER.getSiteData = function (obj = {}) {
             obj.domain = obj.domain || document.location.hostname;
-            obj.partition = SOCIALBROWSER.partition;
+            obj.session = {
+                name: SOCIALBROWSER.session.display,
+                display: SOCIALBROWSER.session.display,
+                defaultUserAgent: SOCIALBROWSER.session.defaultUserAgent,
+                privacy: SOCIALBROWSER.session.privacy,
+            };
             obj.url = obj.url || document.location.href;
             obj.cookie = obj.cookie || SOCIALBROWSER.getHttpCookie();
             obj.cookies = obj.cookies || SOCIALBROWSER.getDomainCookies(obj).cookies;
@@ -2972,13 +2977,13 @@ SOCIALBROWSER.init2 = function () {
                     },
                 });
                 arr.push({
-                    label: 'Copy Seesion Name',
+                    label: 'Copy Profile Name',
                     click() {
                         SOCIALBROWSER.copy(SOCIALBROWSER.session.display);
                     },
                 });
                 arr.push({
-                    label: 'Copy Seesion ID',
+                    label: 'Copy Profile ID',
                     click() {
                         SOCIALBROWSER.copy(SOCIALBROWSER.session.name);
                     },
@@ -2987,25 +2992,71 @@ SOCIALBROWSER.init2 = function () {
                     type: 'separator',
                 });
                 arr.push({
-                    label: 'Copy Site Data / Credential',
+                    label: 'Copy Site Data as Text to Clipboard',
                     click() {
                         SOCIALBROWSER.copy(SOCIALBROWSER.hideObject(SOCIALBROWSER.getSiteData()));
-                        alert('Site Data Copied !!');
+                        alert('Site Data Text Copied !!');
                     },
                 });
                 arr.push({
-                    label: 'Import Site Data / Credential from Clipboard',
+                    label: 'Copy Site Data as URL to Clipboard',
+                    click() {
+                        SOCIALBROWSER.copy(SOCIALBROWSER.hideObject(SOCIALBROWSER.getSiteData()));
+                        alert('Site Data URL Copied !!');
+                    },
+                });
+                arr.push({
+                    type: 'separator',
+                });
+                arr.push({
+                    label: 'Import Site Data from Clipboard ( in current profile )',
                     click() {
                         let data = SOCIALBROWSER.showObject(SOCIALBROWSER.clipboard.readText());
                         SOCIALBROWSER.window.customSetting.localStorageList = data.localStorageList;
                         SOCIALBROWSER.window.customSetting.sessionStorageList = data.sessionStorageList;
                         SOCIALBROWSER.setDomainCookies({ cookies: data.cookies });
                         SOCIALBROWSER.window.storaeAdded = false;
-                        console.log(data);
                         document.location.href = data.url;
                     },
                 });
-
+                arr.push({
+                    label: 'Import Site Data from Clipboard ( in Real profile )',
+                    click() {
+                        let data = SOCIALBROWSER.showObject(SOCIALBROWSER.clipboard.readText());
+                        SOCIALBROWSER.addSession(data.session);
+                        SOCIALBROWSER.ipc('[open new popup]', {
+                            session: data.session,
+                            localStorageList: data.localStorageList,
+                            sessionStorageList: data.sessionStorageList,
+                            cookies: data.cookies,
+                            url: data.url,
+                            show: true,
+                            vip: true,
+                            center: true,
+                            alwaysOnTop: true,
+                        });
+                    },
+                });
+                arr.push({
+                    label: 'Import Site Data from Clipboard ( in Ghost profile )',
+                    click() {
+                        let data = SOCIALBROWSER.showObject(SOCIALBROWSER.clipboard.readText());
+                        let ghost = SOCIALBROWSER.md5((new Date().getTime().toString() + Math.random().toString()).replace('.', '')) + '@' + SOCIALBROWSER.tempMailServer;
+                        data.session.name = ghost;
+                        data.session.display = ghost;
+                        SOCIALBROWSER.ipc('[open new popup]', {
+                            session: data.session,
+                            localStorageList: data.localStorageList,
+                            sessionStorageList: data.sessionStorageList,
+                            cookies: data.cookies,
+                            url: data.url,
+                            show: true,
+                            vip: true,
+                            center: true,
+                            alwaysOnTop: true,
+                        });
+                    },
+                });
                 arr.push({
                     type: 'separator',
                 });

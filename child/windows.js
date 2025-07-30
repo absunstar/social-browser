@@ -173,10 +173,11 @@ module.exports = function (child) {
         }
 
         let parent = child.parent;
-        setting.partition = setting.partition || child.partition || parent.var.core.session.name;
+        setting.partition = setting.partition || setting.session?.name || child.partition || parent.var.core.session.name;
 
         let defaultSetting = {
             vip: false,
+            session :  null,
             iframe: true,
             trackingID: 'main_tracking_' + new Date().getTime(),
             sandbox: true,
@@ -410,7 +411,7 @@ module.exports = function (child) {
         win.customSetting = customSetting;
         win.customSetting.windowSetting = win.customSetting.windowSetting || [];
 
-        win.customSetting.session = parent.var.session_list.find((s) => s.name == win.customSetting.partition) || {
+        win.customSetting.session = win.customSetting.session || parent.var.session_list.find((s) => s.name == win.customSetting.partition) || {
             name: win.customSetting.partition,
             display: win.customSetting.user_name || win.customSetting.partition,
         };
