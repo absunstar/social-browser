@@ -229,8 +229,7 @@ function showSettingMenu() {
         click: () =>
             ipc('[open new tab]', {
                 url: 'http://127.0.0.1:60080/setting',
-                partition: 'ghost',
-                user_name: 'Setting',
+                session: { name: 'setting', display: 'setting' },
                 windowType: 'view',
                 vip: true,
             }),
@@ -455,8 +454,7 @@ function showBookmarksMenu() {
         click: () => {
             ipc('[open new tab]', {
                 url: 'http://127.0.0.1:60080/setting#bookmark',
-                partition: 'ghost',
-                user_name: 'Setting',
+                session: { name: 'setting', display: 'setting' },
                 windowType: 'view',
                 vip: true,
             });
@@ -534,8 +532,7 @@ SOCIALBROWSER.showScriptListMenu = function () {
         click: () => {
             ipc('[open new tab]', {
                 url: 'http://127.0.0.1:60080/setting#scripts',
-                partition: 'ghost',
-                user_name: 'Setting',
+                session: { name: 'setting', display: 'setting' },
                 windowType: 'view',
                 vip: true,
             });
@@ -589,8 +586,7 @@ SOCIALBROWSER.showUserProxyMenu = function () {
         click: () => {
             ipc('[open new tab]', {
                 url: 'http://127.0.0.1:60080/setting#proxyList',
-                partition: 'ghost',
-                user_name: 'Setting',
+                session: { name: 'setting', display: 'setting' },
                 windowType: 'view',
                 vip: true,
             });
@@ -656,8 +652,7 @@ SOCIALBROWSER.showUserAgentMenu = function () {
         click: () => {
             ipc('[open new tab]', {
                 url: 'http://127.0.0.1:60080/setting#userAgntList',
-                partition: 'ghost',
-                user_name: 'Setting',
+                session: { name: 'setting', display: 'setting' },
                 windowType: 'view',
                 vip: true,
             });
@@ -720,16 +715,16 @@ SOCIALBROWSER.showWindowsMenu = function () {
     SOCIALBROWSER.menuList = [];
 
     SOCIALBROWSER.menuList.push({
-        label: 'Open URL in  [ Random - PC - Window ]' ,
+        label: 'Open URL in  [ Random - PC - Window ]',
         iconURL: 'http://127.0.0.1:60080/images/page.png',
-        sublabel : SOCIALBROWSER.currentTabInfo.url,
+        sublabel: SOCIALBROWSER.currentTabInfo.url,
         click: () => {
             ipc('[window-action]', { name: 'new-window' });
         },
     });
     SOCIALBROWSER.menuList.push({
         label: 'Open URL in  [ Random - Mobile - Window ]',
-        sublabel : SOCIALBROWSER.currentTabInfo.url,
+        sublabel: SOCIALBROWSER.currentTabInfo.url,
         iconURL: 'http://127.0.0.1:60080/images/page.png',
         click: () => {
             ipc('[window-action]', { name: 'new-mobile-window' });
@@ -741,7 +736,7 @@ SOCIALBROWSER.showWindowsMenu = function () {
     });
     SOCIALBROWSER.menuList.push({
         label: 'Open URL in  [ Random - PC - Ghost - Window ]',
-        sublabel : SOCIALBROWSER.currentTabInfo.url,
+        sublabel: SOCIALBROWSER.currentTabInfo.url,
         iconURL: 'http://127.0.0.1:60080/images/page.png',
         click: () => {
             ipc('[window-action]', { name: 'new-ghost-window' });
@@ -750,7 +745,7 @@ SOCIALBROWSER.showWindowsMenu = function () {
 
     SOCIALBROWSER.menuList.push({
         label: 'Open URL in  [ Random - Mobile - Ghost  - Window ]',
-        sublabel : SOCIALBROWSER.currentTabInfo.url,
+        sublabel: SOCIALBROWSER.currentTabInfo.url,
         iconURL: 'http://127.0.0.1:60080/images/page.png',
         click: () => {
             ipc('[window-action]', { name: 'new-ghost-mobile-window' });
@@ -761,7 +756,7 @@ SOCIALBROWSER.showWindowsMenu = function () {
     });
     SOCIALBROWSER.menuList.push({
         label: 'Open URL in  [ Ads - Window ]',
-        sublabel : SOCIALBROWSER.currentTabInfo.url,
+        sublabel: SOCIALBROWSER.currentTabInfo.url,
         iconURL: 'http://127.0.0.1:60080/images/page.png',
         click: () => {
             ipc('[window-action]', { name: 'new-ads-window' });
@@ -772,31 +767,31 @@ SOCIALBROWSER.showWindowsMenu = function () {
     });
     SOCIALBROWSER.menuList.push({
         label: 'Open URL in  [ Google - Chrome Browser ] ',
-        sublabel : SOCIALBROWSER.currentTabInfo.url,
+        sublabel: SOCIALBROWSER.currentTabInfo.url,
         iconURL: 'http://127.0.0.1:60080/images/chrome.png',
         click: () => {
             ipc('[window-action]', { name: 'open-in-chrome' });
         },
     });
 
-       SOCIALBROWSER.menuList.push({
+    SOCIALBROWSER.menuList.push({
         label: 'Open URL in  [ Google - Chrome Browser ] ( Shared Session and User Data )',
-        sublabel : SOCIALBROWSER.currentTabInfo.url,
+        sublabel: SOCIALBROWSER.currentTabInfo.url,
         iconURL: 'http://127.0.0.1:60080/images/chrome.png',
         click: () => {
             ipc('[window-action]', { name: 'open-in-chrome-session' });
         },
     });
 
-     SOCIALBROWSER.menuList.push({
+    SOCIALBROWSER.menuList.push({
         type: 'separator',
     });
     SOCIALBROWSER.menuList.push({
         label: 'Open URL in  [ External - Browser ] ',
-        sublabel : SOCIALBROWSER.currentTabInfo.url,
+        sublabel: SOCIALBROWSER.currentTabInfo.url,
         iconURL: 'http://127.0.0.1:60080/images/html.png',
         click: () => {
-            ipc('[window-action]', { name: 'open-external' , url : SOCIALBROWSER.currentTabInfo.url });
+            ipc('[window-action]', { name: 'open-external', url: SOCIALBROWSER.currentTabInfo.url });
         },
     });
 
@@ -1218,8 +1213,7 @@ function renderMessage(cm) {
     } else if (cm.name == '[show-browser-setting]') {
         renderNewTabData({
             url: 'http://127.0.0.1:60080/setting',
-            partition: 'ghost',
-            user_name: 'Setting',
+            session: { name: 'setting', display: 'setting' },
             windowType: 'view',
             vip: true,
         });

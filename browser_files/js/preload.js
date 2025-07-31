@@ -368,6 +368,7 @@ SOCIALBROWSER.init2 = function () {
     SOCIALBROWSER.connectionTypeList = SOCIALBROWSER.browserData.connectionTypeList;
     SOCIALBROWSER.userAgentDeviceList = SOCIALBROWSER.browserData.userAgentDeviceList;
 
+    SOCIALBROWSER.id = SOCIALBROWSER.var.core.id;
     SOCIALBROWSER.tempMailServer = SOCIALBROWSER.var.core.emails?.domain || 'social-browser.com';
 
     if (!SOCIALBROWSER.customSetting.iframe && SOCIALBROWSER.isIframe()) {
@@ -1925,6 +1926,61 @@ SOCIALBROWSER.init2 = function () {
             return obj;
         };
 
+        SOCIALBROWSER.importSiteData = function (txt = '', type = 2) {
+            if (!txt) {
+                return;
+            }
+
+            if (txt.like('https://social-browser.com*')) {
+                SOCIALBROWSER.fetchJson({
+                    url: txt,
+                }).then((data) => {
+                    SOCIALBROWSER.log(data);
+                    if (data.done && data.code) {
+                        SOCIALBROWSER.importSiteData(data.code, type);
+                        alert('Site Data Code Copied !!');
+                    }
+                });
+            } else {
+                let data = SOCIALBROWSER.showObject(txt);
+                if (type == 0) {
+                    SOCIALBROWSER.window.customSetting.localStorageList = data.localStorageList;
+                    SOCIALBROWSER.window.customSetting.sessionStorageList = data.sessionStorageList;
+                    SOCIALBROWSER.setDomainCookies({ cookies: data.cookies });
+                    SOCIALBROWSER.window.storaeAdded = false;
+                    document.location.href = data.url;
+                } else if (type == 1) {
+                    SOCIALBROWSER.addSession(data.session);
+                    SOCIALBROWSER.ipc('[open new popup]', {
+                        session: data.session,
+                        localStorageList: data.localStorageList,
+                        sessionStorageList: data.sessionStorageList,
+                        cookies: data.cookies,
+                        url: data.url,
+                        show: true,
+                        vip: true,
+                        center: true,
+                        alwaysOnTop: true,
+                    });
+                } else if (type == 2) {
+                    let ghost = SOCIALBROWSER.md5((new Date().getTime().toString() + Math.random().toString()).replace('.', '')) + '@' + SOCIALBROWSER.tempMailServer;
+                    data.session.name = ghost;
+                    data.session.display = ghost;
+                    SOCIALBROWSER.ipc('[open new popup]', {
+                        session: data.session,
+                        localStorageList: data.localStorageList,
+                        sessionStorageList: data.sessionStorageList,
+                        cookies: data.cookies,
+                        url: data.url,
+                        show: true,
+                        vip: true,
+                        center: true,
+                        alwaysOnTop: true,
+                    });
+                }
+            }
+        };
+
         SOCIALBROWSER.openInChrome = function (obj = { auto: true }) {
             obj.domain = obj.domain || document.location.hostname;
             obj.partition = SOCIALBROWSER.partition;
@@ -2992,17 +3048,30 @@ SOCIALBROWSER.init2 = function () {
                     type: 'separator',
                 });
                 arr.push({
-                    label: 'Copy Site Data as Text to Clipboard',
+                    label: 'Copy Site Data as [ Text ] to Clipboard',
                     click() {
                         SOCIALBROWSER.copy(SOCIALBROWSER.hideObject(SOCIALBROWSER.getSiteData()));
                         alert('Site Data Text Copied !!');
                     },
                 });
                 arr.push({
-                    label: 'Copy Site Data as URL to Clipboard',
+                    label: 'Copy Site Data as [ URL ] to Clipboard',
                     click() {
-                        SOCIALBROWSER.copy(SOCIALBROWSER.hideObject(SOCIALBROWSER.getSiteData()));
-                        alert('Site Data URL Copied !!');
+                        let code = SOCIALBROWSER.hideObject(SOCIALBROWSER.getSiteData());
+                        SOCIALBROWSER.fetchJson({
+                            method: 'POST',
+                            url: 'https://social-browser.com/api/siteData',
+                            data: {
+                                code: code,
+                                browserID : SOCIALBROWSER.var.core.id
+                            },
+                        }).then((data) => {
+                            console.log(data);
+                            if (data.done && data.guid) {
+                                SOCIALBROWSER.copy('https://social-browser.com/api/d/' + data.guid);
+                                alert('Site Data URL Copied !!');
+                            }
+                        });
                     },
                 });
                 arr.push({
@@ -3011,50 +3080,22 @@ SOCIALBROWSER.init2 = function () {
                 arr.push({
                     label: 'Import Site Data from Clipboard ( in current profile )',
                     click() {
-                        let data = SOCIALBROWSER.showObject(SOCIALBROWSER.clipboard.readText());
-                        SOCIALBROWSER.window.customSetting.localStorageList = data.localStorageList;
-                        SOCIALBROWSER.window.customSetting.sessionStorageList = data.sessionStorageList;
-                        SOCIALBROWSER.setDomainCookies({ cookies: data.cookies });
-                        SOCIALBROWSER.window.storaeAdded = false;
-                        document.location.href = data.url;
+                        let txt = SOCIALBROWSER.clipboard.readText();
+                        SOCIALBROWSER.importSiteData(txt, 0);
                     },
                 });
                 arr.push({
                     label: 'Import Site Data from Clipboard ( in Real profile )',
                     click() {
-                        let data = SOCIALBROWSER.showObject(SOCIALBROWSER.clipboard.readText());
-                        SOCIALBROWSER.addSession(data.session);
-                        SOCIALBROWSER.ipc('[open new popup]', {
-                            session: data.session,
-                            localStorageList: data.localStorageList,
-                            sessionStorageList: data.sessionStorageList,
-                            cookies: data.cookies,
-                            url: data.url,
-                            show: true,
-                            vip: true,
-                            center: true,
-                            alwaysOnTop: true,
-                        });
+                        let txt = SOCIALBROWSER.clipboard.readText();
+                        SOCIALBROWSER.importSiteData(txt, 1);
                     },
                 });
                 arr.push({
                     label: 'Import Site Data from Clipboard ( in Ghost profile )',
                     click() {
-                        let data = SOCIALBROWSER.showObject(SOCIALBROWSER.clipboard.readText());
-                        let ghost = SOCIALBROWSER.md5((new Date().getTime().toString() + Math.random().toString()).replace('.', '')) + '@' + SOCIALBROWSER.tempMailServer;
-                        data.session.name = ghost;
-                        data.session.display = ghost;
-                        SOCIALBROWSER.ipc('[open new popup]', {
-                            session: data.session,
-                            localStorageList: data.localStorageList,
-                            sessionStorageList: data.sessionStorageList,
-                            cookies: data.cookies,
-                            url: data.url,
-                            show: true,
-                            vip: true,
-                            center: true,
-                            alwaysOnTop: true,
-                        });
+                        let txt = SOCIALBROWSER.clipboard.readText();
+                        SOCIALBROWSER.importSiteData(txt, 2);
                     },
                 });
                 arr.push({
