@@ -230,6 +230,7 @@ module.exports = function (child) {
     };
 
     child.isAllowURL = function (url) {
+        url = url.split('?')[0];
         if (child.parent.var.blocking.white_list?.some((item) => url.like(item.url))) {
             return true;
         }

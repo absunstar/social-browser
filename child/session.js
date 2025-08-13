@@ -316,7 +316,7 @@ module.exports = function (child) {
                     }
                 }
 
-                if (customSetting.off) {
+                if (customSetting.off || customSetting.enginOFF) {
                     callback({
                         cancel: false,
                     });
@@ -472,7 +472,7 @@ module.exports = function (child) {
                     }
                 }
 
-                if (customSetting && customSetting.off) {
+                if (customSetting && (customSetting.off || customSetting.enginOFF)) {
                     callback({
                         cancel: false,
                         requestHeaders: details.requestHeaders,
@@ -643,7 +643,7 @@ module.exports = function (child) {
                     }
                 }
 
-                if (customSetting && customSetting.off) {
+                if (customSetting && (customSetting.off || customSetting.enginOFF)) {
                     callback({
                         cancel: false,
                         responseHeaders: {

@@ -501,10 +501,31 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         });
     };
 
+
+      $scope.showVipSiteListModal = function () {
+        site.showModal('#vipSiteListModal');
+    };
+      $scope.hideVipSiteListModal = function () {
+        site.hideModal('#vipSiteListModal');
+    };
+     $scope.vipSite = {};
+    $scope.addVipSite = function () {
+        $scope.setting.blocking.vip_site_list.push($scope.vipSite);
+        $scope.vipSite = {};
+    };
+
+    $scope.removeVipSite = function (_ws) {
+        $scope.setting.blocking.vip_site_list.forEach((ws, i) => {
+            if (ws.url === _ws.url) {
+                $scope.setting.blocking.vip_site_list.splice(i, 1);
+            }
+        });
+    };
+
     $scope.showWhiteListModal = function () {
         site.showModal('#whiteListModal');
     };
-
+  
     $scope.hideWhiteListModal = function () {
         site.hideModal('#whiteListModal');
     };

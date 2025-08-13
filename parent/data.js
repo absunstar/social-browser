@@ -367,7 +367,9 @@ module.exports = function init(parent) {
         }
 
         if (name == 'user_data_input') {
-            parent.var.user_data_input = parent.var.user_data_input.filter((v, i, a) => a.findIndex((t) => t && v && t.hostname === v.hostname && t.password === v.password && t.username === v.username) === i);
+            parent.var.user_data_input = parent.var.user_data_input.filter(
+                (v, i, a) => a.findIndex((t) => t && v && t.hostname === v.hostname && t.password === v.password && t.username === v.username) === i,
+            );
             parent.var.user_data_input.forEach((d, i) => {
                 delete parent.var.user_data_input[i].options;
                 delete parent.var.user_data_input[i].parentSetting;
@@ -379,7 +381,9 @@ module.exports = function init(parent) {
             });
         }
         if (name == 'user_data') {
-            parent.var.user_data = parent.var.user_data.filter((v, i, a) => a.findIndex((t) => t && v && t.hostname === v.hostname && JSON.stringify(t.data || {}) === JSON.stringify(v.data || {})) === i);
+            parent.var.user_data = parent.var.user_data.filter(
+                (v, i, a) => a.findIndex((t) => t && v && t.hostname === v.hostname && JSON.stringify(t.data || {}) === JSON.stringify(v.data || {})) === i,
+            );
             parent.var.user_data.forEach((d, i) => {
                 delete parent.var.user_data[i].options;
                 delete parent.var.user_data[i].parentSetting;
@@ -404,6 +408,7 @@ module.exports = function init(parent) {
             parent.var.blocking.permissions = parent.var.blocking.permissions || {};
             parent.var.blocking.internet_speed = parent.var.blocking.internet_speed || {};
             parent.var.blocking.white_list = parent.var.blocking.white_list || [];
+            parent.var.blocking.vip_site_list = parent.var.blocking.vip_site_list || [];
             parent.var.blocking.black_list = parent.var.blocking.black_list || [];
             parent.var.blocking.open_list = parent.var.blocking.open_list || [];
             parent.var.blocking.popup = parent.var.blocking.popup || {};
@@ -710,6 +715,12 @@ module.exports = function init(parent) {
     if (parent.var.blocking && parent.var.blocking.white_list) {
         parent.var.blocking.white_list = parent.var.blocking.white_list.filter((w) => w.url.length > 3);
     }
+    if (parent.var.blocking && parent.var.blocking.vip_site_list) {
+        parent.var.blocking.vip_site_list = parent.var.blocking.vip_site_list.filter((w) => w.url.length > 3);
+    }
+    if (parent.var.blocking && parent.var.blocking.black_list) {
+        parent.var.blocking.black_list = parent.var.blocking.black_list.filter((w) => w.url.length > 3);
+    }
     if (parent.var.blocking && parent.var.blocking.popup && parent.var.blocking.popup.white_list) {
         parent.var.blocking.popup.white_list = parent.var.blocking.popup.white_list.filter((w) => w.url.length > 3);
     }
@@ -733,14 +744,14 @@ module.exports = function init(parent) {
                 if (parent.var.core.max_tabs < 3) {
                     parent.var.core.max_tabs = 20;
                 }
-                parent.save_var('core')
+                parent.save_var('core');
             } else if (parent.var.core['DeviceKey'] && parent.md5(parent.api.to123(parent.var.core['DeviceId'])) === parent.var.core['DeviceKey']) {
                 parent.var.core.browserActivated = true;
                 parent.var.core.activeMessage = 'Browser Activated By ( Device Key )';
                 if (parent.var.core.max_tabs < 3) {
                     parent.var.core.max_tabs = 20;
                 }
-                parent.save_var('core')
+                parent.save_var('core');
             } else if (parent.var.core['OnlineKey']) {
                 parent.api
                     .fetch('https://social-browser.com/api/activated', {
@@ -780,13 +791,13 @@ module.exports = function init(parent) {
                             parent.var.core.browserActivated = false;
                             parent.var.core.max_tabs = 2;
                         }
-                        parent.save_var('core')
+                        parent.save_var('core');
                     })
                     .catch((err) => {
                         // error when server down or no internet or site blocked for any reson ( online key only)
                         console.log(err);
                         parent.var.core.activeMessage = err;
-                        parent.save_var('core')
+                        parent.save_var('core');
                     });
             } else {
                 if (parent.var.session_list.length <= parent.freeUsersCount) {
@@ -800,7 +811,7 @@ module.exports = function init(parent) {
                     parent.var.core.max_tabs = 2;
                     parent.var.core.activeMessage = 'Need Device Key or Online Key';
                 }
-                parent.save_var('core')
+                parent.save_var('core');
             }
         }
     };

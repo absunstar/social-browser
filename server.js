@@ -210,6 +210,7 @@
     //   }
     // });
   });
+  
   browser.electron.app.on('second-instance', (event, commandLine, workingDirectory) => {
     browser.log('second-instance', commandLine);
 

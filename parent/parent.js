@@ -17,6 +17,9 @@ module.exports = function init(parent) {
         if (parent.var.blocking.white_list.some((item) => url.like(item.url))) {
             return true;
         }
+        if (parent.var.blocking.vip_site_list.some((item) => url.like(item.url))) {
+            return true;
+        }
         let allow = true;
         if (parent.var.blocking.core.block_ads) {
             allow = !parent.var.ad_list.some((ad) => url.like(ad.url));

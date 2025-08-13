@@ -105,6 +105,7 @@ var child = {
 // child.electron.app.commandLine.appendSwitch('no-sandbox');
 // child.electron.app.commandLine.appendSwitch('disable-setuid-sandbox');
 child.electron.app.commandLine.appendSwitch('disable-dev-mode');
+child.electron.app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 // child.electron.app.commandLine.appendSwitch('disable-debug-mode');
 // child.electron.app.disableHardwareAcceleration(); ## real human has this //
 

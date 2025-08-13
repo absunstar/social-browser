@@ -9,18 +9,14 @@
         "name": "service",
         "enabled": true
     },
-    {
-        "url": "*/ad/*|*_ads.js|*/ads/*|http://ads.*|https://ads.*|*ad_companion*|*/banners/*|*popads.net*|*-ad.net/*|*-ads.js*|*-ad.js*|*fuckadblock*js|*adtrue.com*|*run-syndicate.com*|*alexametrics.com*",
-        "name": "tools",
-        "enabled": true
-    },
+    { "url": "http://ads.*|https://ads.*|*ad_companion*|*/banners/*|*popads.net*|*-ad.net/*|*fuckadblock*js|*adtrue.com*|*run-syndicate.com*|*alexametrics.com*", "name": "tools", "enabled": true },
     {
         "url": "*mgid.com*|*yandex*watch.js|*advertisement.js|*pvclouds.com*.js|*js.foxpush.com*|*effectivemeasure.com*|*fdrgtt9edmej010.com*|*flagros2sii8fdbrh09.com*|*podsolnu9hi10.com*|*ptwmstc.com*",
         "name": "search",
         "enabled": true
     },
     {
-        "url": "*addthis.com*|*adskeeper.co*|*brightonclick.com*|*gigaonclick.com*|*padsdel.com*|*cdn4ads*|/ad.js|*bestcontentproject.top*|*popsoffer.com*|*ppfrlfe.com*|*awmserve.com*|*labeldollars.com*|*wpadmngr.com*|*diagramjawlineunhappy.com*|*leedsneurite.com*|*s0-greate.net*|*ptichoolsougn.net*|*labadena.com*|*tapioni.com*|*wmgtr.com*",
+        "url": "*addthis.com*|*adskeeper.co*|*brightonclick.com*|*gigaonclick.com*|*padsdel.com*|*cdn4ads*|*bestcontentproject.top*|*popsoffer.com*|*ppfrlfe.com*|*awmserve.com*|*labeldollars.com*|*wpadmngr.com*|*diagramjawlineunhappy.com*|*leedsneurite.com*|*s0-greate.net*|*ptichoolsougn.net*|*labadena.com*|*tapioni.com*|*wmgtr.com*",
         "name": "cdn",
         "enabled": true
     },
@@ -30,7 +26,7 @@
         "enabled": true
     },
     {
-        "url": "*tsyndicate.com*|*adspyglass.com*|*realsrv.com*|*exoclick.com*|*hunt4k.com*|*amzcdn.info*|*poweredby.jads.co*|*bngpt.com*|*creamssicsite.com*|*media.aso1.net*|*buleor.com*|*lupush.com*|*clladss.com*",
+        "url": "*lcdn.tsyndicate.com*|*adspyglass.com*|*realsrv.com*|*exoclick.com*|*hunt4k.com*|*amzcdn.info*|*poweredby.jads.co*|*bngpt.com*|*creamssicsite.com*|*media.aso1.net*|*buleor.com*|*lupush.com*|*clladss.com*",
         "name": "service 2",
         "enabled": true
     },
@@ -98,5 +94,5 @@
     { "url": "*amithoutsoo.ne*", "name": "OPTIONS001", "enabled": true },
     { "name": "Monitor 001", "url": "*clarity.ms*clarity.js", "enabled": true },
     { "name": "ad004", "url": "*commentarybumpbankrupt.co*|*containingstripesadmonish.com*", "enabled": true },
-    { "name": "redirect 7", "url": "*bongacams11.com*|*clickadu.net*", "enabled": true }
+    { "name": "redirect 7", "url": "*bongacams11.com*|*clickadu.net*|*yequka.my*", "enabled": true }
 ]

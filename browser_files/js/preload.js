@@ -370,6 +370,13 @@ SOCIALBROWSER.init2 = function () {
 
     SOCIALBROWSER.id = SOCIALBROWSER.var.core.id;
     SOCIALBROWSER.tempMailServer = SOCIALBROWSER.var.core.emails?.domain || 'social-browser.com';
+    SOCIALBROWSER.isWhiteSite = SOCIALBROWSER.var.blocking.white_list.some((site) => site.url.length > 2 && document.location.href.like(site.url));
+
+    if (SOCIALBROWSER.var.core.id.like('*developer*')) {
+        SOCIALBROWSER.developerMode = true;
+    }
+    SOCIALBROWSER.customSetting.javaScriptOFF =
+        SOCIALBROWSER.customSetting.javaScriptOFF || SOCIALBROWSER.var.blocking.vip_site_list.some((site) => site.url.length > 2 && document.location.href.like(site.url));
 
     if (!SOCIALBROWSER.customSetting.iframe && SOCIALBROWSER.isIframe()) {
         return;
@@ -389,66 +396,7 @@ SOCIALBROWSER.init2 = function () {
         }
     }
 
-    (function loadInit() {
-        if ((initLOADED = true)) {
-            function escape(s) {
-                if (!s) {
-                    return '';
-                }
-                if (typeof s !== 'string') {
-                    s = s.toString();
-                }
-                return s.replace(/[\/\\^$*+?.()\[\]{}]/g, '\\$&');
-            }
 
-            if (!String.prototype.test) {
-                String.prototype.test = function (reg, flag = 'gium') {
-                    try {
-                        return new RegExp(reg, flag).test(this);
-                    } catch (error) {
-                        return false;
-                    }
-                };
-            }
-
-            if (!String.prototype.like) {
-                String.prototype.like = function (name) {
-                    if (typeof name === 'number') {
-                        name = name.toString();
-                    } else if (typeof name !== 'string') {
-                        return false;
-                    }
-                    let r = false;
-                    name.split('|').forEach((n) => {
-                        n = n.split('*');
-                        n.forEach((w, i) => {
-                            n[i] = escape(w);
-                        });
-                        n = n.join('.*');
-                        if (this.test('^' + n + '$', 'gium')) {
-                            r = true;
-                        }
-                    });
-                    return r;
-                };
-            }
-
-            if (!String.prototype.contains) {
-                String.prototype.contains = function (name) {
-                    let r = false;
-                    if (!name) {
-                        return r;
-                    }
-                    name.split('|').forEach((n) => {
-                        if (n && this.test('^.*' + escape(n) + '.*$', 'gium')) {
-                            r = true;
-                        }
-                    });
-                    return r;
-                };
-            }
-        }
-    })();
 
     (function loadEvents() {
         if ((eventLOADED = true)) {
@@ -1164,7 +1112,8 @@ SOCIALBROWSER.init2 = function () {
                     y: SOCIALBROWSER.randomNumber(top, top + box.height),
                 };
             };
-            SOCIALBROWSER.mouseMoveByPosition = function (x, y) {
+
+            SOCIALBROWSER.mouseMoveByPosition = function (x, y, move = true) {
                 x = Math.floor(x);
                 y = Math.floor(y);
 
@@ -1173,29 +1122,50 @@ SOCIALBROWSER.init2 = function () {
                 }
 
                 SOCIALBROWSER.window.focus();
-                let steps = 300;
+                if (move) {
+                    let steps = 300;
 
-                for (let index = 0; index < steps; index++) {
-                    setTimeout(() => {
-                        SOCIALBROWSER.webContents.sendInputEvent({
-                            type: 'mouseMove',
-                            x: x - steps + index,
-                            y: y - steps + index,
-                            movementX: x - steps + index,
-                            movementY: y - steps + index,
-                            globalX: x - steps + index,
-                            globalY: y - steps + index,
-                        });
-                        SOCIALBROWSER.webContents.sendInputEvent({
-                            type: 'mouseEnter',
-                            x: x - steps + index,
-                            y: y - steps + index,
-                            movementX: x - steps + index,
-                            movementY: y - steps + index,
-                            globalX: x - steps + index,
-                            globalY: y - steps + index,
-                        });
-                    }, 10 * index);
+                    for (let index = 0; index < steps; index++) {
+                        setTimeout(() => {
+                            SOCIALBROWSER.webContents.sendInputEvent({
+                                type: 'mouseMove',
+                                x: x - steps + index,
+                                y: y - steps + index,
+                                movementX: x - steps + index,
+                                movementY: y - steps + index,
+                                globalX: x - steps + index,
+                                globalY: y - steps + index,
+                            });
+                            SOCIALBROWSER.webContents.sendInputEvent({
+                                type: 'mouseEnter',
+                                x: x - steps + index,
+                                y: y - steps + index,
+                                movementX: x - steps + index,
+                                movementY: y - steps + index,
+                                globalX: x - steps + index,
+                                globalY: y - steps + index,
+                            });
+                        }, 10 * index);
+                    }
+                } else {
+                    SOCIALBROWSER.webContents.sendInputEvent({
+                        type: 'mouseMove',
+                        x: x,
+                        y: y,
+                        movementX: x,
+                        movementY: y,
+                        globalX: x,
+                        globalY: y,
+                    });
+                    SOCIALBROWSER.webContents.sendInputEvent({
+                        type: 'mouseEnter',
+                        x: x,
+                        y: y,
+                        movementX: x,
+                        movementY: y,
+                        globalX: x,
+                        globalY: y,
+                    });
                 }
             };
 
@@ -1207,7 +1177,7 @@ SOCIALBROWSER.init2 = function () {
                 }
                 let time = 0;
                 if (move) {
-                    SOCIALBROWSER.mouseMoveByPosition(x, y);
+                    SOCIALBROWSER.mouseMoveByPosition(x, y, move);
                     time = 1000 * 3;
                 }
                 setTimeout(() => {
@@ -1220,32 +1190,61 @@ SOCIALBROWSER.init2 = function () {
                 }, time);
             };
 
-            SOCIALBROWSER.click = function (selector, realPerson = true, move = true) {
+            SOCIALBROWSER.hover = function (selector, realPerson = true, move = true) {
                 const element = SOCIALBROWSER.$(selector);
                 if (element) {
-                    if (!SOCIALBROWSER.isElementViewable(element) || !SOCIALBROWSER.isElementInViewArea(element)) {
-                        element.scrollIntoView({
-                            behavior: 'auto',
-                            block: 'center',
-                            inline: 'center',
+                    let offset = SOCIALBROWSER.getOffset(element);
+                    if (realPerson && SOCIALBROWSER.window.isVisible()) {
+                        SOCIALBROWSER.mouseMoveByPosition(offset.x, offset.y, move);
+                        return element;
+                    } else {
+                        const eventNames = ['mouseover', 'mouseenter', 'mouseout'];
+                        eventNames.forEach((eventName) => {
+                            const event = new MouseEvent(eventName, {
+                                detail: eventName === 'mouseover' ? 0 : 1,
+                                view: window,
+                                bubbles: true,
+                                cancelable: true,
+                                clientX: element.clientX,
+                                clientY: element.clientY,
+                            });
+                            element.dispatchEvent(event);
                         });
-                        window.scroll(window.scrollX, window.scrollY - (element.clientHeight + window.innerHeight / 2));
                     }
 
-                    if (!SOCIALBROWSER.isElementViewable(element) || !SOCIALBROWSER.isElementInViewArea(element)) {
-                        element.scrollIntoView({
-                            behavior: 'auto',
-                            block: 'center',
-                            inline: 'center',
-                        });
-                        if (window.scrollY !== 0) {
-                            let y = window.scrollY - element.clientHeight;
-                            if (y < 0) {
-                                y = 0;
+                    return element;
+                }
+            };
+
+            SOCIALBROWSER.click = function (selector, realPerson = true, move = true, view = true) {
+                const element = SOCIALBROWSER.$(selector);
+                if (element) {
+                    if (view) {
+                        if (!SOCIALBROWSER.isElementViewable(element) || !SOCIALBROWSER.isElementInViewArea(element)) {
+                            element.scrollIntoView({
+                                behavior: 'auto',
+                                block: 'center',
+                                inline: 'center',
+                            });
+                            window.scroll(window.scrollX, window.scrollY - (element.clientHeight + window.innerHeight / 2));
+                        }
+
+                        if (!SOCIALBROWSER.isElementViewable(element) || !SOCIALBROWSER.isElementInViewArea(element)) {
+                            element.scrollIntoView({
+                                behavior: 'auto',
+                                block: 'center',
+                                inline: 'center',
+                            });
+                            if (window.scrollY !== 0) {
+                                let y = window.scrollY - element.clientHeight;
+                                if (y < 0) {
+                                    y = 0;
+                                }
+                                window.scroll(window.scrollX, y);
                             }
-                            window.scroll(window.scrollX, y);
                         }
                     }
+
                     if (!SOCIALBROWSER.isElementViewable(element) || !SOCIALBROWSER.isElementInViewArea(element)) {
                         realPerson = false;
                     }
@@ -1374,6 +1373,7 @@ SOCIALBROWSER.init2 = function () {
             };
 
             SOCIALBROWSER.isAllowURL = function (url) {
+                url = url.split('?')[0];
                 if (SOCIALBROWSER.customSetting.blockURLs) {
                     if (url.like(SOCIALBROWSER.customSetting.blockURLs)) {
                         return false;
@@ -2251,12 +2251,6 @@ SOCIALBROWSER.init2 = function () {
             SOCIALBROWSER.session.privacy.vpc = { ...SOCIALBROWSER.var.blocking.privacy.vpc };
         }
 
-        SOCIALBROWSER.isWhiteSite = SOCIALBROWSER.var.blocking.white_list.some((site) => site.url.length > 2 && document.location.href.like(site.url));
-
-        if (SOCIALBROWSER.var.core.id.like('*developer*')) {
-            SOCIALBROWSER.developerMode = true;
-        }
-
         if (SOCIALBROWSER.sessionId() == 0 && !SOCIALBROWSER.session.privacy.vpc) {
             SOCIALBROWSER.session.privacy.allowVPC = true;
             SOCIALBROWSER.session.privacy.vpc = SOCIALBROWSER.getStorage('vpc') || SOCIALBROWSER.generateVPC();
@@ -2287,7 +2281,7 @@ SOCIALBROWSER.init2 = function () {
     (function loadCloudflare() {
         if (document.location.href.like('*://challenges.cloudflare.com/*')) {
             SOCIALBROWSER.customSetting.$cloudFlare = true;
-            if (SOCIALBROWSER.var.blocking.javascript.cloudflareON || SOCIALBROWSER.customSetting.cloudFlare) {
+            if (SOCIALBROWSER.var.blocking.javascript.cloudflareON) {
                 if (document.location.href.like('*://challenges.cloudflare.com/*')) {
                     SOCIALBROWSER.sendMessage('[cloudflare-detected]');
 
@@ -2767,6 +2761,22 @@ SOCIALBROWSER.init2 = function () {
                             url: url,
                             referrer: document.location.href,
                             allowAds: true,
+                            show: true,
+                            center: true,
+                            alwaysOnTop: true,
+                        });
+                    },
+                });
+                arr.push({
+                    label: ' in ( Vip Window )',
+                    click() {
+                        SOCIALBROWSER.ipc('[open new popup]', {
+                            partition: SOCIALBROWSER.partition,
+                            url: url,
+                            referrer: document.location.href,
+                            allowAds: true,
+                            javaScriptOFF: true,
+                            enginOFF : true,
                             show: true,
                             center: true,
                             alwaysOnTop: true,
@@ -4714,7 +4724,12 @@ SOCIALBROWSER.init2 = function () {
 
     (function loadDom() {
         if ((domsLOADED = true)) {
-            if (SOCIALBROWSER.var.core.javaScriptOFF || SOCIALBROWSER.customSetting.windowType === 'main' || document.location.href.like('*http://127.0.0.1*')) {
+            if (
+                SOCIALBROWSER.customSetting.javaScriptOFF ||
+                SOCIALBROWSER.var.core.javaScriptOFF ||
+                SOCIALBROWSER.customSetting.windowType === 'main' ||
+                document.location.href.like('*http://127.0.0.1*')
+            ) {
                 SOCIALBROWSER.log('.... [ DOM Blocking OFF] .... ' + document.location.href);
                 return;
             }
@@ -4753,7 +4768,7 @@ SOCIALBROWSER.init2 = function () {
 
     (function loadNodes() {
         if ((nodesLOADED = true)) {
-            if (SOCIALBROWSER.var.core.javaScriptOFF) {
+            if (SOCIALBROWSER.customSetting.javaScriptOFF || SOCIALBROWSER.var.core.javaScriptOFF) {
                 return false;
             }
             SOCIALBROWSER.log('.... [ HTML Elements Script Activated ].... ' + document.location.href);
@@ -4942,6 +4957,7 @@ SOCIALBROWSER.init2 = function () {
     (function loadSafty() {
         if ((saftyLOADED = true)) {
             if (
+                SOCIALBROWSER.customSetting.javaScriptOFF ||
                 SOCIALBROWSER.var.core.javaScriptOFF ||
                 !SOCIALBROWSER.var.blocking.allow_safty_mode ||
                 SOCIALBROWSER.isWhiteSite ||
@@ -5019,6 +5035,8 @@ SOCIALBROWSER.init2 = function () {
     (function loadAdsManager() {
         if ((adsManagerLOADED = true)) {
             if (
+                SOCIALBROWSER.isWhiteSite ||
+                SOCIALBROWSER.customSetting.javaScriptOFF ||
                 SOCIALBROWSER.var.core.javaScriptOFF ||
                 !SOCIALBROWSER.var.blocking.block_ads ||
                 SOCIALBROWSER.customSetting.windowType === 'main' ||
@@ -5066,8 +5084,8 @@ SOCIALBROWSER.init2 = function () {
             let videos = document.querySelectorAll('video');
             if (videos.length > 0) {
                 document.querySelectorAll(skip_buttons).forEach((b) => {
-                    b.click();
-                    alert('<b> Auto Skiping Ads Video </b>  <small><i> Changing Form Setting </i></small>', 2000);
+                    SOCIALBROWSER.click(b, false, false, false);
+                    alert('<b>Ads Video Detected</b><small><i> Skip Button </i></small>', 2000);
                 });
             }
             setTimeout(() => {
@@ -5080,14 +5098,14 @@ SOCIALBROWSER.init2 = function () {
             if (videos.length > 0) {
                 document.querySelectorAll(skip_buttons).forEach((b) => {
                     b.click();
-                    alert('<b> Auto Skiping Ads Video </b>  <small><i> Changing Form Setting </i></small>', 2000);
+                    alert('<b>Ads Video Detected</b><small><i> Skip Button </i></small>', 2000);
                 });
 
                 if (document.querySelector(adsProgressSelector)) {
                     videos.forEach((v) => {
                         if (v && !v.ended && v.readyState > 2) {
                             v.currentTime = parseFloat(v.duration);
-                            alert('<b> Skiping Youtube Ad </b>  <small><i> Changing Form Setting </i></small>', 3000);
+                            alert('Ads Video Detected', 2000);
                         }
                     });
                 }
@@ -5189,7 +5207,7 @@ SOCIALBROWSER.init2 = function () {
                                 return child_window;
                             }
 
-                            if (!SOCIALBROWSER.var.core.javaScriptOFF) {
+                            if (!SOCIALBROWSER.var.core.javaScriptOFF && !SOCIALBROWSER.customSetting.javaScriptOFF) {
                                 if (!SOCIALBROWSER.isAllowURL(url)) {
                                     SOCIALBROWSER.log('Not Allow URL : ' + url);
                                     return child_window;
@@ -5633,7 +5651,7 @@ SOCIALBROWSER.init2 = function () {
 
         (function loadFingerPrint() {
             if ((fingerPrintLOADED = true)) {
-                if (SOCIALBROWSER.var.core.javaScriptOFF || SOCIALBROWSER.customSetting.windowType === 'main' || !SOCIALBROWSER.session.privacy.allowVPC) {
+                if (SOCIALBROWSER.customSetting.javaScriptOFF || SOCIALBROWSER.var.core.javaScriptOFF || SOCIALBROWSER.customSetting.windowType === 'main' || !SOCIALBROWSER.session.privacy.allowVPC) {
                     SOCIALBROWSER.log('.... [ Finger Printing OFF ] .... ' + document.location.href);
                     return;
                 }
@@ -5645,7 +5663,7 @@ SOCIALBROWSER.init2 = function () {
                     SOCIALBROWSER.navigator.deviceMemory = SOCIALBROWSER.session.privacy.vpc.memory_count;
                 }
 
-                if (!SOCIALBROWSER.screenHidden && SOCIALBROWSER.session.privacy.vpc.hide_screen && SOCIALBROWSER.session.privacy.vpc.screen) {
+                if (SOCIALBROWSER.screenHidden && SOCIALBROWSER.session.privacy.vpc.hide_screen && SOCIALBROWSER.session.privacy.vpc.screen) {
                     SOCIALBROWSER.__define(window, 'innerWidth', SOCIALBROWSER.session.privacy.vpc.screen.width);
                     SOCIALBROWSER.__define(window, 'innerHeight', SOCIALBROWSER.session.privacy.vpc.screen.height);
                     SOCIALBROWSER.__define(window, 'outerWidth', SOCIALBROWSER.session.privacy.vpc.screen.width);
@@ -5873,9 +5891,11 @@ SOCIALBROWSER.init2 = function () {
                     (SOCIALBROWSER.customSetting.windowType.like('*view*') && SOCIALBROWSER.session.privacy.vpc.set_tab_active)
                 ) {
                     SOCIALBROWSER.blockEvent = (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
+                        if (e.target === window || e.target === document) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            e.stopImmediatePropagation();
+                        }
                     };
 
                     SOCIALBROWSER.__setConstValue(window, 'hidden ', false);
@@ -5922,6 +5942,7 @@ SOCIALBROWSER.init2 = function () {
                     window.webkitRTCPeerConnection = undefined;
                     window.webkitRTCSessionDescription = undefined;
                 }
+
                 if (SOCIALBROWSER.session.privacy.vpc.hide_media_devices) {
                     SOCIALBROWSER.navigator.mediaDevices = {
                         ondevicechange: null,
@@ -6187,6 +6208,7 @@ SOCIALBROWSER.init2 = function () {
                         },
                     });
                 }
+
                 if (SOCIALBROWSER.session.privacy.vpc.hide_battery) {
                     SOCIALBROWSER.navigator.getBattery = function () {
                         return new Promise((ok, err) => {
@@ -6298,6 +6320,7 @@ SOCIALBROWSER.init2 = function () {
                         },
                     };
                 }
+
                 SOCIALBROWSER.log('.... [ Finger Printing ON ] .... ' + document.location.href);
             }
         })();
@@ -7482,6 +7505,67 @@ SOCIALBROWSER.init = function () {
         propertyList: SOCIALBROWSER.propertyList,
         windowID: SOCIALBROWSER._window.id,
     });
+
+        (function loadInit() {
+        if ((initLOADED = true)) {
+            function escape(s) {
+                if (!s) {
+                    return '';
+                }
+                if (typeof s !== 'string') {
+                    s = s.toString();
+                }
+                return s.replace(/[\/\\^$*+?.()\[\]{}]/g, '\\$&');
+            }
+
+            if (!String.prototype.test) {
+                String.prototype.test = function (reg, flag = 'gium') {
+                    try {
+                        return new RegExp(reg, flag).test(this);
+                    } catch (error) {
+                        return false;
+                    }
+                };
+            }
+
+            if (!String.prototype.like) {
+                String.prototype.like = function (name) {
+                    if (typeof name === 'number') {
+                        name = name.toString();
+                    } else if (typeof name !== 'string') {
+                        return false;
+                    }
+                    let r = false;
+                    name.split('|').forEach((n) => {
+                        n = n.split('*');
+                        n.forEach((w, i) => {
+                            n[i] = escape(w);
+                        });
+                        n = n.join('.*');
+                        if (this.test('^' + n + '$', 'gium')) {
+                            r = true;
+                        }
+                    });
+                    return r;
+                };
+            }
+
+            if (!String.prototype.contains) {
+                String.prototype.contains = function (name) {
+                    let r = false;
+                    if (!name) {
+                        return r;
+                    }
+                    name.split('|').forEach((n) => {
+                        if (n && this.test('^.*' + escape(n) + '.*$', 'gium')) {
+                            r = true;
+                        }
+                    });
+                    return r;
+                };
+            }
+        }
+    })();
 
     SOCIALBROWSER.init2();
 

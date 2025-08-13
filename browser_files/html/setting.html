@@ -392,8 +392,9 @@
                                     </fieldset>
                                     <div class="row padding">
                                         <div class="col">
-                                            <i-button type="list" ng-click="showBlackListModal()" label="Black List Sites"></i-button>
-                                            <i-button type="list" ng-click="showWhiteListModal()" label="White List Sites"></i-button>
+                                            <i-button type="list" ng-click="showBlackListModal()" label="Black Site List"></i-button>
+                                            <i-button type="list" ng-click="showWhiteListModal()" label="White Site List"></i-button>
+                                            <i-button type="list" ng-click="showVipSiteListModal()" label="Vip Site List "></i-button>
                                         </div>
                                         <div class="col6">
                                             <div class="row hide">
@@ -2070,6 +2071,47 @@
                     </div>
                 </div>
 
+                  <div id="vipSiteListModal" class="modal" fixed>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <span class="close">&times;</span>
+                            <h2>VIP Sites List</h2>
+                        </div>
+                        <div class="modal-body">
+                            <h2 class="padding margin center">These Sites like white site list + Display without [ FingerPrint , Dom Changes ]</h2>
+
+                            <div class="row padding border">
+                                <div class="col2">
+                                    <i-button type="push" ng-click="addVipSite()" label="Add New"></i-button>
+                                </div>
+                                <div class="col10">
+                                    <i-control ng-model="vipSite.url"></i-control>
+                                </div>
+                            </div>
+
+                            <table class="table">
+                                <tr>
+                                    <th class="w200">Action</th>
+                                    <th>URL</th>
+                                </tr>
+
+                                <tr ng-repeat="_ws in setting.blocking.vip_site_list | filter:vipSite track by $index">
+                                    <td>
+                                        <i-button type="delete" ng-click="removeVipSite(_ws)" label="Remove"></i-button>
+                                    </td>
+                                    <td>
+                                        <i-control ng-model="_ws.url"></i-control>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <div class="modal-footer center">
+                                <i-button type="close" ng-click="hideVipSiteListModal()" label="Close"></i-button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="whiteListModal" class="modal" fixed>
                     <div class="modal-content">
                         <div class="modal-header">
@@ -2110,6 +2152,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div id="blackListModal" class="modal" fixed>
                     <div class="modal-content">
                         <div class="modal-header">

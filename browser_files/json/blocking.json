@@ -238,7 +238,7 @@
             "url": "*youtube.com*"
         },
         {
-            "url": "*facebook.com*"
+            "url": "*facebook.com*|*instagram.com*"
         },
         {
             "url": "*tiktok.com*"
@@ -251,6 +251,11 @@
         },
         {
             "url": "*snapchat.com*"
+        }
+    ],
+    "vip_site_list": [
+        {
+            "url": "*tiktok.com*"
         }
     ],
     "black_list": [],

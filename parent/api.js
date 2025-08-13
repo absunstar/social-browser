@@ -416,6 +416,7 @@ module.exports = function init(parent) {
                 bookmarks: parent.var.bookmarks,
                 black_list: parent.var.blocking.black_list,
                 white_list: parent.var.blocking.white_list,
+                vip_site_list: parent.var.blocking.vip_site_list,
                 session_list: parent.var.session_list,
                 userAgentList: parent.var.userAgentList,
                 user_data_input: parent.var.user_data_input,
