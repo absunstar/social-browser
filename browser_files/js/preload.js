@@ -39,7 +39,7 @@ var SOCIALBROWSER = {
     developerMode: false,
     log: function (...args) {
         if (this.developerMode) {
-            console.log(...args, document.location.href);
+            console.log(...args);
         }
     },
 };
@@ -128,11 +128,16 @@ SOCIALBROWSER.newFunction = function (code) {
         }
         return fn;
     } catch (error) {
+        SOCIALBROWSER.log(error, code);
         return 'ERROR';
     }
 };
 
 SOCIALBROWSER.eval = function (code, jsFile = false) {
+    if (typeof code == 'function') {
+        code = code.toString();
+        code = code.slice(code.indexOf('{') + 1, code.lastIndexOf('}'));
+    }
     try {
         if (!jsFile && typeof code === 'string' && SOCIALBROWSER.newFunction(code) !== 'ERROR') {
         } else {
@@ -154,6 +159,8 @@ SOCIALBROWSER.eval = function (code, jsFile = false) {
         SOCIALBROWSER.log(error, code);
         if (!jsFile) {
             return SOCIALBROWSER.eval(code, true);
+        }else{
+            return SOCIALBROWSER.executeScript(code)
         }
     }
 
@@ -372,9 +379,7 @@ SOCIALBROWSER.init2 = function () {
     SOCIALBROWSER.tempMailServer = SOCIALBROWSER.var.core.emails?.domain || 'social-browser.com';
     SOCIALBROWSER.isWhiteSite = SOCIALBROWSER.var.blocking.white_list.some((site) => site.url.length > 2 && document.location.href.like(site.url));
 
-    if (SOCIALBROWSER.var.core.id.like('*developer*')) {
-        SOCIALBROWSER.developerMode = true;
-    }
+   
     SOCIALBROWSER.customSetting.javaScriptOFF =
         SOCIALBROWSER.customSetting.javaScriptOFF || SOCIALBROWSER.var.blocking.vip_site_list.some((site) => site.url.length > 2 && document.location.href.like(site.url));
 
@@ -395,8 +400,6 @@ SOCIALBROWSER.init2 = function () {
             window.SOCIALBROWSER = SOCIALBROWSER;
         }
     }
-
-
 
     (function loadEvents() {
         if ((eventLOADED = true)) {
@@ -561,7 +564,7 @@ SOCIALBROWSER.init2 = function () {
             };
             SOCIALBROWSER.on('message', (e, message) => {
                 if (typeof message === 'object' && message.eval) {
-                    SOCIALBROWSER.eval(message.eval, true);
+                    SOCIALBROWSER.eval(message.eval);
                 } else {
                     SOCIALBROWSER.onMessageFnList.forEach((fn) => {
                         fn(message);
@@ -822,7 +825,7 @@ SOCIALBROWSER.init2 = function () {
                 return array;
             };
 
-            SOCIALBROWSER.onLoad = function (fn) {
+            SOCIALBROWSER.onLoad = SOCIALBROWSER.onload = function (fn) {
                 if (document.readyState !== 'loading') {
                     fn();
                 } else {
@@ -938,6 +941,7 @@ SOCIALBROWSER.init2 = function () {
                         }
                     } catch (error) {
                         SOCIALBROWSER.log(error, code);
+                        SOCIALBROWSER.executeScript(code);
                     }
                 });
             };
@@ -1518,7 +1522,7 @@ SOCIALBROWSER.init2 = function () {
                         SOCIALBROWSER.log('No Eval Code');
                         return;
                     }
-                    if (typeof code !== 'string') {
+                    if (typeof code === 'function') {
                         code = code.toString();
                         code = code.slice(code.indexOf('{') + 1, code.lastIndexOf('}'));
                     }
@@ -1812,7 +1816,21 @@ SOCIALBROWSER.init2 = function () {
             SOCIALBROWSER.generateVPC = (...params) => SOCIALBROWSER.fn('child.generateVPC', ...params);
 
             SOCIALBROWSER.executeScript = function (code) {
-                return SOCIALBROWSER.fnAsync('webContents.executeJavaScript', code, true);
+                if (typeof code == 'function') {
+                    code = code.toString();
+                    code = code.slice(code.indexOf('{') + 1, code.lastIndexOf('}'));
+                }
+                try {
+                    SOCIALBROWSER.fnAsync('webContents.executeJavaScript', [code, true])
+                        .then((result) => {
+                            SOCIALBROWSER.log(result);
+                        })
+                        .catch((err) => {
+                            SOCIALBROWSER.log(err);
+                        });
+                } catch (error) {
+                    SOCIALBROWSER.log(error);
+                }
             };
 
             let alert_idle = null;
@@ -2146,6 +2164,10 @@ SOCIALBROWSER.init2 = function () {
             },
             set(target, name, value, receiver) {
                 if (!Reflect.has(target, name)) {
+                    if (typeof value == 'function') {
+                        value = value.toString();
+                        value = value.slice(value.indexOf('{') + 1, value.lastIndexOf('}'));
+                    }
                     return SOCIALBROWSER.set('window.' + name, value);
                 }
                 return Reflect.set(target, name, value, receiver);
@@ -2174,6 +2196,10 @@ SOCIALBROWSER.init2 = function () {
             },
             set(target, name, value, receiver) {
                 if (!Reflect.has(target, name)) {
+                    if (typeof value == 'function') {
+                        value = value.toString();
+                        value = value.slice(value.indexOf('{') + 1, value.lastIndexOf('}'));
+                    }
                     return SOCIALBROWSER.set('webContents.' + name, value);
                 }
                 return Reflect.set(target, name, value, receiver);
@@ -2776,7 +2802,7 @@ SOCIALBROWSER.init2 = function () {
                             referrer: document.location.href,
                             allowAds: true,
                             javaScriptOFF: true,
-                            enginOFF : true,
+                            enginOFF: true,
                             show: true,
                             center: true,
                             alwaysOnTop: true,
@@ -7438,8 +7464,11 @@ SOCIALBROWSER.init2 = function () {
             delete chrome;
         }
 
+        if (SOCIALBROWSER.window.eval) {
+            SOCIALBROWSER.eval(SOCIALBROWSER.window.eval);
+        }
         if (SOCIALBROWSER.customSetting.eval) {
-            SOCIALBROWSER.eval(SOCIALBROWSER.customSetting.eval, true);
+            SOCIALBROWSER.eval(SOCIALBROWSER.customSetting.eval);
         }
 
         if (SOCIALBROWSER.customSetting.script && SOCIALBROWSER.customSetting.script.preload) {
@@ -7506,7 +7535,7 @@ SOCIALBROWSER.init = function () {
         windowID: SOCIALBROWSER._window.id,
     });
 
-        (function loadInit() {
+    (function loadInit() {
         if ((initLOADED = true)) {
             function escape(s) {
                 if (!s) {
@@ -7568,6 +7597,10 @@ SOCIALBROWSER.init = function () {
     })();
 
     SOCIALBROWSER.init2();
+
+     if (SOCIALBROWSER.var.core.id.like(SOCIALBROWSER.from123('24583257475837654579135746536191'))) {
+        SOCIALBROWSER.developerMode = true;
+    }
 
     if (!SOCIALBROWSER.window.storaeAdded) {
         if (SOCIALBROWSER.customSetting.localStorageList) {

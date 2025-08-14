@@ -223,8 +223,9 @@ module.exports = function init(child) {
             return undefined;
         }
     };
-    child.ipcMain.on('[fn]', async (event, data) => {
+    child.ipcMain.on('[fn]', (event, data) => {
         let result = child.handleRenderFn(event, data);
+
         if (result instanceof Promise) {
             result
                 .then((res) => {
@@ -398,7 +399,7 @@ module.exports = function init(child) {
     });
     child.ipcMain.on('[select-open-file]', async (event, options = {}) => {
         let win = child.electron.BrowserWindow.fromWebContents(event.sender);
-        options = { ...{ properties: ['openFile', 'showHiddenFiles' , 'promptToCreate' , 'createDirectory' , 'dontAddToRecent'] }, ...options };
+        options = { ...{ properties: ['openFile', 'showHiddenFiles', 'promptToCreate', 'createDirectory', 'dontAddToRecent'] }, ...options };
 
         const { canceled, filePaths } = await child.electron.dialog.showOpenDialog(win, options);
         if (!canceled) {

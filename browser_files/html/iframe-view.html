@@ -1,45 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Youtube View : ##query.url##</title>
-    <style>
-      body {
-        background-image: url('browser://images/loading2.gif');
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-        background-position: center;
-      }
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Youtube View : ##query.url##</title>
+        <style>
+            body {
+                background-image: url('browser://images/loading2.gif');
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+                background-position: center;
+            }
 
-      iframe {
-        position: absolute;
-        left: 0px;
-        top: 0px;
-        height: 100%;
-        width: 100%;
-        background-color: #292929;
-        border: none;
-        display: none;
-      }
-    </style>
-  </head>
+            iframe {
+                position: absolute;
+                left: 0px;
+                top: 0px;
+                height: 100%;
+                width: 100%;
+                background-color: #292929;
+                border: none;
+                display: none;
+            }
+        </style>
+    </head>
 
-  <body>
-    <iframe src="##query.url##" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-    <script>
-      document.querySelector('iframe').addEventListener('load', function () {
-        this.style.display = 'block';
-        try {
-          if ((doc = this.contentWindow.document)) {
-            console.info(doc.querySelector('title').innerText);
-          }
-        } catch (error) {
-          console.error(error);
-        }
-      });
-    </script>
-  </body>
+    <body>
+        <script>
+            SOCIALBROWSER.window.eval = () => {
+                SOCIALBROWSER.onload(() => {
+                    if (document.location.hostname.contains('youtube')) {
+                        SOCIALBROWSER.window.title = document.querySelector('title').innerText;
+                    }
+                });
+            };
+        </script>
+        <iframe src="##query.url##" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <script>
+            SOCIALBROWSER.onload(() => {
+                SOCIALBROWSER.$('iframe').style.display = 'block';
+            });
+        </script>
+    </body>
 </html>
