@@ -314,8 +314,19 @@ module.exports = function init(parent) {
                     }
                 });
                 parent.var[name] = userVarContent;
+            } else if (name == 'faList') {
+                browserVarContent.forEach((info1) => {
+                    if (!userVarContent.some((info2) => info2.code == info1.code)) {
+                        userVarContent.push(info1);
+                    }
+                });
+                parent.var[name] = userVarContent;
             } else {
-                parent.var[name] = browserVarContent;
+                if (name.like('*list*')) {
+                    parent.var[name] = [...browserVarContent, ...userVarContent];
+                } else {
+                    parent.var[name] = { ...browserVarContent, ...userVarContent };
+                }
             }
         }
 
