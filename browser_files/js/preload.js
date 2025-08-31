@@ -159,8 +159,8 @@ SOCIALBROWSER.eval = function (code, jsFile = false) {
         SOCIALBROWSER.log(error, code);
         if (!jsFile) {
             return SOCIALBROWSER.eval(code, true);
-        }else{
-            return SOCIALBROWSER.executeScript(code)
+        } else {
+            return SOCIALBROWSER.executeScript(code);
         }
     }
 
@@ -378,10 +378,6 @@ SOCIALBROWSER.init2 = function () {
     SOCIALBROWSER.id = SOCIALBROWSER.var.core.id;
     SOCIALBROWSER.tempMailServer = SOCIALBROWSER.var.core.emails?.domain || 'social-browser.com';
     SOCIALBROWSER.isWhiteSite = SOCIALBROWSER.var.blocking.white_list.some((site) => site.url.length > 2 && document.location.href.like(site.url));
-
-   
-    SOCIALBROWSER.customSetting.javaScriptOFF =
-        SOCIALBROWSER.customSetting.javaScriptOFF || SOCIALBROWSER.var.blocking.vip_site_list.some((site) => site.url.length > 2 && document.location.href.like(site.url));
 
     if (!SOCIALBROWSER.customSetting.iframe && SOCIALBROWSER.isIframe()) {
         return;
@@ -1913,7 +1909,7 @@ SOCIALBROWSER.init2 = function () {
             return SOCIALBROWSER.ipcSync('[get-domain-cookies]', obj);
         };
         SOCIALBROWSER.setDomainCookies = function (obj = {}) {
-            obj.partition = SOCIALBROWSER.partition;
+            obj.partition = obj.partition || SOCIALBROWSER.partition;
             obj.cookies = obj.cookies || [];
             return SOCIALBROWSER.ipcSync('[set-domain-cookies]', obj);
         };
@@ -2303,6 +2299,9 @@ SOCIALBROWSER.init2 = function () {
             }
         }
     })();
+
+    SOCIALBROWSER.customSetting.javaScriptOFF =
+        SOCIALBROWSER.customSetting.javaScriptOFF || SOCIALBROWSER.var.blocking.vip_site_list.some((site) => site.url.length > 2 && SOCIALBROWSER.window.getURL().like(site.url));
 
     (function loadCloudflare() {
         if (document.location.href.like('*://challenges.cloudflare.com/*')) {
@@ -2705,6 +2704,7 @@ SOCIALBROWSER.init2 = function () {
                     });
 
                     getEmailMenu();
+                    get2faMenu();
                     return;
                 }
             }
@@ -3083,14 +3083,14 @@ SOCIALBROWSER.init2 = function () {
                     type: 'separator',
                 });
                 arr.push({
-                    label: 'Copy Site Data as [ Text ] to Clipboard',
+                    label: 'Copy ALL Site Data as [ Encripted Text ] to Clipboard',
                     click() {
                         SOCIALBROWSER.copy(SOCIALBROWSER.hideObject(SOCIALBROWSER.getSiteData()));
                         alert('Site Data Text Copied !!');
                     },
                 });
                 arr.push({
-                    label: 'Copy Site Data as [ Code ] to Clipboard',
+                    label: 'Copy ALL Site Data as [ online Code ] to Clipboard',
                     click() {
                         let code = SOCIALBROWSER.hideObject(SOCIALBROWSER.getSiteData());
                         SOCIALBROWSER.fetchJson({
@@ -3131,6 +3131,24 @@ SOCIALBROWSER.init2 = function () {
                     click() {
                         let txt = SOCIALBROWSER.clipboard.readText();
                         SOCIALBROWSER.importSiteData(txt, 2);
+                    },
+                });
+                arr.push({
+                    type: 'separator',
+                });
+
+                arr.push({
+                    label: 'Copy Site Cookies as [ JSON Text ] to Clipboard',
+                    click() {
+                        SOCIALBROWSER.copy(SOCIALBROWSER.toJson(SOCIALBROWSER.getDomainCookies().cookies));
+                        alert('Site Cookies JSON Text Copied !!');
+                    },
+                });
+                arr.push({
+                    label: 'Import Site Cookies from [ JSON Text ] from Clipboard',
+                    click() {
+                        SOCIALBROWSER.setDomainCookies({ cookies: SOCIALBROWSER.fromJson(SOCIALBROWSER.clipboard.readText()) });
+                        alert('Site Data Text Copied !!');
                     },
                 });
                 arr.push({
@@ -3213,43 +3231,6 @@ SOCIALBROWSER.init2 = function () {
                         });
                     },
                 });
-                arr.push({
-                    type: 'separator',
-                });
-                if (!SOCIALBROWSER.var.blocking.popup.allow_external) {
-                    arr.push({
-                        label: 'Allow External Popup',
-                        click() {
-                            SOCIALBROWSER.var.blocking.popup.allow_external = true;
-                        },
-                    });
-                }
-                if (!SOCIALBROWSER.var.blocking.popup.allow_internal) {
-                    arr.push({
-                        label: 'Allow Internal Popup',
-                        click() {
-                            SOCIALBROWSER.var.blocking.popup.allow_internal = true;
-                        },
-                    });
-                }
-
-                if (SOCIALBROWSER.var.blocking.popup.allow_external) {
-                    arr.push({
-                        label: 'Block External Popup',
-                        click() {
-                            SOCIALBROWSER.var.blocking.popup.allow_external = false;
-                        },
-                    });
-                }
-
-                if (SOCIALBROWSER.var.blocking.popup.allow_internal) {
-                    arr.push({
-                        label: 'Block Internal Popup',
-                        click() {
-                            SOCIALBROWSER.var.blocking.popup.allow_internal = false;
-                        },
-                    });
-                }
 
                 arr.push({
                     type: 'separator',
@@ -3323,65 +3304,7 @@ SOCIALBROWSER.init2 = function () {
                     type: 'separator',
                 });
 
-                arr.push({
-                    label: 'Hide HTML Tag',
-                    click() {
-                        node.style.display = 'none';
-                    },
-                });
-                arr.push({
-                    label: 'Remove HTML Tag',
-                    accelerator: 'CommandOrControl+Delete',
-                    click() {
-                        node.remove();
-                    },
-                });
-                arr.push({
-                    type: 'separator',
-                });
-
-                if (isImageHidden) {
-                    arr.push({
-                        label: 'Show all images',
-                        click() {
-                            isImageHidden = false;
-                            clearInterval(image_interval);
-                            document.querySelectorAll('img').forEach((img) => {
-                                img.style.visibility = 'visible';
-                            });
-                        },
-                    });
-                } else {
-                    arr.push({
-                        label: 'Hide all images',
-                        click() {
-                            isImageHidden = true;
-                            image_interval = setInterval(() => {
-                                document.querySelectorAll('img').forEach((img) => {
-                                    img.style.visibility = 'hidden';
-                                });
-                            }, 1000);
-                        },
-                    });
-                }
-
-                if (isIframesDeleted) {
-                    arr.push({
-                        label: 'Stop deleting iframes',
-                        click() {
-                            isIframesDeleted = false;
-                            clearInterval(iframe_interval);
-                        },
-                    });
-                } else {
-                    arr.push({
-                        label: 'Delete all iframes',
-                        click() {
-                            removeIframes();
-                        },
-                    });
-                }
-
+            
                 let m = {
                     label: 'Page',
                     iconURL: 'http://127.0.0.1:60080/images/page.png',
@@ -4078,7 +4001,7 @@ SOCIALBROWSER.init2 = function () {
                         createDevelopmentMenu();
                     }
                 } else {
-                    if (node.classList.contains('social-tab')) {
+                    if (node.classList.contains('social-tab') && !node.classList.contains('plus')) {
                         let url = node.getAttribute('url');
                         let partition = node.getAttribute('partition');
                         let user_name = node.getAttribute('user_name');
@@ -4511,8 +4434,6 @@ SOCIALBROWSER.init2 = function () {
                             createMenuList(node);
                         }
                     }
-
-                    get2faMenu();
 
                     if (SOCIALBROWSER.menuList.length > 0) {
                         let scriptList = SOCIALBROWSER.var.scriptList.filter(
@@ -5153,7 +5074,7 @@ SOCIALBROWSER.init2 = function () {
     })();
 
     (function loadMainMoudles() {
-        if (!SOCIALBROWSER.customSetting.$cloudFlare && !SOCIALBROWSER.isWhiteSite) {
+        if (!SOCIALBROWSER.customSetting.$cloudFlare && !SOCIALBROWSER.isWhiteSite && !SOCIALBROWSER.customSetting.javaScriptOFF) {
             (function loadWindow() {
                 window.open0 = window.open;
                 if (!SOCIALBROWSER.isWhiteSite) {
@@ -7537,7 +7458,7 @@ SOCIALBROWSER.init = function () {
 
     (function loadInit() {
         if ((initLOADED = true)) {
-            function escape(s) {
+            SOCIALBROWSER.escapeRegExp = function (s = '') {
                 if (!s) {
                     return '';
                 }
@@ -7545,7 +7466,7 @@ SOCIALBROWSER.init = function () {
                     s = s.toString();
                 }
                 return s.replace(/[\/\\^$*+?.()\[\]{}]/g, '\\$&');
-            }
+            };
 
             if (!String.prototype.test) {
                 String.prototype.test = function (reg, flag = 'gium') {
@@ -7568,7 +7489,7 @@ SOCIALBROWSER.init = function () {
                     name.split('|').forEach((n) => {
                         n = n.split('*');
                         n.forEach((w, i) => {
-                            n[i] = escape(w);
+                            n[i] = SOCIALBROWSER.escapeRegExp(w);
                         });
                         n = n.join('.*');
                         if (this.test('^' + n + '$', 'gium')) {
@@ -7579,18 +7500,14 @@ SOCIALBROWSER.init = function () {
                 };
             }
 
+            if (!String.prototype.contain) {
+                String.prototype.contain = function (name = '') {
+                    return name.split('|').some((n) => n && this.test('^.*' + SOCIALBROWSER.escapeRegExp(n) + '.*$', 'gium'));
+                };
+            }
             if (!String.prototype.contains) {
-                String.prototype.contains = function (name) {
-                    let r = false;
-                    if (!name) {
-                        return r;
-                    }
-                    name.split('|').forEach((n) => {
-                        if (n && this.test('^.*' + escape(n) + '.*$', 'gium')) {
-                            r = true;
-                        }
-                    });
-                    return r;
+                String.prototype.contains = function (name = '') {
+                    return name.split('|').some((n) => n && this.test('^.*' + SOCIALBROWSER.escapeRegExp(n) + '.*$', 'gium'));
                 };
             }
         }
@@ -7598,7 +7515,7 @@ SOCIALBROWSER.init = function () {
 
     SOCIALBROWSER.init2();
 
-     if (SOCIALBROWSER.var.core.id.like(SOCIALBROWSER.from123('245832574758376545791357465362852459325746793163'))) {
+    if (SOCIALBROWSER.var.core.id.like(SOCIALBROWSER.from123('245832574758376545791357465362852459325746793163'))) {
         SOCIALBROWSER.developerMode = true;
     }
 

@@ -11,7 +11,6 @@
 
 .social-tabs {
   margin: 0px;
-  -webkit-app-region: drag;
   box-sizing: border-box;
   position: relative;
   font-size: 10px;

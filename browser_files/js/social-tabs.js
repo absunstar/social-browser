@@ -88,10 +88,6 @@ class SocialTabs {
 
         this.setupStyleEl();
         this.setupEvents();
-        // this.layoutTabs(() => {
-        //     this.fixZIndexes();
-        //     this.setupDraggabilly();
-        // });
 
         this.tabContentEl.appendChild(this.createNewTabPlus());
         $('#tabPlus').click(() => {
@@ -114,7 +110,7 @@ class SocialTabs {
         this.el.dispatchEvent(
             new CustomEvent(eventName, {
                 detail: data,
-            })
+            }),
         );
     }
 
@@ -210,11 +206,12 @@ class SocialTabs {
         const tabEls = this.tabEls;
 
         tabEls.forEach((tabEl, i) => {
-            let zIndex = tabEls.length - i;
+            let length = tabEls.length + 1000;
+            let zIndex = length - i;
 
             if (tabEl.classList.contains('social-tab-current')) {
-                bottomBarEl.style.zIndex = tabEls.length + 1;
-                zIndex = tabEls.length + 2;
+                bottomBarEl.style.zIndex = length + 1;
+                zIndex = length + 2;
                 currentTabId = tabEl.id;
             }
             tabEl.style.zIndex = zIndex;
@@ -234,8 +231,6 @@ class SocialTabs {
     }
 
     addTab(tabProperties) {
-        // console.log(tabProperties)
-
         if (!tabProperties.partition || !tabProperties.user_name) {
             SOCIALBROWSER.ipc('[open new tab]', {
                 ...tabProperties,
@@ -303,9 +298,8 @@ class SocialTabs {
             this.setCurrentTab();
         }
 
-        // this.layoutTabs();
-        // this.fixZIndexes();
-        //  this.setupDraggabilly();
+        this.layoutTabs();
+        this.setupDraggabilly();
 
         tabEl.addEventListener('mousedown', (e) => {
             // console.log('tab mousedown' , e)
@@ -336,8 +330,6 @@ class SocialTabs {
             });
         }
 
-        this.setupDraggabilly();
-        this.layoutTabs();
         this.fixZIndexes();
     }
 
@@ -368,10 +360,7 @@ class SocialTabs {
         });
 
         this.setCurrentTab(newTab);
-
-        // this.layoutTabs();
-        // // this.fixZIndexes();
-        // this.setupDraggabilly();
+        this.layoutTabs();
     }
 
     updateTab(tabEl, tabProperties) {
@@ -390,7 +379,7 @@ class SocialTabs {
     }
 
     setupDraggabilly() {
-        return;
+        let socialTabs = document.querySelector('.social-tabs');
         const tabEls = this.tabEls;
         const tabEffectiveWidth = this.tabEffectiveWidth;
         const tabPositions = this.tabPositions;
@@ -407,34 +396,10 @@ class SocialTabs {
             this.draggabillyInstances.push(draggabillyInstance);
 
             draggabillyInstance.on('dragStart', () => {
+                 socialTabs.classList.remove('app-region');
                 this.cleanUpPreviouslyDraggedTabs();
                 tabEl.classList.add('social-tab-currently-dragged');
                 this.el.classList.add('social-tabs-sorting');
-                // this.fixZIndexes();
-            });
-
-            draggabillyInstance.on('dragEnd', () => {
-                const finalTranslateX = parseFloat(tabEl.style.left, 10);
-                tabEl.style.transform = `translate3d(0, 0, 0)`;
-
-                // Animate dragged tab back into its place
-                requestAnimationFrame(() => {
-                    tabEl.style.left = '0';
-                    tabEl.style.transform = `translate3d(${finalTranslateX}px, 0, 0)`;
-
-                    requestAnimationFrame(() => {
-                        tabEl.classList.remove('social-tab-currently-dragged');
-                        this.el.classList.remove('social-tabs-sorting');
-
-                        // this.setCurrentTab(tabEl);
-                        tabEl.classList.add('social-tab-just-dragged');
-
-                        requestAnimationFrame(() => {
-                            tabEl.style.transform = '';
-                            this.setCurrentTab();
-                        });
-                    });
-                });
             });
 
             draggabillyInstance.on('dragMove', (event, pointer, moveVector) => {
@@ -449,14 +414,44 @@ class SocialTabs {
                     this.animateTabMove(tabEl, currentIndex, destinationIndex);
                 }
             });
+
+            draggabillyInstance.on('dragEnd', () => {
+                const finalTranslateX = parseFloat(tabEl.style.left, 10);
+                tabEl.style.transform = `translate3d(0, 0, 0)`;
+
+                // Animate dragged tab back into its place
+                requestAnimationFrame(() => {
+                    tabEl.style.left = '0';
+                    tabEl.style.transform = `translate3d(${finalTranslateX}px, 0, 0)`;
+
+                    requestAnimationFrame(() => {
+                        tabEl.classList.remove('social-tab-currently-dragged');
+                        this.el.classList.remove('social-tabs-sorting');
+                        tabEl.classList.add('social-tab-just-dragged');
+
+                        requestAnimationFrame(() => {
+                            tabEl.style.transform = '';
+                            this.layoutTabs();
+                            this.fixZIndexes();
+                            setTimeout(() => {
+                                socialTabs.classList.add('app-region');
+                            }, 1000 * 2);
+                             
+                        });
+                    });
+                });
+            });
         });
     }
 
     animateTabMove(tabEl, originIndex, destinationIndex) {
-        if (destinationIndex < originIndex) {
-            tabEl.parentNode.insertBefore(tabEl, this.tabEls[destinationIndex]);
-        } else {
-            tabEl.parentNode.insertBefore(tabEl, this.tabEls[destinationIndex + 1]);
+        if (tabEl.parentNode) {
+            if (destinationIndex < originIndex) {
+                tabEl.parentNode.insertBefore(tabEl, this.tabEls[destinationIndex]);
+            } else {
+                tabEl.parentNode.insertBefore(tabEl, this.tabEls[destinationIndex + 1]);
+            }
+            this.layoutTabs();
         }
     }
 }

@@ -44,14 +44,13 @@ body,
 
 .social-tabs {
   margin: 0px;
-  -webkit-app-region: drag;
   box-sizing: border-box;
   position: relative;
   font-size: 10px;
   height: 30px;
   background: var(--social-background-color);
   overflow: hidden;
-  z-index: 9999999;
+  z-index: 1;
 }
 
 .social-address-bara:not(.space):hover,

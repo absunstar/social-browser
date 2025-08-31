@@ -1,5 +1,5 @@
 module.exports = function (owner) {
-    owner.cloudURL = 'https://mama-services.net';
+    owner.cloudURL = 'https://social-browser.com';
     owner.sentToCloud = function (data) {
         owner.api
             .fetch(owner.cloudURL + '/api/set-var ', {

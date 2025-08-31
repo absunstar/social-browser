@@ -305,6 +305,13 @@ module.exports = function (child) {
                     });
                     return;
                 }
+                let enginOFF = child.parent.var.blocking.vip_site_list.some((site) => site.url.length > 2 && url.like(site.url));
+                if (enginOFF) {
+                    callback({
+                        cancel: false,
+                    });
+                    return;
+                }
 
                 let customSetting = {};
                 if (details.webContents) {
@@ -437,6 +444,14 @@ module.exports = function (child) {
                 let domainName = urlObject.hostname;
                 let domainCookie = details.requestHeaders['Cookie'] || '';
                 let domainCookieObject = child.cookieParse(domainCookie);
+                let enginOFF = child.parent.var.blocking.vip_site_list.some((site) => site.url.length > 2 && url.like(site.url));
+                if (enginOFF) {
+                    callback({
+                        cancel: false,
+                        requestHeaders: details.requestHeaders,
+                    });
+                    return;
+                }
 
                 if (details.webContents) {
                     win = child.electron.BrowserWindow.fromWebContents(details.webContents);
@@ -632,6 +647,17 @@ module.exports = function (child) {
                 let _ss = child.session_name_list.find((s) => s.name == name);
                 _ss.user.privacy.vpc = _ss.user.privacy.vpc || {};
                 let customSetting = null;
+                let enginOFF = child.parent.var.blocking.vip_site_list.some((site) => site.url.length > 2 && url.like(site.url));
+                if (enginOFF) {
+                    callback({
+                        cancel: false,
+                        responseHeaders: {
+                            ...details.responseHeaders,
+                        },
+                        statusLine: details.statusLine,
+                    });
+                    return;
+                }
 
                 if (details.webContents) {
                     win = child.electron.BrowserWindow.fromWebContents(details.webContents);

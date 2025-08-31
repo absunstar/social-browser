@@ -816,7 +816,7 @@ SOCIALBROWSER.showWindowsMenu = function () {
 };
 
 socialTabs.init(socialTabsDom, {
-    tabOverlapDistance: 14,
+    tabOverlapDistance: 10,
     minWidth: 35,
     maxWidth: 270,
 });

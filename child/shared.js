@@ -15,7 +15,7 @@ module.exports = function (owner) {
         };
     }
     if ((like = true)) {
-        function escape(s) {
+        owner.escapeRegExp = function (s) {
             if (!s) {
                 return '';
             }
@@ -23,7 +23,7 @@ module.exports = function (owner) {
                 s = s.toString();
             }
             return s.replace(/[\/\\^$*+?.()\[\]{}]/g, '\\$&');
-        }
+        };
 
         if (!String.prototype.test) {
             String.prototype.test = function (reg, flag = 'gium') {
@@ -44,7 +44,7 @@ module.exports = function (owner) {
                 name.split('|').forEach((n) => {
                     n = n.split('*');
                     n.forEach((w, i) => {
-                        n[i] = escape(w);
+                        n[i] = owner.escapeRegExp(w);
                     });
                     n = n.join('.*');
                     if (this.test('^' + n + '$', 'gium')) {
@@ -57,16 +57,12 @@ module.exports = function (owner) {
 
         if (!String.prototype.contains) {
             String.prototype.contains = function (name) {
-                let r = false;
-                if (!name) {
-                    return r;
-                }
-                name.split('|').forEach((n) => {
-                    if (n && this.test('^.*' + escape(n) + '.*$', 'gium')) {
-                        r = true;
-                    }
-                });
-                return r;
+                return name.split('|').some((n) => n && this.test('^.*' + owner.escapeRegExp(n) + '.*$', 'gium'));
+            };
+        }
+        if (!String.prototype.contain) {
+            String.prototype.contain = function (name = '') {
+                return name.split('|').some((n) => n && this.test('^.*' + owner.escapeRegExp(n) + '.*$', 'gium'));
             };
         }
     }
