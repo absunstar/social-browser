@@ -504,13 +504,14 @@ module.exports = function (child) {
                             // Cookie Mode 0=fixed , 1=overwrite , else=default
                             if (customSetting.cookieList[cookieIndex].mode === 0) {
                                 domainCookieObject = { ...child.cookieParse(customSetting.cookieList[cookieIndex].cookie) };
+                                details.requestHeaders['Cookie'] = customSetting.cookieList[cookieIndex].cookie;
                             } else if (customSetting.cookieList[cookieIndex].mode === 1) {
                                 domainCookieObject = { ...domainCookieObject, ...child.cookieParse(customSetting.cookieList[cookieIndex].cookie) };
-                            } else {
+                                details.requestHeaders['Cookie'] = child.cookieStringify({ ...domainCookieObject });
+                            } else if (customSetting.cookieList[cookieIndex].mode === -1) {
                                 domainCookieObject = { ...child.cookieParse(customSetting.cookieList[cookieIndex].cookie), ...domainCookieObject };
+                                details.requestHeaders['Cookie'] = child.cookieStringify({ ...domainCookieObject });
                             }
-
-                            details.requestHeaders['Cookie'] = child.cookieStringify({ ...domainCookieObject });
                         }
                     } else {
                         let cookieIndex = child.cookieList.findIndex((c) => domainName.contains(c.domain) && c.partition == name);
@@ -541,9 +542,10 @@ module.exports = function (child) {
                         if (child.cookieList[cookieIndex].off) {
                             console.log('Cookie OFF');
                         } else {
+                            // Cookie Mode 0=fixed , 1=overwrite , else=default
                             if (child.cookieList[cookieIndex].mode === 0) {
                                 domainCookieObject = { ...child.cookieParse(child.cookieList[cookieIndex].cookie) };
-                                details.requestHeaders['Cookie'] = child.cookieStringify({ ...domainCookieObject });
+                                details.requestHeaders['Cookie'] = child.cookieList[cookieIndex].cookie;
                             } else if (child.cookieList[cookieIndex].mode === 1) {
                                 domainCookieObject = { ...domainCookieObject, ...child.cookieParse(child.cookieList[cookieIndex].cookie) };
                                 details.requestHeaders['Cookie'] = child.cookieStringify({ ...domainCookieObject });

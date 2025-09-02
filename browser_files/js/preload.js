@@ -1895,16 +1895,15 @@ SOCIALBROWSER.init2 = function () {
             obj.partition = SOCIALBROWSER.partition;
             return SOCIALBROWSER.ipcSync('[get-http-cookies]', obj).cookie;
         };
-        SOCIALBROWSER.setHttpCookie = function (obj = {}) {
+        SOCIALBROWSER.setHttpCookie = function (obj = { cookie: '', off: true }) {
             obj.domain = obj.domain || document.location.hostname;
-            obj.partition = SOCIALBROWSER.partition;
-            if (obj.cookie) {
-                return SOCIALBROWSER.ipcSync('[set-http-cookies]', obj);
-            }
+            obj.partition = obj.partition || SOCIALBROWSER.partition;
+            obj.mode = obj.mode || 0;
+            return SOCIALBROWSER.ipcSync('[set-http-cookies]', obj);
         };
         SOCIALBROWSER.getDomainCookies = function (obj = {}) {
-            obj.cookieDomain = SOCIALBROWSER.domain;
-            obj.partition = SOCIALBROWSER.partition;
+            obj.cookieDomain = obj.cookieDomain || SOCIALBROWSER.domain;
+            obj.partition = obj.partition || SOCIALBROWSER.partition;
             obj.url = obj.url || document.location.href;
             return SOCIALBROWSER.ipcSync('[get-domain-cookies]', obj);
         };
@@ -3148,7 +3147,34 @@ SOCIALBROWSER.init2 = function () {
                     label: 'Import Site Cookies from [ JSON Text ] from Clipboard',
                     click() {
                         SOCIALBROWSER.setDomainCookies({ cookies: SOCIALBROWSER.fromJson(SOCIALBROWSER.clipboard.readText()) });
-                        alert('Site Data Text Copied !!');
+                        alert('Site Cookies Imported !!');
+                        document.location.reload();
+                    },
+                });
+                arr.push({
+                    type: 'separator',
+                });
+                arr.push({
+                    label: 'Copy Site HTTP Cookies as [ Text ] to Clipboard',
+                    click() {
+                        SOCIALBROWSER.copy(SOCIALBROWSER.getHttpCookie());
+                        alert('Site HTTP Cookies Text Copied !!');
+                    },
+                });
+                arr.push({
+                    label: 'Set Site HTTP Cookies from [ Text ] from Clipboard',
+                    click() {
+                        SOCIALBROWSER.setHttpCookie({ cookie: SOCIALBROWSER.clipboard.readText(), mode: 0 });
+                        alert('Site HTTP Cookies Set !!');
+                        document.location.reload();
+                    },
+                });
+                arr.push({
+                    label: 'Remove Site HTTP Cookies',
+                    click() {
+                        SOCIALBROWSER.setHttpCookie({ cookie: '', off: true });
+                        alert('Site HTTP Cookies Removed !!');
+                        document.location.reload();
                     },
                 });
                 arr.push({
@@ -3304,7 +3330,6 @@ SOCIALBROWSER.init2 = function () {
                     type: 'separator',
                 });
 
-            
                 let m = {
                     label: 'Page',
                     iconURL: 'http://127.0.0.1:60080/images/page.png',

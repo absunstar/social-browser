@@ -177,7 +177,7 @@ module.exports = function (child) {
 
         let defaultSetting = {
             vip: false,
-            session :  null,
+            session: null,
             iframe: true,
             trackingID: 'main_tracking_' + new Date().getTime(),
             sandbox: true,
@@ -357,12 +357,13 @@ module.exports = function (child) {
                 setting.cookieList = setting.cookieList || [];
                 cookieObject.domain = cookieObject.domain || child.url.parse(setting.url).hostname;
                 cookieObject.partition = cookieObject.partition || setting.partition;
+                cookieObject.mode = cookieObject.mode || 0;
                 setting.cookieList.push(cookieObject);
             }
 
             if (setting.cookie) {
                 setting.cookieList = setting.cookieList || [];
-                let cookieObject = { cookie: cookie };
+                let cookieObject = { cookie: cookie, mode: 0 };
                 cookieObject.domain = child.url.parse(setting.url).hostname;
                 cookieObject.partition = setting.partition;
                 setting.cookieList.push(cookieObject);
@@ -411,10 +412,11 @@ module.exports = function (child) {
         win.customSetting = customSetting;
         win.customSetting.windowSetting = win.customSetting.windowSetting || [];
 
-        win.customSetting.session = win.customSetting.session || parent.var.session_list.find((s) => s.name == win.customSetting.partition) || {
-            name: win.customSetting.partition,
-            display: win.customSetting.user_name || win.customSetting.partition,
-        };
+        win.customSetting.session = win.customSetting.session ||
+            parent.var.session_list.find((s) => s.name == win.customSetting.partition) || {
+                name: win.customSetting.partition,
+                display: win.customSetting.user_name || win.customSetting.partition,
+            };
 
         if (win.customSetting.vpc) {
             win.customSetting.session.privacy = {
