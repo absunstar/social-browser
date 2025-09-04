@@ -2922,7 +2922,7 @@ SOCIALBROWSER.init2 = function () {
 
                     if (u.like('*youtube.com/watch*')) {
                         SOCIALBROWSER.menuList.push({
-                            label: 'Open video ',
+                            label: 'Play Youtube video ',
                             click() {
                                 SOCIALBROWSER.ipc('[open new popup]', {
                                     windowType: 'youtube',
@@ -2935,7 +2935,7 @@ SOCIALBROWSER.init2 = function () {
                             },
                         });
                         SOCIALBROWSER.menuList.push({
-                            label: 'Download video ',
+                            label: 'Download Youtube video ',
                             click() {
                                 SOCIALBROWSER.ipc('[open new popup]', {
                                     url: u.replace('youtube', 'ssyoutube'),
@@ -2945,6 +2945,30 @@ SOCIALBROWSER.init2 = function () {
                                     allowPopup: true,
                                     show: true,
                                     center: true,
+                                });
+                            },
+                        });
+
+                        SOCIALBROWSER.menuList.push({
+                            type: 'separator',
+                        });
+                    }
+
+                    if (u.like('*youtube.com/short*')) {
+                        SOCIALBROWSER.menuList.push({
+                            label: 'Play Youtube Shorts video ',
+                            click() {
+                                SOCIALBROWSER.ipc('[open new popup]', {
+                                    windowType: 'popup',
+                                    title: 'YouTube',
+                                    alwaysOnTop: true,
+                                    center: true,
+                                    width: 550,
+                                    height: 850,
+                                    show: true,
+                                    url: u,
+                                    partition: SOCIALBROWSER.partition,
+                                    referrer: document.location.href,
                                 });
                             },
                         });

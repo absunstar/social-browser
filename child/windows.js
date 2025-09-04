@@ -1136,10 +1136,10 @@ module.exports = function (child) {
                     return { action: 'deny' };
                 } else if (url.like('https://www.youtube.com/shorts*')) {
                     child.createNewWindow({
+                        url: url,
                         windowType: 'popup',
                         title: 'YouTube',
                         alwaysOnTop: true,
-                        url: url,
                         center: true,
                         width: 550,
                         height: 850,
