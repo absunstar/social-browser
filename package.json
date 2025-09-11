@@ -24,13 +24,15 @@
         "postinstall": "electron-builder install-app-deps",
         "reload": "electron-rebuild",
         "pack": "electron-builder --dir",
-        "dist": "electron-builder"
+        "dist": "electron-builder",
+        "app:dir": "electron-builder --dir",
+        "app:dist": "electron-builder"
     },
     "build": {
         "appId": "com.social.browser",
         "productName": "Social Browser",
         "copyright": "Copyright©2025",
-        "target": "NSIS",
+        "target": "appx",
         "asar": true,
         "files": [
             "**/*",
@@ -107,6 +109,9 @@
         "snap": {
             "confinement": "classic",
             "useTemplateApp": "false"
+        },
+        "appx": {
+           
         }
     },
     "dependencies": {
@@ -115,6 +120,6 @@
     },
     "devDependencies": {
         "electron": "^38.0.0",
-        "electron-builder": "^24.0.0"
+        "electron-builder": "^26.0.12"
     }
 }

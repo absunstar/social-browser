@@ -373,7 +373,7 @@ module.exports = function (child) {
                 setting.cookies.forEach((cookie) => {
                     const scheme = cookie.secure ? 'https' : 'http';
                     const host = cookie.domain[0] === '.' ? cookie.domain.substr(1) : cookie.domain;
-                    cookie.url = cookie.url || scheme + '://' + host;
+                    cookie.url = cookie.url || scheme + '://' + host + cookie.path;
                     child.electron.session
                         .fromPartition(setting.partition)
                         .cookies.set(cookie)

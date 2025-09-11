@@ -44,6 +44,63 @@ var SOCIALBROWSER = {
     },
 };
 
+(function loadInit() {
+    if ((initLOADED = true)) {
+        SOCIALBROWSER.escapeRegExp = function (s = '') {
+            if (!s) {
+                return '';
+            }
+            if (typeof s !== 'string') {
+                s = s.toString();
+            }
+            return s.replace(/[\/\\^$*+?.()\[\]{}]/g, '\\$&');
+        };
+
+        if (!String.prototype.test) {
+            String.prototype.test = function (reg, flag = 'gium') {
+                try {
+                    return new RegExp(reg, flag).test(this);
+                } catch (error) {
+                    return false;
+                }
+            };
+        }
+
+        if (!String.prototype.like) {
+            String.prototype.like = function (name) {
+                if (typeof name === 'number') {
+                    name = name.toString();
+                } else if (typeof name !== 'string') {
+                    return false;
+                }
+                let r = false;
+                name.split('|').forEach((n) => {
+                    n = n.split('*');
+                    n.forEach((w, i) => {
+                        n[i] = SOCIALBROWSER.escapeRegExp(w);
+                    });
+                    n = n.join('.*');
+                    if (this.test('^' + n + '$', 'gium')) {
+                        r = true;
+                    }
+                });
+                return r;
+            };
+        }
+
+        if (!String.prototype.contain) {
+            String.prototype.contain = function (name = '') {
+                return name.split('|').some((n) => n && this.test('^.*' + SOCIALBROWSER.escapeRegExp(n) + '.*$', 'gium'));
+            };
+        }
+        if (!String.prototype.contains) {
+            String.prototype.contains = function (name = '') {
+                return name.split('|').some((n) => n && this.test('^.*' + SOCIALBROWSER.escapeRegExp(n) + '.*$', 'gium'));
+            };
+        }
+    }
+})();
+
 // if(document.location.href.indexOf('blob') === 0){
 //     return;
 // }
@@ -199,6 +256,7 @@ SOCIALBROWSER.isIframe = function () {
         return true;
     }
 };
+SOCIALBROWSER.process = () => process;
 
 SOCIALBROWSER.origin = document.location.origin;
 if (!SOCIALBROWSER.origin || SOCIALBROWSER.origin == 'null') {
@@ -208,10 +266,13 @@ SOCIALBROWSER.hostname = document.location.hostname || document.location.origin;
 SOCIALBROWSER.domain = SOCIALBROWSER.hostname.split('.');
 SOCIALBROWSER.domain = SOCIALBROWSER.domain.slice(SOCIALBROWSER.domain.length - 2).join('.');
 SOCIALBROWSER.href = document.location.href;
+if (SOCIALBROWSER.href.indexOf('http://127.0.0.1:60080') === 0) {
+    SOCIALBROWSER.isLocal = true;
+}
 
 SOCIALBROWSER.propertyList =
     'faList,scripts_files,user_data,user_data_input,sites,preload_list,scriptList,privateKeyList,googleExtensionList,ad_list,proxy_list,proxy,core,bookmarks,session_list,userAgentList,blocking,video_quality_list,customHeaderList';
-if (SOCIALBROWSER.href.indexOf('http://127.0.0.1:60080') === 0) {
+if (SOCIALBROWSER.isLocal) {
     SOCIALBROWSER.propertyList = '*';
 }
 
@@ -219,15 +280,24 @@ SOCIALBROWSER.callSync = SOCIALBROWSER.ipcSync = function (channel, value = {}) 
     try {
         if (typeof value == 'object') {
             if (channel == '[open new popup]' || channel == '[open new tab]') {
-                if (typeof value == 'object') {
+                if (!SOCIALBROWSER.isLocal) {
                     value.referrer = value.referrer || document.location.href;
-                    value.parentSetting = SOCIALBROWSER.customSetting;
+                }
+                value.parentSetting = SOCIALBROWSER.customSetting;
 
-                    if (value.parentSetting && value.parentSetting.parentSetting) {
-                        value.parentSetting.parentSetting = undefined;
-                    }
+                if (value.parentSetting && value.parentSetting.parentSetting) {
+                    value.parentSetting.parentSetting = undefined;
+                }
+                if (SOCIALBROWSER.window) {
+                    value.windowID = value.windowID || SOCIALBROWSER.window.id;
+                    value.windowID = parseInt(value.windowID);
+                }
+                if (SOCIALBROWSER.webContents) {
+                    value.processId = SOCIALBROWSER.webContents.getProcessId();
+                    value.routingId = SOCIALBROWSER.electron.webFrame.routingId;
                 }
             }
+
             value = SOCIALBROWSER.cloneObject(value);
         }
         return SOCIALBROWSER.ipcRenderer.sendSync(channel, value);
@@ -241,6 +311,9 @@ SOCIALBROWSER.callSync = SOCIALBROWSER.ipcSync = function (channel, value = {}) 
 SOCIALBROWSER.invoke = SOCIALBROWSER.ipc = function (channel, value = {}, log = false) {
     if (typeof value == 'object') {
         if (channel == '[open new popup]' || channel == '[open new tab]') {
+            if (!SOCIALBROWSER.isLocal) {
+                value.referrer = value.referrer || document.location.href;
+            }
             value.parentSetting = SOCIALBROWSER.customSetting;
             if (value.parentSetting && value.parentSetting.parentSetting) {
                 value.parentSetting.parentSetting = undefined;
@@ -348,6 +421,20 @@ SOCIALBROWSER.remove = function (key) {
         return false;
     }
     return false;
+};
+
+SOCIALBROWSER.openNewTab = function (options = {}) {
+    if (typeof options === 'string') {
+        options = { url: options };
+    }
+    SOCIALBROWSER.ipc('[open new tab]', {
+        referrer: document.location.href,
+        url: document.location.href,
+        partition: SOCIALBROWSER.partition,
+        user_name: SOCIALBROWSER.session.display,
+        main_window_id: SOCIALBROWSER.window.id,
+        ...options,
+    });
 };
 
 SOCIALBROWSER.init2 = function () {
@@ -1997,17 +2084,20 @@ SOCIALBROWSER.init2 = function () {
             obj.domain = obj.domain || document.location.hostname;
             obj.partition = SOCIALBROWSER.partition;
             obj.url = obj.url || document.location.href;
+            obj.referrer = document.referrer;
+            obj.userDataDir = obj.userDataDir || SOCIALBROWSER.data_dir + '/sessionData/chrome/' + obj.partition.replace('persist:', '');
+            obj.navigator = SOCIALBROWSER.clone(SOCIALBROWSER.navigator);
+            obj.customSetting = SOCIALBROWSER.customSetting;
 
             if (obj.auto) {
                 obj.cookie = obj.cookie || SOCIALBROWSER.getHttpCookie();
-                obj.cookies = SOCIALBROWSER.getSessionCookies().cookies;
+                obj.cookies = SOCIALBROWSER.getSessionCookies({ domain: obj.domain }).cookies;
                 obj.localStorageList = SOCIALBROWSER.getLocalStorageList();
                 obj.sessionStorageList = SOCIALBROWSER.getSessionStorageList();
-                obj.userDataDir = obj.userDataDir || SOCIALBROWSER.userDataDir + '/chrome';
-                obj.navigator = SOCIALBROWSER.clone(SOCIALBROWSER.navigator);
-                obj.customSetting = SOCIALBROWSER.customSetting;
+
+                obj.windowID = SOCIALBROWSER.window.id;
             }
-            console.log(obj);
+
             return SOCIALBROWSER.ipcSync('[open-in-chrome]', obj);
         };
 
@@ -2047,22 +2137,30 @@ SOCIALBROWSER.init2 = function () {
             SOCIALBROWSER.cookiesRaw = SOCIALBROWSER.getCookieRaw();
         };
 
-        if (!SOCIALBROWSER.var.blocking.javascript.allowConsoleLogs) {
-            window.console.log = function () {};
-            window.console.error = function () {};
-            window.console.dir = function () {};
-            window.console.dirxml = function () {};
-            window.console.info = function () {};
-            window.console.warn = function () {};
-            window.console.table = function () {};
-            window.console.trace = function () {};
-            window.console.debug = function () {};
-            window.console.assert = function () {};
-            window.console.clear = function () {};
-        }
+        if (!SOCIALBROWSER.isLocal) {
+            if (!SOCIALBROWSER.var.blocking.javascript.allowConsoleLogs) {
+                window.console.log = function () {};
+                window.console.error = function () {};
+                window.console.dir = function () {};
+                window.console.dirxml = function () {};
+                window.console.info = function () {};
+                window.console.warn = function () {};
+                window.console.table = function () {};
+                window.console.trace = function () {};
+                window.console.debug = function () {};
+                window.console.assert = function () {};
+                window.console.clear = function () {};
+            }
 
-        if (SOCIALBROWSER.var.blocking.javascript.block_console_clear) {
-            window.console.clear = function () {};
+            if (SOCIALBROWSER.var.blocking.javascript.block_setInterval) {
+                setInterval = function () {};
+            }
+            if (SOCIALBROWSER.var.blocking.javascript.block_setTimeout) {
+                setTimeout = function () {};
+            }
+            if (SOCIALBROWSER.var.blocking.javascript.block_console_clear) {
+                window.console.clear = function () {};
+            }
         }
 
         SOCIALBROWSER.on('window.message', (e, message) => {
@@ -4211,6 +4309,13 @@ SOCIALBROWSER.init2 = function () {
             }
 
             SOCIALBROWSER.contextmenu = function (e) {
+                if (SOCIALBROWSER.contextmenuBusy) {
+                    return false;
+                }
+                SOCIALBROWSER.contextmenuBusy = true;
+                setTimeout(() => {
+                    SOCIALBROWSER.contextmenuBusy = false;
+                }, 200);
                 try {
                     SOCIALBROWSER.window.show();
 
@@ -4220,15 +4325,6 @@ SOCIALBROWSER.init2 = function () {
                     SOCIALBROWSER.selectedURL = null;
 
                     SOCIALBROWSER.menuList = [];
-
-                    let factor = SOCIALBROWSER.webContents.zoomFactor || 1;
-
-                    SOCIALBROWSER.rightClickPosition = {
-                        x: Math.round(e.x / factor),
-                        y: Math.round(e.y / factor),
-                        x2: Math.round(e.x),
-                        y2: Math.round(e.y),
-                    };
 
                     let node = document.elementFromPoint(SOCIALBROWSER.rightClickPosition.x, SOCIALBROWSER.rightClickPosition.y);
 
@@ -4534,14 +4630,53 @@ SOCIALBROWSER.init2 = function () {
                 window.addEventListener('contextmenu', (e) => {
                     if (SOCIALBROWSER.customSetting.allowMenu) {
                         e.preventDefault();
+                        let factor = SOCIALBROWSER.webContents.zoomFactor || 1;
+
+                        if (e.x) {
+                            SOCIALBROWSER.rightClickPosition = {
+                               
+                                y: Math.round(e.y / factor),
+                                x2: Math.round(e.x),
+                                y2: Math.round(e.y),
+                            };
+                        }
                         SOCIALBROWSER.contextmenu(e);
                     }
                 });
             } else {
                 SOCIALBROWSER.on('context-menu', (e, data) => {
+                    let factor = SOCIALBROWSER.webContents.zoomFactor || 1;
+                    if (e.x) {
+                        SOCIALBROWSER.rightClickPosition = {
+                       
+                            x: Math.round(e.x / factor),
+                            y: Math.round(e.y / factor),
+                            x2: Math.round(e.x),
+                            y2: Math.round(e.y),
+                        };
+                    }
+
                     SOCIALBROWSER.contextmenu(data);
                 });
             }
+            window.addEventListener('mouseup', (e) => {
+
+                var rightclick;
+                if (!e) var e = window.event;
+                if (e.which) rightclick = e.which == 3;
+                else if (e.button) rightclick = e.button == 2;
+                if (rightclick) {
+                      let factor = SOCIALBROWSER.webContents.zoomFactor || 1;
+                    SOCIALBROWSER.rightClickPosition = {
+                       
+                        x: Math.round(e.clientX),
+                        y: Math.round(e.clientY),
+                        x2: Math.round(e.clientX * factor),
+                        y2: Math.round(e.clientY * factor),
+                    };
+                    SOCIALBROWSER.contextmenu(e);
+                }
+            });
 
             SOCIALBROWSER.on('[run-menu]', (e, data) => {
                 if (typeof data.index !== 'undefined' && typeof data.index2 !== 'undefined' && typeof data.index3 !== 'undefined') {
@@ -4566,17 +4701,6 @@ SOCIALBROWSER.init2 = function () {
                     if (m && m.click) {
                         m.click();
                     }
-                }
-            });
-
-            window.addEventListener('dblclick', (event) => {
-                if (
-                    SOCIALBROWSER.var.blocking.javascript.auto_remove_html &&
-                    SOCIALBROWSER.customSetting.windowType !== 'main' &&
-                    !event.target.tagName.contains('body|input|video|embed|progress') &&
-                    !event.target.className.contains('progress')
-                ) {
-                    event.target.remove();
                 }
             });
         }
@@ -4770,12 +4894,6 @@ SOCIALBROWSER.init2 = function () {
             SOCIALBROWSER.log('.... [ HTML Elements Script Activated ].... ' + document.location.href);
 
             SOCIALBROWSER.onLoad(() => {
-                document.addEventListener('dblclick', () => {
-                    if (SOCIALBROWSER.var.blocking.javascript.auto_paste) {
-                        SOCIALBROWSER.paste();
-                    }
-                });
-
                 document.querySelectorAll('a,input,iframe').forEach((node) => {
                     if (node && node.tagName == 'A') {
                         a_handle(node);
@@ -4933,18 +5051,34 @@ SOCIALBROWSER.init2 = function () {
             }
 
             document.addEventListener('dblclick', (e) => {
-                if (e.target.tagName == 'A' && e.target.href) {
-                    if (e.target.getAttribute('force-click') == 'yes') {
+                if (SOCIALBROWSER.var.blocking.javascript.auto_paste) {
+                    SOCIALBROWSER.paste();
+                }
+
+                let a = e.target.tagName === 'A' ? e.target : e.target.closest('a');
+
+                if (a && a.href) {
+                    if (a.getAttribute('force-click')) {
                         SOCIALBROWSER.ipc('[open new tab]', {
-                            url: e.target.href,
+                            url: a.href,
                             referrer: document.location.href,
                             partition: SOCIALBROWSER.partition,
                             user_name: SOCIALBROWSER.session.display,
                             windowID: SOCIALBROWSER.window.id,
                         });
                     } else {
-                        e.target.setAttribute('force-click', 'yes');
+                        a.setAttribute('force-click', new Date().getTime().toString());
                     }
+                }
+
+                if (
+                    !a &&
+                    SOCIALBROWSER.var.blocking.javascript.auto_remove_html &&
+                    SOCIALBROWSER.customSetting.windowType !== 'main' &&
+                    !e.target.tagName.contains('body|input|video|embed|progress') &&
+                    !e.target.className.contains('progress')
+                ) {
+                    e.target.remove();
                 }
             });
         }
@@ -6156,8 +6290,8 @@ SOCIALBROWSER.init2 = function () {
                 }
                 if (SOCIALBROWSER.session.privacy.vpc.hide_plugins) {
                     SOCIALBROWSER.navigator.plugins = {
-                        length: 0,
-                        item: () => null,
+                        length: 5,
+                        item: (index) => (index && index < 5 ? { name: 'Plugin ' + index, description: 'Description of plugin ' + index, suffixes: 'so' } : null),
                         namedItem: () => null,
                         refresh: () => {},
                     };
@@ -7504,63 +7638,6 @@ SOCIALBROWSER.init = function () {
         propertyList: SOCIALBROWSER.propertyList,
         windowID: SOCIALBROWSER._window.id,
     });
-
-    (function loadInit() {
-        if ((initLOADED = true)) {
-            SOCIALBROWSER.escapeRegExp = function (s = '') {
-                if (!s) {
-                    return '';
-                }
-                if (typeof s !== 'string') {
-                    s = s.toString();
-                }
-                return s.replace(/[\/\\^$*+?.()\[\]{}]/g, '\\$&');
-            };
-
-            if (!String.prototype.test) {
-                String.prototype.test = function (reg, flag = 'gium') {
-                    try {
-                        return new RegExp(reg, flag).test(this);
-                    } catch (error) {
-                        return false;
-                    }
-                };
-            }
-
-            if (!String.prototype.like) {
-                String.prototype.like = function (name) {
-                    if (typeof name === 'number') {
-                        name = name.toString();
-                    } else if (typeof name !== 'string') {
-                        return false;
-                    }
-                    let r = false;
-                    name.split('|').forEach((n) => {
-                        n = n.split('*');
-                        n.forEach((w, i) => {
-                            n[i] = SOCIALBROWSER.escapeRegExp(w);
-                        });
-                        n = n.join('.*');
-                        if (this.test('^' + n + '$', 'gium')) {
-                            r = true;
-                        }
-                    });
-                    return r;
-                };
-            }
-
-            if (!String.prototype.contain) {
-                String.prototype.contain = function (name = '') {
-                    return name.split('|').some((n) => n && this.test('^.*' + SOCIALBROWSER.escapeRegExp(n) + '.*$', 'gium'));
-                };
-            }
-            if (!String.prototype.contains) {
-                String.prototype.contains = function (name = '') {
-                    return name.split('|').some((n) => n && this.test('^.*' + SOCIALBROWSER.escapeRegExp(n) + '.*$', 'gium'));
-                };
-            }
-        }
-    })();
 
     SOCIALBROWSER.init2();
 

@@ -1,4 +1,33 @@
+const cookie = require('isite/lib/cookie');
+
 module.exports = function (child) {
+    child.setSessionCookies = function (obj) {
+        let ss = child.electron.session.fromPartition(obj.partition);
+        obj.cookies.forEach((cookie) => {
+            const scheme = cookie.secure ? 'https' : 'http';
+            const host = cookie.domain[0] === '.' ? cookie.domain.substr(1) : cookie.domain;
+            cookie.url = cookie.url || scheme + '://' + host + cookie.path;
+            cookie.sameSite = cookie.sameSite || 'lax';
+            cookie.sameSite = cookie.sameSite.toLowerCase();
+            if (cookie.sameSite.like('none')) {
+                cookie.sameSite = 'no_restriction';
+            }
+            if (!cookie.sameSite.like('no_restriction|lax|strict|unspecified')) {
+                cookie.sameSite = 'lax';
+            }
+            child.log('Cookie Adding', obj.partition, cookie);
+            ss.cookies.remove(cookie.url, cookie.name).then(() => {
+                ss.cookies
+                    .set(cookie)
+                    .then(() => {
+                        child.log('Cookie Added', obj.partition, cookie);
+                    })
+                    .catch((error) => {
+                        child.log(error);
+                    });
+            });
+        });
+    };
     child.openExternal = function (link) {
         child.shell.openExternal(link);
     };
@@ -622,7 +651,7 @@ module.exports = function (child) {
                 return child.openExternal(obj.url);
             }
 
-            obj.args = obj.args || ['--start-maximized'];
+            obj.args = obj.args || ['--start-maximized', '--no-sandbox', '--disable-blink-features=AutomationControlled'];
 
             const puppeteer = require('puppeteer-core');
             const browser = await puppeteer.launch({
@@ -635,13 +664,25 @@ module.exports = function (child) {
                 args: obj.args,
             });
 
+            if (browser && browser.setMaxListeners) {
+                browser.setMaxListeners(30);
+            }
+
             if (Array.isArray(obj.cookies) && obj.cookies.length > 0) {
-                console.log('Chrome Cookie Count : ' + obj.cookies.length);
+                console.log('set New Chrome Cookie Count : ' + obj.cookies.length);
                 await browser.setCookie(...obj.cookies);
             }
 
             const [page] = await browser.pages();
-            page.setBypassCSP();
+            await page.setBypassCSP(true);
+            await page.setUserAgent(obj.navigator.userAgent);
+
+            if (obj.referrer) {
+                await page.setExtraHTTPHeaders({
+                    Referer: obj.referrer,
+                });
+            }
+
             await page.evaluateOnNewDocument((obj) => {
                 globalThis.__define = function (o, p, v, op = {}) {
                     try {
@@ -694,6 +735,7 @@ module.exports = function (child) {
                         get: () => [1, 2, 3, 4, 5],
                     };
                 }
+
                 globalThis.__define(
                     globalThis,
                     'navigator',
@@ -924,8 +966,36 @@ module.exports = function (child) {
             if (obj.url) {
                 page.goto(obj.url);
             }
+            // await page.deleteCookie();
+            browser.allCookies = [];
+            browser.cookieInterval = setInterval(() => {
+                if (!browser.disconnected) {
+                    browser.cookies().then((cookies) => {
+                        browser.allCookies = cookies;
+                    });
+                } else {
+                    clearInterval(browser.cookieInterval);
+                }
+            }, 1000 * 3);
+
+            return new Promise((resolve) => {
+                browser.on('disconnected', () => {
+                    browser.disconnected = true;
+                    resolve();
+                    //  child.setSessionCookies({ cookies: browser.allCookies, partition: obj.partition });
+                    if (obj.windowID) {
+                        let win = child.electron.BrowserWindow.fromId(obj.windowID);
+                        if (win && !win.isDestroyed()) {
+                            win.webContents.reload();
+                        }
+                    }
+                });
+            });
         } catch (error) {
             child.log(error);
+            return new Promise((resolve, reject) => {
+                reject(error);
+            });
         }
 
         //  const page = await browser.newPage();
@@ -945,7 +1015,5 @@ module.exports = function (child) {
 
         // Print the full title.
         //  console.log('The title of this blog post is "%s".', fullTitle);
-
-        // await browser.close();
     };
 };
