@@ -286,6 +286,7 @@ module.exports = function (child) {
 
             ss.webRequest.onBeforeRequest(filter, function (details, callback) {
                 let url = details.url;
+                let mainURL = url;
 
                 let refererURL = '';
                 details.requestHeaders = details.requestHeaders || {};
@@ -305,7 +306,20 @@ module.exports = function (child) {
                     });
                     return;
                 }
-                let enginOFF = child.parent.var.blocking.vip_site_list.some((site) => site.url.length > 2 && url.like(site.url));
+
+                let customSetting = {};
+                if (details.webContents) {
+                    let win = child.electron.BrowserWindow.fromWebContents(details.webContents);
+                    if (win) {
+                        mainURL = win.getURL();
+
+                        if ((w = child.windowList.find((w) => w.id === win.id))) {
+                            customSetting = w.customSetting || {};
+                        }
+                    }
+                }
+                let enginOFF = child.parent.var.blocking.vip_site_list.some((site) => site.url.length > 2 && mainURL.like(site.url));
+
                 if (enginOFF) {
                     callback({
                         cancel: false,
@@ -313,14 +327,11 @@ module.exports = function (child) {
                     return;
                 }
 
-                let customSetting = {};
-                if (details.webContents) {
-                    let win = child.electron.BrowserWindow.fromWebContents(details.webContents);
-                    if (win) {
-                        if ((w = child.windowList.find((w) => w.id === win.id))) {
-                            customSetting = w.customSetting || {};
-                        }
-                    }
+                if (child.isWiteURL(mainURL)) {
+                    callback({
+                        cancel: false,
+                    });
+                    return;
                 }
 
                 if (customSetting.off || customSetting.enginOFF) {
@@ -437,6 +448,7 @@ module.exports = function (child) {
 
                 let exit = false;
                 let url = details.url;
+                let mainURL = url;
                 let urlObject = child.url.parse(url);
                 let customSetting = null;
                 let win = null;
@@ -444,23 +456,25 @@ module.exports = function (child) {
                 let domainName = urlObject.hostname;
                 let domainCookie = details.requestHeaders['Cookie'] || '';
                 let domainCookieObject = child.cookieParse(domainCookie);
-                let enginOFF = child.parent.var.blocking.vip_site_list.some((site) => site.url.length > 2 && url.like(site.url));
+
+                if (details.webContents) {
+                    win = child.electron.BrowserWindow.fromWebContents(details.webContents);
+
+                    if (win) {
+                        mainURL = win.getURL();
+                        wIndex = child.windowList.findIndex((w) => w.id === win.id);
+                        if (wIndex !== -1) {
+                            customSetting = child.windowList[wIndex].customSetting;
+                        }
+                    }
+                }
+                let enginOFF = child.parent.var.blocking.vip_site_list.some((site) => site.url.length > 2 && mainURL.like(site.url));
                 if (enginOFF) {
                     callback({
                         cancel: false,
                         requestHeaders: details.requestHeaders,
                     });
                     return;
-                }
-
-                if (details.webContents) {
-                    win = child.electron.BrowserWindow.fromWebContents(details.webContents);
-                    if (win) {
-                        wIndex = child.windowList.findIndex((w) => w.id === win.id);
-                        if (wIndex !== -1) {
-                            customSetting = child.windowList[wIndex].customSetting;
-                        }
-                    }
                 }
                 if (!customSetting) {
                     customSetting = child.windowList[0]?.customSetting;
@@ -603,7 +617,7 @@ module.exports = function (child) {
                     }
                 });
 
-                if (child.parent.var.blocking.white_list.some((item) => url.like(item.url))) {
+                if (child.isWiteURL(mainURL)) {
                     callback({
                         cancel: false,
                         requestHeaders: details.requestHeaders,
@@ -645,11 +659,23 @@ module.exports = function (child) {
                 }
 
                 let url = details.url;
+                let mainURL = url;
                 let urlObject = child.url.parse(url);
                 let _ss = child.session_name_list.find((s) => s.name == name);
                 _ss.user.privacy.vpc = _ss.user.privacy.vpc || {};
                 let customSetting = null;
-                let enginOFF = child.parent.var.blocking.vip_site_list.some((site) => site.url.length > 2 && url.like(site.url));
+
+                if (details.webContents) {
+                    win = child.electron.BrowserWindow.fromWebContents(details.webContents);
+                    if (win) {
+                        mainURL = win.getURL();
+                        wIndex = child.windowList.findIndex((w) => w.id === win.id);
+                        if (wIndex !== -1) {
+                            customSetting = child.windowList[wIndex].customSetting;
+                        }
+                    }
+                }
+                let enginOFF = child.parent.var.blocking.vip_site_list.some((site) => site.url.length > 2 && mainURL.like(site.url));
                 if (enginOFF) {
                     callback({
                         cancel: false,
@@ -660,17 +686,6 @@ module.exports = function (child) {
                     });
                     return;
                 }
-
-                if (details.webContents) {
-                    win = child.electron.BrowserWindow.fromWebContents(details.webContents);
-                    if (win) {
-                        wIndex = child.windowList.findIndex((w) => w.id === win.id);
-                        if (wIndex !== -1) {
-                            customSetting = child.windowList[wIndex].customSetting;
-                        }
-                    }
-                }
-
                 if (customSetting && (customSetting.off || customSetting.enginOFF)) {
                     callback({
                         cancel: false,
@@ -801,7 +816,7 @@ module.exports = function (child) {
                     }
                 }
 
-                if (child.parent.var.blocking.white_list.some((item) => url.like(item.url))) {
+                if (child.isWiteURL(mainURL)) {
                     callback({
                         cancel: false,
                         responseHeaders: {

@@ -258,11 +258,12 @@ module.exports = function (child) {
         });
     };
 
+    child.isWiteURL = function (url) {
+        return child.parent.var.blocking.white_list?.some((item) => url.like(item.url));
+    };
+    
     child.isAllowURL = function (url) {
         url = url.split('?')[0];
-        if (child.parent.var.blocking.white_list?.some((item) => url.like(item.url))) {
-            return true;
-        }
 
         let allow = true;
 
@@ -274,7 +275,7 @@ module.exports = function (child) {
             allow = !child.adHostList.includes(child.url.parse(url).hostname);
         }
 
-        if (allow) {
+        if (allow && child.parent.var.blocking.black_list) {
             allow = !child.parent.var.blocking.black_list.some((item) => url.like(item.url));
         }
 

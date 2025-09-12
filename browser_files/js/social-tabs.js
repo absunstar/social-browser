@@ -396,7 +396,7 @@ class SocialTabs {
             this.draggabillyInstances.push(draggabillyInstance);
 
             draggabillyInstance.on('dragStart', () => {
-                 socialTabs.classList.remove('app-region');
+                socialTabs.classList.remove('app-region');
                 this.cleanUpPreviouslyDraggedTabs();
                 tabEl.classList.add('social-tab-currently-dragged');
                 this.el.classList.add('social-tabs-sorting');
@@ -416,6 +416,9 @@ class SocialTabs {
             });
 
             draggabillyInstance.on('dragEnd', () => {
+                setTimeout(() => {
+                    socialTabs.classList.add('app-region');
+                }, 1000 * 2);
                 const finalTranslateX = parseFloat(tabEl.style.left, 10);
                 tabEl.style.transform = `translate3d(0, 0, 0)`;
 
@@ -433,10 +436,6 @@ class SocialTabs {
                             tabEl.style.transform = '';
                             this.layoutTabs();
                             this.fixZIndexes();
-                            setTimeout(() => {
-                                socialTabs.classList.add('app-region');
-                            }, 1000 * 2);
-                             
                         });
                     });
                 });

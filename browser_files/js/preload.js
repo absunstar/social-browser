@@ -1912,7 +1912,7 @@ SOCIALBROWSER.init2 = function () {
                             SOCIALBROWSER.log(err);
                         });
                 } catch (error) {
-                    SOCIALBROWSER.log(error);
+                    SOCIALBROWSER.log(error , code);
                 }
             };
 
@@ -4316,6 +4316,10 @@ SOCIALBROWSER.init2 = function () {
                 setTimeout(() => {
                     SOCIALBROWSER.contextmenuBusy = false;
                 }, 200);
+
+                if(!SOCIALBROWSER.rightClickPosition){
+                    return false;
+                }
                 try {
                     SOCIALBROWSER.window.show();
 
@@ -5313,6 +5317,11 @@ SOCIALBROWSER.init2 = function () {
                             },
                             self: this,
                         };
+
+                        if(!url || url == document.location.href){
+                            alert('Same Page URL Blocked')
+                            return child_window;
+                        }
 
                         if (!url || url.like('javascript:*|about:*|*accounts.*|*login*') || SOCIALBROWSER.customSetting.allowCorePopup) {
                             let opener = window.open0(...args);
