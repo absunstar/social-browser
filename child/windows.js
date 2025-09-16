@@ -255,7 +255,7 @@ module.exports = function (child) {
             defaultSetting.webPreferences.allowRunningInsecureContent = true;
             setting.backgroundColor = child.theme == 'light' ? '#ffffff' : '#1a2a32';
         } else if (setting.windowType === 'youtube') {
-            setting.url = 'browser://youtube-view?url=' + setting.url;
+           // setting.url = 'browser://youtube-view?url=' + setting.url;
             setting.iframe = true;
             setting.show = true;
             setting.alwaysOnTop = true;
@@ -1108,7 +1108,7 @@ module.exports = function (child) {
                 }
 
                 if (url.like('*youtube.com/watch*')) {
-                    url = 'https://www.youtube.com/embed/' + url.split('=')[1].split('&')[0];
+                   // url = 'https://www.youtube.com/embed/' + url.split('=')[1].split('&')[0];
 
                     child.createNewWindow({
                         windowType: 'youtube',
@@ -1271,7 +1271,7 @@ module.exports = function (child) {
             let real_url = url || event.url || '';
             child.log('\n new-window', real_url);
             if (real_url.like('*youtube.com/watch*')) {
-                real_url = 'https://www.youtube.com/embed/' + real_url.split('=')[1].split('&')[0];
+                // real_url = 'https://www.youtube.com/embed/' + real_url.split('=')[1].split('&')[0];
 
                 child.createNewWindow({
                     windowType: 'youtube',

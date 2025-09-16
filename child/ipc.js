@@ -536,7 +536,7 @@ module.exports = function init(child) {
     child.ipcMain.on('[get-session-cookies]', (event, obj) => {
         child.electron.session
             .fromPartition(obj.partition)
-            .cookies.get({domain : obj.domain })
+            .cookies.get({ domain: obj.domain })
             .then((cookies) => {
                 let cookieInfo = {
                     partition: obj.partition,
@@ -1092,6 +1092,7 @@ module.exports = function init(child) {
 
         delete data.name;
         data.windowType = data.windowType || 'popup';
+
         if (data.partition == child.partition) {
             child.createNewWindow(data);
         } else {

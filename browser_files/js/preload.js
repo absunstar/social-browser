@@ -101,8 +101,6 @@ var SOCIALBROWSER = {
     }
 })();
 
-
-
 // if (typeof window === 'undefined') {
 //     var window = globalThis;
 // }
@@ -126,6 +124,10 @@ SOCIALBROWSER.copyObject =
     SOCIALBROWSER.clone =
     SOCIALBROWSER.cloneObject =
         function (obj) {
+            if (typeof obj.eval == 'function') {
+                obj.eval = obj.eval.toString();
+                obj.eval = obj.eval.slice(obj.eval.indexOf('{') + 1, obj.eval.lastIndexOf('}'));
+            }
             return JSON.parse(JSON.stringify(obj));
         };
 
@@ -3040,10 +3042,13 @@ SOCIALBROWSER.init2 = function () {
                                 SOCIALBROWSER.ipc('[open new popup]', {
                                     windowType: 'youtube',
                                     alwaysOnTop: true,
-                                    url: 'https://www.youtube.com/embed/' + u.split('=')[1].split('&')[0],
+                                    url: u || 'https://www.youtube.com/embed/' + u.split('=')[1].split('&')[0],
                                     partition: SOCIALBROWSER.partition,
                                     referrer: document.location.href,
                                     show: true,
+                                    eval: () => {
+                                        SOCIALBROWSER.addCSS('#masthead-container{display:none}');
+                                    },
                                 });
                             },
                         });
@@ -3082,6 +3087,9 @@ SOCIALBROWSER.init2 = function () {
                                     url: u,
                                     partition: SOCIALBROWSER.partition,
                                     referrer: document.location.href,
+                                    eval2: () => {
+                                        SOCIALBROWSER.addCSS('#masthead-container{display:none}');
+                                    },
                                 });
                             },
                         });
@@ -3697,11 +3705,12 @@ SOCIALBROWSER.init2 = function () {
                         click() {
                             SOCIALBROWSER.ipc('[open new popup]', {
                                 windowType: 'youtube',
-                                url: 'https://www.youtube.com/embed/' + document.location.href.split('=')[1].split('&')[0],
+                                url: document.location.href || 'https://www.youtube.com/embed/' + document.location.href.split('=')[1].split('&')[0],
                                 partition: SOCIALBROWSER.partition,
                                 referrer: document.location.href,
                                 show: true,
                                 alwaysOnTop: true,
+                                sandbox: false,
                             });
                         },
                     });
@@ -4324,6 +4333,9 @@ SOCIALBROWSER.init2 = function () {
             }
 
             SOCIALBROWSER.contextmenu = function (e) {
+                if (!SOCIALBROWSER.customSetting.allowMenu) {
+                    return false;
+                }
                 if (SOCIALBROWSER.contextmenuBusy) {
                     return false;
                 }
@@ -4647,23 +4659,20 @@ SOCIALBROWSER.init2 = function () {
 
             if (SOCIALBROWSER.isIframe()) {
                 window.addEventListener('contextmenu', (e) => {
-                    if (SOCIALBROWSER.customSetting.allowMenu) {
-                        e.preventDefault();
-                        let factor = SOCIALBROWSER.webContents.zoomFactor || 1;
+                    e.preventDefault();
+                    let factor = SOCIALBROWSER.webContents.zoomFactor || 1;
 
-                        if (e.x) {
-                            SOCIALBROWSER.rightClickPosition = {
-                                y: Math.round(e.y / factor),
-                                x2: Math.round(e.x),
-                                y2: Math.round(e.y),
-                            };
-                        }
-                        SOCIALBROWSER.contextmenu(e);
+                    if (e.x) {
+                        SOCIALBROWSER.rightClickPosition = {
+                            y: Math.round(e.y / factor),
+                            x2: Math.round(e.x),
+                            y2: Math.round(e.y),
+                        };
                     }
+                    SOCIALBROWSER.contextmenu(e);
                 });
             } else {
                 SOCIALBROWSER.on('context-menu', (e, data) => {
-                    console.log(' SOCIALBROWSER context-menu');
                     let factor = SOCIALBROWSER.webContents.zoomFactor || 1;
                     if (data.x) {
                         SOCIALBROWSER.rightClickPosition = {
@@ -4673,30 +4682,27 @@ SOCIALBROWSER.init2 = function () {
                             y2: Math.round(data.y),
                         };
                     }
-                    
+
                     SOCIALBROWSER.contextmenu(data);
                 });
             }
 
-          
-                window.addEventListener('mouseup', (e) => {
-                    console.log(' window mouseup');
-                    var rightclick;
-                    if (!e) var e = window.event;
-                    if (e.which) rightclick = e.which == 3;
-                    else if (e.button) rightclick = e.button == 2;
-                    if (rightclick) {
-                        let factor = SOCIALBROWSER.webContents.zoomFactor || 1;
-                        SOCIALBROWSER.rightClickPosition = {
-                            x: Math.round(e.clientX),
-                            y: Math.round(e.clientY),
-                            x2: Math.round(e.clientX * factor),
-                            y2: Math.round(e.clientY * factor),
-                        };
-                        SOCIALBROWSER.contextmenu(e);
-                    }
-                });
-            
+            window.addEventListener('mouseup', (e) => {
+                var rightclick;
+                if (!e) var e = window.event;
+                if (e.which) rightclick = e.which == 3;
+                else if (e.button) rightclick = e.button == 2;
+                if (rightclick) {
+                    let factor = SOCIALBROWSER.webContents.zoomFactor || 1;
+                    SOCIALBROWSER.rightClickPosition = {
+                        x: Math.round(e.clientX),
+                        y: Math.round(e.clientY),
+                        x2: Math.round(e.clientX * factor),
+                        y2: Math.round(e.clientY * factor),
+                    };
+                    SOCIALBROWSER.contextmenu(e);
+                }
+            });
 
             SOCIALBROWSER.on('[run-menu]', (e, data) => {
                 if (typeof data.index !== 'undefined' && typeof data.index2 !== 'undefined' && typeof data.index3 !== 'undefined') {
