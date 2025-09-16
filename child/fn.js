@@ -261,8 +261,9 @@ module.exports = function (child) {
     child.isWiteURL = function (url) {
         return child.parent.var.blocking.white_list?.some((item) => url.like(item.url));
     };
-    
+
     child.isAllowURL = function (url) {
+       
         url = url.split('?')[0];
 
         let allow = true;
@@ -288,8 +289,9 @@ module.exports = function (child) {
 
     child.cloudFlareURLs = [];
     child.handleCustomSeting = function (url, win, isMainFrame = false) {
-        let windowIndex = child.windowList.findIndex((w) => w.id == win.id);
-
+         if(url == 'about:blank' || url == 'about:srcdoc'){
+            return;
+        }
         win.customSetting.headers = {};
         win.customSetting.session = child.parent.var.session_list.find((s) => s.name == win.customSetting.partition) || win.customSetting.session;
 
@@ -471,9 +473,10 @@ module.exports = function (child) {
 
         let currentURL = win.getURL();
         let currentHostname = child.url.parse(currentURL).hostname;
+        let newHostname = child.url.parse(url).hostname;
 
         let reload = false;
-        if (child.cloudFlareURLs.some((f) => f.url === currentHostname)) {
+        if (child.cloudFlareURLs.some((f) => f.url === newHostname)) {
             if (!win.customSetting.$cloudFlare) {
                 win.customSetting.$cloudFlare = true;
                 win.customSetting.iframe = true;
@@ -487,18 +490,14 @@ module.exports = function (child) {
         } else {
             if (win.customSetting.$cloudFlare !== win.customSetting.cloudFlare) {
                 if (win.customSetting.$currrentURL !== currentURL) {
-                    win.customSetting.$currrentURL = currentURL;
+                    win.customSetting.$currrentURL = url;
                     win.customSetting.$cloudFlare = win.customSetting.cloudFlare;
                 }
             }
         }
 
-        if (windowIndex !== -1) {
-            child.windowList[windowIndex].customSetting = win.customSetting;
-            child.electron.app.userAgentFallback = win.customSetting.$userAgentURL;
-        } else {
-            console.log('handleCustomSeting Not Exists', url);
-        }
+        child.electron.app.userAgentFallback = win.customSetting.$userAgentURL;
+
         if (reload) {
             setTimeout(() => {
                 win.webContents.reload();

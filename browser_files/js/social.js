@@ -715,7 +715,7 @@ SOCIALBROWSER.showWindowsMenu = function () {
     SOCIALBROWSER.menuList = [];
 
     SOCIALBROWSER.menuList.push({
-        label: 'Open URL in  [ Random - PC - Window ]',
+        label: 'Open URL in  [ New Window ( Random - PC ) ]',
         iconURL: 'http://127.0.0.1:60080/images/page.png',
         sublabel: SOCIALBROWSER.currentTabInfo.url,
         click: () => {
@@ -723,7 +723,7 @@ SOCIALBROWSER.showWindowsMenu = function () {
         },
     });
     SOCIALBROWSER.menuList.push({
-        label: 'Open URL in  [ Random - Mobile - Window ]',
+        label: 'Open URL in  [ New Window ( Random - Mobile ) ]',
         sublabel: SOCIALBROWSER.currentTabInfo.url,
         iconURL: 'http://127.0.0.1:60080/images/page.png',
         click: () => {
@@ -735,7 +735,7 @@ SOCIALBROWSER.showWindowsMenu = function () {
         type: 'separator',
     });
     SOCIALBROWSER.menuList.push({
-        label: 'Open URL in  [ Random - PC - Ghost - Window ]',
+        label: 'Open URL in   [ New Ghost Window ( Random - PC ) ]',
         sublabel: SOCIALBROWSER.currentTabInfo.url,
         iconURL: 'http://127.0.0.1:60080/images/page.png',
         click: () => {
@@ -744,7 +744,7 @@ SOCIALBROWSER.showWindowsMenu = function () {
     });
 
     SOCIALBROWSER.menuList.push({
-        label: 'Open URL in  [ Random - Mobile - Ghost  - Window ]',
+        label: 'Open URL in  [ New Gost Window ( Random - Mobile ) ]',
         sublabel: SOCIALBROWSER.currentTabInfo.url,
         iconURL: 'http://127.0.0.1:60080/images/page.png',
         click: () => {
@@ -755,7 +755,7 @@ SOCIALBROWSER.showWindowsMenu = function () {
         type: 'separator',
     });
     SOCIALBROWSER.menuList.push({
-        label: 'Open URL in  [ Ads - Window ]',
+        label: 'Open URL in  [ New Window ( Allow Ads ) ]',
         sublabel: SOCIALBROWSER.currentTabInfo.url,
         iconURL: 'http://127.0.0.1:60080/images/page.png',
         click: () => {
@@ -775,7 +775,7 @@ SOCIALBROWSER.showWindowsMenu = function () {
     });
 
     SOCIALBROWSER.menuList.push({
-        label: 'Open URL in  [ Google - Chrome Browser ] ( Shared Session and User Data )',
+        label: 'Open URL in  [ Google - Chrome Browser ] ( Shared Cookies and User Data )',
         sublabel: SOCIALBROWSER.currentTabInfo.url,
         iconURL: 'http://127.0.0.1:60080/images/chrome.png',
         click: () => {

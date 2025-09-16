@@ -110,12 +110,10 @@
             "confinement": "classic",
             "useTemplateApp": "false"
         },
-        "appx": {
-           
-        }
+        "appx": {}
     },
     "dependencies": {
-        "isite": "^2025.8.8",
+        "isite": "^2025.9.1",
         "puppeteer-core": "^24.8.2"
     },
     "devDependencies": {

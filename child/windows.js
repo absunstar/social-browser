@@ -10,7 +10,7 @@ module.exports = function (child) {
         height2: 72 + 30,
     };
     child.getMainWindow = function () {
-        return child.windowList.find((w) => w.customSetting && w.customSetting.windowType == 'main');
+        return child.windowList.find((w) => w.window.customSetting && w.window.customSetting.windowType == 'main');
     };
 
     child.getWindow = function () {
@@ -27,7 +27,7 @@ module.exports = function (child) {
     };
 
     child.showAddressbarWindow = function (op, show = true) {
-        let w = child.windowList.find((w) => w.customSetting.windowType === 'main' && w.window && !w.window.isDestroyed());
+        let w = child.windowList.find((w) =>  w.window && w.window.customSetting.windowType === 'main' && !w.window.isDestroyed());
         if (!w) {
             return;
         }
@@ -83,7 +83,7 @@ module.exports = function (child) {
     };
 
     child.showProfilesWindow = function (show = true) {
-        let w = child.windowList.find((w) => w.customSetting.windowType === 'main' && w.window && !w.window.isDestroyed());
+        let w = child.windowList.find((w) => w.window.customSetting.windowType === 'main' && w.window && !w.window.isDestroyed());
         if (!w) {
             return;
         }
@@ -461,12 +461,10 @@ module.exports = function (child) {
                 id: win.id,
                 id2: win.webContents.id,
                 window: win,
-                customSetting: win.customSetting,
             });
         } else {
             child.windowList[oldWIndex].id2 = win.webContents.id;
             child.windowList[oldWIndex].window = win;
-            child.windowList[oldWIndex].customSetting = win.customSetting;
         }
 
         if (win.customSetting.center) {
@@ -1045,7 +1043,7 @@ module.exports = function (child) {
 
                 newWin.on('close', (e) => {
                     if (win && !win.isDestroyed()) {
-                        win.webContents.reload();
+                        win.loadURL(newWin.getURL());
                     }
                 });
 

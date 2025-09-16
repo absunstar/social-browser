@@ -984,7 +984,7 @@
                                                 </th>
                                             </tr>
                                             <tr ng-repeat="_se in setting.session_list | filter:session track by $index">
-                                                <td class="bold ">
+                                                <td class="bold">
                                                     <div class="row center">
                                                         <div class="col">{{$index + 1}}</div>
                                                         <div class="col"><i-checkbox ng-model="_se.$selected"></i-checkbox></div>
@@ -1632,7 +1632,7 @@
                                     </tr>
                                     <tr ng-repeat="site in setting.bookmarks | limitTo:100 track by $index">
                                         <td>{{$index +1 }} <i-button type="remove" ng-click="remove_bookmarks(site)"></i-button></td>
-                                        <td>{{site.title}}</td>
+                                        <td><i-control ng-model="site.title"></i-control></td>
                                         <td>
                                             <i-control ng-model="site.url"></i-control>
                                         </td>
@@ -2071,7 +2071,7 @@
                     </div>
                 </div>
 
-                  <div id="vipSiteListModal" class="modal" fixed>
+                <div id="vipSiteListModal" class="modal" fixed>
                     <div class="modal-content">
                         <div class="modal-header">
                             <span class="close">&times;</span>

@@ -228,7 +228,7 @@ child.electron.app.whenReady().then(() => {
             event.preventDefault();
             let proxy = null;
 
-            let index = child.windowList.findIndex((w) => w.id2 == webContents.id && w.customSetting && w.customSetting.proxy);
+            let index = child.windowList.findIndex((w) => w.id2 == webContents.id && w.window.customSetting && w.window.customSetting.proxy);
             if (index !== -1) {
                 proxy = child.windowList[index].customSetting.proxy;
                 callback(proxy.username, proxy.password);
@@ -282,7 +282,7 @@ child.electron.app.whenReady().then(() => {
         let screen = child.parent.options.screen;
 
         child.windowList.forEach((w) => {
-            if (w.customSetting.windowType == 'view' && w.window && !w.window.isDestroyed()) {
+            if ( w.window && w.window.customSetting.windowType == 'view' && !w.window.isDestroyed()) {
                 let win = w.window;
 
                 if (mainWindow.hide) {

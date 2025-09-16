@@ -312,10 +312,7 @@ module.exports = function (child) {
                     let win = child.electron.BrowserWindow.fromWebContents(details.webContents);
                     if (win) {
                         mainURL = win.getURL();
-
-                        if ((w = child.windowList.find((w) => w.id === win.id))) {
-                            customSetting = w.customSetting || {};
-                        }
+                        customSetting = win.customSetting || {};
                     }
                 }
                 let enginOFF = child.parent.var.blocking.vip_site_list.some((site) => site.url.length > 2 && mainURL.like(site.url));
@@ -462,10 +459,7 @@ module.exports = function (child) {
 
                     if (win) {
                         mainURL = win.getURL();
-                        wIndex = child.windowList.findIndex((w) => w.id === win.id);
-                        if (wIndex !== -1) {
-                            customSetting = child.windowList[wIndex].customSetting;
-                        }
+                        customSetting = win.customSetting;
                     }
                 }
                 let enginOFF = child.parent.var.blocking.vip_site_list.some((site) => site.url.length > 2 && mainURL.like(site.url));
@@ -477,7 +471,7 @@ module.exports = function (child) {
                     return;
                 }
                 if (!customSetting) {
-                    customSetting = child.windowList[0]?.customSetting;
+                    customSetting = child.windowList[0]?.window.customSetting;
                 }
 
                 if (customSetting) {
@@ -882,7 +876,7 @@ module.exports = function (child) {
             ss.on('will-download', (event, item, webContents) => {
                 if (webContents) {
                     if ((w = child.windowList.find((w) => w.id2 === webContents.id))) {
-                        if (!w.customSetting.allowDownload) {
+                        if (!w.window.customSetting.allowDownload) {
                             event.preventDefault();
                             child.log('Download OFF');
                             return;
