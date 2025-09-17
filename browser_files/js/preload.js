@@ -4333,9 +4333,6 @@ SOCIALBROWSER.init2 = function () {
             }
 
             SOCIALBROWSER.contextmenu = function (e) {
-                if (!SOCIALBROWSER.customSetting.allowMenu) {
-                    return false;
-                }
                 if (SOCIALBROWSER.contextmenuBusy) {
                     return false;
                 }
