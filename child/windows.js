@@ -27,7 +27,7 @@ module.exports = function (child) {
     };
 
     child.showAddressbarWindow = function (op, show = true) {
-        let w = child.windowList.find((w) =>  w.window && w.window.customSetting.windowType === 'main' && !w.window.isDestroyed());
+        let w = child.windowList.find((w) => w.window && w.window.customSetting.windowType === 'main' && !w.window.isDestroyed());
         if (!w) {
             return;
         }
@@ -217,7 +217,7 @@ module.exports = function (child) {
             minHeight: 200,
             fullscreenable: true,
             title: 'New Window',
-            backgroundColor: setting.backgroundColor || '#FFFFFF',
+            backgroundColor: setting.backgroundColor || (child.theme == 'light' ? '#ffffff' : '#607d8b'),
             icon: parent.icon,
             autoHideMenuBar: true,
             enableLargerThanScreen: true,
@@ -253,9 +253,8 @@ module.exports = function (child) {
             defaultSetting.webPreferences.nodeIntegrationInWorker = true;
             defaultSetting.webPreferences.webSecurity = false;
             defaultSetting.webPreferences.allowRunningInsecureContent = true;
-            setting.backgroundColor = child.theme == 'light' ? '#ffffff' : '#1a2a32';
         } else if (setting.windowType === 'youtube') {
-           // setting.url = 'browser://youtube-view?url=' + setting.url;
+            // setting.url = 'browser://youtube-view?url=' + setting.url;
             setting.iframe = true;
             setting.show = true;
             setting.alwaysOnTop = true;
@@ -263,7 +262,6 @@ module.exports = function (child) {
             setting.height = 330;
             setting.x = parent.options.screen.bounds.width - 550;
             setting.y = parent.options.screen.bounds.height - 400;
-            setting.backgroundColor = '#030303';
             setting.center = false;
             defaultSetting.webPreferences.allowRunningInsecureContent = true;
             defaultSetting.webPreferences.webSecurity = false;
@@ -275,7 +273,6 @@ module.exports = function (child) {
             defaultSetting.skipTaskbar = true;
             defaultSetting.frame = false;
             defaultSetting.resizable = false;
-            setting.backgroundColor = child.theme == 'light' ? '#ffffff' : '#1a2a32';
         } else if (setting.windowType === 'addressbar') {
             defaultSetting.show = false;
             defaultSetting.alwaysOnTop = false;
@@ -284,7 +281,6 @@ module.exports = function (child) {
             defaultSetting.frame = false;
             defaultSetting.fullscreenable = false;
             defaultSetting.allowAudio = false;
-            setting.backgroundColor = child.theme == 'light' ? '#ffffff' : '#1a2a32';
         } else if (setting.windowType === 'profiles') {
             defaultSetting.show = false;
             defaultSetting.alwaysOnTop = false;
@@ -293,7 +289,6 @@ module.exports = function (child) {
             defaultSetting.fullscreenable = false;
             defaultSetting.frame = false;
             defaultSetting.allowAudio = false;
-            setting.backgroundColor = child.theme == 'light' ? '#ffffff' : '#1a2a32';
         } else if (setting.windowType === 'updates') {
             defaultSetting.sandbox = false;
             setting.sandbox = false;
@@ -304,7 +299,6 @@ module.exports = function (child) {
             defaultSetting.frame = true;
             defaultSetting.allowAudio = false;
             defaultSetting.center = true;
-            setting.backgroundColor = child.theme == 'light' ? '#ffffff' : '#1a2a32';
         } else if (setting.windowType === 'none') {
             defaultSetting.show = false;
             defaultSetting.alwaysOnTop = false;
@@ -313,7 +307,6 @@ module.exports = function (child) {
             defaultSetting.frame = true;
             defaultSetting.allowAudio = false;
             defaultSetting.center = true;
-            setting.backgroundColor = child.theme == 'light' ? '#ffffff' : '#1a2a32';
         }
 
         if (setting.show === false) {
@@ -1108,7 +1101,7 @@ module.exports = function (child) {
                 }
 
                 if (url.like('*youtube.com/watch*')) {
-                   // url = 'https://www.youtube.com/embed/' + url.split('=')[1].split('&')[0];
+                    // url = 'https://www.youtube.com/embed/' + url.split('=')[1].split('&')[0];
 
                     child.createNewWindow({
                         windowType: 'youtube',
@@ -1217,7 +1210,7 @@ module.exports = function (child) {
 
                     allow = parent.var.blocking.white_list.some((d) => url_parser.hostname.like(d.url) || current_url_parser.hostname.like(d.url));
                     if (!allow) {
-                        allow = parent.var.blocking.popup.white_list.some((d) => url_parser.hostname.like(d.url) || current_url_parser.hostname.like(d.url));
+                        allow = parent.var.blocking.white_list.some((d) => url_parser.hostname.like(d.url) || current_url_parser.hostname.like(d.url));
                     }
                     if (!allow) {
                         if (parent.var.blocking.popup.allow_internal && url_parser.hostname.contains(current_url_parser.hostname)) {
@@ -1370,7 +1363,7 @@ module.exports = function (child) {
                 return;
             }
 
-            allow = parent.var.blocking.popup.white_list.find((d) => url_parser.hostname.like(d.url) || current_url_parser.hostname.like(d.url));
+            allow = parent.var.blocking.white_list.find((d) => url_parser.hostname.like(d.url) || current_url_parser.hostname.like(d.url));
 
             if (allow) {
                 child.sendMessage({

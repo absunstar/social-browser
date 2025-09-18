@@ -5371,7 +5371,7 @@ SOCIALBROWSER.init2 = function () {
                                     return child_window;
                                 }
 
-                                allow = !SOCIALBROWSER.var.blocking.popup.black_list.some((d) => url.like(d.url));
+                                allow = !SOCIALBROWSER.var.blocking.black_list.some((d) => url.like(d.url));
 
                                 if (!allow) {
                                     SOCIALBROWSER.log('black list : ' + url);
@@ -5387,7 +5387,7 @@ SOCIALBROWSER.init2 = function () {
                                     } else if (toUrlParser.host !== fromUrlParser.host && SOCIALBROWSER.var.blocking.popup.allow_external) {
                                         allow = true;
                                     } else {
-                                        allow = SOCIALBROWSER.var.blocking.popup.white_list.some((d) => toUrlParser.host.like(d.url) || fromUrlParser.host.like(d.url));
+                                        allow = SOCIALBROWSER.var.blocking.white_list.some((d) => toUrlParser.host.like(d.url) || fromUrlParser.host.like(d.url));
                                     }
                                 }
                             }

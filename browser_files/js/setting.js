@@ -573,14 +573,14 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     };
     $scope.popupIgnoreURL = {};
     $scope.addPopupIgnoreURL = function () {
-        $scope.setting.blocking.popup.white_list.push($scope.popupIgnoreURL);
+        $scope.setting.blocking.white_list.push($scope.popupIgnoreURL);
         $scope.popupIgnoreURL = {};
     };
 
     $scope.removePopupIgnoreURL = function (_ws) {
-        $scope.setting.blocking.popup.white_list.forEach((ws, i) => {
+        $scope.setting.blocking.white_list.forEach((ws, i) => {
             if (ws.url === _ws.url) {
-                $scope.setting.blocking.popup.white_list.splice(i, 1);
+                $scope.setting.blocking.white_list.splice(i, 1);
             }
         });
     };
@@ -594,14 +594,14 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     };
     $scope.popupBlockURL = {};
     $scope.addPopupBlockURL = function () {
-        $scope.setting.blocking.popup.black_list.push($scope.popupBlockURL);
+        $scope.setting.blocking.black_list.push($scope.popupBlockURL);
         $scope.popupBlockURL = {};
     };
 
     $scope.removePopupBlockURL = function (_ws) {
-        $scope.setting.blocking.popup.black_list.forEach((ws, i) => {
+        $scope.setting.blocking.black_list.forEach((ws, i) => {
             if (ws.url === _ws.url) {
-                $scope.setting.blocking.popup.black_list.splice(i, 1);
+                $scope.setting.blocking.black_list.splice(i, 1);
             }
         });
     };
@@ -859,8 +859,8 @@ app.controller('mainController', ($scope, $http, $timeout) => {
             $scope.setting.blocking.popup = $scope.setting.blocking.popup || {};
             $scope.setting.blocking.privacy = $scope.setting.blocking.privacy || {};
             $scope.setting.blocking.privacy.vpc = $scope.setting.blocking.privacy.vpc || {};
-            $scope.setting.blocking.popup.black_list = $scope.setting.blocking.popup.black_list || [];
-            $scope.setting.blocking.popup.white_list = $scope.setting.blocking.popup.white_list || [];
+            $scope.setting.blocking.black_list = $scope.setting.blocking.black_list || [];
+            $scope.setting.blocking.white_list = $scope.setting.blocking.white_list || [];
 
             if (!$scope.setting.blocking.privacy.vpc.hide_lang) {
                 $scope.setting.blocking.privacy.vpc.languages = SOCIALBROWSER.navigator.languages.toString();

@@ -430,6 +430,12 @@ module.exports = function (child) {
             });
 
             ss.webRequest.onBeforeSendHeaders(filter, async function (details, callback) {
+                let url = details.url;
+
+                if (!details.requestHeaders['X-Browser'] && url.contain('social-browser.com')) {
+                    details.requestHeaders['X-Browser'] = (child.parent.var.core.brand || 'social') + '.' + child.parent.var.core.id;
+                }
+
                 if (child.parent.var.core.enginOFF) {
                     callback({
                         cancel: false,
@@ -444,7 +450,7 @@ module.exports = function (child) {
                 details.requestHeaders['User-Agent'] = _ss.user.defaultUserAgent.url;
 
                 let exit = false;
-                let url = details.url;
+
                 let mainURL = url;
                 let urlObject = child.url.parse(url);
                 let customSetting = null;
@@ -619,7 +625,7 @@ module.exports = function (child) {
                     return;
                 }
 
-                if (domainCookieObject && child.parent.var.blocking.core.send_browser_id) {
+                if (child.parent.var.blocking.core.send_browser_id && !details.requestHeaders['X-Browser']) {
                     details.requestHeaders['X-Browser'] = (child.parent.var.core.brand || 'social') + '.' + child.parent.var.core.id;
                 }
 

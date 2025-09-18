@@ -74,7 +74,7 @@ module.exports = function (browser) {
           value: ['https://www.youtube.com/'],
         },
       ],
-      ignore: ['x-browser', 'X-Frame-Options', 'Cross-Origin-Resource-Policy'],
+      ignore: ['X-Browser', 'X-Frame-Options', 'Cross-Origin-Resource-Policy'],
     });
   };
 

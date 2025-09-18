@@ -732,8 +732,8 @@ module.exports = function init(parent) {
     if (parent.var.blocking && parent.var.blocking.black_list) {
         parent.var.blocking.black_list = parent.var.blocking.black_list.filter((w) => w.url.length > 3);
     }
-    if (parent.var.blocking && parent.var.blocking.popup && parent.var.blocking.popup.white_list) {
-        parent.var.blocking.popup.white_list = parent.var.blocking.popup.white_list.filter((w) => w.url.length > 3);
+    if (parent.var.blocking && parent.var.blocking.popup && parent.var.blocking.white_list) {
+        parent.var.blocking.white_list = parent.var.blocking.white_list.filter((w) => w.url.length > 3);
     }
 
     parent.var.session_list = parent.var.session_list.filter((s) => !!s);

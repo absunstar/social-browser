@@ -25,7 +25,7 @@
   --social-address-color: #ffffff;
   --scrollbar-background-color: #000000;
   --scrollbar-color: #1a2a32;
-  --bs-body-bg: var(--social-background-color);
+  --bs-body-bg: #607d8b;
   transition: all 0.4s ease;
 
 }

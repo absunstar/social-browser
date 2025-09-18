@@ -29,7 +29,10 @@ module.exports = function (child) {
         });
     };
     child.openExternal = function (link) {
-        child.shell.openExternal(link);
+        child.log('child.openExternal : ' + link);
+        child.shell.openExternal(link).catch((e) => {
+            child.log(e.message, link);
+        });
     };
     child.exec = function (cmd, callback) {
         callback =
@@ -263,7 +266,6 @@ module.exports = function (child) {
     };
 
     child.isAllowURL = function (url) {
-       
         url = url.split('?')[0];
 
         let allow = true;
@@ -289,7 +291,7 @@ module.exports = function (child) {
 
     child.cloudFlareURLs = [];
     child.handleCustomSeting = function (url, win, isMainFrame = false) {
-         if(url == 'about:blank' || url == 'about:srcdoc'){
+        if (url == 'about:blank' || url == 'about:srcdoc') {
             return;
         }
         win.customSetting.headers = {};

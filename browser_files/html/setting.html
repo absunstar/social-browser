@@ -444,10 +444,7 @@
                                             <i-checkbox class="" label="Allow Internal Popup" ng-model="setting.blocking.popup.allow_internal"></i-checkbox>
                                             <i-checkbox class="" label="Allow Blank Popup" ng-model="setting.blocking.popup.allow_blank"></i-checkbox>
 
-                                            <div class="row">
-                                                <i-button label="Popup White List" type="list" ng-click="showPopupIgnoreURLsModal()"></i-button>
-                                                <i-button label="Popup Black List" type="list" ng-click="showPopupBlockURLsModal()"></i-button>
-                                            </div>
+                                            
                                         </div>
                                     </fieldset>
 
@@ -1841,7 +1838,7 @@
                                     <th>Link</th>
                                     <th>Action</th>
                                 </tr>
-                                <tr ng-repeat="_d in setting.blocking.popup.white_list | filter:popupIgnoreURL track by $index">
+                                <tr ng-repeat="_d in setting.blocking.white_list | filter:popupIgnoreURL track by $index">
                                     <td>
                                         <i-control ng-model="_d.url"></i-control>
                                     </td>
@@ -1880,7 +1877,7 @@
                                     <th>Link</th>
                                     <th>Action</th>
                                 </tr>
-                                <tr ng-repeat="_d in setting.blocking.popup.black_list | filter:popupBlockURL track by $index">
+                                <tr ng-repeat="_d in setting.blocking.black_list | filter:popupBlockURL track by $index">
                                     <td>
                                         <i-control ng-model="_d.url"></i-control>
                                     </td>
