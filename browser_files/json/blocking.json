@@ -26,6 +26,7 @@
         }
     ],
     "javascript": {
+        "googleCaptchaON": true,
         "allowConsoleLogs": false,
         "block_window_open": false,
         "block_eval": false,
@@ -151,30 +152,6 @@
         }
     ],
     "popup": {
-        "white_list": [
-            {
-                "url": "*facebook.com*"
-            },
-            {
-                "url": "*google.com*"
-            },
-            {
-                "url": "*youtube.com*"
-            },
-            {
-                "url": "*microsoft.com*"
-            },
-            {
-                "url": "*linkedin.com*"
-            },
-            {
-                "url": "*paypal.com*"
-            },
-            {
-                "url": "*snapchat.com*"
-            }
-        ],
-        "black_list": [],
         "allow_external": false,
         "allow_blank": false,
         "allow_internal": true

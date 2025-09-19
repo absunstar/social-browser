@@ -46,7 +46,17 @@ module.exports = function init(child) {
         });
     };
     child.cloneObject = function (obj) {
-        return JSON.parse(JSON.stringify(obj));
+        let newObject = {};
+
+        for (const key in obj) {
+            if (typeof obj[key] === 'function') {
+                newObject[key] = obj[key].toString();
+                newObject[key] = newObject[key].slice(newObject[key].indexOf('{') + 1, newObject[key].lastIndexOf('}'));
+            } else {
+                newObject[key] = obj[key];
+            }
+        }
+        return newObject;
     };
     child.handleBrowserData = function (data) {
         let data2 = {
@@ -177,34 +187,43 @@ module.exports = function init(child) {
             let obj = undefined;
             let fn = undefined;
 
-            if (arr.length == 1) {
-                obj = child;
-                fn = arr[0];
-            } else if (arr.length == 2) {
-                fn = arr[1];
-
-                if (arr[0] == 'webContents') {
-                    obj = event.sender;
-                } else if (arr[0] == 'window') {
-                    obj = child.electron.BrowserWindow.fromWebContents(event.sender) || child.windowList[child.windowList.length - 1]?.window || child.lastWindow;
-                } else if (arr[0] == 'session') {
-                    obj = event.sender.session;
-                } else if (arr[0] == 'cookies') {
-                    obj = event.sender.session.cookies;
-                } else if (arr[0] == 'api') {
-                    obj = child.api;
-                } else if (arr[0] == 'screen') {
-                    obj = child.electron.screen;
-                } else if (arr[0] == 'clipboard') {
-                    obj = child.electron.clipboard;
-                } else if (arr[0] == 'child') {
-                    obj = child;
-                } else if (arr[0] == 'fs') {
-                    obj = child.fs;
-                } else if (arr[0] == 'path') {
-                    obj = child.path;
+            if (data.fn == 'executeJavaScript') {
+                fn = data.fn;
+                if (data.processId && data.frameToken) {
+                    obj = child.electron.webFrameMain.fromFrameToken(data.processId, data.frameToken);
                 } else {
-                    obj = null;
+                    obj = event.sender;
+                }
+            } else {
+                if (arr.length == 1) {
+                    obj = child;
+                    fn = arr[0];
+                } else if (arr.length == 2) {
+                    fn = arr[1];
+
+                    if (arr[0] == 'webContents') {
+                        obj = event.sender;
+                    } else if (arr[0] == 'window') {
+                        obj = child.electron.BrowserWindow.fromWebContents(event.sender) || child.windowList[child.windowList.length - 1]?.window || child.lastWindow;
+                    } else if (arr[0] == 'session') {
+                        obj = event.sender.session;
+                    } else if (arr[0] == 'cookies') {
+                        obj = event.sender.session.cookies;
+                    } else if (arr[0] == 'api') {
+                        obj = child.api;
+                    } else if (arr[0] == 'screen') {
+                        obj = child.electron.screen;
+                    } else if (arr[0] == 'clipboard') {
+                        obj = child.electron.clipboard;
+                    } else if (arr[0] == 'child') {
+                        obj = child;
+                    } else if (arr[0] == 'fs') {
+                        obj = child.fs;
+                    } else if (arr[0] == 'path') {
+                        obj = child.path;
+                    } else {
+                        obj = null;
+                    }
                 }
             }
 
@@ -223,6 +242,7 @@ module.exports = function init(child) {
             return undefined;
         }
     };
+
     child.ipcMain.on('[fn]', (event, data) => {
         let result = child.handleRenderFn(event, data);
 
@@ -758,13 +778,18 @@ module.exports = function init(child) {
             } else if (options.return == 'text') {
                 return await response.text();
             } else {
-                return {
+                let responseText = await response.text();
+                let headers = await response.headers.raw();
+                let resData = {
                     ok: response.ok,
                     status: response.status,
                     statusText: response.statusText,
-                    headers: response.headers.raw(),
-                    body: await response.text(),
+                    headers: headers,
+                    body: responseText,
+                    responseText: responseText,
                 };
+                console.log(resData);
+                return resData;
             }
         }
     });
@@ -856,38 +881,38 @@ module.exports = function init(child) {
     child.ipcMain.handle('[show-menu]', (e, data) => {
         let win = child.electron.BrowserWindow.fromId(data.windowID);
         let contents = null;
-        if (data.processId && data.routingId) {
-            contents = child.electron.webFrameMain.fromId(data.processId, data.routingId);
+        if (data.processId && data.frameToken) {
+            contents = child.electron.webFrameMain.fromFrameToken(data.processId, data.frameToken);
         } else {
             contents = win.webContents;
         }
         if (!contents) {
             win.webContents.mainFrame.frames.forEach((f1) => {
-                if (f1.routingId == data.routingId) {
+                if (f1.frameToken == data.frameToken) {
                     contents = f1;
                 }
                 f1.frames.forEach((f2) => {
-                    if (f2.routingId == data.routingId) {
+                    if (f2.frameToken == data.frameToken) {
                         contents = f2;
                     }
                     f2.frames.forEach((f3) => {
-                        if (f3.routingId == data.routingId) {
+                        if (f3.frameToken == data.frameToken) {
                             contents = f3;
                         }
                         f3.frames.forEach((f4) => {
-                            if (f4.routingId == data.routingId) {
+                            if (f4.frameToken == data.frameToken) {
                                 contents = f4;
                             }
                             f4.frames.forEach((f5) => {
-                                if (f5.routingId == data.routingId) {
+                                if (f5.frameToken == data.frameToken) {
                                     contents = f5;
                                 }
                                 f5.frames.forEach((f6) => {
-                                    if (f6.routingId == data.routingId) {
+                                    if (f6.frameToken == data.frameToken) {
                                         contents = f6;
                                     }
                                     f6.frames.forEach((f7) => {
-                                        if (f7.routingId == data.routingId) {
+                                        if (f7.frameToken == data.frameToken) {
                                             contents = f7;
                                         }
                                     });

@@ -248,6 +248,9 @@
                             <a id="scripts" class="tab-link" onclick="site.showTabContent(event, '#scripts_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
                                 <i class="fa fa-code"></i> User Scripts
                             </a>
+                               <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#javascript_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                                <i class="fas fa-scroll"></i> Java Script
+                            </a>
 
                             <a id="basic" class="tab-link" id="safty_btn" onclick="site.showTabContent(event, '#safty_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
                                 <i class="fa fa-lock"></i> Children Safty Mode
@@ -258,9 +261,7 @@
                             <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#privacy_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
                                 <i class="fa fa-laptop"></i> Virtual PC [Browser FingerPrint]
                             </a>
-                            <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#javascript_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
-                                <i class="fas fa-scroll"></i> Java Script
-                            </a>
+                         
 
                             <a id="basic" class="tab-link hidden" onclick="site.showTabContent(event, '#youtube_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
                                 <i class="fab fa-youtube"></i> Youtube
@@ -714,8 +715,9 @@
                                                 <i-checkbox class="row" label="Double Click [ Auto Remove HTML Element ] " ng-model="setting.blocking.javascript.auto_remove_html"> </i-checkbox>
                                             </div>
                                             <div class="col6">
-                                                <i-checkbox class="row" label="Allow Login By Passkey" ng-model="setting.core.loginByPasskey"></i-checkbox>
+                                                <i-checkbox class="row" label="Allow Google Captcha Auto Solve " ng-model="setting.blocking.javascript.googleCaptchaON"></i-checkbox>
                                                 <i-checkbox class="row" label="Allow CloudFlare Auto Solve " ng-model="setting.blocking.javascript.cloudflareON"></i-checkbox>
+                                                <i-checkbox class="row" label="Allow Login By Passkey" ng-model="setting.core.loginByPasskey"></i-checkbox>
                                                 <i-checkbox class="row" label="Disabled ALL Browser Engines " ng-model="setting.core.enginOFF"></i-checkbox>
                                                 <i-checkbox class="row" label="Disabled ALL JavaScript Engines " ng-model="setting.core.javaScriptOFF"></i-checkbox>
                                                 <i-checkbox class="row" label="Custom Local Storage" ng-model="setting.blocking.javascript.custom_local_storage"> </i-checkbox>

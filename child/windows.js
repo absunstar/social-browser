@@ -255,7 +255,7 @@ module.exports = function (child) {
             defaultSetting.webPreferences.allowRunningInsecureContent = true;
         } else if (setting.windowType === 'youtube') {
             // setting.url = 'browser://youtube-view?url=' + setting.url;
-            setting.iframe = true;
+            setting.iframe = false;
             setting.show = true;
             setting.alwaysOnTop = true;
             setting.width = 520;
@@ -263,6 +263,7 @@ module.exports = function (child) {
             setting.x = parent.options.screen.bounds.width - 550;
             setting.y = parent.options.screen.bounds.height - 400;
             setting.center = false;
+            setting.sandbox = false;
             defaultSetting.webPreferences.allowRunningInsecureContent = true;
             defaultSetting.webPreferences.webSecurity = false;
         } else if (setting.windowType.contains('popup')) {
