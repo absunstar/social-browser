@@ -675,6 +675,9 @@ module.exports = function init(parent) {
     parent.get_var('privateKeyList');
     parent.get_var('scriptList');
     parent.get_var('faList');
+    parent.get_var('storageList');
+
+    
 
     parent.handleAdList();
 

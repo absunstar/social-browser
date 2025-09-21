@@ -49,11 +49,17 @@ module.exports = function init(child) {
         let newObject = {};
 
         for (const key in obj) {
-            if (typeof obj[key] === 'function') {
-                newObject[key] = obj[key].toString();
-                newObject[key] = newObject[key].slice(newObject[key].indexOf('{') + 1, newObject[key].lastIndexOf('}'));
-            } else {
-                newObject[key] = obj[key];
+            if (Object.hasOwn(obj, key)) {
+                if (typeof obj[key] === 'function') {
+                    newObject[key] = obj[key].toString();
+                    newObject[key] = newObject[key].slice(newObject[key].indexOf('{') + 1, newObject[key].lastIndexOf('}'));
+                } else if (Array.isArray(obj[key])) {
+                    newObject[key] = obj[key];
+                } else if (typeof obj[key] === 'object' && obj[key]) {
+                    newObject[key] = child.cloneObject(obj[key]);
+                } else {
+                    newObject[key] = obj[key];
+                }
             }
         }
         return newObject;
@@ -119,6 +125,8 @@ module.exports = function init(child) {
                 obj = event.sender;
             } else if (arr[0] == 'window') {
                 obj = child.electron.BrowserWindow.fromWebContents(event.sender) || child.windowList[child.windowList.length - 1]?.window || child.lastWindow;
+            } else if (arr[0] == 'customSetting') {
+                obj = child.electron.BrowserWindow.fromWebContents(event.sender)?.customSetting || child.lastWindow?.customSetting;
             } else if (arr[0] == 'session') {
                 obj = event.sender.session;
             } else if (arr[0] == 'shared') {
@@ -159,6 +167,8 @@ module.exports = function init(child) {
                 obj = event.sender;
             } else if (arr[0] == 'window') {
                 obj = child.electron.BrowserWindow.fromWebContents(event.sender) || child.windowList[child.windowList.length - 1]?.window || child.lastWindow;
+            } else if (arr[0] == 'customSetting') {
+                obj = child.electron.BrowserWindow.fromWebContents(event.sender)?.customSetting || child.lastWindow?.customSetting;
             } else if (arr[0] == 'session') {
                 obj = event.sender.session;
             } else if (arr[0] == 'shared') {

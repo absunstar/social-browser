@@ -1326,7 +1326,9 @@
                                     <h2>Script Manager</h2>
 
                                     <div class="row padding margin">
-                                        <i-button type="add" label="New Script" ng-click="showAddScript()"></i-button>
+                                        <div class="col6"><i-button type="add" label="New Script" ng-click="showAddScript()"></i-button></div>
+                                        <div class="col6"> <i-checkbox label="Auto Detected Online User.js Scripts " ng-model="setting.core.autoAddUserScripts"></i-checkbox></div>
+                                        
                                     </div>
 
                                     <div class="row">

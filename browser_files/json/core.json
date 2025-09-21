@@ -5,7 +5,7 @@
     "prefix": "SB_9_",
     "flags": "",
     "brand": "Social Browser",
-    "pinCode" : "ABCD",
+    "pinCode": "ABCD",
     "full_version": true,
     "key": "free key",
     "home_page": "https://www.google.com/",
@@ -13,6 +13,7 @@
     "autoClearCacheStorage": false,
     "password": "",
     "max_tabs": 20,
+    "autoAddUserScripts": true,
     "emails": {
         "enabled": true,
         "domain": "social-browser.com"

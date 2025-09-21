@@ -124,6 +124,9 @@ SOCIALBROWSER.copyObject =
     SOCIALBROWSER.clone =
     SOCIALBROWSER.cloneObject =
         function (obj) {
+            if (typeof obj !== 'object') {
+                return obj;
+            }
             let newObject = {};
 
             for (const key in obj) {
@@ -144,6 +147,40 @@ SOCIALBROWSER.random = SOCIALBROWSER.randomNumber = function (min = 1, max = 100
 };
 
 if ((policy = true)) {
+    document.createElement0 = document.createElement;
+    document.createElement = function (...args) {
+        let ele = document.createElement0(...args);
+
+        Object.defineProperty(ele, 'innerHTML2', {
+            get() {
+                return this.innerHTML;
+            },
+            set(value) {
+                this.innerHTML = SOCIALBROWSER.policy.createHTML(value);
+            },
+            enumerable: true,
+            configurable: true,
+        });
+
+        Object.defineProperty(ele, 'textContent2', {
+            get() {
+                return this.textContent;
+            },
+            set(value) {
+                if (ele.tagName.like('script')) {
+                    this.textContent = SOCIALBROWSER.policy.createScript(value);
+                } else {
+                    this.textContent = SOCIALBROWSER.policy.createHTML(value);
+                }
+            },
+            enumerable: true,
+            configurable: true,
+        });
+
+        ele.nonce = 'social';
+        return ele;
+    }.bind(document.createElement);
+
     if (window.trustedTypes) {
         SOCIALBROWSER.policy = window.trustedTypes.createPolicy('social', {
             createHTML: (string) => string,
@@ -236,8 +273,10 @@ SOCIALBROWSER.runUserScript = function (_script) {
             if (_script.preload) {
                 SOCIALBROWSER.eval(_script.js);
             } else {
-                SOCIALBROWSER.addCSS(_script.css);
-                SOCIALBROWSER.addHTML(_script.html);
+                SOCIALBROWSER.onLoad(() => {
+                    SOCIALBROWSER.addCSS(_script.css);
+                    SOCIALBROWSER.addHTML(_script.html);
+                });
                 SOCIALBROWSER.addJS(_script.js);
             }
         }
@@ -246,8 +285,10 @@ SOCIALBROWSER.runUserScript = function (_script) {
             if (_script.preload) {
                 SOCIALBROWSER.eval(_script.js);
             } else {
-                SOCIALBROWSER.addCSS(_script.css);
-                SOCIALBROWSER.addHTML(_script.html);
+                SOCIALBROWSER.onLoad(() => {
+                    SOCIALBROWSER.addCSS(_script.css);
+                    SOCIALBROWSER.addHTML(_script.html);
+                });
                 SOCIALBROWSER.addJS(_script.js);
             }
         }
@@ -271,13 +312,15 @@ if (!SOCIALBROWSER.origin || SOCIALBROWSER.origin == 'null') {
 SOCIALBROWSER.hostname = document.location.hostname || document.location.origin;
 SOCIALBROWSER.domain = SOCIALBROWSER.hostname.split('.');
 SOCIALBROWSER.domain = SOCIALBROWSER.domain.slice(SOCIALBROWSER.domain.length - 2).join('.');
+SOCIALBROWSER.domainStorage = SOCIALBROWSER.domain;
+
 SOCIALBROWSER.href = document.location.href;
 if (SOCIALBROWSER.href.indexOf('http://127.0.0.1:60080') === 0) {
     SOCIALBROWSER.isLocal = true;
 }
 
 SOCIALBROWSER.propertyList =
-    'faList,scripts_files,user_data,user_data_input,sites,preload_list,scriptList,privateKeyList,googleExtensionList,ad_list,proxy_list,proxy,core,bookmarks,session_list,userAgentList,blocking,video_quality_list,customHeaderList';
+    'download_list,faList,scripts_files,user_data,user_data_input,sites,preload_list,scriptList,privateKeyList,googleExtensionList,ad_list,proxy_list,proxy,core,bookmarks,session_list,userAgentList,blocking,video_quality_list,customHeaderList';
 if (SOCIALBROWSER.isLocal) {
     SOCIALBROWSER.propertyList = '*';
 }
@@ -289,7 +332,7 @@ SOCIALBROWSER.callSync = SOCIALBROWSER.ipcSync = function (channel, value = {}) 
                 if (!SOCIALBROWSER.isLocal) {
                     value.referrer = value.referrer || document.location.href;
                 }
-                value.parentSetting = SOCIALBROWSER.customSetting;
+                value.parentSetting = SOCIALBROWSER._customSetting;
 
                 if (value.parentSetting && value.parentSetting.parentSetting) {
                     value.parentSetting.parentSetting = undefined;
@@ -320,7 +363,7 @@ SOCIALBROWSER.invoke = SOCIALBROWSER.ipc = function (channel, value = {}, log = 
             if (!SOCIALBROWSER.isLocal) {
                 value.referrer = value.referrer || document.location.href;
             }
-            value.parentSetting = SOCIALBROWSER.customSetting;
+            value.parentSetting = SOCIALBROWSER._customSetting;
             if (value.parentSetting && value.parentSetting.parentSetting) {
                 value.parentSetting.parentSetting = undefined;
             }
@@ -359,45 +402,40 @@ SOCIALBROWSER.fn = function (fn, ...params) {
 SOCIALBROWSER.set = function (property, value) {
     SOCIALBROWSER.ipcSync('[set]', { property: property, value: value });
 };
-SOCIALBROWSER.setStorage = function (key, value) {
-    try {
-        if (!key || typeof value === 'undefined') {
-            return false;
-        }
-        value = JSON.stringify(value);
-        if (!SOCIALBROWSER.isMemoryMode) {
-            window.localStorage.setItem(key, value);
-            return true;
-        } else if (window.sessionStorage) {
-            window.sessionStorage.setItem(key, value);
-            return true;
-        }
-        return false;
-    } catch (error) {
-        console.warn(error);
-        return false;
-    }
+
+SOCIALBROWSER.updateBrowserVar = function (name, data) {
+    SOCIALBROWSER.ipc('[update-browser-var]', {
+        name: name,
+        data: data,
+    });
 };
-SOCIALBROWSER.getStorage = function (key) {
-    try {
-        if (!key) {
-            return null;
-        }
-        let value = null;
-        if (!SOCIALBROWSER.isMemoryMode) {
-            value = window.localStorage.getItem(key);
-        } else if (window.sessionStorage) {
-            value = window.sessionStorage.getItem(key);
-        }
-        if (value) {
-            value = JSON.parse(value);
-        }
-        return value;
-    } catch (error) {
-        console.warn(error);
-        return null;
+
+SOCIALBROWSER.setStorage = function (key, value, options = {}) {
+    let storage = { key: key, value: value, type: typeof value, domain: SOCIALBROWSER.domainStorage, ...options };
+    if (storage.type === 'object') {
+        storage.value = SOCIALBROWSER.cloneObject(storage.value);
     }
-    return null;
+
+    SOCIALBROWSER.fn('setStorage', storage);
+};
+SOCIALBROWSER.getStorage = function (key, defaultValue, options = {}) {
+    let storage = SOCIALBROWSER.fn('getStorage', { key: key, domain: SOCIALBROWSER.domainStorage, ...options });
+    if (storage) {
+        defaultValue = storage.value;
+    }
+    return defaultValue;
+};
+SOCIALBROWSER.deleteStorage = function (key, options = {}) {
+    return SOCIALBROWSER.fn('deleteStorage', { key: key, domain: SOCIALBROWSER.domainStorage, ...options });
+};
+SOCIALBROWSER.listStorage = function (options = {}) {
+    return SOCIALBROWSER.fn('listStorage', { domain: SOCIALBROWSER.domainStorage, ...options });
+};
+SOCIALBROWSER.listStorageKeys = function (options = {}) {
+    return SOCIALBROWSER.fn('listStorageKeys', { domain: SOCIALBROWSER.domainStorage, ...options });
+};
+SOCIALBROWSER.listStorageValues = function (options = {}) {
+    return SOCIALBROWSER.fn('listStorageValues', { domain: SOCIALBROWSER.domainStorage, ...options });
 };
 
 SOCIALBROWSER.remove = function (key) {
@@ -462,8 +500,6 @@ SOCIALBROWSER.init2 = function () {
     SOCIALBROWSER.is_main_data = true;
     SOCIALBROWSER.childProcessID = SOCIALBROWSER.browserData.childProcessID;
     SOCIALBROWSER.child_index = SOCIALBROWSER.browserData.child_index;
-    SOCIALBROWSER.customSetting = SOCIALBROWSER.browserData.customSetting;
-    SOCIALBROWSER.userAgentData = SOCIALBROWSER.customSetting.userAgentData;
     SOCIALBROWSER.var = SOCIALBROWSER.browserData.var;
     SOCIALBROWSER.dir = SOCIALBROWSER.browserData.dir;
     SOCIALBROWSER.data_dir = SOCIALBROWSER.browserData.data_dir;
@@ -475,7 +511,7 @@ SOCIALBROWSER.init2 = function () {
     SOCIALBROWSER.newTabData = SOCIALBROWSER.browserData.newTabData;
     SOCIALBROWSER.session = { ...SOCIALBROWSER.session, ...SOCIALBROWSER.browserData.session };
     SOCIALBROWSER.partition = SOCIALBROWSER.browserData.partition;
-
+    SOCIALBROWSER._customSetting = SOCIALBROWSER.browserData.customSetting;
     SOCIALBROWSER.userAgentBrowserList = SOCIALBROWSER.browserData.userAgentBrowserList;
     SOCIALBROWSER.timeZones = SOCIALBROWSER.browserData.timeZones;
     SOCIALBROWSER.languageList = SOCIALBROWSER.browserData.languageList;
@@ -486,6 +522,18 @@ SOCIALBROWSER.init2 = function () {
     SOCIALBROWSER.id = SOCIALBROWSER.var.core.id;
     SOCIALBROWSER.tempMailServer = SOCIALBROWSER.var.core.emails?.domain || 'social-browser.com';
     SOCIALBROWSER.isWhiteSite = SOCIALBROWSER.var.blocking.white_list.some((site) => site.url.length > 2 && document.location.href.like(site.url));
+    SOCIALBROWSER.customSetting = new Proxy(SOCIALBROWSER._customSetting, {
+        get(target, name, receiver) {
+            return SOCIALBROWSER.get('customSetting.' + name);
+        },
+        set(target, name, value, receiver) {
+            if (typeof value == 'function') {
+                value = value.toString();
+                value = value.slice(value.indexOf('{') + 1, value.lastIndexOf('}'));
+            }
+            return SOCIALBROWSER.set('customSetting.' + name, value);
+        },
+    });
 
     if (!SOCIALBROWSER.customSetting.iframe && SOCIALBROWSER.isIframe()) {
         return;
@@ -1016,22 +1064,21 @@ SOCIALBROWSER.init2 = function () {
             };
 
             SOCIALBROWSER.addHTML = SOCIALBROWSER.addhtml = function (code) {
-                SOCIALBROWSER.onLoad(() => {
-                    try {
-                        let body = document.body || document.documentElement;
-                        if (body && code) {
-                            let _div = document.createElement('div');
-                            _div.id = '_div_' + SOCIALBROWSER.md5(code);
-                            _div.innerHTML = SOCIALBROWSER.policy.createHTML(code);
-                            _div.nonce = 'social';
-                            if (!document.querySelector('#' + _div.id)) {
-                                body.appendChild(_div);
-                            }
+                try {
+                    let body = document.body || document.documentElement;
+                    if (body && code) {
+                        let _div = document.createElement('div');
+                        _div.id = '_div_' + SOCIALBROWSER.md5(code);
+                        _div.innerHTML = SOCIALBROWSER.policy.createHTML(code);
+                        _div.nonce = 'social';
+                        if (!document.querySelector('#' + _div.id)) {
+                            body.appendChild(_div);
                         }
-                    } catch (error) {
-                        SOCIALBROWSER.log(error);
+                        return _div;
                     }
-                });
+                } catch (error) {
+                    SOCIALBROWSER.log(error);
+                }
             };
             SOCIALBROWSER.addJS = SOCIALBROWSER.addjs = function (code) {
                 SOCIALBROWSER.executeJavaScript(code).catch((err) => {
@@ -1076,27 +1123,23 @@ SOCIALBROWSER.init2 = function () {
                 });
             };
             SOCIALBROWSER.addCSS = SOCIALBROWSER.addcss = function (code) {
-                SOCIALBROWSER.webContents.insertCSSAsync(code).catch((err) => {
-                    SOCIALBROWSER.log(err);
-                    SOCIALBROWSER.onLoad(() => {
-                        try {
-                            let body = document.head || document.body || document.documentElement;
-                            if (body && code) {
-                                code = code.replaceAll('\n', '').replaceAll('\r', '').replaceAll('  ', '');
-                                let _style = document.createElement('style');
-                                _style.id = '_style_' + SOCIALBROWSER.md5(code);
-                                _style.innerText = code;
-                                _style.nonce = 'social';
-                                if (!document.querySelector('#' + _style.id)) {
-                                    body.appendChild(_style);
-                                }
-                            }
-                        } catch (error) {
-                            SOCIALBROWSER.webContents.insertCSS(code);
-                            SOCIALBROWSER.log(error);
+                try {
+                    let body = document.head || document.body || document.documentElement;
+                    if (body && code) {
+                        code = code.replaceAll('\n', '').replaceAll('\r', '').replaceAll('  ', '');
+                        let _style = document.createElement('style');
+                        _style.id = '_style_' + SOCIALBROWSER.md5(code);
+                        _style.innerText = code;
+                        _style.nonce = 'social';
+                        if (!document.querySelector('#' + _style.id)) {
+                            body.appendChild(_style);
                         }
-                    });
-                });
+                        return _style;
+                    }
+                } catch (error) {
+                    SOCIALBROWSER.webContents.insertCSS(code);
+                    SOCIALBROWSER.log(error);
+                }
             };
             SOCIALBROWSER.addCSSURL = SOCIALBROWSER.addcssurl = function (url) {
                 SOCIALBROWSER.onLoad(() => {
@@ -1598,7 +1641,7 @@ SOCIALBROWSER.init2 = function () {
                 };
                 _customSetting.windowType = _customSetting.windowType || 'social-popup';
 
-                let customSetting = { ...SOCIALBROWSER.customSetting, ..._customSetting };
+                let customSetting = { ...SOCIALBROWSER._customSetting, ..._customSetting };
 
                 SOCIALBROWSER.on('[tracking-info]', (e, data) => {
                     if (data.trackingID == customSetting.trackingID) {
@@ -1780,21 +1823,18 @@ SOCIALBROWSER.init2 = function () {
             };
 
             SOCIALBROWSER.__showWarningImage = function () {
-                SOCIALBROWSER.injectDefault();
                 let div = document.querySelector('#__warning_img');
                 if (div) {
                     div.style.display = 'block';
                 }
             };
             SOCIALBROWSER.__showBotImage = function () {
-                SOCIALBROWSER.injectDefault();
                 let div = document.querySelector('#__bot_img');
                 if (div) {
                     div.style.display = 'block';
                 }
             };
             SOCIALBROWSER.__blockPage = function (block, msg, close) {
-                SOCIALBROWSER.injectDefault();
                 let div = document.querySelector('#__blockDiv');
                 if (div && block) {
                     div.style.display = 'block';
@@ -1812,7 +1852,6 @@ SOCIALBROWSER.init2 = function () {
             var showinfoTimeout = null;
             SOCIALBROWSER.showInfo = function (msg, time) {
                 clearTimeout(showinfoTimeout);
-                SOCIALBROWSER.injectDefault();
                 let div = document.querySelector('#__targetUrl');
                 if (msg && msg.trim()) {
                     let length = window.innerWidth / 8;
@@ -1837,7 +1876,6 @@ SOCIALBROWSER.init2 = function () {
 
             let __downloads = document.querySelector('#__downloads');
             SOCIALBROWSER.showDownloads = function (msg, css) {
-                SOCIALBROWSER.injectDefault();
                 if (!__downloads) {
                     __downloads = document.querySelector('#__downloads');
                     if (__downloads) {
@@ -1867,7 +1905,6 @@ SOCIALBROWSER.init2 = function () {
             let find_input = null;
             let find_interval = null;
             SOCIALBROWSER.showFind = function (from_key) {
-                SOCIALBROWSER.injectDefault();
                 if (!__find) {
                     __find = document.querySelector('#__find');
                 }
@@ -1930,14 +1967,191 @@ SOCIALBROWSER.init2 = function () {
             SOCIALBROWSER.getRandomUserAgent = (...params) => SOCIALBROWSER.fn('child.getRandomUserAgent', ...params);
             SOCIALBROWSER.generateVPC = (...params) => SOCIALBROWSER.fn('child.generateVPC', ...params);
 
-            SOCIALBROWSER.executeJavaScript = SOCIALBROWSER.runScript = function (code) {
+            SOCIALBROWSER.getUserScriptMeta = function (code) {
+                let meta = {};
+                let metaString = code.slice(code.indexOf('// ==UserScript==') + '// ==UserScript=='.length, code.lastIndexOf('// ==/UserScript=='));
+                metaString.split('\n').forEach((line) => {
+                    if (line && line.indexOf('// @') == 0) {
+                        line = line.replace('// @', '').split(' ');
+                        let key = line.shift();
+                        if (meta[key]) {
+                            meta[key] = meta[key] + '|' + line.join(' ').trim();
+                        } else {
+                            meta[key] = line.join(' ').trim();
+                        }
+                    }
+                });
+                return meta;
+            };
+
+            SOCIALBROWSER.executeJavaScript = SOCIALBROWSER.runScript = function (code = '') {
                 if (typeof code == 'function') {
                     code = code.toString();
                     code = code.slice(code.indexOf('{') + 1, code.lastIndexOf('}'));
                 }
 
-                code = code.replaceAll('GM_xmlhttpRequest', 'SOCIALBROWSER.fetch').replaceAll('GM_addStyle', ' SOCIALBROWSER.addCSS');
+                // code = code.replace(/\/\*[\s\S]*?\*\//g , '') // remove comments like /* */
 
+                if (code.contain('// ==UserScript==')) {
+                    let gm_info_id = '__GM_info_' + Math.random().toString().replace('.', '');
+                    let meta = SOCIALBROWSER.getUserScriptMeta(code);
+                    let scriptMetaStr = '';
+                    for (const key in meta) {
+                        if (Object.hasOwn(meta, key)) {
+                            scriptMetaStr += '// @' + key + ' ' + meta[key] + '\n';
+                        }
+                    }
+
+                    if (meta.match) {
+                        if (!document.location.href.like(meta.match)) {
+                            return new Promise((resolve, reject) => {
+                                resolve(true);
+                            });
+                        }
+                    } else if (meta.connect) {
+                        if (!document.location.href.contain(meta.connect) && !document.location.href.like(meta.connect)) {
+                            return new Promise((resolve, reject) => {
+                                resolve(true);
+                            });
+                        }
+                    }
+                    if (meta.include) {
+                        if (!document.location.href.like(meta.include)) {
+                            return new Promise((resolve, reject) => {
+                                resolve(true);
+                            });
+                        }
+                    }
+                    if (meta.noframes && SOCIALBROWSER.isIframe()) {
+                        return new Promise((resolve, reject) => {
+                            resolve(true);
+                        });
+                    }
+
+                    SOCIALBROWSER[gm_info_id] = {
+                        uuid: gm_info_id,
+                        scriptSource: gm_info_id,
+                        scriptMetaStr: scriptMetaStr,
+                        script: meta,
+                        isPrivate: false,
+                        isIncognito: false,
+                        userAgentData: navigator.userAgentData,
+                        ...meta,
+                    };
+                    window.GM_registerMenuCommand = function (name, callback, options_or_accessKey) {
+                        SOCIALBROWSER.addMenu({ label: name, click: callback });
+                        return name;
+                    };
+                    window.GM_unregisterMenuCommand = function (name) {
+                        SOCIALBROWSER.removeMenu({ label: name });
+                    };
+                    window.GM_addStyle = SOCIALBROWSER.addCSS;
+                    window.GM_xmlhttpRequest = SOCIALBROWSER.fetch;
+                    window.unsafeWindow = window;
+
+                    window.GM_setValue = SOCIALBROWSER.setStorage;
+                    window.GM_getValue = SOCIALBROWSER.getStorage;
+                    window.GM_deleteValue = SOCIALBROWSER.deleteStorage;
+                    window.GM_listValues = SOCIALBROWSER.listStorageKeys;
+
+                    window.GM_setValues = function (obj) {
+                        for (const key in obj) {
+                            if (!Object.hasOwn(obj, key)) {
+                                window.GM_setValue(key, obj[key]);
+                            }
+                        }
+                    };
+                    window.GM_getValues = function (data) {
+                        let values = {};
+                        if (Array.isArray(data)) {
+                            data.forEach((key) => {
+                                values[key] = window.GM_getValue(key);
+                            });
+                        } else if (typeof data === 'object') {
+                            for (const key in data) {
+                                if (!Object.hasOwn(data, key)) {
+                                    values[key] = window.GM_getValue(key) || data[key];
+                                }
+                            }
+                        }
+                        return values;
+                    };
+                    window.GM_deleteValues = function (data) {
+                        if (Array.isArray(data)) {
+                            data.forEach((key) => {
+                                window.GM_deleteValue(key);
+                            });
+                        }
+                    };
+
+                    window.GM_notification = SOCIALBROWSER.alert;
+                    window.GM_setClipboard = SOCIALBROWSER.copy;
+                    window.GM_openInTab = SOCIALBROWSER.openNewTab;
+                    window.GM_log = SOCIALBROWSER.log;
+                    window.GM_getTab = SOCIALBROWSER.log;
+                    window.GM_saveTab = SOCIALBROWSER.log;
+                    window.GM_getTabs = SOCIALBROWSER.log;
+                    window.GM_addValueChangeListener = SOCIALBROWSER.log;
+                    window.GM_removeValueChangeListener = SOCIALBROWSER.log;
+                    window.GM_cookie = {
+                        list: SOCIALBROWSER.log,
+                        set: SOCIALBROWSER.log,
+                        delete: SOCIALBROWSER.log,
+                    };
+                    window.GM_audio = {
+                        setMute: SOCIALBROWSER.log,
+                        getState: SOCIALBROWSER.log,
+                        addStateChangeListener: SOCIALBROWSER.log,
+                        removeStateChangeListener: SOCIALBROWSER.log,
+                    };
+                    window.GM_webRequest = SOCIALBROWSER.log;
+
+                    window.GM_addElement = function (type, options = {}) {
+                        let ele = document.createElement(type);
+                        for (const key in options) {
+                            if (Object.hasOwn(options, key)) {
+                                if (key === 'textContent') {
+                                    if (type.like('script')) {
+                                        ele[key] = SOCIALBROWSER.policy.createScript(options[key]);
+                                    } else {
+                                        ele[key] = SOCIALBROWSER.policy.createHTML(options[key]);
+                                    }
+                                } else if (key === 'innerHTML') {
+                                    ele[key] = SOCIALBROWSER.policy.createHTML(options[key]);
+                                } else if (key === 'src') {
+                                    ele[key] = SOCIALBROWSER.policy.createScriptURL(options[key]);
+                                } else {
+                                    ele[key] = options[key];
+                                }
+                            }
+                        }
+                        return ele;
+                    };
+
+                    window.GM_download = function (...args) {
+                        alert('GM_download');
+                        console.log(args);
+                    };
+                    window.GM_getResourceURL = function (...args) {
+                        alert('GM_getResourceURL');
+                        console.log(args);
+                    };
+                    window.GM_getResourceText = function (...args) {
+                        alert('GM_getResourceText');
+                        console.log(args);
+                    };
+
+                    code = code
+                        .replaceAll('GM_info', 'SOCIALBROWSER.' + gm_info_id)
+                        .replaceAll('innerHTML', 'innerHTML2')
+                        .replaceAll('textContent', 'textContent2');
+                    if (meta['run-at'] && meta['run-at'] == 'document-end') {
+                        code = 'SOCIALBROWSER.onLoad(()=>{ ' + code + ' })';
+                    }
+                }
+
+                code = '(function(){' + code + '})();';
+                SOCIALBROWSER.copy(code);
                 return SOCIALBROWSER.fnAsync('executeJavaScript', code, true);
             };
 
@@ -1952,7 +2166,6 @@ SOCIALBROWSER.init2 = function () {
                         msg = msg.trim();
 
                         SOCIALBROWSER.log(msg);
-                        SOCIALBROWSER.injectDefault();
                         let div = document.querySelector('#__alertBox');
                         if (div) {
                             clearTimeout(alert_idle);
@@ -1976,11 +2189,9 @@ SOCIALBROWSER.init2 = function () {
         SOCIALBROWSER.getLocalStorageList = function () {
             let arr = [];
             try {
-                (keys = Object.keys(localStorage)), (i = keys.length);
-
-                while (i--) {
-                    arr.push({ key: keys[i], value: localStorage.getItem(keys[i]) });
-                }
+                Object.keys(localStorage).forEach((key) => {
+                    arr.push({ key: key, value: localStorage.getItem(key) });
+                });
             } catch (error) {
                 SOCIALBROWSER.log(error);
             }
@@ -1990,11 +2201,9 @@ SOCIALBROWSER.init2 = function () {
         SOCIALBROWSER.getSessionStorageList = function () {
             let arr = [];
             try {
-                (keys = Object.keys(sessionStorage)), (i = keys.length);
-
-                while (i--) {
-                    arr.push({ key: keys[i], value: sessionStorage.getItem(keys[i]) });
-                }
+                Object.keys(sessionStorage).forEach((key) => {
+                    arr.push({ key: key, value: sessionStorage.getItem(key) });
+                });
             } catch (error) {
                 SOCIALBROWSER.log(error);
             }
@@ -2068,8 +2277,8 @@ SOCIALBROWSER.init2 = function () {
             } else {
                 let data = SOCIALBROWSER.showObject(txt);
                 if (type == 0) {
-                    SOCIALBROWSER.window.customSetting.localStorageList = data.localStorageList;
-                    SOCIALBROWSER.window.customSetting.sessionStorageList = data.sessionStorageList;
+                    SOCIALBROWSER.customSetting.localStorageList = data.localStorageList;
+                    SOCIALBROWSER.customSetting.sessionStorageList = data.sessionStorageList;
                     SOCIALBROWSER.setDomainCookies({ cookies: data.cookies });
                     SOCIALBROWSER.window.storaeAdded = false;
                     document.location.href = data.url;
@@ -2112,7 +2321,7 @@ SOCIALBROWSER.init2 = function () {
             obj.referrer = document.referrer;
             obj.userDataDir = obj.userDataDir || SOCIALBROWSER.data_dir + '/sessionData/chrome/' + obj.partition.replace('persist:', '');
             obj.navigator = SOCIALBROWSER.clone(SOCIALBROWSER.navigator);
-            obj.customSetting = SOCIALBROWSER.customSetting;
+            obj.customSetting = SOCIALBROWSER._customSetting;
 
             if (obj.auto) {
                 obj.cookie = obj.cookie || SOCIALBROWSER.getHttpCookie();
@@ -3272,7 +3481,9 @@ SOCIALBROWSER.init2 = function () {
                                     partition: SOCIALBROWSER.partition,
                                     referrer: document.location.href,
                                     eval: () => {
-                                        SOCIALBROWSER.addCSS('#masthead-container{display:none}');
+                                        SOCIALBROWSER.onLoad(() => {
+                                            SOCIALBROWSER.addCSS('#masthead-container{display:none}');
+                                        });
                                     },
                                 });
                             },
@@ -3367,6 +3578,8 @@ SOCIALBROWSER.init2 = function () {
                     SOCIALBROWSER.menuList.push({
                         label: `Save image ${u_string} `,
                         click() {
+                            SOCIALBROWSER.downloadURL(url);
+                            return;
                             sendToMain({
                                 name: '[download-link]',
                                 url: url,
@@ -3567,7 +3780,7 @@ SOCIALBROWSER.init2 = function () {
                     label: 'Save page',
                     accelerator: 'CommandOrControl+s',
                     click() {
-                        SOCIALBROWSER.webContents.downloadURL(document.location.href);
+                        SOCIALBROWSER.downloadURL(document.location.href);
                     },
                 });
 
@@ -4744,10 +4957,8 @@ SOCIALBROWSER.init2 = function () {
                                             let key = SOCIALBROWSER.selectedText().replace('_KEY_', '').replace('_', '');
                                             if (!SOCIALBROWSER.var.privateKeyList.some((info) => info.key === key)) {
                                                 SOCIALBROWSER.var.privateKeyList.push({ name: key, key: key });
-                                                SOCIALBROWSER.ipc('[update-browser-var]', {
-                                                    name: 'privateKeyList',
-                                                    data: SOCIALBROWSER.var.privateKeyList,
-                                                });
+                                                SOCIALBROWSER.updateBrowserVar('privateKeyList', SOCIALBROWSER.var.privateKeyList);
+
                                                 alert('Private Key Added To Private Key List');
                                             } else {
                                                 alert('Private Key Exists');
@@ -4907,7 +5118,10 @@ SOCIALBROWSER.init2 = function () {
             }
 
             window.addEventListener('mouseup', (e) => {
-                var rightclick;
+                if (e.target.tagName.like('video')) {
+                    return;
+                }
+                let rightclick;
                 if (!e) var e = window.event;
                 if (e.which) rightclick = e.which == 3;
                 else if (e.button) rightclick = e.button == 2;
@@ -5475,7 +5689,7 @@ SOCIALBROWSER.init2 = function () {
                     if (SOCIALBROWSER.isElementViewable(b)) {
                         SOCIALBROWSER.click(b, true, false);
                     }
-                  //  alert('<b>Ads Video Detected</b><small><i> Try Skip it </i></small>', 1000);
+                    //  alert('<b>Ads Video Detected</b><small><i> Try Skip it </i></small>', 1000);
                 });
 
                 // if (document.querySelector(adsProgressSelector)) {
@@ -6541,27 +6755,22 @@ SOCIALBROWSER.init2 = function () {
                     };
                 }
                 if (SOCIALBROWSER.session.privacy.vpc.hide_plugins) {
-                    SOCIALBROWSER.navigator.plugins = Object.create(Object.getPrototypeOf(navigator.plugins)) ;
-                    //    {
-                    //     length: 5,
-                    //     item: (index) => SOCIALBROWSER.navigator.plugins[index] || null,
-                    //     namedItem: (name) => null,
-                    //     refresh: () => {},
-                    // };
-                    SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins , 'length' , 5);
-                  
+                    SOCIALBROWSER.navigator.plugins = Object.create(Object.getPrototypeOf(navigator.plugins));
+
+                    SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins, 'length', 5);
+
                     for (let index = 0; index < 5; index++) {
                         let name = 'Plugin ' + index;
                         let description = 'Description of plugin ' + index;
-                        SOCIALBROWSER.navigator.plugins[index] = SOCIALBROWSER.navigator.plugins[name] = Object.create(Plugin.prototype) ;
-                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[index] , 'name' , name);
-                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[name] , 'name' , name);
-                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[index] , 'filename' , name);
-                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[name] , 'filename' , name);
-                      SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[index] , 'description' , description);
-                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[name] , 'description' , description);
-                         SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[index] , 'length' , 2);
-                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[name] , 'length' , 2);
+                        SOCIALBROWSER.navigator.plugins[index] = SOCIALBROWSER.navigator.plugins[name] = Object.create(Plugin.prototype);
+                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[index], 'name', name);
+                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[name], 'name', name);
+                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[index], 'filename', name);
+                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[name], 'filename', name);
+                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[index], 'description', description);
+                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[name], 'description', description);
+                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[index], 'length', 2);
+                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[name], 'length', 2);
                     }
                 }
 
@@ -7623,6 +7832,7 @@ SOCIALBROWSER.init2 = function () {
                                             ...base,
                                             managed: local,
                                             sync: local,
+                                            local: { get: SOCIALBROWSER.getStorage, set: SOCIALBROWSER.setStorage },
                                         };
                                     },
                                 },
@@ -7847,6 +8057,7 @@ SOCIALBROWSER.init2 = function () {
         if (SOCIALBROWSER.window.eval) {
             SOCIALBROWSER.eval(SOCIALBROWSER.window.eval);
         }
+
         if (SOCIALBROWSER.customSetting.eval) {
             SOCIALBROWSER.eval(SOCIALBROWSER.customSetting.eval);
         }
@@ -7872,6 +8083,20 @@ SOCIALBROWSER.init2 = function () {
         }
 
         SOCIALBROWSER.onLoad(() => {
+            SOCIALBROWSER.injectDefault();
+            SOCIALBROWSER.url = document.location.href;
+            (function urlChanged() {
+                setInterval(() => {
+                    if (SOCIALBROWSER.url !== document.location.href) {
+                        SOCIALBROWSER.log('location changed');
+                        SOCIALBROWSER.url = document.location.href;
+                        window.dispatchEvent(new CustomEvent('urlchange'));
+                        if (window.onurlchange && typeof window.onurlchange == 'function') {
+                            window.onurlchange();
+                        }
+                    }
+                }, 1000);
+            })();
             if (SOCIALBROWSER.customSetting.script && !SOCIALBROWSER.customSetting.script.preload) {
                 SOCIALBROWSER.runUserScript(SOCIALBROWSER.customSetting.script);
             }
@@ -7902,6 +8127,44 @@ SOCIALBROWSER.init2 = function () {
                     }
                 });
             }, 1000);
+        });
+    })();
+
+    (function loadOnlineUserJS() {
+        SOCIALBROWSER.onLoad(() => {
+            SOCIALBROWSER.SearchPageForUserJS = function () {
+                let a = document.querySelector('a[href$="user.js"]');
+                if (a) {
+                    let index = SOCIALBROWSER.var.scriptList.findIndex((s) => s.id == a.href);
+                    if (index == -1) {
+                        SOCIALBROWSER.fetch({ url: a.href }).then((res) => {
+                            if (res.status == 200 && res.headers['content-type'] && res.headers['content-type'][0].contain('javascript') && res.body) {
+                                let meta = SOCIALBROWSER.getUserScriptMeta(res.body);
+                                if (meta.name) {
+                                    SOCIALBROWSER.var.scriptList.push({
+                                        id: a.href,
+                                        title: meta.name,
+                                        js: res.body,
+                                        show: true,
+                                        window: true,
+                                        iframe: !!meta.noframes,
+                                        auto: false,
+                                        allowURLs: meta.match || '*://*',
+                                    });
+                                    SOCIALBROWSER.updateBrowserVar('scriptList', SOCIALBROWSER.var.scriptList);
+                                    alert('Add User Script : ' + a.href);
+                                    setTimeout(() => {
+                                        SOCIALBROWSER.openNewTab('http://127.0.0.1:60080/setting#scripts');
+                                    }, 1000 * 2);
+                                }
+                            }
+                        });
+                    }
+                }
+            };
+            if (SOCIALBROWSER.var.core.autoAddUserScripts) {
+                SOCIALBROWSER.SearchPageForUserJS();
+            }
         });
     })();
 };

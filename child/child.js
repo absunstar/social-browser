@@ -108,6 +108,7 @@ child.electron.app.commandLine.appendSwitch('disable-dev-mode');
 child.electron.app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 // child.electron.app.commandLine.appendSwitch('disable-debug-mode');
 // child.electron.app.disableHardwareAcceleration(); ## real human has this //
+child.userDataDir = child.path.join(child.data_dir, child.uuid)
 
 require(child.path.join(child.dir, 'child', 'shared'))(child);
 require(child.path.join(child.dir, 'child', 'fn'))(child);
@@ -159,7 +160,7 @@ if (child.electron.app.dock) {
 // child.electron.app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
 //child.electron.app.commandLine.appendSwitch('disable-site-isolation-trials');
 //child.electron.app.commandLine.appendSwitch('enable-features', 'PDFViewerUpdate');
-child.userDataDir = child.path.join(child.data_dir, child.uuid)
+
 child.mkdirSync(child.userDataDir);
 child.electron.app.setPath('userData', child.userDataDir);
 child.electron.protocol.registerSchemesAsPrivileged([

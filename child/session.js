@@ -881,12 +881,18 @@ module.exports = function (child) {
 
             ss.on('will-download', (event, item, webContents) => {
                 if (webContents) {
-                    if ((w = child.windowList.find((w) => w.id2 === webContents.id))) {
-                        if (!w.window.customSetting.allowDownload) {
-                            event.preventDefault();
-                            child.log('Download OFF');
-                            return;
-                        }
+                    webContents.send('[will-download]', { url: item.getURL() });
+                    let win = child.electron.BrowserWindow.fromWebContents(webContents);
+
+                    if (!win.customSetting.allowDownload) {
+                        event.preventDefault();
+                        child.log('Download OFF');
+                        return;
+                    }
+                    if (win.customSetting.defaultDownloadPath) {
+                        item.setSavePath(child.path.join(win.customSetting.defaultDownloadPath, item.getFilename()));
+                        item.showDownloadCompleteDialog = win.customSetting.showDownloadCompleteDialog;
+                        item.showDownloadInformation = win.customSetting.showDownloadInformation;
                     }
                 }
 
@@ -931,8 +937,10 @@ module.exports = function (child) {
                     return;
                 }
 
-                child.parent.var.download_list.push(dl);
-                child.sendMessage({ type: '$download_item', data: dl });
+                child.parent.var.download_list.push(child.cloneObject(dl));
+                if (item.showDownloadInformation) {
+                    child.sendMessage({ type: '$download_item', data: dl });
+                }
 
                 item.on('updated', (event, state) => {
                     if (!item.getSavePath()) {
@@ -961,7 +969,10 @@ module.exports = function (child) {
                                 child.parent.var.download_list[index].status = 'downloading';
                             }
                         }
-                        child.sendMessage({ type: '$download_item', data: child.parent.var.download_list[index] });
+                        child.parent.var.download_list[index] = child.cloneObject(child.parent.var.download_list[index]);
+                        if (item.showDownloadInformation) {
+                            child.sendMessage({ type: '$download_item', data: child.parent.var.download_list[index] });
+                        }
                     }
                 });
 
@@ -979,28 +990,32 @@ module.exports = function (child) {
                             child.parent.var.download_list[index].received = item.getReceivedBytes();
                             child.parent.var.download_list[index].status = 'completed';
                             child.parent.var.download_list[index].path = item.getSavePath();
-
-                            child.sendMessage({ type: '$download_item', data: child.parent.var.download_list[index] });
-
+                            child.parent.var.download_list[index] = child.cloneObject(child.parent.var.download_list[index]);
+                            if (item.showDownloadInformation) {
+                                child.sendMessage({ type: '$download_item', data: child.parent.var.download_list[index] });
+                            } else {
+                                child.parent.var.download_list.splice(index, 1);
+                            }
                             let _path = item.getSavePath();
                             let _url = item.getURL();
-
-                            child.dialog
-                                .showMessageBox({
-                                    title: 'Download Complete',
-                                    type: 'info',
-                                    buttons: ['Open File', 'Open Folder', 'Close'],
-                                    message: `Saved URL \n ${_url} \n To \n ${_path} `,
-                                })
-                                .then((result) => {
-                                    child.shell.beep();
-                                    if (result.response == 1) {
-                                        child.shell.showItemInFolder(_path);
-                                    }
-                                    if (result.response == 0) {
-                                        child.shell.openPath(_path);
-                                    }
-                                });
+                            if (item.showDownloadCompleteDialog) {
+                                child.dialog
+                                    .showMessageBox({
+                                        title: 'Download Complete',
+                                        type: 'info',
+                                        buttons: ['Open File', 'Open Folder', 'Close'],
+                                        message: `Saved URL \n ${_url} \n To \n ${_path} `,
+                                    })
+                                    .then((result) => {
+                                        child.shell.beep();
+                                        if (result.response == 1) {
+                                            child.shell.showItemInFolder(_path);
+                                        }
+                                        if (result.response == 0) {
+                                            child.shell.openPath(_path);
+                                        }
+                                    });
+                            }
                         } else {
                             child.parent.var.download_list[index].name = item.getFilename();
                             child.parent.var.download_list[index].type = item.getMimeType();
@@ -1009,8 +1024,10 @@ module.exports = function (child) {
                             child.parent.var.download_list[index].received = item.getReceivedBytes();
                             child.parent.var.download_list[index].status = state;
                             child.parent.var.download_list[index].path = item.getSavePath();
-
-                            child.sendMessage({ type: '$download_item', data: child.parent.var.download_list[index] });
+                            child.parent.var.download_list[index] = child.cloneObject(child.parent.var.download_list[index]);
+                            if (item.showDownloadInformation) {
+                                child.sendMessage({ type: '$download_item', data: child.parent.var.download_list[index] });
+                            }
                         }
                     }
                 });

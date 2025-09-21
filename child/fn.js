@@ -1,6 +1,68 @@
-const cookie = require('isite/lib/cookie');
-
 module.exports = function (child) {
+    child.readLocalFile = function (name) {
+        let path = child.path.join(child.userDataDir, name);
+        let Content = name.like('*list*') ? [] : {};
+
+        if (child.fs.existsSync(path)) {
+            if (name.like('*.social')) {
+                Content = child.api.showObject(child.api.readFileSync(path)) || Content;
+            } else {
+                Content = child.api.readFileSync(path) || Content;
+            }
+        }
+
+        if (!Content) {
+            Content = name.like('*list*') ? [] : {};
+        }
+        return Content;
+    };
+
+    child.writeLocalFile = function (name, Content) {
+        let path = child.path.join(child.userDataDir, name);
+
+        if (name.like('*.social')) {
+            child.api.writeFile(path, child.api.hideObject(Content));
+        } else {
+            child.api.writeFile(path, Content);
+        }
+
+        return true;
+    };
+
+    child.storageList = child.readLocalFile('storageList.social');
+
+    child.setStorage = function (storage) {
+        let index = child.storageList.findIndex((s) => s.domain == storage.domain && s.key == storage.key);
+        if (index === -1) {
+            child.storageList.push(storage);
+        } else {
+            child.storageList[index] = storage;
+        }
+        child.writeLocalFile('storageList.social', child.storageList);
+    };
+    child.getStorage = function (storage) {
+        let index = child.storageList.findIndex((s) => s.domain == storage.domain && s.key == storage.key);
+        if (index !== -1) {
+            return child.storageList[index];
+        }
+    };
+    child.deleteStorage = function (storage) {
+        let index = child.storageList.findIndex((s) => s.domain == storage.domain && s.key == storage.key);
+        if (index !== -1) {
+            child.storageList.splice(index, 1);
+            child.writeLocalFile('storageList.social', child.storageList);
+        }
+    };
+    child.listStorage = function (storage) {
+        return child.storageList.filter((s) => s.domain == storage.domain);
+    };
+    child.listStorageKeys = function (storage) {
+        return child.storageList.filter((s) => s.domain == storage.domain).map((s) => s.key);
+    };
+    child.listStorageValues = function (storage) {
+        return child.storageList.filter((s) => s.domain == storage.domain).map((s) => s.value);
+    };
+
     child.setSessionCookies = function (obj) {
         let ss = child.electron.session.fromPartition(obj.partition);
         obj.cookies.forEach((cookie) => {
@@ -249,7 +311,7 @@ module.exports = function (child) {
         setting.back = win.webContents.navigationHistory.canGoBack();
         setting.webaudio = !win.webContents.audioMuted;
         setting.title = win.customSetting.title;
-        setting.iconURL = win.customSetting.iconURL;
+        setting.iconURL = win.customSetting.iconURL || win.customSetting.loading_icon;
         setting.proxy = win.customSetting.proxy?.url || '';
         setting.userAgentURL = win.customSetting.$userAgentURL;
         setting.mainWindowID = win.customSetting.mainWindowID;

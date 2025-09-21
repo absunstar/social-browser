@@ -191,7 +191,6 @@ module.exports = function (child) {
             allowOpenExternal: true,
             allowMenu: true,
             allowDevTools: true,
-            allowDownload: true,
             allowAds: false,
             allowNewWindows: true,
             allowSaveUserData: true,
@@ -203,6 +202,12 @@ module.exports = function (child) {
             allowJavascript: true,
             allowAudio: true,
             allowPopup: false,
+
+            allowDownload: true,
+            defaultDownloadPath : '',
+            showDownloadCompleteDialog : true,
+            showDownloadInformation : true,
+
             cloudFlare: false,
             off: false,
             show: setting.show === true ? true : false,
@@ -253,6 +258,7 @@ module.exports = function (child) {
             defaultSetting.webPreferences.nodeIntegrationInWorker = true;
             defaultSetting.webPreferences.webSecurity = false;
             defaultSetting.webPreferences.allowRunningInsecureContent = true;
+            // setting.showDevTools = true;
         } else if (setting.windowType === 'youtube') {
             // setting.url = 'browser://youtube-view?url=' + setting.url;
             setting.iframe = false;
@@ -885,9 +891,10 @@ module.exports = function (child) {
         });
 
         win.webContents.on('page-favicon-updated', (e, urls) => {
-            if (urls[0]) {
-                win.customSetting.iconURL = urls[0];
-                win.customSetting.favicon = urls[0];
+            let iconURL = urls.pop();
+            if (iconURL) {
+                win.customSetting.iconURL = iconURL;
+                win.customSetting.favicon = iconURL;
                 child.updateTab(win);
                 if (win.customSetting.allowSaveUrls) {
                     child.sendMessage({
@@ -913,9 +920,9 @@ module.exports = function (child) {
             win.customSetting.iconURL = win.customSetting.favicon;
             child.updateTab(win);
         });
-        win.webContents.on('did-fail-load', (...callback) => {
-            callback[0].preventDefault();
-            if (callback[4] /* is main frame */) {
+        win.webContents.on('did-fail-load', (event, errorCode, errorDescription, validatedURL, isMainFrame, frameProcessId, frameRoutingId) => {
+           event.preventDefault();
+            if (isMainFrame && validatedURL == win.getURL()) {
                 if (child.parent.var.blocking.proxy_error_remove_proxy && win.customSetting.proxy) {
                     child.sendMessage({
                         type: '[remove-proxy]',
@@ -930,6 +937,9 @@ module.exports = function (child) {
                 } else {
                     win.customSetting.iconURL = win.customSetting.error_icon;
                     child.updateTab(win);
+                    setTimeout(() => {
+                        win.webContents.reload();
+                    }, 1000 * 2);
                 }
             }
 
