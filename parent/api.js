@@ -126,7 +126,38 @@ module.exports = function init(parent) {
             });
         });
     });
+    parent.api.jsList = [];
+    parent.api.onGET('/get-js', async (req, res) => {
+        let jsObject = parent.api.jsList.find((j) => j.url == req.query.url);
+        if (jsObject) {
+            res.set('Content-Type', 'application/javascript; charset=utf-8');
+            res.end(jsObject.code, 'utf8');
+            return;
+        } else if (req.query.url) {
+            let response = await parent.api.fetch(req.query.url, {
+                mode: 'cors',
+                method: 'get',
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.4638.54 Safari/537.36',
+                },
+                redirect: 'follow',
+            });
 
+            if (response && response.status == 200) {
+                res.set('Content-Type', 'application/javascript; charset=utf-8');
+                let code = await response.text();
+                jsObject = { url: req.query.url, code: code };
+                parent.api.jsList.push(jsObject);
+                res.end(code, 'utf8');
+            } else {
+                res.set('Content-Type', 'application/javascript; charset=utf-8');
+                res.end('/* error load url */', 'utf8');
+            }
+        } else {
+            res.set('Content-Type', 'application/javascript; charset=utf-8');
+            res.end('/* no url */', 'utf8');
+        }
+    });
     parent.api.onPOST({ name: '/__social_browser/api/import-cookie-list', overwrite: true }, (req, res) => {
         let response = {
             done: true,
@@ -365,7 +396,7 @@ module.exports = function init(parent) {
             windowType: 'popup',
             show: false,
             partition: 'print',
-            sandbox : false,
+            sandbox: false,
             eval: parent.api.readFileSync(parent.dir + '/printing/preload.js'),
             allowAudio: false,
             showDevTools: false,

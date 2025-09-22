@@ -663,16 +663,12 @@ module.exports = function (child) {
                 let urlObject = child.url.parse(url);
                 let _ss = child.session_name_list.find((s) => s.name == name);
                 _ss.user.privacy.vpc = _ss.user.privacy.vpc || {};
-                let customSetting = null;
+                let win = null;
 
                 if (details.webContents) {
                     win = child.electron.BrowserWindow.fromWebContents(details.webContents);
                     if (win) {
                         mainURL = win.getURL();
-                        wIndex = child.windowList.findIndex((w) => w.id === win.id);
-                        if (wIndex !== -1) {
-                            customSetting = child.windowList[wIndex].customSetting;
-                        }
                     }
                 }
                 let enginOFF = child.parent.var.blocking.vip_site_list.some((site) => site.url.length > 2 && mainURL.like(site.url));
@@ -686,7 +682,7 @@ module.exports = function (child) {
                     });
                     return;
                 }
-                if (customSetting && (customSetting.off || customSetting.enginOFF)) {
+                if (win && (win.customSetting.off || win.customSetting.enginOFF)) {
                     callback({
                         cancel: false,
                         responseHeaders: {
@@ -777,11 +773,60 @@ module.exports = function (child) {
                     if (s_policy) {
                         if (Array.isArray(s_policy)) {
                             for (var key in s_policy) {
+                                // if (s_policy[key].contain("'self'")) {
+                                //     s_policy[key] = s_policy[key].replaceAll("style-src 'self'", "style-src 'unsafe-inline' browser://*");
+                                //     s_policy[key] = s_policy[key].replaceAll("script-src 'self'", "script-src 'unsafe-inline' browser://*");
+                                //     s_policy[key] = s_policy[key].replaceAll("script-src-elem 'self'", "script-src-elem 'unsafe-inline' browser://*");
+                                //     s_policy[key] = s_policy[key].replaceAll("connect-src 'self'", 'connect-src browser://*');
+                                //     s_policy[key] = s_policy[key].replaceAll("img-src 'self'", 'img-src data: browser://*');
+                                //     s_policy[key] = s_policy[key].replaceAll("frame-src 'self'", 'frame-src browser://*');
+                                //     s_policy[key] = s_policy[key].replaceAll("default-src 'self'", 'default-src browser://*');
+                                //     s_policy[key] = s_policy[key].replaceAll("font-src 'self'", 'font-src browser://*');
+                                //     s_policy[key] = s_policy[key].replaceAll("media-src 'self'", 'media-src browser://*');
+                                //     s_policy[key] = s_policy[key].replaceAll("object-src 'self'", 'object-src browser://*');
+                                //     s_policy[key] = s_policy[key].replaceAll("child-src 'self'", 'child-src browser://*');
+                                //     s_policy[key] = s_policy[key].replaceAll("frame-ancestors 'self'", 'frame-ancestors browser://*');
+                                //     s_policy[key] = s_policy[key].replaceAll("worker-src 'self'", 'worker-src browser://*');
+                                //     s_policy[key] = s_policy[key].replaceAll("manifest-src 'self'", 'manifest-src browser://*');
+                                //     s_policy[key] = s_policy[key].replaceAll("prefetch-src 'self'", 'prefetch-src browser://*');
+                                //     s_policy[key] = s_policy[key].replaceAll("style-src-attr 'self'", "style-src-attr 'unsafe-inline' browser://*");
+                                //     s_policy[key] = s_policy[key].replaceAll("style-src-elem 'self'", "style-src-elem 'unsafe-inline' browser://*");
+                                //     s_policy[key] = s_policy[key].replaceAll("img-src 'self'", 'img-src data: browser://*');
+                                //     s_policy[key] = s_policy[key].replaceAll("media-src 'self'", 'media-src browser://*');
+                                // } else {
+                                //     s_policy[key] = s_policy[key].replaceAll('style-src ', "style-src 'unsafe-inline' browser://* ");
+                                //     s_policy[key] = s_policy[key].replaceAll('script-src ', "script-src 'unsafe-inline' browser://* ");
+                                //     s_policy[key] = s_policy[key].replaceAll('script-src-elem ', "script-src-elem 'unsafe-inline' browser://* ");
+                                //     s_policy[key] = s_policy[key].replaceAll('connect-src ', 'connect-src browser://* ');
+                                //     s_policy[key] = s_policy[key].replaceAll('img-src ', 'img-src data: browser://* ');
+                                //     s_policy[key] = s_policy[key].replaceAll('frame-src ', 'frame-src browser://* ');
+                                //     s_policy[key] = s_policy[key].replaceAll('default-src ', 'default-src browser://* ');
+                                //     s_policy[key] = s_policy[key].replaceAll('font-src ', 'font-src browser://* ');
+                                //     s_policy[key] = s_policy[key].replaceAll('media-src ', 'media-src browser://* ');
+                                //     s_policy[key] = s_policy[key].replaceAll('object-src ', 'object-src browser://* ');
+                                //     s_policy[key] = s_policy[key].replaceAll('child-src ', 'child-src browser://* ');
+                                //     s_policy[key] = s_policy[key].replaceAll('frame-ancestors ', 'frame-ancestors browser://* ');
+                                //     s_policy[key] = s_policy[key].replaceAll('worker-src ', 'worker-src browser://* ');
+                                //     s_policy[key] = s_policy[key].replaceAll('manifest-src ', 'manifest-src browser://* ');
+                                //     s_policy[key] = s_policy[key].replaceAll('prefetch-src ', 'prefetch-src browser://* ');
+                                //     s_policy[key] = s_policy[key].replaceAll('style-src-attr ', "style-src-attr 'unsafe-inline' browser://* ");
+                                //     s_policy[key] = s_policy[key].replaceAll('style-src-elem ', "style-src-elem 'unsafe-inline' browser://* ");
+                                //     s_policy[key] = s_policy[key].replaceAll('img-src ', 'img-src data: browser://* ');
+                                //     s_policy[key] = s_policy[key].replaceAll('media-src ', 'media-src browser://* ');
+                                // }
+
+                                // if (win && s_policy[key].like('*sha256*')) {
+                                //     win.customSetting.$sha256 = s_policy[key];
+                                // }
+                                // if (win && s_policy[key].like('*nonce*')) {
+                                //     win.customSetting.$nonce = s_policy[key];
+                                // }
+
                                 s_policy[key] = s_policy[key].replaceAll("default-src 'none'", '');
                                 s_policy[key] = s_policy[key].replaceAll('data: ', 'data: browser://* ');
                                 s_policy[key] = s_policy[key].replaceAll('default-src ', 'default-src browser://* ');
                                 s_policy[key] = s_policy[key].replaceAll('img-src ', 'img-src browser://* ');
-                                if (s_policy[key].contains("'unsafe-inline'") && !s_policy[key].contains('nonce') && !s_policy[key].contains('sha256-')) {
+                                if (s_policy[key].contains("'unsafe-inline'") && !s_policy[key].contains('nonce-') && !s_policy[key].contains('sha256-')) {
                                     s_policy[key] = s_policy[key].replaceAll('script-src ', 'script-src browser://* ');
                                     s_policy[key] = s_policy[key].replaceAll('script-src-elem ', 'script-src-elem browser://* ');
                                     s_policy[key] = s_policy[key].replaceAll('connect-src ', 'connect-src browser://* ');
@@ -794,11 +839,12 @@ module.exports = function (child) {
                                 }
                             }
                         } else if (typeof s_policy == 'string') {
-                            s_policy[key] = s_policy[key].replaceAll("default-src 'none'", '');
+                         
+                            s_policy = s_policy.replaceAll("default-src 'none'", '');
                             s_policy = s_policy.replaceAll('data: ', 'data: browser://* ');
                             s_policy = s_policy.replaceAll('default-src ', 'default-src browser://* ');
                             s_policy = s_policy.replaceAll('img-src ', 'img-src browser://* ');
-                            if (s_policy.contains("'unsafe-inline'") && !s_policy.contains('nonce') && !s_policy[key].contains('sha256-')) {
+                            if (s_policy.contains("'unsafe-inline'") && !s_policy.contains('nonce-') && !s_policy[key].contains('sha256-')) {
                                 s_policy = s_policy.replaceAll('script-src ', 'script-src browser://* ');
                                 s_policy = s_policy.replaceAll('script-src-elem ', 'script-src-elem browser://* ');
                                 s_policy = s_policy.replaceAll('frame-src ', 'frame-src browser://* ');
@@ -889,13 +935,12 @@ module.exports = function (child) {
                         child.log('Download OFF');
                         return;
                     }
-                        item.showDownloadCompleteDialog = win.customSetting.showDownloadCompleteDialog;
-                        item.showDownloadInformation = win.customSetting.showDownloadInformation;
-                        item.allowExternalDownloader = win.customSetting.allowExternalDownloader;
+                    item.showDownloadCompleteDialog = win.customSetting.showDownloadCompleteDialog;
+                    item.showDownloadInformation = win.customSetting.showDownloadInformation;
+                    item.allowExternalDownloader = win.customSetting.allowExternalDownloader;
 
                     if (win.customSetting.defaultDownloadPath) {
                         item.setSavePath(child.path.join(win.customSetting.defaultDownloadPath, item.getFilename()));
-                    
                     }
                 }
 

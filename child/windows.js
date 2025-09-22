@@ -938,9 +938,7 @@ module.exports = function (child) {
                 } else {
                     win.customSetting.iconURL = win.customSetting.error_icon;
                     child.updateTab(win);
-                    setTimeout(() => {
-                        win.webContents.reload();
-                    }, 1000 * 2);
+                  
                 }
             }
 
@@ -1119,7 +1117,7 @@ module.exports = function (child) {
                     return;
                 }
 
-                if (url.like('*youtube.com/watch*')) {
+                if (url.like('https://www.youtube.com/watch*')) {
                     // url = 'https://www.youtube.com/embed/' + url.split('=')[1].split('&')[0];
 
                     child.createNewWindow({
@@ -1282,7 +1280,7 @@ module.exports = function (child) {
 
             let real_url = url || event.url || '';
             child.log('\n new-window', real_url);
-            if (real_url.like('*youtube.com/watch*')) {
+            if (real_url.like('https://www.youtube.com/watch*')) {
                 // real_url = 'https://www.youtube.com/embed/' + real_url.split('=')[1].split('&')[0];
 
                 child.createNewWindow({

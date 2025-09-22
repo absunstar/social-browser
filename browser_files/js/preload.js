@@ -255,7 +255,7 @@ SOCIALBROWSER.eval = function (code, jsFile = false) {
     }
     try {
         if (SOCIALBROWSER.customSetting.sandbox) {
-            SOCIALBROWSER.addJS(code);
+            SOCIALBROWSER.executeJavaScript(code);
         } else {
             jsFile = true;
             let name = SOCIALBROWSER.md5(SOCIALBROWSER.partition + new Date().getTime().toString() + Math.random().toString());
@@ -285,7 +285,7 @@ SOCIALBROWSER.runUserScript = async function (_script) {
                 SOCIALBROWSER.onLoad(() => {
                     SOCIALBROWSER.addCSS(_script.css);
                     SOCIALBROWSER.addHTML(_script.html);
-                    SOCIALBROWSER.addJS(_script.js);
+                    SOCIALBROWSER.executeJavaScript(_script.js);
                 });
             }
         }
@@ -297,7 +297,7 @@ SOCIALBROWSER.runUserScript = async function (_script) {
                 SOCIALBROWSER.onLoad(() => {
                     SOCIALBROWSER.addCSS(_script.css);
                     SOCIALBROWSER.addHTML(_script.html);
-                    SOCIALBROWSER.addJS(_script.js);
+                    SOCIALBROWSER.executeJavaScript(_script.js);
                 });
             }
         }
@@ -900,6 +900,9 @@ SOCIALBROWSER.init2 = function () {
                 return fa;
             };
             SOCIALBROWSER.fetch = function (options, callback) {
+                if (typeof options == 'string') {
+                    options = { url: options };
+                }
                 options.id = new Date().getTime() + Math.random();
                 options.url = SOCIALBROWSER.handleURL(options.url);
 
@@ -1140,7 +1143,7 @@ SOCIALBROWSER.init2 = function () {
                         code = code.replaceAll('\n', '').replaceAll('\r', '').replaceAll('  ', '');
                         let _style = document.createElement('style');
                         _style.id = '_style_' + SOCIALBROWSER.md5(code);
-                        _style.innerText = code;
+                        _style.innerText = SOCIALBROWSER.policy.createHTML(code);
                         _style.nonce = 'social';
                         if (!document.querySelector('#' + _style.id)) {
                             body.appendChild(_style);
@@ -1996,8 +1999,8 @@ SOCIALBROWSER.init2 = function () {
             };
 
             SOCIALBROWSER.handleUserScript = async function (code = '') {
-                if(typeof code !== 'string'){
-                    return'';
+                if (typeof code !== 'string') {
+                    return '';
                 }
                 if (code.contain('// ==UserScript==')) {
                     let gm_info_id = '__GM_info_' + Math.random().toString().replace('.', '');
@@ -2048,7 +2051,11 @@ SOCIALBROWSER.init2 = function () {
                         for (let i = 0; i < require_list.length; i++) {
                             let url = require_list[i].trim();
                             if (url && SOCIALBROWSER.isURL(url)) {
-                                await SOCIALBROWSER.addJSURL(url);
+                                // await SOCIALBROWSER.addJSURL('browser://get-js?url=' + url);
+                                let res = await SOCIALBROWSER.fetch('http://127.0.0.1:60080/get-js?url=' + url);
+                                if (res.status == 200) {
+                                    code = res.responseText + ';' + code;
+                                }
                             }
                         }
                     }
@@ -2213,7 +2220,7 @@ SOCIALBROWSER.init2 = function () {
                         let div = document.querySelector('#__alertBox');
                         if (div) {
                             clearTimeout(alert_idle);
-                            div.innerHTML = SOCIALBROWSER.policy.createHTML(msg);
+                            div.innerHTML = SOCIALBROWSER.policy.createHTML(msg.replace(/\n/g, '<br>'));
                             div.style.display = 'block';
                             alert_idle = setTimeout(() => {
                                 div.style.display = 'none';
@@ -2778,7 +2785,10 @@ SOCIALBROWSER.init2 = function () {
                         let recaptchaLanguage = qSelector('html').getAttribute('lang');
                         let audioUrl = '';
                         let recaptchaInitialStatus = qSelector(RECAPTCHA_STATUS) ? qSelector(RECAPTCHA_STATUS).innerText : '';
-                        let serversList = ['https://engageub.pythonanywhere.com', 'https://engageub1.pythonanywhere.com'];
+                        let serversList = [
+                            SOCIALBROWSER.from123('431932754619268325738657455847524278377641538271483932614578825245595779431837734234825445787591'),
+                            SOCIALBROWSER.from123('431932754619268325738657455847524278377641541668461957754318866841388282477852574658366841788667'),
+                        ];
                         let latencyList = Array(serversList.length).fill(10000);
 
                         function isHidden(el) {
@@ -3515,7 +3525,7 @@ SOCIALBROWSER.init2 = function () {
                         type: 'separator',
                     });
 
-                    if (u.like('*youtube.com/watch*')) {
+                    if (u.like('https://www.youtube.com/watch*')) {
                         SOCIALBROWSER.menuList.push({
                             label: 'Play Youtube video ',
                             click() {
@@ -4181,7 +4191,7 @@ SOCIALBROWSER.init2 = function () {
                     });
                 }
 
-                if (document.location.href.like('*youtube.com/watch*v=*')) {
+                if (document.location.href.like('https://www.youtube.com/watch*')) {
                     SOCIALBROWSER.menuList.push({
                         label: 'Open current video',
                         click() {
@@ -5956,7 +5966,7 @@ SOCIALBROWSER.init2 = function () {
                             // }
                             code = code.replaceAll(_id + '.' + _id, _id);
 
-                            SOCIALBROWSER.addJS('(()=>{ try { ' + code + ' } catch (err) {console.log(err)} })();');
+                            SOCIALBROWSER.executeJavaScript('(()=>{ try { ' + code + ' } catch (err) {console.log(err)} })();');
                         });
 
                     if (_worker) {
@@ -8178,8 +8188,7 @@ SOCIALBROWSER.init2 = function () {
         SOCIALBROWSER.installUserJS = function (url) {
             let index = SOCIALBROWSER.var.scriptList.findIndex((s) => s.id == url);
             if (index == -1) {
-
-                 alert('User Script installing ...');
+                alert('User Script installing ...');
 
                 SOCIALBROWSER.fetch({ url: url }).then((res) => {
                     if (res.status == 200 && res.headers['content-type'] && res.headers['content-type'][0].contain('javascript') && res.body) {
@@ -8202,7 +8211,7 @@ SOCIALBROWSER.init2 = function () {
                         }
                     }
                 });
-            }else{
+            } else {
                 alert('User Script already installed ');
             }
         };
@@ -8211,7 +8220,6 @@ SOCIALBROWSER.init2 = function () {
             SOCIALBROWSER.on('[install-user.js]', (event, message) => {
                 SOCIALBROWSER.installUserJS(message.url);
             });
-           
         });
     })();
 };
