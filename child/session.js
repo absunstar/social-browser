@@ -889,10 +889,13 @@ module.exports = function (child) {
                         child.log('Download OFF');
                         return;
                     }
-                    if (win.customSetting.defaultDownloadPath) {
-                        item.setSavePath(child.path.join(win.customSetting.defaultDownloadPath, item.getFilename()));
                         item.showDownloadCompleteDialog = win.customSetting.showDownloadCompleteDialog;
                         item.showDownloadInformation = win.customSetting.showDownloadInformation;
+                        item.allowExternalDownloader = win.customSetting.allowExternalDownloader;
+
+                    if (win.customSetting.defaultDownloadPath) {
+                        item.setSavePath(child.path.join(win.customSetting.defaultDownloadPath, item.getFilename()));
+                    
                     }
                 }
 
@@ -914,27 +917,29 @@ module.exports = function (child) {
                     lastModified: item.getLastModifiedTime(),
                 };
 
-                let ok = false;
-                if (child.parent.var.blocking.downloader.enabled && !dl.url.contains('browser://|http://127.0.0.1|http://localhost') && dl.url.indexOf('blob') !== 0) {
-                    child.parent.var.blocking.downloader.apps.forEach((app) => {
-                        if (ok) {
-                            return;
-                        }
-                        let app_name = app.name.replace('$username', child.os.userInfo().username);
-                        if (child.isFileExistsSync(app_name)) {
-                            event.preventDefault();
-                            ok = true;
-                            let params = app.params.split(' ');
-                            for (const i in params) {
-                                params[i] = params[i].replace('$url', decodeURIComponent(dl.url)).replace('$file_name', dl.name);
+                if (item.allowExternalDownloader) {
+                    let ok = false;
+                    if (child.parent.var.blocking.downloader.enabled && !dl.url.contains('browser://|http://127.0.0.1|http://localhost') && dl.url.indexOf('blob') !== 0) {
+                        child.parent.var.blocking.downloader.apps.forEach((app) => {
+                            if (ok) {
+                                return;
                             }
-                            child.exe(app_name, params);
-                            return;
-                        }
-                    });
-                }
-                if (ok) {
-                    return;
+                            let app_name = app.name.replace('$username', child.os.userInfo().username);
+                            if (child.isFileExistsSync(app_name)) {
+                                event.preventDefault();
+                                ok = true;
+                                let params = app.params.split(' ');
+                                for (const i in params) {
+                                    params[i] = params[i].replace('$url', decodeURIComponent(dl.url)).replace('$file_name', dl.name);
+                                }
+                                child.exe(app_name, params);
+                                return;
+                            }
+                        });
+                    }
+                    if (ok) {
+                        return;
+                    }
                 }
 
                 child.parent.var.download_list.push(child.cloneObject(dl));

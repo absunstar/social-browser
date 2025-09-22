@@ -356,6 +356,7 @@ module.exports = function (child) {
         if (url == 'about:blank' || url == 'about:srcdoc') {
             return;
         }
+     
         win.customSetting.headers = {};
         win.customSetting.session = child.parent.var.session_list.find((s) => s.name == win.customSetting.partition) || win.customSetting.session;
 

@@ -13,7 +13,6 @@
     "autoClearCacheStorage": false,
     "password": "",
     "max_tabs": 20,
-    "autoAddUserScripts": true,
     "emails": {
         "enabled": true,
         "domain": "social-browser.com"

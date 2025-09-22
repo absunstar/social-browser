@@ -204,9 +204,10 @@ module.exports = function (child) {
             allowPopup: false,
 
             allowDownload: true,
-            defaultDownloadPath : '',
-            showDownloadCompleteDialog : true,
-            showDownloadInformation : true,
+            allowExternalDownloader: true,
+            defaultDownloadPath: '',
+            showDownloadCompleteDialog: true,
+            showDownloadInformation: true,
 
             cloudFlare: false,
             off: false,
@@ -921,7 +922,7 @@ module.exports = function (child) {
             child.updateTab(win);
         });
         win.webContents.on('did-fail-load', (event, errorCode, errorDescription, validatedURL, isMainFrame, frameProcessId, frameRoutingId) => {
-           event.preventDefault();
+            event.preventDefault();
             if (isMainFrame && validatedURL == win.getURL()) {
                 if (child.parent.var.blocking.proxy_error_remove_proxy && win.customSetting.proxy) {
                     child.sendMessage({
@@ -1007,10 +1008,12 @@ module.exports = function (child) {
 
         win.webContents.on('did-start-navigation', (e) => {
             console.log('did-start-navigation : MainFrame=' + e.isMainFrame + ' : ' + e.url);
+
             child.handleCustomSeting(e.url, win, e.isMainFrame);
         });
         win.webContents.on('will-redirect', (e) => {
             let url = e.url;
+            
             child.log('will-redirect : ', url);
             child.handleCustomSeting(url, win, e.isMainFrame);
 
@@ -1081,6 +1084,11 @@ module.exports = function (child) {
         });
 
         win.webContents.on('will-frame-navigate', (e) => {
+            if (e.url.like('*user.js') && e.isMainFrame) {
+                win.webContents.send('[install-user.js]', { url: e.url });
+                e.preventDefault();
+                return;
+            }
             child.log('will-frame-navigate : ' + e.url);
             child.handleCustomSeting(e.url, win, e.isMainFrame);
 

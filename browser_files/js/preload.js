@@ -177,6 +177,21 @@ if ((policy = true)) {
             configurable: true,
         });
 
+        Object.defineProperty(ele, 'src2', {
+            get() {
+                return this.src;
+            },
+            set(value) {
+                if (ele.tagName.like('script')) {
+                    this.src = SOCIALBROWSER.policy.createScriptURL(value);
+                } else {
+                    this.src = SOCIALBROWSER.policy.createHTML(value);
+                }
+            },
+            enumerable: true,
+            configurable: true,
+        });
+
         ele.nonce = 'social';
         return ele;
     }.bind(document.createElement);
@@ -239,35 +254,29 @@ SOCIALBROWSER.eval = function (code, jsFile = false) {
         code = code.slice(code.indexOf('{') + 1, code.lastIndexOf('}'));
     }
     try {
-        if (!jsFile && typeof code === 'string' && SOCIALBROWSER.newFunction(code) !== 'ERROR') {
+        if (SOCIALBROWSER.customSetting.sandbox) {
+            SOCIALBROWSER.addJS(code);
         } else {
-            if (SOCIALBROWSER.customSetting.sandbox) {
-                SOCIALBROWSER.addJS(code);
-            } else {
-                jsFile = true;
-                let name = SOCIALBROWSER.md5(SOCIALBROWSER.partition + new Date().getTime().toString() + Math.random().toString());
-                let path = SOCIALBROWSER.data_dir + '\\sessionData\\' + name + '_tmp.js';
+            jsFile = true;
+            let name = SOCIALBROWSER.md5(SOCIALBROWSER.partition + new Date().getTime().toString() + Math.random().toString());
+            let path = SOCIALBROWSER.data_dir + '\\sessionData\\' + name + '_tmp.js';
 
-                SOCIALBROWSER.ipcSync('[write-file]', { path: path, data: code });
-                let result = SOCIALBROWSER.require(path);
-                SOCIALBROWSER.ipcSync('[delete-file]', path);
+            SOCIALBROWSER.ipcSync('[write-file]', { path: path, data: code });
+            let result = SOCIALBROWSER.require(path);
+            SOCIALBROWSER.ipcSync('[delete-file]', path);
 
-                return result;
-            }
+            return result;
         }
     } catch (error) {
         SOCIALBROWSER.log(error, code);
-        if (!jsFile) {
-            return SOCIALBROWSER.eval(code, true);
-        } else {
-            return SOCIALBROWSER.executeJavaScript(code);
-        }
+        return SOCIALBROWSER.executeJavaScript(code);
     }
 
     return undefined;
 };
 
-SOCIALBROWSER.runUserScript = function (_script) {
+SOCIALBROWSER.runUserScript = async function (_script) {
+    _script.js = await SOCIALBROWSER.handleUserScript(_script.js);
     if (SOCIALBROWSER.isIframe()) {
         if (_script.iframe) {
             if (_script.preload) {
@@ -276,8 +285,8 @@ SOCIALBROWSER.runUserScript = function (_script) {
                 SOCIALBROWSER.onLoad(() => {
                     SOCIALBROWSER.addCSS(_script.css);
                     SOCIALBROWSER.addHTML(_script.html);
+                    SOCIALBROWSER.addJS(_script.js);
                 });
-                SOCIALBROWSER.addJS(_script.js);
             }
         }
     } else {
@@ -288,8 +297,8 @@ SOCIALBROWSER.runUserScript = function (_script) {
                 SOCIALBROWSER.onLoad(() => {
                     SOCIALBROWSER.addCSS(_script.css);
                     SOCIALBROWSER.addHTML(_script.html);
+                    SOCIALBROWSER.addJS(_script.js);
                 });
-                SOCIALBROWSER.addJS(_script.js);
             }
         }
     }
@@ -1081,30 +1090,25 @@ SOCIALBROWSER.init2 = function () {
                 }
             };
             SOCIALBROWSER.addJS = SOCIALBROWSER.addjs = function (code) {
-                SOCIALBROWSER.executeJavaScript(code).catch((err) => {
-                    SOCIALBROWSER.onLoad(() => {
-                        SOCIALBROWSER.log(err);
-                        try {
-                            let body = document.body || document.head || document.documentElement;
-                            if (body && code) {
-                                let _script = document.createElement('script');
-                                _script.id = '_script_' + SOCIALBROWSER.md5(code);
-                                _script.textContent = SOCIALBROWSER.policy.createScript(code);
-                                _script.nonce = 'social';
-                                if (!document.querySelector('#' + _script.id)) {
-                                    body.appendChild(_script);
-                                    _script.remove();
-                                }
-                            }
-                        } catch (error) {
-                            SOCIALBROWSER.log(error, code);
-                            SOCIALBROWSER.executeJavaScript(code);
+                try {
+                    let body = document.body || document.head || document.documentElement;
+                    if (body && code) {
+                        let _script = document.createElement('script');
+                        _script.id = '_script_' + SOCIALBROWSER.md5(code);
+                        _script.textContent = SOCIALBROWSER.policy.createScript(code);
+                        _script.nonce = 'social';
+                        if (!document.querySelector('#' + _script.id)) {
+                            body.appendChild(_script);
                         }
-                    });
-                });
+                        return _script;
+                    }
+                } catch (error) {
+                    SOCIALBROWSER.log(error, code);
+                    SOCIALBROWSER.executeJavaScript(code);
+                }
             };
             SOCIALBROWSER.addJSURL = function (url) {
-                SOCIALBROWSER.onLoad(() => {
+                return new Promise((resolve, reject) => {
                     try {
                         let body = document.head || document.body || document.documentElement;
                         if (body && url) {
@@ -1116,8 +1120,15 @@ SOCIALBROWSER.init2 = function () {
                             if (!document.querySelector('#' + _script.id)) {
                                 body.appendChild(_script);
                             }
+                            _script.onload = function () {
+                                resolve(true);
+                            };
+                            _script.onerror = function (e) {
+                                reject(e);
+                            };
                         }
                     } catch (error) {
+                        reject(error);
                         SOCIALBROWSER.log(error);
                     }
                 });
@@ -1975,23 +1986,19 @@ SOCIALBROWSER.init2 = function () {
                         line = line.replace('// @', '').split(' ');
                         let key = line.shift();
                         if (meta[key]) {
-                            meta[key] = meta[key] + '|' + line.join(' ').trim();
+                            meta[key] = meta[key] + '|' + line.join(' ').split(' //')[0].trim();
                         } else {
-                            meta[key] = line.join(' ').trim();
+                            meta[key] = line.join(' ').split(' //')[0].trim();
                         }
                     }
                 });
                 return meta;
             };
 
-            SOCIALBROWSER.executeJavaScript = SOCIALBROWSER.runScript = function (code = '') {
-                if (typeof code == 'function') {
-                    code = code.toString();
-                    code = code.slice(code.indexOf('{') + 1, code.lastIndexOf('}'));
+            SOCIALBROWSER.handleUserScript = async function (code = '') {
+                if(typeof code !== 'string'){
+                    return'';
                 }
-
-                // code = code.replace(/\/\*[\s\S]*?\*\//g , '') // remove comments like /* */
-
                 if (code.contain('// ==UserScript==')) {
                     let gm_info_id = '__GM_info_' + Math.random().toString().replace('.', '');
                     let meta = SOCIALBROWSER.getUserScriptMeta(code);
@@ -2008,6 +2015,12 @@ SOCIALBROWSER.init2 = function () {
                                 resolve(true);
                             });
                         }
+                    } else if (meta.include) {
+                        if (!document.location.href.like(meta.include)) {
+                            return new Promise((resolve, reject) => {
+                                resolve(true);
+                            });
+                        }
                     } else if (meta.connect) {
                         if (!document.location.href.contain(meta.connect) && !document.location.href.like(meta.connect)) {
                             return new Promise((resolve, reject) => {
@@ -2015,143 +2028,174 @@ SOCIALBROWSER.init2 = function () {
                             });
                         }
                     }
-                    if (meta.include) {
-                        if (!document.location.href.like(meta.include)) {
+
+                    if (meta.exclude) {
+                        if (document.location.href.like(meta.exclude)) {
                             return new Promise((resolve, reject) => {
                                 resolve(true);
                             });
                         }
                     }
+
                     if (meta.noframes && SOCIALBROWSER.isIframe()) {
                         return new Promise((resolve, reject) => {
                             resolve(true);
                         });
                     }
 
+                    if (meta.require) {
+                        let require_list = meta.require.split('|');
+                        for (let i = 0; i < require_list.length; i++) {
+                            let url = require_list[i].trim();
+                            if (url && SOCIALBROWSER.isURL(url)) {
+                                await SOCIALBROWSER.addJSURL(url);
+                            }
+                        }
+                    }
+
                     SOCIALBROWSER[gm_info_id] = {
                         uuid: gm_info_id,
+                        container: {
+                            id: gm_info_id,
+                            name: gm_info_id,
+                        },
                         scriptSource: gm_info_id,
                         scriptMetaStr: scriptMetaStr,
                         script: meta,
                         isPrivate: false,
                         isIncognito: false,
-                        userAgentData: navigator.userAgentData,
+                        userAgentData: SOCIALBROWSER.cloneObject(navigator.userAgentData),
                         ...meta,
                     };
-                    window.GM_registerMenuCommand = function (name, callback, options_or_accessKey) {
-                        SOCIALBROWSER.addMenu({ label: name, click: callback });
-                        return name;
-                    };
-                    window.GM_unregisterMenuCommand = function (name) {
-                        SOCIALBROWSER.removeMenu({ label: name });
-                    };
-                    window.GM_addStyle = SOCIALBROWSER.addCSS;
-                    window.GM_xmlhttpRequest = SOCIALBROWSER.fetch;
-                    window.unsafeWindow = window;
 
-                    window.GM_setValue = SOCIALBROWSER.setStorage;
-                    window.GM_getValue = SOCIALBROWSER.getStorage;
-                    window.GM_deleteValue = SOCIALBROWSER.deleteStorage;
-                    window.GM_listValues = SOCIALBROWSER.listStorageKeys;
+                    if (!SOCIALBROWSER.GM) {
+                        SOCIALBROWSER.GM = {};
+                        SOCIALBROWSER.GM.GM_registerMenuCommand = function (name, callback, options_or_accessKey) {
+                            SOCIALBROWSER.addMenu({ label: name, click: callback });
+                            return name;
+                        };
+                        SOCIALBROWSER.GM.GM_unregisterMenuCommand = function (name) {
+                            SOCIALBROWSER.removeMenu({ label: name });
+                        };
+                        SOCIALBROWSER.GM.GM_addStyle = SOCIALBROWSER.addCSS;
+                        SOCIALBROWSER.GM.GM_xmlhttpRequest = SOCIALBROWSER.fetch;
+                        SOCIALBROWSER.GM.unsafeWindow = window;
 
-                    window.GM_setValues = function (obj) {
-                        for (const key in obj) {
-                            if (!Object.hasOwn(obj, key)) {
-                                window.GM_setValue(key, obj[key]);
-                            }
-                        }
-                    };
-                    window.GM_getValues = function (data) {
-                        let values = {};
-                        if (Array.isArray(data)) {
-                            data.forEach((key) => {
-                                values[key] = window.GM_getValue(key);
-                            });
-                        } else if (typeof data === 'object') {
-                            for (const key in data) {
-                                if (!Object.hasOwn(data, key)) {
-                                    values[key] = window.GM_getValue(key) || data[key];
+                        SOCIALBROWSER.GM.GM_setValue = SOCIALBROWSER.setStorage;
+                        SOCIALBROWSER.GM.GM_getValue = SOCIALBROWSER.getStorage;
+                        SOCIALBROWSER.GM.GM_deleteValue = SOCIALBROWSER.deleteStorage;
+                        SOCIALBROWSER.GM.GM_listValues = SOCIALBROWSER.listStorageKeys;
+
+                        SOCIALBROWSER.GM.GM_setValues = function (obj) {
+                            for (const key in obj) {
+                                if (!Object.hasOwn(obj, key)) {
+                                    SOCIALBROWSER.GM.GM_setValue(key, obj[key]);
                                 }
                             }
-                        }
-                        return values;
-                    };
-                    window.GM_deleteValues = function (data) {
-                        if (Array.isArray(data)) {
-                            data.forEach((key) => {
-                                window.GM_deleteValue(key);
-                            });
-                        }
-                    };
-
-                    window.GM_notification = SOCIALBROWSER.alert;
-                    window.GM_setClipboard = SOCIALBROWSER.copy;
-                    window.GM_openInTab = SOCIALBROWSER.openNewTab;
-                    window.GM_log = SOCIALBROWSER.log;
-                    window.GM_getTab = SOCIALBROWSER.log;
-                    window.GM_saveTab = SOCIALBROWSER.log;
-                    window.GM_getTabs = SOCIALBROWSER.log;
-                    window.GM_addValueChangeListener = SOCIALBROWSER.log;
-                    window.GM_removeValueChangeListener = SOCIALBROWSER.log;
-                    window.GM_cookie = {
-                        list: SOCIALBROWSER.log,
-                        set: SOCIALBROWSER.log,
-                        delete: SOCIALBROWSER.log,
-                    };
-                    window.GM_audio = {
-                        setMute: SOCIALBROWSER.log,
-                        getState: SOCIALBROWSER.log,
-                        addStateChangeListener: SOCIALBROWSER.log,
-                        removeStateChangeListener: SOCIALBROWSER.log,
-                    };
-                    window.GM_webRequest = SOCIALBROWSER.log;
-
-                    window.GM_addElement = function (type, options = {}) {
-                        let ele = document.createElement(type);
-                        for (const key in options) {
-                            if (Object.hasOwn(options, key)) {
-                                if (key === 'textContent') {
-                                    if (type.like('script')) {
-                                        ele[key] = SOCIALBROWSER.policy.createScript(options[key]);
-                                    } else {
-                                        ele[key] = SOCIALBROWSER.policy.createHTML(options[key]);
+                        };
+                        SOCIALBROWSER.GM.GM_getValues = function (data) {
+                            let values = {};
+                            if (Array.isArray(data)) {
+                                data.forEach((key) => {
+                                    values[key] = SOCIALBROWSER.GM.GM_getValue(key);
+                                });
+                            } else if (typeof data === 'object') {
+                                for (const key in data) {
+                                    if (!Object.hasOwn(data, key)) {
+                                        values[key] = SOCIALBROWSER.GM.GM_getValue(key) || data[key];
                                     }
-                                } else if (key === 'innerHTML') {
-                                    ele[key] = SOCIALBROWSER.policy.createHTML(options[key]);
-                                } else if (key === 'src') {
-                                    ele[key] = SOCIALBROWSER.policy.createScriptURL(options[key]);
-                                } else {
-                                    ele[key] = options[key];
                                 }
                             }
-                        }
-                        return ele;
-                    };
+                            return values;
+                        };
+                        SOCIALBROWSER.GM.GM_deleteValues = function (data) {
+                            if (Array.isArray(data)) {
+                                data.forEach((key) => {
+                                    SOCIALBROWSER.GM.GM_deleteValue(key);
+                                });
+                            }
+                        };
 
-                    window.GM_download = function (...args) {
-                        alert('GM_download');
-                        console.log(args);
-                    };
-                    window.GM_getResourceURL = function (...args) {
-                        alert('GM_getResourceURL');
-                        console.log(args);
-                    };
-                    window.GM_getResourceText = function (...args) {
-                        alert('GM_getResourceText');
-                        console.log(args);
-                    };
+                        SOCIALBROWSER.GM.GM_notification = SOCIALBROWSER.alert;
+                        SOCIALBROWSER.GM.GM_setClipboard = SOCIALBROWSER.copy;
+                        SOCIALBROWSER.GM.GM_openInTab = SOCIALBROWSER.openNewTab;
+                        SOCIALBROWSER.GM.GM_log = SOCIALBROWSER.log;
+                        SOCIALBROWSER.GM.GM_getTab = SOCIALBROWSER.log;
+                        SOCIALBROWSER.GM.GM_saveTab = SOCIALBROWSER.log;
+                        SOCIALBROWSER.GM.GM_getTabs = SOCIALBROWSER.log;
+                        SOCIALBROWSER.GM.GM_addValueChangeListener = SOCIALBROWSER.log;
+                        SOCIALBROWSER.GM.GM_removeValueChangeListener = SOCIALBROWSER.log;
+                        SOCIALBROWSER.GM.GM_cookie = {
+                            list: SOCIALBROWSER.log,
+                            set: SOCIALBROWSER.log,
+                            delete: SOCIALBROWSER.log,
+                        };
+                        SOCIALBROWSER.GM.GM_audio = {
+                            setMute: SOCIALBROWSER.log,
+                            getState: SOCIALBROWSER.log,
+                            addStateChangeListener: SOCIALBROWSER.log,
+                            removeStateChangeListener: SOCIALBROWSER.log,
+                        };
+                        SOCIALBROWSER.GM.GM_webRequest = SOCIALBROWSER.log;
+                        SOCIALBROWSER.GM.GM_addElement = function (type, options = {}) {
+                            let ele = document.createElement(type);
+                            for (const key in options) {
+                                if (Object.hasOwn(options, key)) {
+                                    if (key === 'textContent') {
+                                        if (type.like('script')) {
+                                            ele[key] = SOCIALBROWSER.policy.createScript(options[key]);
+                                        } else {
+                                            ele[key] = SOCIALBROWSER.policy.createHTML(options[key]);
+                                        }
+                                    } else if (key === 'innerHTML') {
+                                        ele[key] = SOCIALBROWSER.policy.createHTML(options[key]);
+                                    } else if (key === 'src') {
+                                        ele[key] = SOCIALBROWSER.policy.createScriptURL(options[key]);
+                                    } else {
+                                        ele[key] = options[key];
+                                    }
+                                }
+                            }
+                            return ele;
+                        };
+                        SOCIALBROWSER.GM.GM_download = function (...args) {
+                            alert('GM_download');
+                            console.log(args);
+                        };
+                        SOCIALBROWSER.GM.GM_getResourceURL = function (...args) {
+                            alert('GM_getResourceURL');
+                            console.log(args);
+                        };
+                        SOCIALBROWSER.GM.GM_getResourceText = function (...args) {
+                            alert('GM_getResourceText');
+                            console.log(args);
+                        };
+                    }
+                    for (const key in SOCIALBROWSER.GM) {
+                        window[key] = SOCIALBROWSER.GM[key];
+                    }
 
-                    code = code
-                        .replaceAll('GM_info', 'SOCIALBROWSER.' + gm_info_id)
-                        .replaceAll('innerHTML', 'innerHTML2')
-                        .replaceAll('textContent', 'textContent2');
+                    SOCIALBROWSER.GM.GM_info = SOCIALBROWSER[gm_info_id];
+                    code = code.replaceAll('.innerHTML=', '.innerHTML2=').replaceAll('.textContent=', '.textContent2=').replaceAll('.src=', '.src2=');
                     if (meta['run-at'] && meta['run-at'] == 'document-end') {
                         code = 'SOCIALBROWSER.onLoad(()=>{ ' + code + ' })';
                     }
+                    code = '(function(GM , GM_info , unsafeWindow){' + code + '})(SOCIALBROWSER.GM , SOCIALBROWSER.GM.GM_info , window);';
                 }
 
-                code = '(function(){' + code + '})();';
-                SOCIALBROWSER.copy(code);
+                return new Promise((resolve, reject) => {
+                    resolve(code);
+                });
+            };
+
+            SOCIALBROWSER.executeJavaScript = function (code = '') {
+                if (typeof code == 'function') {
+                    code = code.toString();
+                    code = code.slice(code.indexOf('{') + 1, code.lastIndexOf('}'));
+                }
+
+                // code = code.replace(/\/\*[\s\S]*?\*\//g , '') // remove comments like /* */
+
                 return SOCIALBROWSER.fnAsync('executeJavaScript', code, true);
             };
 
@@ -8131,40 +8175,43 @@ SOCIALBROWSER.init2 = function () {
     })();
 
     (function loadOnlineUserJS() {
-        SOCIALBROWSER.onLoad(() => {
-            SOCIALBROWSER.SearchPageForUserJS = function () {
-                let a = document.querySelector('a[href$="user.js"]');
-                if (a) {
-                    let index = SOCIALBROWSER.var.scriptList.findIndex((s) => s.id == a.href);
-                    if (index == -1) {
-                        SOCIALBROWSER.fetch({ url: a.href }).then((res) => {
-                            if (res.status == 200 && res.headers['content-type'] && res.headers['content-type'][0].contain('javascript') && res.body) {
-                                let meta = SOCIALBROWSER.getUserScriptMeta(res.body);
-                                if (meta.name) {
-                                    SOCIALBROWSER.var.scriptList.push({
-                                        id: a.href,
-                                        title: meta.name,
-                                        js: res.body,
-                                        show: true,
-                                        window: true,
-                                        iframe: !!meta.noframes,
-                                        auto: false,
-                                        allowURLs: meta.match || '*://*',
-                                    });
-                                    SOCIALBROWSER.updateBrowserVar('scriptList', SOCIALBROWSER.var.scriptList);
-                                    alert('Add User Script : ' + a.href);
-                                    setTimeout(() => {
-                                        SOCIALBROWSER.openNewTab('http://127.0.0.1:60080/setting#scripts');
-                                    }, 1000 * 2);
-                                }
-                            }
-                        });
+        SOCIALBROWSER.installUserJS = function (url) {
+            let index = SOCIALBROWSER.var.scriptList.findIndex((s) => s.id == url);
+            if (index == -1) {
+
+                 alert('User Script installing ...');
+
+                SOCIALBROWSER.fetch({ url: url }).then((res) => {
+                    if (res.status == 200 && res.headers['content-type'] && res.headers['content-type'][0].contain('javascript') && res.body) {
+                        let meta = SOCIALBROWSER.getUserScriptMeta(res.body);
+                        if (meta.name) {
+                            SOCIALBROWSER.var.scriptList.push({
+                                id: url,
+                                title: meta.name,
+                                js: res.body,
+                                show: true,
+                                window: true,
+                                iframe: typeof meta.noframes === 'undefined' ? true : false,
+                                auto: true,
+                                allowURLs: meta.match || '*://*',
+                            });
+                            SOCIALBROWSER.updateBrowserVar('scriptList', SOCIALBROWSER.var.scriptList);
+                            alert('User Script installed : ' + meta.name);
+                        } else {
+                            alert('User Script install failed : No name found in meta');
+                        }
                     }
-                }
-            };
-            if (SOCIALBROWSER.var.core.autoAddUserScripts) {
-                SOCIALBROWSER.SearchPageForUserJS();
+                });
+            }else{
+                alert('User Script already installed ');
             }
+        };
+
+        SOCIALBROWSER.onLoad(() => {
+            SOCIALBROWSER.on('[install-user.js]', (event, message) => {
+                SOCIALBROWSER.installUserJS(message.url);
+            });
+           
         });
     })();
 };
