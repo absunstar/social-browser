@@ -216,7 +216,7 @@
                 module = undefined;
             }
             function showMessage(msg) {
-                SOCIALBROWSER.ipc('show_message', { message: msg, windowID: SOCIALBROWSER.window.id });
+                SOCIALBROWSER.ipc('[alert]', { message: msg, windowID: SOCIALBROWSER.window.id });
             }
         </script>
 

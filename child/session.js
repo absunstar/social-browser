@@ -839,7 +839,6 @@ module.exports = function (child) {
                                 }
                             }
                         } else if (typeof s_policy == 'string') {
-                         
                             s_policy = s_policy.replaceAll("default-src 'none'", '');
                             s_policy = s_policy.replaceAll('data: ', 'data: browser://* ');
                             s_policy = s_policy.replaceAll('default-src ', 'default-src browser://* ');
@@ -935,12 +934,14 @@ module.exports = function (child) {
                         child.log('Download OFF');
                         return;
                     }
-                    item.showDownloadCompleteDialog = win.customSetting.showDownloadCompleteDialog;
-                    item.showDownloadInformation = win.customSetting.showDownloadInformation;
+
+                    item.showDownloadCompleteDialog = child.parent.var.blocking.downloader.hideDownloadCompleteDialog ? false :  win.customSetting.showDownloadCompleteDialog;
+                    item.showDownloadInformation = child.parent.var.blocking.downloader.hideDownloadInformation ? false : win.customSetting.showDownloadInformation;
                     item.allowExternalDownloader = win.customSetting.allowExternalDownloader;
 
                     if (win.customSetting.defaultDownloadPath) {
                         item.setSavePath(child.path.join(win.customSetting.defaultDownloadPath, item.getFilename()));
+                        item.setingdefaultSavePath = true
                     }
                 }
 
@@ -961,6 +962,10 @@ module.exports = function (child) {
                     startTime: item.getStartTime(),
                     lastModified: item.getLastModifiedTime(),
                 };
+
+                  if (child.parent.var.blocking.downloader.defaultDownloadPath && !item.setingdefaultSavePath) {
+                    item.setSavePath(child.path.join(child.parent.var.blocking.downloader.defaultDownloadPath, item.getFilename()));
+                }
 
                 if (item.allowExternalDownloader) {
                     let ok = false;
@@ -986,6 +991,14 @@ module.exports = function (child) {
                         return;
                     }
                 }
+
+                if (child.parent.var.blocking.downloader.blockDownload) {
+                    event.preventDefault();
+                    webContents.send('[alert]' , {message: 'Download Blocked from Setting' });
+                    child.log('block Download from  setting');
+                    return;
+                }
+
 
                 child.parent.var.download_list.push(child.cloneObject(dl));
                 if (item.showDownloadInformation) {

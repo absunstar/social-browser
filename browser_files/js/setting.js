@@ -16,7 +16,16 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     $scope.setting_busy = true;
     $scope.timezones = [...SOCIALBROWSER.timeZones];
     $scope.timezones2 = [...SOCIALBROWSER.timeZones];
-
+    
+    $scope.selectFolder = function () {
+        return SOCIALBROWSER.ipcSync('[select-folder]');
+    };
+    $scope.selectFile= function (options) {
+        return SOCIALBROWSER.ipcSync('[select-file]' , options);
+    };
+    $scope.openSocialDataFolder = function(){
+        SOCIALBROWSER.openExternal(SOCIALBROWSER.data_dir);
+    }
     SOCIALBROWSER.onVarUpdated = function (name, data) {
         if (name == 'session_list' || name == 'proxy_list' || name == 'extension_list' || name == 'googleExtensionList') {
             $scope.setting[name] = data;

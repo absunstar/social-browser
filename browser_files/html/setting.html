@@ -193,6 +193,9 @@
                 margin: 0px;
                 padding: 0px;
             }
+            i-checkbox, i-radio{
+                align-self: auto;
+            }
         </style>
         <script src="http://127.0.0.1:60080/x-js/bootstrap-5-support.js"></script>
         <script src="http://127.0.0.1:60080/js/setting.js"></script>
@@ -248,7 +251,7 @@
                             <a id="scripts" class="tab-link" onclick="site.showTabContent(event, '#scripts_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
                                 <i class="fa fa-code"></i> User Scripts
                             </a>
-                               <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#javascript_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                            <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#javascript_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
                                 <i class="fas fa-scroll"></i> Java Script
                             </a>
 
@@ -261,7 +264,6 @@
                             <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#privacy_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
                                 <i class="fa fa-laptop"></i> Virtual PC [Browser FingerPrint]
                             </a>
-                         
 
                             <a id="basic" class="tab-link hidden" onclick="site.showTabContent(event, '#youtube_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
                                 <i class="fab fa-youtube"></i> Youtube
@@ -317,8 +319,14 @@
                                 <div class="row">
                                     <fieldset>
                                         <div class="row">
-                                            <i-checkbox class="" label="send X-BROWSER Headers" ng-model="setting.blocking.core.send_browser_id"></i-checkbox>
+                                            <div class="col6">
+                                                   <i-checkbox class="" label="send X-BROWSER Headers" ng-model="setting.blocking.core.send_browser_id"></i-checkbox>
                                             <i-checkbox class="" label="Auto Clear Cache Storage" ng-model="setting.core.autoClearCacheStorage"></i-checkbox>
+                                            </div>
+                                            <div class="col6">
+                                                 <i-button type="view" label="Open Social Data Folder" ng-click="openSocialDataFolder();"></i-button>
+                                            </div>
+                                         
                                         </div>
                                     </fieldset>
 
@@ -444,8 +452,6 @@
                                             <i-checkbox class="" label="Allow External Popup" ng-model="setting.blocking.popup.allow_external"></i-checkbox>
                                             <i-checkbox class="" label="Allow Internal Popup" ng-model="setting.blocking.popup.allow_internal"></i-checkbox>
                                             <i-checkbox class="" label="Allow Blank Popup" ng-model="setting.blocking.popup.allow_blank"></i-checkbox>
-
-                                            
                                         </div>
                                     </fieldset>
 
@@ -871,6 +877,22 @@
                             <div id="downloader_tab" class="tab-content">
                                 <div class="row">
                                     <fieldset>
+                                        <legend>Internal Downloader</legend>
+                                        <div class="row">
+                                            <i-checkbox class="row" label="block Browser Downloader" ng-model="setting.blocking.downloader.blockDownload"></i-checkbox>
+                                            <i-checkbox class="row" label="hide Browser Downloader Complete Dialog" ng-model="setting.blocking.downloader.hideDownloadCompleteDialog"></i-checkbox>
+                                            <i-checkbox class="row" label="hide Browser Downloader Information" ng-model="setting.blocking.downloader.hideDownloadInformation"></i-checkbox>
+                                            <div class="row">
+                                                <div class="col9">
+                                                    <i-control type="text" ng-model="setting.blocking.downloader.defaultDownloadPath" label="default Browser Download Path"></i-control>
+                                                </div>
+                                                <div class="col3">
+                                                    <i-button type="search" label="Select Folder" ng-click="setting.blocking.downloader.defaultDownloadPath = selectFolder()"></i-button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset>
                                         <legend>External Downloader</legend>
                                         <div class="row">
                                             <div class="col12">
@@ -885,6 +907,8 @@
                                             <div class="row padding margin border" ng-repeat="app in setting.blocking.downloader.apps" ng-show="setting.blocking.downloader.enabled === true">
                                                 <div class="col7">
                                                     <i-control type="text" ng-model="app.name" label="App Path"></i-control>
+                                                      <i-button type="search" label="Select App [.exe] File" ng-click="app.name = selectFile({ filters: [{ name: 'Downloader App', extensions: ['exe']}] }) || app.name"></i-button>
+
                                                 </div>
                                                 <div class="col3">
                                                     <i-control type="text" ng-model="app.params" label="App Params"></i-control>
@@ -1326,7 +1350,7 @@
                                     <h2>Script Manager</h2>
 
                                     <div class="row padding margin">
-                                        <div class="col6"><i-button type="add" label="New Script" ng-click="showAddScript()"></i-button></div>                                        
+                                        <div class="col6"><i-button type="add" label="New Script" ng-click="showAddScript()"></i-button></div>
                                     </div>
 
                                     <div class="row">

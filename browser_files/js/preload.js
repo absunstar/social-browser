@@ -1545,7 +1545,12 @@ SOCIALBROWSER.init2 = function () {
             };
 
             SOCIALBROWSER.downloadURL = function (url) {
-                SOCIALBROWSER.webContents.downloadURL(url);
+                if(!SOCIALBROWSER.customSetting.allowDownload || SOCIALBROWSER.var.blocking.downloader.blockDownload){
+                    alert('Download Blocked from Setting ');
+                }else{
+
+                    SOCIALBROWSER.webContents.downloadURL(url);
+                }
             };
 
             SOCIALBROWSER.isAllowURL = function (url) {
@@ -7391,7 +7396,7 @@ SOCIALBROWSER.init2 = function () {
             }
         });
 
-        SOCIALBROWSER.on('show_message', (event, data) => {
+        SOCIALBROWSER.on('[alert]', (event, data) => {
             alert(data.message);
         });
         SOCIALBROWSER.on('[update-browser-var]', (e, res) => {

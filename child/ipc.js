@@ -419,8 +419,9 @@ module.exports = function init(child) {
             event.returnValue = '';
         }
     });
-    child.ipcMain.on('[select-file]', async (event, options) => {
-        const { canceled, filePaths } = await child.electron.dialog.showOpenDialog(options || { properties: ['openFile', 'showHiddenFiles'] });
+    child.ipcMain.on('[select-file]', async (event, options={}) => {
+         let win = child.electron.BrowserWindow.fromWebContents(event.sender);
+        const { canceled, filePaths } = await child.electron.dialog.showOpenDialog(win , { properties: ['openFile', 'showHiddenFiles'] , ...options });
         if (!canceled) {
             event.returnValue = filePaths[0];
         } else {
@@ -668,11 +669,14 @@ module.exports = function init(child) {
     child.ipcMain.handle('[cookies-clear]', (e, obj) => {
         return child.clearCookies(obj);
     });
-    child.ipcMain.handle('show_message', (e, data) => {
-        let win = child.electron.BrowserWindow.fromId(data.windowID);
+    child.ipcMain.handle('[alert]', (e, data) => {
+        if(data.windowID){
+             let win = child.electron.BrowserWindow.fromId(data.windowID);
         if (win) {
-            win.send('show_message', data);
+            win.send('[alert]', data);
         }
+        }
+       
     });
     child.ipcMain.handle('message', (e, message) => {
         let win = child.electron.BrowserWindow.fromId(message.windowID);
@@ -798,7 +802,6 @@ module.exports = function init(child) {
                     body: responseText,
                     responseText: responseText,
                 };
-                console.log(resData);
                 return resData;
             }
         }
