@@ -16,16 +16,16 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     $scope.setting_busy = true;
     $scope.timezones = [...SOCIALBROWSER.timeZones];
     $scope.timezones2 = [...SOCIALBROWSER.timeZones];
-    
+
     $scope.selectFolder = function () {
         return SOCIALBROWSER.ipcSync('[select-folder]');
     };
-    $scope.selectFile= function (options) {
-        return SOCIALBROWSER.ipcSync('[select-file]' , options);
+    $scope.selectFile = function (options) {
+        return SOCIALBROWSER.ipcSync('[select-file]', options);
     };
-    $scope.openSocialDataFolder = function(){
+    $scope.openSocialDataFolder = function () {
         SOCIALBROWSER.openExternal(SOCIALBROWSER.data_dir);
-    }
+    };
     SOCIALBROWSER.onVarUpdated = function (name, data) {
         if (name == 'session_list' || name == 'proxy_list' || name == 'extension_list' || name == 'googleExtensionList') {
             $scope.setting[name] = data;
@@ -510,14 +510,13 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         });
     };
 
-
-      $scope.showVipSiteListModal = function () {
+    $scope.showVipSiteListModal = function () {
         site.showModal('#vipSiteListModal');
     };
-      $scope.hideVipSiteListModal = function () {
+    $scope.hideVipSiteListModal = function () {
         site.hideModal('#vipSiteListModal');
     };
-     $scope.vipSite = {};
+    $scope.vipSite = {};
     $scope.addVipSite = function () {
         $scope.setting.blocking.vip_site_list.push($scope.vipSite);
         $scope.vipSite = {};
@@ -534,7 +533,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     $scope.showWhiteListModal = function () {
         site.showModal('#whiteListModal');
     };
-  
+
     $scope.hideWhiteListModal = function () {
         site.hideModal('#whiteListModal');
     };
@@ -703,9 +702,33 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         });
     };
 
-    $scope.showAddScript = function () {
+    $scope.showAddScript = function (type = '') {
         $scope.script = { allowURLs: '*://*', show: true, window: true };
-        $scope.showModal('#scriptModal');
+        if (!type) {
+            $scope.showModal('#scriptModal');
+        } else if (type == 'url') {
+            let url = SOCIALBROWSER.SOCIALBROWSER.readCopy ();
+            if (url && url.startsWith('http')) {
+                SOCIALBROWSER.fetch({ url: url }).then((res) => {
+                    if (res.status == 200) {
+                        $scope.script.js = res.body;
+                        $scope.showModal('#scriptModal');
+                    }
+                });
+            }
+        } else if (type == 'file') {
+            let path = $scope.selectFile({
+                properties: ['openFile'],
+                filters: [
+                    { name: 'JavaScript Files', extensions: ['js'] },
+                    { name: 'All Files', extensions: ['*'] },
+                ],
+            });
+            if (path) {
+                $scope.script.js = SOCIALBROWSER.readFile(path);
+                $scope.showModal('#scriptModal');
+            }
+        }
     };
 
     $scope.addScript = function (_script) {

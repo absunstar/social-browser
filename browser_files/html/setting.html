@@ -1347,10 +1347,12 @@
 
                             <div id="scripts_tab" class="tab-content">
                                 <div class="row">
-                                    <h2>Script Manager</h2>
+                                    <h2>User Script Manager</h2>
 
                                     <div class="row padding margin">
-                                        <div class="col6"><i-button type="add" label="New Script" ng-click="showAddScript()"></i-button></div>
+                                        <div class="col4"><i-button type="add" label="New User Script" ng-click="showAddScript()"></i-button></div>
+                                        <div class="col4"><i-button type="add" label="Import Script from Copy URL" ng-click="showAddScript('url')"></i-button></div>
+                                        <div class="col4"><i-button type="add" label="Import Script from Local File" ng-click="showAddScript('file')"></i-button></div>
                                     </div>
 
                                     <div class="row">

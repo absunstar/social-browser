@@ -800,7 +800,7 @@ module.exports = function init(child) {
                     statusText: response.statusText,
                     headers: headers,
                     body: responseText,
-                    responseText: responseText,
+                    url: options.url,
                 };
                 return resData;
             }

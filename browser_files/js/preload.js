@@ -910,6 +910,7 @@ SOCIALBROWSER.init2 = function () {
                     let newOptions = SOCIALBROWSER.cloneObject(options);
                     SOCIALBROWSER.ipc('[fetch]', newOptions).then((data) => {
                         if (data) {
+                            data.responseText = data.body;
                             if (options.onload) {
                                 options.onload(data);
                             }

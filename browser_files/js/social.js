@@ -321,8 +321,8 @@ function showSettingMenu() {
 
     SOCIALBROWSER.var.bookmarks.forEach((b) => {
         arr2.push({
-            label: b.title,
-            sublabel: b.url,
+            label: b.url,
+            sublabel: b.title,
             iconURL: b.favicon,
             click: () =>
                 ipc('[open new tab]', {
@@ -467,8 +467,8 @@ function showBookmarksMenu() {
 
     SOCIALBROWSER.var.bookmarks.forEach((b) => {
         SOCIALBROWSER.menuList.push({
-            label: b.title,
-            sublabel: b.url,
+            label: b.url,
+            sublabel: b.title,
             iconURL: b.favicon,
             click: () =>
                 ipc('[open new tab]', {
