@@ -26,8 +26,11 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     $scope.openSocialDataFolder = function () {
         SOCIALBROWSER.openExternal(SOCIALBROWSER.data_dir);
     };
+    $scope.openPopup = function (url) {
+        SOCIALBROWSER.openNewPopup(url);
+    };
     SOCIALBROWSER.onVarUpdated = function (name, data) {
-        if (name == 'session_list' || name == 'proxy_list' || name == 'extension_list' || name == 'googleExtensionList') {
+        if (name == 'session_list' || name == 'proxy_list' || name == 'extension_list' || name == 'googleExtensionList' || name == 'scriptList') {
             $scope.setting[name] = data;
             $scope.$applyAsync();
         }
@@ -703,18 +706,41 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     };
 
     $scope.showAddScript = function (type = '') {
-        $scope.script = { allowURLs: '*://*', show: true, window: true };
+        $scope.script = { allowURLs: '*://*', auto: true, show: true, window: true, iframe: true, blockURLs: '' };
         if (!type) {
             $scope.showModal('#scriptModal');
         } else if (type == 'url') {
-            let url = SOCIALBROWSER.SOCIALBROWSER.readCopy ();
-            if (url && url.startsWith('http')) {
+            let url = SOCIALBROWSER.readCopy();
+            if (url && SOCIALBROWSER.isValidURL(url)) {
+                if ($scope.setting.scriptList.some((s) => s.id == url)) {
+                    alert('UserScript Already Exists ...');
+                    return;
+                }
                 SOCIALBROWSER.fetch({ url: url }).then((res) => {
                     if (res.status == 200) {
+                        $scope.script.id = url;
                         $scope.script.js = res.body;
+                        $scope.script.meta = SOCIALBROWSER.getUserScriptMeta($scope.script.js);
+                        if ($scope.script.meta.match) {
+                            $scope.script.allowURLs = $scope.script.meta.match;
+                        } else if ($scope.script.meta.include) {
+                            $scope.script.allowURLs = $scope.script.meta.include;
+                        }
+                        if ($scope.script.meta.name) {
+                            $scope.script.title = $scope.script.meta.name;
+                        }
+                        if ($scope.script.meta.exclude) {
+                            $scope.script.blockURLs = $scope.script.meta.exclude;
+                        }
+                        if (typeof $scope.script.meta.noframes !== 'undefined') {
+                            $scope.script.iframe = false;
+                        }
                         $scope.showModal('#scriptModal');
+                        $scope.$applyAsync();
                     }
                 });
+            } else {
+                alert('Invalid URL in Clipboard ...');
             }
         } else if (type == 'file') {
             let path = $scope.selectFile({
@@ -732,7 +758,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     };
 
     $scope.addScript = function (_script) {
-        _script.id = new Date().getTime();
+        _script.id =  _script.id || new Date().getTime();
         $scope.setting.scriptList.push({ ..._script });
         $scope.hideModal('#scriptModal');
     };
@@ -744,6 +770,8 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         let index = $scope.setting.scriptList.findIndex((s) => s.id == _script.id);
         if (index !== -1) {
             $scope.setting.scriptList[index] = { ..._script };
+        }else{
+            $scope.setting.scriptList.push({ ..._script });
         }
         $scope.hideModal('#scriptModal');
     };

@@ -193,8 +193,10 @@
                 margin: 0px;
                 padding: 0px;
             }
-            i-checkbox, i-radio{
+            i-checkbox,
+            i-radio {
                 align-self: auto;
+                margin: 0;
             }
         </style>
         <script src="http://127.0.0.1:60080/x-js/bootstrap-5-support.js"></script>
@@ -233,6 +235,9 @@
                             <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#users_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
                                 <i class="fa fa-users"></i> Users Profile
                             </a>
+                            <a id="scripts" class="tab-link" onclick="site.showTabContent(event, '#scripts_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                                <i class="fa fa-code"></i> User Scripts
+                            </a>
                             <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#passwords_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
                                 <i class="fa fa-key"></i> Passwords
                             </a>
@@ -248,9 +253,6 @@
                                 <i class="fa fa-list"></i> Extensions
                             </a>
 
-                            <a id="scripts" class="tab-link" onclick="site.showTabContent(event, '#scripts_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
-                                <i class="fa fa-code"></i> User Scripts
-                            </a>
                             <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#javascript_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
                                 <i class="fas fa-scroll"></i> Java Script
                             </a>
@@ -320,13 +322,12 @@
                                     <fieldset>
                                         <div class="row">
                                             <div class="col6">
-                                                   <i-checkbox class="" label="send X-BROWSER Headers" ng-model="setting.blocking.core.send_browser_id"></i-checkbox>
-                                            <i-checkbox class="" label="Auto Clear Cache Storage" ng-model="setting.core.autoClearCacheStorage"></i-checkbox>
+                                                <i-checkbox class="" label="send X-BROWSER Headers" ng-model="setting.blocking.core.send_browser_id"></i-checkbox>
+                                                <i-checkbox class="" label="Auto Clear Cache Storage" ng-model="setting.core.autoClearCacheStorage"></i-checkbox>
                                             </div>
                                             <div class="col6">
-                                                 <i-button type="view" label="Open Social Data Folder" ng-click="openSocialDataFolder();"></i-button>
+                                                <i-button type="view" label="Open Social Data Folder" ng-click="openSocialDataFolder();"></i-button>
                                             </div>
-                                         
                                         </div>
                                     </fieldset>
 
@@ -907,8 +908,11 @@
                                             <div class="row padding margin border" ng-repeat="app in setting.blocking.downloader.apps" ng-show="setting.blocking.downloader.enabled === true">
                                                 <div class="col7">
                                                     <i-control type="text" ng-model="app.name" label="App Path"></i-control>
-                                                      <i-button type="search" label="Select App [.exe] File" ng-click="app.name = selectFile({ filters: [{ name: 'Downloader App', extensions: ['exe']}] }) || app.name"></i-button>
-
+                                                    <i-button
+                                                        type="search"
+                                                        label="Select App [.exe] File"
+                                                        ng-click="app.name = selectFile({ filters: [{ name: 'Downloader App', extensions: ['exe']}] }) || app.name"
+                                                    ></i-button>
                                                 </div>
                                                 <div class="col3">
                                                     <i-control type="text" ng-model="app.params" label="App Params"></i-control>
@@ -1347,14 +1351,18 @@
 
                             <div id="scripts_tab" class="tab-content">
                                 <div class="row">
-                                    <h2>User Script Manager</h2>
+                                    <h2 class="center">User Script Manager <small class="green"> ( JavaScript , CSS , HTML , Tampermonkey , Violentmonkey , Greasemonkey ) </small></h2>
 
                                     <div class="row padding margin">
                                         <div class="col4"><i-button type="add" label="New User Script" ng-click="showAddScript()"></i-button></div>
                                         <div class="col4"><i-button type="add" label="Import Script from Copy URL" ng-click="showAddScript('url')"></i-button></div>
                                         <div class="col4"><i-button type="add" label="Import Script from Local File" ng-click="showAddScript('file')"></i-button></div>
                                     </div>
-
+                                    <div class="row padding margin">
+                                        <div class="col4"><i-button type="search" label="open openuserjs.org" ng-click="openPopup('https://openuserjs.org/')"></i-button></div>
+                                        <div class="col4"><i-button type="search" label="open userscript.zone" ng-click="openPopup('https://www.userscript.zone/')"></i-button></div>
+                                        <div class="col4"><i-button type="search" label="open greasyfork.org" ng-click="openPopup('https://greasyfork.org/en/scripts')"></i-button></div>
+                                    </div>
                                     <div class="row">
                                         <table class="table hover">
                                             <tr>

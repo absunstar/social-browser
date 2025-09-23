@@ -495,8 +495,11 @@ SOCIALBROWSER.openNewPopup = function (options = {}) {
         options = { url: options };
     }
     SOCIALBROWSER.ipc('[open new popup]', {
-        referrer: document.location.href,
         url: document.location.href,
+        show: true,
+        alwaysOnTop: true,
+        center: true,
+        referrer: document.location.href,
         partition: SOCIALBROWSER.partition,
         user_name: SOCIALBROWSER.session.display,
         main_window_id: SOCIALBROWSER.window.id,
@@ -1546,10 +1549,9 @@ SOCIALBROWSER.init2 = function () {
             };
 
             SOCIALBROWSER.downloadURL = function (url) {
-                if(!SOCIALBROWSER.customSetting.allowDownload || SOCIALBROWSER.var.blocking.downloader.blockDownload){
+                if (!SOCIALBROWSER.customSetting.allowDownload || SOCIALBROWSER.var.blocking.downloader.blockDownload) {
                     alert('Download Blocked from Setting ');
-                }else{
-
+                } else {
                     SOCIALBROWSER.webContents.downloadURL(url);
                 }
             };
@@ -1992,6 +1994,7 @@ SOCIALBROWSER.init2 = function () {
                 let metaString = code.slice(code.indexOf('// ==UserScript==') + '// ==UserScript=='.length, code.lastIndexOf('// ==/UserScript=='));
                 metaString.split('\n').forEach((line) => {
                     if (line && line.indexOf('// @') == 0) {
+                        line = line.replace(/\t/g, ' ');
                         line = line.replace('// @', '').split(' ');
                         let key = line.shift();
                         if (meta[key]) {
@@ -8198,20 +8201,29 @@ SOCIALBROWSER.init2 = function () {
 
                 SOCIALBROWSER.fetch({ url: url }).then((res) => {
                     if (res.status == 200 && res.headers['content-type'] && res.headers['content-type'][0].contain('javascript') && res.body) {
-                        let meta = SOCIALBROWSER.getUserScriptMeta(res.body);
-                        if (meta.name) {
-                            SOCIALBROWSER.var.scriptList.push({
-                                id: url,
-                                title: meta.name,
-                                js: res.body,
-                                show: true,
-                                window: true,
-                                iframe: typeof meta.noframes === 'undefined' ? true : false,
-                                auto: true,
-                                allowURLs: meta.match || '*://*',
-                            });
+                        let script = { allowURLs: '*://*', auto: true, show: true, window: true, iframe: true, blockURLs: '' };
+                        script.js = res.body;
+                        script.meta = SOCIALBROWSER.getUserScriptMeta(script.js);
+                        if (script.meta.name) {
+                            script.id = url;
+
+                            if (script.meta.match) {
+                                script.allowURLs = script.meta.match;
+                            } else if (script.meta.include) {
+                                script.allowURLs = script.meta.include;
+                            }
+                            if (script.meta.name) {
+                                script.title = script.meta.name;
+                            }
+                            if (script.meta.exclude) {
+                                script.blockURLs = script.meta.exclude;
+                            }
+                            if (typeof script.meta.noframes !== 'undefined') {
+                                script.iframe = false;
+                            }
+                            SOCIALBROWSER.var.scriptList.push(script);
                             SOCIALBROWSER.updateBrowserVar('scriptList', SOCIALBROWSER.var.scriptList);
-                            alert('User Script installed : ' + meta.name);
+                            alert('User Script installed : ' + script.meta.name);
                         } else {
                             alert('User Script install failed : No name found in meta');
                         }
