@@ -80,8 +80,8 @@ video0 {
     font-size: 26px;
     font-weight: bold;
     top: 15%;
-    left: 25%;
-    right: 25%;
+    left: 5%;
+    right: 5%;
     padding: 30px;
     border-radius: 15px;
     border: 3px solid #000;
@@ -90,7 +90,11 @@ video0 {
     word-break: break-all;
     box-shadow: 0 0 8px 1px #000000;
 }
-
+#__alertBox small {
+    font-size: 12px;
+    color: #bbb;
+    font-weight: normal;
+}
 #__targetUrl {
     font-family: monospace;
     padding-left: 10px;

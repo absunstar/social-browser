@@ -5862,7 +5862,7 @@ SOCIALBROWSER.init2 = function () {
                             return child_window;
                         }
                         if (url == document.location.href && SOCIALBROWSER.var.blocking.popup.block_same_page) {
-                            alert('Block current URL re-Open');
+                            alert('Block current URL re-Open' , 1000);
                             return child_window;
                         }
 
@@ -5880,7 +5880,7 @@ SOCIALBROWSER.init2 = function () {
                             allow = true;
                         } else {
                             if (SOCIALBROWSER.customSetting.blockPopup || !SOCIALBROWSER.customSetting.allowNewWindows) {
-                                SOCIALBROWSER.log('block Popup : ' + url);
+                                alert('block Popup from customSetting: <small>' + url + '</small>' , 1000);
                                 return child_window;
                             }
 
@@ -5891,14 +5891,14 @@ SOCIALBROWSER.init2 = function () {
 
                             if (!SOCIALBROWSER.var.core.javaScriptOFF && !SOCIALBROWSER.customSetting.javaScriptOFF) {
                                 if (!SOCIALBROWSER.isAllowURL(url)) {
-                                    SOCIALBROWSER.log('Not Allow URL : ' + url);
+                                    alert('Not Allow URL : <small>' + url  + '</small>' , 1000);
                                     return child_window;
                                 }
 
                                 allow = !SOCIALBROWSER.var.blocking.black_list.some((d) => url.like(d.url));
 
                                 if (!allow) {
-                                    SOCIALBROWSER.log('black list : ' + url);
+                                    alert('block popup from black list : <small>' + url+ '</small>' , 1000);
                                     return child_window;
                                 }
 
@@ -5917,7 +5917,7 @@ SOCIALBROWSER.init2 = function () {
                             }
 
                             if (!allow) {
-                                SOCIALBROWSER.log('Not Allow popup window : ' + url);
+                                alert('Not Allow popup from setting : <small>' + url + '</small>', 1000);
                                 return child_window;
                             }
                         }
