@@ -536,7 +536,11 @@ SOCIALBROWSER.init2 = function () {
     SOCIALBROWSER.isWhiteSite = SOCIALBROWSER.var.blocking.white_list.some((site) => site.url.length > 2 && document.location.href.like(site.url));
     SOCIALBROWSER.customSetting = new Proxy(SOCIALBROWSER._customSetting, {
         get(target, name, receiver) {
-            return SOCIALBROWSER.get('customSetting.' + name);
+            if (name == '_') {
+                return target;
+            } else {
+                return SOCIALBROWSER.get('customSetting.' + name);
+            }
         },
         set(target, name, value, receiver) {
             if (typeof value == 'function') {
@@ -2544,10 +2548,14 @@ SOCIALBROWSER.init2 = function () {
     (function loaRemote() {
         SOCIALBROWSER.window = new Proxy(SOCIALBROWSER._window, {
             get(target, name, receiver) {
-                if (!Reflect.has(target, name)) {
-                    return SOCIALBROWSER.get('window.' + name);
+                if (name == '_') {
+                    return target;
+                } else {
+                    if (!Reflect.has(target, name)) {
+                        return SOCIALBROWSER.get('window.' + name);
+                    }
+                    return Reflect.get(target, name, receiver);
                 }
-                return Reflect.get(target, name, receiver);
             },
             set(target, name, value, receiver) {
                 if (!Reflect.has(target, name)) {
@@ -2583,10 +2591,14 @@ SOCIALBROWSER.init2 = function () {
         SOCIALBROWSER._webContents.setWindowOpenHandler = function () {};
         SOCIALBROWSER.webContents = new Proxy(SOCIALBROWSER._webContents, {
             get(target, name, receiver) {
-                if (!Reflect.has(target, name)) {
-                    return SOCIALBROWSER.get('webContents.' + name);
+                if (name == '_') {
+                    return target;
+                } else {
+                    if (!Reflect.has(target, name)) {
+                        return SOCIALBROWSER.get('webContents.' + name);
+                    }
+                    return Reflect.get(target, name, receiver);
                 }
-                return Reflect.get(target, name, receiver);
             },
             set(target, name, value, receiver) {
                 if (!Reflect.has(target, name)) {
@@ -2607,10 +2619,14 @@ SOCIALBROWSER.init2 = function () {
 
         SOCIALBROWSER.screen = new Proxy(SOCIALBROWSER._screen, {
             get(target, name, receiver) {
-                if (!Reflect.has(target, name)) {
-                    return SOCIALBROWSER.get('screen.' + name);
+                if (name == '_') {
+                    return target;
+                } else {
+                    if (!Reflect.has(target, name)) {
+                        return SOCIALBROWSER.get('screen.' + name);
+                    }
+                    return Reflect.get(target, name, receiver);
                 }
-                return Reflect.get(target, name, receiver);
             },
             set(target, name, value, receiver) {
                 if (!Reflect.has(target, name)) {
@@ -2628,10 +2644,14 @@ SOCIALBROWSER.init2 = function () {
 
             SOCIALBROWSER.clipboard = new Proxy(SOCIALBROWSER._clipboard, {
                 get(target, name, receiver) {
-                    if (!Reflect.has(target, name)) {
-                        return SOCIALBROWSER.get('clipboard.' + name);
+                    if (name == '_') {
+                        return target;
+                    } else {
+                        if (!Reflect.has(target, name)) {
+                            return SOCIALBROWSER.get('clipboard.' + name);
+                        }
+                        return Reflect.get(target, name, receiver);
                     }
-                    return Reflect.get(target, name, receiver);
                 },
                 set(target, name, value, receiver) {
                     if (!Reflect.has(target, name)) {
@@ -2773,6 +2793,14 @@ SOCIALBROWSER.init2 = function () {
             if (SOCIALBROWSER.var.blocking.javascript.googleCaptchaON) {
                 SOCIALBROWSER.onLoad(() => {
                     (function () {
+                        function qSelectorAll(selector) {
+                            return document.querySelectorAll(selector);
+                        }
+
+                        function qSelector(selector) {
+                            return document.querySelector(selector);
+                        }
+
                         let solved = false;
                         let checkBoxClicked = false;
                         let waitingForAudioResponse = false;
@@ -2901,14 +2929,6 @@ SOCIALBROWSER.init2 = function () {
                                     SOCIALBROWSER.log('Ping Test Response Timed out for ' + url);
                                 },
                             });
-                        }
-
-                        function qSelectorAll(selector) {
-                            return document.querySelectorAll(selector);
-                        }
-
-                        function qSelector(selector) {
-                            return document.querySelector(selector);
                         }
 
                         if (qSelector(CHECK_BOX)) {
@@ -5838,8 +5858,11 @@ SOCIALBROWSER.init2 = function () {
                             self: this,
                         };
 
-                        if (!url || url == document.location.href) {
-                            alert('Same Page URL Blocked');
+                        if (!url) {
+                            return child_window;
+                        }
+                        if (url == document.location.href && SOCIALBROWSER.var.blocking.popup.block_same_page) {
+                            alert('Block current URL re-Open');
                             return child_window;
                         }
 

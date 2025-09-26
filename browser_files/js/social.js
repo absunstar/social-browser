@@ -542,6 +542,31 @@ SOCIALBROWSER.showScriptListMenu = function () {
     SOCIALBROWSER.menuList.push({
         type: 'separator',
     });
+
+    SOCIALBROWSER.menuList.push({
+        label: 'Edit Page Content',
+        iconURL: 'http://127.0.0.1:60080/images/code.png',
+        click: () => {
+            ipc('[toggle-window-edit]');
+        },
+    });
+    SOCIALBROWSER.menuList.push({
+        label: 'Hide / Show - Page Images',
+        iconURL: 'http://127.0.0.1:60080/images/code.png',
+        click: () => {
+            ipc('[window-action]', { name: 'toggle-page-images' });
+        },
+    });
+    SOCIALBROWSER.menuList.push({
+        label: 'Hide / Show - Page Content',
+        iconURL: 'http://127.0.0.1:60080/images/code.png',
+        click: () => {
+            ipc('[window-action]', { name: 'toggle-page-content' });
+        },
+    });
+    SOCIALBROWSER.menuList.push({
+        type: 'separator',
+    });
     SOCIALBROWSER.var.scriptList
         .filter(
             (s) => s.show && !SOCIALBROWSER.currentTabInfo.url.like('*127.0.0.1:60080*') && SOCIALBROWSER.currentTabInfo.url.like(s.allowURLs) && !SOCIALBROWSER.currentTabInfo.url.like(s.blockURLs),

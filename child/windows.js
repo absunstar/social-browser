@@ -172,8 +172,7 @@ module.exports = function (child) {
             delete setting.tabID;
         }
 
-        let parent = child.parent;
-        setting.partition = setting.partition || setting.session?.name || child.partition || parent.var.core.session.name;
+        setting.partition = setting.partition || setting.session?.name || child.partition || child.parent.var.core.session.name;
 
         let defaultSetting = {
             vip: false,
@@ -187,7 +186,7 @@ module.exports = function (child) {
             cookieList: null,
             localStorageList: null,
             sessionStorageList: null,
-            parent: setting.parent || null,
+            
             allowOpenExternal: true,
             allowMenu: true,
             allowDevTools: true,
@@ -224,7 +223,7 @@ module.exports = function (child) {
             fullscreenable: true,
             title: 'New Window',
             backgroundColor: setting.backgroundColor || (child.theme == 'light' ? '#ffffff' : '#607d8b'),
-            icon: parent.icon,
+            icon: child.parent.icon,
             autoHideMenuBar: true,
             enableLargerThanScreen: true,
             hasShadow: false,
@@ -267,8 +266,8 @@ module.exports = function (child) {
             setting.alwaysOnTop = true;
             setting.width = 520;
             setting.height = 330;
-            setting.x = parent.options.screen.bounds.width - 550;
-            setting.y = parent.options.screen.bounds.height - 400;
+            setting.x = child.parent.options.screen.bounds.width - 550;
+            setting.y = child.parent.options.screen.bounds.height - 400;
             setting.center = false;
             setting.sandbox = false;
             defaultSetting.webPreferences.allowRunningInsecureContent = true;
@@ -407,14 +406,18 @@ module.exports = function (child) {
             customSetting.allowSaveUserData = false;
         }
 
-        let win = new child.electron.BrowserWindow(customSetting);
+        let win = new child.electron.BrowserWindow({...customSetting , parent: setting.parent || null});
 
+        if(customSetting.parent){
+            customSetting.parentID = customSetting.parent.id;
+            customSetting.parent = null;
+        }
         customSetting.windowID = win.id;
         win.customSetting = customSetting;
         win.customSetting.windowSetting = win.customSetting.windowSetting || [];
 
         win.customSetting.session = win.customSetting.session ||
-            parent.var.session_list.find((s) => s.name == win.customSetting.partition) || {
+            child.parent.var.session_list.find((s) => s.name == win.customSetting.partition) || {
                 name: win.customSetting.partition,
                 display: win.customSetting.user_name || win.customSetting.partition,
             };
@@ -426,7 +429,7 @@ module.exports = function (child) {
             };
         }
         if (win.customSetting.userAgentURL) {
-            win.customSetting.$defaultUserAgent = parent.var.userAgentList.find((u) => u.url == win.customSetting.userAgentURL) || { url: win.customSetting.userAgentURL };
+            win.customSetting.$defaultUserAgent = child.parent.var.userAgentList.find((u) => u.url == win.customSetting.userAgentURL) || { url: win.customSetting.userAgentURL };
             win.customSetting.$userAgentURL = win.customSetting.$defaultUserAgent.url;
         } else if (win.customSetting.defaultUserAgent) {
             win.customSetting.$defaultUserAgent = win.customSetting.defaultUserAgent;
@@ -436,12 +439,12 @@ module.exports = function (child) {
                 win.customSetting.$defaultUserAgent = win.customSetting.session.defaultUserAgent;
                 win.customSetting.$userAgentURL = win.customSetting.$defaultUserAgent.url;
             } else {
-                win.customSetting.$defaultUserAgent = parent.var.core.defaultUserAgent;
+                win.customSetting.$defaultUserAgent = child.parent.var.core.defaultUserAgent;
                 win.customSetting.$userAgentURL = win.customSetting.$defaultUserAgent.url;
             }
         }
 
-        if (!parent.var.core.browserActivated && win.customSetting.windowType == 'view') {
+        if (!child.parent.var.core.browserActivated && win.customSetting.windowType == 'view') {
             win.customSetting.url = 'http://127.0.0.1:60080/setting';
         }
 
@@ -1019,6 +1022,7 @@ module.exports = function (child) {
                 e.preventDefault();
                 let newWin = child.createNewWindow({
                     ...win.customSetting,
+                    parent : win,
                     defaultUserAgent: {
                         url: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0',
                         name: 'Edge',
@@ -1178,11 +1182,13 @@ module.exports = function (child) {
 
                 let allow = false;
 
-                if ((url.like('*about:*') && parent.var.blocking.popup.allow_blank) || url.like('javascript:*|*accounts.*')) {
+                if ((url.like('*about:*') && child.parent.var.blocking.popup.allow_blank) || url.like('javascript:*|*accounts.google*|*account.facebook*|*login.microsoft*|*appleid.apple*')) {
                     return {
                         action: 'allow',
                         overrideBrowserWindowOptions: {
                             ...customSetting,
+                            customSetting:customSetting,
+                            parent: win,
                             alwaysOnTop: true,
                             skipTaskbar: false,
                             show: true,
@@ -1225,14 +1231,14 @@ module.exports = function (child) {
                     let url_parser = child.url.parse(url);
                     let current_url_parser = child.url.parse(win.getURL());
 
-                    allow = parent.var.blocking.white_list.some((d) => url_parser.hostname.like(d.url) || current_url_parser.hostname.like(d.url));
+                    allow = child.parent.var.blocking.white_list.some((d) => url_parser.hostname.like(d.url) || current_url_parser.hostname.like(d.url));
                     if (!allow) {
-                        allow = parent.var.blocking.white_list.some((d) => url_parser.hostname.like(d.url) || current_url_parser.hostname.like(d.url));
+                        allow = child.parent.var.blocking.white_list.some((d) => url_parser.hostname.like(d.url) || current_url_parser.hostname.like(d.url));
                     }
                     if (!allow) {
-                        if (parent.var.blocking.popup.allow_internal && url_parser.hostname.contains(current_url_parser.hostname)) {
+                        if (child.parent.var.blocking.popup.allow_internal && url_parser.hostname.contains(current_url_parser.hostname)) {
                             allow = true;
-                        } else if (parent.var.blocking.popup.allow_external && !url_parser.hostname.contains(current_url_parser.hostname)) {
+                        } else if (child.parent.var.blocking.popup.allow_external && !url_parser.hostname.contains(current_url_parser.hostname)) {
                             allow = true;
                         }
                     }
@@ -1365,7 +1371,7 @@ module.exports = function (child) {
 
             let allow = false;
 
-            allow = parent.var.blocking.white_list.find((d) => url_parser.hostname.like(d.url) || current_url_parser.hostname.like(d.url));
+            allow = child.parent.var.blocking.white_list.find((d) => url_parser.hostname.like(d.url) || current_url_parser.hostname.like(d.url));
 
             if (allow) {
                 child.sendMessage({
@@ -1374,13 +1380,13 @@ module.exports = function (child) {
                         url: real_url,
                         partition: win.customSetting.partition,
                         user_name: win.customSetting.user_name,
-                        options: parent.options,
+                        options: child.parent.options,
                     },
                 });
                 return;
             }
 
-            allow = parent.var.blocking.white_list.find((d) => url_parser.hostname.like(d.url) || current_url_parser.hostname.like(d.url));
+            allow = child.parent.var.blocking.white_list.find((d) => url_parser.hostname.like(d.url) || current_url_parser.hostname.like(d.url));
 
             if (allow) {
                 child.sendMessage({
@@ -1389,30 +1395,30 @@ module.exports = function (child) {
                         url: real_url,
                         partition: win.customSetting.partition,
                         user_name: win.customSetting.user_name,
-                        options: parent.options,
+                        options: child.parent.options,
                     },
                 });
                 return;
             }
 
-            if (parent.var.blocking.popup.allow_internal && url_parser.hostname.contains(current_url_parser.hostname)) {
+            if (child.parent.var.blocking.popup.allow_internal && url_parser.hostname.contains(current_url_parser.hostname)) {
                 child.sendMessage({
                     type: '[open new tab]',
                     data: {
                         url: real_url,
                         partition: win.customSetting.partition,
                         user_name: win.customSetting.user_name,
-                        options: parent.options,
+                        options: child.parent.options,
                     },
                 });
-            } else if (parent.var.blocking.popup.allow_external && !url_parser.hostname.contains(current_url_parser.hostname)) {
+            } else if (child.parent.var.blocking.popup.allow_external && !url_parser.hostname.contains(current_url_parser.hostname)) {
                 child.sendMessage({
                     type: '[open new tab]',
                     data: {
                         url: real_url,
                         partition: win.customSetting.partition,
                         user_name: win.customSetting.user_name,
-                        options: parent.options,
+                        options: child.parent.options,
                     },
                 });
             }

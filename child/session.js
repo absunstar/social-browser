@@ -682,7 +682,7 @@ module.exports = function (child) {
                     });
                     return;
                 }
-                if (win && (win.customSetting.off || win.customSetting.enginOFF)) {
+                if (win && win.customSetting && (win.customSetting.off || win.customSetting.enginOFF)) {
                     callback({
                         cancel: false,
                         responseHeaders: {
