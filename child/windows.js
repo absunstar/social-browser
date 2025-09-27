@@ -187,6 +187,8 @@ module.exports = function (child) {
             localStorageList: null,
             sessionStorageList: null,
             
+            urlList : [],
+
             allowOpenExternal: true,
             allowMenu: true,
             allowDevTools: true,
@@ -1062,6 +1064,7 @@ module.exports = function (child) {
             if ((!win.customSetting.allowAds && !child.isAllowURL(url)) || !win.customSetting.allowRedirect) {
                 e.preventDefault();
                 child.log('Block-redirect', url);
+                win.webContents.send('[show-user-info]', { message: 'Blocked Redirect URL <p><a>' + url + '</a></p>' });
             }
 
             if (win.customSetting.allowSelfRedirect && (win.getURL().contains(child.url.parse(url).hostname) || url.contains(child.url.parse(win.getURL()).hostname))) {
@@ -1086,6 +1089,9 @@ module.exports = function (child) {
         });
 
         win.webContents.on('will-frame-navigate', (e) => {
+            if(!win.customSetting.urlList.some(u=>e.url == u.url)){
+               win.customSetting.urlList.push({url:e.url});
+            }
             if (e.url.like('*user.js') && e.isMainFrame) {
                 win.webContents.send('[install-user.js]', { url: e.url });
                 e.preventDefault();
@@ -1098,12 +1104,14 @@ module.exports = function (child) {
                 e.preventDefault();
                 if (win.customSetting.allowOpenExternal) {
                     child.openExternal(e.url);
+                     win.webContents.send('[show-user-info]' , {message : 'Open External URL  <p><a>' + e.url + '</a></p>'});
                 }
                 return;
             }
 
             if (!win.customSetting.allowRedirect || (!win.customSetting.allowAds && !child.isAllowURL(e.url))) {
                 e.preventDefault();
+                win.webContents.send('[show-user-info]' , {message : 'Blocked URL : <p><a>' + e.url + '</a></p>'});
                 child.log('Block-frame-navigate', e.url);
                 return;
             }
@@ -1222,6 +1230,7 @@ module.exports = function (child) {
 
                 if (!win.customSetting.allowNewWindows || (isPopup && !win.customSetting.allowPopup) || (!win.customSetting.allowAds && !child.isAllowURL(url))) {
                     child.log('Block-open-window', url);
+                    win.webContents.send('[show-user-info]', { message: 'Blocked Open Window <p><a>' + url + '</a></p>' });
                     return { action: 'deny' };
                 }
 
@@ -1313,6 +1322,7 @@ module.exports = function (child) {
 
             if (!win.customSetting.allowAds && !child.isAllowURL(real_url)) {
                 child.log('Block-redirect', real_url);
+                win.webContents.send('[show-user-info]', { message: 'Blocked Redirect URL  <p><a>' + real_url + '</a></p>' });
                 return false;
             }
 

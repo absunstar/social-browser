@@ -1875,10 +1875,10 @@ SOCIALBROWSER.init2 = function () {
                 }
             };
 
-            var showinfoTimeout = null;
-            SOCIALBROWSER.showInfo = function (msg, time) {
-                clearTimeout(showinfoTimeout);
-                let div = document.querySelector('#__targetUrl');
+            SOCIALBROWSER.showinfoTimeout = null;
+            SOCIALBROWSER.showInfo = function (msg, time = 1000 * 5) {
+                clearTimeout(SOCIALBROWSER.showinfoTimeout);
+                let div = document.querySelector('#__pageInfo');
                 if (msg && msg.trim()) {
                     let length = window.innerWidth / 8;
                     if (msg.length > length) {
@@ -1888,10 +1888,10 @@ SOCIALBROWSER.init2 = function () {
                     if (div) {
                         div.style.display = 'block';
                         div.innerHTML = SOCIALBROWSER.policy.createHTML(msg);
-                        showinfoTimeout = setTimeout(() => {
+                        SOCIALBROWSER.showinfoTimeout = setTimeout(() => {
                             div.innerHTML = SOCIALBROWSER.policy.createHTML('');
                             div.style.display = 'none';
-                        }, time | (1000 * 5));
+                        }, time );
                     }
                 } else {
                     if (div) {
@@ -1900,6 +1900,33 @@ SOCIALBROWSER.init2 = function () {
                 }
             };
 
+            SOCIALBROWSER.showUserMessageTimeout = null;
+            SOCIALBROWSER.showUserMessage = function (msg, time = 1000 * 3) {
+                if(SOCIALBROWSER.var.blocking.javascript.hide_user_messages){
+                    return;
+                }
+                clearTimeout(SOCIALBROWSER.showUserMessageTimeout);
+                let div = document.querySelector('#__userInfo');
+                if (msg && msg.trim()) {
+                    let length = window.innerWidth / 8;
+                    if (msg.length > length) {
+                        msg = msg.substring(0, length) + '... ';
+                    }
+
+                    if (div) {
+                        div.style.display = 'block';
+                        div.innerHTML = SOCIALBROWSER.policy.createHTML(msg);
+                        SOCIALBROWSER.showUserMessageTimeout = setTimeout(() => {
+                            div.innerHTML = SOCIALBROWSER.policy.createHTML('');
+                            div.style.display = 'none';
+                        }, time);
+                    }
+                } else {
+                    if (div) {
+                        div.style.display = 'none';
+                    }
+                }
+            };
             let __downloads = document.querySelector('#__downloads');
             SOCIALBROWSER.showDownloads = function (msg, css) {
                 if (!__downloads) {
@@ -5172,7 +5199,12 @@ SOCIALBROWSER.init2 = function () {
 
             if (SOCIALBROWSER.isIframe()) {
                 window.addEventListener('contextmenu', (e) => {
-                    e.preventDefault();
+                     e.preventDefault();
+
+                    if (SOCIALBROWSER.webContents.isDevToolsOpened()) {
+                        return;
+                    }
+                   
                     let factor = SOCIALBROWSER.webContents.zoomFactor || 1;
 
                     if (e.x) {
@@ -5201,6 +5233,9 @@ SOCIALBROWSER.init2 = function () {
             }
 
             window.addEventListener('mouseup', (e) => {
+                if (SOCIALBROWSER.webContents.isDevToolsOpened()) {
+                    return;
+                }
                 if (e.target.tagName.like('video')) {
                     return;
                 }
@@ -5689,7 +5724,7 @@ SOCIALBROWSER.init2 = function () {
                     }
                 });
 
-                window.__blockPage(block, 'Block Page [ Contains Unsafe Words ] , <small> <a target="_blank" href="http://127.0.0.1:60080/setting?open=safty"> goto setting </a></small>', false);
+                window.__blockPage(block, 'Block Page [ Contains Unsafe Words ] , <p> <a target="_blank" href="http://127.0.0.1:60080/setting?open=safty"> goto setting </a></p>', false);
 
                 check_unsafe_words_busy = false;
 
@@ -5757,7 +5792,7 @@ SOCIALBROWSER.init2 = function () {
             if (videos.length > 0) {
                 document.querySelectorAll(skip_buttons).forEach((b) => {
                     SOCIALBROWSER.click(b, false, false, false);
-                    alert('<b>Ads Video Detected</b><small><i> Skip Button </i></small>', 1000);
+                    alert('<b>Ads Video Detected</b><p><i> Skip Button </i></p>', 1000);
                 });
             }
             setTimeout(() => {
@@ -5772,7 +5807,7 @@ SOCIALBROWSER.init2 = function () {
                     if (SOCIALBROWSER.isElementViewable(b)) {
                         SOCIALBROWSER.click(b, true, false);
                     }
-                    //  alert('<b>Ads Video Detected</b><small><i> Try Skip it </i></small>', 1000);
+                    //  alert('<b>Ads Video Detected</b><p><i> Try Skip it </i></p>', 1000);
                 });
 
                 // if (document.querySelector(adsProgressSelector)) {
@@ -5862,7 +5897,7 @@ SOCIALBROWSER.init2 = function () {
                             return child_window;
                         }
                         if (url == document.location.href && SOCIALBROWSER.var.blocking.popup.block_same_page) {
-                            alert('Block current URL re-Open' , 1000);
+                            SOCIALBROWSER.showUserMessage('Block current URL re-Open');
                             return child_window;
                         }
 
@@ -5880,7 +5915,7 @@ SOCIALBROWSER.init2 = function () {
                             allow = true;
                         } else {
                             if (SOCIALBROWSER.customSetting.blockPopup || !SOCIALBROWSER.customSetting.allowNewWindows) {
-                                alert('block Popup from customSetting: <small>' + url + '</small>' , 1000);
+                                SOCIALBROWSER.showUserMessage('block Popup from customSetting <br>  <p><a>' + url + '</a></p>');
                                 return child_window;
                             }
 
@@ -5891,14 +5926,14 @@ SOCIALBROWSER.init2 = function () {
 
                             if (!SOCIALBROWSER.var.core.javaScriptOFF && !SOCIALBROWSER.customSetting.javaScriptOFF) {
                                 if (!SOCIALBROWSER.isAllowURL(url)) {
-                                    alert('Not Allow URL : <small>' + url  + '</small>' , 1000);
+                                    SOCIALBROWSER.showUserMessage('Not Allow URL <br>  <p><a>' + url + '<a></p>');
                                     return child_window;
                                 }
 
                                 allow = !SOCIALBROWSER.var.blocking.black_list.some((d) => url.like(d.url));
 
                                 if (!allow) {
-                                    alert('block popup from black list : <small>' + url+ '</small>' , 1000);
+                                    SOCIALBROWSER.showUserMessage('block popup from black list <br>  <p><a>' + url + '</a></p>');
                                     return child_window;
                                 }
 
@@ -5917,7 +5952,7 @@ SOCIALBROWSER.init2 = function () {
                             }
 
                             if (!allow) {
-                                alert('Not Allow popup from setting : <small>' + url + '</small>', 1000);
+                                SOCIALBROWSER.showUserMessage('Not Allow popup from setting <br> <p><a>' + url + '</a></p>');
                                 return child_window;
                             }
                         }
@@ -7425,6 +7460,9 @@ SOCIALBROWSER.init2 = function () {
 
         SOCIALBROWSER.on('[alert]', (event, data) => {
             alert(data.message);
+        });
+        SOCIALBROWSER.on('[show-user-info]', (event, data) => {
+            SOCIALBROWSER.showUserMessage(data.message);
         });
         SOCIALBROWSER.on('[update-browser-var]', (e, res) => {
             if (res.options.name == 'user_data_input') {

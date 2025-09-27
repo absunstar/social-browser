@@ -287,7 +287,7 @@ module.exports = function (child) {
             ss.webRequest.onBeforeRequest(filter, function (details, callback) {
                 let url = details.url;
                 let mainURL = url;
-
+                let win = null;
                 let refererURL = '';
                 details.requestHeaders = details.requestHeaders || {};
 
@@ -307,12 +307,10 @@ module.exports = function (child) {
                     return;
                 }
 
-                let customSetting = {};
                 if (details.webContents) {
-                    let win = child.electron.BrowserWindow.fromWebContents(details.webContents);
+                    win = child.electron.BrowserWindow.fromWebContents(details.webContents);
                     if (win) {
                         mainURL = win.getURL();
-                        customSetting = win.customSetting || {};
                     }
                 }
                 let enginOFF = child.parent.var.blocking.vip_site_list.some((site) => site.url.length > 2 && mainURL.like(site.url));
@@ -321,6 +319,7 @@ module.exports = function (child) {
                     callback({
                         cancel: false,
                     });
+
                     return;
                 }
 
@@ -330,36 +329,37 @@ module.exports = function (child) {
                     });
                     return;
                 }
-
-                if (customSetting.off || customSetting.enginOFF) {
-                    callback({
-                        cancel: false,
-                    });
-                    return;
-                }
-
-                if (customSetting.allowAds) {
-                    callback({
-                        cancel: false,
-                    });
-                    return;
-                }
-                if (customSetting.blockURLs) {
-                    if (url.like(customSetting.blockURLs)) {
+                if (win && win.customSetting) {
+                    if (win.customSetting.off || win.customSetting.enginOFF) {
                         callback({
                             cancel: false,
-                            redirectURL: 'browser://html/logo.html',
                         });
                         return;
                     }
-                }
-                if (customSetting.allowURLs) {
-                    if (!url.like(customSetting.allowURLs)) {
+
+                    if (win.customSetting.allowAds) {
                         callback({
                             cancel: false,
-                            redirectURL: 'browser://html/logo.html',
                         });
                         return;
+                    }
+                    if (win.customSetting.blockURLs) {
+                        if (url.like(win.customSetting.blockURLs)) {
+                            callback({
+                                cancel: false,
+                                redirectURL: 'browser://html/logo.html',
+                            });
+                            return;
+                        }
+                    }
+                    if (win.customSetting.allowURLs) {
+                        if (!url.like(win.customSetting.allowURLs)) {
+                            callback({
+                                cancel: false,
+                                redirectURL: 'browser://html/logo.html',
+                            });
+                            return;
+                        }
                     }
                 }
 
@@ -392,6 +392,9 @@ module.exports = function (child) {
 
                 // return js will crach if needed request not js
                 if (!child.isAllowURL(url)) {
+
+                    win.webContents.send('[show-user-info]', { message: 'Blocked URL <p><a>' + url + '</a></p>' });
+
                     if (url.like('*.js') || details.resourceType == 'script') {
                         let query = '';
                         if (url.split('?')[1]) {
@@ -453,9 +456,7 @@ module.exports = function (child) {
 
                 let mainURL = url;
                 let urlObject = child.url.parse(url);
-                let customSetting = null;
                 let win = null;
-                let wIndex = -1;
                 let domainName = urlObject.hostname;
                 let domainCookie = details.requestHeaders['Cookie'] || '';
                 let domainCookieObject = child.cookieParse(domainCookie);
@@ -476,107 +477,104 @@ module.exports = function (child) {
                     });
                     return;
                 }
-                if (!customSetting) {
-                    customSetting = child.windowList[0]?.window.customSetting;
-                }
 
-                if (customSetting) {
-                    if (customSetting.$userAgentURL) {
-                        details.requestHeaders['User-Agent'] = customSetting.$userAgentURL;
-                    } else if (customSetting.$defaultUserAgent) {
-                        details.requestHeaders['User-Agent'] = customSetting.$defaultUserAgent.url;
-                    } else if (customSetting.userAgent) {
-                        details.requestHeaders['User-Agent'] = customSetting.userAgent;
+                if (win && win.customSetting) {
+                    if (win.customSetting.$userAgentURL) {
+                        details.requestHeaders['User-Agent'] = win.customSetting.$userAgentURL;
+                    } else if (win.customSetting.$defaultUserAgent) {
+                        details.requestHeaders['User-Agent'] = win.customSetting.$defaultUserAgent.url;
+                    } else if (win.customSetting.userAgent) {
+                        details.requestHeaders['User-Agent'] = win.customSetting.userAgent;
                     }
 
-                    if (customSetting.headers) {
-                        for (const key in customSetting.headers) {
+                    if (win.customSetting.headers) {
+                        for (const key in win.customSetting.headers) {
                             for (const key2 in details.requestHeaders) {
                                 if (key2.like(key)) {
                                     delete details.requestHeaders[key2];
                                 }
                             }
-                            details.requestHeaders[key] = customSetting.headers[key];
+                            details.requestHeaders[key] = win.customSetting.headers[key];
                         }
                     }
-                }
 
-                if (customSetting && (customSetting.off || customSetting.enginOFF)) {
-                    callback({
-                        cancel: false,
-                        requestHeaders: details.requestHeaders,
-                    });
-                    return;
-                }
+                    if (win.customSetting.off || win.customSetting.enginOFF) {
+                        callback({
+                            cancel: false,
+                            requestHeaders: details.requestHeaders,
+                        });
+                        return;
+                    }
 
-                if (customSetting && customSetting.vip) {
-                    // child.log('VIP Ignore cookieList');
-                } else if (customSetting && Array.isArray(customSetting.cookieList)) {
-                    if (customSetting.cookieList.length > 0) {
-                        let cookieIndex = customSetting.cookieList.findIndex((c) => domainName.contains(c.domain) && c.partition == name);
-                        if (cookieIndex !== -1) {
-                            // Cookie Mode 0=fixed , 1=overwrite , else=default
-                            if (customSetting.cookieList[cookieIndex].mode === 0) {
-                                domainCookieObject = { ...child.cookieParse(customSetting.cookieList[cookieIndex].cookie) };
-                                details.requestHeaders['Cookie'] = customSetting.cookieList[cookieIndex].cookie;
-                            } else if (customSetting.cookieList[cookieIndex].mode === 1) {
-                                domainCookieObject = { ...domainCookieObject, ...child.cookieParse(customSetting.cookieList[cookieIndex].cookie) };
-                                details.requestHeaders['Cookie'] = child.cookieStringify({ ...domainCookieObject });
-                            } else if (customSetting.cookieList[cookieIndex].mode === -1) {
-                                domainCookieObject = { ...child.cookieParse(customSetting.cookieList[cookieIndex].cookie), ...domainCookieObject };
-                                details.requestHeaders['Cookie'] = child.cookieStringify({ ...domainCookieObject });
+                    if (win.customSetting.vip) {
+                        // child.log('VIP Ignore cookieList');
+                    } else if (Array.isArray(win.customSetting.cookieList)) {
+                        if (win.customSetting.cookieList.length > 0) {
+                            let cookieIndex = win.customSetting.cookieList.findIndex((c) => domainName.contains(c.domain) && c.partition == name);
+                            if (cookieIndex !== -1) {
+                                // Cookie Mode 0=fixed , 1=overwrite , else=default
+                                if (win.customSetting.cookieList[cookieIndex].mode === 0) {
+                                    domainCookieObject = { ...child.cookieParse(win.customSetting.cookieList[cookieIndex].cookie) };
+                                    details.requestHeaders['Cookie'] = win.customSetting.cookieList[cookieIndex].cookie;
+                                } else if (win.customSetting.cookieList[cookieIndex].mode === 1) {
+                                    domainCookieObject = { ...domainCookieObject, ...child.cookieParse(win.customSetting.cookieList[cookieIndex].cookie) };
+                                    details.requestHeaders['Cookie'] = child.cookieStringify({ ...domainCookieObject });
+                                } else if (win.customSetting.cookieList[cookieIndex].mode === -1) {
+                                    domainCookieObject = { ...child.cookieParse(win.customSetting.cookieList[cookieIndex].cookie), ...domainCookieObject };
+                                    details.requestHeaders['Cookie'] = child.cookieStringify({ ...domainCookieObject });
+                                }
                             }
-                        }
-                    } else {
-                        let cookieIndex = child.cookieList.findIndex((c) => domainName.contains(c.domain) && c.partition == name);
-                        if (cookieIndex !== -1) {
-                            child.cookieList.splice(cookieIndex, 1);
-                        }
-                    }
-                } else if (Array.isArray(child.cookieList)) {
-                    let cookieIndex = child.cookieList.findIndex((c) => domainName.contains(c.domain) && c.partition == name);
-                    if (cookieIndex === -1) {
-                        if (domainName && domainCookie) {
-                            let co = {
-                                partition: name,
-                                domain: domainName,
-                                cookie: domainCookie,
-                                time: new Date().getTime(),
-                            };
-                            let cookieDomain = domainName.split('.');
-                            cookieDomain = cookieDomain[cookieDomain.length - 2] + '.' + cookieDomain[cookieDomain.length - 1];
-                            co.cookies = await ss.cookies.get({ domain: cookieDomain });
-                            child.cookieList.push(co);
-                            child.sendMessage({
-                                type: '[cookieList-set]',
-                                cookie: co,
-                            });
-                        }
-                    } else {
-                        if (child.cookieList[cookieIndex].off) {
-                            console.log('Cookie OFF');
                         } else {
-                            // Cookie Mode 0=fixed , 1=overwrite , else=default
-                            if (child.cookieList[cookieIndex].mode === 0) {
-                                domainCookieObject = { ...child.cookieParse(child.cookieList[cookieIndex].cookie) };
-                                details.requestHeaders['Cookie'] = child.cookieList[cookieIndex].cookie;
-                            } else if (child.cookieList[cookieIndex].mode === 1) {
-                                domainCookieObject = { ...domainCookieObject, ...child.cookieParse(child.cookieList[cookieIndex].cookie) };
-                                details.requestHeaders['Cookie'] = child.cookieStringify({ ...domainCookieObject });
-                            } else if (child.cookieList[cookieIndex].mode === -1) {
-                                domainCookieObject = { ...child.cookieParse(child.cookieList[cookieIndex].cookie), ...domainCookieObject };
-                                details.requestHeaders['Cookie'] = child.cookieStringify({ ...domainCookieObject });
+                            let cookieIndex = child.cookieList.findIndex((c) => domainName.contains(c.domain) && c.partition == name);
+                            if (cookieIndex !== -1) {
+                                child.cookieList.splice(cookieIndex, 1);
                             }
-
-                            if (child.cookieList[cookieIndex].cookie !== details.requestHeaders['Cookie']) {
-                                child.cookieList[cookieIndex].cookie = details.requestHeaders['Cookie'];
+                        }
+                    } else if (Array.isArray(child.cookieList)) {
+                        let cookieIndex = child.cookieList.findIndex((c) => domainName.contains(c.domain) && c.partition == name);
+                        if (cookieIndex === -1) {
+                            if (domainName && domainCookie) {
+                                let co = {
+                                    partition: name,
+                                    domain: domainName,
+                                    cookie: domainCookie,
+                                    time: new Date().getTime(),
+                                };
                                 let cookieDomain = domainName.split('.');
                                 cookieDomain = cookieDomain[cookieDomain.length - 2] + '.' + cookieDomain[cookieDomain.length - 1];
-                                child.cookieList[cookieIndex].cookies = await ss.cookies.get({ domain: cookieDomain });
+                                co.cookies = await ss.cookies.get({ domain: cookieDomain });
+                                child.cookieList.push(co);
                                 child.sendMessage({
                                     type: '[cookieList-set]',
-                                    cookie: child.cookieList[cookieIndex],
+                                    cookie: co,
                                 });
+                            }
+                        } else {
+                            if (child.cookieList[cookieIndex].off) {
+                                console.log('Cookie OFF');
+                            } else {
+                                // Cookie Mode 0=fixed , 1=overwrite , else=default
+                                if (child.cookieList[cookieIndex].mode === 0) {
+                                    domainCookieObject = { ...child.cookieParse(child.cookieList[cookieIndex].cookie) };
+                                    details.requestHeaders['Cookie'] = child.cookieList[cookieIndex].cookie;
+                                } else if (child.cookieList[cookieIndex].mode === 1) {
+                                    domainCookieObject = { ...domainCookieObject, ...child.cookieParse(child.cookieList[cookieIndex].cookie) };
+                                    details.requestHeaders['Cookie'] = child.cookieStringify({ ...domainCookieObject });
+                                } else if (child.cookieList[cookieIndex].mode === -1) {
+                                    domainCookieObject = { ...child.cookieParse(child.cookieList[cookieIndex].cookie), ...domainCookieObject };
+                                    details.requestHeaders['Cookie'] = child.cookieStringify({ ...domainCookieObject });
+                                }
+
+                                if (child.cookieList[cookieIndex].cookie !== details.requestHeaders['Cookie']) {
+                                    child.cookieList[cookieIndex].cookie = details.requestHeaders['Cookie'];
+                                    let cookieDomain = domainName.split('.');
+                                    cookieDomain = cookieDomain[cookieDomain.length - 2] + '.' + cookieDomain[cookieDomain.length - 1];
+                                    child.cookieList[cookieIndex].cookies = await ss.cookies.get({ domain: cookieDomain });
+                                    child.sendMessage({
+                                        type: '[cookieList-set]',
+                                        cookie: child.cookieList[cookieIndex],
+                                    });
+                                }
                             }
                         }
                     }
@@ -935,13 +933,13 @@ module.exports = function (child) {
                         return;
                     }
 
-                    item.showDownloadCompleteDialog = child.parent.var.blocking.downloader.hideDownloadCompleteDialog ? false :  win.customSetting.showDownloadCompleteDialog;
+                    item.showDownloadCompleteDialog = child.parent.var.blocking.downloader.hideDownloadCompleteDialog ? false : win.customSetting.showDownloadCompleteDialog;
                     item.showDownloadInformation = child.parent.var.blocking.downloader.hideDownloadInformation ? false : win.customSetting.showDownloadInformation;
                     item.allowExternalDownloader = win.customSetting.allowExternalDownloader;
 
                     if (win.customSetting.defaultDownloadPath) {
                         item.setSavePath(child.path.join(win.customSetting.defaultDownloadPath, item.getFilename()));
-                        item.setingdefaultSavePath = true
+                        item.setingdefaultSavePath = true;
                     }
                 }
 
@@ -963,7 +961,7 @@ module.exports = function (child) {
                     lastModified: item.getLastModifiedTime(),
                 };
 
-                  if (child.parent.var.blocking.downloader.defaultDownloadPath && !item.setingdefaultSavePath) {
+                if (child.parent.var.blocking.downloader.defaultDownloadPath && !item.setingdefaultSavePath) {
                     item.setSavePath(child.path.join(child.parent.var.blocking.downloader.defaultDownloadPath, item.getFilename()));
                 }
 
@@ -994,11 +992,10 @@ module.exports = function (child) {
 
                 if (child.parent.var.blocking.downloader.blockDownload) {
                     event.preventDefault();
-                    webContents.send('[alert]' , {message: 'Download Blocked from Setting' });
-                    child.log('block Download from  setting');
+                    webContents.send('[alert]', { message: 'Download Blocked / from Setting' });
+                    child.log('block Download / from setting');
                     return;
                 }
-
 
                 child.parent.var.download_list.push(child.cloneObject(dl));
                 if (item.showDownloadInformation) {

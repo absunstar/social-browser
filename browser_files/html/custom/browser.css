@@ -95,7 +95,7 @@ video0 {
     color: #bbb;
     font-weight: normal;
 }
-#__targetUrl {
+#__pageInfo {
     font-family: monospace;
     padding-left: 10px;
     display: none;
@@ -113,8 +113,32 @@ video0 {
     overflow: hidden;
     white-space: nowrap;
 }
-#__targetUrl:hover {
+
+#__userInfo {
     display: none;
+    position: fixed;
+    background: #1a2a32;
+    color: #ffffff;
+    max-width: 400px;
+    height: auto;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    top: 1%;
+    right: 1%;
+    padding: 10px;
+    border-radius: 15px;
+    border: 3px solid #000;
+    z-index: 99999999999;
+    word-wrap: break-word;
+    word-break: break-all;
+    box-shadow: 0 0 8px 1px #000000;
+}
+#__userInfo small , #__userInfo p , #__userInfo a {
+    font-size: 12px;
+    color: #bbb;
+    font-weight: normal;
+    display: block;
 }
 #__downloads {
     padding: 5px;
