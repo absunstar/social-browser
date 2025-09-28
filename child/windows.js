@@ -365,7 +365,7 @@ module.exports = function (child) {
 
             if (setting.cookie) {
                 setting.cookieList = setting.cookieList || [];
-                let cookieObject = { cookie: cookie, mode: 0 };
+                let cookieObject = { cookie: setting.cookie, mode: 0 };
                 cookieObject.domain = child.url.parse(setting.url).hostname;
                 cookieObject.partition = setting.partition;
                 setting.cookieList.push(cookieObject);
