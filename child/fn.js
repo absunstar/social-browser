@@ -266,7 +266,7 @@ module.exports = function (child) {
     };
     child.cookieParse = (cookie) => {
         let co = {};
-        if (!cookie) {
+        if (!cookie || typeof cookie !== 'string') {
             return co;
         }
         cookie.split(';').forEach((d) => {
