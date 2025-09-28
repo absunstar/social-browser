@@ -133,6 +133,7 @@ video0 {
     word-wrap: break-word;
     word-break: break-all;
     box-shadow: 0 0 8px 1px #000000;
+    opacity: .7;
 }
 #__userInfo small , #__userInfo p , #__userInfo a {
     font-size: 12px;

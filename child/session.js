@@ -909,7 +909,7 @@ module.exports = function (child) {
                     return callback(allow);
                 }
             });
-            ss.setPermissionCheckHandler((webContents, permission) => {
+            ss.setPermissionCheckHandler((webContents, permission , requestingOrigin , details ) => {
                 if (!child.parent.var.blocking.permissions) {
                     return false;
                 }
@@ -917,7 +917,6 @@ module.exports = function (child) {
                     return true;
                 } else {
                     let allow = child.parent.var.blocking.permissions[permission] || false;
-                    // child.log(` \n  <<< setPermissionCheckHandler ${permission} ( ${allow} )  ${webContents.getURL()} \n `);
                     return allow;
                 }
             });

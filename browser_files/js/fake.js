@@ -1,7 +1,7 @@
 /** This Code Will Run Every Time Script Loaded  */
 
 if (window.SOCIALBROWSER) {
-    SOCIALBROWSER.showInfo('Blocked : ##query.x-url##');
+    SOCIALBROWSER.showUserMessage('Blocked : ##query.x-url##');
 }
 
 

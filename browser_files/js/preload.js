@@ -7451,8 +7451,6 @@ SOCIALBROWSER.init2 = function () {
         SOCIALBROWSER.on('[send-render-message]', (event, data) => {
             if (data.name == 'update-target-url') {
                 SOCIALBROWSER.showInfo(data.url);
-            } else if (data.name == 'show-info') {
-                SOCIALBROWSER.showInfo(data.msg);
             } else if (data.name == '[open new popup]') {
                 SOCIALBROWSER.ipc('[open new popup]', data);
             }
