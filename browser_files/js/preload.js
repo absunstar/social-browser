@@ -1554,7 +1554,7 @@ SOCIALBROWSER.init2 = function () {
 
             SOCIALBROWSER.downloadURL = function (url) {
                 if (!SOCIALBROWSER.customSetting.allowDownload || SOCIALBROWSER.var.blocking.downloader.blockDownload) {
-                    alert('Download Blocked from Setting ');
+                    SOCIALBROWSER.showUserMessage('Download Blocked <p><a>' + url + '</a></p>');
                 } else {
                     SOCIALBROWSER.webContents.downloadURL(url);
                 }
@@ -5841,8 +5841,8 @@ SOCIALBROWSER.init2 = function () {
                 window.open0 = window.open;
                 if (!SOCIALBROWSER.isWhiteSite) {
                     window.open = function (...args /*url, target, windowFeatures*/) {
+                        SOCIALBROWSER.log('window.open', args);
                         let url = args[0];
-                        SOCIALBROWSER.log('window.open', url);
                         let target = args[1];
                         let windowFeaturesString = args[2]; /*"left=100,top=100,width=320,height=320"*/
                         let windowFeatures = {};
@@ -5854,7 +5854,8 @@ SOCIALBROWSER.init2 = function () {
                             });
                         }
 
-                        let child_window = {
+                        let child_window = Object.create(Window.prototype);
+                        Object.assign(child_window, {
                             closed: false,
                             opener: window,
                             innerHeight: 1028,
@@ -5868,7 +5869,7 @@ SOCIALBROWSER.init2 = function () {
                             },
                             close: function () {
                                 //  SOCIALBROWSER.log('close child_window');
-                                this.closed = true;
+                                child_window.closed = true;
                             },
                             focus: function () {
                                 // SOCIALBROWSER.log('focus child_window');
@@ -5890,10 +5891,15 @@ SOCIALBROWSER.init2 = function () {
                                     // SOCIALBROWSER.log('document write child_window');
                                 },
                             },
-                            self: this,
-                        };
+                            location: {
+                                href: url,
+                            },
+                            self: child_window,
+                            window: child_window,
+                        });
 
                         if (!url) {
+                            SOCIALBROWSER.showUserMessage('block Popup <br>  <p> Empty URL </p>');
                             return child_window;
                         }
                         if (url == document.location.href && SOCIALBROWSER.var.blocking.popup.block_same_page) {
@@ -5915,7 +5921,7 @@ SOCIALBROWSER.init2 = function () {
                             allow = true;
                         } else {
                             if (SOCIALBROWSER.customSetting.blockPopup || !SOCIALBROWSER.customSetting.allowNewWindows) {
-                                SOCIALBROWSER.showUserMessage('block Popup from customSetting <br>  <p><a>' + url + '</a></p>');
+                                SOCIALBROWSER.showUserMessage('block Popup <p><a>' + url + '</a></p>');
                                 return child_window;
                             }
 
@@ -5926,14 +5932,14 @@ SOCIALBROWSER.init2 = function () {
 
                             if (!SOCIALBROWSER.var.core.javaScriptOFF && !SOCIALBROWSER.customSetting.javaScriptOFF) {
                                 if (!SOCIALBROWSER.isAllowURL(url)) {
-                                    SOCIALBROWSER.showUserMessage('Not Allow URL <br>  <p><a>' + url + '<a></p>');
+                                    SOCIALBROWSER.showUserMessage('Not Allow URL  <p><a>' + url + '<a></p>');
                                     return child_window;
                                 }
 
                                 allow = !SOCIALBROWSER.var.blocking.black_list.some((d) => url.like(d.url));
 
                                 if (!allow) {
-                                    SOCIALBROWSER.showUserMessage('block popup from black list <br>  <p><a>' + url + '</a></p>');
+                                    SOCIALBROWSER.showUserMessage('block popup >> black list  <p><a>' + url + '</a></p>');
                                     return child_window;
                                 }
 
@@ -5952,7 +5958,7 @@ SOCIALBROWSER.init2 = function () {
                             }
 
                             if (!allow) {
-                                SOCIALBROWSER.showUserMessage('Not Allow popup from setting <br> <p><a>' + url + '</a></p>');
+                                SOCIALBROWSER.showUserMessage('Not Allow popup <br> <p><a>' + url + '</a></p>');
                                 return child_window;
                             }
                         }

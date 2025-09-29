@@ -991,7 +991,7 @@ module.exports = function (child) {
 
                 if (child.parent.var.blocking.downloader.blockDownload) {
                     event.preventDefault();
-                    webContents.send('[alert]', { message: 'Download Blocked / from Setting' });
+                    webContents.send('[show-user-message]', { message: 'Download Blocked <p><a>' + dl.url + '</a></p>' });
                     child.log('block Download / from setting');
                     return;
                 }
