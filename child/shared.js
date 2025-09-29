@@ -1081,9 +1081,9 @@ module.exports = function (owner) {
             let browser = owner.getRandomBrowser();
             return {
                 hide_memory: true,
-                memory_count: owner.randomNumber(1, 128),
+                memory_count: [2 , 4 , 8 ][owner.randomNumber(0,2)],
                 hide_cpu: true,
-                cpu_count: owner.randomNumber(1, 64),
+                cpu_count: owner.randomNumber(1, 24),
                 hide_lang: true,
                 hide_location: true,
                 location: {

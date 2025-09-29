@@ -268,7 +268,7 @@ module.exports = function init(child) {
             event.returnValue = result;
         }
     });
-    child.ipcMain.handle('[fn]', async (event, data) => {
+    child.ipcMain.handle('[fn]', (event, data) => {
         let result = child.handleRenderFn(event, data);
         if (result instanceof Promise) {
             result
