@@ -81,7 +81,7 @@
         "enabled": true
     },
     { "name": "redirect 6", "url": "*tr-boost.com*|*consciousnesshear.com*|*mcpuwpsh.com*|*jsmcrptjmp.com*|*s.orbsrv.com*|*twinrdack.com*|*t.pimiji.xyz*", "enabled": true },
-    { "url": "https://ad.*|*pagead.js|*widget/ads.*|*pixeltrey.com*|*clicks2apk.com*|*floitcarites.com*|*geogenyveered.com*", "name": "ad-block", "enabled": true },
+    { "url": "*/ads.js|https://ad.*|*pagead.js|*widget/ads.*|*pixeltrey.com*|*clicks2apk.com*|*floitcarites.com*|*geogenyveered.com*", "name": "ad-block", "enabled": true },
     {
         "url": "*shakingtacklingunpeeled.com*|*boodiecawquaw.top*|*zeecajichaiw.net*|*ileeckut.com*|*aiveemtomsaix.net*|*ewouwamsubsouvy.net*|*curiescores.com*|*goboksehee.net*|*safedragonapp.monster*|*specificallycries.com*|*peanutrefusesplit.com*|*zygoticroud.shop*",
         "name": "ad003",
@@ -93,7 +93,11 @@
     { "url": "*saukutoapsoag.net*", "enabled": true, "name": "POST001" },
     { "url": "*amithoutsoo.ne*", "name": "OPTIONS001", "enabled": true },
     { "name": "Monitor 001", "url": "*clarity.ms*clarity.js", "enabled": true },
-    { "name": "ad004", "url": "*commentarybumpbankrupt.co*|*containingstripesadmonish.com*|*stripchat.com*", "enabled": true },
+    {
+        "name": "ad004",
+        "url": "*commentarybumpbankrupt.co*|*containingstripesadmonish.com*|*stripchat.com*|*68s8.com*|*lamboystirling.com*|*trefcuartel.com*|*bustlerloins.com*|*2264ca26d4.e088b80df3.com*|*akknroojtna.com*",
+        "enabled": true
+    },
     { "name": "redirect 7", "url": "*bongacams11.com*|*clickadu.net*|*yequka.my*|*sattiostiounper.com*|*tsyndicate.com*", "enabled": true },
     { "url": "*campfirecroutondecorator.com*|*pwyapnvhi.com*", "name": "popup 001", "enabled": true }
 ]

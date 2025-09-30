@@ -937,7 +937,7 @@ module.exports = function init(child) {
             });
             contents = contents || win.webContents;
         }
-
+        console.log(typeof data.list , data.list)
         data.list.forEach((m, i) => {
             m.click = function () {
                 contents.send('[run-menu]', { index: i });

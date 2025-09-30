@@ -26,7 +26,7 @@
         }
     ],
     "javascript": {
-        "googleCaptchaON": true,
+        "googleCaptchaON": false,
         "allowConsoleLogs": false,
         "block_window_open": false,
         "block_eval": false,

@@ -357,10 +357,10 @@ module.exports = function (child) {
 
             if (setting.cookieObject) {
                 setting.cookieList = setting.cookieList || [];
-                cookieObject.domain = cookieObject.domain || child.url.parse(setting.url).hostname;
-                cookieObject.partition = cookieObject.partition || setting.partition;
-                cookieObject.mode = cookieObject.mode || 0;
-                setting.cookieList.push(cookieObject);
+                setting.cookieObject.domain = setting.cookieObject.domain || child.url.parse(setting.url).hostname;
+                setting.cookieObject.partition = setting.cookieObject.partition || setting.partition;
+                setting.cookieObject.mode = setting.cookieObject.mode || 0;
+                setting.cookieList.push(setting.cookieObject);
             }
 
             if (setting.cookie) {

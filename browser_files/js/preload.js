@@ -53,7 +53,7 @@ var SOCIALBROWSER = {
             if (typeof s !== 'string') {
                 s = s.toString();
             }
-            return s.replace(/[\/\\^$*+?.()\[\]{}]/g, '\\$&');
+            return s.replace(/[\/\\^$*+.()\[\]{}]/g, '\\$&');
         };
 
         if (!String.prototype.test) {
@@ -132,25 +132,6 @@ var SOCIALBROWSER = {
     };
 })();
 
-// if (typeof window === 'undefined') {
-//     var window = globalThis;
-// }
-
-// if (typeof window.document === 'undefined') {
-//     window.document = { elementFromPoint: () => undefined, addEventListener: () => {}, querySelector: () => {}, querySelectorAll: () => [], location: { origin: '', hostname: '', href: '' } };
-// }
-
-if (typeof navigator !== 'undefined') {
-    SOCIALBROWSER.navigatorRaw = {
-        hardwareConcurrency: navigator.hardwareConcurrency,
-        deviceMemory: navigator.deviceMemory,
-        language: navigator.language,
-        languages: navigator.languages,
-        connection: navigator.connection,
-        MaxTouchPoints: navigator.MaxTouchPoints,
-    };
-}
-
 SOCIALBROWSER.copyObject =
     SOCIALBROWSER.clone =
     SOCIALBROWSER.cloneObject =
@@ -158,12 +139,17 @@ SOCIALBROWSER.copyObject =
             if (typeof obj !== 'object') {
                 return obj;
             }
+
             let newObject = {};
 
             for (const key in obj) {
-                if (typeof obj[key] === 'function') {
+                if (Array.isArray(obj[key])) {
+                    newObject[key] = obj[key];
+                } else if (typeof obj[key] === 'function') {
                     newObject[key] = obj[key].toString();
                     newObject[key] = newObject[key].slice(newObject[key].indexOf('{') + 1, newObject[key].lastIndexOf('}'));
+                } else if (typeof obj[key] === 'object') {
+                    newObject[key] = SOCIALBROWSER.cloneObject(obj[key]);
                 } else {
                     newObject[key] = obj[key];
                 }
@@ -178,6 +164,22 @@ SOCIALBROWSER.random = SOCIALBROWSER.randomNumber = function (min = 1, max = 100
 };
 
 if ((policy = true)) {
+    if ((stringify = true)) {
+        JSON.stringify0 = JSON.stringify;
+        let j = JSON.stringify.toString();
+        JSON.stringify = function (obj, ...args) {
+            let obj2 = SOCIALBROWSER.cloneObject(obj);
+            try {
+                return JSON.stringify0(SOCIALBROWSER.cloneObject(obj2), ...args);
+            } catch (error) {
+                console.error(error);
+                console.log(obj2);
+                return '';
+            }
+        };
+        SOCIALBROWSER.__setConstValue(JSON.stringify, 'toString', () => j);
+    }
+
     document.createElement0 = document.createElement;
     let s = document.createElement.toString();
     document.createElement = function (...args) {
@@ -582,7 +584,7 @@ SOCIALBROWSER.init2 = function () {
     SOCIALBROWSER.userAgentDeviceList = SOCIALBROWSER.browserData.userAgentDeviceList;
 
     SOCIALBROWSER.id = SOCIALBROWSER.var.core.id;
-    SOCIALBROWSER.tempMailServer = SOCIALBROWSER.var.core.emails?.domain || 'social-browser.com';
+    SOCIALBROWSER.tempMailServer = SOCIALBROWSER.var.core.emails.domain || 'social-browser.com';
     SOCIALBROWSER.isWhiteSite = SOCIALBROWSER.var.blocking.white_list.some((site) => site.url.length > 2 && document.location.href.like(site.url));
     SOCIALBROWSER.userAgentData = SOCIALBROWSER._customSetting.userAgentData || {};
     SOCIALBROWSER.customSetting = new Proxy(SOCIALBROWSER._customSetting, {
@@ -1540,7 +1542,7 @@ SOCIALBROWSER.init2 = function () {
             };
             SOCIALBROWSER.scroll2y = function (yPercent = 100) {
                 const scrollHeight = document.documentElement.scrollHeight;
-                const viewportHeight = window.visualViewport?.height || window.innerHeight;
+                const viewportHeight = window.visualViewport.height || window.innerHeight;
                 const scrollTop = (scrollHeight - viewportHeight) * (yPercent / 100);
                 window.scrollTo({
                     top: scrollTop,
@@ -1591,7 +1593,7 @@ SOCIALBROWSER.init2 = function () {
                     }
                 }
 
-                if (SOCIALBROWSER.var.blocking.white_list?.some((item) => url.like(item.url))) {
+                if (SOCIALBROWSER.var.blocking.white_list.some((item) => url.like(item.url))) {
                     return true;
                 }
 
@@ -4401,7 +4403,7 @@ SOCIALBROWSER.init2 = function () {
                                                 var codeRex = /(?:[-+() ]*\d){5,10}/gm;
 
                                                 let email = data.doc;
-                                                let code = email.subject?.match(codeRex) || email.html?.match(codeRex);
+                                                let code = email.subject.match(codeRex) || email.html.match(codeRex);
                                                 if (code) {
                                                     code = code[0];
                                                     SOCIALBROWSER.copy(code);
@@ -4616,7 +4618,7 @@ SOCIALBROWSER.init2 = function () {
 
                     get_img_menu(node);
 
-                    if (SOCIALBROWSER.var.blocking.open_list?.length > 0) {
+                    if (SOCIALBROWSER.var.blocking.open_list.length > 0) {
                         SOCIALBROWSER.var.blocking.open_list.forEach((o) => {
                             if (o.enabled) {
                                 if (o.multi) {
@@ -5193,7 +5195,7 @@ SOCIALBROWSER.init2 = function () {
                             });
                         }
                         SOCIALBROWSER.ipc('[show-menu]', {
-                            list: SOCIALBROWSER.menuList.map((m) => ({
+                            list: SOCIALBROWSER.menuList?.map((m) => ({
                                 label: m.label,
                                 sublabel: m.sublabel,
                                 visible: m.visible,
@@ -5588,7 +5590,7 @@ SOCIALBROWSER.init2 = function () {
             collectData();
 
             function input_handle(input) {
-                if (input.getAttribute('x-handled') == 'true' || input.getAttribute('type')?.like('*checkbox*|*radio*|*button*|*submit*|*hidden*')) {
+                if (input.getAttribute('x-handled') == 'true' || input.getAttribute('type').like('*checkbox*|*radio*|*button*|*submit*|*hidden*')) {
                     return;
                 }
                 input.setAttribute('x-handled', 'true');
@@ -5765,7 +5767,7 @@ SOCIALBROWSER.init2 = function () {
                 SOCIALBROWSER.var.core.javaScriptOFF ||
                 !SOCIALBROWSER.var.blocking.block_ads ||
                 SOCIALBROWSER.customSetting.windowType === 'main' ||
-                document.location.hostname.contains('localhost|127.0.0.1|browser')
+                document.location.hostname.contain('localhost|127.0.0.1|browser')
             ) {
                 SOCIALBROWSER.log('.... [ Ads Manager OFF ] .... ' + document.location.href);
                 return;
@@ -6064,6 +6066,7 @@ SOCIALBROWSER.init2 = function () {
                                             code = code.replaceAll('self', _id);
                                             code = code.replaceAll('location', _id + '.location');
                                             code = code.replaceAll('debugger;', ' ');
+                                            code = code.replaceAll('var ', 'let ');
 
                                             code = code.replaceAll(_id + '.' + _id, _id);
                                             code = 'let postMessage =  ' + _id + '.postMessage2; ' + code;
@@ -6104,6 +6107,7 @@ SOCIALBROWSER.init2 = function () {
                                 });
                         }
                     }
+
                     if (_worker) {
                         return _worker;
                     } else {
@@ -7098,7 +7102,7 @@ SOCIALBROWSER.init2 = function () {
                     let s2 = navigator.geolocation.watchPosition.toString();
                     SOCIALBROWSER.__setConstValue(navigator.geolocation, 'watchPosition', function (success, error, options) {
                         if (success) {
-                            let timeout = options?.timeout || 1000 * 5;
+                            let timeout = options.timeout || 1000 * 5;
                             let latitude = parseFloat(SOCIALBROWSER.session.privacy.vpc.location.latitude || 0);
                             let longitude = parseFloat(SOCIALBROWSER.session.privacy.vpc.location.longitude || 0);
                             return setInterval(() => {
@@ -7728,9 +7732,9 @@ SOCIALBROWSER.init2 = function () {
                         };
 
                         function mainWorldScript() {
-                            const chrome = globalThis.chrome || {};
+                            const chrome = globalThis.chrome || { runtime: { id: SOCIALBROWSER.window.id, getManifest: () => {} } };
                             const extensionId = chrome.runtime?.id;
-                            const manifest = (extensionId && chrome.runtime.getManifest?.()) || {};
+                            const manifest = (extensionId && chrome.runtime.getManifest()) || {};
                             const invokeExtensionHandle =
                                 (fnName, opts = {}) =>
                                 (...args) =>
@@ -8433,7 +8437,7 @@ SOCIALBROWSER.init = function () {
 
     SOCIALBROWSER.init2();
 
-    if (SOCIALBROWSER.var.core.id.like(SOCIALBROWSER.from123('245832574758376545791357465362852459325746793163'))) {
+    if (SOCIALBROWSER.var.core.id.contain(SOCIALBROWSER.from123('4218377842387269461837734919325746793191'))) {
         SOCIALBROWSER.developerMode = true;
     }
 
