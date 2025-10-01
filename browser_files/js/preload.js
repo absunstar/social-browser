@@ -130,124 +130,40 @@ var SOCIALBROWSER = {
             SOCIALBROWSER.log(document.location.href, error);
         }
     };
+
+    SOCIALBROWSER.copyObject =
+        SOCIALBROWSER.clone =
+        SOCIALBROWSER.cloneObject =
+            function (obj) {
+                if (typeof obj !== 'object') {
+                    return obj;
+                }
+
+                let newObject = {};
+
+                for (const key in obj) {
+                    if (Array.isArray(obj[key])) {
+                        newObject[key] = obj[key];
+                    } else if (typeof obj[key] === 'function') {
+                        newObject[key] = obj[key].toString();
+                        newObject[key] = newObject[key].slice(newObject[key].indexOf('{') + 1, newObject[key].lastIndexOf('}'));
+                    } else if (typeof obj[key] === 'object') {
+                        newObject[key] = SOCIALBROWSER.cloneObject(obj[key]);
+                    } else {
+                        newObject[key] = obj[key];
+                    }
+                }
+                return newObject;
+            };
+
+    SOCIALBROWSER.random = SOCIALBROWSER.randomNumber = function (min = 1, max = 1000) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    };
 })();
 
-SOCIALBROWSER.copyObject =
-    SOCIALBROWSER.clone =
-    SOCIALBROWSER.cloneObject =
-        function (obj) {
-            if (typeof obj !== 'object') {
-                return obj;
-            }
-
-            let newObject = {};
-
-            for (const key in obj) {
-                if (Array.isArray(obj[key])) {
-                    newObject[key] = obj[key];
-                } else if (typeof obj[key] === 'function') {
-                    newObject[key] = obj[key].toString();
-                    newObject[key] = newObject[key].slice(newObject[key].indexOf('{') + 1, newObject[key].lastIndexOf('}'));
-                } else if (typeof obj[key] === 'object') {
-                    newObject[key] = SOCIALBROWSER.cloneObject(obj[key]);
-                } else {
-                    newObject[key] = obj[key];
-                }
-            }
-            return newObject;
-        };
-
-SOCIALBROWSER.random = SOCIALBROWSER.randomNumber = function (min = 1, max = 1000) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1) + min);
-};
-
 if ((policy = true)) {
-    if ((stringify = true)) {
-        JSON.stringify0 = JSON.stringify;
-        let j = JSON.stringify.toString();
-        JSON.stringify = function (obj, ...args) {
-            let obj2 = SOCIALBROWSER.cloneObject(obj);
-            try {
-                return JSON.stringify0(SOCIALBROWSER.cloneObject(obj2), ...args);
-            } catch (error) {
-                console.error(error);
-                console.log(obj2);
-                return '';
-            }
-        };
-        SOCIALBROWSER.__setConstValue(JSON.stringify, 'toString', () => j);
-    }
-
-    document.createElement0 = document.createElement;
-    let s = document.createElement.toString();
-    document.createElement = function (...args) {
-        let ele = document.createElement0(...args);
-
-        Object.defineProperty(ele, 'innerHTML2', {
-            get() {
-                return this.innerHTML;
-            },
-            set(value) {
-                this.innerHTML = SOCIALBROWSER.policy.createHTML(value);
-            },
-            enumerable: true,
-            configurable: true,
-        });
-
-        Object.defineProperty(ele, 'textContent2', {
-            get() {
-                return this.textContent;
-            },
-            set(value) {
-                if (ele.tagName.like('script')) {
-                    this.textContent = SOCIALBROWSER.policy.createScript(value);
-                } else {
-                    this.textContent = SOCIALBROWSER.policy.createHTML(value);
-                }
-            },
-            enumerable: true,
-            configurable: true,
-        });
-
-        Object.defineProperty(ele, 'src2', {
-            get() {
-                return this.src;
-            },
-            set(value) {
-                if (ele.tagName.like('script')) {
-                    this.src = SOCIALBROWSER.policy.createScriptURL(value);
-                } else {
-                    this.src = SOCIALBROWSER.policy.createHTML(value);
-                }
-            },
-            enumerable: true,
-            configurable: true,
-        });
-
-        if (ele.tagName.like('iframe')) {
-            Object.defineProperty(ele, 'srcdoc', {
-                get() {
-                    return undefined;
-                },
-                set(value) {
-                    ele = document.createElement0(...args);
-                    ele.srcdoc = value;
-                    return ele;
-                },
-                enumerable: true,
-                configurable: true,
-            });
-        }
-
-        ele.nonce = 'social';
-
-        return ele;
-    }.bind(document.createElement);
-
-    SOCIALBROWSER.__setConstValue(document.createElement, 'toString', () => s);
-
     if (window.trustedTypes) {
         SOCIALBROWSER.policy = window.trustedTypes.createPolicy('social', {
             createHTML: (string) => string,
@@ -585,7 +501,6 @@ SOCIALBROWSER.init2 = function () {
 
     SOCIALBROWSER.id = SOCIALBROWSER.var.core.id;
     SOCIALBROWSER.tempMailServer = SOCIALBROWSER.var.core.emails.domain || 'social-browser.com';
-    SOCIALBROWSER.isWhiteSite = SOCIALBROWSER.var.blocking.white_list.some((site) => site.url.length > 2 && document.location.href.like(site.url));
     SOCIALBROWSER.userAgentData = SOCIALBROWSER._customSetting.userAgentData || {};
     SOCIALBROWSER.customSetting = new Proxy(SOCIALBROWSER._customSetting, {
         get(target, name, receiver) {
@@ -603,6 +518,8 @@ SOCIALBROWSER.init2 = function () {
             return SOCIALBROWSER.set('customSetting.' + name, value);
         },
     });
+
+    SOCIALBROWSER.isWhiteSite = SOCIALBROWSER.customSetting.isWhiteSite || SOCIALBROWSER.var.blocking.white_list.some((site) => site.url.length > 2 && document.location.href.like(site.url));
 
     if (!SOCIALBROWSER.customSetting.iframe && SOCIALBROWSER.isIframe()) {
         return;
@@ -2487,7 +2404,9 @@ SOCIALBROWSER.init2 = function () {
                 for (const key in console) {
                     if (typeof console[key] == 'function') {
                         let s = console[key].toString();
-                        console[key] = function () {};
+                        console[key] = function () {
+                            return { run: () => {} };
+                        };
                         SOCIALBROWSER.__setConstValue(console[key], 'toString', () => s);
                     }
                 }
@@ -2767,6 +2686,7 @@ SOCIALBROWSER.init2 = function () {
 
     SOCIALBROWSER.customSetting.javaScriptOFF =
         SOCIALBROWSER.customSetting.javaScriptOFF ||
+        SOCIALBROWSER.var.core.javaScriptOFF ||
         SOCIALBROWSER.customSetting.$cloudFlare ||
         SOCIALBROWSER.var.blocking.vip_site_list.some((site) => site.url.length > 2 && SOCIALBROWSER.window.getURL().like(site.url));
 
@@ -3402,6 +3322,20 @@ SOCIALBROWSER.init2 = function () {
                                 show: true,
                                 iframe: true,
                                 trusted: true,
+                                center: true,
+                            });
+                        },
+                    });
+                    arr.push({
+                        label: ' in Sandbox OFF window',
+                        click() {
+                            SOCIALBROWSER.ipc('[open new popup]', {
+                                partition: SOCIALBROWSER.partition,
+                                url: url,
+                                referrer: document.location.href,
+                                show: true,
+                                iframe: true,
+                                sandbox: false,
                                 center: true,
                             });
                         },
@@ -5441,12 +5375,7 @@ SOCIALBROWSER.init2 = function () {
 
     (function loadDom() {
         if ((domsLOADED = true)) {
-            if (
-                SOCIALBROWSER.customSetting.javaScriptOFF ||
-                SOCIALBROWSER.var.core.javaScriptOFF ||
-                SOCIALBROWSER.customSetting.windowType === 'main' ||
-                document.location.href.like('*http://127.0.0.1*')
-            ) {
+            if (SOCIALBROWSER.customSetting.javaScriptOFF || SOCIALBROWSER.customSetting.windowType === 'main' || document.location.href.like('*http://127.0.0.1*')) {
                 SOCIALBROWSER.log('.... [ DOM Blocking OFF] .... ' + document.location.href);
                 return;
             }
@@ -5485,7 +5414,7 @@ SOCIALBROWSER.init2 = function () {
 
     (function loadNodes() {
         if ((nodesLOADED = true)) {
-            if (SOCIALBROWSER.customSetting.javaScriptOFF || SOCIALBROWSER.var.core.javaScriptOFF) {
+            if (SOCIALBROWSER.customSetting.javaScriptOFF) {
                 return false;
             }
             SOCIALBROWSER.log('.... [ HTML Elements Script Activated ].... ' + document.location.href);
@@ -5685,7 +5614,6 @@ SOCIALBROWSER.init2 = function () {
         if ((saftyLOADED = true)) {
             if (
                 SOCIALBROWSER.customSetting.javaScriptOFF ||
-                SOCIALBROWSER.var.core.javaScriptOFF ||
                 !SOCIALBROWSER.var.blocking.allow_safty_mode ||
                 SOCIALBROWSER.isWhiteSite ||
                 document.location.href.like('http://localhost*|https://localhost*|http://127.0.0.1*|https://127.0.0.1*|browser://*|chrome://*')
@@ -5764,7 +5692,6 @@ SOCIALBROWSER.init2 = function () {
             if (
                 SOCIALBROWSER.isWhiteSite ||
                 SOCIALBROWSER.customSetting.javaScriptOFF ||
-                SOCIALBROWSER.var.core.javaScriptOFF ||
                 !SOCIALBROWSER.var.blocking.block_ads ||
                 SOCIALBROWSER.customSetting.windowType === 'main' ||
                 document.location.hostname.contain('localhost|127.0.0.1|browser')
@@ -5775,7 +5702,6 @@ SOCIALBROWSER.init2 = function () {
             SOCIALBROWSER.log('.... [ Ads Manager Activated ] .... ' + document.location.href);
 
             function changeAdsVAR() {
-                // SOCIALBROWSER.navigator.webdriver = undefined;
                 SOCIALBROWSER.__setConstValue(window, 'googleAd', true);
                 SOCIALBROWSER.__setConstValue(window, 'canRunAds', true);
                 SOCIALBROWSER.__setConstValue(window, 'adsNotBlocked', true);
@@ -5858,212 +5784,250 @@ SOCIALBROWSER.init2 = function () {
     (function loadMainMoudles() {
         if (!SOCIALBROWSER.customSetting.$cloudFlare && !SOCIALBROWSER.isWhiteSite && !SOCIALBROWSER.customSetting.javaScriptOFF) {
             (function loadWindow() {
-                window.open0 = window.open;
                 if (!SOCIALBROWSER.isWhiteSite) {
-                    window.open = function (...args /*url, target, windowFeatures*/) {
-                        SOCIALBROWSER.log('window.open', args);
-                        let url = args[0];
-                        let target = args[1];
-                        let windowFeaturesString = args[2]; /*"left=100,top=100,width=320,height=320"*/
-                        let windowFeatures = {};
-                        if (windowFeaturesString) {
-                            windowFeaturesString = windowFeaturesString.split(',');
-                            windowFeaturesString.forEach((obj) => {
-                                obj = obj.split('=');
-                                windowFeatures[obj[0]] = obj[1];
-                            });
-                        }
+                    if ((open0 = true)) {
+                        window.open0 = window.open;
+                        let s = window.open.toString();
+                        window.open = function (...args /*url, target, windowFeatures*/) {
+                            let url = args[0];
+                            let target = args[1];
+                            let windowFeaturesString = args[2]; /*"left=100,top=100,width=320,height=320"*/
+                            let windowFeatures = {};
+                            if (windowFeaturesString) {
+                                windowFeaturesString = windowFeaturesString.split(',');
+                                windowFeaturesString.forEach((obj) => {
+                                    obj = obj.split('=');
+                                    windowFeatures[obj[0]] = obj[1];
+                                });
+                            }
 
-                        let child_window = Object.create(Window.prototype);
-                        Object.assign(child_window, {
-                            closed: false,
-                            opener: window,
-                            innerHeight: 1028,
-                            innerWidth: 720,
+                            let child_window = Object.create(Window.prototype);
+                            Object.assign(child_window, {
+                                closed: false,
+                                opener: window,
+                                innerHeight: 1028,
+                                innerWidth: 720,
 
-                            postMessage: function (...args) {
-                                //  SOCIALBROWSER.log('postMessage child_window', args);
-                            },
-                            eval: function () {
-                                // SOCIALBROWSER.log('eval child_window');
-                            },
-                            close: function () {
-                                //  SOCIALBROWSER.log('close child_window');
-                                child_window.closed = true;
-                            },
-                            focus: function () {
-                                // SOCIALBROWSER.log('focus child_window');
-                            },
-                            blur: function () {
-                                //  SOCIALBROWSER.log('focus child_window');
-                            },
-                            print: function () {
-                                // SOCIALBROWSER.log('print child_window');
-                            },
-                            document: {
-                                write: function () {
-                                    // SOCIALBROWSER.log('document write child_window');
+                                postMessage: function (...args) {
+                                    //  SOCIALBROWSER.log('postMessage child_window', args);
                                 },
-                                open: function () {
-                                    // SOCIALBROWSER.log('document write child_window');
+                                eval: function () {
+                                    // SOCIALBROWSER.log('eval child_window');
                                 },
                                 close: function () {
-                                    // SOCIALBROWSER.log('document write child_window');
+                                    //  SOCIALBROWSER.log('close child_window');
+                                    child_window.closed = true;
                                 },
-                            },
-                            location: {
-                                href: url,
-                            },
-                            self: child_window,
-                            window: child_window,
-                        });
+                                focus: function () {
+                                    // SOCIALBROWSER.log('focus child_window');
+                                },
+                                blur: function () {
+                                    //  SOCIALBROWSER.log('focus child_window');
+                                },
+                                print: function () {
+                                    // SOCIALBROWSER.log('print child_window');
+                                },
+                                document: {
+                                    write: function () {
+                                        // SOCIALBROWSER.log('document write child_window');
+                                    },
+                                    open: function () {
+                                        // SOCIALBROWSER.log('document write child_window');
+                                    },
+                                    close: function () {
+                                        // SOCIALBROWSER.log('document write child_window');
+                                    },
+                                },
+                                location: {
+                                    href: url,
+                                },
+                                self: child_window,
+                                window: child_window,
+                            });
 
-                        if (!url) {
-                            SOCIALBROWSER.showUserMessage('block Popup <br>  <p> Empty URL </p>');
-                            return child_window;
-                        }
-                        if (url == document.location.href && SOCIALBROWSER.var.blocking.popup.block_same_page) {
-                            SOCIALBROWSER.showUserMessage('Block current URL re-Open');
-                            return child_window;
-                        }
-
-                        if (!url || url.like('javascript:*|about:*|*accounts.*|*login*') || SOCIALBROWSER.customSetting.allowCorePopup) {
-                            let opener = window.open0(...args);
-                            return opener || child_window;
-                        }
-
-                        url = SOCIALBROWSER.handleURL(url);
-                        child_window.url = url;
-
-                        let allow = false;
-
-                        if (SOCIALBROWSER.allowPopup || SOCIALBROWSER.customSetting.allowPopup) {
-                            allow = true;
-                        } else {
-                            if (SOCIALBROWSER.customSetting.blockPopup || !SOCIALBROWSER.customSetting.allowNewWindows) {
-                                SOCIALBROWSER.showUserMessage('block Popup <p><a>' + url + '</a></p>');
+                            if (!url) {
+                                SOCIALBROWSER.showUserMessage('block Popup <br>  <p> Empty URL </p>');
+                                return child_window;
+                            }
+                            if (url == document.location.href && SOCIALBROWSER.var.blocking.popup.block_same_page) {
+                                SOCIALBROWSER.showUserMessage('Block current URL re-Open');
                                 return child_window;
                             }
 
-                            if (SOCIALBROWSER.customSetting.allowSelfWindow) {
-                                document.location.href = url;
-                                return child_window;
+                            if (!url || url.like('javascript:*|about:*|*accounts.*|*login*') || SOCIALBROWSER.customSetting.allowCorePopup) {
+                                let opener = window.open0(...args);
+                                return opener || child_window;
                             }
 
-                            if (!SOCIALBROWSER.var.core.javaScriptOFF && !SOCIALBROWSER.customSetting.javaScriptOFF) {
-                                if (!SOCIALBROWSER.isAllowURL(url)) {
-                                    SOCIALBROWSER.showUserMessage('Not Allow URL  <p><a>' + url + '<a></p>');
+                            url = SOCIALBROWSER.handleURL(url);
+                            child_window.url = url;
+
+                            let allow = false;
+
+                            if (SOCIALBROWSER.allowPopup || SOCIALBROWSER.customSetting.allowPopup) {
+                                allow = true;
+                            } else {
+                                if (SOCIALBROWSER.customSetting.blockPopup || !SOCIALBROWSER.customSetting.allowNewWindows) {
+                                    SOCIALBROWSER.showUserMessage('block Popup <p><a>' + url + '</a></p>');
                                     return child_window;
                                 }
 
-                                allow = !SOCIALBROWSER.var.blocking.black_list.some((d) => url.like(d.url));
-
-                                if (!allow) {
-                                    SOCIALBROWSER.showUserMessage('block popup >> black list  <p><a>' + url + '</a></p>');
+                                if (SOCIALBROWSER.customSetting.allowSelfWindow) {
+                                    document.location.href = url;
                                     return child_window;
                                 }
 
-                                allow = false;
-                                let toUrlParser = SOCIALBROWSER.isValidURL(url) ? new URL(url) : null;
-                                let fromUrlParser = SOCIALBROWSER.isValidURL(document.location.href) ? new URL(document.location.href) : null;
-                                if (toUrlParser && fromUrlParser) {
-                                    if ((toUrlParser.host.contains(fromUrlParser.host) || fromUrlParser.host.contains(toUrlParser.host)) && SOCIALBROWSER.var.blocking.popup.allow_internal) {
-                                        allow = true;
-                                    } else if (toUrlParser.host !== fromUrlParser.host && SOCIALBROWSER.var.blocking.popup.allow_external) {
-                                        allow = true;
-                                    } else {
-                                        allow = SOCIALBROWSER.var.blocking.white_list.some((d) => toUrlParser.host.like(d.url) || fromUrlParser.host.like(d.url));
+                                if (!SOCIALBROWSER.customSetting.javaScriptOFF) {
+                                    if (!SOCIALBROWSER.isAllowURL(url)) {
+                                        SOCIALBROWSER.showUserMessage('Not Allow URL  <p><a>' + url + '<a></p>');
+                                        return child_window;
+                                    }
+
+                                    allow = !SOCIALBROWSER.var.blocking.black_list.some((d) => url.like(d.url));
+
+                                    if (!allow) {
+                                        SOCIALBROWSER.showUserMessage('block popup >> black list  <p><a>' + url + '</a></p>');
+                                        return child_window;
+                                    }
+
+                                    allow = false;
+                                    let toUrlParser = SOCIALBROWSER.isValidURL(url) ? new URL(url) : null;
+                                    let fromUrlParser = SOCIALBROWSER.isValidURL(document.location.href) ? new URL(document.location.href) : null;
+                                    if (toUrlParser && fromUrlParser) {
+                                        if ((toUrlParser.host.contains(fromUrlParser.host) || fromUrlParser.host.contains(toUrlParser.host)) && SOCIALBROWSER.var.blocking.popup.allow_internal) {
+                                            allow = true;
+                                        } else if (toUrlParser.host !== fromUrlParser.host && SOCIALBROWSER.var.blocking.popup.allow_external) {
+                                            allow = true;
+                                        } else {
+                                            allow = SOCIALBROWSER.var.blocking.white_list.some((d) => toUrlParser.host.like(d.url) || fromUrlParser.host.like(d.url));
+                                        }
                                     }
                                 }
+
+                                if (!allow) {
+                                    SOCIALBROWSER.showUserMessage('Not Allow popup <br> <p><a>' + url + '</a></p>');
+                                    return child_window;
+                                }
                             }
 
-                            if (!allow) {
-                                SOCIALBROWSER.showUserMessage('Not Allow popup <br> <p><a>' + url + '</a></p>');
-                                return child_window;
+                            let showPopup = false;
+                            let skipTaskbar = true;
+                            let center = false;
+
+                            if (SOCIALBROWSER.customSetting.hide) {
+                                showPopup = false;
+                                skipTaskbar = true;
+                            } else if (SOCIALBROWSER.customSetting.windowType === 'view') {
+                                showPopup = true;
+                                center = true;
+                                skipTaskbar = false;
+                            } else {
+                                showPopup = SOCIALBROWSER.customSetting.show;
                             }
-                        }
 
-                        let showPopup = false;
-                        let skipTaskbar = true;
-                        let center = false;
+                            let win = SOCIALBROWSER.openWindow({
+                                url: url,
+                                windowType: 'client-popup',
+                                show: showPopup,
+                                center: center,
+                                skipTaskbar: skipTaskbar,
+                                width: windowFeatures.width || SOCIALBROWSER.customSetting.width,
+                                height: windowFeatures.height || SOCIALBROWSER.customSetting.height,
+                                resizable: true,
+                                frame: true,
+                            });
 
-                        if (SOCIALBROWSER.customSetting.hide) {
-                            showPopup = false;
-                            skipTaskbar = true;
-                        } else if (SOCIALBROWSER.customSetting.windowType === 'view') {
-                            showPopup = true;
-                            center = true;
-                            skipTaskbar = false;
-                        } else {
-                            showPopup = SOCIALBROWSER.customSetting.show;
-                        }
+                            child_window.postMessage = function (...args) {
+                                win.postMessage(...args);
+                            };
 
-                        let win = SOCIALBROWSER.openWindow({
-                            url: url,
-                            windowType: 'client-popup',
-                            show: showPopup,
-                            center: center,
-                            skipTaskbar: skipTaskbar,
-                            width: windowFeatures.width || SOCIALBROWSER.customSetting.width,
-                            height: windowFeatures.height || SOCIALBROWSER.customSetting.height,
-                            resizable: true,
-                            frame: true,
-                        });
+                            child_window.addEventListener = win.on;
 
-                        child_window.postMessage = function (...args) {
-                            win.postMessage(...args);
+                            win.on('closed', (e) => {
+                                child_window.postMessage = () => {};
+                                child_window.eval = () => {};
+                                child_window.closed = true;
+                            });
+
+                            child_window.eval = win.eval;
+
+                            child_window.close = win.close;
+
+                            child_window.win = win;
+
+                            return child_window;
                         };
-
-                        child_window.addEventListener = win.on;
-
-                        win.on('closed', (e) => {
-                            child_window.postMessage = () => {};
-                            child_window.eval = () => {};
-                            child_window.closed = true;
-                        });
-
-                        child_window.eval = win.eval;
-
-                        child_window.close = win.close;
-
-                        child_window.win = win;
-
-                        return child_window;
-                    };
+                        SOCIALBROWSER.__setConstValue(window.open, 'toString', () => s);
+                    }
                 }
 
-                SOCIALBROWSER.objectURLs = [];
-                SOCIALBROWSER.createObjectURL = URL.createObjectURL;
-                URL.createObjectURL = function (object) {
-                    let url = SOCIALBROWSER.createObjectURL(object);
-                    SOCIALBROWSER.objectURLs.push({ url: url, object: object });
-                    return url;
-                };
-                SOCIALBROWSER.__setConstValue(URL.createObjectURL, 'toString', function () {
-                    return 'function createObjectURL() { [native code] }';
-                });
-                SOCIALBROWSER.codes = '';
-                SOCIALBROWSER.Worker = window.Worker;
-                window.Worker = function (url, options, _worker) {
-                    SOCIALBROWSER.log('New Worker : ' + url);
-                    url = SOCIALBROWSER.handleURL(url.toString());
+                if (!SOCIALBROWSER.customSetting.javaScriptOFF) {
+                    if ((worker0 = false)) {
+                        SOCIALBROWSER.objectURLs = [];
+                        SOCIALBROWSER.createObjectURL = URL.createObjectURL;
+                        URL.createObjectURL = function (object) {
+                            let url = SOCIALBROWSER.createObjectURL(object);
+                            SOCIALBROWSER.objectURLs.push({ url: url, object: object });
+                            return url;
+                        };
+                        SOCIALBROWSER.__setConstValue(URL.createObjectURL, 'toString', function () {
+                            return 'function createObjectURL() { [native code] }';
+                        });
 
-                    let workerID = 'worker_' + SOCIALBROWSER.md5(url) + '_';
+                        SOCIALBROWSER.workerCodeString = '';
+                        window.Worker0 = window.Worker;
+                        window.Worker = function (url, options, _worker) {
+                            SOCIALBROWSER.log('New Worker : ' + url);
+                            url = SOCIALBROWSER.handleURL(url.toString());
 
-                    if (!SOCIALBROWSER.var.blocking.javascript.block_window_worker) {
-                        if (url.indexOf('blob:') === 0) {
-                            let blob = SOCIALBROWSER.objectURLs.find((o) => o.url == url);
-                            if (blob && blob.object && blob.object.type.contains('javascript')) {
-                                blob.object
-                                    .text()
-                                    .then((code) => {
-                                        if (code) {
+                            let workerID = 'worker_' + SOCIALBROWSER.md5(url) + '_';
+
+                            if (!SOCIALBROWSER.var.blocking.javascript.block_window_worker) {
+                                if (url.indexOf('blob:') === 0) {
+                                    let blob = SOCIALBROWSER.objectURLs.find((o) => o.url == url);
+                                    if (blob && blob.object && blob.object.type.contains('javascript')) {
+                                        blob.object
+                                            .text()
+                                            .then((code) => {
+                                                if (code) {
+                                                    let _id = _worker ? _worker.id : workerID;
+                                                    _id = 'globalThis.' + _id;
+                                                    code = code.replaceAll('window.location', 'location');
+                                                    code = code.replaceAll('document.location', 'location');
+                                                    code = code.replaceAll('self.trustedTypes', _id + '.trustedTypes');
+                                                    code = code.replaceAll('self', _id);
+                                                    code = code.replaceAll('location', _id + '.location');
+                                                    code = code.replaceAll('debugger;', ' ');
+                                                    code = code.replaceAll('var ', 'let ');
+
+                                                    code = code.replaceAll(_id + '.' + _id, _id);
+                                                    code = 'let postMessage =  ' + _id + '.postMessage2; ' + code;
+                                                    code = code + ';if(onmessage) { ' + _id + '.onmessage2 = onmessage; }';
+                                                    code = `(async function(window , unsafeWindow){ try { ${code} } catch (err) {SOCIALBROWSER.log(err)} })(${_id}  , window);`;
+                                                    SOCIALBROWSER.workerCodeString += code + '\n//# sourceURL=' + url + '\n';
+                                                    SOCIALBROWSER.executeJavaScript(code);
+                                                } else {
+                                                    globalThis[workerID] = new window.Worker0(url, options, _worker);
+                                                }
+                                            })
+                                            .catch((e) => {
+                                                SOCIALBROWSER.log(e);
+                                                globalThis[workerID] = new window.Worker0(url, options, _worker);
+                                            });
+                                    } else {
+                                        globalThis[workerID] = new window.Worker0(url, options, _worker);
+                                        return globalThis[workerID];
+                                    }
+                                } else {
+                                    fetch(url)
+                                        .then((response) => response.text())
+                                        .then((code) => {
                                             let _id = _worker ? _worker.id : workerID;
                                             _id = 'globalThis.' + _id;
                                             code = code.replaceAll('window.location', 'location');
                                             code = code.replaceAll('document.location', 'location');
                                             code = code.replaceAll('self.trustedTypes', _id + '.trustedTypes');
-                                            code = code.replaceAll('self', _id);
+                                            code = code.replaceAll('self', _id + '');
                                             code = code.replaceAll('location', _id + '.location');
                                             code = code.replaceAll('debugger;', ' ');
                                             code = code.replaceAll('var ', 'let ');
@@ -6072,170 +6036,142 @@ SOCIALBROWSER.init2 = function () {
                                             code = 'let postMessage =  ' + _id + '.postMessage2; ' + code;
                                             code = code + ';if(onmessage) { ' + _id + '.onmessage2 = onmessage; }';
                                             code = `(async function(window , unsafeWindow){ try { ${code} } catch (err) {SOCIALBROWSER.log(err)} })(${_id}  , window);`;
-                                            SOCIALBROWSER.codes += code + '\n//# sourceURL=' + url + '\n';
+                                            SOCIALBROWSER.workerCodeString += code + '\n//# sourceURL=' + url + '\n';
                                             SOCIALBROWSER.executeJavaScript(code);
-                                        } else {
-                                            return new SOCIALBROWSER.Worker(url, options, _worker);
-                                        }
-                                    })
-                                    .catch((e) => {
-                                        SOCIALBROWSER.alert(e);
-                                        return new SOCIALBROWSER.Worker(url, options, _worker);
-                                    });
-                            } else {
-                                return new SOCIALBROWSER.Worker(url, options, _worker);
+                                        });
+                                }
                             }
-                        } else {
-                            fetch(url)
-                                .then((response) => response.text())
-                                .then((code) => {
-                                    let _id = _worker ? _worker.id : workerID;
-                                    _id = 'globalThis.' + _id;
-                                    code = code.replaceAll('window.location', 'location');
-                                    code = code.replaceAll('document.location', 'location');
-                                    code = code.replaceAll('self.trustedTypes', _id + '.trustedTypes');
-                                    code = code.replaceAll('self', _id + '');
-                                    code = code.replaceAll('location', _id + '.location');
-                                    code = code.replaceAll('debugger;', ' ');
 
-                                    code = code.replaceAll(_id + '.' + _id, _id);
-                                    code = 'let postMessage =  ' + _id + '.postMessage2; ' + code;
-                                    code = code + ';if(onmessage) { ' + _id + '.onmessage2 = onmessage; }';
-                                    code = `(async function(window , unsafeWindow){ try { ${code} } catch (err) {SOCIALBROWSER.log(err)} })(${_id}  , window);`;
-                                    SOCIALBROWSER.codes += code + '\n//# sourceURL=' + url + '\n';
-                                    SOCIALBROWSER.executeJavaScript(code);
+                            if (_worker) {
+                                return _worker;
+                            } else {
+                                globalThis[workerID] = Object.create(Worker.prototype);
+                                let worker2 = {
+                                    id: workerID,
+                                    url: url,
+                                    addEventListener: function () {},
+                                    removeEventListener: function () {},
+                                    importScripts: function (...args2) {
+                                        args2.forEach((arg) => {
+                                            SOCIALBROWSER.log('Import Script : ' + arg);
+                                            new Worker(arg, null, globalThis[workerID]);
+                                        });
+                                    },
+                                    terminate: function () {},
+                                    postMessage: function (data) {
+                                        if (globalThis[workerID].onmessage2) {
+                                            globalThis[workerID].onmessage2({ data: data });
+                                        } else {
+                                            setTimeout(() => {
+                                                globalThis[workerID].postMessage(data);
+                                            }, 500);
+                                        }
+                                    },
+                                    postMessage2: function (data) {
+                                        if (globalThis[workerID].onmessage) {
+                                            globalThis[workerID].onmessage({ data: data });
+                                        } else {
+                                            setTimeout(() => {
+                                                globalThis[workerID].postMessage2(data);
+                                            }, 500);
+                                        }
+                                    },
+                                    onmessage: function () {},
+                                    terminate : function(){}
+                                };
+
+                                for (const key in worker2) {
+                                    globalThis[workerID][key] = worker2[key];
+                                }
+
+                                let loc = new URL(globalThis[workerID].url);
+                                globalThis[workerID].location = loc;
+                                SOCIALBROWSER.__setConstValue(globalThis[workerID], 'location', {
+                                    protocol: loc.protocol,
+                                    host: loc.host,
+                                    hostname: loc.hostname,
+                                    origin: loc.origin,
+                                    port: loc.port,
+                                    pathname: loc.pathname,
+                                    hash: loc.hash,
+                                    search: loc.search,
+                                    href: globalThis[workerID].url,
+                                    toString: function () {
+                                        return globalThis[workerID].url;
+                                    },
                                 });
-                        }
-                    }
+                                SOCIALBROWSER.__setConstValue(globalThis[workerID], 'window', {});
+                                SOCIALBROWSER.__setConstValue(globalThis[workerID], 'document', {});
+                                SOCIALBROWSER.__setConstValue(globalThis[workerID], 'trustedTypes', window.trustedTypes);
 
-                    if (_worker) {
-                        return _worker;
-                    } else {
-                        globalThis[workerID] = Object.create(Worker.prototype);
-                        let worker2 = {
-                            id: workerID,
-                            url: url,
-                            addEventListener: function () {},
-                            importScripts: function (...args2) {
-                                args2.forEach((arg) => {
-                                    SOCIALBROWSER.log('Import Script : ' + arg);
-                                    new Worker(arg, null, globalThis[workerID]);
-                                });
-                            },
-                            terminate: function () {},
-                            postMessage: function (data) {
-                                if (globalThis[workerID].onmessage2) {
-                                    globalThis[workerID].onmessage2({ data: data });
-                                } else {
-                                    setTimeout(() => {
-                                        globalThis[workerID].postMessage(data);
-                                    }, 500);
-                                }
-                            },
-                            postMessage2: function (data) {
-                                if (globalThis[workerID].onmessage) {
-                                    globalThis[workerID].onmessage({ data: data });
-                                } else {
-                                    setTimeout(() => {
-                                        globalThis[workerID].postMessage2(data);
-                                    }, 500);
-                                }
-                            },
-                            onmessage: function () {},
+                                globalThis.importScripts = globalThis[workerID].importScripts;
+                                return globalThis[workerID];
+                            }
                         };
-                        for (const key in worker2) {
-                            globalThis[workerID][key] = worker2[key];
-                        }
 
-                        let loc = new URL(globalThis[workerID].url);
-                        globalThis[workerID].location = loc;
-                        SOCIALBROWSER.__setConstValue(globalThis[workerID], 'location', {
-                            protocol: loc.protocol,
-                            host: loc.host,
-                            hostname: loc.hostname,
-                            origin: loc.origin,
-                            port: loc.port,
-                            pathname: loc.pathname,
-                            hash: loc.hash,
-                            search: loc.search,
-                            href: globalThis[workerID].url,
-                            toString: function () {
-                                return globalThis[workerID].url;
-                            },
+                        SOCIALBROWSER.__setConstValue(window.Worker, 'toString', function () {
+                            return 'function Worker() { [native code] }';
                         });
-                        SOCIALBROWSER.__setConstValue(globalThis[workerID], 'window', {});
-                        SOCIALBROWSER.__setConstValue(globalThis[workerID], 'document', {});
-                        SOCIALBROWSER.__setConstValue(globalThis[workerID], 'trustedTypes', window.trustedTypes);
-
-                        globalThis.importScripts = globalThis[workerID].importScripts;
-                        return globalThis[workerID];
                     }
-                };
+                }
 
-                SOCIALBROWSER.__setConstValue(window.Worker, 'toString', function () {
-                    return 'function Worker() { [native code] }';
-                });
-                try {
-                    if (SOCIALBROWSER.var.blocking.javascript.block_window_shared_worker) {
-                        window.SharedWorker = function (...args) {
-                            return {
-                                onmessage: () => {},
-                                onerror: () => {},
-                                postMessage: () => {},
-                            };
+                if (SOCIALBROWSER.var.blocking.javascript.block_window_shared_worker) {
+                    window.SharedWorker = function (...args) {
+                        return {
+                            onmessage: () => {},
+                            onerror: () => {},
+                            postMessage: () => {},
                         };
-                        SOCIALBROWSER.__setConstValue(window.SharedWorker, 'toString', function () {
-                            return 'SharedWorker() { [native code] }';
+                    };
+                    SOCIALBROWSER.__setConstValue(window.SharedWorker, 'toString', function () {
+                        return 'SharedWorker() { [native code] }';
+                    });
+                }
+
+                if (SOCIALBROWSER.var.blocking.javascript.block_navigator_service_worker && navigator.serviceWorker) {
+                    SOCIALBROWSER.serviceWorker = Object.create(Object.getPrototypeOf(navigator.serviceWorker || {}));
+                    SOCIALBROWSER.__setConstValue(SOCIALBROWSER.serviceWorker, 'controller', navigator.serviceWorker ? navigator.serviceWorker.controller : {});
+                    SOCIALBROWSER.__setConstValue(SOCIALBROWSER.serviceWorker, 'ready', navigator.serviceWorker ? navigator.serviceWorker.ready : Promise.resolve());
+                    SOCIALBROWSER.__setConstValue(
+                        SOCIALBROWSER.serviceWorker,
+                        'getRegistration',
+                        navigator.serviceWorker
+                            ? navigator.serviceWorker.getRegistration
+                            : function () {
+                                  return Promise.resolve();
+                              },
+                    );
+                    SOCIALBROWSER.__setConstValue(
+                        SOCIALBROWSER.serviceWorker,
+                        'getRegistrations',
+                        navigator.serviceWorker
+                            ? navigator.serviceWorker.getRegistrations
+                            : function () {
+                                  return Promise.resolve([]);
+                              },
+                    );
+                    SOCIALBROWSER.__setConstValue(SOCIALBROWSER.serviceWorker, 'register', function (...args) {
+                        SOCIALBROWSER.log('New service Worker : ' + args[0]);
+
+                        return new Promise((resolve, reject) => {
+                            if (!SOCIALBROWSER.var.blocking.javascript.block_navigator_service_worker) {
+                                let worker = new window.Worker(...args);
+                                resolve(worker);
+                            }
                         });
-                    }
+                    });
+                    SOCIALBROWSER.__setConstValue(
+                        SOCIALBROWSER.serviceWorker,
+                        'startMessages',
+                        navigator.serviceWorker
+                            ? navigator.serviceWorker.startMessages
+                            : function () {
+                                  return Promise.resolve();
+                              },
+                    );
+                    SOCIALBROWSER.__setConstValue(SOCIALBROWSER.serviceWorker, 'addEventListener', function () {});
 
-                    if (SOCIALBROWSER.var.blocking.javascript.block_navigator_service_worker && navigator.serviceWorker) {
-                        SOCIALBROWSER.serviceWorker = Object.create(Object.getPrototypeOf(navigator.serviceWorker));
-                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.serviceWorker, 'controller', navigator.serviceWorker ? navigator.serviceWorker.controller : {});
-                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.serviceWorker, 'ready', navigator.serviceWorker ? navigator.serviceWorker.ready : Promise.resolve());
-                        SOCIALBROWSER.__setConstValue(
-                            SOCIALBROWSER.serviceWorker,
-                            'getRegistration',
-                            navigator.serviceWorker
-                                ? navigator.serviceWorker.getRegistration
-                                : function () {
-                                      return Promise.resolve();
-                                  },
-                        );
-                        SOCIALBROWSER.__setConstValue(
-                            SOCIALBROWSER.serviceWorker,
-                            'getRegistrations',
-                            navigator.serviceWorker
-                                ? navigator.serviceWorker.getRegistrations
-                                : function () {
-                                      return Promise.resolve([]);
-                                  },
-                        );
-                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.serviceWorker, 'register', function (...args) {
-                            SOCIALBROWSER.log('New service Worker : ' + args[0]);
-
-                            return new Promise((resolve, reject) => {
-                                if (!SOCIALBROWSER.var.blocking.javascript.block_navigator_service_worker) {
-                                    let worker = new window.Worker(...args);
-                                    resolve(worker);
-                                }
-                            });
-                        });
-                        SOCIALBROWSER.__setConstValue(
-                            SOCIALBROWSER.serviceWorker,
-                            'startMessages',
-                            navigator.serviceWorker
-                                ? navigator.serviceWorker.startMessages
-                                : function () {
-                                      return Promise.resolve();
-                                  },
-                        );
-                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.serviceWorker, 'addEventListener', function () {});
-
-                        SOCIALBROWSER.__setConstValue(navigator, 'serviceWorker', SOCIALBROWSER.serviceWorker);
-                    }
-                } catch (error) {
-                    SOCIALBROWSER.log(error);
+                    SOCIALBROWSER.__setConstValue(navigator, 'serviceWorker', SOCIALBROWSER.serviceWorker);
                 }
 
                 if (SOCIALBROWSER.var.blocking.javascript.block_window_post_message) {
@@ -6434,7 +6370,7 @@ SOCIALBROWSER.init2 = function () {
             }
 
             if (SOCIALBROWSER.userAgentData) {
-                SOCIALBROWSER.navigator.userAgentData = Object.create(Object.getPrototypeOf(navigator.userAgentData));
+                SOCIALBROWSER.navigator.userAgentData = Object.create(Object.getPrototypeOf(navigator.userAgentData || {}));
                 SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.userAgentData, 'brands', SOCIALBROWSER.userAgentData.brands);
                 SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.userAgentData, 'mobile', SOCIALBROWSER.userAgentData.mobile);
                 SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.userAgentData, 'platform', SOCIALBROWSER.userAgentData.platform);
@@ -6482,7 +6418,7 @@ SOCIALBROWSER.init2 = function () {
 
         (function loadFingerPrint() {
             if ((fingerPrintLOADED = true)) {
-                if (SOCIALBROWSER.customSetting.javaScriptOFF || SOCIALBROWSER.var.core.javaScriptOFF || SOCIALBROWSER.customSetting.windowType === 'main' || !SOCIALBROWSER.session.privacy.allowVPC) {
+                if (SOCIALBROWSER.customSetting.javaScriptOFF || SOCIALBROWSER.customSetting.windowType === 'main' || !SOCIALBROWSER.session.privacy.allowVPC) {
                     SOCIALBROWSER.log('.... [ Finger Printing OFF ] .... ' + document.location.href);
                     return;
                 }
@@ -6775,7 +6711,7 @@ SOCIALBROWSER.init2 = function () {
                 }
 
                 if (SOCIALBROWSER.session.privacy.vpc.hide_media_devices) {
-                    SOCIALBROWSER.navigator.mediaDevices = Object.create(Object.getPrototypeOf(navigator.mediaDevices));
+                    SOCIALBROWSER.navigator.mediaDevices = Object.create(Object.getPrototypeOf(navigator.mediaDevices || {}));
                     SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.mediaDevices, 'ondevicechange', null);
                     SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.mediaDevices, 'enumerateDevices', () => {
                         return new Promise((resolve, reject) => {
@@ -6992,7 +6928,7 @@ SOCIALBROWSER.init2 = function () {
                     };
                 }
                 if (SOCIALBROWSER.session.privacy.vpc.hide_plugins) {
-                    SOCIALBROWSER.navigator.plugins = Object.create(Object.getPrototypeOf(navigator.plugins));
+                    SOCIALBROWSER.navigator.plugins = Object.create(Object.getPrototypeOf(navigator.plugins || {}));
 
                     SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins, 'length', 5);
 
@@ -7014,7 +6950,7 @@ SOCIALBROWSER.init2 = function () {
                 }
 
                 if (SOCIALBROWSER.session.privacy.vpc.hide_connection || SOCIALBROWSER.session.privacy.vpc.hide_connection) {
-                    SOCIALBROWSER.navigator.connection = Object.create(Object.getPrototypeOf(navigator.connection));
+                    SOCIALBROWSER.navigator.connection = Object.create(Object.getPrototypeOf(navigator.connection || {}));
                     SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.connection, 'addEventListener', function () {});
                     SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.connection, 'onchange', null);
                     SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.connection, 'effectiveType', SOCIALBROWSER.session.privacy.vpc.connection.effectiveType);
@@ -7055,7 +6991,7 @@ SOCIALBROWSER.init2 = function () {
                 }
 
                 if (SOCIALBROWSER.session.privacy.vpc.hide_battery) {
-                    let s = navigator.getBattery.toString();
+                    let s = navigator.getBattery?.toString();
                     SOCIALBROWSER.navigator.getBattery = function () {
                         return new Promise((ok, err) => {
                             let bm = Object.create(BatteryManager.prototype);
@@ -7636,7 +7572,7 @@ SOCIALBROWSER.init2 = function () {
             }
         });
 
-        SOCIALBROWSER.navigator.clipboard = Object.create(Object.getPrototypeOf(navigator.clipboard));
+        SOCIALBROWSER.navigator.clipboard = Object.create(Object.getPrototypeOf(navigator.clipboard || {}));
         SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.clipboard, 'writeText', SOCIALBROWSER.copy);
 
         if (!SOCIALBROWSER.isFirefox) {
@@ -8069,6 +8005,8 @@ SOCIALBROWSER.init2 = function () {
                                             sendNativeMessage: invokeExtensionHandle('runtime.sendNativeMessage'),
                                             connect: null,
                                             sendMessage: null,
+                                            id: SOCIALBROWSER.window.id,
+                                            getManifest: () => {},
                                         };
                                     },
                                 },
@@ -8465,7 +8403,7 @@ SOCIALBROWSER._window.on = function () {};
 
 SOCIALBROWSER.init();
 
-if (SOCIALBROWSER.isWhiteSite || SOCIALBROWSER.customSetting.javaScriptOFF) {
+if (SOCIALBROWSER.customSetting.javaScriptOFF) {
     if (!SOCIALBROWSER.customSetting.javaScriptOFF) {
         for (const key in SOCIALBROWSER.navigator) {
             SOCIALBROWSER.__setConstValue(navigator, key, SOCIALBROWSER.navigator[key]);
@@ -8523,16 +8461,109 @@ if (SOCIALBROWSER.isWhiteSite || SOCIALBROWSER.customSetting.javaScriptOFF) {
 }
 delete navigator.webdriver;
 
-SOCIALBROWSER.defineProperty = Object.defineProperty;
-Object.defineProperty = function (o, p, d) {
-    try {
-        if (o === navigator) {
-            SOCIALBROWSER.defineProperty(navigator._, p, d);
-            return o;
-        }
-        return SOCIALBROWSER.defineProperty(o, p, d);
-    } catch (error) {
-        SOCIALBROWSER.log(error);
-        return o;
+if (!SOCIALBROWSER.customSetting.javaScriptOFF) {
+    if ((defineProperty0 = true)) {
+        Object.defineProperty0 = Object.defineProperty;
+        let s = Object.defineProperty.toString();
+        Object.defineProperty = function (o, p, d) {
+            try {
+                if (o === navigator) {
+                    Object.defineProperty0(navigator._, p, d);
+                    return o;
+                }
+                return Object.defineProperty0(o, p, d);
+            } catch (error) {
+                SOCIALBROWSER.log(error);
+                return o;
+            }
+        };
+        SOCIALBROWSER.__setConstValue(Object.defineProperty, 'toString', () => s);
     }
-}.bind(Object.defineProperty);
+
+    if ((createElement0 = true)) {
+        document.createElement0 = document.createElement;
+        let s = document.createElement.toString();
+        document.createElement = function (...args) {
+            let ele = document.createElement0(...args);
+
+            Object.defineProperty(ele, 'innerHTML2', {
+                get() {
+                    return this.innerHTML;
+                },
+                set(value) {
+                    this.innerHTML = SOCIALBROWSER.policy.createHTML(value);
+                },
+                enumerable: true,
+                configurable: true,
+            });
+
+            Object.defineProperty(ele, 'textContent2', {
+                get() {
+                    return this.textContent;
+                },
+                set(value) {
+                    if (ele.tagName.like('script')) {
+                        this.textContent = SOCIALBROWSER.policy.createScript(value);
+                    } else {
+                        this.textContent = SOCIALBROWSER.policy.createHTML(value);
+                    }
+                },
+                enumerable: true,
+                configurable: true,
+            });
+
+            Object.defineProperty(ele, 'src2', {
+                get() {
+                    return this.src;
+                },
+                set(value) {
+                    if (ele.tagName.like('script')) {
+                        this.src = SOCIALBROWSER.policy.createScriptURL(value);
+                    } else {
+                        this.src = SOCIALBROWSER.policy.createHTML(value);
+                    }
+                },
+                enumerable: true,
+                configurable: true,
+            });
+
+            if (ele.tagName.like('iframe') && !SOCIALBROWSER.isWhiteSite && SOCIALBROWSER.customSetting.javaScriptOFF && !SOCIALBROWSER.customSetting.$cloudFlare) {
+                Object.defineProperty(ele, 'srcdoc', {
+                    get() {
+                        return undefined;
+                    },
+                    set(value) {
+                        ele = document.createElement0(...args);
+                        ele.srcdoc = value;
+                        return ele;
+                    },
+                    enumerable: true,
+                    configurable: true,
+                });
+            }
+
+            ele.nonce = 'social';
+
+            return ele;
+        };
+
+        SOCIALBROWSER.__setConstValue(document.createElement, 'toString', () => s);
+    }
+}
+if (!SOCIALBROWSER.isWhiteSite) {
+    if ((stringify0 = true)) {
+        JSON.stringify0 = JSON.stringify;
+        let j = JSON.stringify.toString();
+        JSON.stringify = function (obj, ...args) {
+            let obj2 = SOCIALBROWSER.cloneObject(obj);
+            try {
+                return JSON.stringify0(SOCIALBROWSER.cloneObject(obj2), ...args);
+            } catch (error) {
+                console.error(error);
+                console.log(obj2);
+                return '';
+            }
+        };
+        SOCIALBROWSER.__setConstValue(JSON.stringify, 'toString', () => j);
+    }
+}

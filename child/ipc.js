@@ -46,20 +46,22 @@ module.exports = function init(child) {
         });
     };
     child.cloneObject = function (obj) {
+        if (typeof obj !== 'object') {
+            return obj;
+        }
+
         let newObject = {};
 
         for (const key in obj) {
-            if (Object.hasOwn(obj, key)) {
-                if (typeof obj[key] === 'function') {
-                    newObject[key] = obj[key].toString();
-                    newObject[key] = newObject[key].slice(newObject[key].indexOf('{') + 1, newObject[key].lastIndexOf('}'));
-                } else if (Array.isArray(obj[key])) {
-                    newObject[key] = obj[key];
-                } else if (typeof obj[key] === 'object' && obj[key]) {
-                    newObject[key] = child.cloneObject(obj[key]);
-                } else {
-                    newObject[key] = obj[key];
-                }
+            if (Array.isArray(obj[key])) {
+                newObject[key] = obj[key];
+            } else if (typeof obj[key] === 'function') {
+                newObject[key] = obj[key].toString();
+                newObject[key] = newObject[key].slice(newObject[key].indexOf('{') + 1, newObject[key].lastIndexOf('}'));
+            } else if (typeof obj[key] === 'object') {
+                newObject[key] = child.cloneObject(obj[key]);
+            } else {
+                newObject[key] = obj[key];
             }
         }
         return newObject;
@@ -419,9 +421,9 @@ module.exports = function init(child) {
             event.returnValue = '';
         }
     });
-    child.ipcMain.on('[select-file]', async (event, options={}) => {
-         let win = child.electron.BrowserWindow.fromWebContents(event.sender);
-        const { canceled, filePaths } = await child.electron.dialog.showOpenDialog(win , { properties: ['openFile', 'showHiddenFiles'] , ...options });
+    child.ipcMain.on('[select-file]', async (event, options = {}) => {
+        let win = child.electron.BrowserWindow.fromWebContents(event.sender);
+        const { canceled, filePaths } = await child.electron.dialog.showOpenDialog(win, { properties: ['openFile', 'showHiddenFiles'], ...options });
         if (!canceled) {
             event.returnValue = filePaths[0];
         } else {
@@ -670,13 +672,12 @@ module.exports = function init(child) {
         return child.clearCookies(obj);
     });
     child.ipcMain.handle('[alert]', (e, data) => {
-        if(data.windowID){
-             let win = child.electron.BrowserWindow.fromId(data.windowID);
-        if (win) {
-            win.send('[alert]', data);
+        if (data.windowID) {
+            let win = child.electron.BrowserWindow.fromId(data.windowID);
+            if (win) {
+                win.send('[alert]', data);
+            }
         }
-        }
-       
     });
     child.ipcMain.handle('message', (e, message) => {
         let win = child.electron.BrowserWindow.fromId(message.windowID);
@@ -937,7 +938,7 @@ module.exports = function init(child) {
             });
             contents = contents || win.webContents;
         }
-        console.log(typeof data.list , data.list)
+        
         data.list.forEach((m, i) => {
             m.click = function () {
                 contents.send('[run-menu]', { index: i });
