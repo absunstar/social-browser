@@ -525,9 +525,7 @@ SOCIALBROWSER.init2 = function () {
         return;
     }
 
-    if (SOCIALBROWSER.customSetting.off) {
-        return;
-    }
+    
 
     SOCIALBROWSER.log(` ... ${document.location.href} ... `);
 
@@ -2684,8 +2682,9 @@ SOCIALBROWSER.init2 = function () {
         }
     })();
 
-    SOCIALBROWSER.customSetting.javaScriptOFF =
+    SOCIALBROWSER.javaScriptOFF =
         SOCIALBROWSER.customSetting.javaScriptOFF ||
+        SOCIALBROWSER.customSetting.off ||
         SOCIALBROWSER.var.core.javaScriptOFF ||
         SOCIALBROWSER.customSetting.$cloudFlare ||
         SOCIALBROWSER.var.blocking.vip_site_list.some((site) => site.url.length > 2 && SOCIALBROWSER.window.getURL().like(site.url));
@@ -4235,6 +4234,120 @@ SOCIALBROWSER.init2 = function () {
                     });
                 }
             }
+            function getCustomSettingMenu() {
+                let arr = [];
+
+                arr.push({
+                    label: 'allow Default Web Worker',
+                    type: 'checkbox',
+                    checked: SOCIALBROWSER.customSetting.allowDefaultWebWorker || false,
+                    click() {
+                        SOCIALBROWSER.customSetting.allowDefaultWebWorker = !SOCIALBROWSER.customSetting.allowDefaultWebWorker;
+                    },
+                });
+                arr.push({
+                    label: 'allow Default Web Service',
+                    type: 'checkbox',
+                    checked: SOCIALBROWSER.customSetting.allowDefaultWebService || false,
+                    click() {
+                        SOCIALBROWSER.customSetting.allowDefaultWebService = !SOCIALBROWSER.customSetting.allowDefaultWebService;
+                    },
+                });
+                arr.push({
+                    label: 'allow Default Shared Worker',
+                    type: 'checkbox',
+                    checked: SOCIALBROWSER.customSetting.allowDefaultSharedWorker || false,
+                    click() {
+                        SOCIALBROWSER.customSetting.allowDefaultSharedWorker = !SOCIALBROWSER.customSetting.allowDefaultSharedWorker;
+                    },
+                });
+                arr.push({
+                    type: 'separator',
+                });
+                arr.push({
+                    label: 'allow Ads',
+                    type: 'checkbox',
+                    checked: SOCIALBROWSER.customSetting.allowAds || false,
+                    click() {
+                        SOCIALBROWSER.customSetting.allowAds = !SOCIALBROWSER.customSetting.allowAds;
+                    },
+                });
+                 arr.push({
+                    label: 'allow Popup',
+                    type: 'checkbox',
+                    checked: SOCIALBROWSER.customSetting.allowPopup || false,
+                    click() {
+                        SOCIALBROWSER.customSetting.allowPopup = !SOCIALBROWSER.customSetting.allowPopup;
+                    },
+                });
+                       arr.push({
+                    label: 'allow URL Redirect',
+                    type: 'checkbox',
+                    checked: SOCIALBROWSER.customSetting.allowRedirect || false,
+                    click() {
+                        SOCIALBROWSER.customSetting.allowRedirect = !SOCIALBROWSER.customSetting.allowRedirect;
+                    },
+                });
+
+                arr.push({
+                    label: 'allow Open in External Apps',
+                    type: 'checkbox',
+                    checked: SOCIALBROWSER.customSetting.allowOpenExternal || false,
+                    click() {
+                        SOCIALBROWSER.customSetting.allowOpenExternal = !SOCIALBROWSER.customSetting.allowOpenExternal;
+                    },
+                });
+                       arr.push({
+                    type: 'separator',
+                });
+                         arr.push({
+                    label: 'allow Download',
+                    type: 'checkbox',
+                    checked: SOCIALBROWSER.customSetting.allowDownload || false,
+                    click() {
+                        SOCIALBROWSER.customSetting.allowDownload = !SOCIALBROWSER.customSetting.allowDownload;
+                    },
+                });
+                         arr.push({
+                    type: 'separator',
+                });
+                 arr.push({
+                    label: 'turn off Javascript Engine',
+                    type: 'checkbox',
+                    checked: SOCIALBROWSER.customSetting.javaScriptOFF || false,
+                    click() {
+                        SOCIALBROWSER.customSetting.javaScriptOFF = !SOCIALBROWSER.customSetting.javaScriptOFF;
+                    },
+                });
+                   arr.push({
+                    label: 'turn off Browser Engine',
+                    type: 'checkbox',
+                    checked: SOCIALBROWSER.customSetting.enginOFF || false,
+                    click() {
+                        SOCIALBROWSER.customSetting.enginOFF = !SOCIALBROWSER.customSetting.enginOFF;
+                    },
+                });
+                 arr.push({
+                    label: 'turn off ALL Engine',
+                    type: 'checkbox',
+                    checked: SOCIALBROWSER.customSetting.off || false,
+                    click() {
+                        SOCIALBROWSER.customSetting.off = !SOCIALBROWSER.customSetting.off;
+                    },
+                });
+                if (arr.length > 0) {
+                    SOCIALBROWSER.menuList.push({
+                        label: 'Custom Setting',
+                         iconURL: 'http://127.0.0.1:60080/images/page.png',
+                        type: 'submenu',
+                        submenu: arr,
+                    });
+
+                    SOCIALBROWSER.menuList.push({
+                        type: 'separator',
+                    });
+                }
+            }
 
             function get2faMenu() {
                 let arr = [];
@@ -4603,6 +4716,7 @@ SOCIALBROWSER.init2 = function () {
                     SOCIALBROWSER.menuList.push({
                         type: 'separator',
                     });
+                  
 
                     if (SOCIALBROWSER.var.blocking.context_menu.proxy_options) {
                         let arr = [];
@@ -4638,7 +4752,7 @@ SOCIALBROWSER.init2 = function () {
                     if (SOCIALBROWSER.var.blocking.context_menu.page_options) {
                         get_options_menu(node);
                     }
-
+                         getCustomSettingMenu();
                     if (SOCIALBROWSER.var.blocking.context_menu.inspect && SOCIALBROWSER.customSetting.allowDevTools) {
                         SOCIALBROWSER.menuList.push({
                             type: 'separator',
@@ -5134,14 +5248,16 @@ SOCIALBROWSER.init2 = function () {
                                 sublabel: m.sublabel,
                                 visible: m.visible,
                                 type: m.type,
+                                checked: m.checked,
                                 iconURL: m.iconURL,
                                 submenu: m.submenu?.map((m2) => ({
                                     label: m2.label,
                                     type: m2.type,
+                                    checked: m2.checked,
                                     sublabel: m2.sublabel,
                                     visible: m2.visible,
                                     iconURL: m2.iconURL,
-                                    submenu: m2.submenu?.map((m3) => ({ label: m3.label, type: m3.type, sublabel: m3.sublabel, visible: m3.visible, iconURL: m3.iconURL })),
+                                    submenu: m2.submenu?.map((m3) => ({ label: m3.label, type: m3.type, checked: m3.checked, sublabel: m3.sublabel, visible: m3.visible, iconURL: m3.iconURL })),
                                 })),
                             })),
                         });
@@ -5375,7 +5491,7 @@ SOCIALBROWSER.init2 = function () {
 
     (function loadDom() {
         if ((domsLOADED = true)) {
-            if (SOCIALBROWSER.customSetting.javaScriptOFF || SOCIALBROWSER.customSetting.windowType === 'main' || document.location.href.like('*http://127.0.0.1*')) {
+            if (SOCIALBROWSER.javaScriptOFF || SOCIALBROWSER.customSetting.windowType === 'main' || document.location.href.like('*http://127.0.0.1*')) {
                 SOCIALBROWSER.log('.... [ DOM Blocking OFF] .... ' + document.location.href);
                 return;
             }
@@ -5414,7 +5530,7 @@ SOCIALBROWSER.init2 = function () {
 
     (function loadNodes() {
         if ((nodesLOADED = true)) {
-            if (SOCIALBROWSER.customSetting.javaScriptOFF) {
+            if (SOCIALBROWSER.javaScriptOFF) {
                 return false;
             }
             SOCIALBROWSER.log('.... [ HTML Elements Script Activated ].... ' + document.location.href);
@@ -5613,7 +5729,7 @@ SOCIALBROWSER.init2 = function () {
     (function loadSafty() {
         if ((saftyLOADED = true)) {
             if (
-                SOCIALBROWSER.customSetting.javaScriptOFF ||
+                SOCIALBROWSER.javaScriptOFF ||
                 !SOCIALBROWSER.var.blocking.allow_safty_mode ||
                 SOCIALBROWSER.isWhiteSite ||
                 document.location.href.like('http://localhost*|https://localhost*|http://127.0.0.1*|https://127.0.0.1*|browser://*|chrome://*')
@@ -5691,7 +5807,7 @@ SOCIALBROWSER.init2 = function () {
         if ((adsManagerLOADED = true)) {
             if (
                 SOCIALBROWSER.isWhiteSite ||
-                SOCIALBROWSER.customSetting.javaScriptOFF ||
+                SOCIALBROWSER.javaScriptOFF ||
                 !SOCIALBROWSER.var.blocking.block_ads ||
                 SOCIALBROWSER.customSetting.windowType === 'main' ||
                 document.location.hostname.contain('localhost|127.0.0.1|browser')
@@ -5782,7 +5898,7 @@ SOCIALBROWSER.init2 = function () {
     })();
 
     (function loadMainMoudles() {
-        if (!SOCIALBROWSER.customSetting.$cloudFlare && !SOCIALBROWSER.isWhiteSite && !SOCIALBROWSER.customSetting.javaScriptOFF) {
+        if (!SOCIALBROWSER.customSetting.$cloudFlare && !SOCIALBROWSER.isWhiteSite && !SOCIALBROWSER.javaScriptOFF) {
             (function loadWindow() {
                 if (!SOCIALBROWSER.isWhiteSite) {
                     if ((open0 = true)) {
@@ -5877,7 +5993,7 @@ SOCIALBROWSER.init2 = function () {
                                     return child_window;
                                 }
 
-                                if (!SOCIALBROWSER.customSetting.javaScriptOFF) {
+                                if (!SOCIALBROWSER.javaScriptOFF) {
                                     if (!SOCIALBROWSER.isAllowURL(url)) {
                                         SOCIALBROWSER.showUserMessage('Not Allow URL  <p><a>' + url + '<a></p>');
                                         return child_window;
@@ -5961,13 +6077,13 @@ SOCIALBROWSER.init2 = function () {
                     }
                 }
 
-                if (!SOCIALBROWSER.customSetting.javaScriptOFF) {
+                if (!SOCIALBROWSER.javaScriptOFF) {
                     if ((worker0 = true)) {
-                        SOCIALBROWSER.objectURLs = [];
-                        SOCIALBROWSER.createObjectURL = URL.createObjectURL;
+                        SOCIALBROWSER.blobObjectList = [];
+                        URL.createObjectURL0 = URL.createObjectURL;
                         URL.createObjectURL = function (object) {
-                            let url = SOCIALBROWSER.createObjectURL(object);
-                            SOCIALBROWSER.objectURLs.push({ url: url, object: object });
+                            let url = URL.createObjectURL0(object);
+                            SOCIALBROWSER.blobObjectList.push({ url: url, object: object });
                             return url;
                         };
                         SOCIALBROWSER.__setConstValue(URL.createObjectURL, 'toString', function () {
@@ -5975,193 +6091,190 @@ SOCIALBROWSER.init2 = function () {
                         });
 
                         SOCIALBROWSER.workerCodeString = '';
-                        window.Worker0 = window.Worker;
-                        window.Worker = function (url, options, _worker) {
-                            SOCIALBROWSER.log('New Worker : ' + url);
-                            url = SOCIALBROWSER.handleURL(url.toString());
+                        SOCIALBROWSER.executeJavaScriptWorker = function (_id, code, url) {
+                            _id = 'globalThis.' + _id;
+                            code = code.replaceAll('globalThis', _id + '');
+                            code = code.replaceAll('window.location', 'location');
+                            code = code.replaceAll('document.location', 'location');
+                            code = code.replaceAll('self.trustedTypes', _id + '.trustedTypes');
+                            code = code.replaceAll('self.postMessage', _id + '.postMessage2');
+                            code = code.replaceAll('parentPort.postMessage', _id + '.postMessage2');
+                            code = code.replaceAll('self.onmessage', _id + '.onmessage2');
+                            code = code.replaceAll('self', _id + '');
+                            code = code.replaceAll('parentPort', _id + '');
+                            code = code.replaceAll('debugger;', ' ');
+                            code = code.replaceAll('var ', 'let ');
 
-                            let workerID = 'worker_' + SOCIALBROWSER.md5(url) + '_';
+                            code = code.replaceAll(_id + '.' + _id, _id);
+                            code = code + ';if(onmessage) { ' + _id + '.onmessage2 = onmessage; }';
+                            code = code + ';SOCIALBROWSER.showUserMessage("Web Worker Done <p><a>' + url + '</a></p>")';
+                            code = `${_id}._ = async function(window , unsafeWindow , location , postMessage ){ try { ${code} } catch (err) {SOCIALBROWSER.alert(err)} };${_id}._(${_id}  , window , ${_id}.location , ${_id}.postMessage2);`;
+                            SOCIALBROWSER.workerCodeString += code + '\n//# sourceURL=' + url + '\n';
+                            SOCIALBROWSER.executeJavaScript(code).catch((e) => {
+                                SOCIALBROWSER.alert(e);
+                            });
+                        };
+                        if (!SOCIALBROWSER.customSetting.allowDefaultWebWorker) {
+                            window.Worker0 = window.Worker;
+                            window.Worker = function (url, options, _worker) {
+                                SOCIALBROWSER.log('New Worker : ' + url);
+                                url = SOCIALBROWSER.handleURL(url.toString());
 
-                            if (!SOCIALBROWSER.var.blocking.javascript.block_window_worker) {
-                                if (url.indexOf('blob:') === 0) {
-                                    let blob = SOCIALBROWSER.objectURLs.find((o) => o.url == url);
-                                    if (blob && blob.object && blob.object.type.contains('javascript')) {
-                                        blob.object
-                                            .text()
-                                            .then((code) => {
-                                                if (code) {
-                                                    let _id = _worker ? _worker.id : workerID;
-                                                    _id = 'globalThis.' + _id;
-                                                    code = code.replaceAll('window.location', 'location');
-                                                    code = code.replaceAll('document.location', 'location');
-                                                    code = code.replaceAll('self.trustedTypes', _id + '.trustedTypes');
-                                                    code = code.replaceAll('self', _id);
-                                                    code = code.replaceAll('location', _id + '.location');
-                                                    code = code.replaceAll('debugger;', ' ');
-                                                    code = code.replaceAll('var ', 'let ');
+                                let workerID = 'worker_' + SOCIALBROWSER.md5(url) + '_';
 
-                                                    code = code.replaceAll(_id + '.' + _id, _id);
-                                                    code = 'let postMessage =  ' + _id + '.postMessage2; ' + code;
-                                                    code = code + ';if(onmessage) { ' + _id + '.onmessage2 = onmessage; }';
-                                                    code = `${_id}._ = function(window , unsafeWindow , location){ try { ${code} } catch (err) {SOCIALBROWSER.log(err)} };${_id}._(${_id}  , window , ${_id}.location);`;
-                                                    SOCIALBROWSER.workerCodeString += code + '\n//# sourceURL=' + url + '\n';
-                                                    SOCIALBROWSER.executeJavaScript(code);
-                                                } else {
+                                if (!SOCIALBROWSER.var.blocking.javascript.block_window_worker) {
+                                    if (url.indexOf('blob:') === 0) {
+                                        let blob = SOCIALBROWSER.blobObjectList.find((o) => o.url == url);
+                                        if (blob && blob.object && blob.object.type.contains('javascript')) {
+                                            blob.object
+                                                .text()
+                                                .then((code) => {
+                                                    if (code) {
+                                                        let _id = _worker ? _worker.id : workerID;
+
+                                                        SOCIALBROWSER.executeJavaScriptWorker(_id, code, url);
+                                                    } else {
+                                                        globalThis[workerID] = new window.Worker0(url, options, _worker);
+                                                    }
+                                                })
+                                                .catch((e) => {
+                                                    SOCIALBROWSER.log(e);
                                                     globalThis[workerID] = new window.Worker0(url, options, _worker);
-                                                }
-                                            })
-                                            .catch((e) => {
-                                                SOCIALBROWSER.log(e);
-                                                globalThis[workerID] = new window.Worker0(url, options, _worker);
-                                            });
+                                                });
+                                        } else {
+                                            globalThis[workerID] = new window.Worker0(url, options, _worker);
+                                            return globalThis[workerID];
+                                        }
                                     } else {
-                                        globalThis[workerID] = new window.Worker0(url, options, _worker);
-                                        return globalThis[workerID];
+                                        fetch(url)
+                                            .then((response) => response.text())
+                                            .then((code) => {
+                                                SOCIALBROWSER.workerCodeString += code + '\n//# First sourceURL=' + url + '\n';
+                                                let _id = _worker ? _worker.id : workerID;
+                                                SOCIALBROWSER.executeJavaScriptWorker(_id, code, url);
+                                            });
                                     }
+                                }
+
+                                if (_worker) {
+                                    return _worker;
                                 } else {
-                                    fetch(url)
-                                        .then((response) => response.text())
-                                        .then((code) => {
-                                            SOCIALBROWSER.workerCodeString += code + '\n//# First sourceURL=' + url + '\n';
-                                            let _id = _worker ? _worker.id : workerID;
-                                            _id = 'globalThis.' + _id;
-                                            code = code.replaceAll('window.location', 'location');
-                                            code = code.replaceAll('document.location', 'location');
-                                            code = code.replaceAll('self.trustedTypes', _id + '.trustedTypes');
-                                            code = code.replaceAll('self.postMessage', _id + '.postMessage2');
-                                            code = code.replaceAll('self', _id + '');
-                                            code = code.replaceAll('debugger;', ' ');
-                                            code = code.replaceAll('var ', 'let ');
+                                    globalThis[workerID] = Object.create(Worker.prototype);
+                                    let worker2 = {
+                                        id: workerID,
+                                        url: url,
+                                        on: function () {},
+                                        addEventListener: function () {},
+                                        removeEventListener: function () {},
+                                        importScripts: function (...args2) {
+                                            args2.forEach((arg) => {
+                                                SOCIALBROWSER.log('Import Script : ' + arg);
+                                                new Worker(arg, null, globalThis[workerID]);
+                                            });
+                                        },
+                                        terminate: function () {},
+                                        postMessage: function (data) {
+                                            if (globalThis[workerID].onmessage2) {
+                                                globalThis[workerID].onmessage2({ data: data });
+                                            } else {
+                                                setTimeout(() => {
+                                                    globalThis[workerID].postMessage(data);
+                                                }, 500);
+                                            }
+                                        },
+                                        postMessage2: function (data) {
+                                            if (globalThis[workerID].onmessage) {
+                                                globalThis[workerID].onmessage({ data: data });
+                                            } else {
+                                                setTimeout(() => {
+                                                    globalThis[workerID].postMessage2(data);
+                                                }, 500);
+                                            }
+                                        },
+                                        onmessage: function () {},
+                                        terminate: function () {},
+                                    };
 
-                                            code = code.replaceAll(_id + '.' + _id, _id);
-                                            code = code + ';if(onmessage) { ' + _id + '.onmessage2 = onmessage; }';
-                                            code = code + ';SOCIALBROWSER.showUserMessage("Worker Done <p><a>' + url + '</a></p>")';
-                                            code = `${_id}._ = function(window , unsafeWindow , location , postMessage){ try { ${code} } catch (err) {SOCIALBROWSER.log(err)} };${_id}._(${_id}  , window , ${_id}.location , ${_id}.postMessage2);`;
-                                            SOCIALBROWSER.workerCodeString += code + '\n//# sourceURL=' + url + '\n';
-                                            SOCIALBROWSER.executeJavaScript(code);
-                                        });
-                                }
-                            }
-
-                            if (_worker) {
-                                return _worker;
-                            } else {
-                                globalThis[workerID] = Object.create(Worker.prototype);
-                                let worker2 = {
-                                    id: workerID,
-                                    url: url,
-                                    addEventListener: function () {},
-                                    removeEventListener: function () {},
-                                    importScripts: function (...args2) {
-                                        args2.forEach((arg) => {
-                                            SOCIALBROWSER.log('Import Script : ' + arg);
-                                            new Worker(arg, null, globalThis[workerID]);
-                                        });
-                                    },
-                                    terminate: function () {},
-                                    postMessage: function (data) {
-                                        if (globalThis[workerID].onmessage2) {
-                                            globalThis[workerID].onmessage2({ data: data });
-                                        } else {
-                                            setTimeout(() => {
-                                                globalThis[workerID].postMessage(data);
-                                            }, 500);
-                                        }
-                                    },
-                                    postMessage2: function (data) {
-                                        if (globalThis[workerID].onmessage) {
-                                            globalThis[workerID].onmessage({ data: data });
-                                        } else {
-                                            setTimeout(() => {
-                                                globalThis[workerID].postMessage2(data);
-                                            }, 500);
-                                        }
-                                    },
-                                    onmessage: function () {},
-                                    terminate: function () {},
-                                };
-
-                                for (const key in worker2) {
-                                    globalThis[workerID][key] = worker2[key];
-                                }
-
-                                let loc = new URL(globalThis[workerID].url);
-                                globalThis[workerID].location = loc;
-                                SOCIALBROWSER.__setConstValue(globalThis[workerID], 'location', {
-                                    protocol: loc.protocol,
-                                    host: loc.host,
-                                    hostname: loc.hostname,
-                                    origin: loc.origin,
-                                    port: loc.port,
-                                    pathname: loc.pathname,
-                                    hash: loc.hash,
-                                    search: loc.search,
-                                    href: globalThis[workerID].url,
-                                    toString: function () {
-                                        return globalThis[workerID].url;
-                                    },
-                                });
-                                SOCIALBROWSER.__setConstValue(globalThis[workerID], 'window', {});
-                                SOCIALBROWSER.__setConstValue(globalThis[workerID], 'document', {});
-                                SOCIALBROWSER.__setConstValue(globalThis[workerID], 'trustedTypes', window.trustedTypes);
-
-                                globalThis.importScripts = globalThis[workerID].importScripts;
-                                return globalThis[workerID];
-                            }
-                        };
-
-                        SOCIALBROWSER.__setConstValue(window.Worker, 'toString', function () {
-                            return 'function Worker() { [native code] }';
-                        });
-
-                        
-                        SOCIALBROWSER.navigator.serviceWorker = Object.create(Object.getPrototypeOf(navigator.serviceWorker || {}));
-                        SOCIALBROWSER.__setConstValue( SOCIALBROWSER.navigator.serviceWorker, 'controller', navigator.serviceWorker ? navigator.serviceWorker.controller : {});
-                        SOCIALBROWSER.__setConstValue( SOCIALBROWSER.navigator.serviceWorker, 'ready', navigator.serviceWorker ? navigator.serviceWorker.ready : Promise.resolve());
-                        SOCIALBROWSER.__setConstValue( SOCIALBROWSER.navigator.serviceWorker, 'getRegistration', function () {
-                            return Promise.resolve();
-                        });
-                        SOCIALBROWSER.__setConstValue( SOCIALBROWSER.navigator.serviceWorker, 'getRegistrations', function () {
-                            return Promise.resolve([]);
-                        });
-                        SOCIALBROWSER.__setConstValue( SOCIALBROWSER.navigator.serviceWorker, 'register', function (...args) {
-                            if (!SOCIALBROWSER.var.blocking.javascript.block_navigator_service_worker) {
-                                SOCIALBROWSER.log('New service Worker : ' + args[0]);
-
-                                return new Promise((resolve, reject) => {
-                                    if (!SOCIALBROWSER.var.blocking.javascript.block_navigator_service_worker) {
-                                        let worker = new window.Worker(...args);
-                                        resolve( SOCIALBROWSER.navigator.serviceWorker);
+                                    for (const key in worker2) {
+                                        globalThis[workerID][key] = worker2[key];
                                     }
-                                });
-                            } else {
-                                return new Promise((resolve, reject) => {
-                                    resolve(SOCIALBROWSER.serviceWorker);
+
+                                    let loc = new URL(globalThis[workerID].url);
+                                    globalThis[workerID].location = loc;
+                                    SOCIALBROWSER.__setConstValue(globalThis[workerID], 'location', {
+                                        protocol: loc.protocol,
+                                        host: loc.host,
+                                        hostname: loc.hostname,
+                                        origin: loc.origin,
+                                        port: loc.port,
+                                        pathname: loc.pathname,
+                                        hash: loc.hash,
+                                        search: loc.search,
+                                        href: globalThis[workerID].url,
+                                        toString: function () {
+                                            return globalThis[workerID].url;
+                                        },
+                                    });
+                                    SOCIALBROWSER.__setConstValue(globalThis[workerID], 'window', {});
+                                    SOCIALBROWSER.__setConstValue(globalThis[workerID], 'document', {});
+                                    SOCIALBROWSER.__setConstValue(globalThis[workerID], 'trustedTypes', window.trustedTypes);
+
+                                    globalThis.importScripts = globalThis[workerID].importScripts;
+                                    return globalThis[workerID];
+                                }
+                            };
+
+                            SOCIALBROWSER.__setConstValue(window.Worker, 'toString', function () {
+                                return 'function Worker() { [native code] }';
+                            });
+                        }
+
+                        if (!SOCIALBROWSER.customSetting.allowDefaultWebService) {
+                            SOCIALBROWSER.navigator.serviceWorker = Object.create(Object.getPrototypeOf(navigator.serviceWorker || {}));
+                            SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.serviceWorker, 'controller', navigator.serviceWorker ? navigator.serviceWorker.controller : {});
+                            SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.serviceWorker, 'ready', navigator.serviceWorker ? navigator.serviceWorker.ready : Promise.resolve());
+                            SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.serviceWorker, 'getRegistration', function () {
+                                return Promise.resolve();
+                            });
+                            SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.serviceWorker, 'getRegistrations', function () {
+                                return Promise.resolve([]);
+                            });
+                            SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.serviceWorker, 'register', function (...args) {
+                                if (!SOCIALBROWSER.var.blocking.javascript.block_navigator_service_worker) {
+                                    SOCIALBROWSER.log('New service Worker : ' + args[0]);
+
+                                    return new Promise((resolve, reject) => {
+                                        if (!SOCIALBROWSER.var.blocking.javascript.block_navigator_service_worker) {
+                                            let worker = new window.Worker(...args);
+                                            resolve(SOCIALBROWSER.navigator.serviceWorker);
+                                        }
+                                    });
+                                } else {
+                                    return new Promise((resolve, reject) => {
+                                        resolve(SOCIALBROWSER.serviceWorker);
+                                    });
+                                }
+                            });
+                            SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.serviceWorker, 'startMessages', function () {
+                                return Promise.resolve();
+                            });
+                            SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.serviceWorker, 'addEventListener', function () {});
+                        }
+                        if (!SOCIALBROWSER.customSetting.allowDefaultSharedWorker) {
+                            if (SOCIALBROWSER.var.blocking.javascript.block_window_shared_worker) {
+                                window.SharedWorker = function (...args) {
+                                    return {
+                                        onmessage: () => {},
+                                        onerror: () => {},
+                                        postMessage: () => {},
+                                    };
+                                };
+                                SOCIALBROWSER.__setConstValue(window.SharedWorker, 'toString', function () {
+                                    return 'SharedWorker() { [native code] }';
                                 });
                             }
-                        });
-                        SOCIALBROWSER.__setConstValue(
-                             SOCIALBROWSER.navigator.serviceWorker,
-                            'startMessages', function () {
-                                      return Promise.resolve();
-                                  },
-                        );
-                        SOCIALBROWSER.__setConstValue( SOCIALBROWSER.navigator.serviceWorker, 'addEventListener', function () {});
-
+                        }
                     }
-                }
-
-                if (SOCIALBROWSER.var.blocking.javascript.block_window_shared_worker) {
-                    window.SharedWorker = function (...args) {
-                        return {
-                            onmessage: () => {},
-                            onerror: () => {},
-                            postMessage: () => {},
-                        };
-                    };
-                    SOCIALBROWSER.__setConstValue(window.SharedWorker, 'toString', function () {
-                        return 'SharedWorker() { [native code] }';
-                    });
                 }
 
                 if (SOCIALBROWSER.var.blocking.javascript.block_window_post_message) {
@@ -6408,7 +6521,7 @@ SOCIALBROWSER.init2 = function () {
 
         (function loadFingerPrint() {
             if ((fingerPrintLOADED = true)) {
-                if (SOCIALBROWSER.customSetting.javaScriptOFF || SOCIALBROWSER.customSetting.windowType === 'main' || !SOCIALBROWSER.session.privacy.allowVPC) {
+                if (SOCIALBROWSER.javaScriptOFF || SOCIALBROWSER.customSetting.windowType === 'main' || !SOCIALBROWSER.session.privacy.allowVPC) {
                     SOCIALBROWSER.log('.... [ Finger Printing OFF ] .... ' + document.location.href);
                     return;
                 }
@@ -8393,8 +8506,8 @@ SOCIALBROWSER._window.on = function () {};
 
 SOCIALBROWSER.init();
 
-if (SOCIALBROWSER.customSetting.javaScriptOFF) {
-    if (!SOCIALBROWSER.customSetting.javaScriptOFF) {
+if (SOCIALBROWSER.javaScriptOFF) {
+    if (!SOCIALBROWSER.javaScriptOFF) {
         for (const key in SOCIALBROWSER.navigator) {
             SOCIALBROWSER.__setConstValue(navigator, key, SOCIALBROWSER.navigator[key]);
         }
@@ -8451,7 +8564,7 @@ if (SOCIALBROWSER.customSetting.javaScriptOFF) {
 }
 delete navigator.webdriver;
 
-if (!SOCIALBROWSER.customSetting.javaScriptOFF) {
+if (!SOCIALBROWSER.javaScriptOFF) {
     if ((defineProperty0 = true)) {
         Object.defineProperty0 = Object.defineProperty;
         let s = Object.defineProperty.toString();
@@ -8517,7 +8630,7 @@ if (!SOCIALBROWSER.customSetting.javaScriptOFF) {
                 configurable: true,
             });
 
-            if (ele.tagName.like('iframe') && !SOCIALBROWSER.isWhiteSite && SOCIALBROWSER.customSetting.javaScriptOFF && !SOCIALBROWSER.customSetting.$cloudFlare) {
+            if (ele.tagName.like('iframe') && !SOCIALBROWSER.isWhiteSite && SOCIALBROWSER.javaScriptOFF && !SOCIALBROWSER.customSetting.$cloudFlare) {
                 Object.defineProperty(ele, 'srcdoc', {
                     get() {
                         return ele.srcdoc0;
@@ -8541,7 +8654,7 @@ if (!SOCIALBROWSER.customSetting.javaScriptOFF) {
                     set(value) {
                         value.chrome = chrome;
                         value.navigator = window.navigator;
-                        ele.contentWindow = value;
+                        ele.contentWindow0 = value;
                         return ele;
                     },
                     enumerable: true,
