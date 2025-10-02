@@ -73,139 +73,139 @@ module.exports = function (owner) {
             {
                 value: 'Dateline Standard Time',
                 offset: -12,
-                text: '(UTC-12:00) International Date Line West',
+                text: '(UTC -12:00) International Date Line West',
             },
             {
                 value: 'UTC-11',
                 offset: -11,
-                text: '(UTC-11:00) Coordinated Universal Time-11',
+                text: '(UTC -11:00) Coordinated Universal Time-11',
             },
             {
                 value: 'Hawaiian Standard Time',
                 offset: -10,
-                text: '(UTC-10:00) Hawaii',
+                text: '(UTC -10:00) Hawaii',
             },
             {
                 value: 'Alaskan Standard Time',
                 offset: -9,
-                text: '(UTC-09:00) Alaska',
+                text: '(UTC -09:00) Alaska',
             },
             {
                 value: 'Pacific Standard Time (Mexico)',
                 offset: -8,
-                text: '(UTC-08:00) Baja California',
+                text: '(UTC -08:00) Baja California',
             },
             {
                 value: 'Pacific Daylight Time',
                 offset: -7,
-                text: '(UTC-07:00) Pacific Daylight Time (US & Canada)',
+                text: '(UTC -07:00) Pacific Daylight Time (US & Canada)',
             },
             {
                 value: 'Central Standard Time',
                 offset: -6,
-                text: '(UTC-06:00) Central Time (US & Canada)',
+                text: '(UTC -06:00) Central Time (US & Canada)',
             },
 
             {
                 value: 'SA Pacific Standard Time',
                 offset: -5,
-                text: '(UTC-05:00) Bogota, Lima, Quito',
+                text: '(UTC -05:00) Bogota, Lima, Quito',
             },
             {
                 value: 'Paraguay Standard Time',
                 offset: -4,
-                text: '(UTC-04:00) Asuncion',
+                text: '(UTC -04:00) Asuncion',
             },
             {
                 value: 'E. South America Standard Time',
                 offset: -3,
-                text: '(UTC-03:00) Brasilia',
+                text: '(UTC -03:00) Brasilia',
             },
 
             {
                 value: 'UTC-02',
                 offset: -2,
-                text: '(UTC-02:00) Coordinated Universal Time-02',
+                text: '(UTC -02:00) Coordinated Universal Time-02',
             },
             {
                 value: 'Mid-Atlantic Standard Time',
                 offset: -1,
-                text: '(UTC-02:00) Mid-Atlantic - Old',
+                text: '(UTC -01:00) Mid-Atlantic - Old',
             },
             {
                 value: 'GMT Standard Time',
                 offset: 0,
-                text: '(UTC) Edinburgh, London',
+                text: '(UTC 00:00 ) Edinburgh, London',
             },
 
             {
                 value: 'British Summer Time',
                 offset: 1,
-                text: '(UTC+01:00) Edinburgh, London',
+                text: '(UTC +01:00) Edinburgh, London',
             },
             {
                 value: 'Central European Standard Time',
                 offset: 2,
-                text: '(UTC+02:00) Sarajevo, Skopje, Warsaw, Zagreb',
+                text: '(UTC +02:00) Sarajevo, Skopje, Warsaw, Zagreb',
             },
             {
-                value: 'GTB Standard Time',
+                value: 'Midle East',
                 offset: 3,
-                text: '(UTC+02:00) Athens, Bucharest',
+                text: '(UTC +03:00) Egypt, Saudi',
             },
 
             {
                 value: 'Samara Time',
                 offset: 4,
-                text: '(UTC+04:00) Samara, Ulyanovsk, Saratov',
+                text: '(UTC +04:00) Samara, Ulyanovsk, Saratov',
             },
 
             {
                 value: 'Azerbaijan Standard Time',
                 offset: 5,
-                text: '(UTC+05:00) Baku',
+                text: '(UTC +05:00) Baku',
             },
 
             {
                 value: 'Central Asia Standard Time',
                 offset: 6,
-                text: '(UTC+06:00) Nur-Sultan (Astana)',
+                text: '(UTC +06:00) Nur-Sultan (Astana)',
             },
 
             {
                 value: 'SE Asia Standard Time',
                 offset: 7,
-                text: '(UTC+07:00) Bangkok, Hanoi, Jakarta',
+                text: '(UTC +07:00) Bangkok, Hanoi, Jakarta',
             },
 
             {
                 value: 'China Standard Time',
                 offset: 8,
-                text: '(UTC+08:00) Beijing, Chongqing, Hong Kong, Urumqi',
+                text: '(UTC +08:00) Beijing, Chongqing, Hong Kong, Urumqi',
             },
 
             {
                 value: 'Japan Standard Time',
                 offset: 9,
-                text: '(UTC+09:00) Osaka, Sapporo, Tokyo',
+                text: '(UTC +09:00) Osaka, Sapporo, Tokyo',
             },
 
             {
                 value: 'E. Australia Standard Time',
                 offset: 10,
-                text: '(UTC+10:00) Brisbane',
+                text: '(UTC +10:00) Brisbane',
             },
 
             {
                 value: 'Central Pacific Standard Time',
                 offset: 11,
-                text: '(UTC+11:00) Solomon Is., New Caledonia',
+                text: '(UTC +11:00) Solomon Is., New Caledonia',
             },
 
             {
                 value: 'New Zealand Standard Time',
                 offset: 12,
-                text: '(UTC+12:00) Auckland, Wellington',
+                text: '(UTC +12:00) Auckland, Wellington',
             },
         ];
         owner.languageList = [

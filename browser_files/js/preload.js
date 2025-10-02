@@ -44,8 +44,8 @@ var SOCIALBROWSER = {
     },
 };
 
-(function loadInit() {
-    if ((initLOADED = true)) {
+(function loadCore() {
+    if ((coreLOADED = true)) {
         SOCIALBROWSER.escapeRegExp = function (s = '') {
             if (!s) {
                 return '';
@@ -280,6 +280,7 @@ SOCIALBROWSER.isIframe = function () {
         return true;
     }
 };
+
 SOCIALBROWSER.process = () => process;
 
 SOCIALBROWSER.origin = document.location.origin;
@@ -519,22 +520,14 @@ SOCIALBROWSER.init2 = function () {
         },
     });
 
-    SOCIALBROWSER.isWhiteSite = SOCIALBROWSER.customSetting.isWhiteSite || SOCIALBROWSER.var.blocking.white_list.some((site) => site.url.length > 2 && document.location.href.like(site.url));
-
-    if (!SOCIALBROWSER.customSetting.iframe && SOCIALBROWSER.isIframe()) {
-        return;
+    if (SOCIALBROWSER.customSetting.allowSocialBrowser) {
+        globalThis.SOCIALBROWSER = SOCIALBROWSER;
     }
-
-    
 
     SOCIALBROWSER.log(` ... ${document.location.href} ... `);
 
-    if (SOCIALBROWSER.customSetting.allowSocialBrowser) {
-        if (globalThis) {
-            globalThis.SOCIALBROWSER = SOCIALBROWSER;
-        } else if (window) {
-            window.SOCIALBROWSER = SOCIALBROWSER;
-        }
+    if (!SOCIALBROWSER.customSetting.iframe && SOCIALBROWSER.isIframe()) {
+        return;
     }
 
     (function loadEvents() {
@@ -2182,33 +2175,25 @@ SOCIALBROWSER.init2 = function () {
             };
 
             let alert_idle = null;
-            SOCIALBROWSER.alert =
-                window.alert =
-                window.confirm =
-                    function (msg, time = 1000 * 3) {
-                        if (typeof msg !== 'string') {
-                            return true;
-                        }
-                        msg = msg.trim();
+            SOCIALBROWSER.alert = function (msg, time = 1000 * 3) {
+                if (typeof msg !== 'string') {
+                    return true;
+                }
+                msg = msg.trim();
 
-                        SOCIALBROWSER.log(msg);
-                        let div = document.querySelector('#__alertBox');
-                        if (div) {
-                            clearTimeout(alert_idle);
-                            div.innerHTML = SOCIALBROWSER.policy.createHTML(msg.replace(/\n/g, '<br>'));
-                            div.style.display = 'block';
-                            alert_idle = setTimeout(() => {
-                                div.style.display = 'none';
-                                div.innerHTML = SOCIALBROWSER.policy.createHTML('');
-                            }, time);
-                        }
+                SOCIALBROWSER.log(msg);
+                let div = document.querySelector('#__alertBox');
+                if (div) {
+                    clearTimeout(alert_idle);
+                    div.innerHTML = SOCIALBROWSER.policy.createHTML(msg.replace(/\n/g, '<br>'));
+                    div.style.display = 'block';
+                    alert_idle = setTimeout(() => {
+                        div.style.display = 'none';
+                        div.innerHTML = SOCIALBROWSER.policy.createHTML('');
+                    }, time);
+                }
 
-                        return true;
-                    };
-
-            window.prompt = function (ask = '', answer = '') {
-                SOCIALBROWSER.log(ask, answer);
-                return answer;
+                return true;
             };
         }
 
@@ -2306,7 +2291,7 @@ SOCIALBROWSER.init2 = function () {
                     SOCIALBROWSER.customSetting.localStorageList = data.localStorageList;
                     SOCIALBROWSER.customSetting.sessionStorageList = data.sessionStorageList;
                     SOCIALBROWSER.setDomainCookies({ cookies: data.cookies });
-                    SOCIALBROWSER.window.storaeAdded = false;
+                    SOCIALBROWSER.window.newStorageSet = false;
                     document.location.href = data.url;
                 } else if (type == 1) {
                     SOCIALBROWSER.addSession(data.session);
@@ -2397,7 +2382,7 @@ SOCIALBROWSER.init2 = function () {
             SOCIALBROWSER.cookiesRaw = SOCIALBROWSER.getCookieRaw();
         };
 
-        if (!SOCIALBROWSER.isLocal) {
+        if (!SOCIALBROWSER.isLocal && !SOCIALBROWSER.customSetting.$cloudFlare) {
             if (!SOCIALBROWSER.var.blocking.javascript.allowConsoleLogs) {
                 for (const key in console) {
                     if (typeof console[key] == 'function') {
@@ -2659,18 +2644,17 @@ SOCIALBROWSER.init2 = function () {
             SOCIALBROWSER.setStorage('vpc', SOCIALBROWSER.session.privacy.vpc);
         }
 
-        if (!SOCIALBROWSER.customSetting.$cloudFlare && !SOCIALBROWSER.isWhiteSite) {
-            // SOCIALBROWSER.log('edit eval : ' + document.location.href);
-            // window.eval0 = window.eval;
-            // window.eval = function (...code) {
-            //     try {
-            //         return window.eval0.apply(this, code);
-            //     } catch (error) {
-            //         SOCIALBROWSER.log(document.location.href, error, code);
-            //         return undefined;
-            //     }
-            // }.bind(window.eval);
+        SOCIALBROWSER.isWhiteSite =
+            SOCIALBROWSER.customSetting.isWhiteSite || SOCIALBROWSER.var.blocking.white_list.some((site) => site.url.length > 2 && SOCIALBROWSER.window.getURL().like(site.url));
 
+        SOCIALBROWSER.javaScriptOFF =
+            SOCIALBROWSER.customSetting.javaScriptOFF ||
+            SOCIALBROWSER.customSetting.off ||
+            SOCIALBROWSER.customSetting.$cloudFlare ||
+            SOCIALBROWSER.var.core.javaScriptOFF ||
+            SOCIALBROWSER.var.blocking.vip_site_list.some((site) => site.url.length > 2 && SOCIALBROWSER.window.getURL().like(site.url));
+
+        if (!SOCIALBROWSER.javaScriptOFF && !SOCIALBROWSER.isWhiteSite) {
             if (SOCIALBROWSER.var.blocking.javascript.block_eval) {
                 let s = window.eval.toString();
                 window.eval = function () {
@@ -2678,292 +2662,6 @@ SOCIALBROWSER.init2 = function () {
                     return undefined;
                 };
                 SOCIALBROWSER.__setConstValue(window.eval, 'toString', () => s);
-            }
-        }
-    })();
-
-    SOCIALBROWSER.javaScriptOFF =
-        SOCIALBROWSER.customSetting.javaScriptOFF ||
-        SOCIALBROWSER.customSetting.off ||
-        SOCIALBROWSER.var.core.javaScriptOFF ||
-        SOCIALBROWSER.customSetting.$cloudFlare ||
-        SOCIALBROWSER.var.blocking.vip_site_list.some((site) => site.url.length > 2 && SOCIALBROWSER.window.getURL().like(site.url));
-
-    (function loadCloudflare() {
-        if (document.location.href.like('*://challenges.cloudflare.com/*')) {
-            SOCIALBROWSER.customSetting.$cloudFlare = true;
-            if (SOCIALBROWSER.var.blocking.javascript.cloudflareON) {
-                if (document.location.href.like('*://challenges.cloudflare.com/*')) {
-                    SOCIALBROWSER.sendMessage('[cloudflare-detected]');
-
-                    SOCIALBROWSER.onLoad(() => {
-                        async function ShadowFinder() {
-                            const eventNames = ['mouseover', 'mouseenter', 'mousedown', 'mouseup', 'click', 'mouseout'];
-                            const delay = async (milliseconds) => await new Promise((resolve) => setTimeout(resolve, milliseconds));
-                            const randomInteger = (n, r) => {
-                                return Math.floor(Math.random() * (r - n + 1)) + n;
-                            };
-                            const simulateMouseClick = (element, box, clientX = null, clientY = null) => {
-                                return SOCIALBROWSER.click(element);
-                                box = element.getBoundingClientRect();
-
-                                clientX = randomInteger(box.left, box.left + box.width);
-                                clientY = randomInteger(box.top, box.top + box.height);
-
-                                eventNames.forEach((eventName) => {
-                                    const event = new MouseEvent(eventName, {
-                                        detail: eventName === 'mouseover' ? 0 : 1,
-                                        view: window,
-                                        bubbles: true,
-                                        cancelable: true,
-                                        clientX: clientX,
-                                        clientY: clientY,
-                                    });
-                                    element.dispatchEvent(event);
-                                });
-                            };
-
-                            async function Click2(shadowRoot) {
-                                if (shadowRoot.querySelector('div[style*="display: grid"] > div > label')) {
-                                    const element = shadowRoot.querySelector('div[style*="display: grid"] > div input');
-
-                                    if (element) {
-                                        if (element.getAttribute('aria-checked') !== null) {
-                                        } else {
-                                            simulateMouseClick(element);
-                                        }
-                                    }
-                                }
-                                await delay(randomInteger(200, 4000));
-                                Click2(shadowRoot);
-                            }
-
-                            const originalAttachShadow = Element.prototype.attachShadow;
-                            Element.prototype.attachShadow = function (init) {
-                                let shadowRoot = originalAttachShadow.call(this, init);
-                                window.parent !== window && shadowRoot ? Click2(shadowRoot) : undefined;
-                                return shadowRoot;
-                            };
-                        }
-                        ShadowFinder();
-                        // const attachShadowReplacement = '(' + ShadowFinder.toString().replace('ShadowFinder', '') + ')();';
-                        // SOCIALBROWSER.eval(attachShadowReplacement);
-                    });
-                }
-            }
-        }
-    })();
-
-    (function loadGoogleCapatch() {
-        if (document.location.href.like('*://*/recaptcha/*')) {
-            if (SOCIALBROWSER.var.blocking.javascript.googleCaptchaON) {
-                SOCIALBROWSER.onLoad(() => {
-                    (function () {
-                        function qSelectorAll(selector) {
-                            return document.querySelectorAll(selector);
-                        }
-
-                        function qSelector(selector) {
-                            return document.querySelector(selector);
-                        }
-
-                        let solved = false;
-                        let checkBoxClicked = false;
-                        let waitingForAudioResponse = false;
-
-                        const CHECK_BOX = '.recaptcha-checkbox-border';
-                        const AUDIO_BUTTON = '#recaptcha-audio-button';
-                        const PLAY_BUTTON = '.rc-audiochallenge-play-button .rc-button-default';
-                        const AUDIO_SOURCE = '#audio-source';
-                        const IMAGE_SELECT = '#rc-imageselect';
-                        const RESPONSE_FIELD = '.rc-audiochallenge-response-field';
-                        const AUDIO_ERROR_MESSAGE = '.rc-audiochallenge-error-message';
-                        const AUDIO_RESPONSE = '#audio-response';
-                        const RELOAD_BUTTON = '#recaptcha-reload-button';
-                        const RECAPTCHA_STATUS = '#recaptcha-accessible-status';
-                        const DOSCAPTCHA = '.rc-doscaptcha-body';
-                        const VERIFY_BUTTON = '#recaptcha-verify-button';
-                        const MAX_ATTEMPTS = 5;
-                        let requestCount = 0;
-                        let recaptchaLanguage = qSelector('html').getAttribute('lang');
-                        let audioUrl = '';
-                        let recaptchaInitialStatus = qSelector(RECAPTCHA_STATUS) ? qSelector(RECAPTCHA_STATUS).innerText : '';
-                        let serversList = [
-                            SOCIALBROWSER.from123('431932754619268325738657455847524278377641538271483932614578825245595779431837734234825445787591'),
-                            SOCIALBROWSER.from123('431932754619268325738657455847524278377641541668461957754318866841388282477852574658366841788667'),
-                        ];
-                        let latencyList = Array(serversList.length).fill(10000);
-
-                        function isHidden(el) {
-                            return el.offsetParent === null;
-                        }
-
-                        async function getTextFromAudio(URL) {
-                            let minLatency = 100000;
-                            let url = '';
-
-                            for (let k = 0; k < latencyList.length; k++) {
-                                if (latencyList[k] <= minLatency) {
-                                    minLatency = latencyList[k];
-                                    url = serversList[k];
-                                }
-                            }
-
-                            requestCount = requestCount + 1;
-                            URL = URL.replace('recaptcha.net', 'google.com');
-                            if (recaptchaLanguage.length < 1) {
-                                SOCIALBROWSER.log('Recaptcha Language is not recognized');
-                                recaptchaLanguage = 'en-US';
-                            }
-
-                            SOCIALBROWSER.log('Recaptcha Language is ' + recaptchaLanguage);
-
-                            SOCIALBROWSER.fetch({
-                                method: 'POST',
-                                url: url,
-                                headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded',
-                                },
-                                data: 'input=' + encodeURIComponent(URL) + '&lang=' + recaptchaLanguage,
-                                timeout: 60000,
-                                onload: function (response) {
-                                    SOCIALBROWSER.log('Response::' + response.responseText);
-                                    try {
-                                        if (response && response.responseText) {
-                                            var responseText = response.responseText;
-                                            if (responseText == '0' || responseText.includes('<') || responseText.includes('>') || responseText.length < 2 || responseText.length > 50) {
-                                                SOCIALBROWSER.log('Invalid Response. Retrying..');
-                                            } else if (
-                                                qSelector(AUDIO_SOURCE) &&
-                                                qSelector(AUDIO_SOURCE).src &&
-                                                audioUrl == qSelector(AUDIO_SOURCE).src &&
-                                                qSelector(AUDIO_RESPONSE) &&
-                                                !qSelector(AUDIO_RESPONSE).value &&
-                                                qSelector(AUDIO_BUTTON).style.display == 'none' &&
-                                                qSelector(VERIFY_BUTTON)
-                                            ) {
-                                                qSelector(AUDIO_RESPONSE).value = responseText;
-                                                qSelector(VERIFY_BUTTON).click();
-                                            } else {
-                                                SOCIALBROWSER.log('Could not locate text input box');
-                                            }
-                                            waitingForAudioResponse = false;
-                                        }
-                                    } catch (err) {
-                                        SOCIALBROWSER.log(err.message);
-                                        SOCIALBROWSER.log('Exception handling response. Retrying..');
-                                        waitingForAudioResponse = false;
-                                    }
-                                },
-                                onerror: function (e) {
-                                    SOCIALBROWSER.log(e);
-                                    waitingForAudioResponse = false;
-                                },
-                                ontimeout: function () {
-                                    SOCIALBROWSER.log('Response Timed out. Retrying..');
-                                    waitingForAudioResponse = false;
-                                },
-                            });
-                        }
-
-                        async function pingTest(url) {
-                            var start = new Date().getTime();
-                            SOCIALBROWSER.fetch({
-                                method: 'GET',
-                                url: url,
-                                headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded',
-                                },
-                                data: '',
-                                timeout: 8000,
-                                onload: function (response) {
-                                    if (response && response.responseText && response.responseText == '0') {
-                                        var end = new Date().getTime();
-                                        var milliseconds = end - start;
-
-                                        for (let i = 0; i < serversList.length; i++) {
-                                            if (url == serversList[i]) {
-                                                latencyList[i] = milliseconds;
-                                            }
-                                        }
-                                    }
-                                },
-                                onerror: function (e) {
-                                    SOCIALBROWSER.log(e);
-                                },
-                                ontimeout: function () {
-                                    SOCIALBROWSER.log('Ping Test Response Timed out for ' + url);
-                                },
-                            });
-                        }
-
-                        if (qSelector(CHECK_BOX)) {
-                            qSelector(CHECK_BOX).click();
-                        } else if (window.location.href.includes('bframe')) {
-                            for (let i = 0; i < serversList.length; i++) {
-                                pingTest(serversList[i]);
-                            }
-                        }
-
-                        let startInterval = setInterval(function () {
-                            try {
-                                if (!checkBoxClicked && qSelector(CHECK_BOX) && !isHidden(qSelector(CHECK_BOX))) {
-                                    qSelector(CHECK_BOX).click();
-                                    checkBoxClicked = true;
-                                }
-                                if (qSelector(RECAPTCHA_STATUS) && qSelector(RECAPTCHA_STATUS).innerText != recaptchaInitialStatus) {
-                                    solved = true;
-                                    SOCIALBROWSER.log('SOLVED');
-                                    clearInterval(startInterval);
-                                }
-                                if (requestCount > MAX_ATTEMPTS) {
-                                    SOCIALBROWSER.log('Attempted Max Retries. Stopping the solver');
-                                    solved = true;
-                                    clearInterval(startInterval);
-                                }
-                                if (!solved) {
-                                    if (qSelector(AUDIO_BUTTON) && !isHidden(qSelector(AUDIO_BUTTON)) && qSelector(IMAGE_SELECT)) {
-                                        qSelector(AUDIO_BUTTON).click();
-                                    }
-                                    if (
-                                        (!waitingForAudioResponse &&
-                                            qSelector(AUDIO_SOURCE) &&
-                                            qSelector(AUDIO_SOURCE).src &&
-                                            qSelector(AUDIO_SOURCE).src.length > 0 &&
-                                            audioUrl == qSelector(AUDIO_SOURCE).src &&
-                                            qSelector(RELOAD_BUTTON)) ||
-                                        (qSelector(AUDIO_ERROR_MESSAGE) && qSelector(AUDIO_ERROR_MESSAGE).innerText.length > 0 && qSelector(RELOAD_BUTTON) && !qSelector(RELOAD_BUTTON).disabled)
-                                    ) {
-                                        qSelector(RELOAD_BUTTON).click();
-                                    } else if (
-                                        !waitingForAudioResponse &&
-                                        qSelector(RESPONSE_FIELD) &&
-                                        !isHidden(qSelector(RESPONSE_FIELD)) &&
-                                        !qSelector(AUDIO_RESPONSE).value &&
-                                        qSelector(AUDIO_SOURCE) &&
-                                        qSelector(AUDIO_SOURCE).src &&
-                                        qSelector(AUDIO_SOURCE).src.length > 0 &&
-                                        audioUrl != qSelector(AUDIO_SOURCE).src &&
-                                        requestCount <= MAX_ATTEMPTS
-                                    ) {
-                                        waitingForAudioResponse = true;
-                                        audioUrl = qSelector(AUDIO_SOURCE).src;
-                                        getTextFromAudio(audioUrl);
-                                    } else {
-                                    }
-                                }
-                                if (qSelector(DOSCAPTCHA) && qSelector(DOSCAPTCHA).innerText.length > 0) {
-                                    SOCIALBROWSER.log('Automated Queries Detected');
-                                    clearInterval(startInterval);
-                                }
-                            } catch (err) {
-                                SOCIALBROWSER.log(err.message);
-                                SOCIALBROWSER.log('An error occurred while solving. Stopping the solver.');
-                                clearInterval(startInterval);
-                            }
-                        }, 5000);
-                    })();
-                });
             }
         }
     })();
@@ -4238,15 +3936,15 @@ SOCIALBROWSER.init2 = function () {
                 let arr = [];
 
                 arr.push({
-                    label: 'allow Default Web Worker',
+                    label: 'default Web Worker',
                     type: 'checkbox',
-                    checked: SOCIALBROWSER.customSetting.allowDefaultWebWorker || false,
+                    checked: SOCIALBROWSER.customSetting.allowDefaultWorker || false,
                     click() {
-                        SOCIALBROWSER.customSetting.allowDefaultWebWorker = !SOCIALBROWSER.customSetting.allowDefaultWebWorker;
+                        SOCIALBROWSER.customSetting.allowDefaultWorker = !SOCIALBROWSER.customSetting.allowDefaultWorker;
                     },
                 });
                 arr.push({
-                    label: 'allow Default Web Service',
+                    label: 'default Web Service',
                     type: 'checkbox',
                     checked: SOCIALBROWSER.customSetting.allowDefaultWebService || false,
                     click() {
@@ -4254,7 +3952,7 @@ SOCIALBROWSER.init2 = function () {
                     },
                 });
                 arr.push({
-                    label: 'allow Default Shared Worker',
+                    label: 'default Shared Worker',
                     type: 'checkbox',
                     checked: SOCIALBROWSER.customSetting.allowDefaultSharedWorker || false,
                     click() {
@@ -4272,7 +3970,7 @@ SOCIALBROWSER.init2 = function () {
                         SOCIALBROWSER.customSetting.allowAds = !SOCIALBROWSER.customSetting.allowAds;
                     },
                 });
-                 arr.push({
+                arr.push({
                     label: 'allow Popup',
                     type: 'checkbox',
                     checked: SOCIALBROWSER.customSetting.allowPopup || false,
@@ -4280,7 +3978,7 @@ SOCIALBROWSER.init2 = function () {
                         SOCIALBROWSER.customSetting.allowPopup = !SOCIALBROWSER.customSetting.allowPopup;
                     },
                 });
-                       arr.push({
+                arr.push({
                     label: 'allow URL Redirect',
                     type: 'checkbox',
                     checked: SOCIALBROWSER.customSetting.allowRedirect || false,
@@ -4297,10 +3995,10 @@ SOCIALBROWSER.init2 = function () {
                         SOCIALBROWSER.customSetting.allowOpenExternal = !SOCIALBROWSER.customSetting.allowOpenExternal;
                     },
                 });
-                       arr.push({
+                arr.push({
                     type: 'separator',
                 });
-                         arr.push({
+                arr.push({
                     label: 'allow Download',
                     type: 'checkbox',
                     checked: SOCIALBROWSER.customSetting.allowDownload || false,
@@ -4308,10 +4006,10 @@ SOCIALBROWSER.init2 = function () {
                         SOCIALBROWSER.customSetting.allowDownload = !SOCIALBROWSER.customSetting.allowDownload;
                     },
                 });
-                         arr.push({
+                arr.push({
                     type: 'separator',
                 });
-                 arr.push({
+                arr.push({
                     label: 'turn off Javascript Engine',
                     type: 'checkbox',
                     checked: SOCIALBROWSER.customSetting.javaScriptOFF || false,
@@ -4319,7 +4017,7 @@ SOCIALBROWSER.init2 = function () {
                         SOCIALBROWSER.customSetting.javaScriptOFF = !SOCIALBROWSER.customSetting.javaScriptOFF;
                     },
                 });
-                   arr.push({
+                arr.push({
                     label: 'turn off Browser Engine',
                     type: 'checkbox',
                     checked: SOCIALBROWSER.customSetting.enginOFF || false,
@@ -4327,7 +4025,7 @@ SOCIALBROWSER.init2 = function () {
                         SOCIALBROWSER.customSetting.enginOFF = !SOCIALBROWSER.customSetting.enginOFF;
                     },
                 });
-                 arr.push({
+                arr.push({
                     label: 'turn off ALL Engine',
                     type: 'checkbox',
                     checked: SOCIALBROWSER.customSetting.off || false,
@@ -4338,7 +4036,7 @@ SOCIALBROWSER.init2 = function () {
                 if (arr.length > 0) {
                     SOCIALBROWSER.menuList.push({
                         label: 'Custom Setting',
-                         iconURL: 'http://127.0.0.1:60080/images/page.png',
+                        iconURL: 'http://127.0.0.1:60080/images/page.png',
                         type: 'submenu',
                         submenu: arr,
                     });
@@ -4716,7 +4414,6 @@ SOCIALBROWSER.init2 = function () {
                     SOCIALBROWSER.menuList.push({
                         type: 'separator',
                     });
-                  
 
                     if (SOCIALBROWSER.var.blocking.context_menu.proxy_options) {
                         let arr = [];
@@ -4752,7 +4449,7 @@ SOCIALBROWSER.init2 = function () {
                     if (SOCIALBROWSER.var.blocking.context_menu.page_options) {
                         get_options_menu(node);
                     }
-                         getCustomSettingMenu();
+                    getCustomSettingMenu();
                     if (SOCIALBROWSER.var.blocking.context_menu.inspect && SOCIALBROWSER.customSetting.allowDevTools) {
                         SOCIALBROWSER.menuList.push({
                             type: 'separator',
@@ -5353,7 +5050,295 @@ SOCIALBROWSER.init2 = function () {
         }
     })();
 
+    (function loadCloudflare() {
+        if (SOCIALBROWSER.javaScriptOFF) {
+            return;
+        }
+        if (document.location.href.like('*://challenges.cloudflare.com/*')) {
+            SOCIALBROWSER.customSetting.$cloudFlare = true;
+            if (SOCIALBROWSER.var.blocking.javascript.cloudflareON) {
+                if (document.location.href.like('*://challenges.cloudflare.com/*')) {
+                    SOCIALBROWSER.sendMessage('[cloudflare-detected]');
+
+                    SOCIALBROWSER.onLoad(() => {
+                        async function ShadowFinder() {
+                            const eventNames = ['mouseover', 'mouseenter', 'mousedown', 'mouseup', 'click', 'mouseout'];
+                            const delay = async (milliseconds) => await new Promise((resolve) => setTimeout(resolve, milliseconds));
+                            const randomInteger = (n, r) => {
+                                return Math.floor(Math.random() * (r - n + 1)) + n;
+                            };
+                            const simulateMouseClick = (element, box, clientX = null, clientY = null) => {
+                                return SOCIALBROWSER.click(element);
+                                box = element.getBoundingClientRect();
+
+                                clientX = randomInteger(box.left, box.left + box.width);
+                                clientY = randomInteger(box.top, box.top + box.height);
+
+                                eventNames.forEach((eventName) => {
+                                    const event = new MouseEvent(eventName, {
+                                        detail: eventName === 'mouseover' ? 0 : 1,
+                                        view: window,
+                                        bubbles: true,
+                                        cancelable: true,
+                                        clientX: clientX,
+                                        clientY: clientY,
+                                    });
+                                    element.dispatchEvent(event);
+                                });
+                            };
+
+                            async function Click2(shadowRoot) {
+                                if (shadowRoot.querySelector('div[style*="display: grid"] > div > label')) {
+                                    const element = shadowRoot.querySelector('div[style*="display: grid"] > div input');
+
+                                    if (element) {
+                                        if (element.getAttribute('aria-checked') !== null) {
+                                        } else {
+                                            simulateMouseClick(element);
+                                        }
+                                    }
+                                }
+                                await delay(randomInteger(200, 4000));
+                                Click2(shadowRoot);
+                            }
+
+                            const originalAttachShadow = Element.prototype.attachShadow;
+                            Element.prototype.attachShadow = function (init) {
+                                let shadowRoot = originalAttachShadow.call(this, init);
+                                window.parent !== window && shadowRoot ? Click2(shadowRoot) : undefined;
+                                return shadowRoot;
+                            };
+                        }
+                        ShadowFinder();
+                        // const attachShadowReplacement = '(' + ShadowFinder.toString().replace('ShadowFinder', '') + ')();';
+                        // SOCIALBROWSER.eval(attachShadowReplacement);
+                    });
+                }
+            }
+        }
+    })();
+
+    (function loadGoogleCapatch() {
+        if (SOCIALBROWSER.javaScriptOFF) {
+            return;
+        }
+        if (document.location.href.like('*://*/recaptcha/*')) {
+            if (SOCIALBROWSER.var.blocking.javascript.googleCaptchaON) {
+                SOCIALBROWSER.onLoad(() => {
+                    (function () {
+                        function qSelectorAll(selector) {
+                            return document.querySelectorAll(selector);
+                        }
+
+                        function qSelector(selector) {
+                            return document.querySelector(selector);
+                        }
+
+                        let solved = false;
+                        let checkBoxClicked = false;
+                        let waitingForAudioResponse = false;
+
+                        const CHECK_BOX = '.recaptcha-checkbox-border';
+                        const AUDIO_BUTTON = '#recaptcha-audio-button';
+                        const PLAY_BUTTON = '.rc-audiochallenge-play-button .rc-button-default';
+                        const AUDIO_SOURCE = '#audio-source';
+                        const IMAGE_SELECT = '#rc-imageselect';
+                        const RESPONSE_FIELD = '.rc-audiochallenge-response-field';
+                        const AUDIO_ERROR_MESSAGE = '.rc-audiochallenge-error-message';
+                        const AUDIO_RESPONSE = '#audio-response';
+                        const RELOAD_BUTTON = '#recaptcha-reload-button';
+                        const RECAPTCHA_STATUS = '#recaptcha-accessible-status';
+                        const DOSCAPTCHA = '.rc-doscaptcha-body';
+                        const VERIFY_BUTTON = '#recaptcha-verify-button';
+                        const MAX_ATTEMPTS = 5;
+                        let requestCount = 0;
+                        let recaptchaLanguage = qSelector('html').getAttribute('lang');
+                        let audioUrl = '';
+                        let recaptchaInitialStatus = qSelector(RECAPTCHA_STATUS) ? qSelector(RECAPTCHA_STATUS).innerText : '';
+                        let serversList = [
+                            SOCIALBROWSER.from123('431932754619268325738657455847524278377641538271483932614578825245595779431837734234825445787591'),
+                            SOCIALBROWSER.from123('431932754619268325738657455847524278377641541668461957754318866841388282477852574658366841788667'),
+                        ];
+                        let latencyList = Array(serversList.length).fill(10000);
+
+                        function isHidden(el) {
+                            return el.offsetParent === null;
+                        }
+
+                        async function getTextFromAudio(URL) {
+                            let minLatency = 100000;
+                            let url = '';
+
+                            for (let k = 0; k < latencyList.length; k++) {
+                                if (latencyList[k] <= minLatency) {
+                                    minLatency = latencyList[k];
+                                    url = serversList[k];
+                                }
+                            }
+
+                            requestCount = requestCount + 1;
+                            URL = URL.replace('recaptcha.net', 'google.com');
+                            if (recaptchaLanguage.length < 1) {
+                                SOCIALBROWSER.log('Recaptcha Language is not recognized');
+                                recaptchaLanguage = 'en-US';
+                            }
+
+                            SOCIALBROWSER.log('Recaptcha Language is ' + recaptchaLanguage);
+
+                            SOCIALBROWSER.fetch({
+                                method: 'POST',
+                                url: url,
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                                data: 'input=' + encodeURIComponent(URL) + '&lang=' + recaptchaLanguage,
+                                timeout: 60000,
+                                onload: function (response) {
+                                    SOCIALBROWSER.log('Response::' + response.responseText);
+                                    try {
+                                        if (response && response.responseText) {
+                                            var responseText = response.responseText;
+                                            if (responseText == '0' || responseText.includes('<') || responseText.includes('>') || responseText.length < 2 || responseText.length > 50) {
+                                                SOCIALBROWSER.log('Invalid Response. Retrying..');
+                                            } else if (
+                                                qSelector(AUDIO_SOURCE) &&
+                                                qSelector(AUDIO_SOURCE).src &&
+                                                audioUrl == qSelector(AUDIO_SOURCE).src &&
+                                                qSelector(AUDIO_RESPONSE) &&
+                                                !qSelector(AUDIO_RESPONSE).value &&
+                                                qSelector(AUDIO_BUTTON).style.display == 'none' &&
+                                                qSelector(VERIFY_BUTTON)
+                                            ) {
+                                                qSelector(AUDIO_RESPONSE).value = responseText;
+                                                qSelector(VERIFY_BUTTON).click();
+                                            } else {
+                                                SOCIALBROWSER.log('Could not locate text input box');
+                                            }
+                                            waitingForAudioResponse = false;
+                                        }
+                                    } catch (err) {
+                                        SOCIALBROWSER.log(err.message);
+                                        SOCIALBROWSER.log('Exception handling response. Retrying..');
+                                        waitingForAudioResponse = false;
+                                    }
+                                },
+                                onerror: function (e) {
+                                    SOCIALBROWSER.log(e);
+                                    waitingForAudioResponse = false;
+                                },
+                                ontimeout: function () {
+                                    SOCIALBROWSER.log('Response Timed out. Retrying..');
+                                    waitingForAudioResponse = false;
+                                },
+                            });
+                        }
+
+                        async function pingTest(url) {
+                            var start = new Date().getTime();
+                            SOCIALBROWSER.fetch({
+                                method: 'GET',
+                                url: url,
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                                data: '',
+                                timeout: 8000,
+                                onload: function (response) {
+                                    if (response && response.responseText && response.responseText == '0') {
+                                        var end = new Date().getTime();
+                                        var milliseconds = end - start;
+
+                                        for (let i = 0; i < serversList.length; i++) {
+                                            if (url == serversList[i]) {
+                                                latencyList[i] = milliseconds;
+                                            }
+                                        }
+                                    }
+                                },
+                                onerror: function (e) {
+                                    SOCIALBROWSER.log(e);
+                                },
+                                ontimeout: function () {
+                                    SOCIALBROWSER.log('Ping Test Response Timed out for ' + url);
+                                },
+                            });
+                        }
+
+                        if (qSelector(CHECK_BOX)) {
+                            qSelector(CHECK_BOX).click();
+                        } else if (window.location.href.includes('bframe')) {
+                            for (let i = 0; i < serversList.length; i++) {
+                                pingTest(serversList[i]);
+                            }
+                        }
+
+                        let startInterval = setInterval(function () {
+                            try {
+                                if (!checkBoxClicked && qSelector(CHECK_BOX) && !isHidden(qSelector(CHECK_BOX))) {
+                                    qSelector(CHECK_BOX).click();
+                                    checkBoxClicked = true;
+                                }
+                                if (qSelector(RECAPTCHA_STATUS) && qSelector(RECAPTCHA_STATUS).innerText != recaptchaInitialStatus) {
+                                    solved = true;
+                                    SOCIALBROWSER.log('SOLVED');
+                                    clearInterval(startInterval);
+                                }
+                                if (requestCount > MAX_ATTEMPTS) {
+                                    SOCIALBROWSER.log('Attempted Max Retries. Stopping the solver');
+                                    solved = true;
+                                    clearInterval(startInterval);
+                                }
+                                if (!solved) {
+                                    if (qSelector(AUDIO_BUTTON) && !isHidden(qSelector(AUDIO_BUTTON)) && qSelector(IMAGE_SELECT)) {
+                                        qSelector(AUDIO_BUTTON).click();
+                                    }
+                                    if (
+                                        (!waitingForAudioResponse &&
+                                            qSelector(AUDIO_SOURCE) &&
+                                            qSelector(AUDIO_SOURCE).src &&
+                                            qSelector(AUDIO_SOURCE).src.length > 0 &&
+                                            audioUrl == qSelector(AUDIO_SOURCE).src &&
+                                            qSelector(RELOAD_BUTTON)) ||
+                                        (qSelector(AUDIO_ERROR_MESSAGE) && qSelector(AUDIO_ERROR_MESSAGE).innerText.length > 0 && qSelector(RELOAD_BUTTON) && !qSelector(RELOAD_BUTTON).disabled)
+                                    ) {
+                                        qSelector(RELOAD_BUTTON).click();
+                                    } else if (
+                                        !waitingForAudioResponse &&
+                                        qSelector(RESPONSE_FIELD) &&
+                                        !isHidden(qSelector(RESPONSE_FIELD)) &&
+                                        !qSelector(AUDIO_RESPONSE).value &&
+                                        qSelector(AUDIO_SOURCE) &&
+                                        qSelector(AUDIO_SOURCE).src &&
+                                        qSelector(AUDIO_SOURCE).src.length > 0 &&
+                                        audioUrl != qSelector(AUDIO_SOURCE).src &&
+                                        requestCount <= MAX_ATTEMPTS
+                                    ) {
+                                        waitingForAudioResponse = true;
+                                        audioUrl = qSelector(AUDIO_SOURCE).src;
+                                        getTextFromAudio(audioUrl);
+                                    } else {
+                                    }
+                                }
+                                if (qSelector(DOSCAPTCHA) && qSelector(DOSCAPTCHA).innerText.length > 0) {
+                                    SOCIALBROWSER.log('Automated Queries Detected');
+                                    clearInterval(startInterval);
+                                }
+                            } catch (err) {
+                                SOCIALBROWSER.log(err.message);
+                                SOCIALBROWSER.log('An error occurred while solving. Stopping the solver.');
+                                clearInterval(startInterval);
+                            }
+                        }, 5000);
+                    })();
+                });
+            }
+        }
+    })();
+
     (function loadKeyboard() {
+        if (SOCIALBROWSER.javaScriptOFF) {
+            return;
+        }
         if ((keyboardLOADED = true)) {
             let mousemove = null;
 
@@ -5845,6 +5830,9 @@ SOCIALBROWSER.init2 = function () {
     })();
 
     (function loadSkipVideoAds() {
+        if (SOCIALBROWSER.javaScriptOFF) {
+            return;
+        }
         SOCIALBROWSER.log('.... [ Skip Video Ads activated ] .... ' + document.location.href);
         let skip_buttons = '.ytp-skip-ad-button,.skip_button,#skip_button_bravoplayer,.videoad-skip,.skippable,.xplayer-ads-block__skip,.ytp-ad-skip-button,.ytp-ad-overlay-close-container';
         let adsProgressSelector = '.ad-interrupting .ytp-play-progress.ytp-swatch-background-color';
@@ -5898,7 +5886,12 @@ SOCIALBROWSER.init2 = function () {
     })();
 
     (function loadMainMoudles() {
-        if (!SOCIALBROWSER.customSetting.$cloudFlare && !SOCIALBROWSER.isWhiteSite && !SOCIALBROWSER.javaScriptOFF) {
+        window.alert = window.confirm = SOCIALBROWSER.alert;
+        window.prompt = function (ask = '', answer = '') {
+            SOCIALBROWSER.log(ask, answer);
+            return answer;
+        };
+        if (!SOCIALBROWSER.isWhiteSite && !SOCIALBROWSER.javaScriptOFF) {
             (function loadWindow() {
                 if (!SOCIALBROWSER.isWhiteSite) {
                     if ((open0 = true)) {
@@ -6107,16 +6100,21 @@ SOCIALBROWSER.init2 = function () {
 
                             code = code.replaceAll(_id + '.' + _id, _id);
                             code = code + ';if(onmessage) { ' + _id + '.onmessage2 = onmessage; }';
-                            code = code + ';SOCIALBROWSER.showUserMessage("Web Worker Done <p><a>' + url + '</a></p>")';
+                            code = code + ';SOCIALBROWSER.showUserMessage("Web Worker Detected <p><a>' + url + '</a></p>")';
                             code = `${_id}._ = async function(window , unsafeWindow , location , postMessage ){ try { ${code} } catch (err) {SOCIALBROWSER.alert(err)} };${_id}._(${_id}  , window , ${_id}.location , ${_id}.postMessage2);`;
                             SOCIALBROWSER.workerCodeString += code + '\n//# sourceURL=' + url + '\n';
                             SOCIALBROWSER.executeJavaScript(code).catch((e) => {
                                 SOCIALBROWSER.alert(e);
                             });
                         };
-                        if (!SOCIALBROWSER.customSetting.allowDefaultWebWorker) {
+
+                        if (!SOCIALBROWSER.customSetting.allowDefaultWorker) {
                             window.Worker0 = window.Worker;
                             window.Worker = function (url, options, _worker) {
+                                if (SOCIALBROWSER.var.blocking.javascript.allowWorkerByVideo && document.querySelector('video')) {
+                                    SOCIALBROWSER.showUserMessage('Web Worker video Detected');
+                                    return new window.Worker0(url, options, _worker);
+                                }
                                 SOCIALBROWSER.log('New Worker : ' + url);
                                 url = SOCIALBROWSER.handleURL(url.toString());
 
@@ -8482,7 +8480,7 @@ SOCIALBROWSER.init = function () {
         SOCIALBROWSER.developerMode = true;
     }
 
-    if (!SOCIALBROWSER.window.storaeAdded) {
+    if (!SOCIALBROWSER.window.newStorageSet) {
         if (SOCIALBROWSER.customSetting.localStorageList) {
             SOCIALBROWSER.customSetting.localStorageList.forEach((s) => {
                 localStorage[s.key] = s.value;
@@ -8493,7 +8491,7 @@ SOCIALBROWSER.init = function () {
                 sessionStorage[s.key] = s.value;
             });
         }
-        SOCIALBROWSER.window.storaeAdded = true;
+        SOCIALBROWSER.window.newStorageSet = true;
     }
 };
 
@@ -8506,46 +8504,46 @@ SOCIALBROWSER._window.on = function () {};
 
 SOCIALBROWSER.init();
 
-if (SOCIALBROWSER.javaScriptOFF) {
-    if (!SOCIALBROWSER.javaScriptOFF) {
+if (!SOCIALBROWSER.javaScriptOFF) {
+    if (SOCIALBROWSER.isWhiteSite) {
         for (const key in SOCIALBROWSER.navigator) {
             SOCIALBROWSER.__setConstValue(navigator, key, SOCIALBROWSER.navigator[key]);
         }
+    } else {
+        SOCIALBROWSER.__define(
+            globalThis,
+            'navigator',
+            new Proxy(navigator, {
+                setProperty: function (target, key, value) {
+                    if (target.hasOwnProperty(key)) return target[key];
+                    return (target[key] = value);
+                },
+                get: function (target, key, receiver) {
+                    if (key === '_') {
+                        return target;
+                    }
+                    if (key === 'webdriver') {
+                        return null;
+                    }
+                    if (typeof target[key] === 'function') {
+                        return function (...args) {
+                            return target[key].apply(this === receiver ? target : this, args);
+                        };
+                    }
+                    return SOCIALBROWSER.navigator[key] ?? target[key];
+                },
+                set: function (target, key, value) {
+                    return this.setProperty(target, key, value);
+                },
+                defineProperty: function (target, key, desc) {
+                    return this.setProperty(target, key, desc.value);
+                },
+                deleteProperty: function (target, key) {
+                    return false;
+                },
+            }),
+        );
     }
-} else {
-    SOCIALBROWSER.__define(
-        globalThis,
-        'navigator',
-        new Proxy(navigator, {
-            setProperty: function (target, key, value) {
-                if (target.hasOwnProperty(key)) return target[key];
-                return (target[key] = value);
-            },
-            get: function (target, key, receiver) {
-                if (key === '_') {
-                    return target;
-                }
-                if (key === 'webdriver') {
-                    return null;
-                }
-                if (typeof target[key] === 'function') {
-                    return function (...args) {
-                        return target[key].apply(this === receiver ? target : this, args);
-                    };
-                }
-                return SOCIALBROWSER.navigator[key] ?? target[key];
-            },
-            set: function (target, key, value) {
-                return this.setProperty(target, key, value);
-            },
-            defineProperty: function (target, key, desc) {
-                return this.setProperty(target, key, desc.value);
-            },
-            deleteProperty: function (target, key) {
-                return false;
-            },
-        }),
-    );
 
     // let proto = Object.getPrototypeOf(navigator);
     // delete proto.webdriver;
@@ -8562,6 +8560,7 @@ if (SOCIALBROWSER.javaScriptOFF) {
     // }
     // SOCIALBROWSER.__setConstValue(globalThis, 'navigator', n);
 }
+
 delete navigator.webdriver;
 
 if (!SOCIALBROWSER.javaScriptOFF) {
@@ -8630,7 +8629,7 @@ if (!SOCIALBROWSER.javaScriptOFF) {
                 configurable: true,
             });
 
-            if (ele.tagName.like('iframe') && !SOCIALBROWSER.isWhiteSite && SOCIALBROWSER.javaScriptOFF && !SOCIALBROWSER.customSetting.$cloudFlare) {
+            if (ele.tagName.like('iframe') && !SOCIALBROWSER.isWhiteSite && !SOCIALBROWSER.javaScriptOFF) {
                 Object.defineProperty(ele, 'srcdoc', {
                     get() {
                         return ele.srcdoc0;
@@ -8670,6 +8669,7 @@ if (!SOCIALBROWSER.javaScriptOFF) {
         SOCIALBROWSER.__setConstValue(document.createElement, 'toString', () => s);
     }
 }
+
 if (!SOCIALBROWSER.isWhiteSite) {
     if ((stringify0 = true)) {
         JSON.stringify0 = JSON.stringify;

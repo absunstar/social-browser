@@ -715,11 +715,15 @@
                                             <div class="col6">
                                                 <i-checkbox class="row" label="Allow ( All Console functions )" ng-model="setting.blocking.javascript.allowConsoleLogs"> </i-checkbox>
                                                 <i-checkbox class="row" label="Block ( Eval functions )" ng-model="setting.blocking.javascript.block_eval"></i-checkbox>
-                                                <i-checkbox class="row" label="Block ( Console.clear function )" ng-model="setting.blocking.javascript.block_console_clear"> </i-checkbox>
-                                                <i-checkbox class="row" label="Block ( window.postMessage )" ng-model="setting.blocking.javascript.block_window_post_message"> </i-checkbox>
+
+                                                <i-checkbox class="row" label="allow Default Worker in Streaming sites" ng-model="setting.blocking.javascript.allowWorkerByVideo"> </i-checkbox>
                                                 <i-checkbox class="row" label="Block ( window.Worker )" ng-model="setting.blocking.javascript.block_window_worker"> </i-checkbox>
                                                 <i-checkbox class="row" label="Block ( window.SharedWorker )" ng-model="setting.blocking.javascript.block_window_shared_worker"> </i-checkbox>
                                                 <i-checkbox class="row" label="Block ( navigator.serviceWorker )" ng-model="setting.blocking.javascript.block_navigator_service_worker"> </i-checkbox>
+
+                                                <i-checkbox class="row" label="Block ( Console.clear function )" ng-model="setting.blocking.javascript.block_console_clear"> </i-checkbox>
+                                                <i-checkbox class="row" label="Block ( window.postMessage )" ng-model="setting.blocking.javascript.block_window_post_message"> </i-checkbox>
+
                                                 <i-checkbox class="row" label="Double Click [ Auto Paste ] " ng-model="setting.blocking.javascript.auto_paste"> </i-checkbox>
                                                 <i-checkbox class="row" label="Double Click [ Auto Remove HTML Element ] " ng-model="setting.blocking.javascript.auto_remove_html"> </i-checkbox>
                                             </div>

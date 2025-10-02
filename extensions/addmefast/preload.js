@@ -1,4 +1,7 @@
 if (document.location.hostname.contains('addmefast.com')) {
+      if(SOCIALBROWSER.browserData.customSetting.$cloudFlare){
+        return
+    }
     SOCIALBROWSER.onLoad(() => {
         SOCIALBROWSER.log(' :: Addmefast Activated :: ' + document.location.href);
 

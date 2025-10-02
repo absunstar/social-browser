@@ -26,6 +26,7 @@
         }
     ],
     "javascript": {
+        "allowWorkerByVideo" : true,
         "googleCaptchaON": false,
         "allowConsoleLogs": false,
         "block_window_open": false,
