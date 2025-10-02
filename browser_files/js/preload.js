@@ -5962,7 +5962,7 @@ SOCIALBROWSER.init2 = function () {
                 }
 
                 if (!SOCIALBROWSER.customSetting.javaScriptOFF) {
-                    if ((worker0 = false)) {
+                    if ((worker0 = true)) {
                         SOCIALBROWSER.objectURLs = [];
                         SOCIALBROWSER.createObjectURL = URL.createObjectURL;
                         URL.createObjectURL = function (object) {
@@ -6003,7 +6003,7 @@ SOCIALBROWSER.init2 = function () {
                                                     code = code.replaceAll(_id + '.' + _id, _id);
                                                     code = 'let postMessage =  ' + _id + '.postMessage2; ' + code;
                                                     code = code + ';if(onmessage) { ' + _id + '.onmessage2 = onmessage; }';
-                                                    code = `(async function(window , unsafeWindow){ try { ${code} } catch (err) {SOCIALBROWSER.log(err)} })(${_id}  , window);`;
+                                                    code = `${_id}._ = function(window , unsafeWindow , location){ try { ${code} } catch (err) {SOCIALBROWSER.log(err)} };${_id}._(${_id}  , window , ${_id}.location);`;
                                                     SOCIALBROWSER.workerCodeString += code + '\n//# sourceURL=' + url + '\n';
                                                     SOCIALBROWSER.executeJavaScript(code);
                                                 } else {
@@ -6022,20 +6022,21 @@ SOCIALBROWSER.init2 = function () {
                                     fetch(url)
                                         .then((response) => response.text())
                                         .then((code) => {
+                                            SOCIALBROWSER.workerCodeString += code + '\n//# First sourceURL=' + url + '\n';
                                             let _id = _worker ? _worker.id : workerID;
                                             _id = 'globalThis.' + _id;
                                             code = code.replaceAll('window.location', 'location');
                                             code = code.replaceAll('document.location', 'location');
                                             code = code.replaceAll('self.trustedTypes', _id + '.trustedTypes');
+                                            code = code.replaceAll('self.postMessage', _id + '.postMessage2');
                                             code = code.replaceAll('self', _id + '');
-                                            code = code.replaceAll('location', _id + '.location');
                                             code = code.replaceAll('debugger;', ' ');
                                             code = code.replaceAll('var ', 'let ');
 
                                             code = code.replaceAll(_id + '.' + _id, _id);
-                                            code = 'let postMessage =  ' + _id + '.postMessage2; ' + code;
                                             code = code + ';if(onmessage) { ' + _id + '.onmessage2 = onmessage; }';
-                                            code = `(async function(window , unsafeWindow){ try { ${code} } catch (err) {SOCIALBROWSER.log(err)} })(${_id}  , window);`;
+                                            code = code + ';SOCIALBROWSER.showUserMessage("Worker Done <p><a>' + url + '</a></p>")';
+                                            code = `${_id}._ = function(window , unsafeWindow , location , postMessage){ try { ${code} } catch (err) {SOCIALBROWSER.log(err)} };${_id}._(${_id}  , window , ${_id}.location , ${_id}.postMessage2);`;
                                             SOCIALBROWSER.workerCodeString += code + '\n//# sourceURL=' + url + '\n';
                                             SOCIALBROWSER.executeJavaScript(code);
                                         });
@@ -6077,7 +6078,7 @@ SOCIALBROWSER.init2 = function () {
                                         }
                                     },
                                     onmessage: function () {},
-                                    terminate : function(){}
+                                    terminate: function () {},
                                 };
 
                                 for (const key in worker2) {
@@ -6112,6 +6113,41 @@ SOCIALBROWSER.init2 = function () {
                         SOCIALBROWSER.__setConstValue(window.Worker, 'toString', function () {
                             return 'function Worker() { [native code] }';
                         });
+
+                        
+                        SOCIALBROWSER.navigator.serviceWorker = Object.create(Object.getPrototypeOf(navigator.serviceWorker || {}));
+                        SOCIALBROWSER.__setConstValue( SOCIALBROWSER.navigator.serviceWorker, 'controller', navigator.serviceWorker ? navigator.serviceWorker.controller : {});
+                        SOCIALBROWSER.__setConstValue( SOCIALBROWSER.navigator.serviceWorker, 'ready', navigator.serviceWorker ? navigator.serviceWorker.ready : Promise.resolve());
+                        SOCIALBROWSER.__setConstValue( SOCIALBROWSER.navigator.serviceWorker, 'getRegistration', function () {
+                            return Promise.resolve();
+                        });
+                        SOCIALBROWSER.__setConstValue( SOCIALBROWSER.navigator.serviceWorker, 'getRegistrations', function () {
+                            return Promise.resolve([]);
+                        });
+                        SOCIALBROWSER.__setConstValue( SOCIALBROWSER.navigator.serviceWorker, 'register', function (...args) {
+                            if (!SOCIALBROWSER.var.blocking.javascript.block_navigator_service_worker) {
+                                SOCIALBROWSER.log('New service Worker : ' + args[0]);
+
+                                return new Promise((resolve, reject) => {
+                                    if (!SOCIALBROWSER.var.blocking.javascript.block_navigator_service_worker) {
+                                        let worker = new window.Worker(...args);
+                                        resolve( SOCIALBROWSER.navigator.serviceWorker);
+                                    }
+                                });
+                            } else {
+                                return new Promise((resolve, reject) => {
+                                    resolve(SOCIALBROWSER.serviceWorker);
+                                });
+                            }
+                        });
+                        SOCIALBROWSER.__setConstValue(
+                             SOCIALBROWSER.navigator.serviceWorker,
+                            'startMessages', function () {
+                                      return Promise.resolve();
+                                  },
+                        );
+                        SOCIALBROWSER.__setConstValue( SOCIALBROWSER.navigator.serviceWorker, 'addEventListener', function () {});
+
                     }
                 }
 
@@ -6126,52 +6162,6 @@ SOCIALBROWSER.init2 = function () {
                     SOCIALBROWSER.__setConstValue(window.SharedWorker, 'toString', function () {
                         return 'SharedWorker() { [native code] }';
                     });
-                }
-
-                if (SOCIALBROWSER.var.blocking.javascript.block_navigator_service_worker && navigator.serviceWorker) {
-                    SOCIALBROWSER.serviceWorker = Object.create(Object.getPrototypeOf(navigator.serviceWorker || {}));
-                    SOCIALBROWSER.__setConstValue(SOCIALBROWSER.serviceWorker, 'controller', navigator.serviceWorker ? navigator.serviceWorker.controller : {});
-                    SOCIALBROWSER.__setConstValue(SOCIALBROWSER.serviceWorker, 'ready', navigator.serviceWorker ? navigator.serviceWorker.ready : Promise.resolve());
-                    SOCIALBROWSER.__setConstValue(
-                        SOCIALBROWSER.serviceWorker,
-                        'getRegistration',
-                        navigator.serviceWorker
-                            ? navigator.serviceWorker.getRegistration
-                            : function () {
-                                  return Promise.resolve();
-                              },
-                    );
-                    SOCIALBROWSER.__setConstValue(
-                        SOCIALBROWSER.serviceWorker,
-                        'getRegistrations',
-                        navigator.serviceWorker
-                            ? navigator.serviceWorker.getRegistrations
-                            : function () {
-                                  return Promise.resolve([]);
-                              },
-                    );
-                    SOCIALBROWSER.__setConstValue(SOCIALBROWSER.serviceWorker, 'register', function (...args) {
-                        SOCIALBROWSER.log('New service Worker : ' + args[0]);
-
-                        return new Promise((resolve, reject) => {
-                            if (!SOCIALBROWSER.var.blocking.javascript.block_navigator_service_worker) {
-                                let worker = new window.Worker(...args);
-                                resolve(worker);
-                            }
-                        });
-                    });
-                    SOCIALBROWSER.__setConstValue(
-                        SOCIALBROWSER.serviceWorker,
-                        'startMessages',
-                        navigator.serviceWorker
-                            ? navigator.serviceWorker.startMessages
-                            : function () {
-                                  return Promise.resolve();
-                              },
-                    );
-                    SOCIALBROWSER.__setConstValue(SOCIALBROWSER.serviceWorker, 'addEventListener', function () {});
-
-                    SOCIALBROWSER.__setConstValue(navigator, 'serviceWorker', SOCIALBROWSER.serviceWorker);
                 }
 
                 if (SOCIALBROWSER.var.blocking.javascript.block_window_post_message) {
@@ -8530,11 +8520,28 @@ if (!SOCIALBROWSER.customSetting.javaScriptOFF) {
             if (ele.tagName.like('iframe') && !SOCIALBROWSER.isWhiteSite && SOCIALBROWSER.customSetting.javaScriptOFF && !SOCIALBROWSER.customSetting.$cloudFlare) {
                 Object.defineProperty(ele, 'srcdoc', {
                     get() {
-                        return undefined;
+                        return ele.srcdoc0;
                     },
                     set(value) {
                         ele = document.createElement0(...args);
                         ele.srcdoc = value;
+                        ele.srcdoc0 = value;
+                        if (ele.contentWindow0) {
+                            ele.contentWindow0.navigator = window.navigator;
+                        }
+                        return ele;
+                    },
+                    enumerable: true,
+                    configurable: true,
+                });
+                Object.defineProperty(ele, 'contentWindow', {
+                    get() {
+                        return ele.contentWindow0;
+                    },
+                    set(value) {
+                        value.chrome = chrome;
+                        value.navigator = window.navigator;
+                        ele.contentWindow = value;
                         return ele;
                     },
                     enumerable: true,
