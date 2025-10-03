@@ -343,6 +343,7 @@ module.exports = function (child) {
                         });
                         return;
                     }
+                    
                     if (win.customSetting.blockURLs) {
                         if (url.like(win.customSetting.blockURLs)) {
                             callback({

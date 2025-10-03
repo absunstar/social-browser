@@ -135,7 +135,13 @@ var SOCIALBROWSER = {
         SOCIALBROWSER.clone =
         SOCIALBROWSER.cloneObject =
             function (obj) {
-                if (typeof obj !== 'object') {
+                if(Array.isArray(obj)){
+                    let newArray = [];
+                    for (let index = 0; index < obj.length; index++) {
+                        newArray[index]= SOCIALBROWSER.cloneObject(obj[index]);
+                    }
+                    return newArray;
+                }else if (typeof obj !== 'object') {
                     return obj;
                 }
 

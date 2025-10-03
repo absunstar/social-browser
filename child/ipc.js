@@ -45,8 +45,15 @@ module.exports = function init(child) {
             });
         });
     };
+    
     child.cloneObject = function (obj) {
-        if (typeof obj !== 'object') {
+        if (Array.isArray(obj)) {
+            let newArray = [];
+            for (let index = 0; index < obj.length; index++) {
+                newArray[index] = SOCIALBROWSER.cloneObject(obj[index]);
+            }
+            return newArray;
+        } else if (typeof obj !== 'object') {
             return obj;
         }
 
@@ -938,7 +945,7 @@ module.exports = function init(child) {
             });
             contents = contents || win.webContents;
         }
-        
+
         data.list.forEach((m, i) => {
             m.click = function () {
                 contents.send('[run-menu]', { index: i });
