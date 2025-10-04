@@ -877,6 +877,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     };
     $scope.popupGoogleExtension = function (extensionInfo) {
         SOCIALBROWSER.ipc('[open new popup]', {
+            chrome : true,
             url: extensionInfo.url + extensionInfo.manifest.action.default_popup,
             referrer: document.location.href,
             alwaysOnTop: true,

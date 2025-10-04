@@ -180,6 +180,7 @@ module.exports = function (child) {
             iframe: true,
             trackingID: 'main_tracking_' + new Date().getTime(),
             sandbox: true,
+            chrome : false,
             cookie: null,
             cookies: null,
             cookieObject: null,
@@ -356,7 +357,7 @@ module.exports = function (child) {
             }
 
             if (setting.cookieObject) {
-                setting.cookieList = setting.cookieList || [];
+                setting.cookieList =  [];
                 setting.cookieObject.domain = setting.cookieObject.domain || child.url.parse(setting.url).hostname;
                 setting.cookieObject.partition = setting.cookieObject.partition || setting.partition;
                 setting.cookieObject.mode = setting.cookieObject.mode || 0;
@@ -364,14 +365,14 @@ module.exports = function (child) {
             }
 
             if (setting.cookie) {
-                setting.cookieList = setting.cookieList || [];
+                setting.cookieList =  [];
                 let cookieObject = { cookie: setting.cookie, mode: 0 };
                 cookieObject.domain = child.url.parse(setting.url).hostname;
                 cookieObject.partition = setting.partition;
                 setting.cookieList.push(cookieObject);
             }
 
-            if (setting.cookies) {
+            if (Array.isArray(setting.cookies) && setting.cookies.length > 0) {
                 setting.cookies.forEach((cookie) => {
                     const scheme = cookie.secure ? 'https' : 'http';
                     const host = cookie.domain[0] === '.' ? cookie.domain.substr(1) : cookie.domain;
