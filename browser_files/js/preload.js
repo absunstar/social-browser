@@ -3111,15 +3111,14 @@ SOCIALBROWSER.init2 = function () {
                     },
                 });
                 arr.push({
-                    label: ' in ( Vip Window )',
+                    label: ' in ( OFF Window )',
                     click() {
                         SOCIALBROWSER.ipc('[open new popup]', {
                             partition: SOCIALBROWSER.partition,
                             url: url,
                             referrer: document.location.href,
                             allowAds: true,
-                            javaScriptOFF: true,
-                            enginOFF: true,
+                            off: true,
                             show: true,
                             center: true,
                             alwaysOnTop: true,
@@ -3432,14 +3431,14 @@ SOCIALBROWSER.init2 = function () {
                     type: 'separator',
                 });
                 arr.push({
-                    label: 'Copy ALL Site Data as [ Encripted Text ] to Clipboard',
+                    label: '[ Social Data]  / copy as [ Encripted Text ] to Clipboard',
                     click() {
                         SOCIALBROWSER.copy(SOCIALBROWSER.hideObject(SOCIALBROWSER.getSiteData()));
                         alert('Site Data Text Copied !!');
                     },
                 });
                 arr.push({
-                    label: 'Copy ALL Site Data as [ online Code ] to Clipboard',
+                    label: '[ Social Data]  / copy as [ online Code ] to Clipboard',
                     click() {
                         let code = SOCIALBROWSER.hideObject(SOCIALBROWSER.getSiteData());
                         SOCIALBROWSER.fetchJson({
@@ -3462,21 +3461,21 @@ SOCIALBROWSER.init2 = function () {
                     type: 'separator',
                 });
                 arr.push({
-                    label: 'Import Site Data from Clipboard ( in current profile )',
+                    label: '[ Social Data]  / import from Clipboard ( in current profile )',
                     click() {
                         let txt = SOCIALBROWSER.clipboard.readText();
                         SOCIALBROWSER.importSiteData(txt, 0);
                     },
                 });
                 arr.push({
-                    label: 'Import Site Data from Clipboard ( in Real profile )',
+                    label: '[ Social Data]  / import from Clipboard ( in Real profile )',
                     click() {
                         let txt = SOCIALBROWSER.clipboard.readText();
                         SOCIALBROWSER.importSiteData(txt, 1);
                     },
                 });
                 arr.push({
-                    label: 'Import Site Data from Clipboard ( in Ghost profile )',
+                    label: '[ Social Data]  / import from Clipboard ( in Ghost profile )',
                     click() {
                         let txt = SOCIALBROWSER.clipboard.readText();
                         SOCIALBROWSER.importSiteData(txt, 2);
@@ -3487,14 +3486,14 @@ SOCIALBROWSER.init2 = function () {
                 });
 
                 arr.push({
-                    label: 'Copy Site Cookies as [ JSON Text ] to Clipboard',
+                    label: '[ Session Cookies]  / Copy as [ JSON Text ] to Clipboard',
                     click() {
                         SOCIALBROWSER.copy(SOCIALBROWSER.toJson(SOCIALBROWSER.getDomainCookies().cookies));
                         alert('Site Cookies JSON Text Copied !!');
                     },
                 });
                 arr.push({
-                    label: 'Import Site Cookies from [ JSON Text ] from Clipboard',
+                    label: '[ Session Cookies]  / import from [ JSON Text ] from Clipboard',
                     click() {
                         SOCIALBROWSER.setDomainCookies({ cookies: SOCIALBROWSER.fromJson(SOCIALBROWSER.clipboard.readText()) });
                         alert('Site Cookies Imported !!');
@@ -3505,14 +3504,14 @@ SOCIALBROWSER.init2 = function () {
                     type: 'separator',
                 });
                 arr.push({
-                    label: 'Copy Site HTTP Cookies as [ Text ] to Clipboard',
+                    label: '[ HTTP Cookies ] / copy as [ Text ] to Clipboard',
                     click() {
                         SOCIALBROWSER.copy(SOCIALBROWSER.getHttpCookie());
                         alert('Site HTTP Cookies Text Copied !!');
                     },
                 });
                 arr.push({
-                    label: 'Set Site HTTP Cookies from [ Text ] from Clipboard',
+                    label: '[ HTTP Cookies ] / set from [ Text ] from Clipboard',
                     click() {
                         SOCIALBROWSER.setHttpCookie({ cookie: SOCIALBROWSER.clipboard.readText(), mode: 0 });
                         alert('Site HTTP Cookies Set !!');
@@ -3520,7 +3519,7 @@ SOCIALBROWSER.init2 = function () {
                     },
                 });
                 arr.push({
-                    label: 'Remove Site HTTP Cookies',
+                    label: '[ HTTP Cookies ] / remove',
                     click() {
                         SOCIALBROWSER.setHttpCookie({ cookie: '', off: true });
                         alert('Site HTTP Cookies Removed !!');
@@ -4015,8 +4014,8 @@ SOCIALBROWSER.init2 = function () {
                 arr.push({
                     type: 'separator',
                 });
-                     arr.push({
-                    label: 'mark as [ VIP Window ]',
+                arr.push({
+                    label: 'mark as [ OFF Window ]',
                     type: 'checkbox',
                     checked: SOCIALBROWSER.customSetting.off || false,
                     click() {
@@ -4934,12 +4933,39 @@ SOCIALBROWSER.init2 = function () {
                         }
                     }
 
-                    if (SOCIALBROWSER.menuList.length > 0) {
+                    if ((scriptsMenu = true)) {
+                        let arr = [];
+
                         let scriptList = SOCIALBROWSER.var.scriptList.filter(
                             (s) => s.show && !document.location.href.like('*127.0.0.1:60080*|*file://*') && document.location.href.like(s.allowURLs) && !document.location.href.like(s.blockURLs),
                         );
+
+                        arr.push({
+                            label: 'Edit Page Content',
+                            iconURL: 'http://127.0.0.1:60080/images/code.png',
+                            click: () => {
+                                ipc('[toggle-window-edit]');
+                            },
+                        });
+                        arr.push({
+                            label: 'Hide / Show - Page Images',
+                            iconURL: 'http://127.0.0.1:60080/images/code.png',
+                            click: () => {
+                                ipc('[window-action]', { name: 'toggle-page-images' });
+                            },
+                        });
+                        arr.push({
+                            label: 'Hide / Show - Page Content',
+                            iconURL: 'http://127.0.0.1:60080/images/code.png',
+                            click: () => {
+                                ipc('[window-action]', { name: 'toggle-page-content' });
+                            },
+                        });
+
                         if (scriptList.length > 0) {
-                            let arr = [];
+                            arr.push({
+                                type: 'separator',
+                            });
                             scriptList.forEach((script) => {
                                 arr.push({
                                     label: script.title,
@@ -4949,14 +4975,17 @@ SOCIALBROWSER.init2 = function () {
                                     },
                                 });
                             });
-                            SOCIALBROWSER.menuList.push({ type: 'separator' });
-                            SOCIALBROWSER.menuList.push({
-                                label: 'User Scripts',
-                                iconURL: 'http://127.0.0.1:60080/images/code.png',
-                                type: 'submenu',
-                                submenu: arr,
-                            });
                         }
+                        SOCIALBROWSER.menuList.push({ type: 'separator' });
+                        SOCIALBROWSER.menuList.push({
+                            label: 'User Scripts',
+                            iconURL: 'http://127.0.0.1:60080/images/code.png',
+                            type: 'submenu',
+                            submenu: arr,
+                        });
+                    }
+
+                    if (SOCIALBROWSER.menuList.length > 0) {
                         SOCIALBROWSER.ipc('[show-menu]', {
                             list: SOCIALBROWSER.menuList?.map((m) => ({
                                 label: m.label,
@@ -7079,8 +7108,6 @@ SOCIALBROWSER.init2 = function () {
                     SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.connection, 'saveData', false);
                     SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.connection, 'type', SOCIALBROWSER.session.privacy.vpc.connection.type);
                 }
-
-               
 
                 if (SOCIALBROWSER.session.privacy.vpc.hide_fonts) {
                     SOCIALBROWSER.__define(HTMLElement.prototype, 'offsetHeight', {

@@ -375,33 +375,40 @@ module.exports = function (child) {
                         }
                     });
                 } else if (message.type == '[window-action]') {
-                    child.windowList.forEach((w) => {
-                        if (w.window && !w.window.isDestroyed() && w.window.customSetting.tabID == message.data.tabID && w.window.customSetting.windowType == 'view') {
+                    if (message.data.windowID) {
+                        let win = child.electron.BrowserWindow.fromId(message.data.windowID);
+                        if (win && !win.isDestroyed()) {
                             if (message.data.name == 'toggle-window-audio') {
-                                w.window.webContents.setAudioMuted(!w.window.webContents.audioMuted);
-                                child.updateTab(w.window);
+                                win.webContents.setAudioMuted(!win.webContents.audioMuted);
+                                child.updateTab(win);
                             } else if (message.data.name == 'window-zoom-') {
-                                if (w.window.webContents.zoomFactor - 0.3 > 0.0) {
-                                    w.window.webContents.zoomFactor -= 0.2;
-                                    w.window.show();
+                                if (win.webContents.zoomFactor - 0.3 > 0.0) {
+                                    win.webContents.zoomFactor -= 0.2;
+                                    win.show();
                                 }
                             } else if (message.data.name == 'window-zoom+') {
-                                w.window.webContents.zoomFactor += 0.2;
-                                w.window.show();
+                                win.webContents.zoomFactor += 0.2;
+                                win.show();
                             } else if (message.data.name == 'window-zoom') {
-                                w.window.webContents.zoomFactor = 1;
-                                w.window.show();
+                                win.webContents.zoomFactor = 1;
+                                win.show();
                             } else if (message.data.name == 'open-external' && message.data.url) {
                                 child.openExternal(message.data.url);
-                            } else {
+                            } else if (message.data.name == 'allow-ads') {
+                               win.customSetting.allowAds = ! win.customSetting.allowAds;
+                               win.webContents.reload();
+                            }else if (message.data.name == 'off') {
+                               win.customSetting.off = ! win.customSetting.off;
+                               win.webContents.reload();
+                            }  else {
                                 if (message.data.levels) {
-                                    child.sendToWebContents(w.window.webContents, '[window-action]', message.data);
+                                    child.sendToWebContents(win.webContents, '[window-action]', message.data);
                                 } else {
-                                    w.window.webContents.send('[window-action]', message.data);
+                                    win.webContents.send('[window-action]', message.data);
                                 }
                             }
                         }
-                    });
+                    }
                 } else if (message.type == '[toggle-window-edit]') {
                     child.windowList.forEach((w) => {
                         if (w.window && !w.window.isDestroyed() && w.window.customSetting.tabID == message.data.tabID && w.window.customSetting.windowType == 'view') {
