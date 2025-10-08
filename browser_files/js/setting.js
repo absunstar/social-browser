@@ -159,17 +159,20 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         $scope.$applyAsync();
     };
 
-    $scope.generate50UserAgent = function () {
-        for (let index = 0; index < 50; index++) {
+    $scope.generateLatestUserAgentList = function () {
+        for (let index = 0; index < 100; index++) {
             let browser = SOCIALBROWSER.getRandomBrowser();
-            $scope.setting.userAgentList.push({
+            let newBrowser = {
                 url: browser.url,
                 device: browser.device,
                 engine: { name: browser.name },
                 platform: browser.platform,
                 vendor: browser.platform.contains('mac|iPhone') ? 'Apple Computer, Inc.' : browser.vendor,
                 name: browser.name + ' ' + browser.device.name + ' ' + browser.platform,
-            });
+            };
+            if (!$scope.setting.userAgentList.some((u) => u.name == newBrowser.name)) {
+                $scope.setting.userAgentList.push(newBrowser);
+            }
         }
         $scope.$applyAsync();
     };
@@ -692,7 +695,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
 
     $scope.addUserAgent = function () {
         if ($scope.userAgent.name.length > 0) {
-            $scope.setting.userAgentList.push($scope.userAgent);
+            $scope.setting.userAgentList.unshift($scope.userAgent);
             $scope.userAgent = {};
         }
     };
@@ -758,7 +761,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     };
 
     $scope.addScript = function (_script) {
-        _script.id =  _script.id || new Date().getTime();
+        _script.id = _script.id || new Date().getTime();
         $scope.setting.scriptList.push({ ..._script });
         $scope.hideModal('#scriptModal');
     };
@@ -770,7 +773,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         let index = $scope.setting.scriptList.findIndex((s) => s.id == _script.id);
         if (index !== -1) {
             $scope.setting.scriptList[index] = { ..._script };
-        }else{
+        } else {
             $scope.setting.scriptList.push({ ..._script });
         }
         $scope.hideModal('#scriptModal');
@@ -877,7 +880,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     };
     $scope.popupGoogleExtension = function (extensionInfo) {
         SOCIALBROWSER.ipc('[open new popup]', {
-            chrome : true,
+            chrome: true,
             url: extensionInfo.url + extensionInfo.manifest.action.default_popup,
             referrer: document.location.href,
             alwaysOnTop: true,

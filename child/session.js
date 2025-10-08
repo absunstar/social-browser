@@ -314,8 +314,9 @@ module.exports = function (child) {
                     }
                 }
                 let enginOFF = child.parent.var.blocking.vip_site_list.some((site) => site.url.length > 2 && mainURL.like(site.url));
+                let isWhiteSite = child.parent.var.blocking.white_list.some((site) => site.url.length > 2 && mainURL.like(site.url));
 
-                if (enginOFF) {
+                if (enginOFF || isWhiteSite) {
                     callback({
                         cancel: false,
                     });
@@ -337,13 +338,13 @@ module.exports = function (child) {
                         return;
                     }
 
-                    if (win.customSetting.allowAds) {
+                    if (win.customSetting.allowAds || win.customSetting.isWhiteSite) {
                         callback({
                             cancel: false,
                         });
                         return;
                     }
-                    
+
                     if (win.customSetting.blockURLs) {
                         if (url.like(win.customSetting.blockURLs)) {
                             callback({
@@ -393,7 +394,6 @@ module.exports = function (child) {
 
                 // return js will crach if needed request not js
                 if (!child.isAllowURL(url)) {
-
                     win?.webContents.send('[show-user-info]', { message: 'Blocked URL <p><a>' + url + '</a></p>' });
 
                     if (url.like('*.js') || details.resourceType == 'script') {
@@ -910,7 +910,7 @@ module.exports = function (child) {
                     return callback(allow);
                 }
             });
-            ss.setPermissionCheckHandler((webContents, permission , requestingOrigin , details ) => {
+            ss.setPermissionCheckHandler((webContents, permission, requestingOrigin, details) => {
                 if (!child.parent.var.blocking.permissions) {
                     return false;
                 }

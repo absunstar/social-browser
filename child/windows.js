@@ -23,7 +23,7 @@ module.exports = function (child) {
         if (child.getMainWindow() && !child.getMainWindow().isDestroyed()) {
             return child.getMainWindow();
         }
-        return null;
+        return undefined;
     };
 
     child.showAddressbarWindow = function (op, show = true) {
@@ -176,17 +176,17 @@ module.exports = function (child) {
 
         let defaultSetting = {
             vip: false,
-            session: null,
+            session: undefined,
             iframe: true,
             trackingID: 'main_tracking_' + new Date().getTime(),
             sandbox: true,
             chrome : false,
-            cookie: null,
-            cookies: null,
-            cookieObject: null,
-            cookieList: null,
-            localStorageList: null,
-            sessionStorageList: null,
+            cookie: undefined,
+            cookies: undefined,
+            cookieObject: undefined,
+            cookieList: undefined,
+            localStorageList: undefined,
+            sessionStorageList: undefined,
             
             urlList : [],
 
@@ -409,11 +409,11 @@ module.exports = function (child) {
             customSetting.allowSaveUserData = false;
         }
 
-        let win = new child.electron.BrowserWindow({...customSetting , parent: setting.parent || null});
+        let win = new child.electron.BrowserWindow({...customSetting , parent: setting.parent});
 
         if(customSetting.parent){
             customSetting.parentID = customSetting.parent.id;
-            customSetting.parent = null;
+            customSetting.parent = undefined;
         }
         customSetting.windowID = win.id;
         win.customSetting = customSetting;
@@ -782,7 +782,7 @@ module.exports = function (child) {
             console.log('webContents login', authInfo);
 
             if (authInfo.isProxy) {
-                let proxy = null;
+                let proxy = undefined;
                 proxy = win.customSetting.proxy;
                 if (proxy && proxy.username && proxy.password) {
                     event.preventDefault();
@@ -1039,17 +1039,17 @@ module.exports = function (child) {
                             name: 'PC',
                         },
                     },
-                    webPreferences: null,
+                    webPreferences: undefined,
                     iframe: false, // Must , if not set will be unsafty browser
                     skipTaskbar: false,
                     windowType: 'popup',
                     alwaysOnTop: true,
                     resizable: true,
                     show: win.customSetting.windowType == 'view' ? true : win.isVisible(),
-                    width: null,
-                    height: null,
-                    x: null,
-                    y: null,
+                    width: undefined,
+                    height: undefined,
+                    x: undefined,
+                    y: undefined,
                     url: url,
                 });
 
@@ -1241,9 +1241,8 @@ module.exports = function (child) {
                     let url_parser = child.url.parse(url);
                     let current_url_parser = child.url.parse(win.getURL());
 
-                    allow = child.parent.var.blocking.white_list.some((d) => url_parser.hostname.like(d.url) || current_url_parser.hostname.like(d.url));
                     if (!allow) {
-                        allow = child.parent.var.blocking.white_list.some((d) => url_parser.hostname.like(d.url) || current_url_parser.hostname.like(d.url));
+                        allow = win.customSetting.isWhiteSite || child.parent.var.blocking.white_list.some((d) => url_parser.hostname.like(d.url) || current_url_parser.hostname.like(d.url));
                     }
                     if (!allow) {
                         if (child.parent.var.blocking.popup.allow_internal && url_parser.hostname.contains(current_url_parser.hostname)) {
@@ -1336,7 +1335,7 @@ module.exports = function (child) {
                 httpReferrer: referrer,
             };
 
-            if (postBody != null) {
+            if (postBody) {
                 const { data, contentType, boundary } = postBody;
                 loadOptions.postData = postBody.data;
                 loadOptions.extraHeaders = `content-type: ${contentType}; boundary=${boundary}`;
@@ -1382,7 +1381,7 @@ module.exports = function (child) {
 
             let allow = false;
 
-            allow = child.parent.var.blocking.white_list.find((d) => url_parser.hostname.like(d.url) || current_url_parser.hostname.like(d.url));
+            allow = win.customSetting.isWhiteSite || child.parent.var.blocking.white_list.find((d) => url_parser.hostname.like(d.url) || current_url_parser.hostname.like(d.url));
 
             if (allow) {
                 child.sendMessage({
@@ -1397,20 +1396,6 @@ module.exports = function (child) {
                 return;
             }
 
-            allow = child.parent.var.blocking.white_list.find((d) => url_parser.hostname.like(d.url) || current_url_parser.hostname.like(d.url));
-
-            if (allow) {
-                child.sendMessage({
-                    type: '[open new tab]',
-                    data: {
-                        url: real_url,
-                        partition: win.customSetting.partition,
-                        user_name: win.customSetting.user_name,
-                        options: child.parent.options,
-                    },
-                });
-                return;
-            }
 
             if (child.parent.var.blocking.popup.allow_internal && url_parser.hostname.contains(current_url_parser.hostname)) {
                 child.sendMessage({

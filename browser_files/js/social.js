@@ -601,34 +601,30 @@ SOCIALBROWSER.showScriptListMenu = function () {
     });
 };
 
-
 SOCIALBROWSER.showHelpMenu = function () {
     SOCIALBROWSER.window.show();
     SOCIALBROWSER.menuList = [];
 
-
-  SOCIALBROWSER.menuList.push({
+    SOCIALBROWSER.menuList.push({
         label: 'use this option if page content not run as you expected',
-        sublabel : 'toggle Ads and privacy protected [ on / off ]',
+        sublabel: 'toggle Ads and privacy protected [ on / off ]',
         click: () => {
-            ipc('[window-action]' , {name : 'off'});
+            ipc('[window-action]', { name: 'off' });
         },
     });
 
-       SOCIALBROWSER.menuList.push({
+    SOCIALBROWSER.menuList.push({
         type: 'separator',
     });
-    
+
     SOCIALBROWSER.menuList.push({
         label: 'use this option if you want enable / disable Ads in current window ',
-        sublabel : 'toggle Ads [ on / off ]',
+        sublabel: 'toggle Ads [ on / off ]',
         click: () => {
-            ipc('[window-action]' , {name : 'allow-ads'});
+            ipc('[window-action]', { name: 'allow-ads' });
         },
     });
 
- 
- 
     ipc('[show-menu]', {
         windowID: SOCIALBROWSER.window.id,
         list: SOCIALBROWSER.menuList.map((m) => ({
@@ -749,6 +745,7 @@ SOCIALBROWSER.showUserAgentMenu = function () {
     SOCIALBROWSER.menuList.push({
         type: 'separator',
     });
+    SOCIALBROWSER.var.userAgentList.sort((a, b) => a.name > b.name ? -1 : 1);
     SOCIALBROWSER.var.userAgentList.forEach((userAgent) => {
         SOCIALBROWSER.menuList.push({
             label: userAgent.name,

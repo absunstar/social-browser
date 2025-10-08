@@ -210,7 +210,7 @@
     },
     "white_list": [
         {
-            "url": "*google.com*"
+            "url": "*google.com*|*googleapis.com*"
         },
         {
             "url": "*youtube.com*"
