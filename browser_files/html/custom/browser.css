@@ -261,15 +261,29 @@ video0 {
 }
 
 #__google_translate_element {
-   position: fixed;
-    
+    position: fixed;
+    display: none;
+    .close-button {
+        background: none;
+        border: none; 
+        cursor: pointer; 
+        font-size: 1.5em; 
+        color: #333; 
+        padding: 0; 
+        line-height: 1; 
+    }
+
+    .close-button:hover {
+        color: #ff0000; 
+    }
 }
 #__google_translate_element:has(select) {
-     border: 3px solid #272727;
-     background-color: #ffffff;
-    top: 100px;
-    left: 10px;
-    z-index: 9999;
+    display: block;
+    border: 3px solid #272727;
+    background-color: #ffffff;
+    top: 0px;
+    left: 200px;
+    z-index: 99999999999;
     padding: 10px;
     margin: 10px;
     font-size: 18px;

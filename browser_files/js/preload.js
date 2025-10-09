@@ -1756,6 +1756,10 @@ SOCIALBROWSER.init2 = function () {
                 globalThis.googleTranslateElementInit = function () {
                     new google.translate.TranslateElement({ pageLanguage: 'en' }, '__google_translate_element');
                 };
+                let ele = SOCIALBROWSER.$('#__google_translate_element');
+                if(ele){
+                    ele.style.display = "block";
+                }
                 // SOCIALBROWSER.fetch({ url: '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit' }).then((res) => {
                 //     if (res.status == 200 && res.headers['content-type'] && res.headers['content-type'][0].contain('javascript') && res.body) {
                 //         SOCIALBROWSER.executeJavaScript(res.body)
