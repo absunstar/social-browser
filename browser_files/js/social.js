@@ -542,6 +542,13 @@ SOCIALBROWSER.showScriptListMenu = function () {
     SOCIALBROWSER.menuList.push({
         type: 'separator',
     });
+    SOCIALBROWSER.menuList.push({
+        label: 'Translate this page',
+        iconURL: 'http://127.0.0.1:60080/images/code.png',
+        click: () => {
+            ipc('[window-action]', { name: 'translate' });
+        },
+    });
 
     SOCIALBROWSER.menuList.push({
         label: 'Edit Page Content',
@@ -745,7 +752,7 @@ SOCIALBROWSER.showUserAgentMenu = function () {
     SOCIALBROWSER.menuList.push({
         type: 'separator',
     });
-    SOCIALBROWSER.var.userAgentList.sort((a, b) => a.name > b.name ? -1 : 1);
+    SOCIALBROWSER.var.userAgentList.sort((a, b) => (a.name > b.name ? -1 : 1));
     SOCIALBROWSER.var.userAgentList.forEach((userAgent) => {
         SOCIALBROWSER.menuList.push({
             label: userAgent.name,

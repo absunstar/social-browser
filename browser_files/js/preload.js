@@ -356,6 +356,19 @@ SOCIALBROWSER.invoke = SOCIALBROWSER.ipc = function (channel, value = {}, log = 
         value.windowID = parseInt(value.windowID);
         value.processId = SOCIALBROWSER.webContents.getProcessId();
         value.frameToken = SOCIALBROWSER.electron.webFrame.frameToken;
+
+        if (typeof SOCIALBROWSER.getCurrentTabInfo === 'function') {
+            SOCIALBROWSER.currentTabInfo = SOCIALBROWSER.getCurrentTabInfo();
+            value.tabInfo = SOCIALBROWSER.currentTabInfo;
+            value.tabID = value.tabID || SOCIALBROWSER.currentTabInfo.id;
+            value.url = value.url || SOCIALBROWSER.currentTabInfo.url;
+            value.title = value.title || '';
+            value.iconURL = value.iconURL || SOCIALBROWSER.currentTabInfo.iconURL;
+            value.windowID = value.windowID || SOCIALBROWSER.currentTabInfo.windowID;
+            value.childID = value.childID || SOCIALBROWSER.currentTabInfo.childProcessID;
+            value.mainWindowID = value.mainWindowID || SOCIALBROWSER.currentTabInfo.mainWindowID;
+        }
+
         value = SOCIALBROWSER.cloneObject(value);
     }
 
@@ -1739,6 +1752,18 @@ SOCIALBROWSER.init2 = function () {
                     }
                 }
             });
+            SOCIALBROWSER.allowGoogleTranslate = function () {
+                globalThis.googleTranslateElementInit = function () {
+                    new google.translate.TranslateElement({ pageLanguage: 'en' }, '__google_translate_element');
+                };
+                // SOCIALBROWSER.fetch({ url: '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit' }).then((res) => {
+                //     if (res.status == 200 && res.headers['content-type'] && res.headers['content-type'][0].contain('javascript') && res.body) {
+                //         SOCIALBROWSER.executeJavaScript(res.body)
+                //     }
+                // });
+                
+                SOCIALBROWSER.addJSURL('//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit').then(() => {});
+            };
 
             SOCIALBROWSER.printerList = [];
             SOCIALBROWSER.getPrinters = function () {
@@ -4004,6 +4029,17 @@ SOCIALBROWSER.init2 = function () {
                     type: 'separator',
                 });
                 arr.push({
+                    label: 'allow Google Translate',
+                    type: 'checkbox',
+                    checked: SOCIALBROWSER.customSetting.allowGoogleTranslate || false,
+                    click() {
+                        SOCIALBROWSER.customSetting.allowGoogleTranslate = !SOCIALBROWSER.customSetting.allowGoogleTranslate;
+                        if(SOCIALBROWSER.customSetting.allowGoogleTranslate){
+                            SOCIALBROWSER.allowGoogleTranslate();
+                        }
+                    },
+                });
+                arr.push({
                     label: 'allow Download',
                     type: 'checkbox',
                     checked: SOCIALBROWSER.customSetting.allowDownload || false,
@@ -4941,24 +4977,31 @@ SOCIALBROWSER.init2 = function () {
                         );
 
                         arr.push({
+                            label: 'Translate this page',
+                            iconURL: 'http://127.0.0.1:60080/images/code.png',
+                            click: () => {
+                                SOCIALBROWSER.ipc('[window-action]', { name: 'translate' });
+                            },
+                        });
+                        arr.push({
                             label: 'Edit Page Content',
                             iconURL: 'http://127.0.0.1:60080/images/code.png',
                             click: () => {
-                                ipc('[toggle-window-edit]');
+                                SOCIALBROWSER.ipc('[toggle-window-edit]');
                             },
                         });
                         arr.push({
                             label: 'Hide / Show - Page Images',
                             iconURL: 'http://127.0.0.1:60080/images/code.png',
                             click: () => {
-                                ipc('[window-action]', { name: 'toggle-page-images' });
+                                SOCIALBROWSER.ipc('[window-action]', { name: 'toggle-page-images' });
                             },
                         });
                         arr.push({
                             label: 'Hide / Show - Page Content',
                             iconURL: 'http://127.0.0.1:60080/images/code.png',
                             click: () => {
-                                ipc('[window-action]', { name: 'toggle-page-content' });
+                                SOCIALBROWSER.ipc('[window-action]', { name: 'toggle-page-content' });
                             },
                         });
 
@@ -7550,6 +7593,8 @@ SOCIALBROWSER.init2 = function () {
                 SOCIALBROWSER.togglePageImages();
             } else if (data.name == 'toggle-page-images') {
                 SOCIALBROWSER.togglePageImages();
+            } else if (data.name == 'translate') {
+                SOCIALBROWSER.allowGoogleTranslate();
             }
         });
 
@@ -8636,6 +8681,12 @@ SOCIALBROWSER.init = function () {
         }
         SOCIALBROWSER.window.newStorageSet = true;
     }
+
+    SOCIALBROWSER.onLoad(()=>{
+        if(SOCIALBROWSER.customSetting.allowGoogleTranslate){
+            SOCIALBROWSER.allowGoogleTranslate();
+        }
+    })
 };
 
 SOCIALBROWSER._window = SOCIALBROWSER._window || SOCIALBROWSER.ipcSync('[window]');

@@ -133,11 +133,13 @@ video0 {
     word-wrap: break-word;
     word-break: break-all;
     box-shadow: 0 0 8px 1px #000000;
-    opacity: .9;
-    transition: all .2s ease;
+    opacity: 0.9;
+    transition: all 0.2s ease;
 }
 
-#__userInfo small , #__userInfo p , #__userInfo a {
+#__userInfo small,
+#__userInfo p,
+#__userInfo a {
     font-size: 12px;
     color: #bbb;
     font-weight: normal;
@@ -256,6 +258,28 @@ video0 {
 }
 .__waiting {
     border: 2px dashed red;
+}
+
+#__google_translate_element {
+   position: fixed;
+    
+}
+#__google_translate_element:has(select) {
+     border: 3px solid #272727;
+     background-color: #ffffff;
+    top: 100px;
+    left: 10px;
+    z-index: 9999;
+    padding: 10px;
+    margin: 10px;
+    font-size: 18px;
+    border-radius: 5px;
+}
+#__google_translate_element2 .goog-te-gadget img {
+    display: none; /* Hide Google branding flag icon */
+}
+#__google_translate_element .goog-te-gadget .goog-te-combo {
+    font-size: 22px;
 }
 
 @media screen and (max-width: 768px) {

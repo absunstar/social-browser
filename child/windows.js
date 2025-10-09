@@ -205,6 +205,8 @@ module.exports = function (child) {
             allowAudio: true,
             allowPopup: false,
 
+            allowGoogleTranslate: false,
+            
             allowDownload: true,
             allowExternalDownloader: true,
             defaultDownloadPath: '',

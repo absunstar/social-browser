@@ -189,7 +189,7 @@ module.exports = function (child) {
                     let index = child.parent.var.download_list.findIndex((dl) => dl.id == message.data.id);
                     if (index !== -1) {
                         if (message.data.status == 'delete') {
-                            if (child.parent.var.download_list[index].item && child.parent.var.download_list[index].item.cancel) {
+                            if (child.parent.var.download_list[index].item && typeof child.parent.var.download_list[index].item.cancel === 'function') {
                                 child.parent.var.download_list[index].item.cancel();
                             }
                             child.windowList.forEach((w) => {
@@ -202,7 +202,7 @@ module.exports = function (child) {
                             if (
                                 child.session_name_list.some((s) => s.name === message.data.Partition) &&
                                 child.parent.var.download_list[index].item &&
-                                child.parent.var.download_list[index].item.pause
+                                typeof child.parent.var.download_list[index].item.pause === 'function'
                             ) {
                                 child.parent.var.download_list[index].item.pause();
                             }
@@ -216,6 +216,7 @@ module.exports = function (child) {
                             if (
                                 child.session_name_list.some((s) => s.name === message.data.Partition) &&
                                 child.parent.var.download_list[index].item &&
+                                typeof child.parent.var.download_list[index].item.canResume === 'function' &&
                                 child.parent.var.download_list[index].item.canResume()
                             ) {
                                 child.parent.var.download_list[index].item.resume();

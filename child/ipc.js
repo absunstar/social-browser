@@ -1219,6 +1219,11 @@ module.exports = function init(child) {
     child.ipcMain.handle('[window-action]', (event, data) => {
         if (data.tabID && data.childID && data.windowID) {
             child.sendMessage({ type: '[window-action]', data: data });
+        }else if(data.windowID){
+            let win = child.electron.BrowserWindow.fromId(data.windowID);
+            if(win){
+                win.webContents.send('[window-action]' , data)
+            }
         }
     });
 
