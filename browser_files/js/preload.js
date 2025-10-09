@@ -5933,11 +5933,20 @@ SOCIALBROWSER.init2 = function () {
     })();
 
     (function loadMainMoudles() {
-        window.alert = window.confirm = SOCIALBROWSER.alert;
-        window.prompt = function (ask = '', answer = '') {
+        let s1 = window.alert.toString();
+        let s2 = window.confirm.toString();
+        let s3 = window.prompt.toString();
+
+        SOCIALBROWSER.__setConstValue(window, 'alert', SOCIALBROWSER.alert);
+        SOCIALBROWSER.__setConstValue(window, 'confirm', SOCIALBROWSER.alert);
+        SOCIALBROWSER.__setConstValue(window, 'prompt', function (ask = '', answer = '') {
             SOCIALBROWSER.log(ask, answer);
             return answer;
-        };
+        });
+        SOCIALBROWSER.__setConstValue(window.alert, 'toString', () => s1);
+        SOCIALBROWSER.__setConstValue(window.confirm, 'toString', () => s2);
+        SOCIALBROWSER.__setConstValue(window.prompt, 'toString', () => s3);
+
         if (!SOCIALBROWSER.isWhiteSite && !SOCIALBROWSER.javaScriptOFF) {
             (function loadWindow() {
                 if (!SOCIALBROWSER.isWhiteSite) {
@@ -8692,28 +8701,6 @@ if (!SOCIALBROWSER.javaScriptOFF) {
 }
 
 if (!SOCIALBROWSER.javaScriptOFF) {
-    if ((defineProperty0 = true)) {
-        Object.defineProperty0 = Object.defineProperty;
-        let s = Object.defineProperty.toString();
-        Object.defineProperty = function (o, p, d) {
-            try {
-                if (o === navigator) {
-                    if (p == 'webdriver') {
-                        Object.defineProperty0(SOCIALBROWSER.navigator, p, d);
-                        return o;
-                    }
-                    Object.defineProperty0(navigator._, p, d);
-                    return o;
-                }
-                return Object.defineProperty0(o, p, d);
-            } catch (error) {
-                SOCIALBROWSER.log(error);
-                return o;
-            }
-        };
-        SOCIALBROWSER.__setConstValue(Object.defineProperty, 'toString', () => s);
-    }
-
     if ((createElement0 = true)) {
         document.createElement0 = document.createElement;
         let s = document.createElement.toString();
@@ -8773,22 +8760,39 @@ if (!SOCIALBROWSER.javaScriptOFF) {
                         if (ele.contentWindow) {
                             ele.contentWindow.chrome = chrome;
                             if (ele.contentWindow.navigator) {
-                                ele.contentWindow.navigator.webdriver = false;
+                                SOCIALBROWSER.__define(
+                                    ele.contentWindow,
+                                    'navigator',
+                                    new Proxy(ele.contentWindow.navigator, {
+                                        setProperty: function (target, key, value) {
+                                            if (target.hasOwnProperty(key)) return target[key];
+                                            return (target[key] = value);
+                                        },
+                                        get: function (target, key, receiver) {
+                                            if (key === '_') {
+                                                return target;
+                                            }
+
+                                            if (typeof target[key] === 'function') {
+                                                return function (...args) {
+                                                    return target[key].apply(this === receiver ? target : this, args);
+                                                };
+                                            }
+                                            return Object.hasOwn(SOCIALBROWSER.navigator, key) ? SOCIALBROWSER.navigator[key] : target[key];
+                                        },
+                                        set: function (target, key, value) {
+                                            return this.setProperty(target, key, value);
+                                        },
+                                        defineProperty: function (target, key, desc) {
+                                            return this.setProperty(target, key, desc.value);
+                                        },
+                                        deleteProperty: function (target, key) {
+                                            return false;
+                                        },
+                                    }),
+                                );
                             }
                         }
-                        return ele;
-                    },
-                    enumerable: true,
-                    configurable: true,
-                });
-                Object.defineProperty(ele, 'contentWindow2', {
-                    get() {
-                        return ele.contentWindow0;
-                    },
-                    set(value) {
-                        value.chrome = chrome;
-                        value.navigator = window.navigator;
-                        ele.contentWindow0 = value;
                         return ele;
                     },
                     enumerable: true,
@@ -8800,8 +8804,75 @@ if (!SOCIALBROWSER.javaScriptOFF) {
 
             return ele;
         };
-
         SOCIALBROWSER.__setConstValue(document.createElement, 'toString', () => s);
+
+        let qs = document.querySelector.toString();
+        document.querySelector0 = document.querySelector;
+        document.querySelector = function (selector) {
+            let ele = document.querySelector0(selector);
+            if (ele && ele.tagName.like('iframe')) {
+                if (ele.contentWindow) {
+                    ele.contentWindow.chrome = chrome;
+                    if (ele.contentWindow.navigator) {
+                        SOCIALBROWSER.__define(
+                            ele.contentWindow,
+                            'navigator',
+                            new Proxy(ele.contentWindow.navigator, {
+                                setProperty: function (target, key, value) {
+                                    if (target.hasOwnProperty(key)) return target[key];
+                                    return (target[key] = value);
+                                },
+                                get: function (target, key, receiver) {
+                                    if (key === '_') {
+                                        return target;
+                                    }
+
+                                    if (typeof target[key] === 'function') {
+                                        return function (...args) {
+                                            return target[key].apply(this === receiver ? target : this, args);
+                                        };
+                                    }
+                                    return Object.hasOwn(SOCIALBROWSER.navigator, key) ? SOCIALBROWSER.navigator[key] : target[key];
+                                },
+                                set: function (target, key, value) {
+                                    return this.setProperty(target, key, value);
+                                },
+                                defineProperty: function (target, key, desc) {
+                                    return this.setProperty(target, key, desc.value);
+                                },
+                                deleteProperty: function (target, key) {
+                                    return false;
+                                },
+                            }),
+                        );
+                    }
+                }
+            }
+            return ele;
+        };
+        SOCIALBROWSER.__setConstValue(document.querySelector, 'toString', () => qs);
+    }
+
+    if ((defineProperty0 = true)) {
+        Object.defineProperty0 = Object.defineProperty;
+        let s = Object.defineProperty.toString();
+        Object.defineProperty = function (o, p, d) {
+            try {
+                if (o === navigator) {
+                    if (p == 'webdriver') {
+                        Object.defineProperty0(SOCIALBROWSER.navigator, p, d);
+                        return o;
+                    }
+                    Object.defineProperty0(navigator._, p, d);
+                    return o;
+                }
+                return Object.defineProperty0(o, p, d);
+            } catch (error) {
+                SOCIALBROWSER.log(error);
+                return o;
+            }
+        };
+        SOCIALBROWSER.__setConstValue(Object.defineProperty, 'toString', () => s);
     }
 }
 
