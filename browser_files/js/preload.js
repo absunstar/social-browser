@@ -8686,18 +8686,6 @@ if (!SOCIALBROWSER.javaScriptOFF) {
             }),
         );
     }
-
-    // let n = Object.create(proto);
-
-    // for (const key in SOCIALBROWSER.navigator) {
-    //     SOCIALBROWSER.__setConstValue(n, key, SOCIALBROWSER.navigator[key]);
-    // }
-    // for (const key in navigator) {
-    //     if (!Object.hasOwn(SOCIALBROWSER.navigator, key)) {
-    //         SOCIALBROWSER.__setConstValue(n, key, navigator[key]);
-    //     }
-    // }
-    // SOCIALBROWSER.__setConstValue(globalThis, 'navigator', n);
 }
 
 if (!SOCIALBROWSER.javaScriptOFF) {
@@ -8886,7 +8874,6 @@ if (!SOCIALBROWSER.isWhiteSite) {
                 return JSON.stringify0(SOCIALBROWSER.cloneObject(obj2), ...args);
             } catch (error) {
                 console.error(error);
-                console.log(obj2);
                 return '';
             }
         };
