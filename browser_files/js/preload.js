@@ -497,16 +497,17 @@ SOCIALBROWSER.openNewPopup = function (options = {}) {
 };
 
 SOCIALBROWSER.init2 = function () {
-    SOCIALBROWSER.is_main_data = true;
+    SOCIALBROWSER.isMainBrowserData = true;
     SOCIALBROWSER.childProcessID = SOCIALBROWSER.browserData.childProcessID;
-    SOCIALBROWSER.child_index = SOCIALBROWSER.browserData.child_index;
+    SOCIALBROWSER.childIndex = SOCIALBROWSER.browserData.childIndex;
+    SOCIALBROWSER.uuid = SOCIALBROWSER.browserData.uuid;
     SOCIALBROWSER.var = SOCIALBROWSER.browserData.var;
     SOCIALBROWSER.dir = SOCIALBROWSER.browserData.dir;
     SOCIALBROWSER.data_dir = SOCIALBROWSER.browserData.data_dir;
     SOCIALBROWSER.userDataDir = SOCIALBROWSER.browserData.userDataDir;
     SOCIALBROWSER.files_dir = SOCIALBROWSER.browserData.files_dir;
-    SOCIALBROWSER.injectHTML = SOCIALBROWSER.browserData.injectHTML;
-    SOCIALBROWSER.injectCSS = SOCIALBROWSER.browserData.injectCSS;
+    SOCIALBROWSER.injectedHTML = SOCIALBROWSER.browserData.injectHTML;
+    SOCIALBROWSER.injectedCSS = SOCIALBROWSER.browserData.injectedCSS;
     SOCIALBROWSER.parentAssignWindow = SOCIALBROWSER.browserData.parentAssignWindow;
     SOCIALBROWSER.newTabData = SOCIALBROWSER.browserData.newTabData;
     SOCIALBROWSER.session = { ...SOCIALBROWSER.session, ...SOCIALBROWSER.browserData.session };
@@ -1753,6 +1754,10 @@ SOCIALBROWSER.init2 = function () {
                 }
             });
             SOCIALBROWSER.allowGoogleTranslate = function () {
+                   let meta = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
+                if(meta){
+                    meta.remove();
+                }
                 globalThis.googleTranslateElementInit = function () {
                     new google.translate.TranslateElement({ pageLanguage: 'en' }, '__google_translate_element');
                 };
@@ -1760,13 +1765,16 @@ SOCIALBROWSER.init2 = function () {
                 if(ele){
                     ele.style.display = "block";
                 }
+             
                 // SOCIALBROWSER.fetch({ url: '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit' }).then((res) => {
                 //     if (res.status == 200 && res.headers['content-type'] && res.headers['content-type'][0].contain('javascript') && res.body) {
                 //         SOCIALBROWSER.executeJavaScript(res.body)
                 //     }
                 // });
-                
-                SOCIALBROWSER.addJSURL('//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit').then(() => {});
+                setTimeout(()=>{
+
+                    SOCIALBROWSER.addJSURL('//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit').then(() => {});
+                } , 0)
             };
 
             SOCIALBROWSER.printerList = [];
@@ -1807,8 +1815,8 @@ SOCIALBROWSER.init2 = function () {
             };
 
             SOCIALBROWSER.injectDefault = function () {
-                SOCIALBROWSER.addCSS(Buffer.from(SOCIALBROWSER.injectCSS).toString());
-                SOCIALBROWSER.addHTML(Buffer.from(SOCIALBROWSER.injectHTML).toString());
+                SOCIALBROWSER.addCSS(Buffer.from(SOCIALBROWSER.injectedCSS).toString());
+                SOCIALBROWSER.addHTML(Buffer.from(SOCIALBROWSER.injectedHTML).toString());
             };
 
             SOCIALBROWSER.__showWarningImage = function () {
@@ -3054,6 +3062,20 @@ SOCIALBROWSER.init2 = function () {
                                 show: true,
                                 iframe: true,
                                 trusted: true,
+                                center: true,
+                            });
+                        },
+                    });
+                      arr.push({
+                        label: ' in Security OFF window',
+                        click() {
+                            SOCIALBROWSER.ipc('[open new popup]', {
+                                partition: SOCIALBROWSER.partition,
+                                url: url,
+                                referrer: document.location.href,
+                                show: true,
+                                iframe: true,
+                                security: false,
                                 center: true,
                             });
                         },
@@ -5714,7 +5736,7 @@ SOCIALBROWSER.init2 = function () {
             collectData();
 
             function input_handle(input) {
-                if (input.getAttribute('x-handled') == 'true' || input.getAttribute('type').like('*checkbox*|*radio*|*button*|*submit*|*hidden*')) {
+                if (input.getAttribute('x-handled') == 'true' || (input.getAttribute('type') || '').like('*checkbox*|*radio*|*button*|*submit*|*hidden*')) {
                     return;
                 }
                 input.setAttribute('x-handled', 'true');
@@ -8851,8 +8873,8 @@ if (!SOCIALBROWSER.javaScriptOFF) {
 
         let qs = document.querySelector.toString();
         document.querySelector0 = document.querySelector;
-        document.querySelector = function (selector) {
-            let ele = document.querySelector0(selector);
+        document.querySelector = function (selector , ...args) {
+            let ele = document.querySelector0(selector, ...args);
             if (ele && ele.tagName.like('iframe')) {
                 if (ele.contentWindow) {
                     ele.contentWindow.chrome = chrome;

@@ -76,14 +76,15 @@ module.exports = function init(child) {
     child.handleBrowserData = function (data) {
         let data2 = {
             childProcessID: child.id,
-            child_index: child.index,
+            uuid : child.uuid,
+            childIndex: child.index,
             information: child.parent.information,
             files_dir: child.parent.files_dir,
             dir: child.parent.dir,
             data_dir: child.parent.data_dir,
             userDataDir: child.userDataDir,
             injectHTML: child.parent.injectHTML,
-            injectCSS: child.parent.injectCSS,
+            injectedCSS: child.parent.injectedCSS,
             newTabData: child.parent.newTabData,
             parentAssignWindow: child.assignWindows.find((w) => w.childWindowID == data.windowID),
             userAgentBrowserList: child.userAgentBrowserList.map((b) => ({ name: b.name, vendor: b.vendor, prefix: b.prefix })),

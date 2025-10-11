@@ -37,7 +37,7 @@ module.exports = function init(parent) {
                         files_dir: parent.files_dir,
                         dir: parent.dir,
                         injectHTML: parent.files[0].data,
-                        injectCSS: parent.files[1].data,
+                        injectedCSS: parent.files[1].data,
                         windowType: child.windowType,
                         information: parent.information,
                     };

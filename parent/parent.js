@@ -189,6 +189,8 @@ module.exports = function init(parent) {
 
         options.uuid = !options.partition.contains('persist:') ? 'x-ghost' : 'user-' + options.partition.replace('persist:', '');
         const uuid = options.uuid;
+        let data_dir = parent.data_dir;
+       
 
         let index = parent.clientList.findIndex((cl) => cl && cl.uuid === uuid);
         if (index !== -1 && parent.clientList[index]) {
@@ -215,7 +217,7 @@ module.exports = function init(parent) {
                 '--uuid=' + uuid,
                 '--partition=' + options.partition,
                 '--dir=' + parent.dir,
-                '--data_dir=' + parent.data_dir,
+                '--data_dir=' + data_dir,
                 '--speed=' + (parent.speedMode || ''),
                 '--theme=' + 'dark',
                 parent.dir + '/child/child.js',

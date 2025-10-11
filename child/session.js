@@ -730,7 +730,7 @@ module.exports = function (child) {
                     let s_policy_opener = details.responseHeaders['Cross-Origin-Opener-Policy-Report-Only'] || details.responseHeaders['Cross-Origin-Opener-Policy-Report-Only'.toLowerCase()];
 
                     // Must Delete Before set new values [duplicate headers]
-                    [
+                    let propertyList = [
                         //'Cross-Origin-Embedder-Policy',
                         // 'Cross-Origin-Opener-Policy',
                         //  'Strict-Transport-Security',
@@ -747,12 +747,14 @@ module.exports = function (child) {
                         'Access-Control-Allow-Origin',
                         'Access-Control-Expose-Headers',
                         _ss.user.privacy.vpc.removeXFrameOptions ? 'X-Frame-Options' : '',
-                    ].forEach((p) => {
-                        details.responseHeaders[p] = undefined;
-                        details.responseHeaders[p.toLowerCase()] = undefined;
-                        delete details.responseHeaders[p];
-                        delete details.responseHeaders[p.toLowerCase()];
-                    });
+                    ].join('|');
+
+                    for (const key in details.responseHeaders) {
+                        if (Object.hasOwn(details.responseHeaders, key) && key.contain(propertyList)) {
+                            details.responseHeaders[key] = undefined;
+                            delete details.responseHeaders[key];
+                        }
+                    }
 
                     details.responseHeaders['Access-Control-Allow-Private-Network'.toLowerCase()] = 'true';
                     details.responseHeaders['Access-Control-Allow-Credentials'.toLowerCase()] = 'true';
@@ -770,89 +772,89 @@ module.exports = function (child) {
                     }
 
                     if (s_policy) {
-                        if (Array.isArray(s_policy)) {
-                            for (var key in s_policy) {
-                                // if (s_policy[key].contain("'self'")) {
-                                //     s_policy[key] = s_policy[key].replaceAll("style-src 'self'", "style-src 'unsafe-inline' browser://*");
-                                //     s_policy[key] = s_policy[key].replaceAll("script-src 'self'", "script-src 'unsafe-inline' browser://*");
-                                //     s_policy[key] = s_policy[key].replaceAll("script-src-elem 'self'", "script-src-elem 'unsafe-inline' browser://*");
-                                //     s_policy[key] = s_policy[key].replaceAll("connect-src 'self'", 'connect-src browser://*');
-                                //     s_policy[key] = s_policy[key].replaceAll("img-src 'self'", 'img-src data: browser://*');
-                                //     s_policy[key] = s_policy[key].replaceAll("frame-src 'self'", 'frame-src browser://*');
-                                //     s_policy[key] = s_policy[key].replaceAll("default-src 'self'", 'default-src browser://*');
-                                //     s_policy[key] = s_policy[key].replaceAll("font-src 'self'", 'font-src browser://*');
-                                //     s_policy[key] = s_policy[key].replaceAll("media-src 'self'", 'media-src browser://*');
-                                //     s_policy[key] = s_policy[key].replaceAll("object-src 'self'", 'object-src browser://*');
-                                //     s_policy[key] = s_policy[key].replaceAll("child-src 'self'", 'child-src browser://*');
-                                //     s_policy[key] = s_policy[key].replaceAll("frame-ancestors 'self'", 'frame-ancestors browser://*');
-                                //     s_policy[key] = s_policy[key].replaceAll("worker-src 'self'", 'worker-src browser://*');
-                                //     s_policy[key] = s_policy[key].replaceAll("manifest-src 'self'", 'manifest-src browser://*');
-                                //     s_policy[key] = s_policy[key].replaceAll("prefetch-src 'self'", 'prefetch-src browser://*');
-                                //     s_policy[key] = s_policy[key].replaceAll("style-src-attr 'self'", "style-src-attr 'unsafe-inline' browser://*");
-                                //     s_policy[key] = s_policy[key].replaceAll("style-src-elem 'self'", "style-src-elem 'unsafe-inline' browser://*");
-                                //     s_policy[key] = s_policy[key].replaceAll("img-src 'self'", 'img-src data: browser://*');
-                                //     s_policy[key] = s_policy[key].replaceAll("media-src 'self'", 'media-src browser://*');
-                                // } else {
-                                //     s_policy[key] = s_policy[key].replaceAll('style-src ', "style-src 'unsafe-inline' browser://* ");
-                                //     s_policy[key] = s_policy[key].replaceAll('script-src ', "script-src 'unsafe-inline' browser://* ");
-                                //     s_policy[key] = s_policy[key].replaceAll('script-src-elem ', "script-src-elem 'unsafe-inline' browser://* ");
-                                //     s_policy[key] = s_policy[key].replaceAll('connect-src ', 'connect-src browser://* ');
-                                //     s_policy[key] = s_policy[key].replaceAll('img-src ', 'img-src data: browser://* ');
-                                //     s_policy[key] = s_policy[key].replaceAll('frame-src ', 'frame-src browser://* ');
-                                //     s_policy[key] = s_policy[key].replaceAll('default-src ', 'default-src browser://* ');
-                                //     s_policy[key] = s_policy[key].replaceAll('font-src ', 'font-src browser://* ');
-                                //     s_policy[key] = s_policy[key].replaceAll('media-src ', 'media-src browser://* ');
-                                //     s_policy[key] = s_policy[key].replaceAll('object-src ', 'object-src browser://* ');
-                                //     s_policy[key] = s_policy[key].replaceAll('child-src ', 'child-src browser://* ');
-                                //     s_policy[key] = s_policy[key].replaceAll('frame-ancestors ', 'frame-ancestors browser://* ');
-                                //     s_policy[key] = s_policy[key].replaceAll('worker-src ', 'worker-src browser://* ');
-                                //     s_policy[key] = s_policy[key].replaceAll('manifest-src ', 'manifest-src browser://* ');
-                                //     s_policy[key] = s_policy[key].replaceAll('prefetch-src ', 'prefetch-src browser://* ');
-                                //     s_policy[key] = s_policy[key].replaceAll('style-src-attr ', "style-src-attr 'unsafe-inline' browser://* ");
-                                //     s_policy[key] = s_policy[key].replaceAll('style-src-elem ', "style-src-elem 'unsafe-inline' browser://* ");
-                                //     s_policy[key] = s_policy[key].replaceAll('img-src ', 'img-src data: browser://* ');
-                                //     s_policy[key] = s_policy[key].replaceAll('media-src ', 'media-src browser://* ');
-                                // }
+                        let pList = [
+                            'default-src',
+                            'script-src',
+                            'script-src-elem',
+                            'child-src',
+                            // 'frame-ancestors',
+                            'frame-src',
+                            'img-src',
+                            'style-src',
+                            'style-src-attr',
+                            'style-src-elem',
+                            'font-src',
+                            'connect-src',
+                            'media-src',
+                            'object-src',
+                            'worker-src',
+                            'manifest-src',
+                            'prefetch-src',
+                            
+                        ];
 
+                        if (Array.isArray(s_policy)) {
+                            
+                            s_policy.forEach((value , key) => {
                                 // if (win && s_policy[key].like('*sha256*')) {
                                 //     win.customSetting.$sha256 = s_policy[key];
                                 // }
                                 // if (win && s_policy[key].like('*nonce*')) {
                                 //     win.customSetting.$nonce = s_policy[key];
                                 // }
-
-                                s_policy[key] = s_policy[key].replaceAll("default-src 'none'", '');
-                                s_policy[key] = s_policy[key].replaceAll('data: ', 'data: browser://* ');
-                                s_policy[key] = s_policy[key].replaceAll('default-src ', 'default-src browser://* ');
-                                s_policy[key] = s_policy[key].replaceAll('img-src ', 'img-src browser://* ');
-                                if (s_policy[key].contains("'unsafe-inline'") && !s_policy[key].contains('nonce-') && !s_policy[key].contains('sha256-')) {
-                                    s_policy[key] = s_policy[key].replaceAll('script-src ', 'script-src browser://* ');
-                                    s_policy[key] = s_policy[key].replaceAll('script-src-elem ', 'script-src-elem browser://* ');
-                                    s_policy[key] = s_policy[key].replaceAll('connect-src ', 'connect-src browser://* ');
-                                    s_policy[key] = s_policy[key].replaceAll('frame-src ', 'frame-src browser://* ');
-                                } else {
-                                    s_policy[key] = s_policy[key].replaceAll('script-src ', "script-src browser://* 'nonce-social' ");
-                                    s_policy[key] = s_policy[key].replaceAll('script-src-elem ', "script-src-elem browser://* 'nonce-social' ");
-                                    s_policy[key] = s_policy[key].replaceAll('connect-src ', "connect-src browser://* 'nonce-social' ");
-                                    s_policy[key] = s_policy[key].replaceAll('frame-src ', "frame-src browser://* 'nonce-social' ");
+                                if (!s_policy[key].contain('browser://') && !s_policy[key].contain("'none'")) {
+                                    pList.forEach((p) => {
+                                        if (!s_policy[key].contain('nonce-') && !s_policy[key].contain("'unsafe-inline'")) {
+                                            s_policy[key] = s_policy[key].replaceAll(p + ' ', p + " browser://* 'nonce-social'");
+                                        } else {
+                                            s_policy[key] = s_policy[key].replaceAll(p + ' ', p + ' browser://* ');
+                                        }
+                                    });
                                 }
-                            }
+
+                                // s_policy[key] = s_policy[key].replaceAll("default-src 'none'", '');
+                                // s_policy[key] = s_policy[key].replaceAll('data: ', 'data: browser://* ');
+                                // s_policy[key] = s_policy[key].replaceAll('default-src ', 'default-src browser://* ');
+                                // s_policy[key] = s_policy[key].replaceAll('img-src ', 'img-src browser://* ');
+                                // if (s_policy[key].contains("'unsafe-inline'") && !s_policy[key].contains('nonce-') && !s_policy[key].contains('sha256-')) {
+                                //     s_policy[key] = s_policy[key].replaceAll('script-src ', 'script-src browser://* ');
+                                //     s_policy[key] = s_policy[key].replaceAll('script-src-elem ', 'script-src-elem browser://* ');
+                                //     s_policy[key] = s_policy[key].replaceAll('connect-src ', 'connect-src browser://* ');
+                                //     s_policy[key] = s_policy[key].replaceAll('frame-src ', 'frame-src browser://* ');
+                                // } else {
+                                //     s_policy[key] = s_policy[key].replaceAll('script-src ', "script-src browser://* 'nonce-social' ");
+                                //     s_policy[key] = s_policy[key].replaceAll('script-src-elem ', "script-src-elem browser://* 'nonce-social' ");
+                                //     s_policy[key] = s_policy[key].replaceAll('connect-src ', "connect-src browser://* 'nonce-social' ");
+                                //     s_policy[key] = s_policy[key].replaceAll('frame-src ', "frame-src browser://* 'nonce-social' ");
+                                // }
+                            });
                         } else if (typeof s_policy == 'string') {
-                            s_policy = s_policy.replaceAll("default-src 'none'", '');
-                            s_policy = s_policy.replaceAll('data: ', 'data: browser://* ');
-                            s_policy = s_policy.replaceAll('default-src ', 'default-src browser://* ');
-                            s_policy = s_policy.replaceAll('img-src ', 'img-src browser://* ');
-                            if (s_policy.contains("'unsafe-inline'") && !s_policy.contains('nonce-') && !s_policy[key].contains('sha256-')) {
-                                s_policy = s_policy.replaceAll('script-src ', 'script-src browser://* ');
-                                s_policy = s_policy.replaceAll('script-src-elem ', 'script-src-elem browser://* ');
-                                s_policy = s_policy.replaceAll('frame-src ', 'frame-src browser://* ');
-                                s_policy = s_policy.replaceAll('connect-src ', 'connect-src browser://* ');
-                            } else {
-                                s_policy = s_policy.replaceAll('script-src ', "script-src browser://* 'nonce-social' ");
-                                s_policy = s_policy.replaceAll('frame-src ', "frame-src browser://* 'nonce-social' ");
-                                s_policy = s_policy.replaceAll('connect-src ', "connect-src browser://* 'nonce-social' ");
-                                s_policy = s_policy.replaceAll('script-src-elem ', "script-src-elem browser://* 'nonce-social' ");
-                            }
+
+                                  if (!s_policy.contain('browser://') && !s_policy.contain("'none'")) {
+                                    pList.forEach((p) => {
+                                        if (!s_policy.contain('nonce-') && !s_policy.contain("'unsafe-inline'")) {
+                                            s_policy = s_policy.replaceAll(p + ' ', p + " browser://* 'nonce-social'");
+                                        } else {
+                                            s_policy = s_policy.replaceAll(p + ' ', p + ' browser://* ');
+                                        }
+                                    });
+                                }
+
+                            // s_policy = s_policy.replaceAll("default-src 'none'", '');
+                            // s_policy = s_policy.replaceAll('data: ', 'data: browser://* ');
+                            // s_policy = s_policy.replaceAll('default-src ', 'default-src browser://* ');
+                            // s_policy = s_policy.replaceAll('img-src ', 'img-src browser://* ');
+                            // if (s_policy.contains("'unsafe-inline'") && !s_policy.contains('nonce-') && !s_policy[key].contains('sha256-')) {
+                            //     s_policy = s_policy.replaceAll('script-src ', 'script-src browser://* ');
+                            //     s_policy = s_policy.replaceAll('script-src-elem ', 'script-src-elem browser://* ');
+                            //     s_policy = s_policy.replaceAll('frame-src ', 'frame-src browser://* ');
+                            //     s_policy = s_policy.replaceAll('connect-src ', 'connect-src browser://* ');
+                            // } else {
+                            //     s_policy = s_policy.replaceAll('script-src ', "script-src browser://* 'nonce-social' ");
+                            //     s_policy = s_policy.replaceAll('frame-src ', "frame-src browser://* 'nonce-social' ");
+                            //     s_policy = s_policy.replaceAll('connect-src ', "connect-src browser://* 'nonce-social' ");
+                            //     s_policy = s_policy.replaceAll('script-src-elem ', "script-src-elem browser://* 'nonce-social' ");
+                            //}
                         } else {
                             console.log(typeof s_policy, s_policy);
                         }

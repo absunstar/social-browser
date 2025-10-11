@@ -108,7 +108,11 @@ child.electron.app.commandLine.appendSwitch('disable-dev-mode');
 child.electron.app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 // child.electron.app.commandLine.appendSwitch('disable-debug-mode');
 // child.electron.app.disableHardwareAcceleration(); ## real human has this //
-child.userDataDir = child.path.join(child.data_dir, child.uuid)
+if (child.uuid == 'x-ghost') {
+    child.userDataDir = child.path.join(child.data_dir, 'sessionData', child.uuid);
+} else {
+    child.userDataDir = child.path.join(child.data_dir, child.uuid);
+}
 
 require(child.path.join(child.dir, 'child', 'shared'))(child);
 require(child.path.join(child.dir, 'child', 'fn'))(child);
@@ -283,7 +287,7 @@ child.electron.app.whenReady().then(() => {
         let screen = child.parent.options.screen;
 
         child.windowList.forEach((w) => {
-            if ( w.window && w.window.customSetting.windowType == 'view' && !w.window.isDestroyed()) {
+            if (w.window && w.window.customSetting.windowType == 'view' && !w.window.isDestroyed()) {
                 let win = w.window;
 
                 if (mainWindow.hide) {
