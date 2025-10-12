@@ -36,7 +36,7 @@ module.exports = function init(parent) {
                         icon: parent.icons[process.platform],
                         files_dir: parent.files_dir,
                         dir: parent.dir,
-                        injectHTML: parent.files[0].data,
+                        injectedHTML: parent.files[0].data,
                         injectedCSS: parent.files[1].data,
                         windowType: child.windowType,
                         information: parent.information,

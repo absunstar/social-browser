@@ -180,15 +180,15 @@ module.exports = function (child) {
             iframe: true,
             trackingID: 'main_tracking_' + new Date().getTime(),
             sandbox: true,
-            chrome : false,
+            chrome: false,
             cookie: undefined,
             cookies: undefined,
             cookieObject: undefined,
             cookieList: undefined,
             localStorageList: undefined,
             sessionStorageList: undefined,
-            
-            urlList : [],
+
+            urlList: [],
 
             allowOpenExternal: true,
             allowMenu: true,
@@ -206,7 +206,7 @@ module.exports = function (child) {
             allowPopup: false,
 
             allowGoogleTranslate: false,
-            
+
             allowDownload: true,
             allowExternalDownloader: true,
             defaultDownloadPath: '',
@@ -359,7 +359,7 @@ module.exports = function (child) {
             }
 
             if (setting.cookieObject) {
-                setting.cookieList =  [];
+                setting.cookieList = [];
                 setting.cookieObject.domain = setting.cookieObject.domain || child.url.parse(setting.url).hostname;
                 setting.cookieObject.partition = setting.cookieObject.partition || setting.partition;
                 setting.cookieObject.mode = setting.cookieObject.mode || 0;
@@ -367,7 +367,7 @@ module.exports = function (child) {
             }
 
             if (setting.cookie) {
-                setting.cookieList =  [];
+                setting.cookieList = [];
                 let cookieObject = { cookie: setting.cookie, mode: 0 };
                 cookieObject.domain = child.url.parse(setting.url).hostname;
                 cookieObject.partition = setting.partition;
@@ -411,9 +411,40 @@ module.exports = function (child) {
             customSetting.allowSaveUserData = false;
         }
 
-        let win = new child.electron.BrowserWindow({...customSetting , parent: setting.parent});
+        let win = new child.electron.BrowserWindow({ ...customSetting, parent: setting.parent });
 
-        if(customSetting.parent){
+        if ((customFunctions = true)) {
+            win.injectHTML = function (htmlString) {
+                win.webContents.executeJavaScript(`document.body.insertAdjacentHTML('beforeend', \`${htmlString}\`);`).catch((err) => {
+                    child.log(err);
+                });
+                return true;
+            };
+            win.injectCSS = function (css) {
+                win.webContents.insertCSS(css).catch((err) => {
+                    child.log(err);
+                });
+                return true;
+            };
+            win.injectJS = function (js) {
+                win.webContents.executeJavaScript(js).catch((err) => {
+                    child.log(err);
+                });
+                return true;
+            };
+
+            win.webContents.on('did-frame-finish-load', (event, isMainFrame , frameProcessId , frameRoutingId ) => {
+                
+                //  win.injectCSS(child.parent.injectedCSS);
+                // const frame = child.electron.webFrameMain.fromId(frameProcessId, frameRoutingId)
+                //   frame.executeJavaScript(`document.body.insertAdjacentHTML('beforeend', \`${child.parent.injectedHTML}\`);`).catch((err) => {
+                //     child.log(err);
+                // });
+
+            });
+        }
+
+        if (customSetting.parent) {
             customSetting.parentID = customSetting.parent.id;
             customSetting.parent = undefined;
         }
@@ -946,7 +977,6 @@ module.exports = function (child) {
                 } else {
                     win.customSetting.iconURL = win.customSetting.error_icon;
                     child.updateTab(win);
-                  
                 }
             }
 
@@ -1019,7 +1049,7 @@ module.exports = function (child) {
         });
         win.webContents.on('will-redirect', (e) => {
             let url = e.url;
-            
+
             child.log('will-redirect : ', url);
             child.handleCustomSeting(url, win, e.isMainFrame);
 
@@ -1027,7 +1057,7 @@ module.exports = function (child) {
                 e.preventDefault();
                 let newWin = child.createNewWindow({
                     ...win.customSetting,
-                    parent : win,
+                    parent: win,
                     defaultUserAgent: {
                         url: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0',
                         name: 'Edge',
@@ -1092,8 +1122,8 @@ module.exports = function (child) {
         });
 
         win.webContents.on('will-frame-navigate', (e) => {
-            if(!win.customSetting.urlList.some(u=>e.url == u.url)){
-               win.customSetting.urlList.push({url:e.url});
+            if (!win.customSetting.urlList.some((u) => e.url == u.url)) {
+                win.customSetting.urlList.push({ url: e.url });
             }
             if (e.url.like('*user.js') && e.isMainFrame) {
                 win.webContents.send('[install-user.js]', { url: e.url });
@@ -1107,14 +1137,14 @@ module.exports = function (child) {
                 e.preventDefault();
                 if (win.customSetting.allowOpenExternal) {
                     child.openExternal(e.url);
-                     win.webContents.send('[show-user-info]' , {message : 'Open External URL  <p><a>' + e.url + '</a></p>'});
+                    win.webContents.send('[show-user-info]', { message: 'Open External URL  <p><a>' + e.url + '</a></p>' });
                 }
                 return;
             }
 
             if (!win.customSetting.allowRedirect || (!win.customSetting.allowAds && !child.isAllowURL(e.url))) {
                 e.preventDefault();
-                win.webContents.send('[show-user-info]' , {message : 'Blocked URL : <p><a>' + e.url + '</a></p>'});
+                win.webContents.send('[show-user-info]', { message: 'Blocked URL : <p><a>' + e.url + '</a></p>' });
                 child.log('Block-frame-navigate', e.url);
                 return;
             }
@@ -1198,7 +1228,7 @@ module.exports = function (child) {
                         action: 'allow',
                         overrideBrowserWindowOptions: {
                             ...customSetting,
-                            customSetting:customSetting,
+                            customSetting: customSetting,
                             parent: win,
                             alwaysOnTop: true,
                             skipTaskbar: false,
@@ -1397,7 +1427,6 @@ module.exports = function (child) {
                 });
                 return;
             }
-
 
             if (child.parent.var.blocking.popup.allow_internal && url_parser.hostname.contains(current_url_parser.hostname)) {
                 child.sendMessage({

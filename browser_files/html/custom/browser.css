@@ -265,16 +265,16 @@ video0 {
     display: none;
     .close-button {
         background: none;
-        border: none; 
-        cursor: pointer; 
-        font-size: 1.5em; 
-        color: #333; 
-        padding: 0; 
-        line-height: 1; 
+        border: none;
+        cursor: pointer;
+        font-size: 1.5em;
+        color: #333;
+        padding: 0;
+        line-height: 1;
     }
 
     .close-button:hover {
-        color: #ff0000; 
+        color: #ff0000;
     }
 }
 #__google_translate_element:has(select) {

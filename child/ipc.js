@@ -83,7 +83,7 @@ module.exports = function init(child) {
             dir: child.parent.dir,
             data_dir: child.parent.data_dir,
             userDataDir: child.userDataDir,
-            injectHTML: child.parent.injectHTML,
+            injectedHTML: child.parent.injectedHTML,
             injectedCSS: child.parent.injectedCSS,
             newTabData: child.parent.newTabData,
             parentAssignWindow: child.assignWindows.find((w) => w.childWindowID == data.windowID),

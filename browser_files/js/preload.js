@@ -506,7 +506,7 @@ SOCIALBROWSER.init2 = function () {
     SOCIALBROWSER.data_dir = SOCIALBROWSER.browserData.data_dir;
     SOCIALBROWSER.userDataDir = SOCIALBROWSER.browserData.userDataDir;
     SOCIALBROWSER.files_dir = SOCIALBROWSER.browserData.files_dir;
-    SOCIALBROWSER.injectedHTML = SOCIALBROWSER.browserData.injectHTML;
+    SOCIALBROWSER.injectedHTML = SOCIALBROWSER.browserData.injectedHTML;
     SOCIALBROWSER.injectedCSS = SOCIALBROWSER.browserData.injectedCSS;
     SOCIALBROWSER.parentAssignWindow = SOCIALBROWSER.browserData.parentAssignWindow;
     SOCIALBROWSER.newTabData = SOCIALBROWSER.browserData.newTabData;
@@ -1754,27 +1754,28 @@ SOCIALBROWSER.init2 = function () {
                 }
             });
             SOCIALBROWSER.allowGoogleTranslate = function () {
-                   let meta = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
-                if(meta){
-                    meta.remove();
-                }
+
+                // let meta = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
+                // if (meta) {
+                //     meta.remove();
+                // }
+
                 globalThis.googleTranslateElementInit = function () {
                     new google.translate.TranslateElement({ pageLanguage: 'en' }, '__google_translate_element');
                 };
                 let ele = SOCIALBROWSER.$('#__google_translate_element');
-                if(ele){
-                    ele.style.display = "block";
+                if (ele) {
+                    ele.style.display = 'block';
                 }
-             
+
                 // SOCIALBROWSER.fetch({ url: '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit' }).then((res) => {
                 //     if (res.status == 200 && res.headers['content-type'] && res.headers['content-type'][0].contain('javascript') && res.body) {
                 //         SOCIALBROWSER.executeJavaScript(res.body)
                 //     }
                 // });
-                setTimeout(()=>{
-
+                setTimeout(() => {
                     SOCIALBROWSER.addJSURL('//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit').then(() => {});
-                } , 0)
+                }, 0);
             };
 
             SOCIALBROWSER.printerList = [];
@@ -1815,8 +1816,10 @@ SOCIALBROWSER.init2 = function () {
             };
 
             SOCIALBROWSER.injectDefault = function () {
-                SOCIALBROWSER.addCSS(Buffer.from(SOCIALBROWSER.injectedCSS).toString());
-                SOCIALBROWSER.addHTML(Buffer.from(SOCIALBROWSER.injectedHTML).toString());
+                let css = Buffer.from(SOCIALBROWSER.injectedCSS).toString();
+                 SOCIALBROWSER.addCSS(css);
+                let html = Buffer.from(SOCIALBROWSER.injectedHTML).toString();
+                SOCIALBROWSER.addHTML(html);
             };
 
             SOCIALBROWSER.__showWarningImage = function () {
@@ -3066,7 +3069,7 @@ SOCIALBROWSER.init2 = function () {
                             });
                         },
                     });
-                      arr.push({
+                    arr.push({
                         label: ' in Security OFF window',
                         click() {
                             SOCIALBROWSER.ipc('[open new popup]', {
@@ -4060,7 +4063,7 @@ SOCIALBROWSER.init2 = function () {
                     checked: SOCIALBROWSER.customSetting.allowGoogleTranslate || false,
                     click() {
                         SOCIALBROWSER.customSetting.allowGoogleTranslate = !SOCIALBROWSER.customSetting.allowGoogleTranslate;
-                        if(SOCIALBROWSER.customSetting.allowGoogleTranslate){
+                        if (SOCIALBROWSER.customSetting.allowGoogleTranslate) {
                             SOCIALBROWSER.allowGoogleTranslate();
                         }
                     },
@@ -8583,7 +8586,6 @@ SOCIALBROWSER.init2 = function () {
         }
 
         SOCIALBROWSER.onLoad(() => {
-            SOCIALBROWSER.injectDefault();
             SOCIALBROWSER.url = document.location.href;
             (function urlChanged() {
                 setInterval(() => {
@@ -8708,11 +8710,12 @@ SOCIALBROWSER.init = function () {
         SOCIALBROWSER.window.newStorageSet = true;
     }
 
-    SOCIALBROWSER.onLoad(()=>{
-        if(SOCIALBROWSER.customSetting.allowGoogleTranslate){
+    SOCIALBROWSER.onLoad(() => {
+        SOCIALBROWSER.injectDefault();
+        if (SOCIALBROWSER.customSetting.allowGoogleTranslate) {
             SOCIALBROWSER.allowGoogleTranslate();
         }
-    })
+    });
 };
 
 SOCIALBROWSER._window = SOCIALBROWSER._window || SOCIALBROWSER.ipcSync('[window]');
@@ -8873,7 +8876,7 @@ if (!SOCIALBROWSER.javaScriptOFF) {
 
         let qs = document.querySelector.toString();
         document.querySelector0 = document.querySelector;
-        document.querySelector = function (selector , ...args) {
+        document.querySelector = function (selector, ...args) {
             let ele = document.querySelector0(selector, ...args);
             if (ele && ele.tagName.like('iframe')) {
                 if (ele.contentWindow) {
