@@ -232,10 +232,10 @@ child.electron.app.whenReady().then(() => {
         if (authInfo.isProxy) {
             event.preventDefault();
             let proxy = null;
+            let win = child.electron.BrowserWindow.fromWebContents(webContents);
 
-            let index = child.windowList.findIndex((w) => w.id2 == webContents.id && w.window.customSetting && w.window.customSetting.proxy);
-            if (index !== -1) {
-                proxy = child.windowList[index].customSetting.proxy;
+            proxy = win.customSetting.proxy;
+            if (proxy) {
                 callback(proxy.username, proxy.password);
                 child.log(proxy);
                 return;

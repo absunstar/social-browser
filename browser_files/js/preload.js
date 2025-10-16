@@ -141,7 +141,7 @@ var SOCIALBROWSER = {
                         newArray[index] = SOCIALBROWSER.cloneObject(obj[index]);
                     }
                     return newArray;
-                } else if (typeof obj !== 'object') {
+                } else if (typeof obj !== 'object' || obj instanceof Date) {
                     return obj;
                 }
 
@@ -153,6 +153,8 @@ var SOCIALBROWSER = {
                     } else if (typeof obj[key] === 'function') {
                         newObject[key] = obj[key].toString();
                         newObject[key] = newObject[key].slice(newObject[key].indexOf('{') + 1, newObject[key].lastIndexOf('}'));
+                    } else if (obj[key] instanceof Date) {
+                        newObject[key] = obj[key];
                     } else if (typeof obj[key] === 'object') {
                         newObject[key] = SOCIALBROWSER.cloneObject(obj[key]);
                     } else {
@@ -1754,7 +1756,6 @@ SOCIALBROWSER.init2 = function () {
                 }
             });
             SOCIALBROWSER.allowGoogleTranslate = function () {
-
                 // let meta = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
                 // if (meta) {
                 //     meta.remove();
@@ -1817,7 +1818,7 @@ SOCIALBROWSER.init2 = function () {
 
             SOCIALBROWSER.injectDefault = function () {
                 let css = Buffer.from(SOCIALBROWSER.injectedCSS).toString();
-                 SOCIALBROWSER.addCSS(css);
+                SOCIALBROWSER.addCSS(css);
                 let html = Buffer.from(SOCIALBROWSER.injectedHTML).toString();
                 SOCIALBROWSER.addHTML(html);
             };
