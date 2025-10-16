@@ -141,7 +141,7 @@ var SOCIALBROWSER = {
                         newArray[index] = SOCIALBROWSER.cloneObject(obj[index]);
                     }
                     return newArray;
-                } else if (typeof obj !== 'object' || obj instanceof Date) {
+                } else if (!obj || typeof obj !== 'object' || obj instanceof Date) {
                     return obj;
                 }
 

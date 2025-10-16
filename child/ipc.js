@@ -45,15 +45,16 @@ module.exports = function init(child) {
             });
         });
     };
-    
+
     child.cloneObject = function (obj) {
+       
         if (Array.isArray(obj)) {
             let newArray = [];
             for (let index = 0; index < obj.length; index++) {
-                newArray[index] = SOCIALBROWSER.cloneObject(obj[index]);
+                newArray[index] = child.cloneObject(obj[index]);
             }
             return newArray;
-        } else if (typeof obj !== 'object') {
+        } else if (!obj || typeof obj !== 'object' || obj instanceof Date) {
             return obj;
         }
 
@@ -65,6 +66,8 @@ module.exports = function init(child) {
             } else if (typeof obj[key] === 'function') {
                 newObject[key] = obj[key].toString();
                 newObject[key] = newObject[key].slice(newObject[key].indexOf('{') + 1, newObject[key].lastIndexOf('}'));
+            } else if (obj[key] instanceof Date) {
+                newObject[key] = obj[key];
             } else if (typeof obj[key] === 'object') {
                 newObject[key] = child.cloneObject(obj[key]);
             } else {
@@ -76,7 +79,7 @@ module.exports = function init(child) {
     child.handleBrowserData = function (data) {
         let data2 = {
             childProcessID: child.id,
-            uuid : child.uuid,
+            uuid: child.uuid,
             childIndex: child.index,
             information: child.parent.information,
             files_dir: child.parent.files_dir,
@@ -1220,10 +1223,10 @@ module.exports = function init(child) {
     child.ipcMain.handle('[window-action]', (event, data) => {
         if (data.tabID && data.childID && data.windowID) {
             child.sendMessage({ type: '[window-action]', data: data });
-        }else if(data.windowID){
+        } else if (data.windowID) {
             let win = child.electron.BrowserWindow.fromId(data.windowID);
-            if(win){
-                win.webContents.send('[window-action]' , data)
+            if (win) {
+                win.webContents.send('[window-action]', data);
             }
         }
     });
