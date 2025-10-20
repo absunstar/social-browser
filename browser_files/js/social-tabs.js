@@ -243,8 +243,8 @@ class SocialTabs {
         }
 
         if (!tabProperties.url.like('http://127.0.0.1:60080*')) {
-            if ($('.social-tab').length > SOCIALBROWSER.var.core.max_tabs) {
-                showMessage(`Sorry You Used Max Opened Tabs ( ${SOCIALBROWSER.var.core.max_tabs} ) <small> Change from setting </small>`);
+            if ($('.social-tab').length > SOCIALBROWSER.var.core.browser.maxTabs) {
+                showMessage(`Sorry You Used Max Opened Tabs ( ${SOCIALBROWSER.var.core.browser.maxTabs} ) <small> Change from setting </small>`);
                 return;
             }
         }
@@ -252,7 +252,7 @@ class SocialTabs {
         if (tabProperties.url.like('http://127.0.0.1:60080*')) {
             let exists = false;
             document.querySelectorAll('.social-tab').forEach((tb) => {
-                if (tb.getAttribute('url') == tabProperties.url) {
+                if (tb.getAttribute('url').contain(tabProperties.url) || tabProperties.url.contain(tb.getAttribute('url'))) {
                     exists = true;
                     this.setCurrentTab(tb);
                 }

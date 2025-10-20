@@ -1,7 +1,7 @@
 {
     "port": 60080,
     "enabled": true,
-    "version": "2025.10.10",
+    "version": "2025.10.18",
     "prefix": "SB_10_",
     "flags": "",
     "brand": "Social Browser",
@@ -16,5 +16,10 @@
     "emails": {
         "enabled": true,
         "domain": "social-browser.com"
+    },
+    "browser" : {
+        "activated" : true,
+        "maxProfiles" : 10,
+        "maxTabs" : 20
     }
 }

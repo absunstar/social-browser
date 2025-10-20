@@ -338,7 +338,7 @@
                                             <i-control type="password" class="col3" label="setting Password" ng-model="setting.core.password"> </i-control>
                                             <i-control class="col3" label="Home Page" ng-model="setting.core.home_page"></i-control>
                                             <i-control class="col3" label="New Tab" ng-model="setting.core.default_page"></i-control>
-                                            <i-control type="number" class="col3" label="Max Opend Tabs" ng-model="setting.core.max_tabs"></i-control>
+                                            <i-control type="number" class="col3" label="Max Opend Tabs" ng-model="setting.core.browser.maxTabs"></i-control>
                                         </div>
 
                                         <div class="row">
@@ -359,10 +359,10 @@
 
                                     <fieldset>
                                         <legend>Activation</legend>
-                                        <div class="row padding">
-                                            <h2 class="bold red" ng-hide="setting.core.browserActivated">Browser Not Active <span>&#215;</span></h2>
-                                            <h2 class="bold green" ng-show="setting.core.browserActivated">Browser Active <span>&#10003;</span></h2>
-                                            <p class="bold font-16 orange">{{setting.core.activeMessage}}</p>
+                                        <div class="row padding center">
+                                            <h2 class="bold red" ng-hide="setting.core.browser.activated">Browser Not Active <span>&#215;</span></h2>
+                                            <h2 class="bold green" ng-show="setting.core.browser.activated">Browser Active <span>&#10003;</span></h2>
+                                            <p class="bold font-16 orange">{{setting.core.browser.message}}</p>
                                         </div>
 
                                         <div class="row padding">

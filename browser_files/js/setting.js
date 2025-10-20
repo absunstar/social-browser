@@ -640,8 +640,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     };
 
     $scope.addSession = function () {
-        let ss = SOCIALBROWSER.addSession($scope.session.display);
-        $scope.setting.session_list.push(ss);
+        SOCIALBROWSER.addSession($scope.session.display);
         $scope.session = {};
     };
 
@@ -687,7 +686,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
                 } else {
                     display = display.replace('{count}', code);
                 }
-                $scope.setting.session_list.push(SOCIALBROWSER.addSession(display));
+                SOCIALBROWSER.addSession(display);
             }
             $scope.session = {};
         }

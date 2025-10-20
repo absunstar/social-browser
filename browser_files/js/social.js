@@ -24,6 +24,7 @@ function ipc(name, message) {
     message.mainWindowID = message.mainWindowID || SOCIALBROWSER.currentTabInfo.mainWindowID;
 
     SOCIALBROWSER.ipc(name, message);
+    
     if (name == '[window-action]' && !message.name.like('*screen*|*external*')) {
         SOCIALBROWSER.clickCurrentTab();
     }
@@ -454,7 +455,7 @@ function showBookmarksMenu() {
         click: () => {
             ipc('[open new tab]', {
                 url: 'http://127.0.0.1:60080/setting#bookmark',
-                session: { name: 'setting', display: 'setting' },
+               session: { name: 'setting', display: 'setting' },
                 windowType: 'view',
                 vip: true,
             });
@@ -662,7 +663,7 @@ SOCIALBROWSER.showUserProxyMenu = function () {
         click: () => {
             ipc('[open new tab]', {
                 url: 'http://127.0.0.1:60080/setting#proxyList',
-                session: { name: 'setting', display: 'setting' },
+               session: { name: 'setting', display: 'setting' },
                 windowType: 'view',
                 vip: true,
             });

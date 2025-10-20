@@ -260,19 +260,21 @@ child.electron.app.whenReady().then(() => {
             //code here
         }
     });
-
-    child.sendToWindow = function (...args) {
-        child.windowList.forEach((w) => {
-            if (w.window && !w.window.isDestroyed()) {
-                w.window.webContents.send(...args);
+    child.getAllWindows =  function () {
+        return child.electron.BaseWindow.getAllWindows() || [];
+    };
+    child.sendToMainWindow = function (...args) {
+         child.getAllWindows().forEach((win) => {
+            if (win && !win.isDestroyed() && win.webContents && win.customSetting && win.customSetting.windowType == 'main') {
+                win.webContents.send(...args);
             }
         });
     };
 
-    child.sendToWindows = function (...args) {
-        child.windowList.forEach((w) => {
-            if (w.window && !w.window.isDestroyed() && w.window.webContents && !w.window.webContents.isDestroyed()) {
-                w.window.webContents.send(...args);
+    child.sendToAllWindows = function (...args) {
+         child.getAllWindows().forEach((win) => {
+            if (win && !win.isDestroyed() && win.webContents) {
+                win.webContents.send(...args);
             }
         });
     };
@@ -286,10 +288,8 @@ child.electron.app.whenReady().then(() => {
         let mainWindow = child.parent.options.mainWindow;
         let screen = child.parent.options.screen;
 
-        child.windowList.forEach((w) => {
-            if (w.window && w.window.customSetting.windowType == 'view' && !w.window.isDestroyed()) {
-                let win = w.window;
-
+        child.getAllWindows().forEach((win) => {
+            if (win && !win.isDestroyed() && win.customSetting.windowType == 'view') {
                 if (mainWindow.hide) {
                     win.hide();
                     child.isCurrentView = false;

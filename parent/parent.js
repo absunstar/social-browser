@@ -10,7 +10,6 @@ module.exports = function init(parent) {
     parent.extensionList = [];
     parent.information = {};
     parent.cookies = {};
-    parent.freeUsersCount = 100;
     parent.eval = require('eval');
 
     parent.isAllowURL = function (url) {
@@ -184,8 +183,8 @@ module.exports = function init(parent) {
 
     parent.createChildProcess = function (_options) {
         let options = { ..._options };
-        options.partition = options.partition || parent.var.core.session.name;
-        options.user_name = options.user_name || options.partition;
+        options.partition = options.partition || options.session?.name || parent.var.core.session.name;
+        options.user_name = options.user_name || options.session?.display || options.partition;
 
         options.uuid = !options.partition.contains('persist:') ? 'x-ghost' : 'user-' + options.partition.replace('persist:', '');
         const uuid = options.uuid;
@@ -266,7 +265,7 @@ module.exports = function init(parent) {
                         parent.clientList.forEach((client, i) => {
                             if (client.option_list.some(op.windowType == 'view')) {
                                 client.ws.send({
-                                    type: '[set-window]',
+                                    type: '[set-standalone-window]',
                                 });
                             }
                         });

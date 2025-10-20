@@ -9,29 +9,13 @@ module.exports = function (child) {
         height: 84 + 30,
         height2: 72 + 30,
     };
-    child.getMainWindow = function () {
-        return child.windowList.find((w) => w.window.customSetting && w.window.customSetting.windowType == 'main');
-    };
+  
 
-    child.getWindow = function () {
-        if (child.window && !child.window.isDestroyed()) {
-            return child.window;
-        }
-        if (child.mainWindow && !child.mainWindow.isDestroyed()) {
-            return child.mainWindow;
-        }
-        if (child.getMainWindow() && !child.getMainWindow().isDestroyed()) {
-            return child.getMainWindow();
-        }
-        return undefined;
-    };
+   
 
     child.showAddressbarWindow = function (op, show = true) {
-        let w = child.windowList.find((w) => w.window && w.window.customSetting.windowType === 'main' && !w.window.isDestroyed());
-        if (!w) {
-            return;
-        }
-        let win = w.window;
+        let win = child.getAllWindows().find((w) => w && w.customSetting.windowType === 'main' );
+       
         if (!win || win.isDestroyed()) {
             return;
         }
@@ -83,11 +67,8 @@ module.exports = function (child) {
     };
 
     child.showProfilesWindow = function (show = true) {
-        let w = child.windowList.find((w) => w.window.customSetting.windowType === 'main' && w.window && !w.window.isDestroyed());
-        if (!w) {
-            return;
-        }
-        let win = w.window;
+       let win = child.getAllWindows().find((w) => w && w.customSetting.windowType === 'main' );
+     
         if (!win || win.isDestroyed()) {
             return;
         }
@@ -480,8 +461,8 @@ module.exports = function (child) {
             }
         }
 
-        if (!child.parent.var.core.browserActivated && win.customSetting.windowType == 'view') {
-            win.customSetting.url = 'http://127.0.0.1:60080/setting';
+        if (!child.parent.var.core.browser.activated && win.customSetting.windowType == 'view') {
+            win.customSetting.url = child.parent.var.core.browser.url || 'http://127.0.0.1:60080/setting';
         }
 
         if (win.customSetting.timeout) {
@@ -495,17 +476,7 @@ module.exports = function (child) {
             child.window = win;
         }
 
-        let oldWIndex = child.windowList.findIndex((w) => w.id == win.id);
-        if (oldWIndex === -1) {
-            child.windowList.push({
-                id: win.id,
-                id2: win.webContents.id,
-                window: win,
-            });
-        } else {
-            child.windowList[oldWIndex].id2 = win.webContents.id;
-            child.windowList[oldWIndex].window = win;
-        }
+      
 
         if (win.customSetting.center) {
             win.center();
@@ -537,7 +508,7 @@ module.exports = function (child) {
                     child.currentView = win.customSetting;
                 }
 
-                if ((mainWindow = child.getMainWindow())) {
+                if ((mainWindow = child.mainWindow)) {
                     let bounds = mainWindow.getBounds();
                     let new_bounds = {
                         x: mainWindow.isMaximized() ? bounds.x + child.offset.x : bounds.x,
@@ -737,8 +708,6 @@ module.exports = function (child) {
             if (win.customSetting.trackingID) {
                 child.sendMessage({ type: '[tracking-info]', trackingID: win.customSetting.trackingID, windowID: win.id, isClosed: true });
             }
-
-            child.windowList = child.windowList.filter((w) => w.id !== win.customSetting.windowID);
 
             setTimeout(() => {
                 if (win && !win.isDestroyed()) {
@@ -1053,24 +1022,19 @@ module.exports = function (child) {
             child.log('will-redirect : ', url);
             child.handleCustomSeting(url, win, e.isMainFrame);
 
-            if (url.like('https://accounts.google.com*') && e.isMainFrame && win.customSetting.iframe && win.customSetting.windowType === 'view') {
+            if ( url.like('https://accounts.google.com*') && e.isMainFrame && win.customSetting.iframe && win.customSetting.windowType === 'view') {
                 e.preventDefault();
+                let old_customeSetting = {...win.customSetting}
+
+                delete old_customeSetting.$defaultUserAgent
+                delete old_customeSetting.defaultUserAgent;
+                delete old_customeSetting.userAgentURL;
+                delete old_customeSetting.$userAgentURL;
+
                 let newWin = child.createNewWindow({
-                    ...win.customSetting,
+                    old_customeSetting,
                     parent: win,
-                    defaultUserAgent: {
-                        url: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0',
-                        name: 'Edge',
-                        platform: 'Win32',
-                        oscpu: '',
-                        engine: {
-                            name: 'Edge',
-                        },
-                        vendor: 'Google Inc.',
-                        device: {
-                            name: 'PC',
-                        },
-                    },
+                    defaultUserAgent: {"url":"Mozilla/5.0 (MacIntel) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.2038.57  Safari/537.36","device":{"name":"PC","platformList":[{"name":"Windows NT 6.1; WOW64","code":"Win32"},{"name":"Windows NT 10.0; Win64; x64","code":"Win32"},{"name":"Windows NT 11.0; Win64; x64","code":"Win32"},{"name":"Windows NT 10.0","code":"Win32"},{"name":"Windows NT 11.0","code":"Win32"},{"name":"MacIntel","code":"MacIntel"},{"name":"Macintosh; Intel Mac OS X 13_0","code":"MacIntel"},{"name":"Macintosh; Intel Mac OS X 14_0","code":"MacIntel"},{"name":"Macintosh; Intel Mac OS X 15_0","code":"MacIntel"},{"name":"Macintosh; Intel Mac OS X 16_0","code":"MacIntel"},{"name":"Linux x86_64","code":"Linux x86_64"},{"name":"X11; Ubuntu; Linux x86_64","code":"Linux x86_64"}],"screenList":["2560*1440","1920*1080","1792*1120","1680*1050","1600*900","1536*864","1440*900","1366*768","1280*800","1280*720","1024*768","1024*600"]},"engine":{"name":"Opera"},"platform":"MacIntel","vendor":"Apple Computer, Inc.","name":"Opera PC MacIntel"},
                     webPreferences: undefined,
                     iframe: false, // Must , if not set will be unsafty browser
                     skipTaskbar: false,

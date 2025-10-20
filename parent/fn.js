@@ -40,28 +40,8 @@ module.exports = function init(parent) {
     };
 
     parent.updateTab = function (setting) {
-        console.log('... u ...');
-        return;
-        if (setting.windowType !== 'view') {
-            return;
-        }
-        let win = child.getWindow();
-        if (!win) {
-            return;
-        }
-        setting.name = '[update-tab-properties]';
-        setting.childProcessID = child.id;
-        setting.url = win.getURL();
-        setting.title = win.webContents.getTitle();
-        setting.forward = win.webContents.navigationHistory.canGoForward();
-        setting.back = win.webContents.navigationHistory.canGoBack();
-        setting.webaudio = !win.webContents.audioMuted;
-
-        child.sendMessage({
-            type: '[update-tab-properties]',
-            source: 'window',
-            data: setting,
-        });
+        console.log(setting);
+        
     };
 
     parent.run = function (file, options) {

@@ -8,14 +8,14 @@ module.exports = function init(child) {
             return null;
         }
 
-        child.windowList.forEach((view) => {
-            if (view.window && !view.window.isDestroyed()) {
+        child.getAllWindows().forEach((win) => {
+            if (win && !win.isDestroyed()) {
                 if (value && value.toWindowID) {
-                    if (value.toWindowID == view.id) {
-                        view.window.send(channel, value);
+                    if (value.toWindowID == win.id) {
+                        win.send(channel, value);
                     }
                 } else {
-                    view.window.send(channel, value);
+                    win.send(channel, value);
                 }
             }
         });
@@ -47,7 +47,6 @@ module.exports = function init(child) {
     };
 
     child.cloneObject = function (obj) {
-       
         if (Array.isArray(obj)) {
             let newArray = [];
             for (let index = 0; index < obj.length; index++) {
@@ -99,9 +98,9 @@ module.exports = function init(child) {
             partition: data.partition,
         };
 
-        let w = child.windowList.find((w) => w.id == data.windowID);
-        if (w) {
-            data2.customSetting = w.window.customSetting || {};
+        let win = child.getAllWindows().find((w) => w.id == data.windowID);
+        if (win) {
+            data2.customSetting = win.customSetting || {};
             data2.partition = data.partition = data2.customSetting.partition;
             data2.session = data2.customSetting.session || child.parent.var.session_list.find((s) => s.name == data2.partition) || { name: data2.partition, display: data2.partition };
         }
@@ -137,9 +136,9 @@ module.exports = function init(child) {
             if (arr[0] == 'webContents') {
                 obj = event.sender;
             } else if (arr[0] == 'window') {
-                obj = child.electron.BrowserWindow.fromWebContents(event.sender) || child.windowList[child.windowList.length - 1]?.window || child.lastWindow;
+                obj = child.electron.BrowserWindow.fromWebContents(event.sender) || child.window;
             } else if (arr[0] == 'customSetting') {
-                obj = child.electron.BrowserWindow.fromWebContents(event.sender)?.customSetting || child.lastWindow?.customSetting;
+                obj = child.electron.BrowserWindow.fromWebContents(event.sender)?.customSetting || child.window?.customSetting;
             } else if (arr[0] == 'session') {
                 obj = event.sender.session;
             } else if (arr[0] == 'shared') {
@@ -179,9 +178,9 @@ module.exports = function init(child) {
             if (arr[0] == 'webContents') {
                 obj = event.sender;
             } else if (arr[0] == 'window') {
-                obj = child.electron.BrowserWindow.fromWebContents(event.sender) || child.windowList[child.windowList.length - 1]?.window || child.lastWindow;
+                obj = child.electron.BrowserWindow.fromWebContents(event.sender) || child.window;
             } else if (arr[0] == 'customSetting') {
-                obj = child.electron.BrowserWindow.fromWebContents(event.sender)?.customSetting || child.lastWindow?.customSetting;
+                obj = child.electron.BrowserWindow.fromWebContents(event.sender)?.customSetting || child.window?.customSetting;
             } else if (arr[0] == 'session') {
                 obj = event.sender.session;
             } else if (arr[0] == 'shared') {
@@ -227,7 +226,7 @@ module.exports = function init(child) {
                     if (arr[0] == 'webContents') {
                         obj = event.sender;
                     } else if (arr[0] == 'window') {
-                        obj = child.electron.BrowserWindow.fromWebContents(event.sender) || child.windowList[child.windowList.length - 1]?.window || child.lastWindow;
+                        obj = child.electron.BrowserWindow.fromWebContents(event.sender) || child.window;
                     } else if (arr[0] == 'session') {
                         obj = event.sender.session;
                     } else if (arr[0] == 'cookies') {
@@ -297,17 +296,17 @@ module.exports = function init(child) {
     });
 
     child.ipcMain.on('[window]', async (event, data = {}) => {
-        child.lastWindow = child.electron.BrowserWindow.fromWebContents(event.sender) || child.windowList[child.windowList.length - 1]?.window || child.lastWindow;
+        let currentWindow = child.electron.BrowserWindow.fromWebContents(event.sender) || child.window;
         let obj = { fnList: [] };
-        if (child.lastWindow) {
-            obj.id = child.lastWindow.id;
-            for (const key in child.lastWindow) {
-                if (typeof child.lastWindow[key] === 'function') {
+        if (currentWindow && !currentWindow.isDestroyed()) {
+            obj.id = currentWindow.id;
+            for (const key in currentWindow) {
+                if (typeof currentWindow[key] === 'function') {
                     obj.fnList.push(key);
                 }
             }
         } else {
-            console.log('[window]', event.sender);
+            console.log('[window] currentWindow.isDestroyed()', event.sender);
         }
 
         event.returnValue = obj;
@@ -330,7 +329,12 @@ module.exports = function init(child) {
         event.returnValue = obj;
     });
     child.ipcMain.on('[customSetting]', async (event, data = {}) => {
-        event.reply('[customSetting-replay]', 'xxxxxxxxxx' || child.windowList[child.windowList.length - 1]?.window.customSetting || {});
+        let currentWindow = child.electron.BrowserWindow.fromWebContents(event.sender) || child.window;
+        if(currentWindow){
+            event.reply('[customSetting-replay]', currentWindow.customSetting);
+        }else{
+             event.reply('[customSetting-replay]', {});
+        }
     });
 
     child.ipcMain.on('[screen]', async (event, data = { id: 1 }) => {
@@ -729,41 +733,22 @@ module.exports = function init(child) {
     });
 
     child.ipcMain.handle('[add][window]', (e, data) => {
-        let w = child.windowList.find((w) => w.id == data.windowID);
-        if (w) {
-            w.window.customSetting = { ...w.window.customSetting, ...data.customSetting };
-            w.id2 = data.id2 || w.id2;
-        } else {
-            child.windowList.push({
-                id: data.windowID,
-                id2: data.id2,
-                customSetting: data.customSetting,
-            });
+        let win = child.electron.BrowserWindow.fromId(data.windowID);
+        if (win) {
+            win.customSetting = { ...win.customSetting, ...data.customSetting };
         }
     });
 
     child.ipcMain.handle('[set][window][setting]', (e, data) => {
-        let w = child.windowList.find((w) => w.id == data.windowID);
-        if (w) {
-            w.window.customSetting.windowSetting = w.window.customSetting.windowSetting || [];
-            w.window.customSetting.windowSetting.push(data);
-            w.id2 = data.id2 || w.id2;
-        } else {
-            let id = data.windowID;
-            let customSetting = data.customSetting;
-            delete data.windowID;
-            delete data.customSetting;
-
-            child.windowList.push({
-                id: id,
-                id2: data.id2,
-                customSetting: { ...customSetting, windowSetting: [data] },
-            });
+        let win = child.electron.BrowserWindow.fromId(data.windowID);
+        if (win) {
+            win.customSetting.windowSetting = win.customSetting.windowSetting || [];
+            win.customSetting.windowSetting.push(data);
         }
     });
 
     child.ipcMain.handle('[get][window][setting]', (e, data) => {
-        let win = child.windowList.find((w) => w.id == data.windowID);
+        let win = child.electron.BrowserWindow.fromId(data.windowID);
         if (win) {
             return win.customSetting.windowSetting || [];
         } else {
@@ -1007,21 +992,18 @@ module.exports = function init(child) {
 
         if (child.speedMode) {
             child.currentView = options;
-            child.windowList.forEach((w) => {
-                if (w.window.customSetting.windowType == 'view') {
-                    if (w.window.customSetting.tabID == child.currentView.tabID) {
-                        w.window.show();
+            child.getAllWindows().forEach((win) => {
+                if (win.customSetting.windowType == 'view') {
+                    if (win.customSetting.tabID == child.currentView.tabID) {
+                        win.show();
                     } else {
-                        w.window.hide();
+                        win.hide();
                     }
                 }
             });
         } else {
             delete options.parentSetting;
-            // let w = child.windowList.find((w) => w.window.customSetting.windowType == 'main');
-            // if (w && w.window && !w.window.isDestroyed()) {
 
-            // }
             child.sendMessage({
                 type: '[show-view]',
                 options: options,
@@ -1031,9 +1013,9 @@ module.exports = function init(child) {
 
     child.ipcMain.handle('[close-view]', (e, options) => {
         if (child.speedMode) {
-            child.windowList.forEach((w) => {
-                if (w.window.customSetting.windowType == 'view' && w.window.customSetting.tabID == options.tabID) {
-                    w.window.close();
+            child.getAllWindows().forEach((win) => {
+                if (win.customSetting.windowType == 'view' && win.customSetting.tabID == options.tabID) {
+                    win.close();
                 }
             });
         } else {
@@ -1100,31 +1082,31 @@ module.exports = function init(child) {
     });
 
     child.ipcMain.handle('[browser-message]', (event, data) => {
-        let w = child.windowList.find((w) => w.id == data.windowID);
-        if (w && w.window && !w.window.isDestroyed()) {
+        let win = child.getAllWindows().find((w) => w.id == data.windowID);
+        if (win && !win.isDestroyed()) {
             if (data.name == 'maxmize') {
-                if (w.window.isMaximized()) {
-                    w.window.unmaximize();
+                if (win.isMaximized()) {
+                    win.unmaximize();
                 } else {
-                    w.window.maximize();
+                    win.maximize();
                 }
             } else if (data.name == 'minmize') {
-                w.window.minimize();
+                win.minimize();
             } else if (data.name == 'close') {
-                w.window.close();
+                win.close();
             }
         }
     });
 
     child.ipcMain.handle('[open new tab]', (event, data) => {
-        data.partition = data.partition || child.parent.var.core.session.name;
-        data.user_name = data.user_name || child.parent.var.session_list.find((s) => s.name == data.partition)?.display || data.partition;
+        data.partition = data.partition || data.session?.name || child.parent.var.core.session.name;
+        data.user_name = data.user_name || data.session?.display || child.parent.var.session_list.find((s) => s.name == data.partition)?.display || data.partition;
         data.title = data.title || data.url;
 
-        if (child.windowList.some((w) => w.window.customSetting.windowType == 'main')) {
-            child.windowList.forEach((w) => {
-                if (w.window.customSetting.windowType == 'main' && !w.window.isDestroyed()) {
-                    w.window.webContents.send('[open new tab]', data);
+        if (child.getAllWindows().some((w) => w.customSetting.windowType == 'main')) {
+            child.getAllWindows().forEach((win) => {
+                if (win.customSetting.windowType == 'main' && !win.isDestroyed()) {
+                    win.webContents.send('[open new tab]', data);
                 }
             });
         } else {
@@ -1137,8 +1119,9 @@ module.exports = function init(child) {
     });
 
     child.ipcMain.handle('[open new popup]', (event, data) => {
-        data.partition = data.partition || child.parent.var.core.session.name;
-        data.user_name = data.user_name || child.parent.var.core.session.display;
+
+        data.partition = data.partition || data.session?.name || child.parent.var.core.session.name;
+        data.user_name = data.user_name || data.session?.display  || child.parent.var.session_list.find((s) => s.name == data.partition)?.display || data.partition;
 
         delete data.name;
         data.windowType = data.windowType || 'popup';
@@ -1380,12 +1363,12 @@ module.exports = function init(child) {
                 type: '[run-window-update]',
             });
         } else if (data.name == '[show-browser-setting]') {
-            if (child.windowList.some((w) => w.window.customSetting.windowType == 'main')) {
-                child.windowList.forEach((w) => {
-                    if (w.window.customSetting.windowType == 'main' && !w.window.isDestroyed()) {
-                        w.window.webContents.send('[open new tab]', {
+            if (child.getAllWindows().some((w) => w.customSetting.windowType == 'main')) {
+                child.getAllWindows().forEach((win) => {
+                    if (win.customSetting.windowType == 'main' && !win.isDestroyed()) {
+                        win.webContents.send('[open new tab]', {
                             url: 'http://127.0.0.1:60080/setting',
-                            partition: 'ghost',
+                           session: { name: 'setting', display: 'setting' },
                             user_name: 'Setting',
                             windowType: 'view',
                             vip: true,
@@ -1398,7 +1381,7 @@ module.exports = function init(child) {
                     type: '[open new tab]',
                     data: {
                         url: 'http://127.0.0.1:60080/setting',
-                        partition: 'ghost',
+                        session: { name: 'setting', display: 'setting' },
                         user_name: 'Setting',
                         windowType: 'view',
                         vip: true,

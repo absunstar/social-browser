@@ -123,7 +123,7 @@ module.exports = function (child) {
                                 return b.time - a.time;
                             });
                         }
-                        child.sendToWindows('[update-browser-var]', message);
+                        child.sendToAllWindows('[update-browser-var]', message);
                     }
                 } else if (message.type == '[user_data_input][changed]') {
                     let index = child.parent.var.user_data_input.findIndex((u) => u.id === message.data.id);
@@ -132,7 +132,7 @@ module.exports = function (child) {
                     } else {
                         child.parent.var.user_data_input.push(message.data);
                     }
-                    child.sendToWindows('[update-browser-var]', {
+                    child.sendToAllWindows('[update-browser-var]', {
                         type: '[update-browser-var]',
                         options: {
                             name: 'user_data_input',
@@ -146,7 +146,7 @@ module.exports = function (child) {
                     } else {
                         child.parent.var.user_data.push(message.data);
                     }
-                    child.sendToWindows('[update-browser-var]', {
+                    child.sendToAllWindows('[update-browser-var]', {
                         type: '[update-browser-var]',
                         options: {
                             name: 'user_data',
@@ -166,23 +166,23 @@ module.exports = function (child) {
                         }
                     });
                 } else if (message.type == '[tracking-info]') {
-                    child.windowList.forEach((w) => {
-                        if (w.window && !w.window.isDestroyed()) {
-                            w.window.webContents.send('[tracking-info]', message);
+                    child.getAllWindows().forEach((win) => {
+                        if (win && !win.isDestroyed()) {
+                            win.webContents.send('[tracking-info]', message);
                         }
                     });
                 } else if (message.type == '[run-user-script]') {
-                    child.windowList.forEach((w) => {
-                        if (w.window && !w.window.isDestroyed() && w.id == message.tabInfo.windowID) {
-                            child.sendToWebContents(w.window.webContents, '[run-user-script]', message.script);
+                    child.getAllWindows().forEach((win) => {
+                        if (win && !win.isDestroyed() && win.id == message.tabInfo.windowID) {
+                            child.sendToWebContents(win.webContents, '[run-user-script]', message.script);
                         }
                     });
                 } else if (message.type == '[send-render-message]') {
-                    child.sendToWindow('[send-render-message]', message.data);
+                    child.sendToAllWindows('[send-render-message]', message.data);
                 } else if (message.type == '[open new tab]') {
-                    child.windowList.forEach((w) => {
-                        if (w.window.customSetting.windowType == 'main' && !w.window.isDestroyed()) {
-                            w.window.webContents.send('[open new tab]', message.data);
+                    child.getAllWindows().forEach((win) => {
+                        if (win.customSetting.windowType == 'main' && !win.isDestroyed()) {
+                            win.webContents.send('[open new tab]', message.data);
                         }
                     });
                 } else if (message.type == '$download_item') {
@@ -192,9 +192,9 @@ module.exports = function (child) {
                             if (child.parent.var.download_list[index].item && typeof child.parent.var.download_list[index].item.cancel === 'function') {
                                 child.parent.var.download_list[index].item.cancel();
                             }
-                            child.windowList.forEach((w) => {
-                                if (w.window && !w.window.isDestroyed()) {
-                                    w.window.webContents.send('$download_item', message.data);
+                            child.getAllWindows().forEach((win) => {
+                                if (win && !win.isDestroyed()) {
+                                    win.webContents.send('$download_item', message.data);
                                 }
                             });
                             child.parent.var.download_list.splice(index, 1);
@@ -206,9 +206,9 @@ module.exports = function (child) {
                             ) {
                                 child.parent.var.download_list[index].item.pause();
                             }
-                            child.windowList.forEach((w) => {
-                                if (w.window && !w.window.isDestroyed()) {
-                                    w.window.webContents.send('$download_item', message.data);
+                            child.getAllWindows().forEach((win) => {
+                                if (win && !win.isDestroyed()) {
+                                    win.webContents.send('$download_item', message.data);
                                 }
                             });
                             child.parent.var.download_list.splice(index, 1);
@@ -221,9 +221,9 @@ module.exports = function (child) {
                             ) {
                                 child.parent.var.download_list[index].item.resume();
                             }
-                            child.windowList.forEach((w) => {
-                                if (w.window && !w.window.isDestroyed()) {
-                                    w.window.webContents.send('$download_item', message.data);
+                            child.getAllWindows().forEach((win) => {
+                                if (win && !win.isDestroyed()) {
+                                    win.webContents.send('$download_item', message.data);
                                 }
                             });
                             child.parent.var.download_list.splice(index, 1);
@@ -233,17 +233,17 @@ module.exports = function (child) {
                                     child.electron.session.fromPartition(message.data.Partition).downloadURL(message.data.url);
                                 }
                             }
-                            child.windowList.forEach((w) => {
-                                if (w.window && !w.window.isDestroyed()) {
-                                    w.window.webContents.send('$download_item', message.data);
+                            child.getAllWindows().forEach((win) => {
+                                if (win && !win.isDestroyed()) {
+                                    win.webContents.send('$download_item', message.data);
                                 }
                             });
                             child.parent.var.download_list.splice(index, 1);
                         } else {
                             child.parent.var.download_list[index] = { ...child.parent.var.download_list[index], ...message.data };
-                            child.windowList.forEach((w) => {
-                                if (w.window && !w.window.isDestroyed()) {
-                                    w.window.webContents.send('$download_item', child.parent.var.download_list[index]);
+                            child.getAllWindows().forEach((win) => {
+                                if (win && !win.isDestroyed()) {
+                                    win.webContents.send('$download_item', child.parent.var.download_list[index]);
                                 }
                             });
                         }
@@ -281,11 +281,11 @@ module.exports = function (child) {
                     }
                 } else if (message.type == '[call-window-action]') {
                     if (message.data.name == '[window-reload-hard]') {
-                        child.windowList.forEach((w) => {
-                            if (w.window && !w.window.isDestroyed() && w.window.customSetting.tabID == message.data.tabID && w.window.customSetting.windowType == 'view') {
+                        child.getAllWindows().forEach((win) => {
+                            if (win && !win.isDestroyed() && win.customSetting.tabID == message.data.tabID && win.customSetting.windowType == 'view') {
                                 let info = message.data;
                                 if (info.origin) {
-                                    info.origin = info.origin === 'null' ? w.window.webContents.getURL() : info.origin;
+                                    info.origin = info.origin === 'null' ? win.webContents.getURL() : info.origin;
                                     info.storages = info.storages || ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage'];
                                     info.quotas = info.quotas || ['temporary', 'persistent', 'syncable'];
                                     if (info.origin.replace('://', '').indexOf(':') == -1) {
@@ -293,28 +293,28 @@ module.exports = function (child) {
                                     }
 
                                     if (info.storages[0] == 'cookies') {
-                                        w.window.webContents.session
+                                        win.webContents.session
                                             .clearStorageData({
                                                 origin: info.origin,
                                                 storages: info.storages,
                                                 quotas: info.quotas,
                                             })
                                             .then(() => {
-                                                w.window.webContents.session.clearCache().then(() => {
-                                                    w.window.webContents.reload();
+                                                win.webContents.session.clearCache().then(() => {
+                                                    win.webContents.reload();
                                                 });
                                             });
                                     } else {
-                                        w.window.webContents.session.clearCache().then(() => {
-                                            w.window.webContents.session
+                                        win.webContents.session.clearCache().then(() => {
+                                            win.webContents.session
                                                 .clearStorageData({
                                                     origin: info.origin,
                                                     storages: info.storages,
                                                     quotas: info.quotas,
                                                 })
                                                 .then(() => {
-                                                    w.window.webContents.session.clearCache().then(() => {
-                                                        w.window.webContents.reload();
+                                                    win.webContents.session.clearCache().then(() => {
+                                                        win.webContents.reload();
                                                     });
                                                 });
                                         });
@@ -325,30 +325,30 @@ module.exports = function (child) {
                     } else if (message.data.name == 'copy') {
                         child.electron.clipboard.writeText(message.data.text.replace('#___new_tab___', '').replace('#___new_popup__', ''));
                     } else if (message.data.name == 'full_screen') {
-                        child.windowList.forEach((w) => {
-                            if (w.window && !w.window.isDestroyed() && w.window.customSetting.tabID == message.data.tabID && w.window.customSetting.windowType == 'view') {
-                                w.window.setFullScreen(true);
+                        child.getAllWindows().forEach((win) => {
+                            if (win && !win.isDestroyed() && win.customSetting.tabID == message.data.tabID && win.customSetting.windowType == 'view') {
+                                win.setFullScreen(true);
                             }
                         });
                     } else if (message.data.name == '!full_screen') {
-                        child.windowList.forEach((w) => {
-                            if (w.window && !w.window.isDestroyed() && w.window.customSetting.tabID == message.data.tabID && w.window.customSetting.windowType == 'view') {
-                                w.window.setFullScreen(false);
+                        child.getAllWindows().forEach((win) => {
+                            if (win && !win.isDestroyed() && win.customSetting.tabID == message.data.tabID && win.customSetting.windowType == 'view') {
+                                win.setFullScreen(false);
                             }
                         });
                     } else {
                         child.log('[call-window-action]', message);
                     }
                 } else if (message.type == '[window-reload]') {
-                    child.windowList.forEach((w) => {
-                        if (w.window && !w.window.isDestroyed() && w.window.customSetting.windowType == 'view' && w.window.customSetting.tabID == message.data.tabID) {
-                            w.window.reload();
+                    child.getAllWindows().forEach((win) => {
+                        if (win && !win.isDestroyed() && win.customSetting.windowType == 'view' && win.customSetting.tabID == message.data.tabID) {
+                            win.reload();
                         }
                     });
                 } else if (message.type == '[window-reload-hard]') {
-                    child.windowList.forEach((w) => {
-                        if (w.window && !w.window.isDestroyed() && w.window.customSetting.tabID == message.data.tabID && w.window.customSetting.windowType == 'view') {
-                            let win = w.window;
+                    child.getAllWindows().forEach((win) => {
+                        if (win && !win.isDestroyed() && win.customSetting.tabID == message.data.tabID && win.customSetting.windowType == 'view') {
+                            let win = win;
                             if (win && message.data.origin && message.data.origin !== 'null') {
                                 let ss = win.webContents.session;
                                 message.data.storages = message.data.storages || ['appcache', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage'];
@@ -396,12 +396,12 @@ module.exports = function (child) {
                             } else if (message.data.name == 'open-external' && message.data.url) {
                                 child.openExternal(message.data.url);
                             } else if (message.data.name == 'allow-ads') {
-                               win.customSetting.allowAds = ! win.customSetting.allowAds;
-                               win.webContents.reload();
-                            }else if (message.data.name == 'off') {
-                               win.customSetting.off = ! win.customSetting.off;
-                               win.webContents.reload();
-                            }  else {
+                                win.customSetting.allowAds = !win.customSetting.allowAds;
+                                win.webContents.reload();
+                            } else if (message.data.name == 'off') {
+                                win.customSetting.off = !win.customSetting.off;
+                                win.webContents.reload();
+                            } else {
                                 if (message.data.levels) {
                                     child.sendToWebContents(win.webContents, '[window-action]', message.data);
                                 } else {
@@ -411,71 +411,75 @@ module.exports = function (child) {
                         }
                     }
                 } else if (message.type == '[toggle-window-edit]') {
-                    child.windowList.forEach((w) => {
-                        if (w.window && !w.window.isDestroyed() && w.window.customSetting.tabID == message.data.tabID && w.window.customSetting.windowType == 'view') {
-                            w.window.webContents.send('[toggle-window-edit]', message.data);
+                    child.getAllWindows().forEach((win) => {
+                        if (win && !win.isDestroyed() && win.customSetting.tabID == message.data.tabID && win.customSetting.windowType == 'view') {
+                            win.webContents.send('[toggle-window-edit]', message.data);
                         }
                     });
                 } else if (message.type == '[window-go-back]') {
-                    child.windowList.forEach((w) => {
-                        if (w.window && !w.window.isDestroyed() && w.window.customSetting.tabID == message.data.tabID && w.window.customSetting.windowType == 'view') {
-                            if (w.window.webContents.navigationHistory.canGoBack()) {
-                                w.window.webContents.navigationHistory.goBack();
+                    child.getAllWindows().forEach((win) => {
+                        if (win && !win.isDestroyed() && win.customSetting.tabID == message.data.tabID && win.customSetting.windowType == 'view') {
+                            if (win.webContents.navigationHistory.canGoBack()) {
+                                win.webContents.navigationHistory.goBack();
                             }
                         }
                     });
                 } else if (message.type == '[window-go-forward]') {
-                    child.windowList.forEach((w) => {
-                        if (w.window && !w.window.isDestroyed() && w.window.customSetting.tabID == message.data.tabID && w.window.customSetting.windowType == 'view') {
-                            if (w.window.webContents.navigationHistory.canGoForward()) {
-                                w.window.webContents.goForward();
+                    child.getAllWindows().forEach((win) => {
+                        if (win && !win.isDestroyed() && win.customSetting.tabID == message.data.tabID && win.customSetting.windowType == 'view') {
+                            if (win.webContents.navigationHistory.canGoForward()) {
+                                win.webContents.goForward();
                             }
                         }
                     });
                 } else if (message.type == '[window-zoom]') {
-                    child.windowList.forEach((w) => {
-                        if (w.window && !w.window.isDestroyed() && w.window.customSetting.tabID == message.data.tabID && w.window.customSetting.windowType == 'view') {
-                            w.window.webContents.zoomFactor = 1;
-                            w.window.show();
+                    child.getAllWindows().forEach((win) => {
+                        if (win && !win.isDestroyed() && win.customSetting.tabID == message.data.tabID && win.customSetting.windowType == 'view') {
+                            win.webContents.zoomFactor = 1;
+                            win.show();
                         }
                     });
                 } else if (message.type == '[window-zoom+]') {
-                    child.windowList.forEach((w) => {
-                        if (w.window && !w.window.isDestroyed() && w.window.customSetting.tabID == message.data.tabID && w.window.customSetting.windowType == 'view') {
-                            w.window.webContents.zoomFactor += 0.2;
-                            w.window.show();
+                    child.getAllWindows().forEach((win) => {
+                        if (win && !win.isDestroyed() && win.customSetting.tabID == message.data.tabID && win.customSetting.windowType == 'view') {
+                            win.webContents.zoomFactor += 0.2;
+                            win.show();
                         }
                     });
                 } else if (message.type == '[window-zoom-]') {
-                    child.windowList.forEach((w) => {
-                        if (w.window && !w.window.isDestroyed() && w.window.customSetting.tabID == message.data.tabID && w.window.customSetting.windowType == 'view') {
-                            if (w.window.webContents.zoomFactor - 0.3 > 0.0) {
-                                w.window.webContents.zoomFactor -= 0.2;
-                                w.window.show();
+                    child.getAllWindows().forEach((win) => {
+                        if (win && !win.isDestroyed() && win.customSetting.tabID == message.data.tabID && win.customSetting.windowType == 'view') {
+                            if (win.webContents.zoomFactor - 0.3 > 0.0) {
+                                win.webContents.zoomFactor -= 0.2;
+                                win.show();
                             }
                         }
                     });
                 } else if (message.type == '[show-window-dev-tools]') {
-                    child.windowList.forEach((w) => {
-                        if (w.window && !w.window.isDestroyed() && w.window.customSetting.tabID == message.data.tabID && w.window.customSetting.windowType == 'view') {
-                            w.window.webContents.openDevTools();
+                    child.getAllWindows().forEach((win) => {
+                        if (win && !win.isDestroyed() && win.customSetting.tabID == message.data.tabID && win.customSetting.windowType == 'view') {
+                            win.webContents.openDevTools();
                         }
                     });
-                } else if (message.type == '[set-window]' && child.getWindow()) {
-                    child.getWindow().setSkipTaskbar(false);
-                    child.getWindow().setMenuBarVisibility(true);
-                    child.getWindow().setResizable(true);
-                    child.getWindow().setMovable(true);
+                } else if (message.type == '[set-standalone-window]') {
+                    child.getAllWindows().forEach((win) => {
+                        if (win && !win.isDestroyed() && win.customSetting && win.customSetting.windowType == 'view') {
+                            win.setSkipTaskbar(false);
+                            win.setMenuBarVisibility(true);
+                            win.setResizable(true);
+                            win.setMovable(true);
+                        }
+                    });
                 } else if (message.type == '[update-tab-properties]') {
-                    child.windowList.forEach((w) => {
-                        if (w.window.customSetting.windowType == 'main' && w.window && !w.window.isDestroyed()) {
-                            w.window.webContents.send('[update-tab-properties]', message.data);
+                    child.getAllWindows().forEach((win) => {
+                        if (win.customSetting.windowType == 'main' && win && !win.isDestroyed()) {
+                            win.webContents.send('[update-tab-properties]', message.data);
                         }
                     });
                 } else if (message.type == '[edit-window]') {
-                    child.windowList.forEach((w) => {
-                        if (w.window.customSetting.windowType == 'view' && w.window.customSetting.tabID == message.data.tabID && w.window && !w.window.isDestroyed()) {
-                            w.window.webContents.executeJavaScript(
+                    child.getAllWindows().forEach((win) => {
+                        if (win.customSetting.windowType == 'view' && win.customSetting.tabID == message.data.tabID && win && !win.isDestroyed()) {
+                            win.webContents.executeJavaScript(
                                 `
                         (function(){
                           let b =  document.querySelector('html');
@@ -493,41 +497,41 @@ module.exports = function (child) {
                         }
                     });
                 } else if (message.type == '[close-view]') {
-                    if ((w = child.windowList.find((w) => w.window.customSetting.tabID == message.options.tabID && w.window.customSetting.windowType == 'view'))) {
-                        if (w && !w.window.isDestroyed()) {
-                            w.window.close();
+                    if ((win = child.getAllWindows().find((w) => w.customSetting.tabID == message.options.tabID && w.customSetting.windowType == 'view'))) {
+                        if (win && !win.isDestroyed()) {
+                            win.close();
                         }
                     }
                 } else if (message.type == '[show-view]') {
                     child.isCurrentView = false;
 
-                    child.windowList.forEach((w) => {
-                        let customSetting = w.window.customSetting;
-                        if (customSetting.windowType == 'view' && w.window && !w.window.isDestroyed()) {
-                            if (w.window.customSetting.tabID == message.options.tabID) {
+                    child.getAllWindows().forEach((win) => {
+                        let customSetting = win.customSetting;
+                        if (customSetting.windowType == 'view' && win && !win.isDestroyed()) {
+                            if (win.customSetting.tabID == message.options.tabID) {
                                 if (message.is_current_view) {
                                     child.isCurrentView = true;
-                                    w.window.show();
-                                    w.window.setAlwaysOnTop(true);
-                                    w.window.setAlwaysOnTop(false);
-                                    // console.log(message , w.window.getURL());
+                                    win.show();
+                                    win.setAlwaysOnTop(true);
+                                    win.setAlwaysOnTop(false);
+                                    // console.log(message , win.getURL());
                                 } else {
-                                    w.window.hide();
+                                    win.hide();
                                 }
                             } else {
-                                w.window.hide();
+                                win.hide();
                             }
                         }
                     });
                 } else if (message.type == '[update-view-url]') {
-                    if ((w = child.windowList.find((w) => w.window.customSetting.tabID == message.data.tabID && w.window.customSetting.windowType == 'view'))) {
-                        if (w && !w.window.isDestroyed()) {
-                            w.window.webContents.stop();
-                            w.window.loadURL(message.data.url);
+                    if ((win = child.getAllWindows().find((w) => w.customSetting.tabID == message.data.tabID && w.customSetting.windowType == 'view'))) {
+                        if (win && !win.isDestroyed()) {
+                            win.webContents.stop();
+                            win.loadURL(message.data.url);
                         }
                     }
-                } else if (message.type == '[remove-tab]' && child.getWindow()) {
-                    child.sendToWindow('[send-render-message]', { name: '[remove-tab]', tabID: message.tabID });
+                } else if (message.type == '[remove-tab]') {
+                    child.sendToAllWindows('[send-render-message]', { name: '[remove-tab]', tabID: message.tabID });
                 } else if (message.type == '[main-window-data-changed]') {
                     if (message.screen && message.mainWindow) {
                         child.parent.options.screen = message.screen;
