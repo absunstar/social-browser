@@ -90,11 +90,21 @@ var SOCIALBROWSER = {
 
         if (!String.prototype.contain) {
             String.prototype.contain = function (name = '') {
+                if (typeof name === 'number') {
+                    name = name.toString();
+                } else if (typeof name !== 'string') {
+                    return false;
+                }
                 return name.split('|').some((n) => n && this.test('^.*' + SOCIALBROWSER.escapeRegExp(n) + '.*$', 'gium'));
             };
         }
         if (!String.prototype.contains) {
             String.prototype.contains = function (name = '') {
+                if (typeof name === 'number') {
+                    name = name.toString();
+                } else if (typeof name !== 'string') {
+                    return false;
+                }
                 return name.split('|').some((n) => n && this.test('^.*' + SOCIALBROWSER.escapeRegExp(n) + '.*$', 'gium'));
             };
         }

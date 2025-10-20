@@ -252,7 +252,7 @@ class SocialTabs {
         if (tabProperties.url.like('http://127.0.0.1:60080*')) {
             let exists = false;
             document.querySelectorAll('.social-tab').forEach((tb) => {
-                if (tb.getAttribute('url').contain(tabProperties.url) || tabProperties.url.contain(tb.getAttribute('url'))) {
+                if (tb.getAttribute('url')?.contain(tabProperties.url) || tabProperties.url?.contain(tb.getAttribute('url'))) {
                     exists = true;
                     this.setCurrentTab(tb);
                 }
