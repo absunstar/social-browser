@@ -471,6 +471,8 @@ module.exports = function init(parent) {
                                 parent.applay('session_list');
                             }
                         }
+                    }else{
+                         parent.sendMessage({type : '[send-render-message]' , data :{ name : '[show-user-message]' , message : 'Max Profiles Detected : ' + parent.var.core.browser.maxProfiles }})
                     }
 
                     break;
@@ -594,6 +596,7 @@ module.exports = function init(parent) {
         parent.clientList.forEach((client) => {
             if (client.ws) {
                 client.ws.send(message);
+                
             }
         });
     };

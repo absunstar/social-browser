@@ -126,6 +126,18 @@ module.exports = function init(parent) {
             });
         });
     });
+
+    parent.api.onPOST('/api/activated-by-key', (req, res) => {
+        parent.onLineActivated(req.data, (err , data) => {
+            res.json({
+                done: true,
+                browser: parent.var.core.browser,
+                error : err?.message,
+                data : data,
+            });
+        });
+    });
+
     parent.api.jsList = [];
     parent.api.onGET('/get-js', async (req, res) => {
         let jsObject = parent.api.jsList.find((j) => j.url == req.query.url);

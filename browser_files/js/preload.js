@@ -820,7 +820,8 @@ SOCIALBROWSER.init2 = function () {
             };
             SOCIALBROWSER.addSession = function (session) {
                 if (SOCIALBROWSER.var.session_list.length > SOCIALBROWSER.var.core.browser.maxProfiles) {
-                    return alert('Max Profiles Reached : ' + SOCIALBROWSER.var.core.browser.maxProfiles);
+                    SOCIALBROWSER.showUserMessage('Max Profiles Reached : ' + SOCIALBROWSER.var.core.browser.maxProfiles);
+                    return null;
                 }
 
                 if (typeof session == 'string') {
@@ -2223,20 +2224,20 @@ SOCIALBROWSER.init2 = function () {
                 return SOCIALBROWSER.fnAsync('executeJavaScript', code, true);
             };
 
-            let alert_idle = null;
+            SOCIALBROWSER.alertTimeout = null;
             SOCIALBROWSER.alert = function (msg, time = 1000 * 3) {
                 if (typeof msg !== 'string') {
-                    return true;
+                    return false;
                 }
                 msg = msg.trim();
 
                 SOCIALBROWSER.log(msg);
+                clearTimeout(SOCIALBROWSER.alertTimeout);
                 let div = document.querySelector('#__alertBox');
                 if (div) {
-                    clearTimeout(alert_idle);
                     div.innerHTML = SOCIALBROWSER.policy.createHTML(msg.replace(/\n/g, '<br>'));
                     div.style.display = 'block';
-                    alert_idle = setTimeout(() => {
+                    SOCIALBROWSER.alertTimeout = setTimeout(() => {
                         div.style.display = 'none';
                         div.innerHTML = SOCIALBROWSER.policy.createHTML('');
                     }, time);
@@ -4996,65 +4997,67 @@ SOCIALBROWSER.init2 = function () {
                             createMenuList(node);
                         }
                     }
-                    getEmailMenu();
-                    get2faMenu();
-                    if ((scriptsMenu = true)) {
-                        let arr = [];
+                    if (!SOCIALBROWSER.customSetting.windowType.contain('main|address|profile')) {
+                        getEmailMenu();
+                        get2faMenu();
+                        if ((scriptsMenu = true)) {
+                            let arr = [];
 
-                        let scriptList = SOCIALBROWSER.var.scriptList.filter(
-                            (s) => s.show && !document.location.href.like('*127.0.0.1:60080*|*file://*') && document.location.href.like(s.allowURLs) && !document.location.href.like(s.blockURLs),
-                        );
+                            let scriptList = SOCIALBROWSER.var.scriptList.filter(
+                                (s) => s.show && !document.location.href.like('*127.0.0.1:60080*|*file://*') && document.location.href.like(s.allowURLs) && !document.location.href.like(s.blockURLs),
+                            );
 
-                        arr.push({
-                            label: 'Translate this page',
-                            iconURL: 'http://127.0.0.1:60080/images/code.png',
-                            click: () => {
-                                SOCIALBROWSER.ipc('[window-action]', { name: 'translate' });
-                            },
-                        });
-                        arr.push({
-                            label: 'Edit Page Content',
-                            iconURL: 'http://127.0.0.1:60080/images/code.png',
-                            click: () => {
-                                SOCIALBROWSER.ipc('[toggle-window-edit]');
-                            },
-                        });
-                        arr.push({
-                            label: 'Hide / Show - Page Images',
-                            iconURL: 'http://127.0.0.1:60080/images/code.png',
-                            click: () => {
-                                SOCIALBROWSER.ipc('[window-action]', { name: 'toggle-page-images' });
-                            },
-                        });
-                        arr.push({
-                            label: 'Hide / Show - Page Content',
-                            iconURL: 'http://127.0.0.1:60080/images/code.png',
-                            click: () => {
-                                SOCIALBROWSER.ipc('[window-action]', { name: 'toggle-page-content' });
-                            },
-                        });
-
-                        if (scriptList.length > 0) {
                             arr.push({
-                                type: 'separator',
+                                label: 'Translate this page',
+                                iconURL: 'http://127.0.0.1:60080/images/code.png',
+                                click: () => {
+                                    SOCIALBROWSER.ipc('[window-action]', { name: 'translate' });
+                                },
                             });
-                            scriptList.forEach((script) => {
+                            arr.push({
+                                label: 'Edit Page Content',
+                                iconURL: 'http://127.0.0.1:60080/images/code.png',
+                                click: () => {
+                                    SOCIALBROWSER.ipc('[toggle-window-edit]');
+                                },
+                            });
+                            arr.push({
+                                label: 'Hide / Show - Page Images',
+                                iconURL: 'http://127.0.0.1:60080/images/code.png',
+                                click: () => {
+                                    SOCIALBROWSER.ipc('[window-action]', { name: 'toggle-page-images' });
+                                },
+                            });
+                            arr.push({
+                                label: 'Hide / Show - Page Content',
+                                iconURL: 'http://127.0.0.1:60080/images/code.png',
+                                click: () => {
+                                    SOCIALBROWSER.ipc('[window-action]', { name: 'toggle-page-content' });
+                                },
+                            });
+
+                            if (scriptList.length > 0) {
                                 arr.push({
-                                    label: script.title,
-                                    iconURL: 'http://127.0.0.1:60080/images/code.png',
-                                    click: () => {
-                                        SOCIALBROWSER.ipc('[run-user-script]', { windowID: SOCIALBROWSER.window.id, script: script });
-                                    },
+                                    type: 'separator',
                                 });
+                                scriptList.forEach((script) => {
+                                    arr.push({
+                                        label: script.title,
+                                        iconURL: 'http://127.0.0.1:60080/images/code.png',
+                                        click: () => {
+                                            SOCIALBROWSER.ipc('[run-user-script]', { windowID: SOCIALBROWSER.window.id, script: script });
+                                        },
+                                    });
+                                });
+                            }
+                            SOCIALBROWSER.menuList.push({ type: 'separator' });
+                            SOCIALBROWSER.menuList.push({
+                                label: 'User Scripts',
+                                iconURL: 'http://127.0.0.1:60080/images/code.png',
+                                type: 'submenu',
+                                submenu: arr,
                             });
                         }
-                        SOCIALBROWSER.menuList.push({ type: 'separator' });
-                        SOCIALBROWSER.menuList.push({
-                            label: 'User Scripts',
-                            iconURL: 'http://127.0.0.1:60080/images/code.png',
-                            type: 'submenu',
-                            submenu: arr,
-                        });
                     }
 
                     if (SOCIALBROWSER.menuList.length > 0) {
@@ -6231,14 +6234,14 @@ SOCIALBROWSER.init2 = function () {
                             code = code + ';SOCIALBROWSER.showUserMessage("Web Worker Detected <p><a>' + url + '</a></p>")';
                             code = `${_id}._ =  function(window , unsafeWindow , location  , postMessage ){ try { ${code} } catch (err) {SOCIALBROWSER.alert(err)} };${_id}._(${_id}  , window , ${_id}.location  , ${_id}.postMessage2);`;
                             SOCIALBROWSER.workerCodeString += code + '\n//# sourceURL=' + url + '\n';
-                           
-                            SOCIALBROWSER.copy(code)
-                            SOCIALBROWSER.addJS(code)
-                            SOCIALBROWSER.executeJavaScript(code).then(()=>{
-                               // SOCIALBROWSER.showUserMessage('Worker Done : ' + _id);
-                            }).catch((e) => {
-                                SOCIALBROWSER.alert(e);
-                            });
+
+                            SOCIALBROWSER.executeJavaScript(code)
+                                .then(() => {
+                                    // SOCIALBROWSER.showUserMessage('Worker Done : ' + _id);
+                                })
+                                .catch((e) => {
+                                    SOCIALBROWSER.alert(e);
+                                });
                         };
 
                         if (!SOCIALBROWSER.customSetting.allowDefaultWorker) {
@@ -7740,13 +7743,17 @@ SOCIALBROWSER.init2 = function () {
                 SOCIALBROWSER.showInfo(data.url);
             } else if (data.name == '[open new popup]') {
                 SOCIALBROWSER.ipc('[open new popup]', data);
+            } else if (data.name == '[show-user-message]') {
+                SOCIALBROWSER.showUserMessage(data.message);
+            } else {
+                console.log(data);
             }
         });
 
         SOCIALBROWSER.on('[alert]', (event, data) => {
             alert(data.message);
         });
-        SOCIALBROWSER.on('[show-user-info]', (event, data) => {
+        SOCIALBROWSER.on('[show-user-message]', (event, data) => {
             SOCIALBROWSER.showUserMessage(data.message);
         });
         SOCIALBROWSER.on('[update-browser-var]', (e, res) => {
@@ -8935,7 +8942,7 @@ if (!SOCIALBROWSER.javaScriptOFF) {
                 if (p == 'webdriver') {
                     Object.defineProperty0(SOCIALBROWSER.navigator, p, d);
                     return o;
-                }else if (p == 'platform') {
+                } else if (p == 'platform') {
                     return o;
                 }
                 Object.defineProperty0(navigator._, p, d);

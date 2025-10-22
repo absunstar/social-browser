@@ -394,7 +394,7 @@ module.exports = function (child) {
 
                 // return js will crach if needed request not js
                 if (!child.isAllowURL(url)) {
-                    win?.webContents.send('[show-user-info]', { message: 'Blocked URL <p><a>' + url + '</a></p>' });
+                    win?.webContents.send('[show-user-message]', { message: 'Blocked URL <p><a>' + url + '</a></p>' });
 
                     if (url.like('*.js') || details.resourceType == 'script') {
                         let query = '';

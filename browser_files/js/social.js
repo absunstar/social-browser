@@ -241,7 +241,7 @@ function showSettingMenu() {
         type: 'separator',
     });
     let tools = {
-        label: 'Social Tools',
+        label: 'Free Social Tools',
         click: () => {
             ipc('[open new popup]', {
                 show: true,

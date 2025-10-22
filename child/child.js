@@ -275,6 +275,7 @@ child.electron.app.whenReady().then(() => {
          child.getAllWindows().forEach((win) => {
             if (win && !win.isDestroyed() && win.webContents) {
                 win.webContents.send(...args);
+                
             }
         });
     };

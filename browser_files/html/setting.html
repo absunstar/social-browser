@@ -362,6 +362,8 @@
                                         <div class="row padding center">
                                             <h2 class="bold red" ng-hide="setting.core.browser.activated">Browser Not Active <span>&#215;</span></h2>
                                             <h2 class="bold green" ng-show="setting.core.browser.activated">Browser Active <span>&#10003;</span></h2>
+                                            <p class="bold font-16 "><b>Max Profils : </b> ( {{setting.core.browser.maxProfiles}} ) </p>
+                                            <br>
                                             <p class="bold font-16 orange">{{setting.core.browser.message}}</p>
                                         </div>
 
@@ -387,16 +389,16 @@
                                         </div>
 
                                         <div class="row padding">
-                                            <i-control class="col8" type="password" label="Device Key ( Any Browser on This PC )" ng-model="setting.core.DeviceKey"> </i-control>
+                                            <i-control class="col8" type="password" label="Device Key ( All Browsers on This PC )" ng-model="setting.core.DeviceKey"> </i-control>
                                             <div class="col">
                                                 <i-button type="approve" label="Activate" ng-click="activated()"></i-button>
                                             </div>
                                         </div>
 
                                         <div class="row padding">
-                                            <i-control class="col8" type="password" label="Online Key ( For Any Browser or PC )" ng-model="setting.core.OnlineKey"> </i-control>
+                                            <i-control class="col8" type="password" label="Online Key ( Subscription Plan )" ng-model="setting.core.OnlineKey"> </i-control>
                                             <div class="col">
-                                                <i-button type="approve" label="Activate" ng-click="activated()"></i-button>
+                                                <i-button type="approve" label="Activate By Online Key" ng-click="activatedByKey()"></i-button>
                                             </div>
                                         </div>
                                     </fieldset>

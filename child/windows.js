@@ -1061,7 +1061,7 @@ module.exports = function (child) {
             if ((!win.customSetting.allowAds && !child.isAllowURL(url)) || !win.customSetting.allowRedirect) {
                 e.preventDefault();
                 child.log('Block-redirect', url);
-                win.webContents.send('[show-user-info]', { message: 'Blocked Redirect URL <p><a>' + url + '</a></p>' });
+                win.webContents.send('[show-user-message]', { message: 'Blocked Redirect URL <p><a>' + url + '</a></p>' });
             }
 
             if (win.customSetting.allowSelfRedirect && (win.getURL().contains(child.url.parse(url).hostname) || url.contains(child.url.parse(win.getURL()).hostname))) {
@@ -1097,18 +1097,20 @@ module.exports = function (child) {
             child.log('will-frame-navigate : ' + e.url);
             child.handleCustomSeting(e.url, win, e.isMainFrame);
 
-            if (e.url.like('ftp*|mail*')) {
+            if (!e.url.like('http*')) {
                 e.preventDefault();
                 if (win.customSetting.allowOpenExternal) {
                     child.openExternal(e.url);
-                    win.webContents.send('[show-user-info]', { message: 'Open External URL  <p><a>' + e.url + '</a></p>' });
+                    win.webContents.send('[show-user-message]', { message: 'Open External URL  <p><a>' + e.url + '</a></p>' });
+                }else{
+                    win.webContents.send('[show-user-message]', { message: 'Open External URL  <p><a>' + e.url + '</a></p>' });
                 }
                 return;
             }
 
             if (!win.customSetting.allowRedirect || (!win.customSetting.allowAds && !child.isAllowURL(e.url))) {
                 e.preventDefault();
-                win.webContents.send('[show-user-info]', { message: 'Blocked URL : <p><a>' + e.url + '</a></p>' });
+                win.webContents.send('[show-user-message]', { message: 'Blocked URL : <p><a>' + e.url + '</a></p>' });
                 child.log('Block-frame-navigate', e.url);
                 return;
             }
@@ -1227,7 +1229,7 @@ module.exports = function (child) {
 
                 if (!win.customSetting.allowNewWindows || (isPopup && !win.customSetting.allowPopup) || (!win.customSetting.allowAds && !child.isAllowURL(url))) {
                     child.log('Block-open-window', url);
-                    win.webContents.send('[show-user-info]', { message: 'Blocked Open Window <p><a>' + url + '</a></p>' });
+                    win.webContents.send('[show-user-message]', { message: 'Blocked Open Window <p><a>' + url + '</a></p>' });
                     return { action: 'deny' };
                 }
 
@@ -1318,7 +1320,7 @@ module.exports = function (child) {
 
             if (!win.customSetting.allowAds && !child.isAllowURL(real_url)) {
                 child.log('Block-redirect', real_url);
-                win.webContents.send('[show-user-info]', { message: 'Blocked Redirect URL  <p><a>' + real_url + '</a></p>' });
+                win.webContents.send('[show-user-message]', { message: 'Blocked Redirect URL  <p><a>' + real_url + '</a></p>' });
                 return false;
             }
 

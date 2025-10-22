@@ -640,8 +640,9 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     };
 
     $scope.addSession = function () {
-        SOCIALBROWSER.addSession($scope.session.display);
-        $scope.session = {};
+        if(SOCIALBROWSER.addSession($scope.session.display)){
+            $scope.session = {};
+        }
     };
 
     $scope.removeSession = function (_se) {
@@ -1054,7 +1055,22 @@ app.controller('mainController', ($scope, $http, $timeout) => {
             window.location.reload();
         }, 1000 * 5);
     };
-
+    $scope.activatedByKey = function () {
+        $scope.busy = true;
+        $http({
+            method: 'POST',
+            url: '/api/activated-by-key',
+            data: {
+                key: $scope.setting.core.OnlineKey,
+            },
+        })
+            .then(function (response) {
+                $scope.busy = false;
+            })
+            .catch((err) => {
+                $scope.busy = false;
+            });
+    };
     $scope.saveSetting = function (close) {
         $scope.busy = true;
         $scope.setting_busy = true;

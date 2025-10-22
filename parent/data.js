@@ -331,14 +331,13 @@ module.exports = function init(parent) {
         }
 
         if (name == 'core') {
-
             if (parent.var.core.version !== browserVarContent.version) {
                 parent.newVersionDetected = true;
                 parent.var.core = { ...parent.var.core, ...browserVarContent, emails: parent.var.core.emails || browserVarContent.emails };
                 parent.var.core.defaultUserAgent = null;
             }
 
-            parent.var.core.browser = parent.var.core.browser || browserVarContent.browser ;
+            parent.var.core.browser = parent.var.core.browser || browserVarContent.browser;
             parent.var.core.flags = browserVarContent.flags || '';
             parent.var.core.prefix = browserVarContent.prefix || '';
             parent.var.core.pinCode = browserVarContent.pinCode || '';
@@ -745,17 +744,17 @@ module.exports = function init(parent) {
     });
 
     parent.var.core.browser.activated = true;
-    parent.onLineActivated = function (callback = () => {}) {
-        if (parent.var.core['OnlineKey']) {
+    parent.onLineActivated = function (data, callback = () => {}) {
+        if (data.key) {
             parent.api
-                .fetch('https://social-browser.com/api/activated', {
+                .fetch('https://social-browser.com/api/activated-by-key', {
                     mode: 'cors',
                     method: 'post',
                     headers: {
                         'User-Agent': parent.var.core.defaultUserAgent.url,
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ OnlineKey: parent.var.core['OnlineKey'], browserID: parent.var.core.id }),
+                    body: JSON.stringify({ browserID: parent.var.core.id, ...data }),
                     redirect: 'follow',
                     agent: function (_parsedURL) {
                         if (_parsedURL.protocol == 'http:') {
@@ -777,11 +776,10 @@ module.exports = function init(parent) {
                     if (data.done && data.activated) {
                         parent.var.core.browser.activated = true;
                         parent.var.core.browser.message = data.message || 'Browser Activated By ( Online Key )';
-                        if (parent.var.core.browser.maxTabs < 3) {
-                            parent.var.core.browser.maxTabs = 20;
-                        }
+                        parent.var.core.browser.maxTabs = data.maxTabs || parent.var.core.browser.maxTabs;
+                        parent.var.core.browser.maxProfiles = data.maxProfiles || parent.var.core.browser.maxProfiles;
                     } else {
-                        parent.var.core.browser.message = data?.error;
+                        parent.var.core.browser.message = data?.error || '';
                         parent.var.core.browser.activated = false;
                         parent.var.core.browser.maxTabs = 2;
                     }
@@ -789,11 +787,10 @@ module.exports = function init(parent) {
                     callback(null, data);
                 })
                 .catch((err) => {
-                    callback(err);
-                    // error when server down or no internet or site blocked for any reson ( online key only)
                     console.log(err);
-                    parent.var.core.browser.message = err;
+                    parent.var.core.browser.message = 'Error While Checking Online Key';
                     parent.save_var('core');
+                    callback(err);
                 });
         }
     };
@@ -806,7 +803,7 @@ module.exports = function init(parent) {
 
         if (parent.var.core['DeviceId']) {
             if (parent.var.core['OnlineKey']) {
-                return parent.onLineActivated();
+                return parent.onLineActivated({ key: parent.var.core['OnlineKey'] });
             } else if (parent.var.core['BrowserKey'] && parent.md5(parent.api.to123(parent.var.core['id'] + parent.var.core['DeviceId'])) === parent.var.core['BrowserKey']) {
                 parent.var.core.browser.activated = true;
                 parent.var.core.browser.message = 'Browser Activated By ( Browser Key )';
