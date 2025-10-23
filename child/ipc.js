@@ -330,10 +330,10 @@ module.exports = function init(child) {
     });
     child.ipcMain.on('[customSetting]', async (event, data = {}) => {
         let currentWindow = child.electron.BrowserWindow.fromWebContents(event.sender) || child.window;
-        if(currentWindow){
+        if (currentWindow) {
             event.reply('[customSetting-replay]', currentWindow.customSetting);
-        }else{
-             event.reply('[customSetting-replay]', {});
+        } else {
+            event.reply('[customSetting-replay]', {});
         }
     });
 
@@ -541,10 +541,12 @@ module.exports = function init(child) {
         event.returnValue = true;
     });
     child.ipcMain.on('[get-domain-cookies]', (event, obj) => {
+        obj.cookieDomain = obj.cookieDomain || '*';
         child.electron.session
             .fromPartition(obj.partition)
-            .cookies.get({ domain: obj.cookieDomain })
+            .cookies.get({})
             .then((cookies) => {
+                cookies = cookies.filter((c) => c.domain.like(obj.cookieDomain) || c.domain.like('.' + obj.cookieDomain));
                 cookies.forEach((c) => {
                     const scheme = c.secure ? 'https' : 'http';
                     const host = c.domain[0] === '.' ? c.domain.substr(1) : c.domain;
@@ -582,13 +584,14 @@ module.exports = function init(child) {
     });
 
     child.ipcMain.on('[get-session-cookies]', (event, obj) => {
+        obj.domain = obj.domain || '*';
         child.electron.session
             .fromPartition(obj.partition)
-            .cookies.get({ domain: obj.domain })
+            .cookies.get({})
             .then((cookies) => {
                 let cookieInfo = {
                     partition: obj.partition,
-                    cookies: cookies,
+                    cookies: cookies.filter((c) => c.domain.like(obj.domain) || c.domain.like('.' + obj.domain)),
                 };
                 event.returnValue = cookieInfo;
             })
@@ -1119,9 +1122,8 @@ module.exports = function init(child) {
     });
 
     child.ipcMain.handle('[open new popup]', (event, data) => {
-
         data.partition = data.partition || data.session?.name || child.parent.var.core.session.name;
-        data.user_name = data.user_name || data.session?.display  || child.parent.var.session_list.find((s) => s.name == data.partition)?.display || data.partition;
+        data.user_name = data.user_name || data.session?.display || child.parent.var.session_list.find((s) => s.name == data.partition)?.display || data.partition;
 
         delete data.name;
         data.windowType = data.windowType || 'popup';
@@ -1368,7 +1370,7 @@ module.exports = function init(child) {
                     if (win.customSetting.windowType == 'main' && !win.isDestroyed()) {
                         win.webContents.send('[open new tab]', {
                             url: 'http://127.0.0.1:60080/setting',
-                           session: { name: 'setting', display: 'setting' },
+                            session: { name: 'setting', display: 'setting' },
                             user_name: 'Setting',
                             windowType: 'view',
                             vip: true,

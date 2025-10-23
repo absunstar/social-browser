@@ -301,11 +301,8 @@ SOCIALBROWSER.isIframe = function () {
 
 SOCIALBROWSER.process = () => process;
 
-SOCIALBROWSER.origin = document.location.origin;
-if (!SOCIALBROWSER.origin || SOCIALBROWSER.origin == 'null') {
-    SOCIALBROWSER.origin = document.location.hostname;
-}
-SOCIALBROWSER.hostname = document.location.hostname || document.location.origin;
+SOCIALBROWSER.hostname = document.location.hostname;
+SOCIALBROWSER.origin = document.location.origin || SOCIALBROWSER.hostname;
 SOCIALBROWSER.domain = SOCIALBROWSER.hostname.split('.');
 SOCIALBROWSER.domain = SOCIALBROWSER.domain.slice(SOCIALBROWSER.domain.length - 2).join('.');
 SOCIALBROWSER.domainStorage = SOCIALBROWSER.domain;
@@ -838,8 +835,10 @@ SOCIALBROWSER.init2 = function () {
                     if (!session.name.like('persist*')) {
                         session.name = 'persist:' + session.name;
                     }
-                    let oldSession = SOCIALBROWSER.var.session_list.find((s) => s.name == session.name);
+                    let oldSession = SOCIALBROWSER.var.session_list.find((s) => s.name == session.name || s.display == session.display);
                     if (oldSession) {
+                        SOCIALBROWSER.showUserMessage('Profile Exists <br> ' + oldSession.display);
+                        SOCIALBROWSER.alert('Profile Exists <br> ' + oldSession.display);
                         return oldSession;
                     }
 
@@ -1000,7 +999,7 @@ SOCIALBROWSER.init2 = function () {
             SOCIALBROWSER.timeOffset = new Date().getTimezoneOffset();
 
             SOCIALBROWSER.guid = function () {
-                return SOCIALBROWSER.md5(SOCIALBROWSER.partition + document.location.hostname + SOCIALBROWSER.var.core.id);
+                return SOCIALBROWSER.md5(SOCIALBROWSER.partition + SOCIALBROWSER.domain + SOCIALBROWSER.var.core.id);
             };
 
             SOCIALBROWSER.maxOf = function (num, max) {
@@ -1554,7 +1553,7 @@ SOCIALBROWSER.init2 = function () {
                     return false;
                 }
 
-                return url.protocol === 'http:' || url.protocol === 'https:';
+                return url.protocol === 'http:' || url.protocol === 'https:' || url.protocol === 'browser:';
             };
 
             SOCIALBROWSER.handleURL = function (u) {
@@ -2273,18 +2272,18 @@ SOCIALBROWSER.init2 = function () {
         };
 
         SOCIALBROWSER.getHttpCookie = function (obj = {}) {
-            obj.domain = obj.domain || document.location.hostname;
+            obj.domain = obj.domain || SOCIALBROWSER.domain;
             obj.partition = SOCIALBROWSER.partition;
             return SOCIALBROWSER.ipcSync('[get-http-cookies]', obj).cookie;
         };
         SOCIALBROWSER.setHttpCookie = function (obj = { cookie: '', off: true }) {
-            obj.domain = obj.domain || document.location.hostname;
+            obj.domain = obj.domain || SOCIALBROWSER.domain;
             obj.partition = obj.partition || SOCIALBROWSER.partition;
             obj.mode = obj.mode || 0;
             return SOCIALBROWSER.ipcSync('[set-http-cookies]', obj);
         };
         SOCIALBROWSER.getDomainCookies = function (obj = {}) {
-            obj.cookieDomain = obj.cookieDomain || SOCIALBROWSER.domain;
+            obj.cookieDomain = obj.cookieDomain || obj.domain|| SOCIALBROWSER.domain;
             obj.partition = obj.partition || SOCIALBROWSER.partition;
             obj.url = obj.url || document.location.href;
             return SOCIALBROWSER.ipcSync('[get-domain-cookies]', obj);
@@ -2296,6 +2295,7 @@ SOCIALBROWSER.init2 = function () {
         };
 
         SOCIALBROWSER.getSessionCookies = function (obj = {}) {
+            obj.domain = '*';
             obj.partition = SOCIALBROWSER.partition;
             return SOCIALBROWSER.ipcSync('[get-session-cookies]', obj);
         };
@@ -2306,7 +2306,7 @@ SOCIALBROWSER.init2 = function () {
         };
 
         SOCIALBROWSER.getSiteData = function (obj = {}) {
-            obj.domain = obj.domain || document.location.hostname;
+            obj.domain = obj.domain || SOCIALBROWSER.domain;
             obj.session = {
                 name: SOCIALBROWSER.session.display,
                 display: SOCIALBROWSER.session.display,
@@ -2376,7 +2376,7 @@ SOCIALBROWSER.init2 = function () {
         };
 
         SOCIALBROWSER.openInChrome = function (obj = { auto: true }) {
-            obj.domain = obj.domain || document.location.hostname;
+            obj.domain = obj.domain || SOCIALBROWSER.domain;
             obj.partition = SOCIALBROWSER.partition;
             obj.url = obj.url || document.location.href;
             obj.referrer = document.referrer;
@@ -2398,7 +2398,7 @@ SOCIALBROWSER.init2 = function () {
 
         SOCIALBROWSER.cookiesRaw = '';
         SOCIALBROWSER.clearCookies = function () {
-            SOCIALBROWSER.ipcSync('[cookies-clear]', { domain: document.location.hostname, partition: SOCIALBROWSER.partition });
+            SOCIALBROWSER.ipcSync('[cookies-clear]', { domain: SOCIALBROWSER.domain, partition: SOCIALBROWSER.partition });
             SOCIALBROWSER.cookiesRaw = SOCIALBROWSER.getCookieRaw();
             return true;
         };
@@ -2413,7 +2413,7 @@ SOCIALBROWSER.init2 = function () {
         SOCIALBROWSER.getCookieRaw = function () {
             return SOCIALBROWSER.ipcSync('[cookie-get-raw]', {
                 name: '*',
-                domain: document.location.hostname,
+                domain: SOCIALBROWSER.domain,
                 partition: SOCIALBROWSER.partition,
                 url: document.location.origin,
                 path: document.location.pathname,
@@ -2425,7 +2425,7 @@ SOCIALBROWSER.init2 = function () {
                 cookie: newValue,
                 partition: SOCIALBROWSER.partition,
                 url: document.location.origin,
-                domain: document.location.hostname,
+                domain: SOCIALBROWSER.domain,
                 path: document.location.pathname,
                 protocol: document.location.protocol,
             });
@@ -4270,8 +4270,8 @@ SOCIALBROWSER.init2 = function () {
                                 type: 'separator',
                             });
                         }
-                    }else{
-                         arr.push({
+                    } else {
+                        arr.push({
                             label: 'paste Current Profile Name',
                             click() {
                                 SOCIALBROWSER.copy(SOCIALBROWSER.session.display);
@@ -4884,7 +4884,7 @@ SOCIALBROWSER.init2 = function () {
                                     SOCIALBROWSER.menuList.push({
                                         label: 'Decrypt By [ Site Key ]',
                                         click() {
-                                            SOCIALBROWSER.decryptedText = SOCIALBROWSER.decryptText(SOCIALBROWSER.selectedText().replace('_SITE_', '').replace('_', ''), document.location.hostname);
+                                            SOCIALBROWSER.decryptedText = SOCIALBROWSER.decryptText(SOCIALBROWSER.selectedText().replace('_SITE_', '').replace('_', ''), SOCIALBROWSER.domain);
                                             SOCIALBROWSER.replaceSelectedText(SOCIALBROWSER.decryptedText);
                                         },
                                     });
@@ -4953,7 +4953,7 @@ SOCIALBROWSER.init2 = function () {
                                 arr.push({
                                     label: 'Encrypt By [ Site Key ]',
                                     click() {
-                                        SOCIALBROWSER.encryptedText = SOCIALBROWSER.encryptText(SOCIALBROWSER.selectedText(), document.location.hostname);
+                                        SOCIALBROWSER.encryptedText = SOCIALBROWSER.encryptText(SOCIALBROWSER.selectedText(), SOCIALBROWSER.domain);
                                         if (SOCIALBROWSER.encryptedText) {
                                             SOCIALBROWSER.encryptedText = '_SITE_' + SOCIALBROWSER.encryptedText + '_';
                                             SOCIALBROWSER.replaceSelectedText(SOCIALBROWSER.encryptedText);
@@ -5674,7 +5674,7 @@ SOCIALBROWSER.init2 = function () {
                 date: new Date().getTime(),
                 id: SOCIALBROWSER.window.id + '_' + SOCIALBROWSER.partition + '_' + new Date().getTime(),
                 partition: SOCIALBROWSER.partition,
-                hostname: document.location.hostname,
+                hostname: SOCIALBROWSER.domain,
                 url: document.location.href,
                 data: [],
             };
@@ -5806,7 +5806,7 @@ SOCIALBROWSER.init2 = function () {
                     if (SOCIALBROWSER.var.blocking.core.block_empty_iframe && (!iframe.src || iframe.src == 'about:')) {
                         SOCIALBROWSER.log('[[ Remove ]]', iframe);
                         iframe.remove();
-                    } else if (SOCIALBROWSER.var.blocking.core.remove_external_iframe && !iframe.src.like(document.location.protocol + '//' + document.location.hostname + '*')) {
+                    } else if (SOCIALBROWSER.var.blocking.core.remove_external_iframe && !iframe.src.like(document.location.protocol + '//*' + SOCIALBROWSER.domain + '*')) {
                         SOCIALBROWSER.log('[[ Remove ]]', iframe);
                         iframe.remove();
                     } else if (iframe.tagName == 'IFRAME') {
@@ -6013,7 +6013,7 @@ SOCIALBROWSER.init2 = function () {
 
         SOCIALBROWSER.onLoad(() => {
             if (SOCIALBROWSER.var.blocking.core.skip_video_ads) {
-                if (document.location.hostname.like('*youtube.com*')) {
+                if (SOCIALBROWSER.domain.like('*youtube.com*')) {
                     skipYoutubeAds();
                 } else {
                     skipVideoAds();

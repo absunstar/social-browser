@@ -181,6 +181,18 @@ module.exports = function init(parent) {
         parent.createNewWindow(options);
     };
 
+    parent.getCookiesByPartition = function (partition) {
+        return new Promise((resolve, reject) => {
+            let child = parent.createChildProcess({ partition: partition, windowType: 'cookies' });
+            child.cookiesInterval = setInterval(() => {
+                if (child.cookies) {
+                    clearInterval(child.cookiesInterval);
+                    resolve(child.cookies);
+                }
+            }, 500);
+        });
+    };
+
     parent.createChildProcess = function (_options) {
         let options = { ..._options };
         options.partition = options.partition || options.session?.name || parent.var.core.session.name;
@@ -189,10 +201,12 @@ module.exports = function init(parent) {
         options.uuid = !options.partition.contains('persist:') ? 'x-ghost' : 'user-' + options.partition.replace('persist:', '');
         const uuid = options.uuid;
         let data_dir = parent.data_dir;
-       
 
         let index = parent.clientList.findIndex((cl) => cl && cl.uuid === uuid);
         if (index !== -1 && parent.clientList[index]) {
+            if (parent.clientList[index].windowType == 'cookies') {
+                parent.clientList[index].cookies = null;
+            }
             parent.clientList[index].windowType = options.windowType || 'popup';
             parent.clientList[index].option_list.push(options);
             parent.clientList[index].options = options;
@@ -250,7 +264,7 @@ module.exports = function init(parent) {
                 // parent.log(` [ child ${uuid} / ${parent.clientList.length} ] spawn`, err);
             });
             child.on('message', (msg) => {
-                 parent.log(` [ child ${uuid} / ${parent.clientList.length} ] message`, msg);
+                parent.log(` [ child ${uuid} / ${parent.clientList.length} ] message`, msg);
             });
             child.on('close', (code, signal) => {
                 parent.log(`\n [ Exit :: child:${child.pid} ${uuid} / ${parent.clientList.length} ] close with code ( ${code} ) and signal ( ${signal} ) \n`);
@@ -288,6 +302,8 @@ module.exports = function init(parent) {
                 }
             });
         }
+
+        return parent.clientList[index];
     };
 
     parent.var.extension_list = parent.var.extension_list || [];

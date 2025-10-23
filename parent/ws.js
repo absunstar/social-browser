@@ -345,6 +345,15 @@ module.exports = function init(parent) {
                     parent.set_var('proxy_list', parent.var.proxy_list);
                     break;
 
+                    case '[cookies-data]':
+                    let cookies = message.cookies;
+                    parent.clientList.forEach((client) => {
+                        if (client && client.uuid == message.uuid ) {
+                            client.cookies = cookies;
+                        }
+                    });
+                    break;
+
                 case '[cookieList-set]':
                     let cookieIndex = parent.var.cookieList.findIndex((c) => c.domain == message.cookie.domain && c.partition == message.cookie.partition);
                     message.cookie.time = message.cookie.time || new Date().getTime();

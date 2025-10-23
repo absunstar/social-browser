@@ -291,15 +291,26 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         }
     };
 
-    $scope.exportSelectedProfilesAndData = function () {
+    $scope.exportSelectedProfilesAndData = async function () {
         let file = SOCIALBROWSER.ipcSync('[select-save-file]', { defaultPath: 'profilesAndData.social' });
         if (file) {
             let arr = $scope.setting.session_list.filter((s) => s.$selected);
-            arr.forEach((profile) => {
-                profile.cookieList = $scope.setting.cookieList.filter((c) => c.partition == profile.name);
+            for (let index = 0; index < arr.length; index++) {
+                const profile = arr[index];
+                SOCIALBROWSER.showUserMessage('Data Collect for Profile <br> ' + profile.display);
+                SOCIALBROWSER.alert('Data Collect for Profile <br> ' + profile.display);
+                let response = await fetch(`/api/cookies?partition=${profile.name}`);
+                if (response.ok) {
+                    profile.cookies = (await response.json()).cookies;
+                    profile.cookieList = [{ cookies: profile.cookies }];
+                }
+
                 profile.faList = $scope.setting.faList.filter((c) => c.partition == profile.name || c.email == profile.display);
-            });
+            }
+
             SOCIALBROWSER.ipcSync('[write-file]', { path: file, data: SOCIALBROWSER.hideObject(arr) });
+            SOCIALBROWSER.showUserMessage('Profiles and Data Exported ...');
+            SOCIALBROWSER.alert('Profiles and Data Exported ...');
         }
     };
     $scope.importSelectedProfilesAndData = function () {
@@ -315,10 +326,11 @@ app.controller('mainController', ($scope, $http, $timeout) => {
             let profileIndex = 0;
 
             arr.forEach((profile) => {
-                let cookies = [];
-                if (profile.cookieList) {
+                profile.cookies = profile.cookies || [];
+
+                if (profile.cookies.length == 0 && profile.cookieList) {
                     profile.cookieList.forEach((c) => {
-                        cookies = [...cookies, ...c.cookies];
+                        profile.cookies = [...profile.cookies, ...c.cookies];
                     });
                     delete profile.cookieList;
                 }
@@ -332,24 +344,18 @@ app.controller('mainController', ($scope, $http, $timeout) => {
                     });
                     delete profile.faList;
                 }
-                let index = $scope.setting.session_list.findIndex((s) => s.name == profile.name);
-                if (index === -1) {
-                    console.log('Profile Not Exists : ' + profile.name);
-                    SOCIALBROWSER.addSession(profile);
-                    if (cookies.length > 0) {
-                        console.log(cookies);
-                        profileIndex++;
-                        $timeout(() => {
-                            alert('Seting Profile Data : ' + profile.display);
-                            SOCIALBROWSER.ipc('[open new popup]', {
-                                partition: profile.name,
-                                cookies: cookies,
-                                timeout: 1000 * 30,
-                            });
-                        }, 1000 * 5 * profileIndex);
-                    }
-                } else {
-                    console.log('Profile Exists : ' + profile.name);
+
+                if (SOCIALBROWSER.addSession(profile) && profile.cookies.length > 0) {
+                    profileIndex++;
+                    $timeout(() => {
+                        SOCIALBROWSER.showUserMessage('Seting Profile Data <br> ' + profile.display);
+                        SOCIALBROWSER.alert('Seting Profile Data <br> ' + profile.display);
+                        SOCIALBROWSER.ipc('[open new popup]', {
+                            partition: profile.name,
+                            cookies: profile.cookies,
+                            timeout: 1000 * 30,
+                        });
+                    }, 1000 * 5 * profileIndex);
                 }
             });
         }
@@ -640,7 +646,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     };
 
     $scope.addSession = function () {
-        if(SOCIALBROWSER.addSession($scope.session.display)){
+        if (SOCIALBROWSER.addSession($scope.session.display)) {
             $scope.session = {};
         }
     };

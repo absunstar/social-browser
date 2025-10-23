@@ -219,12 +219,16 @@ child.electron.app.whenReady().then(() => {
         });
     });
 
-    child.electron.app.on('window-all-closed', (e) => {
-        e.preventDefault();
+    child.tryClosing = function () {
         if (child.partition.contains('persist:') && child.electron.BrowserWindow.getAllWindows().length === 0) {
             child.log('window-all-closed :  process.exit() : ' + child.partition + ' : ' + child.index);
             process.exit();
         }
+    };
+
+    child.electron.app.on('window-all-closed', (e) => {
+        e.preventDefault();
+        child.tryClosing();
     });
 
     child.electron.app.on('login', (event, webContents, details, authInfo, callback) => {
@@ -260,11 +264,11 @@ child.electron.app.whenReady().then(() => {
             //code here
         }
     });
-    child.getAllWindows =  function () {
+    child.getAllWindows = function () {
         return child.electron.BaseWindow.getAllWindows() || [];
     };
     child.sendToMainWindow = function (...args) {
-         child.getAllWindows().forEach((win) => {
+        child.getAllWindows().forEach((win) => {
             if (win && !win.isDestroyed() && win.webContents && win.customSetting && win.customSetting.windowType == 'main') {
                 win.webContents.send(...args);
             }
@@ -272,10 +276,9 @@ child.electron.app.whenReady().then(() => {
     };
 
     child.sendToAllWindows = function (...args) {
-         child.getAllWindows().forEach((win) => {
+        child.getAllWindows().forEach((win) => {
             if (win && !win.isDestroyed() && win.webContents) {
                 win.webContents.send(...args);
-                
             }
         });
     };

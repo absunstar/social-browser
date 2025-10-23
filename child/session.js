@@ -458,7 +458,8 @@ module.exports = function (child) {
                 let mainURL = url;
                 let urlObject = child.url.parse(url);
                 let win = null;
-                let domainName = urlObject.hostname;
+                let domainName = urlObject.hostname.split('.');
+                domainName = domainName.slice(domainName.length - 2).join('.');
                 let domainCookie = details.requestHeaders['Cookie'] || '';
                 let domainCookieObject = child.cookieParse(domainCookie);
 
@@ -543,7 +544,6 @@ module.exports = function (child) {
                                 };
                                 let cookieDomain = domainName.split('.');
                                 cookieDomain = cookieDomain[cookieDomain.length - 2] + '.' + cookieDomain[cookieDomain.length - 1];
-                                co.cookies = await ss.cookies.get({ domain: cookieDomain });
                                 child.cookieList.push(co);
                                 child.sendMessage({
                                     type: '[cookieList-set]',
@@ -570,7 +570,6 @@ module.exports = function (child) {
                                     child.cookieList[cookieIndex].cookie = details.requestHeaders['Cookie'];
                                     let cookieDomain = domainName.split('.');
                                     cookieDomain = cookieDomain[cookieDomain.length - 2] + '.' + cookieDomain[cookieDomain.length - 1];
-                                    child.cookieList[cookieIndex].cookies = await ss.cookies.get({ domain: cookieDomain });
                                     child.sendMessage({
                                         type: '[cookieList-set]',
                                         cookie: child.cookieList[cookieIndex],
@@ -790,12 +789,10 @@ module.exports = function (child) {
                             'worker-src',
                             'manifest-src',
                             'prefetch-src',
-                            
                         ];
 
                         if (Array.isArray(s_policy)) {
-                            
-                            s_policy.forEach((value , key) => {
+                            s_policy.forEach((value, key) => {
                                 // if (win && s_policy[key].like('*sha256*')) {
                                 //     win.customSetting.$sha256 = s_policy[key];
                                 // }
@@ -829,16 +826,15 @@ module.exports = function (child) {
                                 // }
                             });
                         } else if (typeof s_policy == 'string') {
-
-                                  if (!s_policy.contain('browser://') && !s_policy.contain("'none'")) {
-                                    pList.forEach((p) => {
-                                        if (!s_policy.contain('nonce-') && !s_policy.contain("'unsafe-inline'")) {
-                                            s_policy = s_policy.replaceAll(p + ' ', p + " browser://* 'nonce-social'");
-                                        } else {
-                                            s_policy = s_policy.replaceAll(p + ' ', p + ' browser://* ');
-                                        }
-                                    });
-                                }
+                            if (!s_policy.contain('browser://') && !s_policy.contain("'none'")) {
+                                pList.forEach((p) => {
+                                    if (!s_policy.contain('nonce-') && !s_policy.contain("'unsafe-inline'")) {
+                                        s_policy = s_policy.replaceAll(p + ' ', p + " browser://* 'nonce-social'");
+                                    } else {
+                                        s_policy = s_policy.replaceAll(p + ' ', p + ' browser://* ');
+                                    }
+                                });
+                            }
 
                             // s_policy = s_policy.replaceAll("default-src 'none'", '');
                             // s_policy = s_policy.replaceAll('data: ', 'data: browser://* ');

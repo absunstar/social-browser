@@ -128,12 +128,21 @@ module.exports = function init(parent) {
     });
 
     parent.api.onPOST('/api/activated-by-key', (req, res) => {
-        parent.onLineActivated(req.data, (err , data) => {
+        parent.onLineActivated(req.data, (err, data) => {
             res.json({
                 done: true,
                 browser: parent.var.core.browser,
-                error : err?.message,
-                data : data,
+                error: err?.message,
+                data: data,
+            });
+        });
+    });
+    
+    parent.api.onGET('/api/cookies', (req, res) => {
+        parent.getCookiesByPartition(req.query.partition).then((cookies) => {
+            res.json({
+                done: true,
+                cookies: cookies,
             });
         });
     });

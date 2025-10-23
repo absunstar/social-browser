@@ -55,6 +55,17 @@ module.exports = function (child) {
                     if (child.parent.windowType == 'none') {
                     } else if (child.parent.windowType == 'files') {
                         child.window = null;
+                    } else if (child.parent.windowType == 'cookies') {
+                        let ss = child.electron.session.fromPartition(message.options.partition);
+                        ss.cookies.get({}).then((cookies) => {
+                            child.sendMessage({
+                                type: '[cookies-data]',
+                                cookies: cookies,
+                            });
+                            setTimeout(() => {
+                                child.tryClosing();
+                            }, 1000 * 5);
+                        });
                     } else if (child.parent.windowType == 'main') {
                         if (child.mainWindow && !child.mainWindow.isDestroyed()) {
                             child.mainWindow.show();
@@ -99,6 +110,14 @@ module.exports = function (child) {
                         } else {
                             child.createNewWindow({ ...child.parent.options, ...message.options });
                         }
+                    } else if (message.options.windowType == 'cookies') {
+                        let ss = child.electron.session.fromPartition(message.options.partition);
+                        ss.cookies.get({}).then((cookies) => {
+                            child.sendMessage({
+                                type: '[cookies-data]',
+                                cookies: cookies,
+                            });
+                        });
                     } else {
                         child.createNewWindow({ ...message.options });
                     }
