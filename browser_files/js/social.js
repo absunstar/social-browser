@@ -24,7 +24,7 @@ function ipc(name, message) {
     message.mainWindowID = message.mainWindowID || SOCIALBROWSER.currentTabInfo.mainWindowID;
 
     SOCIALBROWSER.ipc(name, message);
-    
+
     if (name == '[window-action]' && !message.name.like('*screen*|*external*')) {
         SOCIALBROWSER.clickCurrentTab();
     }
@@ -455,7 +455,7 @@ function showBookmarksMenu() {
         click: () => {
             ipc('[open new tab]', {
                 url: 'http://127.0.0.1:60080/setting#bookmark',
-               session: { name: 'setting', display: 'setting' },
+                session: { name: 'setting', display: 'setting' },
                 windowType: 'view',
                 vip: true,
             });
@@ -577,14 +577,18 @@ SOCIALBROWSER.showScriptListMenu = function () {
     });
     SOCIALBROWSER.var.scriptList
         .filter(
-            (s) => s.show && !SOCIALBROWSER.currentTabInfo.url.like('*127.0.0.1:60080*') && SOCIALBROWSER.currentTabInfo.url.like(s.allowURLs) && !SOCIALBROWSER.currentTabInfo.url.like(s.blockURLs),
+            (s) =>
+                s.show &&
+                !SOCIALBROWSER.getCurrentTabInfo().url.like('*127.0.0.1:60080*') &&
+                SOCIALBROWSER.getCurrentTabInfo().url.like(s.allowURLs) &&
+                !SOCIALBROWSER.getCurrentTabInfo().url.like(s.blockURLs),
         )
         .forEach((script) => {
             SOCIALBROWSER.menuList.push({
                 label: script.title,
                 iconURL: 'http://127.0.0.1:60080/images/code.png',
                 click: () => {
-                    SOCIALBROWSER.ws({ type: '[run-user-script]', tabInfo: SOCIALBROWSER.currentTabInfo, script: script });
+                    SOCIALBROWSER.ws({ type: '[run-user-script]', tabInfo: SOCIALBROWSER.getCurrentTabInfo(), script: script });
                 },
             });
         });
@@ -614,22 +618,20 @@ SOCIALBROWSER.showHelpMenu = function () {
     SOCIALBROWSER.menuList = [];
 
     SOCIALBROWSER.menuList.push({
-        label: 'use this option if page content not run as you expected',
-        sublabel: 'toggle Ads and privacy protected [ on / off ]',
+        label: 'Click Here if you want to run Page Ads',
+        sublabel: 'toggle [ on / off ]',
         click: () => {
-            ipc('[window-action]', { name: 'off' });
+            ipc('[window-action]', { name: 'allow-ads' });
         },
     });
-
     SOCIALBROWSER.menuList.push({
         type: 'separator',
     });
-
     SOCIALBROWSER.menuList.push({
-        label: 'use this option if you want enable / disable Ads in current window ',
-        sublabel: 'toggle Ads [ on / off ]',
+        label: 'Click Here to run Page Content Any Way',
+        sublabel: 'toggle [ on / off ]',
         click: () => {
-            ipc('[window-action]', { name: 'allow-ads' });
+            ipc('[window-action]', { name: 'off' });
         },
     });
 
@@ -663,7 +665,7 @@ SOCIALBROWSER.showUserProxyMenu = function () {
         click: () => {
             ipc('[open new tab]', {
                 url: 'http://127.0.0.1:60080/setting#proxyList',
-               session: { name: 'setting', display: 'setting' },
+                session: { name: 'setting', display: 'setting' },
                 windowType: 'view',
                 vip: true,
             });
@@ -678,7 +680,7 @@ SOCIALBROWSER.showUserProxyMenu = function () {
         label: 'Stop Proxy',
         iconURL: 'http://127.0.0.1:60080/images/stop.png',
         click: () => {
-            SOCIALBROWSER.ws({ type: '[change-user-proxy]', partition: SOCIALBROWSER.currentTabInfo.partition, proxy: null });
+            SOCIALBROWSER.ws({ type: '[change-user-proxy]', partition: SOCIALBROWSER.getCurrentTabInfo().partition, proxy: null });
             setTimeout(() => {
                 ipc('[window-reload]');
             }, 1000 * 1);
@@ -692,7 +694,7 @@ SOCIALBROWSER.showUserProxyMenu = function () {
             label: proxy.url || proxy.ip + ':' + proxy.port,
             iconURL: 'http://127.0.0.1:60080/images/proxy.png',
             click: () => {
-                SOCIALBROWSER.ws({ type: '[change-user-proxy]', partition: SOCIALBROWSER.currentTabInfo.partition, proxy: proxy });
+                SOCIALBROWSER.ws({ type: '[change-user-proxy]', partition: SOCIALBROWSER.getCurrentTabInfo().partition, proxy: proxy });
                 setTimeout(() => {
                     ipc('[window-reload]');
                 }, 1000 * 1);
@@ -744,7 +746,7 @@ SOCIALBROWSER.showUserAgentMenu = function () {
         label: 'Remove User Agent',
         iconURL: 'http://127.0.0.1:60080/images/stop.png',
         click: () => {
-            SOCIALBROWSER.ws({ type: '[change-user-agent]', partition: SOCIALBROWSER.currentTabInfo.partition, defaultUserAgent: null });
+            SOCIALBROWSER.ws({ type: '[change-user-agent]', partition: SOCIALBROWSER.getCurrentTabInfo().partition, defaultUserAgent: null });
             setTimeout(() => {
                 ipc('[window-reload]');
             }, 1000 * 0);
@@ -759,7 +761,7 @@ SOCIALBROWSER.showUserAgentMenu = function () {
             label: userAgent.name,
             iconURL: 'http://127.0.0.1:60080/images/user-agent.png',
             click: () => {
-                SOCIALBROWSER.ws({ type: '[change-user-agent]', partition: SOCIALBROWSER.currentTabInfo.partition, defaultUserAgent: userAgent });
+                SOCIALBROWSER.ws({ type: '[change-user-agent]', partition: SOCIALBROWSER.getCurrentTabInfo().partition, defaultUserAgent: userAgent });
                 setTimeout(() => {
                     ipc('[window-reload]');
                 }, 1000 * 0);
@@ -795,14 +797,14 @@ SOCIALBROWSER.showWindowsMenu = function () {
     SOCIALBROWSER.menuList.push({
         label: 'Open URL in  [ New Window ( Random - PC ) ]',
         iconURL: 'http://127.0.0.1:60080/images/page.png',
-        sublabel: SOCIALBROWSER.currentTabInfo.url,
+        sublabel: SOCIALBROWSER.getCurrentTabInfo().url,
         click: () => {
             ipc('[window-action]', { name: 'new-window' });
         },
     });
     SOCIALBROWSER.menuList.push({
         label: 'Open URL in  [ New Window ( Random - Mobile ) ]',
-        sublabel: SOCIALBROWSER.currentTabInfo.url,
+        sublabel: SOCIALBROWSER.getCurrentTabInfo().url,
         iconURL: 'http://127.0.0.1:60080/images/page.png',
         click: () => {
             ipc('[window-action]', { name: 'new-mobile-window' });
@@ -814,7 +816,7 @@ SOCIALBROWSER.showWindowsMenu = function () {
     });
     SOCIALBROWSER.menuList.push({
         label: 'Open URL in   [ New Ghost Window ( Random - PC ) ]',
-        sublabel: SOCIALBROWSER.currentTabInfo.url,
+        sublabel: SOCIALBROWSER.getCurrentTabInfo().url,
         iconURL: 'http://127.0.0.1:60080/images/page.png',
         click: () => {
             ipc('[window-action]', { name: 'new-ghost-window' });
@@ -823,7 +825,7 @@ SOCIALBROWSER.showWindowsMenu = function () {
 
     SOCIALBROWSER.menuList.push({
         label: 'Open URL in  [ New Gost Window ( Random - Mobile ) ]',
-        sublabel: SOCIALBROWSER.currentTabInfo.url,
+        sublabel: SOCIALBROWSER.getCurrentTabInfo().url,
         iconURL: 'http://127.0.0.1:60080/images/page.png',
         click: () => {
             ipc('[window-action]', { name: 'new-ghost-mobile-window' });
@@ -834,7 +836,7 @@ SOCIALBROWSER.showWindowsMenu = function () {
     });
     SOCIALBROWSER.menuList.push({
         label: 'Open URL in  [ New Window ( Allow Ads ) ]',
-        sublabel: SOCIALBROWSER.currentTabInfo.url,
+        sublabel: SOCIALBROWSER.getCurrentTabInfo().url,
         iconURL: 'http://127.0.0.1:60080/images/page.png',
         click: () => {
             ipc('[window-action]', { name: 'new-ads-window' });
@@ -845,7 +847,7 @@ SOCIALBROWSER.showWindowsMenu = function () {
     });
     SOCIALBROWSER.menuList.push({
         label: 'Open URL in  [ Google - Chrome Browser ] ',
-        sublabel: SOCIALBROWSER.currentTabInfo.url,
+        sublabel: SOCIALBROWSER.getCurrentTabInfo().url,
         iconURL: 'http://127.0.0.1:60080/images/chrome.png',
         click: () => {
             ipc('[window-action]', { name: 'open-in-chrome' });
@@ -854,7 +856,7 @@ SOCIALBROWSER.showWindowsMenu = function () {
 
     SOCIALBROWSER.menuList.push({
         label: 'Open URL in  [ Google - Chrome Browser ] ( Shared Cookies and User Data )',
-        sublabel: SOCIALBROWSER.currentTabInfo.url,
+        sublabel: SOCIALBROWSER.getCurrentTabInfo().url,
         iconURL: 'http://127.0.0.1:60080/images/chrome.png',
         click: () => {
             ipc('[window-action]', { name: 'open-in-chrome-session' });
@@ -866,10 +868,10 @@ SOCIALBROWSER.showWindowsMenu = function () {
     });
     SOCIALBROWSER.menuList.push({
         label: 'Open URL in  [ External - Browser ] ',
-        sublabel: SOCIALBROWSER.currentTabInfo.url,
+        sublabel: SOCIALBROWSER.getCurrentTabInfo().url,
         iconURL: 'http://127.0.0.1:60080/images/html.png',
         click: () => {
-            ipc('[window-action]', { name: 'open-external', url: SOCIALBROWSER.currentTabInfo.url });
+            ipc('[window-action]', { name: 'open-external', url: SOCIALBROWSER.getCurrentTabInfo().url });
         },
     });
 
