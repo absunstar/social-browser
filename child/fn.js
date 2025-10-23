@@ -356,7 +356,27 @@ module.exports = function (child) {
         if (url == 'about:blank' || url == 'about:srcdoc') {
             return;
         }
-     
+
+        if (win.customSetting.windowType.like('view|popup')) {
+            if (url.like('browser*|http://localhost*|http://127.0.0.1*|chrome://*')) {
+                if (!win.customSetting.isWhiteSite) {
+                    win.customSetting.isWhiteSite0 = false;
+                    win.customSetting.isWhiteSite = true;
+                }
+                if (!win.customSetting.allowGoogleTranslate) {
+                    win.customSetting.allowGoogleTranslate0 = false;
+                    win.customSetting.allowGoogleTranslate = true;
+                }
+            } else {
+                if (win.customSetting.isWhiteSite0 === false) {
+                    win.customSetting.isWhiteSite = false;
+                }
+                if (win.customSetting.allowGoogleTranslate0 === false) {
+                    win.customSetting.allowGoogleTranslate = false;
+                }
+            }
+        }
+
         win.customSetting.headers = {};
         win.customSetting.session = child.parent.var.session_list.find((s) => s.name == win.customSetting.partition) || win.customSetting.session;
 
@@ -545,7 +565,7 @@ module.exports = function (child) {
             if (!win.customSetting.$cloudFlare) {
                 win.customSetting.$cloudFlare = true;
                 win.customSetting.iframe = true;
-                 win.webContents.send('[show-user-message]' , {message : 'Cloudflare Detected '});
+                win.webContents.send('[show-user-message]', { message: 'Cloudflare Detected ' });
             }
         } else if (url.like('*cloudflare.com*|*__cf_chl_rt_tk*') && !win.customSetting.$cloudFlare) {
             child.cloudFlareURLs.push({ url: currentHostname });
@@ -553,7 +573,7 @@ module.exports = function (child) {
             win.customSetting.iframe = true;
             win.customSetting.$currrentURL = currentURL;
             reload = true;
-            win.webContents.send('[show-user-message]' , {message : 'Cloudflare Detected '});
+            win.webContents.send('[show-user-message]', { message: 'Cloudflare Detected ' });
         } else {
             if (win.customSetting.$cloudFlare !== win.customSetting.cloudFlare) {
                 if (win.customSetting.$currrentURL !== currentURL) {

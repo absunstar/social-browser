@@ -1097,7 +1097,7 @@ module.exports = function (child) {
             child.log('will-frame-navigate : ' + e.url);
             child.handleCustomSeting(e.url, win, e.isMainFrame);
 
-            if (!e.url.like('http*')) {
+            if (!e.url.like('http*|data*|about*|browser*|file*|chrome*|blob*|ws*|wss*')) {
                 e.preventDefault();
                 if (win.customSetting.allowOpenExternal) {
                     child.openExternal(e.url);

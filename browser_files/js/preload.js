@@ -4270,6 +4270,21 @@ SOCIALBROWSER.init2 = function () {
                                 type: 'separator',
                             });
                         }
+                    }else{
+                         arr.push({
+                            label: 'paste Current Profile Name',
+                            click() {
+                                SOCIALBROWSER.copy(SOCIALBROWSER.session.display);
+                                SOCIALBROWSER.paste();
+                            },
+                        });
+                        arr.push({
+                            label: 'paste Temp Email',
+                            click() {
+                                SOCIALBROWSER.copy(SOCIALBROWSER.session.display + '@' + SOCIALBROWSER.tempMailServer);
+                                SOCIALBROWSER.paste();
+                            },
+                        });
                     }
 
                     if (SOCIALBROWSER.var.core.emails.password) {
