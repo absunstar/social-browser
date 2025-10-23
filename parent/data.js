@@ -745,7 +745,7 @@ module.exports = function init(parent) {
 
     parent.var.core.browser.activated = true;
     parent.onLineActivated = function (obj = {}, callback = () => {}) {
-        let serverURL = 'https://social-browser.com/';
+        let serverURL = 'https://social-browser.com';
       // serverURL = 'http://localhost:60002';
         parent.api
             .fetch(serverURL + '/api/activated-by-online-key', {

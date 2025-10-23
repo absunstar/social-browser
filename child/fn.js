@@ -363,17 +363,17 @@ module.exports = function (child) {
                     win.customSetting.isWhiteSite0 = false;
                     win.customSetting.isWhiteSite = true;
                 }
-                if (!win.customSetting.allowGoogleTranslate) {
-                    win.customSetting.allowGoogleTranslate0 = false;
-                    win.customSetting.allowGoogleTranslate = true;
-                }
+                // if (!win.customSetting.allowGoogleTranslate) {
+                //     win.customSetting.allowGoogleTranslate0 = false;
+                //     win.customSetting.allowGoogleTranslate = true;
+                // }
             } else {
                 if (win.customSetting.isWhiteSite0 === false) {
                     win.customSetting.isWhiteSite = false;
                 }
-                if (win.customSetting.allowGoogleTranslate0 === false) {
-                    win.customSetting.allowGoogleTranslate = false;
-                }
+                // if (win.customSetting.allowGoogleTranslate0 === false) {
+                //     win.customSetting.allowGoogleTranslate = false;
+                // }
             }
         }
 
