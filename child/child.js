@@ -136,10 +136,10 @@ if (child.theme == 'light') {
 if (child.uuid == 'user-file') {
     child.log('Files Working ....');
     setInterval(() => {
-        if (child.save_var_quee.length > 0) {
-            let name = child.save_var_quee.shift();
-            child.save_var_quee = child.save_var_quee.filter((s) => s !== name);
-            child.save_var(name);
+        if (child.saveBrowserVar_quee.length > 0) {
+            let name = child.saveBrowserVar_quee.shift();
+            child.saveBrowserVar_quee = child.saveBrowserVar_quee.filter((s) => s !== name);
+            child.saveBrowserVar(name);
         }
     }, 1000 * 2);
 }

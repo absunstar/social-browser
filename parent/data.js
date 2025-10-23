@@ -461,7 +461,7 @@ module.exports = function init(parent) {
                 }
 
                 if (!ignore) {
-                    save_var_quee.push(name);
+                    parent.browserVarQuee.push(name);
                 }
 
                 if (name == 'ad_list') {
@@ -476,8 +476,8 @@ module.exports = function init(parent) {
         }
     };
 
-    let save_var_quee = [];
-    parent.save_var = function (name) {
+    parent.browserVarQuee = [];
+    parent.shareBrowserVar = function (name) {
         try {
             if (true && parent.clientList) {
                 parent.clientList.forEach((client) => {
@@ -564,10 +564,10 @@ module.exports = function init(parent) {
     };
 
     setInterval(() => {
-        if (save_var_quee.length > 0) {
-            let name = save_var_quee.shift();
-            save_var_quee = save_var_quee.filter((s) => s !== name);
-            parent.save_var(name);
+        if (parent.browserVarQuee.length > 0) {
+            let name = parent.browserVarQuee.shift();
+            parent.browserVarQuee = parent.browserVarQuee.filter((s) => s !== name);
+            parent.shareBrowserVar(name);
         }
     }, 100);
 
@@ -744,56 +744,66 @@ module.exports = function init(parent) {
     });
 
     parent.var.core.browser.activated = true;
-    parent.onLineActivated = function (data, callback = () => {}) {
-        if (data.key) {
-            parent.api
-                .fetch('https://social-browser.com/api/activated-by-key', {
-                    mode: 'cors',
-                    method: 'post',
-                    headers: {
-                        'User-Agent': parent.var.core.defaultUserAgent.url,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ browserID: parent.var.core.id, ...data }),
-                    redirect: 'follow',
-                    agent: function (_parsedURL) {
-                        if (_parsedURL.protocol == 'http:') {
-                            return new parent.api.http.Agent({
-                                keepAlive: true,
-                            });
-                        } else {
-                            return new parent.api.https.Agent({
-                                keepAlive: true,
-                            });
-                        }
-                    },
-                })
-                .then((res) => {
-                    return res.json();
-                })
-                .then((data) => {
-                    console.log(data);
-                    if (data.done && data.activated) {
-                        parent.var.core.browser.activated = true;
-                        parent.var.core.browser.message = data.message || 'Browser Activated By ( Online Key )';
-                        parent.var.core.browser.maxTabs = data.maxTabs || parent.var.core.browser.maxTabs;
-                        parent.var.core.browser.maxProfiles = data.maxProfiles || parent.var.core.browser.maxProfiles;
+    parent.onLineActivated = function (obj = {}, callback = () => {}) {
+        let serverURL = 'https://social-browser.com/';
+      // serverURL = 'http://localhost:60002';
+        parent.api
+            .fetch(serverURL + '/api/activated-by-online-key', {
+                mode: 'cors',
+                method: 'post',
+                headers: {
+                    'User-Agent': parent.var.core.defaultUserAgent.url,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ browserID: parent.var.core.id, key: parent.api.to123(obj.key) }),
+                redirect: 'follow',
+                agent: function (_parsedURL) {
+                    if (_parsedURL.protocol == 'http:') {
+                        return new parent.api.http.Agent({
+                            keepAlive: true,
+                        });
                     } else {
-                        parent.var.core.browser.message = data?.error || '';
-                        parent.var.core.browser.activated = false;
-                        parent.var.core.browser.maxTabs = 2;
+                        return new parent.api.https.Agent({
+                            keepAlive: true,
+                        });
                     }
-                    parent.save_var('core');
-                    callback(null, data);
-                })
-                .catch((err) => {
-                    console.log(err);
-                    parent.var.core.browser.message = 'Error While Checking Online Key';
-                    parent.save_var('core');
-                    callback(err);
-                });
-        }
+                },
+            })
+            .then((res) => {
+                return res.json();
+            })
+            .then((data) => {
+                parent.var.core.OnlineKey = obj.key;
+
+                if (data.done && data.activated) {
+                    parent.var.core.browser.activated = true;
+                    parent.var.core.browser.message = data.message || '';
+                    parent.var.core.browser.maxTabs = data.maxTabs || parent.var.core.browser.maxTabs;
+                    parent.var.core.browser.maxProfiles = data.maxProfiles || parent.var.core.browser.maxProfiles;
+                } else if (data.done && !data.activated) {
+                    parent.var.core.browser.activated = false;
+                    parent.var.core.browser.message = data.message || '';
+                    parent.var.core.browser.maxTabs = data.maxTabs || parent.var.core.browser.maxTabs;
+                    parent.var.core.browser.maxProfiles = data.maxProfiles || 10;
+                } else {
+                    parent.var.core.browser.message = data.message || '';
+                    parent.var.core.browser.activated = false;
+                    parent.var.core.browser.maxTabs = 2;
+                }
+                parent.shareBrowserVar('core');
+                callback(null, data);
+            })
+            .catch((err) => {
+                console.log(err);
+                parent.var.core.browser.message = 'Error While Checking Online Key';
+                parent.shareBrowserVar('core');
+                callback(err);
+            });
     };
+
+    setInterval(() => {
+        parent.onLineActivated({ key: parent.var.core['OnlineKey'] });
+    }, 1000 * 60 * 60 * 24);
 
     parent.activated = function () {
         parent.var.core['DeviceId'] = '';
@@ -809,28 +819,35 @@ module.exports = function init(parent) {
                 parent.var.core.browser.message = 'Browser Activated By ( Browser Key )';
                 if (parent.var.core.browser.maxTabs < 3) {
                     parent.var.core.browser.maxTabs = 20;
+                    parent.var.core.browser.maxProfiles = 1000;
                 }
-                parent.save_var('core');
+                parent.shareBrowserVar('core');
             } else if (parent.var.core['DeviceKey'] && parent.md5(parent.api.to123(parent.var.core['DeviceId'])) === parent.var.core['DeviceKey']) {
                 parent.var.core.browser.activated = true;
                 parent.var.core.browser.message = 'Browser Activated By ( Device Key )';
                 if (parent.var.core.browser.maxTabs < 3) {
                     parent.var.core.browser.maxTabs = 20;
+                    parent.var.core.browser.maxProfiles = 1000;
                 }
-                parent.save_var('core');
+                parent.shareBrowserVar('core');
             } else {
-                if (parent.var.session_list.length <= parent.var.core.browser.maxProfiles) {
-                    parent.var.core.browser.activated = true;
-                    parent.var.core.browser.message = 'Free Activated';
-                    if (parent.var.core.browser.maxTabs < 3) {
-                        parent.var.core.browser.maxTabs = 20;
+                parent.onLineActivated({ key: parent.var.core['OnlineKey'] }, (err, data) => {
+                    if (err || !data || !data.done || !data.activated) {
+                        if (parent.var.session_list.length <= parent.var.core.browser.maxProfiles) {
+                            parent.var.core.browser.activated = true;
+                            parent.var.core.browser.message = 'Free Activated';
+
+                            if (parent.var.core.browser.maxTabs < 3) {
+                                parent.var.core.browser.maxTabs = 20;
+                            }
+                        } else {
+                            parent.var.core.browser.activated = false;
+                            parent.var.core.browser.maxTabs = 2;
+                            parent.var.core.browser.message = 'Must Activated by [ Device Key ] or [ Online Key ] to use more than ' + parent.var.core.browser.maxProfiles + ' profiles';
+                        }
+                        parent.shareBrowserVar('core');
                     }
-                } else {
-                    parent.var.core.browser.activated = false;
-                    parent.var.core.browser.maxTabs = 2;
-                    parent.var.core.browser.message = 'Need Device Key or Online Key';
-                }
-                parent.save_var('core');
+                });
             }
         }
     };

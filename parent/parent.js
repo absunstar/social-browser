@@ -151,7 +151,7 @@ module.exports = function init(parent) {
         parent.applay('extension_list');
     };
     parent.applay = function (name) {
-        parent.save_var(name);
+        parent.shareBrowserVar(name);
     };
 
     require(parent.path.join(parent.dir, 'child', 'shared.js'))(parent);

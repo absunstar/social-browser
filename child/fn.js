@@ -194,13 +194,13 @@ module.exports = function (child) {
     child.set_var = function (name, currentContent, ignore) {
         try {
             child.parent.var[name] = currentContent;
-            child.save_var_quee.push(name);
+            child.saveBrowserVar_quee.push(name);
         } catch (error) {
             child.log(error);
         }
     };
-    child.save_var_quee = [];
-    child.save_var = function (name) {
+    child.saveBrowserVar_quee = [];
+    child.saveBrowserVar = function (name) {
         if (!name || name.indexOf('$') !== -1) {
             return;
         }

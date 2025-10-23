@@ -426,7 +426,7 @@ module.exports = function init(parent) {
                             ...message.cookie,
                         });
                     }
-                    parent.save_var(session1);
+                    parent.shareBrowserVar(session1);
                     break;
                 case '[cookies-updated]':
                     let session2 = '__cookies_' + message.partition.replace(':', '_') + '_list';
@@ -436,7 +436,7 @@ module.exports = function init(parent) {
                             parent.var[session2][i] = message.cookie;
                         }
                     });
-                    parent.save_var(session2);
+                    parent.shareBrowserVar(session2);
                     break;
                 case '[cookies-deleted]':
                     let session3 = '__cookies_' + message.partition.replace(':', '_') + '_list';
@@ -447,7 +447,7 @@ module.exports = function init(parent) {
                             delete parent.var[session3][i];
                         }
                     });
-                    parent.save_var(session3);
+                    parent.shareBrowserVar(session3);
                     break;
                 case '[cookies-clear]':
                     let session4 = '__cookies_' + message.partition.replace(':', '_') + '_list';
@@ -457,7 +457,7 @@ module.exports = function init(parent) {
                             delete parent.var[session4][i];
                         }
                     });
-                    parent.save_var(session4);
+                    parent.shareBrowserVar(session4);
                     break;
                 case '[add-fa]':
                     let fa = message.fa;

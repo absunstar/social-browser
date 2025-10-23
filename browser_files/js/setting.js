@@ -30,7 +30,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         SOCIALBROWSER.openNewPopup(url);
     };
     SOCIALBROWSER.onVarUpdated = function (name, data) {
-        if (name == 'session_list' || name == 'proxy_list' || name == 'extension_list' || name == 'googleExtensionList' || name == 'scriptList') {
+        if (name == 'core' || name == 'session_list' || name == 'proxy_list' || name == 'extension_list' || name == 'googleExtensionList' || name == 'scriptList') {
             $scope.setting[name] = data;
             $scope.$applyAsync();
         }
@@ -1061,14 +1061,12 @@ app.controller('mainController', ($scope, $http, $timeout) => {
             window.location.reload();
         }, 1000 * 5);
     };
-    $scope.activatedByKey = function () {
+    $scope.activatedByOnlineKey = function () {
         $scope.busy = true;
         $http({
             method: 'POST',
-            url: '/api/activated-by-key',
-            data: {
-                key: $scope.setting.core.OnlineKey,
-            },
+            url: '/api/activated-by-online-key',
+            data: { key: $scope.setting.core.OnlineKey },
         })
             .then(function (response) {
                 $scope.busy = false;

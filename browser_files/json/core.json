@@ -1,7 +1,7 @@
 {
     "port": 60080,
     "enabled": true,
-    "version": "2025.10.18",
+    "version": "2025.10.25",
     "prefix": "SB_10_",
     "flags": "",
     "brand": "Social Browser",

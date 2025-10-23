@@ -127,17 +127,17 @@ module.exports = function init(parent) {
         });
     });
 
-    parent.api.onPOST('/api/activated-by-key', (req, res) => {
-        parent.onLineActivated(req.data, (err, data) => {
+    parent.api.onPOST('/api/activated-by-online-key', (req, res) => {
+        parent.onLineActivated({ key: req.data.key }, (err, data) => {
             res.json({
                 done: true,
                 browser: parent.var.core.browser,
-                error: err?.message,
                 data: data,
+                error: err?.message,
             });
         });
     });
-    
+
     parent.api.onGET('/api/cookies', (req, res) => {
         parent.getCookiesByPartition(req.query.partition).then((cookies) => {
             res.json({
