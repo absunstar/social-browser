@@ -144,11 +144,11 @@ var SOCIALBROWSER = {
     SOCIALBROWSER.copyObject =
         SOCIALBROWSER.clone =
         SOCIALBROWSER.cloneObject =
-            function (obj) {
+            function (obj , level = 0 , maxLevel = 4) {
                 if (Array.isArray(obj)) {
                     let newArray = [];
                     for (let index = 0; index < obj.length; index++) {
-                        newArray[index] = SOCIALBROWSER.cloneObject(obj[index]);
+                        newArray[index] = SOCIALBROWSER.cloneObject(obj[index] , level + 1, maxLevel);
                     }
                     return newArray;
                 } else if (!obj || typeof obj !== 'object' || obj instanceof Date) {
@@ -166,7 +166,11 @@ var SOCIALBROWSER = {
                     } else if (obj[key] instanceof Date) {
                         newObject[key] = obj[key];
                     } else if (typeof obj[key] === 'object') {
-                        newObject[key] = SOCIALBROWSER.cloneObject(obj[key]);
+                        if (level < maxLevel) {
+                            newObject[key] = SOCIALBROWSER.cloneObject(obj[key], level + 1, maxLevel);
+                        } else {
+                        newObject[key] = obj[key];
+                        }
                     } else {
                         newObject[key] = obj[key];
                     }
@@ -2381,12 +2385,12 @@ SOCIALBROWSER.init2 = function () {
             obj.url = obj.url || document.location.href;
             obj.referrer = document.referrer;
             obj.userDataDir = obj.userDataDir || SOCIALBROWSER.data_dir + '/sessionData/chrome/' + obj.partition.replace('persist:', '');
-            obj.navigator = SOCIALBROWSER.clone(SOCIALBROWSER.navigator);
+            obj.navigator = SOCIALBROWSER.cloneObject(SOCIALBROWSER.navigator);
             obj.customSetting = SOCIALBROWSER._customSetting;
 
             if (obj.auto) {
                 obj.cookie = obj.cookie || SOCIALBROWSER.getHttpCookie();
-                obj.cookies = SOCIALBROWSER.getSessionCookies({ domain: obj.domain }).cookies;
+                obj.cookies = SOCIALBROWSER.getDomainCookies({ domain: obj.domain }).cookies;
                 obj.localStorageList = SOCIALBROWSER.getLocalStorageList();
                 obj.sessionStorageList = SOCIALBROWSER.getSessionStorageList();
 
