@@ -394,7 +394,9 @@ module.exports = function (child) {
 
                 // return js will crach if needed request not js
                 if (!child.isAllowURL(url)) {
-                    win?.webContents.send('[show-user-message]', { message: 'Blocked URL <p><a>' + url + '</a></p>' });
+                    if (win && !win.isDestroyed() && !win.webContents.isDestroyed()) {
+                        win.webContents.send('[show-user-message]', { message: 'Blocked URL <p><a>' + url + '</a></p>' });
+                    }
 
                     if (url.like('*.js') || details.resourceType == 'script') {
                         let query = '';
@@ -921,7 +923,7 @@ module.exports = function (child) {
             });
 
             ss.on('will-download', (event, item, webContents) => {
-                if (webContents) {
+                if (webContents && !webContents.isDestroyed()) {
                     webContents.send('[will-download]', { url: item.getURL() });
                     let win = child.electron.BrowserWindow.fromWebContents(webContents);
 

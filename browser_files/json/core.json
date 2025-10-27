@@ -1,8 +1,8 @@
 {
     "port": 60080,
     "enabled": true,
-    "version": "2025.10.25",
-    "prefix": "SB_10_",
+    "version": "2025.11.01",
+    "prefix": "SB_11_",
     "flags": "",
     "brand": "Social Browser",
     "pinCode": "ABCD",
@@ -12,7 +12,6 @@
     "default_page": "https://www.google.com/",
     "autoClearCacheStorage": false,
     "password": "",
-    "max_tabs": 20,
     "emails": {
         "enabled": true,
         "domain": "social-browser.com"

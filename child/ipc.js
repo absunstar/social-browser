@@ -22,27 +22,43 @@ module.exports = function init(child) {
     };
 
     child.sendToWebContents = function (webContents, channel, data) {
-        webContents.send(channel, data);
+        if (webContents && !webContents.isDestroyed()) {
+            webContents.send(channel, data);
+        }
         webContents.mainFrame.frames.forEach((f) => {
-            f.send(channel, data);
-            f.frames.forEach((f2) => {
-                f2.send(channel, data);
-                f2.frames.forEach((f3) => {
-                    f3.send(channel, data);
-                    f3.frames.forEach((f4) => {
-                        f4.send(channel, data);
-                        f4.frames.forEach((f5) => {
-                            f5.send(channel, data);
-                            f5.frames.forEach((f6) => {
-                                f6.send(channel, data);
-                                f6.frames.forEach((f7) => {
-                                    f7.send(channel, data);
+            if (f && !f.isDestroyed()) {
+                f.send(channel, data);
+                f.frames.forEach((f2) => {
+                    if (f2 && !f2.isDestroyed()) {
+                        f2.send(channel, data);
+                        f2.frames.forEach((f3) => {
+                            if (f3 && !f3.isDestroyed()) {
+                                f3.send(channel, data);
+                                f3.frames.forEach((f4) => {
+                                    if (f4 && !f4.isDestroyed()) {
+                                        f4.send(channel, data);
+                                        f4.frames.forEach((f5) => {
+                                            if (f5 && !f5.isDestroyed()) {
+                                                f5.send(channel, data);
+                                                f5.frames.forEach((f6) => {
+                                                    if (f6 && !f6.isDestroyed()) {
+                                                        f6.send(channel, data);
+                                                        f6.frames.forEach((f7) => {
+                                                            if (f7 && !f7.isDestroyed()) {
+                                                                f7.send(channel, data);
+                                                            }
+                                                        });
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
                                 });
-                            });
+                            }
                         });
-                    });
+                    }
                 });
-            });
+            }
         });
     };
 
@@ -305,8 +321,6 @@ module.exports = function init(child) {
                     obj.fnList.push(key);
                 }
             }
-        } else {
-            console.log('[window] currentWindow.isDestroyed()', event.sender);
         }
 
         event.returnValue = obj;
@@ -1108,7 +1122,7 @@ module.exports = function init(child) {
 
         if (child.getAllWindows().some((w) => w.customSetting.windowType == 'main')) {
             child.getAllWindows().forEach((win) => {
-                if (win.customSetting.windowType == 'main' && !win.isDestroyed()) {
+                if (win.customSetting.windowType == 'main' && !win.isDestroyed() && !win.webContents.isDestroyed()) {
                     win.webContents.send('[open new tab]', data);
                 }
             });
@@ -1210,7 +1224,7 @@ module.exports = function init(child) {
             child.sendMessage({ type: '[window-action]', data: data });
         } else if (data.windowID) {
             let win = child.electron.BrowserWindow.fromId(data.windowID);
-            if (win) {
+            if (win && !win.isDestroyed() && win.webContents && !win.webContents.isDestroyed()) {
                 win.webContents.send('[window-action]', data);
             }
         }
@@ -1367,7 +1381,7 @@ module.exports = function init(child) {
         } else if (data.name == '[show-browser-setting]') {
             if (child.getAllWindows().some((w) => w.customSetting.windowType == 'main')) {
                 child.getAllWindows().forEach((win) => {
-                    if (win.customSetting.windowType == 'main' && !win.isDestroyed()) {
+                    if (win.customSetting.windowType == 'main' && !win.isDestroyed() && !win.webContents.isDestroyed()) {
                         win.webContents.send('[open new tab]', {
                             url: 'http://127.0.0.1:60080/setting',
                             session: { name: 'setting', display: 'setting' },

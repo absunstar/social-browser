@@ -144,11 +144,11 @@ var SOCIALBROWSER = {
     SOCIALBROWSER.copyObject =
         SOCIALBROWSER.clone =
         SOCIALBROWSER.cloneObject =
-            function (obj , level = 0 , maxLevel = 4) {
+            function (obj, level = 0, maxLevel = 4) {
                 if (Array.isArray(obj)) {
                     let newArray = [];
                     for (let index = 0; index < obj.length; index++) {
-                        newArray[index] = SOCIALBROWSER.cloneObject(obj[index] , level + 1, maxLevel);
+                        newArray[index] = SOCIALBROWSER.cloneObject(obj[index], level + 1, maxLevel);
                     }
                     return newArray;
                 } else if (!obj || typeof obj !== 'object' || obj instanceof Date) {
@@ -169,7 +169,7 @@ var SOCIALBROWSER = {
                         if (level < maxLevel) {
                             newObject[key] = SOCIALBROWSER.cloneObject(obj[key], level + 1, maxLevel);
                         } else {
-                        newObject[key] = obj[key];
+                            newObject[key] = obj[key];
                         }
                     } else {
                         newObject[key] = obj[key];
@@ -495,6 +495,13 @@ SOCIALBROWSER.openNewPopup = function (options = {}) {
         ...options,
     });
     return true;
+};
+
+SOCIALBROWSER.selectFile = function (options) {
+    return SOCIALBROWSER.ipcSync('[select-file]', options);
+};
+SOCIALBROWSER.selectFolder = function () {
+    return SOCIALBROWSER.ipcSync('[select-folder]');
 };
 
 SOCIALBROWSER.init2 = function () {
@@ -1887,7 +1894,7 @@ SOCIALBROWSER.init2 = function () {
                     return;
                 }
                 clearTimeout(SOCIALBROWSER.showUserMessageTimeout);
-                let div = document.querySelector('#__userInfo');
+                let div = document.querySelector('#__userMessageBox');
                 if (msg && msg.trim()) {
                     let length = window.innerWidth / 8;
                     if (msg.length > length) {
@@ -2236,7 +2243,7 @@ SOCIALBROWSER.init2 = function () {
 
                 SOCIALBROWSER.log(msg);
                 clearTimeout(SOCIALBROWSER.alertTimeout);
-                let div = document.querySelector('#__alertBox');
+                let div = SOCIALBROWSER.$('#__alertBox');
                 if (div) {
                     div.innerHTML = SOCIALBROWSER.policy.createHTML(msg.replace(/\n/g, '<br>'));
                     div.style.display = 'block';
@@ -2287,7 +2294,7 @@ SOCIALBROWSER.init2 = function () {
             return SOCIALBROWSER.ipcSync('[set-http-cookies]', obj);
         };
         SOCIALBROWSER.getDomainCookies = function (obj = {}) {
-            obj.cookieDomain = obj.cookieDomain || obj.domain|| SOCIALBROWSER.domain;
+            obj.cookieDomain = obj.cookieDomain || obj.domain || SOCIALBROWSER.domain;
             obj.partition = obj.partition || SOCIALBROWSER.partition;
             obj.url = obj.url || document.location.href;
             return SOCIALBROWSER.ipcSync('[get-domain-cookies]', obj);

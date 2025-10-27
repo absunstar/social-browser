@@ -240,24 +240,42 @@ function showSettingMenu() {
     SOCIALBROWSER.menuList.push({
         type: 'separator',
     });
-    let tools = {
+    let freeTools = {
         label: 'Free Social Tools',
         click: () => {
             ipc('[open new popup]', {
                 show: true,
                 url: 'https://tools.social-browser.com/tools',
-                title: 'Social Browser Tools',
+                title: 'Free Social Tools',
                 partition: 'persist:social',
                 center: true,
                 vip: true,
                 alwaysOnTop: true,
-                maximize: false,
+                maximize: true,
             });
         },
-        iconURL: 'http://127.0.0.1:60080/images/tools.png',
+        iconURL: 'http://127.0.0.1:60080/images/free-tools.png',
     };
 
-    SOCIALBROWSER.menuList.push(tools);
+    SOCIALBROWSER.menuList.push(freeTools);
+    let vipTools = {
+        label: 'VIP Social Tools',
+        click: () => {
+            ipc('[open new popup]', {
+                show: true,
+                url: 'https://vip.social-browser.com',
+                title: 'VIP Social Tools',
+                partition: 'persist:social',
+                center: true,
+                vip: true,
+                alwaysOnTop: true,
+                maximize: true,
+            });
+        },
+        iconURL: 'http://127.0.0.1:60080/images/vip-tools.png',
+    };
+
+    SOCIALBROWSER.menuList.push(vipTools);
     SOCIALBROWSER.menuList.push({
         type: 'separator',
     });

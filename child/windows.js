@@ -9,13 +9,10 @@ module.exports = function (child) {
         height: 84 + 30,
         height2: 72 + 30,
     };
-  
-
-   
 
     child.showAddressbarWindow = function (op, show = true) {
-        let win = child.getAllWindows().find((w) => w && w.customSetting.windowType === 'main' );
-       
+        let win = child.getAllWindows().find((w) => w && w.customSetting.windowType === 'main');
+
         if (!win || win.isDestroyed()) {
             return;
         }
@@ -67,8 +64,8 @@ module.exports = function (child) {
     };
 
     child.showProfilesWindow = function (show = true) {
-       let win = child.getAllWindows().find((w) => w && w.customSetting.windowType === 'main' );
-     
+        let win = child.getAllWindows().find((w) => w && w.customSetting.windowType === 'main');
+
         if (!win || win.isDestroyed()) {
             return;
         }
@@ -414,14 +411,12 @@ module.exports = function (child) {
                 return true;
             };
 
-            win.webContents.on('did-frame-finish-load', (event, isMainFrame , frameProcessId , frameRoutingId ) => {
-                
+            win.webContents.on('did-frame-finish-load', (event, isMainFrame, frameProcessId, frameRoutingId) => {
                 //  win.injectCSS(child.parent.injectedCSS);
                 // const frame = child.electron.webFrameMain.fromId(frameProcessId, frameRoutingId)
                 //   frame.executeJavaScript(`document.body.insertAdjacentHTML('beforeend', \`${child.parent.injectedHTML}\`);`).catch((err) => {
                 //     child.log(err);
                 // });
-
             });
         }
 
@@ -475,8 +470,6 @@ module.exports = function (child) {
         if (!child.window) {
             child.window = win;
         }
-
-      
 
         if (win.customSetting.center) {
             win.center();
@@ -1012,6 +1005,9 @@ module.exports = function (child) {
         });
 
         win.webContents.on('did-start-navigation', (e) => {
+            if (e.url.like('data:*|about:*|chrome:*|file:*|devtools:*')) {
+                return;
+            }
             console.log('did-start-navigation : MainFrame=' + e.isMainFrame + ' : ' + e.url);
 
             child.handleCustomSeting(e.url, win, e.isMainFrame);
@@ -1022,11 +1018,11 @@ module.exports = function (child) {
             child.log('will-redirect : ', url);
             child.handleCustomSeting(url, win, e.isMainFrame);
 
-            if ( url.like('https://accounts.google.com*') && e.isMainFrame && win.customSetting.iframe && win.customSetting.windowType === 'view') {
+            if (url.like('https://accounts.google.com*') && e.isMainFrame && win.customSetting.iframe && win.customSetting.windowType === 'view') {
                 e.preventDefault();
-                let old_customeSetting = {...win.customSetting}
+                let old_customeSetting = { ...win.customSetting };
 
-                delete old_customeSetting.$defaultUserAgent
+                delete old_customeSetting.$defaultUserAgent;
                 delete old_customeSetting.defaultUserAgent;
                 delete old_customeSetting.userAgentURL;
                 delete old_customeSetting.$userAgentURL;
@@ -1034,7 +1030,31 @@ module.exports = function (child) {
                 let newWin = child.createNewWindow({
                     old_customeSetting,
                     parent: win,
-                    defaultUserAgent: {"url":"Mozilla/5.0 (MacIntel) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.2038.57  Safari/537.36","device":{"name":"PC","platformList":[{"name":"Windows NT 6.1; WOW64","code":"Win32"},{"name":"Windows NT 10.0; Win64; x64","code":"Win32"},{"name":"Windows NT 11.0; Win64; x64","code":"Win32"},{"name":"Windows NT 10.0","code":"Win32"},{"name":"Windows NT 11.0","code":"Win32"},{"name":"MacIntel","code":"MacIntel"},{"name":"Macintosh; Intel Mac OS X 13_0","code":"MacIntel"},{"name":"Macintosh; Intel Mac OS X 14_0","code":"MacIntel"},{"name":"Macintosh; Intel Mac OS X 15_0","code":"MacIntel"},{"name":"Macintosh; Intel Mac OS X 16_0","code":"MacIntel"},{"name":"Linux x86_64","code":"Linux x86_64"},{"name":"X11; Ubuntu; Linux x86_64","code":"Linux x86_64"}],"screenList":["2560*1440","1920*1080","1792*1120","1680*1050","1600*900","1536*864","1440*900","1366*768","1280*800","1280*720","1024*768","1024*600"]},"engine":{"name":"Opera"},"platform":"MacIntel","vendor":"Apple Computer, Inc.","name":"Opera PC MacIntel"},
+                    defaultUserAgent: {
+                        url: 'Mozilla/5.0 (MacIntel) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.2038.57  Safari/537.36',
+                        device: {
+                            name: 'PC',
+                            platformList: [
+                                { name: 'Windows NT 6.1; WOW64', code: 'Win32' },
+                                { name: 'Windows NT 10.0; Win64; x64', code: 'Win32' },
+                                { name: 'Windows NT 11.0; Win64; x64', code: 'Win32' },
+                                { name: 'Windows NT 10.0', code: 'Win32' },
+                                { name: 'Windows NT 11.0', code: 'Win32' },
+                                { name: 'MacIntel', code: 'MacIntel' },
+                                { name: 'Macintosh; Intel Mac OS X 13_0', code: 'MacIntel' },
+                                { name: 'Macintosh; Intel Mac OS X 14_0', code: 'MacIntel' },
+                                { name: 'Macintosh; Intel Mac OS X 15_0', code: 'MacIntel' },
+                                { name: 'Macintosh; Intel Mac OS X 16_0', code: 'MacIntel' },
+                                { name: 'Linux x86_64', code: 'Linux x86_64' },
+                                { name: 'X11; Ubuntu; Linux x86_64', code: 'Linux x86_64' },
+                            ],
+                            screenList: ['2560*1440', '1920*1080', '1792*1120', '1680*1050', '1600*900', '1536*864', '1440*900', '1366*768', '1280*800', '1280*720', '1024*768', '1024*600'],
+                        },
+                        engine: { name: 'Opera' },
+                        platform: 'MacIntel',
+                        vendor: 'Apple Computer, Inc.',
+                        name: 'Opera PC MacIntel',
+                    },
                     webPreferences: undefined,
                     iframe: false, // Must , if not set will be unsafty browser
                     skipTaskbar: false,
@@ -1102,7 +1122,7 @@ module.exports = function (child) {
                 if (win.customSetting.allowOpenExternal) {
                     child.openExternal(e.url);
                     win.webContents.send('[show-user-message]', { message: 'Open External URL  <p><a>' + e.url + '</a></p>' });
-                }else{
+                } else {
                     win.webContents.send('[show-user-message]', { message: 'Open External URL  <p><a>' + e.url + '</a></p>' });
                 }
                 return;

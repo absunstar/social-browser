@@ -269,7 +269,7 @@ child.electron.app.whenReady().then(() => {
     };
     child.sendToMainWindow = function (...args) {
         child.getAllWindows().forEach((win) => {
-            if (win && !win.isDestroyed() && win.webContents && win.customSetting && win.customSetting.windowType == 'main') {
+            if (win && win.customSetting && win.customSetting.windowType == 'main' && !win.isDestroyed() && win.webContents && !win.webContents.isDestroyed()) {
                 win.webContents.send(...args);
             }
         });
@@ -277,7 +277,7 @@ child.electron.app.whenReady().then(() => {
 
     child.sendToAllWindows = function (...args) {
         child.getAllWindows().forEach((win) => {
-            if (win && !win.isDestroyed() && win.webContents) {
+            if (win && !win.isDestroyed() && win.webContents && !win.webContents.isDestroyed()) {
                 win.webContents.send(...args);
             }
         });

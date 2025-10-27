@@ -774,6 +774,7 @@ module.exports = function init(parent) {
             })
             .then((data) => {
                 parent.var.core.OnlineKey = obj.key;
+                parent.var.core.keyInfo = data;
 
                 if (data.done && data.activated) {
                     parent.var.core.browser.activated = true;

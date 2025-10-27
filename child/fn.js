@@ -353,7 +353,7 @@ module.exports = function (child) {
 
     child.cloudFlareURLs = [];
     child.handleCustomSeting = function (url, win, isMainFrame = false) {
-        if (url == 'about:blank' || url == 'about:srcdoc') {
+        if (url.like('data:*|about:*|chrome:*|file:*|devtools:*')) {
             return;
         }
 
@@ -565,7 +565,9 @@ module.exports = function (child) {
             if (!win.customSetting.$cloudFlare) {
                 win.customSetting.$cloudFlare = true;
                 win.customSetting.iframe = true;
-                win.webContents.send('[show-user-message]', { message: 'Cloudflare Detected ' });
+                if (!win.webContents.isDestroyed()) {
+                    win.webContents.send('[show-user-message]', { message: 'Cloudflare Detected ' });
+                }
             }
         } else if (url.like('*cloudflare.com*|*__cf_chl_rt_tk*') && !win.customSetting.$cloudFlare) {
             child.cloudFlareURLs.push({ url: currentHostname });
@@ -573,7 +575,9 @@ module.exports = function (child) {
             win.customSetting.iframe = true;
             win.customSetting.$currrentURL = currentURL;
             reload = true;
-            win.webContents.send('[show-user-message]', { message: 'Cloudflare Detected ' });
+            if (!win.webContents.isDestroyed()) {
+                win.webContents.send('[show-user-message]', { message: 'Cloudflare Detected ' });
+            }
         } else {
             if (win.customSetting.$cloudFlare !== win.customSetting.cloudFlare) {
                 if (win.customSetting.$currrentURL !== currentURL) {
