@@ -329,16 +329,19 @@ module.exports = function (child) {
         }
 
         if ((handleCookies = true)) {
+            let domainName = child.url.parse(setting.url).hostname.split('.');
+            domainName = domainName.slice(domainName.length - 2).join('.');
+
             if (Array.isArray(setting.cookieList) && setting.cookieList.length > 0) {
                 setting.cookieList.forEach((cookieObject, index) => {
-                    setting.cookieList[index].domain = setting.cookieList[index].domain || child.url.parse(setting.url).hostname;
+                    setting.cookieList[index].domain = setting.cookieList[index].domain || domainName;
                     setting.cookieList[index].partition = setting.cookieList[index].partition || setting.partition;
                 });
             }
 
             if (setting.cookieObject) {
                 setting.cookieList = [];
-                setting.cookieObject.domain = setting.cookieObject.domain || child.url.parse(setting.url).hostname;
+                setting.cookieObject.domain = setting.cookieObject.domain || domainName;
                 setting.cookieObject.partition = setting.cookieObject.partition || setting.partition;
                 setting.cookieObject.mode = setting.cookieObject.mode || 0;
                 setting.cookieList.push(setting.cookieObject);
@@ -347,7 +350,7 @@ module.exports = function (child) {
             if (setting.cookie) {
                 setting.cookieList = [];
                 let cookieObject = { cookie: setting.cookie, mode: 0 };
-                cookieObject.domain = child.url.parse(setting.url).hostname;
+                cookieObject.domain = domainName;
                 cookieObject.partition = setting.partition;
                 setting.cookieList.push(cookieObject);
             }
