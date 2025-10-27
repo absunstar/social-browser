@@ -2669,6 +2669,8 @@ SOCIALBROWSER.init2 = function () {
                 },
             });
             SOCIALBROWSER.electron.clipboard = SOCIALBROWSER.clipboard;
+        }else{
+            SOCIALBROWSER.clipboard = SOCIALBROWSER.electron.clipboard
         }
 
         SOCIALBROWSER.remote = {
