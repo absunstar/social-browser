@@ -863,17 +863,18 @@ SOCIALBROWSER.showWindowsMenu = function () {
     SOCIALBROWSER.menuList.push({
         type: 'separator',
     });
-    SOCIALBROWSER.menuList.push({
-        label: 'Open URL in  [ Google - Chrome Browser ] ',
-        sublabel: SOCIALBROWSER.getCurrentTabInfo().url,
-        iconURL: 'http://127.0.0.1:60080/images/chrome.png',
-        click: () => {
-            ipc('[window-action]', { name: 'open-in-chrome' });
-        },
-    });
+
+    // SOCIALBROWSER.menuList.push({
+    //     label: 'Open URL in  [ Chrome Browser ] ',
+    //     sublabel: SOCIALBROWSER.getCurrentTabInfo().url,
+    //     iconURL: 'http://127.0.0.1:60080/images/chrome.png',
+    //     click: () => {
+    //         ipc('[window-action]', { name: 'open-in-chrome' });
+    //     },
+    // });
 
     SOCIALBROWSER.menuList.push({
-        label: 'Open URL in  [ Google - Chrome Browser ] ( Shared Cookies and User Data )',
+        label: 'Open URL in  [ Chrome Browser ] ( Shared Cookies , User Data , Extentions ) ',
         sublabel: SOCIALBROWSER.getCurrentTabInfo().url,
         iconURL: 'http://127.0.0.1:60080/images/chrome.png',
         click: () => {

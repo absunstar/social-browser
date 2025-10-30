@@ -4,6 +4,8 @@ module.exports = function (child) {
     child.allowSessionHandle = false;
 
     child.loadGoogleExtension = function (extensionInfo) {
+        console.log('Load Google Extension', extensionInfo);
+        return true;
         child.session_name_list.forEach((sessionInfo) => {
             let session = child.electron.session.fromPartition(sessionInfo.name) || child.electron.session.defaultSession;
             if (session.isPersistent()) {
@@ -19,6 +21,7 @@ module.exports = function (child) {
         });
     };
     child.removeGoogleExtension = function (extension) {
+        return true;
         child.session_name_list.forEach((sessionInfo) => {
             let session = child.electron.session.fromPartition(sessionInfo.name) || child.electron.session.defaultSession;
             if (session.isPersistent()) {
@@ -649,11 +652,12 @@ module.exports = function (child) {
             });
 
             ss.webRequest.onHeadersReceived(filter, function (details, callback) {
+                let statusLine = details.statusLine;
                 if (child.parent.var.core.enginOFF) {
                     callback({
                         cancel: false,
                         requestHeaders: details.requestHeaders,
-                        statusLine: details.statusLine,
+                        statusLine: statusLine,
                     });
                     return;
                 }
@@ -678,7 +682,7 @@ module.exports = function (child) {
                         responseHeaders: {
                             ...details.responseHeaders,
                         },
-                        statusLine: details.statusLine,
+                        statusLine: statusLine,
                     });
                     return;
                 }
@@ -688,7 +692,7 @@ module.exports = function (child) {
                         responseHeaders: {
                             ...details.responseHeaders,
                         },
-                        statusLine: details.statusLine,
+                        statusLine: statusLine,
                     });
                     return;
                 }
@@ -759,15 +763,27 @@ module.exports = function (child) {
 
                     details.responseHeaders['Access-Control-Allow-Private-Network'.toLowerCase()] = 'true';
                     details.responseHeaders['Access-Control-Allow-Credentials'.toLowerCase()] = 'true';
-                    details.responseHeaders['Access-Control-Allow-Methods'.toLowerCase()] = a_Methods || 'POST,GET,DELETE,PUT,OPTIONS,VIEW,HEAD,CONNECT,TRACE';
-                    details.responseHeaders['Access-Control-Allow-Headers'.toLowerCase()] =
-                        a_Headers || 'Authorization ,Access-Control-Allow-Headers, Access-Control-Request-Method, Access-Control-Request-Headers,Origin, X-Requested-With, Content-Type, Accept';
 
-                    if (a_orgin) {
-                        details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = a_orgin;
+                    if (win && win.customSetting && win.customSetting.allowCrossOrigin) {
+                        if(details.method.like('options')){
+                            statusLine = '200';
+                        }
+                        details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = ['*'];
+                        details.responseHeaders['Access-Control-Allow-Methods'.toLowerCase()] = 'POST,GET,DELETE,PUT,OPTIONS,VIEW,HEAD,CONNECT,TRACE';
+                        details.responseHeaders['Access-Control-Allow-Headers'.toLowerCase()] =
+                            'Authorization ,Access-Control-Allow-Headers, Access-Control-Request-Method, Access-Control-Request-Headers,Origin, X-Requested-With, Content-Type, Accept, Content-Length, Accept-Encoding, X-CSRF-Token';
                     } else {
-                        details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = [details['referrer']] || [details['referer']] || ['*'];
+                        details.responseHeaders['Access-Control-Allow-Methods'.toLowerCase()] = a_Methods || 'POST,GET,DELETE,PUT,OPTIONS,VIEW,HEAD,CONNECT,TRACE';
+                        details.responseHeaders['Access-Control-Allow-Headers'.toLowerCase()] =
+                            a_Headers || 'Authorization ,Access-Control-Allow-Headers, Access-Control-Request-Method, Access-Control-Request-Headers,Origin, X-Requested-With, Content-Type, Accept';
+
+                        if (a_orgin) {
+                            details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = a_orgin;
+                        } else {
+                            details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = [details['referrer']] || [details['referer']] || ['*'];
+                        }
                     }
+
                     if (a_expose) {
                         details.responseHeaders['Access-Control-Expose-Headers'.toLowerCase()] = a_expose;
                     }
@@ -866,7 +882,7 @@ module.exports = function (child) {
                         responseHeaders: {
                             ...details.responseHeaders,
                         },
-                        statusLine: details.statusLine,
+                        statusLine: statusLine,
                     });
                     return;
                 }
@@ -882,7 +898,7 @@ module.exports = function (child) {
                     responseHeaders: {
                         ...details.responseHeaders,
                     },
-                    statusLine: details.statusLine,
+                    statusLine:statusLine,
                 });
             });
 

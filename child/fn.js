@@ -78,16 +78,17 @@ module.exports = function (child) {
                 cookie.sameSite = 'lax';
             }
             child.log('Cookie Adding', obj.partition, cookie);
-            ss.cookies.remove(cookie.url, cookie.name).then(() => {
-                ss.cookies
-                    .set(cookie)
-                    .then(() => {
-                        child.log('Cookie Added', obj.partition, cookie);
-                    })
-                    .catch((error) => {
-                        child.log(error);
-                    });
-            });
+            ss.cookies
+                .set(cookie)
+                .then(() => {
+                    child.log('Cookie Added', obj.partition, cookie);
+                })
+                .catch((error) => {
+                    child.log(error);
+                });
+            // ss.cookies.remove(cookie.url, cookie.name).then(() => {
+
+            // });
         });
     };
     child.openExternal = function (link) {
@@ -736,6 +737,8 @@ module.exports = function (child) {
 
     child.openInChrome = async function (obj) {
         try {
+            child.log('child.openInChrome', obj.url);
+
             obj.browserPath = obj.browserPath || child.path.join('C:', 'Program Files', 'Google', 'Chrome', 'Application', 'chrome.exe');
 
             if (!child.api.isFileExistsSync(obj.browserPath)) {
@@ -743,28 +746,45 @@ module.exports = function (child) {
             }
 
             obj.args = obj.args || ['--start-maximized', '--no-sandbox', '--disable-blink-features=AutomationControlled'];
+            if (child.puppeteerBrowser) {
+                child.puppeteerBrowser.$exists = true;
+            }
 
-            const puppeteer = require('puppeteer-core');
-            const browser = await puppeteer.launch({
-                userDataDir: obj.userDataDir,
-                executablePath: obj.browserPath,
-                headless: obj.headless || false,
-                pipe: true,
-                enableExtensions: true,
-                defaultViewport: null,
-                args: obj.args,
-            });
+            child.puppeteer = child.puppeteer || require('puppeteer-core');
+            child.puppeteerBrowser =
+                child.puppeteerBrowser ||
+                (await child.puppeteer.launch({
+                    userDataDir: obj.userDataDir,
+                    executablePath: obj.browserPath,
+                    headless: obj.headless || false,
+                    pipe: true,
+                    enableExtensions: true,
+                    defaultViewport: null,
+                    args: obj.args,
+                }));
 
-            if (browser && browser.setMaxListeners) {
-                browser.setMaxListeners(30);
+            if (child.puppeteerBrowser && child.puppeteerBrowser.setMaxListeners) {
+                child.puppeteerBrowser.setMaxListeners(30);
             }
 
             if (Array.isArray(obj.cookies) && obj.cookies.length > 0) {
                 console.log('set New Chrome Cookie Count : ' + obj.cookies.length);
-                await browser.setCookie(...obj.cookies);
+                await child.puppeteerBrowser.setCookie(...obj.cookies);
+            }
+            if (!child.puppeteerBrowser.$exists) {
+                for (let index = 0; index < child.parent.var.googleExtensionList.length; index++) {
+                    const ext = child.parent.var.googleExtensionList[index];
+                    await child.puppeteerBrowser.installExtension(ext.path);
+                }
             }
 
-            const [page] = await browser.pages();
+            let page = null;
+
+            if (child.puppeteerBrowser.$exists) {
+                page = await child.puppeteerBrowser.newPage();
+            } else {
+                page = (await child.puppeteerBrowser.pages())[0];
+            }
             await page.setBypassCSP(true);
             await page.setUserAgent(obj.navigator.userAgent);
 
@@ -1001,13 +1021,20 @@ module.exports = function (child) {
                 globalThis.defineProperty2 = Object.defineProperty;
                 Object.defineProperty = function (o, p, d) {
                     try {
-                        if (p == 'stack' || p == 'platform') {
-                            return o;
-                        }
-
                         if (o === navigator) {
+                            if (p == 'platform') {
+                                return o;
+                            }
+                            if (p == 'webdriver') {
+                                globalThis.defineProperty2(navigator, p, d);
+                                return o;
+                            }
                             globalThis.defineProperty2(navigator._, p, d);
                             return o;
+                        } else {
+                            // if (p == 'stack') {
+                            //     return o;
+                            // }
                         }
                         return globalThis.defineProperty2(o, p, d);
                     } catch (error) {
@@ -1055,25 +1082,27 @@ module.exports = function (child) {
             }
 
             if (obj.url) {
-                page.goto(obj.url);
+                await page.goto(obj.url);
             }
             // await page.deleteCookie();
-            browser.allCookies = [];
-            browser.cookieInterval = setInterval(() => {
-                if (!browser.disconnected) {
-                    browser.cookies().then((cookies) => {
-                        browser.allCookies = cookies;
+            child.puppeteerBrowser.allCookies = [];
+            child.cookieInterval = setInterval(() => {
+                if (child.puppeteerBrowser && !child.puppeteerBrowser.disconnected) {
+                    child.puppeteerBrowser.cookies().then((cookies) => {
+                        child.puppeteerBrowser.allCookies = cookies;
                     });
                 } else {
-                    clearInterval(browser.cookieInterval);
+                    clearInterval(child.cookieInterval);
                 }
             }, 1000 * 3);
 
             return new Promise((resolve) => {
-                browser.on('disconnected', () => {
-                    browser.disconnected = true;
+                child.puppeteerBrowser.on('disconnected', () => {
+                    child.puppeteerBrowser.disconnected = true;
                     resolve();
-                    //  child.setSessionCookies({ cookies: browser.allCookies, partition: obj.partition });
+                    // make problem and sign out of google and facebook
+                  //  child.setSessionCookies({ cookies: child.puppeteerBrowser.allCookies, partition: obj.partition });
+                    child.puppeteerBrowser = null;
                     if (obj.windowID) {
                         let win = child.electron.BrowserWindow.fromId(obj.windowID);
                         if (win && !win.isDestroyed()) {
@@ -1089,10 +1118,10 @@ module.exports = function (child) {
             });
         }
 
-        //  const page = await browser.newPage();
+        //  const page = await child.puppeteerBrowser.newPage();
         // page.on('console', (msg) => console.log('PAGE LOG:', msg.text()));
 
-        // await browser.installExtension(pathToExtension);
+        // await child.puppeteerBrowser.installExtension(pathToExtension);
 
         // Type into search box.
         //  await page.locator('.devsite-search-field').fill('automate beyond recorder');

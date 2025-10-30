@@ -111,11 +111,11 @@
         "appx": {}
     },
     "dependencies": {
-        "isite": "^2025.10.2",
+        "isite": "^2025.10.4",
         "puppeteer-core": "^24.22.0"
     },
     "devDependencies": {
-        "electron": "^38.4.0",
+        "electron": "^39.0.0",
         "electron-builder": "^26.0.12"
     }
 }

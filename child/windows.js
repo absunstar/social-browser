@@ -184,6 +184,7 @@ module.exports = function (child) {
             allowPopup: false,
 
             allowGoogleTranslate: false,
+            allowCrossOrigin: false,
 
             allowDownload: true,
             allowExternalDownloader: true,

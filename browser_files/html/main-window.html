@@ -129,7 +129,6 @@
 
         <div class="footer">
             <div class="window-actions">
-                
                 <a title="Help" onclick="SOCIALBROWSER.showHelpMenu();">
                     <i class="fas fa-universal-access"></i>
                 </a>
@@ -143,13 +142,15 @@
                 <a class="space"> | </a>
 
                 <a title="Translate" onclick=" ipc('[window-action]', { name: 'translate' })">
-                   <i class="fas fa-language white"></i>
+                    <i class="fas fa-language white"></i>
+                </a>
+                <a title="Open URL in  [ Chrome Browser ] ( Shared Cookies , User Data , Extentions ) "  onclick="ipc('[window-action]' , { name: 'open-in-chrome-session'})">
+                   <i class="fa-brands fa-chrome"></i>
                 </a>
 
-                 <a title="User Scripts" onclick="SOCIALBROWSER.showScriptListMenu();">
+                <a title="User Scripts" onclick="SOCIALBROWSER.showScriptListMenu();">
                     <i class="fa-solid fa-code brown"></i>
                 </a>
-
 
                 <a class="space"> | </a>
 

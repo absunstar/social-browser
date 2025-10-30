@@ -39,7 +39,11 @@ var SOCIALBROWSER = {
     developerMode: false,
     log: function (...args) {
         if (this.developerMode) {
-            console.log(document.location.href, ...args);
+            try {
+                console.log(document.location.href, ...args);
+            } catch (error) {
+                console.log(error);
+            }
         }
     },
 };
@@ -145,37 +149,42 @@ var SOCIALBROWSER = {
         SOCIALBROWSER.clone =
         SOCIALBROWSER.cloneObject =
             function (obj, level = 0, maxLevel = 4) {
-                if (Array.isArray(obj)) {
-                    let newArray = [];
-                    for (let index = 0; index < obj.length; index++) {
-                        newArray[index] = SOCIALBROWSER.cloneObject(obj[index], level + 1, maxLevel);
+                try {
+                    if (Array.isArray(obj)) {
+                        let newArray = [];
+                        for (let index = 0; index < obj.length; index++) {
+                            newArray[index] = SOCIALBROWSER.cloneObject(obj[index], level + 1, maxLevel);
+                        }
+                        return newArray;
+                    } else if (!obj || typeof obj !== 'object' || obj instanceof Date) {
+                        return obj;
                     }
-                    return newArray;
-                } else if (!obj || typeof obj !== 'object' || obj instanceof Date) {
-                    return obj;
-                }
 
-                let newObject = {};
+                    let newObject = {};
 
-                for (const key in obj) {
-                    if (Array.isArray(obj[key])) {
-                        newObject[key] = obj[key];
-                    } else if (typeof obj[key] === 'function') {
-                        newObject[key] = obj[key].toString();
-                        newObject[key] = newObject[key].slice(newObject[key].indexOf('{') + 1, newObject[key].lastIndexOf('}'));
-                    } else if (obj[key] instanceof Date) {
-                        newObject[key] = obj[key];
-                    } else if (typeof obj[key] === 'object') {
-                        if (level < maxLevel) {
-                            newObject[key] = SOCIALBROWSER.cloneObject(obj[key], level + 1, maxLevel);
+                    for (const key in obj) {
+                        if (Array.isArray(obj[key])) {
+                            newObject[key] = obj[key];
+                        } else if (typeof obj[key] === 'function') {
+                            newObject[key] = obj[key].toString();
+                            newObject[key] = newObject[key].slice(newObject[key].indexOf('{') + 1, newObject[key].lastIndexOf('}'));
+                        } else if (obj[key] instanceof Date) {
+                            newObject[key] = obj[key];
+                        } else if (typeof obj[key] === 'object') {
+                            if (level < maxLevel) {
+                                newObject[key] = SOCIALBROWSER.cloneObject(obj[key], level + 1, maxLevel);
+                            } else {
+                                newObject[key] = obj[key];
+                            }
                         } else {
                             newObject[key] = obj[key];
                         }
-                    } else {
-                        newObject[key] = obj[key];
                     }
+                    return newObject;
+                } catch (error) {
+                    SOCIALBROWSER.log(error);
+                    return obj;
                 }
-                return newObject;
             };
 
     SOCIALBROWSER.random = SOCIALBROWSER.randomNumber = function (min = 1, max = 1000) {
@@ -388,17 +397,18 @@ SOCIALBROWSER.md5 = function (txt) {
     return SOCIALBROWSER.ipcSync('[md5]', txt);
 };
 
-SOCIALBROWSER.get = function (property) {
-    return SOCIALBROWSER.ipcSync('[get]', { property: property });
-};
 SOCIALBROWSER.fnAsync = function (fn, ...params) {
     return SOCIALBROWSER.ipc('[fn]', { fn: fn, params: params });
 };
 SOCIALBROWSER.fn = function (fn, ...params) {
     return SOCIALBROWSER.ipcSync('[fn]', { fn: fn, params: params });
 };
+
 SOCIALBROWSER.set = function (property, value) {
     SOCIALBROWSER.ipcSync('[set]', { property: property, value: value });
+};
+SOCIALBROWSER.get = function (property) {
+    return SOCIALBROWSER.ipcSync('[get]', { property: property });
 };
 
 SOCIALBROWSER.updateBrowserVar = function (name, data) {
@@ -704,6 +714,173 @@ SOCIALBROWSER.init2 = function () {
                 });
             });
 
+            SOCIALBROWSER.workerCodeString = '';
+            SOCIALBROWSER.executeJavaScriptWorker = function (_id, code, url) {
+                _id = 'globalThis.' + _id;
+                code = code.replaceAll('globalThis', _id + '');
+                code = code.replaceAll('window.location', 'location');
+                code = code.replaceAll('document.location', 'location');
+                code = code.replaceAll('self.trustedTypes', _id + '.trustedTypes');
+                code = code.replaceAll('self.postMessage', _id + '.postMessage2');
+                code = code.replaceAll('parentPort.postMessage', _id + '.postMessage2');
+                code = code.replaceAll('self.onmessage', _id + '.onmessage2');
+                code = code.replaceAll('self', _id + '');
+                code = code.replaceAll('parentPort', _id + '');
+                code = code.replaceAll('debugger;', ' ');
+                code = code.replaceAll('var ', 'let ');
+
+                code = code.replaceAll(_id + '.' + _id, _id);
+                code = code + ';if(onmessage) { ' + _id + '.onmessage2 = onmessage; }';
+                code = code + ';SOCIALBROWSER.showUserMessage("Web Worker Detected <p><a>' + url + '</a></p>")';
+                code = `${_id}._ =  function(window , unsafeWindow , location  , postMessage ){ try { ${code} } catch (err) {SOCIALBROWSER.alert(err)} };${_id}._(${_id}  , window , ${_id}.location  , ${_id}.postMessage2);`;
+                SOCIALBROWSER.workerCodeString += code + '\n//# sourceURL=' + url + '\n';
+
+                SOCIALBROWSER.executeJavaScript(code)
+                    .then(() => {
+                        // SOCIALBROWSER.showUserMessage('Worker Done : ' + _id);
+                    })
+                    .catch((e) => {
+                        SOCIALBROWSER.alert(e);
+                    });
+            };
+            SOCIALBROWSER.serviceWorker = navigator.serviceWorker;
+
+            window.Worker0 = window.Worker;
+            SOCIALBROWSER.Worker = function (url, options, _worker, codeString = null) {
+                if (!codeString && SOCIALBROWSER.var.blocking.javascript.allowWorkerByVideo && document.querySelector('video')) {
+                    SOCIALBROWSER.showUserMessage('Web Worker video Detected');
+                    return new window.Worker0(url, options, _worker);
+                }
+
+                SOCIALBROWSER.log('New Worker : ' + url);
+                if (!codeString) {
+                    url = SOCIALBROWSER.handleURL(url.toString());
+                }
+
+                let workerID = 'worker_' + SOCIALBROWSER.md5(url) + '_';
+
+                if (!codeString && !SOCIALBROWSER.var.blocking.javascript.block_window_worker) {
+                    if (url.indexOf('blob:') === 0) {
+                        let blob = SOCIALBROWSER.blobObjectList.find((o) => o.url == url);
+                        if (blob && blob.object && blob.object.type.contains('javascript')) {
+                            blob.object
+                                .text()
+                                .then((code) => {
+                                    if (code) {
+                                        let _id = _worker ? _worker.id : workerID;
+
+                                        SOCIALBROWSER.executeJavaScriptWorker(_id, code, url);
+                                    } else {
+                                        globalThis[workerID] = new window.Worker0(url, options, _worker);
+                                    }
+                                })
+                                .catch((e) => {
+                                    SOCIALBROWSER.log(e);
+                                    globalThis[workerID] = new window.Worker0(url, options, _worker);
+                                });
+                        } else {
+                            globalThis[workerID] = new window.Worker0(url, options, _worker);
+                            return globalThis[workerID];
+                        }
+                    } else {
+                        fetch(url)
+                            .then((response) => response.text())
+                            .then((code) => {
+                                SOCIALBROWSER.workerCodeString += code + '\n//# First sourceURL=' + url + '\n';
+                                let _id = _worker ? _worker.id : workerID;
+                                SOCIALBROWSER.executeJavaScriptWorker(_id, code, url);
+                            });
+                    }
+                } else {
+                    if (codeString) {
+                        let _id = _worker ? _worker.id : workerID;
+                        SOCIALBROWSER.executeJavaScriptWorker(_id, codeString, url);
+                    }
+                }
+
+                if (_worker) {
+                    return _worker;
+                } else {
+                    globalThis[workerID] = Object.create(Worker.prototype);
+                    let worker2 = {
+                        id: workerID,
+                        url: url,
+                        on: function () {},
+                        fnEventList: [],
+                        addEventListener: function (...args) {
+                            console.log('Worker addEventListener', args);
+                            this.fnEventList.push(...args);
+                        },
+                        removeEventListener: function () {},
+                        importScripts: function (...args2) {
+                            args2.forEach((arg) => {
+                                SOCIALBROWSER.log('Import Script : ' + arg);
+                                new Worker(arg, null, globalThis[workerID]);
+                            });
+                        },
+                        terminate: function () {},
+                        postMessage: function (data) {
+                            if (globalThis[workerID].onmessage2) {
+                                globalThis[workerID].onmessage2({ data: data });
+                            } else {
+                                setTimeout(() => {
+                                    globalThis[workerID].postMessage(data);
+                                }, 500);
+                            }
+                        },
+                        postMessage2: function (data) {
+                            if (globalThis[workerID].onmessage) {
+                                globalThis[workerID].onmessage({ data: data });
+                            } else {
+                                setTimeout(() => {
+                                    globalThis[workerID].postMessage2(data);
+                                }, 500);
+                            }
+                        },
+                        onmessage: function () {
+                            SOCIALBROWSER.log('Worker onmessage', args);
+                        },
+                        terminate: function () {},
+                    };
+
+                    for (const key in worker2) {
+                        try {
+                            if (!globalThis[workerID][key]) {
+                                globalThis[workerID][key] = worker2[key];
+                            }
+                        } catch (error) {
+                            SOCIALBROWSER.log(error, key);
+                        }
+                    }
+
+                    let loc = new URL(globalThis[workerID].url);
+                    globalThis[workerID].location = loc;
+                    SOCIALBROWSER.__setConstValue(globalThis[workerID], 'location', {
+                        protocol: loc.protocol,
+                        host: loc.host,
+                        hostname: loc.hostname,
+                        origin: loc.origin,
+                        port: loc.port,
+                        pathname: loc.pathname,
+                        hash: loc.hash,
+                        search: loc.search,
+                        href: globalThis[workerID].url,
+                        toString: function () {
+                            return globalThis[workerID].url;
+                        },
+                    });
+                    SOCIALBROWSER.__setConstValue(globalThis[workerID], 'window', {});
+                    SOCIALBROWSER.__setConstValue(globalThis[workerID], 'document', {});
+                    SOCIALBROWSER.__setConstValue(globalThis[workerID], 'trustedTypes', window.trustedTypes);
+
+                    globalThis.importScripts = globalThis[workerID].importScripts;
+                    return globalThis[workerID];
+                }
+            };
+            SOCIALBROWSER.executeJavaScriptCodeInWorker = function (url, codeString) {
+                return SOCIALBROWSER.Worker(url, null, null, codeString);
+            };
+
             SOCIALBROWSER.sendMessage = SOCIALBROWSER.message = function (message) {
                 if (!message) {
                     return false;
@@ -946,6 +1123,10 @@ SOCIALBROWSER.init2 = function () {
                         }
                     });
                 });
+            };
+
+            SOCIALBROWSER.getIP = function () {
+                return SOCIALBROWSER.fetchJson('https://inet-ip.info/json?fewfeedcors=0');
             };
             SOCIALBROWSER.rand = {
                 noise: function () {
@@ -1890,6 +2071,7 @@ SOCIALBROWSER.init2 = function () {
 
             SOCIALBROWSER.showUserMessageTimeout = null;
             SOCIALBROWSER.showUserMessage = function (msg, time = 1000 * 3) {
+                SOCIALBROWSER.log(msg);
                 if (SOCIALBROWSER.var.blocking.javascript.hide_user_messages) {
                     return;
                 }
@@ -2669,8 +2851,8 @@ SOCIALBROWSER.init2 = function () {
                 },
             });
             SOCIALBROWSER.electron.clipboard = SOCIALBROWSER.clipboard;
-        }else{
-            SOCIALBROWSER.clipboard = SOCIALBROWSER.electron.clipboard
+        } else {
+            SOCIALBROWSER.clipboard = SOCIALBROWSER.electron.clipboard;
         }
 
         SOCIALBROWSER.remote = {
@@ -4072,6 +4254,16 @@ SOCIALBROWSER.init2 = function () {
                 arr.push({
                     type: 'separator',
                 });
+                arr.push({
+                    label: 'allow Cross Origin Requests',
+                    type: 'checkbox',
+                    checked: SOCIALBROWSER.customSetting.allowCrossOrigin || false,
+                    click() {
+                        SOCIALBROWSER.customSetting.allowCrossOrigin = !SOCIALBROWSER.customSetting.allowCrossOrigin;
+                        document.location.reload();
+                    },
+                });
+
                 arr.push({
                     label: 'allow Google Translate',
                     type: 'checkbox',
@@ -5485,6 +5677,848 @@ SOCIALBROWSER.init2 = function () {
         }
     })();
 
+    (function loadGoogleExtensions() {
+        SOCIALBROWSER.var.googleExtensionList.forEach((ext) => {
+            if (ext.manifest.host_permissions) {
+                ext.manifest.host_permissions.forEach((host) => {
+                    if (document.location.href.like(host)) {
+                        ext.$approved = true;
+                        SOCIALBROWSER.chromeExtensionDetected = true;
+                        SOCIALBROWSER.log('Google Extension Host Permission Loaded : ' + ext.manifest.name + ' on ' + document.location.href);
+                    }
+                });
+            }
+            ext.manifest.content_scripts.forEach((script) => {
+                script.matches.forEach((match) => {
+                    if ((ext.$approved = true || document.location.href.like(match))) {
+                        SOCIALBROWSER.chromeExtensionDetected = true;
+                        SOCIALBROWSER.log('Google Extension Script Loaded : ' + ext.manifest.name + ' on ' + document.location.href);
+                        script.js.forEach((jsfile) => {
+                            let path = ext.path + '/' + jsfile;
+                            let content = SOCIALBROWSER.readFile(path);
+                            SOCIALBROWSER.onLoad(() => {
+                                let bg = ext.manifest.background?.service_worker;
+                                if (bg) {
+                                    let path2 = ext.path + '/' + bg;
+                                    let content2 = SOCIALBROWSER.readFile(path2);
+                                    SOCIALBROWSER.domainStorage = path2;
+
+                                    content2 = content2
+                                        .replaceAll('localStorage.setItem ', 'SOCIALBROWSER.setStorage')
+                                        .replaceAll('localStorage.getItem', 'SOCIALBROWSER.getStorage')
+                                        .replaceAll('localStorage.removeItem', 'SOCIALBROWSER.deleteStorage')
+                                        .replaceAll('sessionStorage.setItem ', 'SOCIALBROWSER.setStorage')
+                                        .replaceAll('sessionStorage.getItem', 'SOCIALBROWSER.getStorage')
+                                        .replaceAll('sessionStorage.removeItem', 'SOCIALBROWSER.deleteStorage');
+                                    SOCIALBROWSER.backgroundWorker = SOCIALBROWSER.executeJavaScriptCodeInWorker(path2, content2);
+                                }
+                                content = content
+                                    .replaceAll('localStorage.setItem ', 'SOCIALBROWSER.setStorage')
+                                    .replaceAll('localStorage.getItem', 'SOCIALBROWSER.getStorage')
+                                    .replaceAll('localStorage.removeItem', 'SOCIALBROWSER.deleteStorage')
+                                    .replaceAll('sessionStorage.setItem ', 'SOCIALBROWSER.setStorage')
+                                    .replaceAll('sessionStorage.getItem', 'SOCIALBROWSER.getStorage')
+                                    .replaceAll('sessionStorage.removeItem', 'SOCIALBROWSER.deleteStorage');
+                                SOCIALBROWSER.contentWorker = SOCIALBROWSER.executeJavaScriptCodeInWorker(path, content);
+                            });
+                        });
+                    }
+                });
+            });
+        });
+    })();
+
+    if (SOCIALBROWSER.chromeExtensionDetected || SOCIALBROWSER.customSetting.chrome || document.location.href.like('*chrome-extension://*')) {
+        if (SOCIALBROWSER.chromeExtensionDetected && !SOCIALBROWSER.customSetting.allowCrossOrigin) {
+            SOCIALBROWSER.customSetting.allowCrossOrigin = true;
+            document.location.reload();
+        }
+        (function loadChromExtention() {
+            SOCIALBROWSER.log('chrome-extension Init ...');
+            let injectExtensionAPIs = () => {
+                var formatIpcName = (name) => `crx-${name}`;
+                var listenerMap = new Map();
+
+                var addExtensionListener = (extensionId, name, callback) => {
+                    const listenerCount = listenerMap.get(name) || 0;
+                    if (listenerCount === 0) {
+                        SOCIALBROWSER.ipc('crx-add-listener', extensionId, name);
+                    }
+                    listenerMap.set(name, listenerCount + 1);
+                    SOCIALBROWSER.ipcRenderer.addListener(formatIpcName(name), function (event, ...args) {
+                        if (true) {
+                            SOCIALBROWSER.log(name, '(result)', ...args);
+                        }
+                        callback(...args);
+                    });
+                };
+                var removeExtensionListener = (extensionId, name, callback) => {
+                    if (listenerMap.has(name)) {
+                        const listenerCount = listenerMap.get(name) || 0;
+                        if (listenerCount <= 1) {
+                            listenerMap.delete(name);
+                            SOCIALBROWSER.ipc('crx-remove-listener', extensionId, name);
+                        } else {
+                            listenerMap.set(name, listenerCount - 1);
+                        }
+                    }
+                    SOCIALBROWSER.ipcRenderer.removeListener(formatIpcName(name), callback);
+                };
+
+                const invokeExtension = async function (extensionId, fnName, options = {}, ...args) {
+                    const callback = typeof args[args.length - 1] === 'function' ? args.pop() : void 0;
+                    if (true) {
+                        SOCIALBROWSER.log(fnName, args);
+                    }
+                    if (options.noop) {
+                        console.warn(`${fnName} is not yet implemented.`);
+                        if (callback) callback(options.defaultResponse);
+                        return Promise.resolve(options.defaultResponse);
+                    }
+                    if (options.serialize) {
+                        args = options.serialize(...args);
+                    }
+                    let result;
+                    try {
+                        result = await SOCIALBROWSER.invoke('[crx]', { extensionId: extensionId, fnName: fnName, args: args });
+                    } catch (e) {
+                        console.error(e);
+                        result = void 0;
+                    }
+                    if (true) {
+                        SOCIALBROWSER.log(fnName, '(result)', result);
+                    }
+                    if (callback) {
+                        callback(result);
+                    } else {
+                        return result;
+                    }
+                };
+                const connectNative = (extensionId, application, receive, disconnect, callback) => {
+                    const connectionId = SOCIALBROWSER.contextBridge.executeInMainWorld({
+                        func: () => crypto.randomUUID(),
+                    });
+                    invokeExtension(extensionId, 'runtime.connectNative', {}, connectionId, application);
+                    const onMessage = (_event, message) => {
+                        receive(message);
+                    };
+                    SOCIALBROWSER.on(`crx-native-msg-${connectionId}`, onMessage);
+                    SOCIALBROWSER.once(`crx-native-msg-${connectNative}-disconnect`, () => {
+                        SOCIALBROWSER.off(`crx-native-msg-${connectionId}`, onMessage);
+                        disconnect();
+                    });
+                    const send = (message) => {
+                        SOCIALBROWSER.ipc(`crx-native-msg-${connectionId}`, message);
+                    };
+                    callback(connectionId, send);
+                };
+                const disconnectNative = (extensionId, connectionId) => {
+                    invokeExtension(extensionId, 'runtime.disconnectNative', {}, connectionId);
+                };
+                const electronContext = {
+                    invokeExtension,
+                    addExtensionListener,
+                    removeExtensionListener,
+                    connectNative,
+                    disconnectNative,
+                };
+
+                function mainWorldScript() {
+                    const chrome = globalThis.chrome || { runtime: { id: SOCIALBROWSER.window.id, getManifest: () => {} } };
+                    const extensionId = chrome.runtime?.id;
+                    const manifest = (extensionId && chrome.runtime.getManifest()) || {};
+                    const invokeExtensionHandle =
+                        (fnName, opts = {}) =>
+                        (...args) =>
+                            electronContext.invokeExtension(extensionId, fnName, opts, ...args);
+                    function imageData2base64(imageData) {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        if (!ctx) return null;
+                        canvas.width = imageData.width;
+                        canvas.height = imageData.height;
+                        ctx.putImageData(imageData, 0, 0);
+                        return canvas.toDataURL();
+                    }
+                    class ExtensionEvent {
+                        constructor(name) {
+                            this.name = name;
+                        }
+                        addListener(callback) {
+                            electronContext.addExtensionListener(extensionId, this.name, callback);
+                        }
+                        removeListener(callback) {
+                            electronContext.removeExtensionListener(extensionId, this.name, callback);
+                        }
+                        getRules(ruleIdentifiers, callback) {
+                            throw new Error('Method not implemented.');
+                        }
+                        hasListener(callback) {
+                            throw new Error('Method not implemented.');
+                        }
+                        removeRules(ruleIdentifiers, callback) {
+                            throw new Error('Method not implemented.');
+                        }
+                        addRules(rules, callback) {
+                            throw new Error('Method not implemented.');
+                        }
+                        hasListeners() {
+                            throw new Error('Method not implemented.');
+                        }
+                    }
+                    class ChromeSetting {
+                        constructor() {
+                            this.onChange = {
+                                addListener: () => {},
+                            };
+                        }
+                        set() {}
+                        get() {}
+                        clear() {}
+                    }
+                    class Event {
+                        constructor() {
+                            this.listeners = [];
+                        }
+                        _emit(...args) {
+                            this.listeners.forEach((listener) => {
+                                listener(...args);
+                            });
+                        }
+                        addListener(callback) {
+                            this.listeners.push(callback);
+                        }
+                        removeListener(callback) {
+                            const index = this.listeners.indexOf(callback);
+                            if (index > -1) {
+                                this.listeners.splice(index, 1);
+                            }
+                        }
+                    }
+                    class NativePort {
+                        constructor() {
+                            this.connectionId = '';
+                            this.connected = false;
+                            this.pending = [];
+                            this.name = '';
+                            this._init = (connectionId, send) => {
+                                this.connected = true;
+                                this.connectionId = connectionId;
+                                this._send = send;
+                                this.pending.forEach((msg) => this.postMessage(msg));
+                                this.pending = [];
+                                Object.defineProperty(this, '_init', { value: void 0 });
+                            };
+                            this.onMessage = new Event();
+                            this.onDisconnect = new Event();
+                        }
+                        _send(message) {
+                            this.pending.push(message);
+                        }
+                        _receive(message) {
+                            this.onMessage._emit(message);
+                        }
+                        _disconnect() {
+                            this.disconnect();
+                        }
+                        postMessage(message) {
+                            this._send(message);
+                        }
+                        disconnect() {
+                            if (this.connected) {
+                                electronContext.disconnectNative(extensionId, this.connectionId);
+                                this.onDisconnect._emit();
+                                this.connected = false;
+                            }
+                        }
+                    }
+                    const browserActionFactory = (base) => {
+                        const api = {
+                            ...base,
+                            setTitle: invokeExtensionHandle('browserAction.setTitle'),
+                            getTitle: invokeExtensionHandle('browserAction.getTitle'),
+                            setIcon: invokeExtensionHandle('browserAction.setIcon', {
+                                serialize: (details) => {
+                                    if (details.imageData) {
+                                        if (manifest.manifest_version === 3) {
+                                            console.warn('action.setIcon with imageData is not yet supported by electron-chrome-extensions');
+                                            details.imageData = void 0;
+                                        } else if (details.imageData instanceof ImageData) {
+                                            details.imageData = imageData2base64(details.imageData);
+                                        } else {
+                                            details.imageData = Object.entries(details.imageData).reduce((obj, pair) => {
+                                                obj[pair[0]] = imageData2base64(pair[1]);
+                                                return obj;
+                                            }, {});
+                                        }
+                                    }
+                                    return [details];
+                                },
+                            }),
+                            setPopup: invokeExtensionHandle('browserAction.setPopup'),
+                            getPopup: invokeExtensionHandle('browserAction.getPopup'),
+                            setBadgeText: invokeExtensionHandle('browserAction.setBadgeText'),
+                            getBadgeText: invokeExtensionHandle('browserAction.getBadgeText'),
+                            setBadgeBackgroundColor: invokeExtensionHandle('browserAction.setBadgeBackgroundColor'),
+                            getBadgeBackgroundColor: invokeExtensionHandle('browserAction.getBadgeBackgroundColor'),
+                            getUserSettings: invokeExtensionHandle('browserAction.getUserSettings'),
+                            enable: invokeExtensionHandle('browserAction.enable', { noop: true }),
+                            disable: invokeExtensionHandle('browserAction.disable', { noop: true }),
+                            openPopup: invokeExtensionHandle('browserAction.openPopup'),
+                            onClicked: new ExtensionEvent('browserAction.onClicked'),
+                        };
+                        return api;
+                    };
+
+                    const apiDefinitions = {
+                        action: {
+                            shouldInject: () => manifest.manifest_version === 3 && !!manifest.action,
+                            factory: browserActionFactory,
+                        },
+                        browserAction: {
+                            shouldInject: () => manifest.manifest_version === 2 && !!manifest.browser_action,
+                            factory: browserActionFactory,
+                        },
+                        commands: {
+                            factory: (base) => {
+                                return {
+                                    ...base,
+                                    getAll: invokeExtensionHandle('commands.getAll'),
+                                    onCommand: new ExtensionEvent('commands.onCommand'),
+                                };
+                            },
+                        },
+                        contextMenus: {
+                            factory: (base) => {
+                                let menuCounter = 0;
+                                const menuCallbacks = {};
+                                const menuCreate = invokeExtensionHandle('contextMenus.create');
+                                let hasInternalListener = false;
+                                const addInternalListener = () => {
+                                    api.onClicked.addListener((info, tab) => {
+                                        const callback = menuCallbacks[info.menuItemId];
+                                        if (callback && tab) callback(info, tab);
+                                    });
+                                    hasInternalListener = true;
+                                };
+                                const api = {
+                                    ...base,
+                                    create: function (createProperties, callback) {
+                                        if (typeof createProperties.id === 'undefined') {
+                                            createProperties.id = `${++menuCounter}`;
+                                        }
+                                        if (createProperties.onclick) {
+                                            if (!hasInternalListener) addInternalListener();
+                                            menuCallbacks[createProperties.id] = createProperties.onclick;
+                                            delete createProperties.onclick;
+                                        }
+                                        menuCreate(createProperties, callback);
+                                        return createProperties.id;
+                                    },
+                                    update: invokeExtensionHandle('contextMenus.update', { noop: true }),
+                                    remove: invokeExtensionHandle('contextMenus.remove'),
+                                    removeAll: invokeExtensionHandle('contextMenus.removeAll'),
+                                    onClicked: new ExtensionEvent('contextMenus.onClicked'),
+                                };
+                                return api;
+                            },
+                        },
+                        cookies: {
+                            factory: (base) => {
+                                return {
+                                    ...base,
+                                    get: invokeExtensionHandle('cookies.get'),
+                                    getAll: invokeExtensionHandle('cookies.getAll'),
+                                    set: invokeExtensionHandle('cookies.set'),
+                                    remove: invokeExtensionHandle('cookies.remove'),
+                                    getAllCookieStores: invokeExtensionHandle('cookies.getAllCookieStores'),
+                                    onChanged: new ExtensionEvent('cookies.onChanged'),
+                                };
+                            },
+                        },
+                        downloads: {
+                            factory: (base) => {
+                                return {
+                                    ...base,
+                                    acceptDanger: invokeExtensionHandle('downloads.acceptDanger', { noop: true }),
+                                    cancel: invokeExtensionHandle('downloads.cancel', { noop: true }),
+                                    download: invokeExtensionHandle('downloads.download', { noop: true }),
+                                    erase: invokeExtensionHandle('downloads.erase', { noop: true }),
+                                    getFileIcon: invokeExtensionHandle('downloads.getFileIcon', { noop: true }),
+                                    open: invokeExtensionHandle('downloads.open', { noop: true }),
+                                    pause: invokeExtensionHandle('downloads.pause', { noop: true }),
+                                    removeFile: invokeExtensionHandle('downloads.removeFile', { noop: true }),
+                                    resume: invokeExtensionHandle('downloads.resume', { noop: true }),
+                                    search: invokeExtensionHandle('downloads.search', { noop: true }),
+                                    setUiOptions: invokeExtensionHandle('downloads.setUiOptions', { noop: true }),
+                                    show: invokeExtensionHandle('downloads.show', { noop: true }),
+                                    showDefaultFolder: invokeExtensionHandle('downloads.showDefaultFolder', { noop: true }),
+                                    onChanged: new ExtensionEvent('downloads.onChanged'),
+                                    onCreated: new ExtensionEvent('downloads.onCreated'),
+                                    onDeterminingFilename: new ExtensionEvent('downloads.onDeterminingFilename'),
+                                    onErased: new ExtensionEvent('downloads.onErased'),
+                                };
+                            },
+                        },
+                        extension: {
+                            factory: (base) => {
+                                return {
+                                    ...base,
+                                    isAllowedFileSchemeAccess: invokeExtensionHandle('extension.isAllowedFileSchemeAccess', {
+                                        noop: true,
+                                        defaultResponse: false,
+                                    }),
+                                    isAllowedIncognitoAccess: invokeExtensionHandle('extension.isAllowedIncognitoAccess', {
+                                        noop: true,
+                                        defaultResponse: false,
+                                    }),
+                                    getViews: () => [],
+                                };
+                            },
+                        },
+                        i18n: {
+                            shouldInject: () => manifest.manifest_version === 3,
+                            factory: (base) => {
+                                if (base.getMessage) {
+                                    return base;
+                                }
+                                return {
+                                    ...base,
+                                    getUILanguage: () => 'en-US',
+                                    getAcceptLanguages: (callback) => {
+                                        const results = ['en-US'];
+                                        if (callback) {
+                                            queueMicrotask(() => callback(results));
+                                        }
+                                        return Promise.resolve(results);
+                                    },
+                                    getMessage: (messageName) => messageName,
+                                };
+                            },
+                        },
+                        notifications: {
+                            factory: (base) => {
+                                return {
+                                    ...base,
+                                    clear: invokeExtensionHandle('notifications.clear'),
+                                    create: invokeExtensionHandle('notifications.create'),
+                                    getAll: invokeExtensionHandle('notifications.getAll'),
+                                    getPermissionLevel: invokeExtensionHandle('notifications.getPermissionLevel'),
+                                    update: invokeExtensionHandle('notifications.update'),
+                                    onClicked: new ExtensionEvent('notifications.onClicked'),
+                                    onButtonClicked: new ExtensionEvent('notifications.onButtonClicked'),
+                                    onClosed: new ExtensionEvent('notifications.onClosed'),
+                                };
+                            },
+                        },
+                        permissions: {
+                            factory: (base) => {
+                                return {
+                                    ...base,
+                                    contains: invokeExtensionHandle('permissions.contains'),
+                                    getAll: invokeExtensionHandle('permissions.getAll'),
+                                    remove: invokeExtensionHandle('permissions.remove'),
+                                    request: invokeExtensionHandle('permissions.request'),
+                                    onAdded: new ExtensionEvent('permissions.onAdded'),
+                                    onRemoved: new ExtensionEvent('permissions.onRemoved'),
+                                };
+                            },
+                        },
+                        privacy: {
+                            factory: (base) => {
+                                return {
+                                    ...base,
+                                    network: {
+                                        networkPredictionEnabled: new ChromeSetting(),
+                                        webRTCIPHandlingPolicy: new ChromeSetting(),
+                                    },
+                                    services: {
+                                        autofillAddressEnabled: new ChromeSetting(),
+                                        autofillCreditCardEnabled: new ChromeSetting(),
+                                        passwordSavingEnabled: new ChromeSetting(),
+                                    },
+                                    websites: {
+                                        hyperlinkAuditingEnabled: new ChromeSetting(),
+                                    },
+                                };
+                            },
+                        },
+                        runtime: {
+                            factory: (base) => {
+                                return {
+                                    ...base,
+                                    connectNative: (application) => {
+                                        const port = new NativePort();
+                                        const receive = port._receive.bind(port);
+                                        const disconnect = port._disconnect.bind(port);
+                                        const callback = (connectionId, send) => {
+                                            port._init(connectionId, send);
+                                        };
+                                        electronContext.connectNative(extensionId, application, receive, disconnect, callback);
+                                        return port;
+                                    },
+                                    openOptionsPage: invokeExtensionHandle('runtime.openOptionsPage'),
+                                    sendNativeMessage: invokeExtensionHandle('runtime.sendNativeMessage'),
+                                    connect: null,
+                                    fnEventList: [],
+                                    onMessage: {
+                                        addEventListener: function (...args) {
+                                            SOCIALBROWSER.log('chrome addEventListener', args);
+                                            this.fnEventList.push(...args);
+                                        },
+                                    },
+                                    sendMessage: function (...args) {
+                                        SOCIALBROWSER.log('chrome sendMessage', args);
+                                        args.forEach((arg) => {
+                                            if (typeof arg === 'function') {
+                                                SOCIALBROWSER.log('chrome sendMessage function', arg);
+                                                arg(...args);
+                                            }
+                                        });
+                                        this.fnEventList.forEach((fnItem) => {
+                                            for (const key in fnItem) {
+                                                if (typeof fnItem[key] === 'function') {
+                                                    fnItem[key](...args);
+                                                }
+                                            }
+                                        });
+
+                                        if (SOCIALBROWSER.backgroundWorker) {
+                                            SOCIALBROWSER.backgroundWorker.postMessage2(...args);
+                                        }
+                                    },
+                                    id: SOCIALBROWSER.window.id,
+                                    getManifest: () => {},
+                                };
+                            },
+                        },
+                        storage: {
+                            factory: (base) => {
+                                const local = base && base.local;
+                                return {
+                                    ...base,
+                                    managed: local,
+                                    sync: local,
+                                    local: { get: SOCIALBROWSER.getStorage, set: SOCIALBROWSER.setStorage },
+                                };
+                            },
+                        },
+                        tabs: {
+                            factory: (base) => {
+                                const api = {
+                                    ...base,
+                                    create: invokeExtensionHandle('tabs.create'),
+                                    executeScript: async function (arg1, arg2, arg3) {
+                                        if (typeof arg1 === 'object') {
+                                            const [activeTab] = await api.query({
+                                                active: true,
+                                                windowId: chrome.windows.WINDOW_ID_CURRENT,
+                                            });
+                                            return api.executeScript(activeTab.id, arg1, arg2);
+                                        } else {
+                                            return base.executeScript(arg1, arg2, arg3);
+                                        }
+                                    },
+                                    get: invokeExtensionHandle('tabs.get'),
+                                    getCurrent: invokeExtensionHandle('tabs.getCurrent'),
+                                    getAllInWindow: invokeExtensionHandle('tabs.getAllInWindow'),
+                                    insertCSS: invokeExtensionHandle('tabs.insertCSS'),
+                                    query: invokeExtensionHandle('tabs.query'),
+                                    reload: invokeExtensionHandle('tabs.reload'),
+                                    update: invokeExtensionHandle('tabs.update'),
+                                    remove: invokeExtensionHandle('tabs.remove'),
+                                    goBack: invokeExtensionHandle('tabs.goBack'),
+                                    goForward: invokeExtensionHandle('tabs.goForward'),
+                                    onCreated: new ExtensionEvent('tabs.onCreated'),
+                                    onRemoved: new ExtensionEvent('tabs.onRemoved'),
+                                    onUpdated: new ExtensionEvent('tabs.onUpdated'),
+                                    onActivated: new ExtensionEvent('tabs.onActivated'),
+                                    onReplaced: new ExtensionEvent('tabs.onReplaced'),
+                                };
+                                return api;
+                            },
+                        },
+                        topSites: {
+                            factory: () => {
+                                return {
+                                    get: invokeExtensionHandle('topSites.get', { noop: true, defaultResponse: [] }),
+                                };
+                            },
+                        },
+                        webNavigation: {
+                            factory: (base) => {
+                                return {
+                                    ...base,
+                                    getFrame: invokeExtensionHandle('webNavigation.getFrame'),
+                                    getAllFrames: invokeExtensionHandle('webNavigation.getAllFrames'),
+                                    onBeforeNavigate: new ExtensionEvent('webNavigation.onBeforeNavigate'),
+                                    onCommitted: new ExtensionEvent('webNavigation.onCommitted'),
+                                    onCompleted: new ExtensionEvent('webNavigation.onCompleted'),
+                                    onCreatedNavigationTarget: new ExtensionEvent('webNavigation.onCreatedNavigationTarget'),
+                                    onDOMContentLoaded: new ExtensionEvent('webNavigation.onDOMContentLoaded'),
+                                    onErrorOccurred: new ExtensionEvent('webNavigation.onErrorOccurred'),
+                                    onHistoryStateUpdated: new ExtensionEvent('webNavigation.onHistoryStateUpdated'),
+                                    onReferenceFragmentUpdated: new ExtensionEvent('webNavigation.onReferenceFragmentUpdated'),
+                                    onTabReplaced: new ExtensionEvent('webNavigation.onTabReplaced'),
+                                };
+                            },
+                        },
+                        webRequest: {
+                            factory: (base) => {
+                                return {
+                                    ...base,
+                                    onHeadersReceived: new ExtensionEvent('webRequest.onHeadersReceived'),
+                                };
+                            },
+                        },
+                        windows: {
+                            factory: (base) => {
+                                return {
+                                    ...base,
+                                    WINDOW_ID_NONE: -1,
+                                    WINDOW_ID_CURRENT: SOCIALBROWSER.window.id,
+                                    get: invokeExtensionHandle('windows.get'),
+                                    getCurrent: invokeExtensionHandle('windows.getCurrent'),
+                                    getLastFocused: invokeExtensionHandle('windows.getLastFocused'),
+                                    getAll: invokeExtensionHandle('windows.getAll'),
+                                    create: invokeExtensionHandle('windows.create'),
+                                    update: invokeExtensionHandle('windows.update'),
+                                    remove: invokeExtensionHandle('windows.remove'),
+                                    onCreated: new ExtensionEvent('windows.onCreated'),
+                                    onRemoved: new ExtensionEvent('windows.onRemoved'),
+                                    onFocusChanged: new ExtensionEvent('windows.onFocusChanged'),
+                                };
+                            },
+                        },
+                    };
+
+                    Object.keys(apiDefinitions).forEach((key) => {
+                        const apiName = key;
+                        const baseApi = chrome[apiName];
+                        const api = apiDefinitions[apiName];
+                        if (api.shouldInject && !api.shouldInject()) return;
+                        Object.defineProperty(chrome, apiName, {
+                            value: api.factory(baseApi),
+                            enumerable: true,
+                            configurable: true,
+                        });
+                    });
+
+                    chrome.csi = function () {
+                        return {
+                            onloadT: window.performance.timing.domContentLoadedEventEnd,
+                            startE: window.performance.timing.navigationStart,
+                            pageT: Date.now() - window.performance.timing.navigationStart,
+                            tran: 15,
+                        };
+                    };
+                    const ntEntryFallback = {
+                        nextHopProtocol: 'h2',
+                        type: 'other',
+                    };
+                    function toFixed(num, fixed) {
+                        var re = new RegExp('^-?\\d+(?:.\\d{0,' + (fixed || -1) + '})?');
+                        return num.toString().match(re)[0];
+                    }
+
+                    chrome.loadTimes = function () {
+                        return {
+                            get connectionInfo() {
+                                const ntEntry = window.performance.getEntriesByType('navigation')[0] || ntEntryFallback;
+                                return ntEntry.nextHopProtocol;
+                            },
+                            get npnNegotiatedProtocol() {
+                                const ntEntry = window.performance.getEntriesByType('navigation')[0] || ntEntryFallback;
+                                return ['h2', 'hq'].includes(ntEntry.nextHopProtocol) ? ntEntry.nextHopProtocol : 'unknown';
+                            },
+                            get navigationType() {
+                                const ntEntry = window.performance.getEntriesByType('navigation')[0] || ntEntryFallback;
+                                return ntEntry.type;
+                            },
+                            get wasAlternateProtocolAvailable() {
+                                return false;
+                            },
+                            get wasFetchedViaSpdy() {
+                                const ntEntry = window.performance.getEntriesByType('navigation')[0] || ntEntryFallback;
+                                return ['h2', 'hq'].includes(ntEntry.nextHopProtocol);
+                            },
+                            get wasNpnNegotiated() {
+                                const ntEntry = window.performance.getEntriesByType('navigation')[0] || ntEntryFallback;
+                                return ['h2', 'hq'].includes(ntEntry.nextHopProtocol);
+                            },
+                            get firstPaintAfterLoadTime() {
+                                return 0;
+                            },
+                            get requestTime() {
+                                return window.performance.timing.navigationStart / 1000;
+                            },
+                            get startLoadTime() {
+                                return window.performance.timing.navigationStart / 1000;
+                            },
+                            get commitLoadTime() {
+                                return window.performance.timing.responseStart / 1000;
+                            },
+                            get finishDocumentLoadTime() {
+                                return window.performance.timing.domContentLoadedEventEnd / 1000;
+                            },
+                            get finishLoadTime() {
+                                return window.performance.timing.loadEventEnd / 1000;
+                            },
+                            get firstPaintTime() {
+                                const fpEntry = window.performance.getEntriesByType('paint')[0] || {
+                                    startTime: window.performance.timing.loadEventEnd / 1000,
+                                };
+                                return toFixed((fpEntry.startTime + window.performance.timeOrigin) / 1000, 3);
+                            },
+                        };
+                    };
+                    chrome.app = {
+                        isInstalled: false,
+                        InstallState: {
+                            DISABLED: 'disabled',
+                            INSTALLED: 'installed',
+                            NOT_INSTALLED: 'not_installed',
+                        },
+                        RunningState: {
+                            CANNOT_RUN: 'cannot_run',
+                            READY_TO_RUN: 'ready_to_run',
+                            RUNNING: 'running',
+                        },
+                        isInstalled: function () {
+                            return false;
+                        },
+
+                        getDetails: function () {
+                            return null;
+                        },
+                        getIsInstalled: function () {
+                            return false;
+                        },
+                        runningState: function () {
+                            return 'cannot_run';
+                        },
+                    };
+
+                    chrome.appPinningPrivate = chrome.appPinningPrivate || {
+                        getPins: () => {},
+                        pinPage: () => {},
+                    };
+
+                    if (!globalThis.chrome) {
+                        SOCIALBROWSER.__setConstValue(window, 'chrome', chrome);
+                    }
+                }
+
+                mainWorldScript();
+            };
+
+            injectExtensionAPIs();
+        })();
+    } else {
+        if (!SOCIALBROWSER.isFirefox) {
+            const chrome = {};
+            chrome.csi = function () {
+                return {
+                    onloadT: window.performance.timing.domContentLoadedEventEnd,
+                    startE: window.performance.timing.navigationStart,
+                    pageT: Date.now() - window.performance.timing.navigationStart,
+                    tran: 15,
+                };
+            };
+            const ntEntryFallback = {
+                nextHopProtocol: 'h2',
+                type: 'other',
+            };
+            function toFixed(num, fixed) {
+                var re = new RegExp('^-?\\d+(?:.\\d{0,' + (fixed || -1) + '})?');
+                return num.toString().match(re)[0];
+            }
+
+            chrome.loadTimes = function () {
+                return {
+                    get connectionInfo() {
+                        const ntEntry = window.performance.getEntriesByType('navigation')[0] || ntEntryFallback;
+                        return ntEntry.nextHopProtocol;
+                    },
+                    get npnNegotiatedProtocol() {
+                        const ntEntry = window.performance.getEntriesByType('navigation')[0] || ntEntryFallback;
+                        return ['h2', 'hq'].includes(ntEntry.nextHopProtocol) ? ntEntry.nextHopProtocol : 'unknown';
+                    },
+                    get navigationType() {
+                        const ntEntry = window.performance.getEntriesByType('navigation')[0] || ntEntryFallback;
+                        return ntEntry.type;
+                    },
+                    get wasAlternateProtocolAvailable() {
+                        return false;
+                    },
+                    get wasFetchedViaSpdy() {
+                        const ntEntry = window.performance.getEntriesByType('navigation')[0] || ntEntryFallback;
+                        return ['h2', 'hq'].includes(ntEntry.nextHopProtocol);
+                    },
+                    get wasNpnNegotiated() {
+                        const ntEntry = window.performance.getEntriesByType('navigation')[0] || ntEntryFallback;
+                        return ['h2', 'hq'].includes(ntEntry.nextHopProtocol);
+                    },
+                    get firstPaintAfterLoadTime() {
+                        return 0;
+                    },
+                    get requestTime() {
+                        return window.performance.timing.navigationStart / 1000;
+                    },
+                    get startLoadTime() {
+                        return window.performance.timing.navigationStart / 1000;
+                    },
+                    get commitLoadTime() {
+                        return window.performance.timing.responseStart / 1000;
+                    },
+                    get finishDocumentLoadTime() {
+                        return window.performance.timing.domContentLoadedEventEnd / 1000;
+                    },
+                    get finishLoadTime() {
+                        return window.performance.timing.loadEventEnd / 1000;
+                    },
+                    get firstPaintTime() {
+                        const fpEntry = window.performance.getEntriesByType('paint')[0] || {
+                            startTime: window.performance.timing.loadEventEnd / 1000,
+                        };
+                        return toFixed((fpEntry.startTime + window.performance.timeOrigin) / 1000, 3);
+                    },
+                };
+            };
+            chrome.app = {
+                isInstalled: false,
+                InstallState: {
+                    DISABLED: 'disabled',
+                    INSTALLED: 'installed',
+                    NOT_INSTALLED: 'not_installed',
+                },
+                RunningState: {
+                    CANNOT_RUN: 'cannot_run',
+                    READY_TO_RUN: 'ready_to_run',
+                    RUNNING: 'running',
+                },
+                isInstalled: function () {
+                    return false;
+                },
+
+                getDetails: function () {
+                    return null;
+                },
+                getIsInstalled: function () {
+                    return false;
+                },
+                runningState: function () {
+                    return 'cannot_run';
+                },
+            };
+            if (!globalThis.chrome) {
+                SOCIALBROWSER.__setConstValue(window, 'chrome', chrome);
+            }
+        } else {
+            chrome = undefined;
+        }
+    }
+
     (function loadKeyboard() {
         if (SOCIALBROWSER.javaScriptOFF) {
             return;
@@ -6242,149 +7276,9 @@ SOCIALBROWSER.init2 = function () {
                             return 'function createObjectURL() { [native code] }';
                         });
 
-                        SOCIALBROWSER.workerCodeString = '';
-                        SOCIALBROWSER.executeJavaScriptWorker = function (_id, code, url) {
-                            _id = 'globalThis.' + _id;
-                            code = code.replaceAll('globalThis', _id + '');
-                            code = code.replaceAll('window.location', 'location');
-                            code = code.replaceAll('document.location', 'location');
-                            code = code.replaceAll('self.trustedTypes', _id + '.trustedTypes');
-                            code = code.replaceAll('self.postMessage', _id + '.postMessage2');
-                            code = code.replaceAll('parentPort.postMessage', _id + '.postMessage2');
-                            code = code.replaceAll('self.onmessage', _id + '.onmessage2');
-                            code = code.replaceAll('self', _id + '');
-                            code = code.replaceAll('parentPort', _id + '');
-                            code = code.replaceAll('debugger;', ' ');
-                            code = code.replaceAll('var ', 'let ');
-
-                            code = code.replaceAll(_id + '.' + _id, _id);
-                            code = code + ';if(onmessage) { ' + _id + '.onmessage2 = onmessage; }';
-                            code = code + ';SOCIALBROWSER.showUserMessage("Web Worker Detected <p><a>' + url + '</a></p>")';
-                            code = `${_id}._ =  function(window , unsafeWindow , location  , postMessage ){ try { ${code} } catch (err) {SOCIALBROWSER.alert(err)} };${_id}._(${_id}  , window , ${_id}.location  , ${_id}.postMessage2);`;
-                            SOCIALBROWSER.workerCodeString += code + '\n//# sourceURL=' + url + '\n';
-
-                            SOCIALBROWSER.executeJavaScript(code)
-                                .then(() => {
-                                    // SOCIALBROWSER.showUserMessage('Worker Done : ' + _id);
-                                })
-                                .catch((e) => {
-                                    SOCIALBROWSER.alert(e);
-                                });
-                        };
-
                         if (!SOCIALBROWSER.customSetting.allowDefaultWorker) {
-                            window.Worker0 = window.Worker;
-                            window.Worker = function (url, options, _worker) {
-                                if (SOCIALBROWSER.var.blocking.javascript.allowWorkerByVideo && document.querySelector('video')) {
-                                    SOCIALBROWSER.showUserMessage('Web Worker video Detected');
-                                    return new window.Worker0(url, options, _worker);
-                                }
-
-                                SOCIALBROWSER.log('New Worker : ' + url);
-                                url = SOCIALBROWSER.handleURL(url.toString());
-
-                                let workerID = 'worker_' + SOCIALBROWSER.md5(url) + '_';
-
-                                if (!SOCIALBROWSER.var.blocking.javascript.block_window_worker) {
-                                    if (url.indexOf('blob:') === 0) {
-                                        let blob = SOCIALBROWSER.blobObjectList.find((o) => o.url == url);
-                                        if (blob && blob.object && blob.object.type.contains('javascript')) {
-                                            blob.object
-                                                .text()
-                                                .then((code) => {
-                                                    if (code) {
-                                                        let _id = _worker ? _worker.id : workerID;
-
-                                                        SOCIALBROWSER.executeJavaScriptWorker(_id, code, url);
-                                                    } else {
-                                                        globalThis[workerID] = new window.Worker0(url, options, _worker);
-                                                    }
-                                                })
-                                                .catch((e) => {
-                                                    SOCIALBROWSER.log(e);
-                                                    globalThis[workerID] = new window.Worker0(url, options, _worker);
-                                                });
-                                        } else {
-                                            globalThis[workerID] = new window.Worker0(url, options, _worker);
-                                            return globalThis[workerID];
-                                        }
-                                    } else {
-                                        fetch(url)
-                                            .then((response) => response.text())
-                                            .then((code) => {
-                                                SOCIALBROWSER.workerCodeString += code + '\n//# First sourceURL=' + url + '\n';
-                                                let _id = _worker ? _worker.id : workerID;
-                                                SOCIALBROWSER.executeJavaScriptWorker(_id, code, url);
-                                            });
-                                    }
-                                }
-
-                                if (_worker) {
-                                    return _worker;
-                                } else {
-                                    globalThis[workerID] = Object.create(Worker.prototype);
-                                    let worker2 = {
-                                        id: workerID,
-                                        url: url,
-                                        on: function () {},
-                                        addEventListener: function () {},
-                                        removeEventListener: function () {},
-                                        importScripts: function (...args2) {
-                                            args2.forEach((arg) => {
-                                                SOCIALBROWSER.log('Import Script : ' + arg);
-                                                new Worker(arg, null, globalThis[workerID]);
-                                            });
-                                        },
-                                        terminate: function () {},
-                                        postMessage: function (data) {
-                                            if (globalThis[workerID].onmessage2) {
-                                                globalThis[workerID].onmessage2({ data: data });
-                                            } else {
-                                                setTimeout(() => {
-                                                    globalThis[workerID].postMessage(data);
-                                                }, 500);
-                                            }
-                                        },
-                                        postMessage2: function (data) {
-                                            if (globalThis[workerID].onmessage) {
-                                                globalThis[workerID].onmessage({ data: data });
-                                            } else {
-                                                setTimeout(() => {
-                                                    globalThis[workerID].postMessage2(data);
-                                                }, 500);
-                                            }
-                                        },
-                                        onmessage: function () {},
-                                        terminate: function () {},
-                                    };
-
-                                    for (const key in worker2) {
-                                        globalThis[workerID][key] = worker2[key];
-                                    }
-
-                                    let loc = new URL(globalThis[workerID].url);
-                                    globalThis[workerID].location = loc;
-                                    SOCIALBROWSER.__setConstValue(globalThis[workerID], 'location', {
-                                        protocol: loc.protocol,
-                                        host: loc.host,
-                                        hostname: loc.hostname,
-                                        origin: loc.origin,
-                                        port: loc.port,
-                                        pathname: loc.pathname,
-                                        hash: loc.hash,
-                                        search: loc.search,
-                                        href: globalThis[workerID].url,
-                                        toString: function () {
-                                            return globalThis[workerID].url;
-                                        },
-                                    });
-                                    SOCIALBROWSER.__setConstValue(globalThis[workerID], 'window', {});
-                                    SOCIALBROWSER.__setConstValue(globalThis[workerID], 'document', {});
-                                    SOCIALBROWSER.__setConstValue(globalThis[workerID], 'trustedTypes', window.trustedTypes);
-
-                                    globalThis.importScripts = globalThis[workerID].importScripts;
-                                    return globalThis[workerID];
-                                }
+                            window.Worker = function () {
+                                return SOCIALBROWSER.Worker.apply(this, arguments);
                             };
 
                             SOCIALBROWSER.__setConstValue(window.Worker, 'toString', function () {
@@ -6414,7 +7308,11 @@ SOCIALBROWSER.init2 = function () {
                                     });
                                 } else {
                                     return new Promise((resolve, reject) => {
-                                        resolve(SOCIALBROWSER.serviceWorker);
+                                        resolve({
+                                            onmessage: () => {},
+                                            onerror: () => {},
+                                            postMessage: () => {},
+                                        });
                                     });
                                 }
                             });
@@ -7836,767 +8734,6 @@ SOCIALBROWSER.init2 = function () {
 
         SOCIALBROWSER.navigator.clipboard = Object.create(Object.getPrototypeOf(navigator.clipboard || {}));
         SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.clipboard, 'writeText', SOCIALBROWSER.copy);
-
-        if (SOCIALBROWSER.customSetting.chrome || document.location.href.like('*chrome-extension://*')) {
-            (function loadChromExtention() {
-                SOCIALBROWSER.log('chrome-extension Init ...');
-                let injectExtensionAPIs = () => {
-                    var formatIpcName = (name) => `crx-${name}`;
-                    var listenerMap = new Map();
-
-                    var addExtensionListener = (extensionId, name, callback) => {
-                        const listenerCount = listenerMap.get(name) || 0;
-                        if (listenerCount === 0) {
-                            SOCIALBROWSER.ipc('crx-add-listener', extensionId, name);
-                        }
-                        listenerMap.set(name, listenerCount + 1);
-                        SOCIALBROWSER.ipcRenderer.addListener(formatIpcName(name), function (event, ...args) {
-                            if (true) {
-                                SOCIALBROWSER.log(name, '(result)', ...args);
-                            }
-                            callback(...args);
-                        });
-                    };
-                    var removeExtensionListener = (extensionId, name, callback) => {
-                        if (listenerMap.has(name)) {
-                            const listenerCount = listenerMap.get(name) || 0;
-                            if (listenerCount <= 1) {
-                                listenerMap.delete(name);
-                                SOCIALBROWSER.ipc('crx-remove-listener', extensionId, name);
-                            } else {
-                                listenerMap.set(name, listenerCount - 1);
-                            }
-                        }
-                        SOCIALBROWSER.ipcRenderer.removeListener(formatIpcName(name), callback);
-                    };
-
-                    const invokeExtension = async function (extensionId, fnName, options = {}, ...args) {
-                        const callback = typeof args[args.length - 1] === 'function' ? args.pop() : void 0;
-                        if (true) {
-                            SOCIALBROWSER.log(fnName, args);
-                        }
-                        if (options.noop) {
-                            console.warn(`${fnName} is not yet implemented.`);
-                            if (callback) callback(options.defaultResponse);
-                            return Promise.resolve(options.defaultResponse);
-                        }
-                        if (options.serialize) {
-                            args = options.serialize(...args);
-                        }
-                        let result;
-                        try {
-                            result = await SOCIALBROWSER.invoke('[crx]', { extensionId: extensionId, fnName: fnName, args: args });
-                        } catch (e) {
-                            console.error(e);
-                            result = void 0;
-                        }
-                        if (true) {
-                            SOCIALBROWSER.log(fnName, '(result)', result);
-                        }
-                        if (callback) {
-                            callback(result);
-                        } else {
-                            return result;
-                        }
-                    };
-                    const connectNative = (extensionId, application, receive, disconnect, callback) => {
-                        const connectionId = SOCIALBROWSER.contextBridge.executeInMainWorld({
-                            func: () => crypto.randomUUID(),
-                        });
-                        invokeExtension(extensionId, 'runtime.connectNative', {}, connectionId, application);
-                        const onMessage = (_event, message) => {
-                            receive(message);
-                        };
-                        SOCIALBROWSER.on(`crx-native-msg-${connectionId}`, onMessage);
-                        SOCIALBROWSER.once(`crx-native-msg-${connectNative}-disconnect`, () => {
-                            SOCIALBROWSER.off(`crx-native-msg-${connectionId}`, onMessage);
-                            disconnect();
-                        });
-                        const send = (message) => {
-                            SOCIALBROWSER.ipc(`crx-native-msg-${connectionId}`, message);
-                        };
-                        callback(connectionId, send);
-                    };
-                    const disconnectNative = (extensionId, connectionId) => {
-                        invokeExtension(extensionId, 'runtime.disconnectNative', {}, connectionId);
-                    };
-                    const electronContext = {
-                        invokeExtension,
-                        addExtensionListener,
-                        removeExtensionListener,
-                        connectNative,
-                        disconnectNative,
-                    };
-
-                    function mainWorldScript() {
-                        const chrome = globalThis.chrome || { runtime: { id: SOCIALBROWSER.window.id, getManifest: () => {} } };
-                        const extensionId = chrome.runtime?.id;
-                        const manifest = (extensionId && chrome.runtime.getManifest()) || {};
-                        const invokeExtensionHandle =
-                            (fnName, opts = {}) =>
-                            (...args) =>
-                                electronContext.invokeExtension(extensionId, fnName, opts, ...args);
-                        function imageData2base64(imageData) {
-                            const canvas = document.createElement('canvas');
-                            const ctx = canvas.getContext('2d');
-                            if (!ctx) return null;
-                            canvas.width = imageData.width;
-                            canvas.height = imageData.height;
-                            ctx.putImageData(imageData, 0, 0);
-                            return canvas.toDataURL();
-                        }
-                        class ExtensionEvent {
-                            constructor(name) {
-                                this.name = name;
-                            }
-                            addListener(callback) {
-                                electronContext.addExtensionListener(extensionId, this.name, callback);
-                            }
-                            removeListener(callback) {
-                                electronContext.removeExtensionListener(extensionId, this.name, callback);
-                            }
-                            getRules(ruleIdentifiers, callback) {
-                                throw new Error('Method not implemented.');
-                            }
-                            hasListener(callback) {
-                                throw new Error('Method not implemented.');
-                            }
-                            removeRules(ruleIdentifiers, callback) {
-                                throw new Error('Method not implemented.');
-                            }
-                            addRules(rules, callback) {
-                                throw new Error('Method not implemented.');
-                            }
-                            hasListeners() {
-                                throw new Error('Method not implemented.');
-                            }
-                        }
-                        class ChromeSetting {
-                            constructor() {
-                                this.onChange = {
-                                    addListener: () => {},
-                                };
-                            }
-                            set() {}
-                            get() {}
-                            clear() {}
-                        }
-                        class Event {
-                            constructor() {
-                                this.listeners = [];
-                            }
-                            _emit(...args) {
-                                this.listeners.forEach((listener) => {
-                                    listener(...args);
-                                });
-                            }
-                            addListener(callback) {
-                                this.listeners.push(callback);
-                            }
-                            removeListener(callback) {
-                                const index = this.listeners.indexOf(callback);
-                                if (index > -1) {
-                                    this.listeners.splice(index, 1);
-                                }
-                            }
-                        }
-                        class NativePort {
-                            constructor() {
-                                this.connectionId = '';
-                                this.connected = false;
-                                this.pending = [];
-                                this.name = '';
-                                this._init = (connectionId, send) => {
-                                    this.connected = true;
-                                    this.connectionId = connectionId;
-                                    this._send = send;
-                                    this.pending.forEach((msg) => this.postMessage(msg));
-                                    this.pending = [];
-                                    Object.defineProperty(this, '_init', { value: void 0 });
-                                };
-                                this.onMessage = new Event();
-                                this.onDisconnect = new Event();
-                            }
-                            _send(message) {
-                                this.pending.push(message);
-                            }
-                            _receive(message) {
-                                this.onMessage._emit(message);
-                            }
-                            _disconnect() {
-                                this.disconnect();
-                            }
-                            postMessage(message) {
-                                this._send(message);
-                            }
-                            disconnect() {
-                                if (this.connected) {
-                                    electronContext.disconnectNative(extensionId, this.connectionId);
-                                    this.onDisconnect._emit();
-                                    this.connected = false;
-                                }
-                            }
-                        }
-                        const browserActionFactory = (base) => {
-                            const api = {
-                                ...base,
-                                setTitle: invokeExtensionHandle('browserAction.setTitle'),
-                                getTitle: invokeExtensionHandle('browserAction.getTitle'),
-                                setIcon: invokeExtensionHandle('browserAction.setIcon', {
-                                    serialize: (details) => {
-                                        if (details.imageData) {
-                                            if (manifest.manifest_version === 3) {
-                                                console.warn('action.setIcon with imageData is not yet supported by electron-chrome-extensions');
-                                                details.imageData = void 0;
-                                            } else if (details.imageData instanceof ImageData) {
-                                                details.imageData = imageData2base64(details.imageData);
-                                            } else {
-                                                details.imageData = Object.entries(details.imageData).reduce((obj, pair) => {
-                                                    obj[pair[0]] = imageData2base64(pair[1]);
-                                                    return obj;
-                                                }, {});
-                                            }
-                                        }
-                                        return [details];
-                                    },
-                                }),
-                                setPopup: invokeExtensionHandle('browserAction.setPopup'),
-                                getPopup: invokeExtensionHandle('browserAction.getPopup'),
-                                setBadgeText: invokeExtensionHandle('browserAction.setBadgeText'),
-                                getBadgeText: invokeExtensionHandle('browserAction.getBadgeText'),
-                                setBadgeBackgroundColor: invokeExtensionHandle('browserAction.setBadgeBackgroundColor'),
-                                getBadgeBackgroundColor: invokeExtensionHandle('browserAction.getBadgeBackgroundColor'),
-                                getUserSettings: invokeExtensionHandle('browserAction.getUserSettings'),
-                                enable: invokeExtensionHandle('browserAction.enable', { noop: true }),
-                                disable: invokeExtensionHandle('browserAction.disable', { noop: true }),
-                                openPopup: invokeExtensionHandle('browserAction.openPopup'),
-                                onClicked: new ExtensionEvent('browserAction.onClicked'),
-                            };
-                            return api;
-                        };
-
-                        const apiDefinitions = {
-                            action: {
-                                shouldInject: () => manifest.manifest_version === 3 && !!manifest.action,
-                                factory: browserActionFactory,
-                            },
-                            browserAction: {
-                                shouldInject: () => manifest.manifest_version === 2 && !!manifest.browser_action,
-                                factory: browserActionFactory,
-                            },
-                            commands: {
-                                factory: (base) => {
-                                    return {
-                                        ...base,
-                                        getAll: invokeExtensionHandle('commands.getAll'),
-                                        onCommand: new ExtensionEvent('commands.onCommand'),
-                                    };
-                                },
-                            },
-                            contextMenus: {
-                                factory: (base) => {
-                                    let menuCounter = 0;
-                                    const menuCallbacks = {};
-                                    const menuCreate = invokeExtensionHandle('contextMenus.create');
-                                    let hasInternalListener = false;
-                                    const addInternalListener = () => {
-                                        api.onClicked.addListener((info, tab) => {
-                                            const callback = menuCallbacks[info.menuItemId];
-                                            if (callback && tab) callback(info, tab);
-                                        });
-                                        hasInternalListener = true;
-                                    };
-                                    const api = {
-                                        ...base,
-                                        create: function (createProperties, callback) {
-                                            if (typeof createProperties.id === 'undefined') {
-                                                createProperties.id = `${++menuCounter}`;
-                                            }
-                                            if (createProperties.onclick) {
-                                                if (!hasInternalListener) addInternalListener();
-                                                menuCallbacks[createProperties.id] = createProperties.onclick;
-                                                delete createProperties.onclick;
-                                            }
-                                            menuCreate(createProperties, callback);
-                                            return createProperties.id;
-                                        },
-                                        update: invokeExtensionHandle('contextMenus.update', { noop: true }),
-                                        remove: invokeExtensionHandle('contextMenus.remove'),
-                                        removeAll: invokeExtensionHandle('contextMenus.removeAll'),
-                                        onClicked: new ExtensionEvent('contextMenus.onClicked'),
-                                    };
-                                    return api;
-                                },
-                            },
-                            cookies: {
-                                factory: (base) => {
-                                    return {
-                                        ...base,
-                                        get: invokeExtensionHandle('cookies.get'),
-                                        getAll: invokeExtensionHandle('cookies.getAll'),
-                                        set: invokeExtensionHandle('cookies.set'),
-                                        remove: invokeExtensionHandle('cookies.remove'),
-                                        getAllCookieStores: invokeExtensionHandle('cookies.getAllCookieStores'),
-                                        onChanged: new ExtensionEvent('cookies.onChanged'),
-                                    };
-                                },
-                            },
-                            downloads: {
-                                factory: (base) => {
-                                    return {
-                                        ...base,
-                                        acceptDanger: invokeExtensionHandle('downloads.acceptDanger', { noop: true }),
-                                        cancel: invokeExtensionHandle('downloads.cancel', { noop: true }),
-                                        download: invokeExtensionHandle('downloads.download', { noop: true }),
-                                        erase: invokeExtensionHandle('downloads.erase', { noop: true }),
-                                        getFileIcon: invokeExtensionHandle('downloads.getFileIcon', { noop: true }),
-                                        open: invokeExtensionHandle('downloads.open', { noop: true }),
-                                        pause: invokeExtensionHandle('downloads.pause', { noop: true }),
-                                        removeFile: invokeExtensionHandle('downloads.removeFile', { noop: true }),
-                                        resume: invokeExtensionHandle('downloads.resume', { noop: true }),
-                                        search: invokeExtensionHandle('downloads.search', { noop: true }),
-                                        setUiOptions: invokeExtensionHandle('downloads.setUiOptions', { noop: true }),
-                                        show: invokeExtensionHandle('downloads.show', { noop: true }),
-                                        showDefaultFolder: invokeExtensionHandle('downloads.showDefaultFolder', { noop: true }),
-                                        onChanged: new ExtensionEvent('downloads.onChanged'),
-                                        onCreated: new ExtensionEvent('downloads.onCreated'),
-                                        onDeterminingFilename: new ExtensionEvent('downloads.onDeterminingFilename'),
-                                        onErased: new ExtensionEvent('downloads.onErased'),
-                                    };
-                                },
-                            },
-                            extension: {
-                                factory: (base) => {
-                                    return {
-                                        ...base,
-                                        isAllowedFileSchemeAccess: invokeExtensionHandle('extension.isAllowedFileSchemeAccess', {
-                                            noop: true,
-                                            defaultResponse: false,
-                                        }),
-                                        isAllowedIncognitoAccess: invokeExtensionHandle('extension.isAllowedIncognitoAccess', {
-                                            noop: true,
-                                            defaultResponse: false,
-                                        }),
-                                        getViews: () => [],
-                                    };
-                                },
-                            },
-                            i18n: {
-                                shouldInject: () => manifest.manifest_version === 3,
-                                factory: (base) => {
-                                    if (base.getMessage) {
-                                        return base;
-                                    }
-                                    return {
-                                        ...base,
-                                        getUILanguage: () => 'en-US',
-                                        getAcceptLanguages: (callback) => {
-                                            const results = ['en-US'];
-                                            if (callback) {
-                                                queueMicrotask(() => callback(results));
-                                            }
-                                            return Promise.resolve(results);
-                                        },
-                                        getMessage: (messageName) => messageName,
-                                    };
-                                },
-                            },
-                            notifications: {
-                                factory: (base) => {
-                                    return {
-                                        ...base,
-                                        clear: invokeExtensionHandle('notifications.clear'),
-                                        create: invokeExtensionHandle('notifications.create'),
-                                        getAll: invokeExtensionHandle('notifications.getAll'),
-                                        getPermissionLevel: invokeExtensionHandle('notifications.getPermissionLevel'),
-                                        update: invokeExtensionHandle('notifications.update'),
-                                        onClicked: new ExtensionEvent('notifications.onClicked'),
-                                        onButtonClicked: new ExtensionEvent('notifications.onButtonClicked'),
-                                        onClosed: new ExtensionEvent('notifications.onClosed'),
-                                    };
-                                },
-                            },
-                            permissions: {
-                                factory: (base) => {
-                                    return {
-                                        ...base,
-                                        contains: invokeExtensionHandle('permissions.contains'),
-                                        getAll: invokeExtensionHandle('permissions.getAll'),
-                                        remove: invokeExtensionHandle('permissions.remove'),
-                                        request: invokeExtensionHandle('permissions.request'),
-                                        onAdded: new ExtensionEvent('permissions.onAdded'),
-                                        onRemoved: new ExtensionEvent('permissions.onRemoved'),
-                                    };
-                                },
-                            },
-                            privacy: {
-                                factory: (base) => {
-                                    return {
-                                        ...base,
-                                        network: {
-                                            networkPredictionEnabled: new ChromeSetting(),
-                                            webRTCIPHandlingPolicy: new ChromeSetting(),
-                                        },
-                                        services: {
-                                            autofillAddressEnabled: new ChromeSetting(),
-                                            autofillCreditCardEnabled: new ChromeSetting(),
-                                            passwordSavingEnabled: new ChromeSetting(),
-                                        },
-                                        websites: {
-                                            hyperlinkAuditingEnabled: new ChromeSetting(),
-                                        },
-                                    };
-                                },
-                            },
-                            runtime: {
-                                factory: (base) => {
-                                    return {
-                                        ...base,
-                                        connectNative: (application) => {
-                                            const port = new NativePort();
-                                            const receive = port._receive.bind(port);
-                                            const disconnect = port._disconnect.bind(port);
-                                            const callback = (connectionId, send) => {
-                                                port._init(connectionId, send);
-                                            };
-                                            electronContext.connectNative(extensionId, application, receive, disconnect, callback);
-                                            return port;
-                                        },
-                                        openOptionsPage: invokeExtensionHandle('runtime.openOptionsPage'),
-                                        sendNativeMessage: invokeExtensionHandle('runtime.sendNativeMessage'),
-                                        connect: null,
-                                        sendMessage: null,
-                                        id: SOCIALBROWSER.window.id,
-                                        getManifest: () => {},
-                                    };
-                                },
-                            },
-                            storage: {
-                                factory: (base) => {
-                                    const local = base && base.local;
-                                    return {
-                                        ...base,
-                                        managed: local,
-                                        sync: local,
-                                        local: { get: SOCIALBROWSER.getStorage, set: SOCIALBROWSER.setStorage },
-                                    };
-                                },
-                            },
-                            tabs: {
-                                factory: (base) => {
-                                    const api = {
-                                        ...base,
-                                        create: invokeExtensionHandle('tabs.create'),
-                                        executeScript: async function (arg1, arg2, arg3) {
-                                            if (typeof arg1 === 'object') {
-                                                const [activeTab] = await api.query({
-                                                    active: true,
-                                                    windowId: chrome.windows.WINDOW_ID_CURRENT,
-                                                });
-                                                return api.executeScript(activeTab.id, arg1, arg2);
-                                            } else {
-                                                return base.executeScript(arg1, arg2, arg3);
-                                            }
-                                        },
-                                        get: invokeExtensionHandle('tabs.get'),
-                                        getCurrent: invokeExtensionHandle('tabs.getCurrent'),
-                                        getAllInWindow: invokeExtensionHandle('tabs.getAllInWindow'),
-                                        insertCSS: invokeExtensionHandle('tabs.insertCSS'),
-                                        query: invokeExtensionHandle('tabs.query'),
-                                        reload: invokeExtensionHandle('tabs.reload'),
-                                        update: invokeExtensionHandle('tabs.update'),
-                                        remove: invokeExtensionHandle('tabs.remove'),
-                                        goBack: invokeExtensionHandle('tabs.goBack'),
-                                        goForward: invokeExtensionHandle('tabs.goForward'),
-                                        onCreated: new ExtensionEvent('tabs.onCreated'),
-                                        onRemoved: new ExtensionEvent('tabs.onRemoved'),
-                                        onUpdated: new ExtensionEvent('tabs.onUpdated'),
-                                        onActivated: new ExtensionEvent('tabs.onActivated'),
-                                        onReplaced: new ExtensionEvent('tabs.onReplaced'),
-                                    };
-                                    return api;
-                                },
-                            },
-                            topSites: {
-                                factory: () => {
-                                    return {
-                                        get: invokeExtensionHandle('topSites.get', { noop: true, defaultResponse: [] }),
-                                    };
-                                },
-                            },
-                            webNavigation: {
-                                factory: (base) => {
-                                    return {
-                                        ...base,
-                                        getFrame: invokeExtensionHandle('webNavigation.getFrame'),
-                                        getAllFrames: invokeExtensionHandle('webNavigation.getAllFrames'),
-                                        onBeforeNavigate: new ExtensionEvent('webNavigation.onBeforeNavigate'),
-                                        onCommitted: new ExtensionEvent('webNavigation.onCommitted'),
-                                        onCompleted: new ExtensionEvent('webNavigation.onCompleted'),
-                                        onCreatedNavigationTarget: new ExtensionEvent('webNavigation.onCreatedNavigationTarget'),
-                                        onDOMContentLoaded: new ExtensionEvent('webNavigation.onDOMContentLoaded'),
-                                        onErrorOccurred: new ExtensionEvent('webNavigation.onErrorOccurred'),
-                                        onHistoryStateUpdated: new ExtensionEvent('webNavigation.onHistoryStateUpdated'),
-                                        onReferenceFragmentUpdated: new ExtensionEvent('webNavigation.onReferenceFragmentUpdated'),
-                                        onTabReplaced: new ExtensionEvent('webNavigation.onTabReplaced'),
-                                    };
-                                },
-                            },
-                            webRequest: {
-                                factory: (base) => {
-                                    return {
-                                        ...base,
-                                        onHeadersReceived: new ExtensionEvent('webRequest.onHeadersReceived'),
-                                    };
-                                },
-                            },
-                            windows: {
-                                factory: (base) => {
-                                    return {
-                                        ...base,
-                                        WINDOW_ID_NONE: -1,
-                                        WINDOW_ID_CURRENT: SOCIALBROWSER.window.id,
-                                        get: invokeExtensionHandle('windows.get'),
-                                        getCurrent: invokeExtensionHandle('windows.getCurrent'),
-                                        getLastFocused: invokeExtensionHandle('windows.getLastFocused'),
-                                        getAll: invokeExtensionHandle('windows.getAll'),
-                                        create: invokeExtensionHandle('windows.create'),
-                                        update: invokeExtensionHandle('windows.update'),
-                                        remove: invokeExtensionHandle('windows.remove'),
-                                        onCreated: new ExtensionEvent('windows.onCreated'),
-                                        onRemoved: new ExtensionEvent('windows.onRemoved'),
-                                        onFocusChanged: new ExtensionEvent('windows.onFocusChanged'),
-                                    };
-                                },
-                            },
-                        };
-
-                        Object.keys(apiDefinitions).forEach((key) => {
-                            const apiName = key;
-                            const baseApi = chrome[apiName];
-                            const api = apiDefinitions[apiName];
-                            if (api.shouldInject && !api.shouldInject()) return;
-                            Object.defineProperty(chrome, apiName, {
-                                value: api.factory(baseApi),
-                                enumerable: true,
-                                configurable: true,
-                            });
-                        });
-
-                        chrome.csi = function () {
-                            return {
-                                onloadT: window.performance.timing.domContentLoadedEventEnd,
-                                startE: window.performance.timing.navigationStart,
-                                pageT: Date.now() - window.performance.timing.navigationStart,
-                                tran: 15,
-                            };
-                        };
-                        const ntEntryFallback = {
-                            nextHopProtocol: 'h2',
-                            type: 'other',
-                        };
-                        function toFixed(num, fixed) {
-                            var re = new RegExp('^-?\\d+(?:.\\d{0,' + (fixed || -1) + '})?');
-                            return num.toString().match(re)[0];
-                        }
-
-                        chrome.loadTimes = function () {
-                            return {
-                                get connectionInfo() {
-                                    const ntEntry = window.performance.getEntriesByType('navigation')[0] || ntEntryFallback;
-                                    return ntEntry.nextHopProtocol;
-                                },
-                                get npnNegotiatedProtocol() {
-                                    const ntEntry = window.performance.getEntriesByType('navigation')[0] || ntEntryFallback;
-                                    return ['h2', 'hq'].includes(ntEntry.nextHopProtocol) ? ntEntry.nextHopProtocol : 'unknown';
-                                },
-                                get navigationType() {
-                                    const ntEntry = window.performance.getEntriesByType('navigation')[0] || ntEntryFallback;
-                                    return ntEntry.type;
-                                },
-                                get wasAlternateProtocolAvailable() {
-                                    return false;
-                                },
-                                get wasFetchedViaSpdy() {
-                                    const ntEntry = window.performance.getEntriesByType('navigation')[0] || ntEntryFallback;
-                                    return ['h2', 'hq'].includes(ntEntry.nextHopProtocol);
-                                },
-                                get wasNpnNegotiated() {
-                                    const ntEntry = window.performance.getEntriesByType('navigation')[0] || ntEntryFallback;
-                                    return ['h2', 'hq'].includes(ntEntry.nextHopProtocol);
-                                },
-                                get firstPaintAfterLoadTime() {
-                                    return 0;
-                                },
-                                get requestTime() {
-                                    return window.performance.timing.navigationStart / 1000;
-                                },
-                                get startLoadTime() {
-                                    return window.performance.timing.navigationStart / 1000;
-                                },
-                                get commitLoadTime() {
-                                    return window.performance.timing.responseStart / 1000;
-                                },
-                                get finishDocumentLoadTime() {
-                                    return window.performance.timing.domContentLoadedEventEnd / 1000;
-                                },
-                                get finishLoadTime() {
-                                    return window.performance.timing.loadEventEnd / 1000;
-                                },
-                                get firstPaintTime() {
-                                    const fpEntry = window.performance.getEntriesByType('paint')[0] || {
-                                        startTime: window.performance.timing.loadEventEnd / 1000,
-                                    };
-                                    return toFixed((fpEntry.startTime + window.performance.timeOrigin) / 1000, 3);
-                                },
-                            };
-                        };
-                        chrome.app = {
-                            isInstalled: false,
-                            InstallState: {
-                                DISABLED: 'disabled',
-                                INSTALLED: 'installed',
-                                NOT_INSTALLED: 'not_installed',
-                            },
-                            RunningState: {
-                                CANNOT_RUN: 'cannot_run',
-                                READY_TO_RUN: 'ready_to_run',
-                                RUNNING: 'running',
-                            },
-                            isInstalled: function () {
-                                return false;
-                            },
-
-                            getDetails: function () {
-                                return null;
-                            },
-                            getIsInstalled: function () {
-                                return false;
-                            },
-                            runningState: function () {
-                                return 'cannot_run';
-                            },
-                        };
-
-                        chrome.appPinningPrivate = chrome.appPinningPrivate || {
-                            getPins: () => {},
-                            pinPage: () => {},
-                        };
-
-                        if (!globalThis.chrome) {
-                            SOCIALBROWSER.__setConstValue(window, 'chrome', chrome);
-                        }
-                    }
-
-                    mainWorldScript();
-                };
-
-                injectExtensionAPIs();
-            })();
-        } else {
-            if (!SOCIALBROWSER.isFirefox) {
-                const chrome = {};
-                chrome.csi = function () {
-                    return {
-                        onloadT: window.performance.timing.domContentLoadedEventEnd,
-                        startE: window.performance.timing.navigationStart,
-                        pageT: Date.now() - window.performance.timing.navigationStart,
-                        tran: 15,
-                    };
-                };
-                const ntEntryFallback = {
-                    nextHopProtocol: 'h2',
-                    type: 'other',
-                };
-                function toFixed(num, fixed) {
-                    var re = new RegExp('^-?\\d+(?:.\\d{0,' + (fixed || -1) + '})?');
-                    return num.toString().match(re)[0];
-                }
-
-                chrome.loadTimes = function () {
-                    return {
-                        get connectionInfo() {
-                            const ntEntry = window.performance.getEntriesByType('navigation')[0] || ntEntryFallback;
-                            return ntEntry.nextHopProtocol;
-                        },
-                        get npnNegotiatedProtocol() {
-                            const ntEntry = window.performance.getEntriesByType('navigation')[0] || ntEntryFallback;
-                            return ['h2', 'hq'].includes(ntEntry.nextHopProtocol) ? ntEntry.nextHopProtocol : 'unknown';
-                        },
-                        get navigationType() {
-                            const ntEntry = window.performance.getEntriesByType('navigation')[0] || ntEntryFallback;
-                            return ntEntry.type;
-                        },
-                        get wasAlternateProtocolAvailable() {
-                            return false;
-                        },
-                        get wasFetchedViaSpdy() {
-                            const ntEntry = window.performance.getEntriesByType('navigation')[0] || ntEntryFallback;
-                            return ['h2', 'hq'].includes(ntEntry.nextHopProtocol);
-                        },
-                        get wasNpnNegotiated() {
-                            const ntEntry = window.performance.getEntriesByType('navigation')[0] || ntEntryFallback;
-                            return ['h2', 'hq'].includes(ntEntry.nextHopProtocol);
-                        },
-                        get firstPaintAfterLoadTime() {
-                            return 0;
-                        },
-                        get requestTime() {
-                            return window.performance.timing.navigationStart / 1000;
-                        },
-                        get startLoadTime() {
-                            return window.performance.timing.navigationStart / 1000;
-                        },
-                        get commitLoadTime() {
-                            return window.performance.timing.responseStart / 1000;
-                        },
-                        get finishDocumentLoadTime() {
-                            return window.performance.timing.domContentLoadedEventEnd / 1000;
-                        },
-                        get finishLoadTime() {
-                            return window.performance.timing.loadEventEnd / 1000;
-                        },
-                        get firstPaintTime() {
-                            const fpEntry = window.performance.getEntriesByType('paint')[0] || {
-                                startTime: window.performance.timing.loadEventEnd / 1000,
-                            };
-                            return toFixed((fpEntry.startTime + window.performance.timeOrigin) / 1000, 3);
-                        },
-                    };
-                };
-                chrome.app = {
-                    isInstalled: false,
-                    InstallState: {
-                        DISABLED: 'disabled',
-                        INSTALLED: 'installed',
-                        NOT_INSTALLED: 'not_installed',
-                    },
-                    RunningState: {
-                        CANNOT_RUN: 'cannot_run',
-                        READY_TO_RUN: 'ready_to_run',
-                        RUNNING: 'running',
-                    },
-                    isInstalled: function () {
-                        return false;
-                    },
-
-                    getDetails: function () {
-                        return null;
-                    },
-                    getIsInstalled: function () {
-                        return false;
-                    },
-                    runningState: function () {
-                        return 'cannot_run';
-                    },
-                };
-                if (!globalThis.chrome) {
-                    SOCIALBROWSER.__setConstValue(window, 'chrome', chrome);
-                }
-            } else {
-                chrome = undefined;
-            }
-        }
 
         if (SOCIALBROWSER.window.eval) {
             SOCIALBROWSER.eval(SOCIALBROWSER.window.eval);
