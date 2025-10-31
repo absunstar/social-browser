@@ -50,7 +50,7 @@ let defaultTapProperties = {
     id: '',
     url: 'https://www.google.com',
     title: null,
-    iconURL: 'browser://images/loading-white.gif',
+    iconURL: 'browser://images/loading.gif',
 };
 
 function getDefaultTapProperties() {

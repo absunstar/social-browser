@@ -765,7 +765,7 @@ module.exports = function (child) {
                     details.responseHeaders['Access-Control-Allow-Credentials'.toLowerCase()] = 'true';
 
                     if (win && win.customSetting && win.customSetting.allowCrossOrigin) {
-                        if(details.method.like('options')){
+                        if (details.method.like('options')) {
                             statusLine = '200';
                         }
                         details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = ['*'];
@@ -811,12 +811,15 @@ module.exports = function (child) {
 
                         if (Array.isArray(s_policy)) {
                             s_policy.forEach((value, key) => {
-                                // if (win && s_policy[key].like('*sha256*')) {
-                                //     win.customSetting.$sha256 = s_policy[key];
-                                // }
-                                // if (win && s_policy[key].like('*nonce*')) {
-                                //     win.customSetting.$nonce = s_policy[key];
-                                // }
+                                if (win) {
+                                    if (s_policy[key].like('*sha256*')) {
+                                        win.customSetting.$sha256 = s_policy[key];
+                                    }
+                                    if (s_policy[key].like('*nonce*')) {
+                                        win.customSetting.$nonce = s_policy[key];
+                                    }
+                                }
+
                                 if (!s_policy[key].contain('browser://') && !s_policy[key].contain("'none'")) {
                                     pList.forEach((p) => {
                                         if (!s_policy[key].contain('nonce-') && !s_policy[key].contain("'unsafe-inline'")) {
@@ -826,24 +829,16 @@ module.exports = function (child) {
                                         }
                                     });
                                 }
-
-                                // s_policy[key] = s_policy[key].replaceAll("default-src 'none'", '');
-                                // s_policy[key] = s_policy[key].replaceAll('data: ', 'data: browser://* ');
-                                // s_policy[key] = s_policy[key].replaceAll('default-src ', 'default-src browser://* ');
-                                // s_policy[key] = s_policy[key].replaceAll('img-src ', 'img-src browser://* ');
-                                // if (s_policy[key].contains("'unsafe-inline'") && !s_policy[key].contains('nonce-') && !s_policy[key].contains('sha256-')) {
-                                //     s_policy[key] = s_policy[key].replaceAll('script-src ', 'script-src browser://* ');
-                                //     s_policy[key] = s_policy[key].replaceAll('script-src-elem ', 'script-src-elem browser://* ');
-                                //     s_policy[key] = s_policy[key].replaceAll('connect-src ', 'connect-src browser://* ');
-                                //     s_policy[key] = s_policy[key].replaceAll('frame-src ', 'frame-src browser://* ');
-                                // } else {
-                                //     s_policy[key] = s_policy[key].replaceAll('script-src ', "script-src browser://* 'nonce-social' ");
-                                //     s_policy[key] = s_policy[key].replaceAll('script-src-elem ', "script-src-elem browser://* 'nonce-social' ");
-                                //     s_policy[key] = s_policy[key].replaceAll('connect-src ', "connect-src browser://* 'nonce-social' ");
-                                //     s_policy[key] = s_policy[key].replaceAll('frame-src ', "frame-src browser://* 'nonce-social' ");
-                                // }
                             });
                         } else if (typeof s_policy == 'string') {
+                            if (win) {
+                                if (s_policy.like('*sha256*')) {
+                                    win.customSetting.$sha256 = s_policy;
+                                }
+                                if (s_policy.like('*nonce*')) {
+                                    win.customSetting.$nonce = s_policy;
+                                }
+                            }
                             if (!s_policy.contain('browser://') && !s_policy.contain("'none'")) {
                                 pList.forEach((p) => {
                                     if (!s_policy.contain('nonce-') && !s_policy.contain("'unsafe-inline'")) {
@@ -853,22 +848,6 @@ module.exports = function (child) {
                                     }
                                 });
                             }
-
-                            // s_policy = s_policy.replaceAll("default-src 'none'", '');
-                            // s_policy = s_policy.replaceAll('data: ', 'data: browser://* ');
-                            // s_policy = s_policy.replaceAll('default-src ', 'default-src browser://* ');
-                            // s_policy = s_policy.replaceAll('img-src ', 'img-src browser://* ');
-                            // if (s_policy.contains("'unsafe-inline'") && !s_policy.contains('nonce-') && !s_policy[key].contains('sha256-')) {
-                            //     s_policy = s_policy.replaceAll('script-src ', 'script-src browser://* ');
-                            //     s_policy = s_policy.replaceAll('script-src-elem ', 'script-src-elem browser://* ');
-                            //     s_policy = s_policy.replaceAll('frame-src ', 'frame-src browser://* ');
-                            //     s_policy = s_policy.replaceAll('connect-src ', 'connect-src browser://* ');
-                            // } else {
-                            //     s_policy = s_policy.replaceAll('script-src ', "script-src browser://* 'nonce-social' ");
-                            //     s_policy = s_policy.replaceAll('frame-src ', "frame-src browser://* 'nonce-social' ");
-                            //     s_policy = s_policy.replaceAll('connect-src ', "connect-src browser://* 'nonce-social' ");
-                            //     s_policy = s_policy.replaceAll('script-src-elem ', "script-src-elem browser://* 'nonce-social' ");
-                            //}
                         } else {
                             console.log(typeof s_policy, s_policy);
                         }
@@ -898,7 +877,7 @@ module.exports = function (child) {
                     responseHeaders: {
                         ...details.responseHeaders,
                     },
-                    statusLine:statusLine,
+                    statusLine: statusLine,
                 });
             });
 

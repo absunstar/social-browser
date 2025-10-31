@@ -213,7 +213,7 @@
 
     <body ng-controller="mainController" class="main-setting">
         <div ng-show="busy" id="loading">
-            <img src="/images/loading-white.gif" alt="" />
+            <img src="/images/loading.gif" alt="" />
         </div>
 
         <div ng-hide="busy" class="content loaded">
@@ -368,6 +368,8 @@
                                             <p class="bold font-16 "><b>Max Profils : </b> ( {{setting.core.browser.maxProfiles}} ) </p>
                                             <br>
                                             <p class="bold font-16 orange">{{setting.core.browser.message}}</p>
+                                            <br>
+                                            <p ng-show="setting.core.keyInfo.endDate" class="bold font-20 red">Expire Date : {{setting.core.keyInfo.endDate | xdate}}</p>
                                         </div>
 
                                         <div class="row padding">

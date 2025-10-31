@@ -864,17 +864,17 @@ SOCIALBROWSER.showWindowsMenu = function () {
         type: 'separator',
     });
 
-    // SOCIALBROWSER.menuList.push({
-    //     label: 'Open URL in  [ Chrome Browser ] ',
-    //     sublabel: SOCIALBROWSER.getCurrentTabInfo().url,
-    //     iconURL: 'http://127.0.0.1:60080/images/chrome.png',
-    //     click: () => {
-    //         ipc('[window-action]', { name: 'open-in-chrome' });
-    //     },
-    // });
+    SOCIALBROWSER.menuList.push({
+        label: 'Open URL in  [ Chrome Browser Simulator ] ',
+        sublabel: SOCIALBROWSER.getCurrentTabInfo().url,
+        iconURL: 'http://127.0.0.1:60080/images/chrome.png',
+        click: () => {
+            ipc('[window-action]', { name: 'open-in-chrome' });
+        },
+    });
 
     SOCIALBROWSER.menuList.push({
-        label: 'Open URL in  [ Chrome Browser ] ( Shared Cookies , User Data , Extentions ) ',
+        label: 'Open URL in  [ Chrome Browser Simulator ] ( Shared Cookies , User Data , Extentions ) ',
         sublabel: SOCIALBROWSER.getCurrentTabInfo().url,
         iconURL: 'http://127.0.0.1:60080/images/chrome.png',
         click: () => {
@@ -886,7 +886,7 @@ SOCIALBROWSER.showWindowsMenu = function () {
         type: 'separator',
     });
     SOCIALBROWSER.menuList.push({
-        label: 'Open URL in  [ External - Browser ] ',
+        label: 'Open URL in  [ External Browser ] ',
         sublabel: SOCIALBROWSER.getCurrentTabInfo().url,
         iconURL: 'http://127.0.0.1:60080/images/html.png',
         click: () => {
@@ -1162,7 +1162,7 @@ function renderNewTabData(op) {
         id: 'tab_' + new Date().getTime(),
         title: op.title || op.url,
         user_name: op.user_name || op.partition,
-        iconURL: 'browser://images/loading-white.gif',
+        iconURL: 'browser://images/loading.gif',
         mainWindowID: SOCIALBROWSER.window.id,
     };
     socialTabs.addTab(tab);

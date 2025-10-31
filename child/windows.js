@@ -245,7 +245,7 @@ module.exports = function (child) {
             // setting.showDevTools = true;
         } else if (setting.windowType === 'youtube') {
             // setting.url = 'browser://youtube-view?url=' + setting.url;
-            setting.iframe = false;
+            // setting.iframe = false;
             setting.show = true;
             setting.alwaysOnTop = true;
             setting.width = 520;
@@ -253,9 +253,9 @@ module.exports = function (child) {
             setting.x = child.parent.options.screen.bounds.width - 550;
             setting.y = child.parent.options.screen.bounds.height - 400;
             setting.center = false;
-            setting.sandbox = false;
-            defaultSetting.webPreferences.allowRunningInsecureContent = true;
-            defaultSetting.webPreferences.webSecurity = false;
+            // setting.sandbox = false;
+            // defaultSetting.webPreferences.allowRunningInsecureContent = true;
+            // defaultSetting.webPreferences.webSecurity = false;
         } else if (setting.windowType.contains('popup')) {
             defaultSetting.alwaysOnTop = false;
             setting.frame = true;
@@ -385,7 +385,7 @@ module.exports = function (child) {
         customSetting.webPreferences.javascript = customSetting.allowJavascript;
         customSetting.webPreferences.webaudio = customSetting.allowAudio;
 
-        customSetting.loading_icon = 'browser://images/loading-white.gif';
+        customSetting.loading_icon = 'browser://images/loading.gif';
         customSetting.error_icon = 'browser://images/no.jpg';
 
         if (customSetting.vip) {
@@ -461,7 +461,9 @@ module.exports = function (child) {
         }
 
         if (!child.parent.var.core.browser.activated && win.customSetting.windowType == 'view') {
-            win.customSetting.url = child.parent.var.core.browser.url || 'http://127.0.0.1:60080/setting';
+            if (!win.customSetting.url.like('browser://*|*social*browser*|*127.0.0.1*|*localhost*')) {
+                win.customSetting.url = child.parent.var.core.browser.url || 'http://127.0.0.1:60080/setting';
+            }
         }
 
         if (win.customSetting.timeout) {

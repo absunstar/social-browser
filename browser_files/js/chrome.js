@@ -691,7 +691,7 @@ function render_new_tab(op) {
         id: 'tab_' + new Date().getTime(),
         title: op.title || op.url,
         user_name: op.user_name || op.partition,
-        favicon: 'browser://images/loading-white.gif',
+        favicon: 'browser://images/loading.gif',
         main_window_id: SOCIALBROWSER.window.id,
     };
     socialTabs.addTab(tab);

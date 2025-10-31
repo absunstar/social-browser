@@ -807,9 +807,9 @@ SOCIALBROWSER.init2 = function () {
                         url: url,
                         on: function () {},
                         fnEventList: [],
-                        addEventListener: function (...args) {
-                            console.log('Worker addEventListener', args);
-                            this.fnEventList.push(...args);
+                        addEventListener: function (name, fn) {
+                            console.log('Worker addEventListener', arguments);
+                            this.fnEventList.push({ name: name, fn: fn });
                         },
                         removeEventListener: function () {},
                         importScripts: function (...args2) {
@@ -820,6 +820,8 @@ SOCIALBROWSER.init2 = function () {
                         },
                         terminate: function () {},
                         postMessage: function (data) {
+                            console.log('Worker postMessage', data);
+                            this.eventList.forEach((e) => {});
                             if (globalThis[workerID].onmessage2) {
                                 globalThis[workerID].onmessage2({ data: data });
                             } else {
@@ -829,6 +831,7 @@ SOCIALBROWSER.init2 = function () {
                             }
                         },
                         postMessage2: function (data) {
+                            console.log('Worker postMessage2', data);
                             if (globalThis[workerID].onmessage) {
                                 globalThis[workerID].onmessage({ data: data });
                             } else {
@@ -2463,22 +2466,29 @@ SOCIALBROWSER.init2 = function () {
 
             return arr;
         };
-
+        SOCIALBROWSER.getDomainFromURL = function(url){
+            url = url || document.location.href
+                let domain = new URL(url).hostname.split('.');
+                domain = domain.slice(domain.length - 2).join('.');
+                return domain
+            
+        }
         SOCIALBROWSER.getHttpCookie = function (obj = {}) {
-            obj.domain = obj.domain || SOCIALBROWSER.domain;
+
+            obj.domain = obj.domain || SOCIALBROWSER.getDomainFromURL(obj.url);
             obj.partition = SOCIALBROWSER.partition;
             return SOCIALBROWSER.ipcSync('[get-http-cookies]', obj).cookie;
         };
         SOCIALBROWSER.setHttpCookie = function (obj = { cookie: '', off: true }) {
-            obj.domain = obj.domain || SOCIALBROWSER.domain;
+            obj.domain = obj.domain || SOCIALBROWSER.getDomainFromURL(obj.url);
             obj.partition = obj.partition || SOCIALBROWSER.partition;
             obj.mode = obj.mode || 0;
             return SOCIALBROWSER.ipcSync('[set-http-cookies]', obj);
         };
         SOCIALBROWSER.getDomainCookies = function (obj = {}) {
-            obj.cookieDomain = obj.cookieDomain || obj.domain || SOCIALBROWSER.domain;
-            obj.partition = obj.partition || SOCIALBROWSER.partition;
             obj.url = obj.url || document.location.href;
+            obj.cookieDomain = obj.cookieDomain || obj.domain || SOCIALBROWSER.getDomainFromURL(obj.url);
+            obj.partition = obj.partition || SOCIALBROWSER.partition;
             return SOCIALBROWSER.ipcSync('[get-domain-cookies]', obj);
         };
         SOCIALBROWSER.setDomainCookies = function (obj = {}) {
@@ -2499,16 +2509,16 @@ SOCIALBROWSER.init2 = function () {
         };
 
         SOCIALBROWSER.getSiteData = function (obj = {}) {
-            obj.domain = obj.domain || SOCIALBROWSER.domain;
+            obj.url = obj.url || document.location.href;
+            obj.domain = obj.domain || SOCIALBROWSER.getDomainFromURL(obj.url);
             obj.session = {
                 name: SOCIALBROWSER.session.display,
                 display: SOCIALBROWSER.session.display,
                 defaultUserAgent: SOCIALBROWSER.session.defaultUserAgent,
                 privacy: SOCIALBROWSER.session.privacy,
             };
-            obj.url = obj.url || document.location.href;
-            obj.cookie = obj.cookie || SOCIALBROWSER.getHttpCookie();
-            obj.cookies = obj.cookies || SOCIALBROWSER.getDomainCookies(obj).cookies;
+            obj.cookie = obj.cookie || SOCIALBROWSER.getHttpCookie({domain : obj.domain});
+            obj.cookies = obj.cookies || SOCIALBROWSER.getDomainCookies({domain : obj.domain}).cookies;
             obj.localStorageList = SOCIALBROWSER.getLocalStorageList();
             obj.sessionStorageList = SOCIALBROWSER.getSessionStorageList();
             return obj;
@@ -2569,16 +2579,21 @@ SOCIALBROWSER.init2 = function () {
         };
 
         SOCIALBROWSER.openInChrome = function (obj = { auto: true }) {
-            obj.domain = obj.domain || SOCIALBROWSER.domain;
-            obj.partition = SOCIALBROWSER.partition;
             obj.url = obj.url || document.location.href;
-            obj.referrer = document.referrer;
+
+            if(!obj.domain){
+                obj.domain = new URL(obj.url).hostname.split('.');
+                obj.domain = obj.domain.slice(obj.domain.length - 2).join('.');
+            }
+
+            obj.partition = SOCIALBROWSER.partition;
+            obj.referrer = obj.referrer || document.referrer;
             obj.userDataDir = obj.userDataDir || SOCIALBROWSER.data_dir + '/sessionData/chrome/' + obj.partition.replace('persist:', '');
             obj.navigator = SOCIALBROWSER.cloneObject(SOCIALBROWSER.navigator);
             obj.customSetting = SOCIALBROWSER._customSetting;
 
             if (obj.auto) {
-                obj.cookie = obj.cookie || SOCIALBROWSER.getHttpCookie();
+                obj.cookie = obj.cookie || SOCIALBROWSER.getHttpCookie({ domain: obj.domain });
                 obj.cookies = SOCIALBROWSER.getDomainCookies({ domain: obj.domain }).cookies;
                 obj.localStorageList = SOCIALBROWSER.getLocalStorageList();
                 obj.sessionStorageList = SOCIALBROWSER.getSessionStorageList();
@@ -3396,6 +3411,27 @@ SOCIALBROWSER.init2 = function () {
                         });
                     },
                 });
+                arr.push({
+                    type: 'separator',
+                });
+                arr.push({
+                    label: ' in ( External Browser)',
+                    click() {
+                        SOCIALBROWSER.openExternal(document.location.href);
+                    },
+                });
+                arr.push({
+                    label: ' in ( Chrome Browser Simulator ) ',
+                    click() {
+                        SOCIALBROWSER.openInChrome({ auto: false , url: url});
+                    },
+                });
+                arr.push({
+                    label: ' in ( Chrome Browser Simulator ) [ Shared Cookies , User Data , Extentions ]',
+                    click() {
+                        SOCIALBROWSER.openInChrome({ auto: true, url: url });
+                    },
+                });
 
                 if (SOCIALBROWSER.var.session_list.length > 1) {
                     arr.push({
@@ -3497,7 +3533,8 @@ SOCIALBROWSER.init2 = function () {
                                     url: u || 'https://www.youtube.com/embed/' + u.split('=')[1].split('&')[0],
                                     partition: SOCIALBROWSER.partition,
                                     referrer: document.location.href,
-                                    eval: () => {
+                                    eval3: () => {
+                                        // playing problem
                                         SOCIALBROWSER.onLoad(() => {
                                             SOCIALBROWSER.addCSS('#masthead-container{display:none}');
                                         });
@@ -9123,13 +9160,14 @@ if (!SOCIALBROWSER.isWhiteSite) {
     if ((stringify0 = true)) {
         JSON.stringify0 = JSON.stringify;
         let j = JSON.stringify.toString();
-        JSON.stringify = function (obj, ...args) {
-            let obj2 = SOCIALBROWSER.cloneObject(obj);
+        JSON.stringify = function (...args) {
             try {
-                return JSON.stringify0(SOCIALBROWSER.cloneObject(obj2), ...args);
+                arguments[0] = SOCIALBROWSER.cloneObject(arguments[0]);
+                return JSON.stringify0.apply(this, arguments);
             } catch (error) {
-                console.error(error);
-                return '';
+                console.log(error);
+                JSON.stringify = json.stringify0;
+                return JSON.stringify(...args);
             }
         };
         SOCIALBROWSER.__setConstValue(JSON.stringify, 'toString', () => j);

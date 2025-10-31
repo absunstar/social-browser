@@ -778,23 +778,33 @@ module.exports = function init(parent) {
 
                 if (data.done && data.activated) {
                     parent.var.core.browser.activated = true;
-                    parent.var.core.browser.message = data.message || '';
-                    parent.var.core.browser.maxTabs = data.maxTabs || parent.var.core.browser.maxTabs;
+                    parent.var.core.browser.message = data.message || 'Browser Activated';
                     parent.var.core.browser.maxProfiles = data.maxProfiles || parent.var.core.browser.maxProfiles;
                 } else if (data.done && !data.activated) {
                     parent.var.core.browser.activated = false;
-                    parent.var.core.browser.message = data.message || '';
-                    parent.var.core.browser.maxTabs = data.maxTabs || parent.var.core.browser.maxTabs;
+                    parent.var.core.browser.message = data.message || 'Browser Not Activated';
                     parent.var.core.browser.maxProfiles = data.maxProfiles || 10;
                 } else {
-                    parent.var.core.browser.message = data.message || '';
                     parent.var.core.browser.activated = false;
-                    parent.var.core.browser.maxTabs = 2;
+                    parent.var.core.browser.message = data.message || 'Browser Can Not Activated';
                 }
                 parent.shareBrowserVar('core');
                 callback(null, data);
             })
             .catch((err) => {
+                if (err) {
+                    if (parent.var.core.keyInfo && parent.var.core.keyInfo.endDate && parent.api.getDate(parent.var.core.keyInfo.endDate).getTime() < parent.api.getDate().getTime()) {
+                        parent.var.core.browser.activated = false;
+                        parent.var.core.browser.message = 'Your Key Expire Date , Update Key or Subscription and get New Key';
+                    } else if (parent.var.session_list.length <= parent.var.core.browser.maxProfiles) {
+                        parent.var.core.browser.activated = true;
+                        parent.var.core.browser.message = 'Free Activated';
+                    } else {
+                        parent.var.core.browser.activated = false;
+                        parent.var.core.browser.message = 'Must Activated by [ Device Key ] or [ Online Key ] to use more than ' + parent.var.core.browser.maxProfiles + ' profiles';
+                    }
+                    parent.shareBrowserVar('core');
+                }
                 console.log(err);
                 parent.var.core.browser.message = 'Error While Checking Online Key';
                 parent.shareBrowserVar('core');
@@ -802,9 +812,10 @@ module.exports = function init(parent) {
             });
     };
 
+    // check key every 6 hour before working day ended
     setInterval(() => {
         parent.onLineActivated({ key: parent.var.core['OnlineKey'] });
-    }, 1000 * 60 * 60 * 24);
+    }, 1000 * 60 * 60 * 6);
 
     parent.activated = function () {
         parent.var.core['DeviceId'] = '';
@@ -818,38 +829,20 @@ module.exports = function init(parent) {
             } else if (parent.var.core['BrowserKey'] && parent.md5(parent.api.to123(parent.var.core['id'] + parent.var.core['DeviceId'])) === parent.var.core['BrowserKey']) {
                 parent.var.core.browser.activated = true;
                 parent.var.core.browser.message = 'Browser Activated By ( Browser Key )';
-                if (parent.var.core.browser.maxTabs < 3) {
-                    parent.var.core.browser.maxTabs = 20;
-                    parent.var.core.browser.maxProfiles = 1000;
-                }
+
+                parent.var.core.browser.maxProfiles = 1000;
+
                 parent.shareBrowserVar('core');
             } else if (parent.var.core['DeviceKey'] && parent.md5(parent.api.to123(parent.var.core['DeviceId'])) === parent.var.core['DeviceKey']) {
                 parent.var.core.browser.activated = true;
                 parent.var.core.browser.message = 'Browser Activated By ( Device Key )';
-                if (parent.var.core.browser.maxTabs < 3) {
-                    parent.var.core.browser.maxTabs = 20;
-                    parent.var.core.browser.maxProfiles = 1000;
-                }
+
+                parent.var.core.browser.maxProfiles = 1000;
+
                 parent.shareBrowserVar('core');
             } else {
                 // can active by browserid or deviceid or ip
-                parent.onLineActivated({ key: parent.var.core['OnlineKey'] }, (err, data) => {
-                    if (err || !data || !data.done || !data.activated) {
-                        if (parent.var.session_list.length <= parent.var.core.browser.maxProfiles) {
-                            parent.var.core.browser.activated = true;
-                            parent.var.core.browser.message = 'Free Activated';
-
-                            if (parent.var.core.browser.maxTabs < 3) {
-                                parent.var.core.browser.maxTabs = 20;
-                            }
-                        } else {
-                            parent.var.core.browser.activated = false;
-                            parent.var.core.browser.maxTabs = 2;
-                            parent.var.core.browser.message = 'Must Activated by [ Device Key ] or [ Online Key ] to use more than ' + parent.var.core.browser.maxProfiles + ' profiles';
-                        }
-                        parent.shareBrowserVar('core');
-                    }
-                });
+                parent.onLineActivated({ key: parent.var.core['OnlineKey'] });
             }
         }
     };
