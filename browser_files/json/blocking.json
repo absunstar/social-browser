@@ -59,7 +59,6 @@
             "cpu_count": 10,
             "languages": "en",
             "hide_touch_screen": false,
-            "hide_plugins": true,
             "hide_mimetypes": true,
             "hide_media_devices": true,
             "hide_battery": true,
@@ -71,7 +70,7 @@
             "removeXFrameOptions": false,
             "hide_fonts": false,
             "hide_webgl": true,
-            "hide_audio": true,
+            "hide_audio": false,
             "hide_canvas": true
         },
         "allowVPC": false

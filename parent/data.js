@@ -747,6 +747,10 @@ module.exports = function init(parent) {
     parent.onLineActivated = function (obj = {}, callback = () => {}) {
         let serverURL = 'https://social-browser.com';
         // serverURL = 'http://localhost:60002';
+        let key = obj.key;
+        if (key) {
+            key = parent.api.to123(key);
+        }
         parent.api
             .fetch(serverURL + '/api/activated-by-online-key', {
                 mode: 'cors',
@@ -755,7 +759,7 @@ module.exports = function init(parent) {
                     'User-Agent': parent.var.core.defaultUserAgent.url,
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ browserID: parent.var.core.id, deviceID: parent.var.core.DeviceId, key: parent.api.to123(obj.key) }),
+                body: JSON.stringify({ browserID: parent.var.core.id, deviceID: parent.var.core.DeviceId, key: key }),
                 redirect: 'follow',
                 agent: function (_parsedURL) {
                     if (_parsedURL.protocol == 'http:') {
@@ -773,7 +777,9 @@ module.exports = function init(parent) {
                 return res.json();
             })
             .then((data) => {
-                parent.var.core.OnlineKey = obj.key;
+                if (obj.key) {
+                    parent.var.core.OnlineKey = obj.key;
+                }
                 parent.var.core.keyInfo = data;
 
                 if (data.done && data.activated) {

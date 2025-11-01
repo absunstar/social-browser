@@ -89,10 +89,8 @@ app.controller('mainController', ($scope, $http, $timeout) => {
             $scope.setting.session_list
                 .filter((s) => s.$selected)
                 .forEach((s, i) => {
-                    $scope.setting.session_list[i].selected_proxy_mode = $scope.setting.proxy_mode_list[3];
-                    $scope.setting.session_list[i].selected_proxy = $scope.setting.proxy_list[index];
                     $scope.setting.session_list[i].proxy = $scope.setting.proxy_list[index];
-                    $scope.setting.session_list[i].proxy.enabled = true;
+                    $scope.setting.session_list[i].proxyEnabled = true;
                     index++;
                     if (index >= $scope.setting.proxy_list.length) {
                         index = 0;
@@ -100,10 +98,8 @@ app.controller('mainController', ($scope, $http, $timeout) => {
                 });
         } else {
             if (session) {
-                session.proxy.selected_proxy_mode = $scope.setting.proxy_mode_list[3];
-                session.proxy.selected_proxy = $scope.setting.proxy_list[index];
                 session.proxy = $scope.setting.proxy_list[index];
-                session.proxy.enabled = true;
+                session.proxyEnabled = true;
             }
         }
 
@@ -292,25 +288,32 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     };
 
     $scope.exportSelectedProfilesAndData = async function () {
-        let file = SOCIALBROWSER.ipcSync('[select-save-file]', { defaultPath: 'profilesAndData.social' });
+        let rand = SOCIALBROWSER.md5(SOCIALBROWSER.var.core.id + new Date().getTime());
+        let file = SOCIALBROWSER.ipcSync('[select-save-file]', { defaultPath: 'profilesAndData_' + rand + '.social' });
         if (file) {
+            $scope.busy = true;
             let arr = $scope.setting.session_list.filter((s) => s.$selected);
+
             for (let index = 0; index < arr.length; index++) {
                 const profile = arr[index];
-                SOCIALBROWSER.showUserMessage('Data Collect for Profile <br> ' + profile.display);
-                SOCIALBROWSER.alert('Data Collect for Profile <br> ' + profile.display);
+                let msg = 'Data Collect for Profile <br> ' + profile.display;
+                SOCIALBROWSER.showUserMessage(msg);
+                SOCIALBROWSER.alert(msg);
+
                 let response = await fetch(`/api/cookies?partition=${profile.name}`);
                 if (response.ok) {
                     profile.cookies = (await response.json()).cookies;
-                    profile.cookieList = [{ cookies: profile.cookies }];
                 }
 
                 profile.faList = $scope.setting.faList.filter((c) => c.partition == profile.name || c.email == profile.display);
             }
 
             SOCIALBROWSER.ipcSync('[write-file]', { path: file, data: SOCIALBROWSER.hideObject(arr) });
-            SOCIALBROWSER.showUserMessage('Profiles and Data Exported ...');
-            SOCIALBROWSER.alert('Profiles and Data Exported ...');
+            let msg = arr.length + ' Selected Profiles and Data Exported';
+            SOCIALBROWSER.showUserMessage(msg);
+            SOCIALBROWSER.alert(msg);
+            $scope.busy = false;
+            $scope.$applyAsync();
         }
     };
     $scope.importSelectedProfilesAndData = function () {
@@ -324,6 +327,18 @@ app.controller('mainController', ($scope, $http, $timeout) => {
             let data = SOCIALBROWSER.ipcSync('[read-file]', file);
             let arr = SOCIALBROWSER.showObject(data);
             let profileIndex = 0;
+
+            if (arr.length + SOCIALBROWSER.var.session_list.length > SOCIALBROWSER.var.core.browser.maxProfiles) {
+                let msg = 'Imported Error : Max Profiles Reached : ' + SOCIALBROWSER.var.core.browser.maxProfiles;
+                SOCIALBROWSER.showUserMessage(msg);
+                SOCIALBROWSER.alert(msg);
+                return null;
+            }
+
+            $scope.busy = true;
+            let msg = ' Importing ' + arr.length + ' Profiles and Data';
+            SOCIALBROWSER.showUserMessage(msg);
+            SOCIALBROWSER.alert(msg);
 
             arr.forEach((profile) => {
                 profile.cookies = profile.cookies || [];
@@ -345,11 +360,21 @@ app.controller('mainController', ($scope, $http, $timeout) => {
                     delete profile.faList;
                 }
 
-                if (SOCIALBROWSER.addSession(profile) && profile.cookies.length > 0) {
+                if (
+                    SOCIALBROWSER.addSession({
+                        name: profile.name,
+                        display: profile.display,
+                        privacy: profile.privacy,
+                        defaultUserAgent: profile.defaultUserAgent,
+                    }) &&
+                    profile.cookies.length > 0
+                ) {
                     profileIndex++;
                     $timeout(() => {
-                        SOCIALBROWSER.showUserMessage('Seting Profile Data <br> ' + profile.display);
-                        SOCIALBROWSER.alert('Seting Profile Data <br> ' + profile.display);
+                        let msg = 'Setting Profile Data <br> ' + profile.display;
+                        SOCIALBROWSER.showUserMessage(msg);
+                        SOCIALBROWSER.alert(msg);
+
                         SOCIALBROWSER.ipc('[open new popup]', {
                             partition: profile.name,
                             cookies: profile.cookies,
@@ -358,6 +383,11 @@ app.controller('mainController', ($scope, $http, $timeout) => {
                     }, 1000 * 5 * profileIndex);
                 }
             });
+
+            $timeout(() => {
+                $scope.busy = false;
+                $scope.$applyAsync();
+            }, 1000 * 5 * arr.length);
         }
     };
 
@@ -814,39 +844,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     $scope.checkProxy = function (_se) {
         SOCIALBROWSER.ipc('[proxy-check-request]', { proxy: _se });
     };
-    $scope.changeProxy = function (currentSession) {
-        $timeout(() => {
-            if (currentSession) {
-                currentSession.proxy.name = currentSession.selected_proxy.name;
-                currentSession.proxy.url = currentSession.selected_proxy.url;
-                currentSession.proxy.ip = currentSession.selected_proxy.ip;
-                currentSession.proxy.port = currentSession.selected_proxy.port;
-                currentSession.proxy.username = currentSession.selected_proxy.username;
-                currentSession.proxy.password = currentSession.selected_proxy.password;
-                currentSession.proxy.socks4 = currentSession.selected_proxy.socks4;
-                currentSession.proxy.socks5 = currentSession.selected_proxy.socks5;
-                currentSession.proxy.ftp = currentSession.selected_proxy.ftp;
-                currentSession.proxy.http = currentSession.selected_proxy.http;
-                currentSession.proxy.https = currentSession.selected_proxy.https;
-                currentSession.proxy.direct = currentSession.selected_proxy.direct;
-                currentSession.proxy.ignore = currentSession.selected_proxy.ignore;
-            } else if ($scope.setting.proxy && $scope.setting.proxy.selected_proxy) {
-                $scope.setting.proxy.name = $scope.setting.proxy.selected_proxy.name;
-                $scope.setting.proxy.url = $scope.setting.proxy.selected_proxy.url;
-                $scope.setting.proxy.ip = $scope.setting.proxy.selected_proxy.ip;
-                $scope.setting.proxy.port = $scope.setting.proxy.selected_proxy.port;
-                $scope.setting.proxy.username = $scope.setting.proxy.selected_proxy.username;
-                $scope.setting.proxy.password = $scope.setting.proxy.selected_proxy.password;
-                $scope.setting.proxy.socks4 = $scope.setting.proxy.selected_proxy.socks4;
-                $scope.setting.proxy.socks5 = $scope.setting.proxy.selected_proxy.socks5;
-                $scope.setting.proxy.ftp = $scope.setting.proxy.selected_proxy.ftp;
-                $scope.setting.proxy.http = $scope.setting.proxy.selected_proxy.http;
-                $scope.setting.proxy.https = $scope.setting.proxy.selected_proxy.https;
-                $scope.setting.proxy.direct = $scope.setting.proxy.selected_proxy.direct;
-                $scope.setting.proxy.ignore = $scope.setting.proxy.selected_proxy.ignore;
-            }
-        }, 0);
-    };
+
 
     $scope.addPreload = function () {
         if ($scope.preload && $scope.preload.path && $scope.preload.url) {

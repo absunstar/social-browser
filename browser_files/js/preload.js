@@ -808,7 +808,6 @@ SOCIALBROWSER.init2 = function () {
                         on: function () {},
                         fnEventList: [],
                         addEventListener: function (name, fn) {
-                            console.log('Worker addEventListener', arguments);
                             this.fnEventList.push({ name: name, fn: fn });
                         },
                         removeEventListener: function () {},
@@ -820,8 +819,7 @@ SOCIALBROWSER.init2 = function () {
                         },
                         terminate: function () {},
                         postMessage: function (data) {
-                            console.log('Worker postMessage', data);
-                            this.eventList.forEach((e) => {});
+                            this.fnEventList.forEach((e) => {});
                             if (globalThis[workerID].onmessage2) {
                                 globalThis[workerID].onmessage2({ data: data });
                             } else {
@@ -831,7 +829,6 @@ SOCIALBROWSER.init2 = function () {
                             }
                         },
                         postMessage2: function (data) {
-                            console.log('Worker postMessage2', data);
                             if (globalThis[workerID].onmessage) {
                                 globalThis[workerID].onmessage({ data: data });
                             } else {
@@ -1008,7 +1005,9 @@ SOCIALBROWSER.init2 = function () {
             };
             SOCIALBROWSER.addSession = function (session) {
                 if (SOCIALBROWSER.var.session_list.length > SOCIALBROWSER.var.core.browser.maxProfiles) {
-                    SOCIALBROWSER.showUserMessage('Max Profiles Reached : ' + SOCIALBROWSER.var.core.browser.maxProfiles);
+                    let msg = 'Max Profiles Reached : ' + SOCIALBROWSER.var.core.browser.maxProfiles;
+                    SOCIALBROWSER.showUserMessage(msg);
+                    SOCIALBROWSER.alert(msg);
                     return null;
                 }
 
@@ -1028,27 +1027,32 @@ SOCIALBROWSER.init2 = function () {
                     }
                     let oldSession = SOCIALBROWSER.var.session_list.find((s) => s.name == session.name || s.display == session.display);
                     if (oldSession) {
-                        SOCIALBROWSER.showUserMessage('Profile Exists <br> ' + oldSession.display);
-                        SOCIALBROWSER.alert('Profile Exists <br> ' + oldSession.display);
+                        let msg = 'Profile Exists <br> ' + oldSession.display;
+                        SOCIALBROWSER.showUserMessage(msg);
+                        SOCIALBROWSER.alert(msg);
                         return oldSession;
                     }
 
                     session.can_delete = true;
                     session.time = session.time || new Date().getTime();
+
                     if (!session.privacy) {
                         session.privacy = {
                             allowVPC: true,
                             vpc: SOCIALBROWSER.generateVPC(),
                         };
                     }
+
                     if (!session.defaultUserAgent) {
-                        session.defaultUserAgent = SOCIALBROWSER.getRandomBrowser('pc');
+                        session.defaultUserAgent = SOCIALBROWSER.getRandomBrowser('pc', 'chrome');
                     }
+
                     SOCIALBROWSER.ws({ type: '[add-session]', session: session });
                 }
 
                 return session;
             };
+
             SOCIALBROWSER.removeSession = SOCIALBROWSER.deleteSession = function (session) {
                 if (typeof session == 'string') {
                     session = {
@@ -2466,15 +2470,13 @@ SOCIALBROWSER.init2 = function () {
 
             return arr;
         };
-        SOCIALBROWSER.getDomainFromURL = function(url){
-            url = url || document.location.href
-                let domain = new URL(url).hostname.split('.');
-                domain = domain.slice(domain.length - 2).join('.');
-                return domain
-            
-        }
+        SOCIALBROWSER.getDomainFromURL = function (url) {
+            url = url || document.location.href;
+            let domain = new URL(url).hostname.split('.');
+            domain = domain.slice(domain.length - 2).join('.');
+            return domain;
+        };
         SOCIALBROWSER.getHttpCookie = function (obj = {}) {
-
             obj.domain = obj.domain || SOCIALBROWSER.getDomainFromURL(obj.url);
             obj.partition = SOCIALBROWSER.partition;
             return SOCIALBROWSER.ipcSync('[get-http-cookies]', obj).cookie;
@@ -2517,8 +2519,8 @@ SOCIALBROWSER.init2 = function () {
                 defaultUserAgent: SOCIALBROWSER.session.defaultUserAgent,
                 privacy: SOCIALBROWSER.session.privacy,
             };
-            obj.cookie = obj.cookie || SOCIALBROWSER.getHttpCookie({domain : obj.domain});
-            obj.cookies = obj.cookies || SOCIALBROWSER.getDomainCookies({domain : obj.domain}).cookies;
+            obj.cookie = obj.cookie || SOCIALBROWSER.getHttpCookie({ domain: obj.domain });
+            obj.cookies = obj.cookies || SOCIALBROWSER.getDomainCookies({ domain: obj.domain }).cookies;
             obj.localStorageList = SOCIALBROWSER.getLocalStorageList();
             obj.sessionStorageList = SOCIALBROWSER.getSessionStorageList();
             return obj;
@@ -2581,7 +2583,7 @@ SOCIALBROWSER.init2 = function () {
         SOCIALBROWSER.openInChrome = function (obj = { auto: true }) {
             obj.url = obj.url || document.location.href;
 
-            if(!obj.domain){
+            if (!obj.domain) {
                 obj.domain = new URL(obj.url).hostname.split('.');
                 obj.domain = obj.domain.slice(obj.domain.length - 2).join('.');
             }
@@ -2589,18 +2591,25 @@ SOCIALBROWSER.init2 = function () {
             obj.partition = SOCIALBROWSER.partition;
             obj.referrer = obj.referrer || document.referrer;
             obj.userDataDir = obj.userDataDir || SOCIALBROWSER.data_dir + '/sessionData/chrome/' + obj.partition.replace('persist:', '');
-            obj.navigator = SOCIALBROWSER.cloneObject(SOCIALBROWSER.navigator);
-            obj.customSetting = SOCIALBROWSER._customSetting;
 
             if (obj.auto) {
+                obj.navigator = SOCIALBROWSER.cloneObject(SOCIALBROWSER.navigator);
+                obj.customSetting = SOCIALBROWSER._customSetting;
                 obj.cookie = obj.cookie || SOCIALBROWSER.getHttpCookie({ domain: obj.domain });
                 obj.cookies = SOCIALBROWSER.getDomainCookies({ domain: obj.domain }).cookies;
                 obj.localStorageList = SOCIALBROWSER.getLocalStorageList();
                 obj.sessionStorageList = SOCIALBROWSER.getSessionStorageList();
 
+                obj.navigator = {
+                    deviceMemory: obj.navigator.deviceMemory,
+                    hardwareConcurrency: obj.navigator.hardwareConcurrency,
+                    language: obj.navigator.language,
+                    languages: obj.navigator.languages,
+                };
+
                 obj.windowID = SOCIALBROWSER.window.id;
             }
-
+            alert('Opening in Chrome Browser Simulator');
             return SOCIALBROWSER.ipcSync('[open-in-chrome]', obj);
         };
 
@@ -2923,6 +2932,16 @@ SOCIALBROWSER.init2 = function () {
                 };
                 SOCIALBROWSER.__setConstValue(window.eval, 'toString', () => s);
             }
+        }
+    })();
+
+    (function prepareFn() {
+        if (SOCIALBROWSER.customSetting.proxy) {
+            SOCIALBROWSER.proxy = SOCIALBROWSER.customSetting.proxy;
+        } else if (SOCIALBROWSER.session.proxy && SOCIALBROWSER.session.proxyEnabled) {
+            SOCIALBROWSER.proxy = SOCIALBROWSER.session.proxy;
+        } else if (SOCIALBROWSER.var.proxy && SOCIALBROWSER.var.proxyEnabled) {
+            SOCIALBROWSER.proxy = SOCIALBROWSER.var.proxy;
         }
     })();
 
@@ -3423,7 +3442,7 @@ SOCIALBROWSER.init2 = function () {
                 arr.push({
                     label: ' in ( Chrome Browser Simulator ) ',
                     click() {
-                        SOCIALBROWSER.openInChrome({ auto: false , url: url});
+                        SOCIALBROWSER.openInChrome({ auto: false, url: url });
                     },
                 });
                 arr.push({
@@ -7495,7 +7514,6 @@ SOCIALBROWSER.init2 = function () {
 
         if (SOCIALBROWSER.defaultUserAgent) {
             SOCIALBROWSER.userAgentURL = SOCIALBROWSER.defaultUserAgent.url;
-
             if (!SOCIALBROWSER.screenHidden && SOCIALBROWSER.defaultUserAgent.screen) {
                 SOCIALBROWSER.__setConstValue(window, 'innerWidth', SOCIALBROWSER.defaultUserAgent.screen.width);
                 SOCIALBROWSER.__setConstValue(window, 'innerHeight', SOCIALBROWSER.defaultUserAgent.screen.height);
@@ -7619,110 +7637,17 @@ SOCIALBROWSER.init2 = function () {
 
         (function loadFingerPrint() {
             if ((fingerPrintLOADED = true)) {
-                if (SOCIALBROWSER.javaScriptOFF || SOCIALBROWSER.customSetting.windowType === 'main' || !SOCIALBROWSER.session.privacy.allowVPC) {
-                    SOCIALBROWSER.log('.... [ Finger Printing OFF ] .... ' + document.location.href);
-                    return;
+                let maskDate = false;
+                let timeZone = null;
+                if (SOCIALBROWSER.proxy && SOCIALBROWSER.proxy.vpc && SOCIALBROWSER.proxy.vpc.mask_date && SOCIALBROWSER.proxy.vpc.timeZone) {
+                    maskDate = true;
+                    timeZone = SOCIALBROWSER.proxy.vpc.timeZone;
+                } else if (SOCIALBROWSER.session.privacy.allowVPC && SOCIALBROWSER.session.privacy.vpc.mask_date && SOCIALBROWSER.session.privacy.vpc.timeZone) {
+                    maskDate = true;
+                    timeZone = SOCIALBROWSER.session.privacy.vpc.timeZone;
                 }
 
-                if (SOCIALBROWSER.session.privacy.vpc.hide_cpu) {
-                    SOCIALBROWSER.navigator.hardwareConcurrency = SOCIALBROWSER.session.privacy.vpc.cpu_count;
-                }
-                if (SOCIALBROWSER.session.privacy.vpc.hide_memory) {
-                    SOCIALBROWSER.navigator.deviceMemory = SOCIALBROWSER.session.privacy.vpc.memory_count;
-                }
-
-                if (SOCIALBROWSER.screenHidden && SOCIALBROWSER.session.privacy.vpc.hide_screen && SOCIALBROWSER.session.privacy.vpc.screen) {
-                    SOCIALBROWSER.__setConstValue(window, 'innerWidth', SOCIALBROWSER.session.privacy.vpc.screen.width);
-                    SOCIALBROWSER.__setConstValue(window, 'innerHeight', SOCIALBROWSER.session.privacy.vpc.screen.height);
-                    SOCIALBROWSER.__setConstValue(window, 'outerWidth', SOCIALBROWSER.session.privacy.vpc.screen.width);
-                    SOCIALBROWSER.__setConstValue(window, 'outerHeight', SOCIALBROWSER.session.privacy.vpc.screen.height);
-                    SOCIALBROWSER.__setConstValue(screen, 'width', SOCIALBROWSER.session.privacy.vpc.screen.width);
-                    SOCIALBROWSER.__setConstValue(screen, 'height', SOCIALBROWSER.session.privacy.vpc.screen.height);
-                    SOCIALBROWSER.__setConstValue(screen, 'availWidth', SOCIALBROWSER.session.privacy.vpc.screen.availWidth);
-                    SOCIALBROWSER.__setConstValue(screen, 'availHeight', SOCIALBROWSER.session.privacy.vpc.screen.availHeight);
-
-                    SOCIALBROWSER.screenHidden = true;
-                }
-
-                if (SOCIALBROWSER.session.privacy.vpc.hide_lang) {
-                    SOCIALBROWSER.session.privacy.vpc.languages = SOCIALBROWSER.session.privacy.vpc.languages || navigator.languages.toString();
-
-                    let arr = [];
-                    SOCIALBROWSER.session.privacy.vpc.languages.split(',').forEach((lang) => {
-                        arr.push(lang.split(';')[0]);
-                    });
-
-                    SOCIALBROWSER.navigator.language = SOCIALBROWSER.session.privacy.vpc.languages.split(',')[0].split(';')[0];
-                    SOCIALBROWSER.navigator.languages = arr;
-                }
-
-                if (SOCIALBROWSER.session.privacy.vpc.hide_canvas) {
-                    /*document.createElement0 = document.createElement;
-                document.createElement = function (name) {
-                  if (name == 'canvas') {
-                    return null;
-                  }
-                  return document.createElement0(name);
-                };*/
-                    SOCIALBROWSER.canvas = {};
-                    SOCIALBROWSER.canvas.toBlob = HTMLCanvasElement.prototype.toBlob;
-                    SOCIALBROWSER.canvas.toDataURL = HTMLCanvasElement.prototype.toDataURL;
-                    SOCIALBROWSER.canvas.getImageData = CanvasRenderingContext2D.prototype.getImageData;
-                    SOCIALBROWSER.canvas.noisify = function (canvas, context) {
-                        if (context) {
-                            let shift;
-                            let canvas_shift = SOCIALBROWSER.getStorage('canvas_shift');
-                            if (canvas_shift) {
-                                shift = canvas_shift;
-                            } else {
-                                shift = {
-                                    r: Math.floor(Math.random() * 10) - 5,
-                                    g: Math.floor(Math.random() * 10) - 5,
-                                    b: Math.floor(Math.random() * 10) - 5,
-                                    a: Math.floor(Math.random() * 10) - 5,
-                                };
-                                SOCIALBROWSER.setStorage('canvas_shift', shift);
-                            }
-
-                            const width = canvas.width;
-                            const height = canvas.height;
-                            if (width && height) {
-                                const imageData = SOCIALBROWSER.canvas.getImageData.apply(context, [0, 0, width, height]);
-                                for (let i = 0; i < height; i++) {
-                                    for (let j = 0; j < width; j++) {
-                                        const n = i * (width * 4) + j * 4;
-                                        imageData.data[n + 0] = imageData.data[n + 0] + shift.r;
-                                        imageData.data[n + 1] = imageData.data[n + 1] + shift.g;
-                                        imageData.data[n + 2] = imageData.data[n + 2] + shift.b;
-                                        imageData.data[n + 3] = imageData.data[n + 3] + shift.a;
-                                    }
-                                }
-
-                                context.putImageData(imageData, 0, 0);
-                            }
-                        }
-                    };
-                    Object.defineProperty(HTMLCanvasElement.prototype, 'toBlob', {
-                        value: function () {
-                            SOCIALBROWSER.canvas.noisify(this, this.getContext('2d'));
-                            return SOCIALBROWSER.canvas.toBlob.apply(this, arguments);
-                        },
-                    });
-                    Object.defineProperty(HTMLCanvasElement.prototype, 'toDataURL', {
-                        value: function () {
-                            SOCIALBROWSER.canvas.noisify(this, this.getContext('2d'));
-                            return SOCIALBROWSER.canvas.toDataURL.apply(this, arguments);
-                        },
-                    });
-                    Object.defineProperty(CanvasRenderingContext2D.prototype, 'getImageData', {
-                        value: function () {
-                            SOCIALBROWSER.canvas.noisify(this.canvas, this);
-                            return SOCIALBROWSER.canvas.getImageData.apply(this, arguments);
-                        },
-                    });
-                }
-
-                if (SOCIALBROWSER.session.privacy.vpc.mask_date && SOCIALBROWSER.session.privacy.vpc.timeZone && SOCIALBROWSER.session.privacy.vpc.timeZone.text) {
+                if (maskDate && timeZone) {
                     (function (o, acOffset) {
                         const gmtNeg = function (n) {
                             const _format = function (v) {
@@ -7851,7 +7776,186 @@ SOCIALBROWSER.init2 = function () {
                                     .replace(/\(.*\)/, '(' + o.value + ')');
                             },
                         });
-                    })(SOCIALBROWSER.session.privacy.vpc.timeZone, new Date().getTimezoneOffset());
+                    })(timeZone, new Date().getTimezoneOffset());
+                }
+
+                let maskLocation = false;
+                let newLocation = null;
+                if (SOCIALBROWSER.proxy && SOCIALBROWSER.proxy.vpc && SOCIALBROWSER.proxy.vpc.hide_location && SOCIALBROWSER.proxy.vpc.location) {
+                    maskLocation = true;
+                    newLocation = SOCIALBROWSER.proxy.vpc.location;
+                } else if (SOCIALBROWSER.session.privacy.allowVPC && SOCIALBROWSER.session.privacy.vpc.hide_location && SOCIALBROWSER.session.privacy.vpc.location) {
+                    maskLocation = true;
+                    newLocation = SOCIALBROWSER.session.privacy.vpc.location;
+                }
+
+                if (maskLocation && newLocation) {
+                    let s = navigator.geolocation.getCurrentPosition.toString();
+                    SOCIALBROWSER.__setConstValue(navigator.geolocation, 'getCurrentPosition', function (callback, error) {
+                        if (callback) {
+                            callback({
+                                timestamp: new Date().getTime(),
+                                coords: {
+                                    latitude: newLocation.latitude,
+                                    longitude: newLocation.longitude,
+                                    altitude: null,
+                                    accuracy: SOCIALBROWSER.random(50, 500),
+                                    altitudeAccuracy: null,
+                                    heading: null,
+                                    speed: null,
+                                },
+                            });
+                        }
+                    });
+                    SOCIALBROWSER.__setConstValue(navigator.geolocation.getCurrentPosition, 'toString', () => s);
+
+                    let s2 = navigator.geolocation.watchPosition.toString();
+                    SOCIALBROWSER.__setConstValue(navigator.geolocation, 'watchPosition', function (success, error, options) {
+                        if (success) {
+                            let timeout = options.timeout || 1000 * 5;
+                            let latitude = parseFloat(newLocation.latitude || 0);
+                            let longitude = parseFloat(newLocation.longitude || 0);
+                            return setInterval(() => {
+                                latitude += 0.00001;
+                                longitude += 0.00001;
+                                success({
+                                    timestamp: new Date().getTime(),
+                                    coords: {
+                                        latitude: latitude,
+                                        longitude: longitude,
+                                        altitude: null,
+                                        accuracy: SOCIALBROWSER.random(10, 100),
+                                        altitudeAccuracy: null,
+                                        heading: null,
+                                        speed: null,
+                                    },
+                                });
+                            }, timeout);
+                        }
+                    });
+                    SOCIALBROWSER.__setConstValue(navigator.geolocation.watchPosition, 'toString', () => s2);
+
+                    let s3 = navigator.geolocation.clearWatch.toString();
+                    SOCIALBROWSER.__setConstValue(navigator.geolocation, 'clearWatch', function (id) {
+                        clearInterval(id);
+                    });
+                    SOCIALBROWSER.__setConstValue(navigator.geolocation.clearWatch, 'toString', () => s3);
+                }
+                if (true) {
+                    SOCIALBROWSER.navigator.plugins = Object.create(Object.getPrototypeOf(navigator.plugins || {}));
+
+                    SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins, 'length', 5);
+
+                    for (let index = 0; index < 5; index++) {
+                        let name = 'Plugin ' + index;
+                        let description = 'Description of plugin ' + index;
+                        SOCIALBROWSER.navigator.plugins[index] = SOCIALBROWSER.navigator.plugins[name] = Object.create(Plugin.prototype);
+                        Object.assign(SOCIALBROWSER.navigator.plugins[index], navigator.plugins[0]);
+                        Object.assign(SOCIALBROWSER.navigator.plugins[name], navigator.plugins[0]);
+                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[index], 'name', name);
+                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[name], 'name', name);
+                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[index], 'filename', name);
+                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[name], 'filename', name);
+                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[index], 'description', description);
+                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[name], 'description', description);
+                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[index], 'length', 2);
+                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[name], 'length', 2);
+                    }
+                }
+
+                if (SOCIALBROWSER.javaScriptOFF || SOCIALBROWSER.customSetting.windowType === 'main' || !SOCIALBROWSER.session.privacy.allowVPC) {
+                    SOCIALBROWSER.log('.... [ Finger Printing OFF ] .... ' + document.location.href);
+                    return;
+                }
+
+                if (SOCIALBROWSER.session.privacy.vpc.hide_cpu) {
+                    SOCIALBROWSER.navigator.hardwareConcurrency = SOCIALBROWSER.session.privacy.vpc.cpu_count;
+                }
+                if (SOCIALBROWSER.session.privacy.vpc.hide_memory) {
+                    SOCIALBROWSER.navigator.deviceMemory = SOCIALBROWSER.session.privacy.vpc.memory_count;
+                }
+                if (!SOCIALBROWSER.screenHidden && SOCIALBROWSER.session.privacy.vpc.hide_screen && SOCIALBROWSER.session.privacy.vpc.screen) {
+                    SOCIALBROWSER.__setConstValue(window, 'innerWidth', SOCIALBROWSER.session.privacy.vpc.screen.width);
+                    SOCIALBROWSER.__setConstValue(window, 'innerHeight', SOCIALBROWSER.session.privacy.vpc.screen.height);
+                    SOCIALBROWSER.__setConstValue(window, 'outerWidth', SOCIALBROWSER.session.privacy.vpc.screen.width);
+                    SOCIALBROWSER.__setConstValue(window, 'outerHeight', SOCIALBROWSER.session.privacy.vpc.screen.height);
+                    SOCIALBROWSER.__setConstValue(screen, 'width', SOCIALBROWSER.session.privacy.vpc.screen.width);
+                    SOCIALBROWSER.__setConstValue(screen, 'height', SOCIALBROWSER.session.privacy.vpc.screen.height);
+                    SOCIALBROWSER.__setConstValue(screen, 'availWidth', SOCIALBROWSER.session.privacy.vpc.screen.availWidth);
+                    SOCIALBROWSER.__setConstValue(screen, 'availHeight', SOCIALBROWSER.session.privacy.vpc.screen.availHeight);
+
+                    SOCIALBROWSER.screenHidden = true;
+                }
+
+                if (SOCIALBROWSER.session.privacy.vpc.hide_lang) {
+                    SOCIALBROWSER.session.privacy.vpc.languages = SOCIALBROWSER.session.privacy.vpc.languages || navigator.languages.toString();
+
+                    let arr = [];
+                    SOCIALBROWSER.session.privacy.vpc.languages.split(',').forEach((lang) => {
+                        arr.push(lang.split(';')[0]);
+                    });
+
+                    SOCIALBROWSER.navigator.language = SOCIALBROWSER.session.privacy.vpc.languages.split(',')[0].split(';')[0];
+                    SOCIALBROWSER.navigator.languages = arr;
+                }
+
+                if (SOCIALBROWSER.session.privacy.vpc.hide_canvas) {
+                    SOCIALBROWSER.canvas = {};
+                    SOCIALBROWSER.canvas.toBlob = HTMLCanvasElement.prototype.toBlob;
+                    SOCIALBROWSER.canvas.toDataURL = HTMLCanvasElement.prototype.toDataURL;
+                    SOCIALBROWSER.canvas.getImageData = CanvasRenderingContext2D.prototype.getImageData;
+                    SOCIALBROWSER.canvas.noisify = function (canvas, context) {
+                        if (context) {
+                            let shift;
+                            let canvas_shift = SOCIALBROWSER.getStorage('canvas_shift');
+                            if (canvas_shift) {
+                                shift = canvas_shift;
+                            } else {
+                                shift = {
+                                    r: Math.floor(Math.random() * 10) - 5,
+                                    g: Math.floor(Math.random() * 10) - 5,
+                                    b: Math.floor(Math.random() * 10) - 5,
+                                    a: Math.floor(Math.random() * 10) - 5,
+                                };
+                                SOCIALBROWSER.setStorage('canvas_shift', shift);
+                            }
+
+                            const width = canvas.width;
+                            const height = canvas.height;
+                            if (width && height) {
+                                const imageData = SOCIALBROWSER.canvas.getImageData.apply(context, [0, 0, width, height]);
+                                for (let i = 0; i < height; i++) {
+                                    for (let j = 0; j < width; j++) {
+                                        const n = i * (width * 4) + j * 4;
+                                        imageData.data[n + 0] = imageData.data[n + 0] + shift.r;
+                                        imageData.data[n + 1] = imageData.data[n + 1] + shift.g;
+                                        imageData.data[n + 2] = imageData.data[n + 2] + shift.b;
+                                        imageData.data[n + 3] = imageData.data[n + 3] + shift.a;
+                                    }
+                                }
+
+                                context.putImageData(imageData, 0, 0);
+                            }
+                        }
+                    };
+                    Object.defineProperty(HTMLCanvasElement.prototype, 'toBlob', {
+                        value: function () {
+                            SOCIALBROWSER.canvas.noisify(this, this.getContext('2d'));
+                            return SOCIALBROWSER.canvas.toBlob.apply(this, arguments);
+                        },
+                    });
+                    Object.defineProperty(HTMLCanvasElement.prototype, 'toDataURL', {
+                        value: function () {
+                            SOCIALBROWSER.canvas.noisify(this, this.getContext('2d'));
+                            return SOCIALBROWSER.canvas.toDataURL.apply(this, arguments);
+                        },
+                    });
+                    Object.defineProperty(CanvasRenderingContext2D.prototype, 'getImageData', {
+                        value: function () {
+                            SOCIALBROWSER.canvas.noisify(this.canvas, this);
+                            return SOCIALBROWSER.canvas.getImageData.apply(this, arguments);
+                        },
+                    });
                 }
 
                 if (
@@ -7895,19 +7999,35 @@ SOCIALBROWSER.init2 = function () {
                         SOCIALBROWSER.log(error);
                     }
 
+                    SOCIALBROWSER.RTCPeerConnection = function () {
+                        return {
+                            createDataChannel: function () {},
+                            createOffer: function () {
+                                return new Promise((resolve, reject) => {
+                                    resolve({});
+                                });
+                            },
+                            setLocalDescription: function () {
+                                return new Promise((resolve, reject) => {
+                                    resolve({});
+                                });
+                            },
+                        };
+                    };
+
                     SOCIALBROWSER.navigator.getUserMedia = undefined;
                     window.MediaStreamTrack = undefined;
-                    window.RTCPeerConnection = undefined;
+                    window.RTCPeerConnection = SOCIALBROWSER.RTCPeerConnection;
                     window.RTCSessionDescription = undefined;
 
                     SOCIALBROWSER.navigator.mozGetUserMedia = undefined;
                     window.mozMediaStreamTrack = undefined;
-                    window.mozRTCPeerConnection = undefined;
+                    window.mozRTCPeerConnection = SOCIALBROWSER.RTCPeerConnection;
                     window.mozRTCSessionDescription = undefined;
 
                     SOCIALBROWSER.navigator.webkitGetUserMedia = undefined;
                     window.webkitMediaStreamTrack = undefined;
-                    window.webkitRTCPeerConnection = undefined;
+                    window.webkitRTCPeerConnection = SOCIALBROWSER.RTCPeerConnection;
                     window.webkitRTCSessionDescription = undefined;
                 }
 
@@ -8128,27 +8248,6 @@ SOCIALBROWSER.init2 = function () {
                         refresh: () => {},
                     };
                 }
-                if (SOCIALBROWSER.session.privacy.vpc.hide_plugins) {
-                    SOCIALBROWSER.navigator.plugins = Object.create(Object.getPrototypeOf(navigator.plugins || {}));
-
-                    SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins, 'length', 5);
-
-                    for (let index = 0; index < 5; index++) {
-                        let name = 'Plugin ' + index;
-                        let description = 'Description of plugin ' + index;
-                        SOCIALBROWSER.navigator.plugins[index] = SOCIALBROWSER.navigator.plugins[name] = Object.create(Plugin.prototype);
-                        Object.assign(SOCIALBROWSER.navigator.plugins[index], navigator.plugins[0]);
-                        Object.assign(SOCIALBROWSER.navigator.plugins[name], navigator.plugins[0]);
-                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[index], 'name', name);
-                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[name], 'name', name);
-                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[index], 'filename', name);
-                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[name], 'filename', name);
-                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[index], 'description', description);
-                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[name], 'description', description);
-                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[index], 'length', 2);
-                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[name], 'length', 2);
-                    }
-                }
 
                 if (SOCIALBROWSER.session.privacy.vpc.hide_connection || SOCIALBROWSER.session.privacy.vpc.hide_connection) {
                     SOCIALBROWSER.navigator.connection = Object.create(Object.getPrototypeOf(navigator.connection || {}));
@@ -8205,57 +8304,6 @@ SOCIALBROWSER.init2 = function () {
                     SOCIALBROWSER.navigator.doNotTrack = '1';
                 } else {
                     SOCIALBROWSER.navigator.doNotTrack = '0';
-                }
-
-                if (SOCIALBROWSER.session.privacy.vpc.hide_location) {
-                    let s = navigator.geolocation.getCurrentPosition.toString();
-                    SOCIALBROWSER.__setConstValue(navigator.geolocation, 'getCurrentPosition', function (callback, error) {
-                        if (callback) {
-                            callback({
-                                timestamp: new Date().getTime(),
-                                coords: {
-                                    latitude: SOCIALBROWSER.session.privacy.vpc.location.latitude,
-                                    longitude: SOCIALBROWSER.session.privacy.vpc.location.longitude,
-                                    altitude: null,
-                                    accuracy: SOCIALBROWSER.random(50, 500),
-                                    altitudeAccuracy: null,
-                                    heading: null,
-                                    speed: null,
-                                },
-                            });
-                        }
-                    });
-                    SOCIALBROWSER.__setConstValue(navigator.geolocation.getCurrentPosition, 'toString', () => s);
-                    let s2 = navigator.geolocation.watchPosition.toString();
-                    SOCIALBROWSER.__setConstValue(navigator.geolocation, 'watchPosition', function (success, error, options) {
-                        if (success) {
-                            let timeout = options.timeout || 1000 * 5;
-                            let latitude = parseFloat(SOCIALBROWSER.session.privacy.vpc.location.latitude || 0);
-                            let longitude = parseFloat(SOCIALBROWSER.session.privacy.vpc.location.longitude || 0);
-                            return setInterval(() => {
-                                latitude += 0.00001;
-                                longitude += 0.00001;
-                                success({
-                                    timestamp: new Date().getTime(),
-                                    coords: {
-                                        latitude: latitude,
-                                        longitude: longitude,
-                                        altitude: null,
-                                        accuracy: SOCIALBROWSER.random(10, 100),
-                                        altitudeAccuracy: null,
-                                        heading: null,
-                                        speed: null,
-                                    },
-                                });
-                            }, timeout);
-                        }
-                    });
-                    SOCIALBROWSER.__setConstValue(navigator.geolocation.watchPosition, 'toString', () => s2);
-                    let s3 = navigator.geolocation.clearWatch.toString();
-                    SOCIALBROWSER.__setConstValue(navigator.geolocation, 'clearWatch', function (id) {
-                        clearInterval(id);
-                    });
-                    SOCIALBROWSER.__setConstValue(navigator.geolocation.clearWatch, 'toString', () => s3);
                 }
 
                 if (SOCIALBROWSER.isMemoryMode) {
@@ -8941,6 +8989,16 @@ SOCIALBROWSER._window.fnList.forEach((fn) => {
 SOCIALBROWSER._window.on = function () {};
 
 SOCIALBROWSER.init();
+
+if ((navigatorHandle = false)) {
+    SOCIALBROWSER.navigator2 = SOCIALBROWSER.navigator;
+    SOCIALBROWSER.navigator = {
+        //  deviceMemory : SOCIALBROWSER.navigator2.deviceMemory,
+        //  hardwareConcurrency : SOCIALBROWSER.navigator2.hardwareConcurrency,
+        // language : SOCIALBROWSER.navigator2.language,
+        // languages : SOCIALBROWSER.navigator2.languages,
+    };
+}
 
 if (!SOCIALBROWSER.javaScriptOFF) {
     if (SOCIALBROWSER.isWhiteSite) {

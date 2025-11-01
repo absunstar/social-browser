@@ -1101,7 +1101,6 @@ module.exports = function (owner) {
                 timeZone: owner.timeZones[owner.randomNumber(0, owner.timeZones.length - 1)],
                 hide_webgl: true,
                 hide_mimetypes: true,
-                hide_plugins: true,
                 hide_screen: true,
                 screen: {
                     width: browser.screen.width,
@@ -1114,7 +1113,7 @@ module.exports = function (owner) {
                 block_rtc: true,
                 hide_battery: true,
                 hide_canvas: true,
-                hide_audio: true,
+                hide_audio: false,
                 hide_media_devices: true,
                 hide_connection: true,
                 connection: {

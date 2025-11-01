@@ -577,7 +577,7 @@ module.exports = function (child) {
             if (proxy.url) {
                 ss.closeAllConnections().then(() => {
                     ss.setProxy({
-                        mode: proxy.mode,
+                        mode: 'fixed_servers',
                         proxyRules: proxy.url,
                         proxyBypassRules: proxy.ignore || 'localhost,127.0.0.1,::1,192.168.*',
                     })
@@ -616,13 +616,15 @@ module.exports = function (child) {
                     proxyRules = proxy.ip + ':' + proxy.port;
                     startline = ',';
                 }
+
                 if (proxyRules && proxy.direct) {
                     proxyRules += startline + 'direct://';
                 }
+                
                 if (proxyRules) {
                     ss.closeAllConnections().then(() => {
                         ss.setProxy({
-                            mode: proxy.mode || 'fixed_servers',
+                            mode:  'fixed_servers',
                             proxyRules: proxyRules,
                             proxyBypassRules: proxy.ignore || 'localhost,127.0.0.1,::1,192.168.*',
                         }).then(() => {
@@ -792,7 +794,7 @@ module.exports = function (child) {
                     return;
                 }
 
-                let index2 = child.parent.var.session_list.findIndex((s) => s.name == win.customSetting.partition && s.proxy && s.proxy.enabled);
+                let index2 = child.parent.var.session_list.findIndex((s) => s.name == win.customSetting.partition && s.proxy && s.proxyEnabled);
 
                 if (index2 !== -1) {
                     proxy = child.parent.var.session_list[index2].proxy;

@@ -47,7 +47,7 @@
 
                 --bs-body-bg: #fff;
                 --color: #3f9dff;
-                --dropdown-background: #272727;
+                --dropdown-background: #333;
             }
             html,
             body,
@@ -57,6 +57,10 @@
             body {
                 padding: 0px !important;
                 margin: 10px 0px 0px 0px !important;
+            }
+            .v-center {
+                display: flex;
+                align-items: center;
             }
             .modal {
                 --bs-modal-bg: #283e4a;
@@ -198,8 +202,11 @@
                 align-self: auto;
                 margin: 0;
             }
-            textarea{
-                  white-space: nowrap;
+            textarea {
+                white-space: nowrap;
+            }
+            .dropdown-item .small {
+                color: #ffffff;
             }
         </style>
         <script src="http://127.0.0.1:60080/x-js/bootstrap-5-support.js"></script>
@@ -365,10 +372,10 @@
                                         <div class="row padding center">
                                             <h2 class="bold red" ng-hide="setting.core.browser.activated">Browser Not Active <span>&#215;</span></h2>
                                             <h2 class="bold green" ng-show="setting.core.browser.activated">Browser Active <span>&#10003;</span></h2>
-                                            <p class="bold font-16 "><b>Max Profils : </b> ( {{setting.core.browser.maxProfiles}} ) </p>
-                                            <br>
+                                            <p class="bold font-16"><b>Max Profils : </b> ( {{setting.core.browser.maxProfiles}} )</p>
+                                            <br />
                                             <p class="bold font-16 orange">{{setting.core.browser.message}}</p>
-                                            <br>
+                                            <br />
                                             <p ng-show="setting.core.keyInfo.endDate" class="bold font-20 red">Expire Date : {{setting.core.keyInfo.endDate | xdate}}</p>
                                         </div>
 
@@ -813,24 +820,9 @@
                                     <fieldset>
                                         <legend>Proxy</legend>
                                         <div class="row">
-                                            <i-checkbox class="col2" label="Enable" ng-model="setting.proxy.enabled"></i-checkbox>
-                                            <div class="row" ng-show="setting.proxy.enabled === true">
+                                            <i-checkbox class="col2" label="Enable" ng-model="setting.proxyEnabled"></i-checkbox>
+                                            <div class="row" ng-show="setting.proxyEnabled === true">
                                                 <div class="row padding">
-                                                    <i-list
-                                                        class="col6"
-                                                        items="setting.proxy_mode_list"
-                                                        display="name"
-                                                        label="Select Proxy Mode"
-                                                        ng-model="setting.proxy.selected_proxy_mode"
-                                                        ng-change="setting.proxy.mode = setting.proxy.selected_proxy_mode.value"
-                                                    >
-                                                    </i-list>
-                                                </div>
-
-                                                <div class="row padding" ng-show="setting.proxy.mode == 'pac_script' ">
-                                                    <i-control class="col4" label="Proxy Pac Script" type="text" ng-model="setting.proxy.pacScript"> </i-control>
-                                                </div>
-                                                <div class="row padding" ng-show="setting.proxy.mode == 'fixed_servers' ">
                                                     <div class="row padding border">
                                                         <i-list
                                                             class="col4"
@@ -839,8 +831,7 @@
                                                             display="ip"
                                                             display2="port"
                                                             label="Select Proxy"
-                                                            ng-model="setting.proxy.selected_proxy"
-                                                            ng-change="changeProxy()"
+                                                            ng-model="setting.proxy"
                                                         >
                                                         </i-list>
                                                         <div class="row border">
@@ -863,6 +854,29 @@
                                                         <i-checkbox class="" label="HTTPS" ng-model="setting.proxy.https"></i-checkbox>
                                                         <i-checkbox class="" label="ignore Proxy if not Working" ng-model="setting.proxy.direct"></i-checkbox>
                                                     </div>
+                                                    <fieldset>
+                                                        <legend>Proxy Location Setting</legend>
+                                                        <i-checkbox class="" label="Enabled" ng-model="setting.proxy.locationEnabled"></i-checkbox>
+                                                        <div class="row padding" ng-show="setting.proxy.locationEnabled">
+                                                            <div class="row padding v-center">
+                                                                <div class="col">
+                                                                    <i-checkbox label="Hide Date ( problem in some sites )" ng-model="setting.proxy.vpc.mask_date"></i-checkbox>
+                                                                </div>
+                                                                <div class="col" ng-show="setting.proxy.vpc.mask_date">
+                                                                    <i-list items="timezones2" primary="value" display="text" label="Select Time Zone" ng-model="setting.proxy.vpc.timeZone"></i-list>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row padding v-center">
+                                                                <div class="col">
+                                                                    <i-checkbox label="Hide Current Location( Custom )" ng-model="setting.proxy.vpc.hide_location"></i-checkbox>
+                                                                </div>
+                                                                <div class="col" ng-show="setting.proxy.vpc.hide_location">
+                                                                    <i-control ng-model="setting.proxy.vpc.location.latitude" label="Latitude"></i-control>
+                                                                    <i-control ng-model="setting.proxy.vpc.location.longitude" label="Longitude"></i-control>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </fieldset>
                                                 </div>
                                             </div>
                                         </div>
@@ -1070,25 +1084,9 @@
                                             <fieldset>
                                                 <legend>Proxy</legend>
                                                 <div class="row">
-                                                    <i-checkbox class="col2" label="Enable" ng-model="currentSession.proxy.enabled"></i-checkbox>
-                                                    <div ng-show="currentSession.proxy.enabled">
+                                                    <i-checkbox class="col2" label="Enable" ng-model="currentSession.proxyEnabled"></i-checkbox>
+                                                    <div ng-show="currentSession.proxyEnabled">
                                                         <div class="row">
-                                                            <i-list
-                                                                class="col7"
-                                                                items="setting.proxy_mode_list"
-                                                                display="name"
-                                                                label="Select Proxy Mode"
-                                                                ng-model="currentSession.selected_proxy_mode"
-                                                                ng-change="currentSession.proxy.mode = currentSession.selected_proxy_mode.value"
-                                                            >
-                                                            </i-list>
-                                                        </div>
-
-                                                        <div class="row padding" ng-show="setting.proxy.mode == 'pac_script' ">
-                                                            <i-control class="col4" label="Proxy Script URL" type="text" ng-model="setting.proxy.pacScript"> </i-control>
-                                                        </div>
-
-                                                        <div class="row" ng-show="currentSession.proxy.mode == 'fixed_servers' ">
                                                             <div class="row padding border">
                                                                 <i-list
                                                                     class="col4"
@@ -1097,8 +1095,7 @@
                                                                     display="ip"
                                                                     display2="port"
                                                                     label="Select Proxy"
-                                                                    ng-model="currentSession.selected_proxy"
-                                                                    ng-change="changeProxy(currentSession)"
+                                                                    ng-model="currentSession.proxy"
                                                                 >
                                                                 </i-list>
                                                                 <div class="row border">
@@ -1122,6 +1119,35 @@
                                                                 <i-checkbox class="" label="ignore Proxy if not Working" ng-model="currentSession.proxy.direct"></i-checkbox>
                                                             </div>
                                                         </div>
+                                                        <fieldset>
+                                                            <legend>Proxy Location Setting</legend>
+                                                            <i-checkbox class="" label="Enabled" ng-model="currentSession.proxy.locationEnabled"></i-checkbox>
+                                                            <div class="row padding" ng-show="currentSession.proxy.locationEnabled">
+                                                                <div class="row padding v-center">
+                                                                    <div class="col">
+                                                                        <i-checkbox label="Hide Date ( problem in some sites )" ng-model="currentSession.proxy.vpc.mask_date"></i-checkbox>
+                                                                    </div>
+                                                                    <div class="col" ng-show="currentSession.proxy.vpc.mask_date">
+                                                                        <i-list
+                                                                            items="timezones2"
+                                                                            primary="value"
+                                                                            display="text"
+                                                                            label="Select Time Zone"
+                                                                            ng-model="currentSession.proxy.vpc.timeZone"
+                                                                        ></i-list>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row padding v-center">
+                                                                    <div class="col">
+                                                                        <i-checkbox label="Hide Current Location( Custom )" ng-model="currentSession.proxy.vpc.hide_location"></i-checkbox>
+                                                                    </div>
+                                                                    <div class="col" ng-show="currentSession.proxy.vpc.hide_location">
+                                                                        <i-control ng-model="currentSession.proxy.vpc.location.latitude" label="Latitude"></i-control>
+                                                                        <i-control ng-model="currentSession.proxy.vpc.location.longitude" label="Longitude"></i-control>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </fieldset>
                                                     </div>
                                                 </div>
                                             </fieldset>
@@ -1166,19 +1192,39 @@
                                                 </div>
                                             </div>
 
-                                            <div ng-show="currentSession.privacy.allowVPC" class="row padding border">
-                                                <div class="col"><i-checkbox label="Hide Date ( problem in some sites )" ng-model="currentSession.privacy.vpc.mask_date"></i-checkbox></div>
-                                                <div class="col">
-                                                    <i-list
-                                                        ng-disabled="currentSession.privacy.vpc.mask_date !== true"
-                                                        items="timezones2"
-                                                        primary="value"
-                                                        display="text"
-                                                        label="Select Time Zone"
-                                                        ng-model="currentSession.privacy.vpc.timeZone"
-                                                    ></i-list>
+                                            <fieldset ng-show="currentSession.privacy.allowVPC">
+                                                <legend>Location Setting</legend>
+                                                <div class="row padding">
+                                                    <div class="row padding border">
+                                                        <div class="col"><i-checkbox label="Hide Date ( problem in some sites )" ng-model="currentSession.privacy.vpc.mask_date"></i-checkbox></div>
+                                                        <div class="col">
+                                                            <i-list
+                                                                ng-disabled="currentSession.privacy.vpc.mask_date !== true"
+                                                                items="timezones2"
+                                                                primary="value"
+                                                                display="text"
+                                                                label="Select Time Zone"
+                                                                ng-model="currentSession.privacy.vpc.timeZone"
+                                                            ></i-list>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row padding border2">
+                                                        <div class="col"><i-checkbox label="Hide Current Location( Custom )" ng-model="currentSession.privacy.vpc.hide_location"></i-checkbox></div>
+                                                        <div class="col">
+                                                            <i-control
+                                                                ng-disabled="currentSession.privacy.vpc.hide_location !== true"
+                                                                ng-model="currentSession.privacy.vpc.location.latitude"
+                                                                label="Latitude"
+                                                            ></i-control>
+                                                            <i-control
+                                                                ng-disabled="currentSession.privacy.vpc.hide_location !== true"
+                                                                ng-model="currentSession.privacy.vpc.location.longitude"
+                                                                label="Longitude"
+                                                            ></i-control>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            </fieldset>
 
                                             <div ng-show="currentSession.privacy.allowVPC" class="row padding border">
                                                 <div class="col"><i-checkbox label="Hide Screen Size " ng-model="currentSession.privacy.vpc.hide_screen"></i-checkbox></div>
@@ -1243,21 +1289,7 @@
                                                     ></i-control>
                                                 </div>
                                             </div>
-                                            <div ng-show="currentSession.privacy.allowVPC" class="row padding border2">
-                                                <div class="col"><i-checkbox label="Hide Current Location( Custom )" ng-model="currentSession.privacy.vpc.hide_location"></i-checkbox></div>
-                                                <div class="col">
-                                                    <i-control
-                                                        ng-disabled="currentSession.privacy.vpc.hide_location !== true"
-                                                        ng-model="currentSession.privacy.vpc.location.latitude"
-                                                        label="Latitude"
-                                                    ></i-control>
-                                                    <i-control
-                                                        ng-disabled="currentSession.privacy.vpc.hide_location !== true"
-                                                        ng-model="currentSession.privacy.vpc.location.longitude"
-                                                        label="Longitude"
-                                                    ></i-control>
-                                                </div>
-                                            </div>
+
                                             <div ng-show="currentSession.privacy.allowVPC" class="row padding border2">
                                                 <i-checkbox class="col6" label="Set Window Alawys Active" ng-model="currentSession.privacy.vpc.set_window_active"></i-checkbox>
                                                 <i-checkbox class="col6" label="Set Tab Alawys Active" ng-model="currentSession.privacy.vpc.set_tab_active"></i-checkbox>
@@ -1457,6 +1489,30 @@
                                                     <i-checkbox class="" label="ignore Proxy if not Working" ng-model="$proxy.direct"></i-checkbox>
                                                 </div>
 
+                                                <fieldset>
+                                                    <legend>Proxy Location Setting</legend>
+                                                    <i-checkbox class="" label="Enabled" ng-model="$proxy.locationEnabled"></i-checkbox>
+                                                    <div class="row padding" ng-show="$proxy.locationEnabled">
+                                                        <div class="row padding v-center">
+                                                            <div class="col">
+                                                                <i-checkbox label="Hide Date ( problem in some sites )" ng-model="$proxy.vpc.mask_date"></i-checkbox>
+                                                            </div>
+                                                            <div class="col" ng-show="$proxy.vpc.mask_date">
+                                                                <i-list items="timezones2" primary="value" display="text" label="Select Time Zone" ng-model="$proxy.vpc.timeZone"></i-list>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row padding v-center">
+                                                            <div class="col">
+                                                                <i-checkbox label="Hide Current Location( Custom )" ng-model="$proxy.vpc.hide_location"></i-checkbox>
+                                                            </div>
+                                                            <div class="col" ng-show="$proxy.vpc.hide_location">
+                                                                <i-control ng-model="$proxy.vpc.location.latitude" label="Latitude"></i-control>
+                                                                <i-control ng-model="$proxy.vpc.location.longitude" label="Longitude"></i-control>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </fieldset>
+
                                                 <i-button type="push" ng-click="addProxy()" label="Add to List"></i-button>
                                             </fieldset>
                                         </div>
@@ -1494,6 +1550,29 @@
                                                         <i-checkbox class="" label="HTTPS" ng-model="_se.https"></i-checkbox>
                                                         <i-checkbox class="" label="ignore Proxy if not Working" ng-model="_se.direct"></i-checkbox>
                                                     </div>
+                                                    <fieldset>
+                                                        <legend>Proxy Location Setting</legend>
+                                                        <i-checkbox class="" label="Enabled" ng-model="_se.locationEnabled"></i-checkbox>
+                                                        <div class="row padding" ng-show="_se.locationEnabled">
+                                                            <div class="row padding v-center">
+                                                                <div class="col">
+                                                                    <i-checkbox label="Hide Date ( problem in some sites )" ng-model="_se.vpc.mask_date"></i-checkbox>
+                                                                </div>
+                                                                <div class="col" ng-show="_se.vpc.mask_date">
+                                                                    <i-list items="timezones2" primary="value" display="text" label="Select Time Zone" ng-model="_se.vpc.timeZone"></i-list>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row padding v-center">
+                                                                <div class="col">
+                                                                    <i-checkbox label="Hide Current Location( Custom )" ng-model="_se.vpc.hide_location"></i-checkbox>
+                                                                </div>
+                                                                <div class="col" ng-show="_se.vpc.hide_location">
+                                                                    <i-control ng-model="_se.vpc.location.latitude" label="Latitude"></i-control>
+                                                                    <i-control ng-model="_se.vpc.location.longitude" label="Longitude"></i-control>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </fieldset>
                                                 </td>
                                             </tr>
                                         </table>

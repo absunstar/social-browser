@@ -152,20 +152,20 @@ module.exports = function (child) {
 
         if (sessionOptions.proxy) {
             proxy = sessionOptions.proxy;
-        } else if (user.proxy && user.proxy.enabled && user.proxy.mode) {
+        } else if (user.proxy && user.proxyEnabled) {
             proxy = user.proxy;
-        } else if (child.parent.var.proxy && child.parent.var.proxy.enabled && child.parent.var.proxy.mode) {
+        } else if (child.parent.var.proxy && child.parent.var.proxyEnabled) {
             proxy = child.parent.var.proxy;
         }
 
         if (proxy && JSON.stringify(child.session_name_list[sessionIndex].proxy) !== JSON.stringify(proxy)) {
             child.session_name_list[sessionIndex].proxy = proxy;
 
-            if (proxy.mode == 'fixed_servers' && (proxy.url || (proxy.ip && proxy.port))) {
+            if (proxy.url || (proxy.ip && proxy.port)) {
                 if (proxy.url) {
                     ss.closeAllConnections().then(() => {
                         ss.setProxy({
-                            mode: proxy.mode,
+                            mode: 'fixed_servers',
                             proxyRules: proxy.url,
                             proxyBypassRules: proxy.ignore || 'localhost,127.0.0.1,::1,192.168.*',
                         })
@@ -209,7 +209,7 @@ module.exports = function (child) {
                     if (proxyRules) {
                         ss.closeAllConnections().then(() => {
                             ss.setProxy({
-                                mode: proxy.mode,
+                                mode: 'fixed_servers',
                                 proxyRules: proxyRules,
                                 proxyBypassRules: proxy.ignore || 'localhost,127.0.0.1,::1,192.168.*',
                             })
@@ -222,28 +222,16 @@ module.exports = function (child) {
                         });
                     }
                 }
-            } else if (proxy.mode == 'pac_script' && proxy.pacScript) {
+            }  else {
+              
                 ss.setProxy({
-                    mode: proxy.mode,
-                    pacScript: proxy.pacScript,
+                     mode: 'fixed_servers',
                 }).then(() => {
-                    child.log(`session ${name} Proxy Set : ${proxy.mode}`);
-                });
-            } else {
-                child.electron.app.setProxy({
-                    mode: proxy.mode,
-                });
-                ss.setProxy({
-                    mode: proxy.mode,
-                }).then(() => {
-                    child.log(`session ${name} Proxy Set Default : ${proxy.mode}`);
+                    child.log(`session ${name} Proxy Set Default `);
                 });
             }
         } else if (!proxy) {
-            child.electron.app.setProxy({
-                mode: 'system',
-                proxyBypassRules: 'localhost,127.0.0.1,::1,192.168.*',
-            });
+          
             ss.setProxy({
                 mode: 'system',
                 proxyBypassRules: 'localhost,127.0.0.1,::1,192.168.*',
@@ -811,14 +799,14 @@ module.exports = function (child) {
 
                         if (Array.isArray(s_policy)) {
                             s_policy.forEach((value, key) => {
-                                if (win) {
-                                    if (s_policy[key].like('*sha256*')) {
-                                        win.customSetting.$sha256 = s_policy[key];
-                                    }
-                                    if (s_policy[key].like('*nonce*')) {
-                                        win.customSetting.$nonce = s_policy[key];
-                                    }
-                                }
+                                // if (win) {
+                                //     if (s_policy[key].like('*sha256*')) {
+                                //         win.customSetting.$sha256 = s_policy[key];
+                                //     }
+                                //     if (s_policy[key].like('*nonce*')) {
+                                //         win.customSetting.$nonce = s_policy[key];
+                                //     }
+                                // }
 
                                 if (!s_policy[key].contain('browser://') && !s_policy[key].contain("'none'")) {
                                     pList.forEach((p) => {
@@ -831,14 +819,14 @@ module.exports = function (child) {
                                 }
                             });
                         } else if (typeof s_policy == 'string') {
-                            if (win) {
-                                if (s_policy.like('*sha256*')) {
-                                    win.customSetting.$sha256 = s_policy;
-                                }
-                                if (s_policy.like('*nonce*')) {
-                                    win.customSetting.$nonce = s_policy;
-                                }
-                            }
+                            // if (win) {
+                            //     if (s_policy.like('*sha256*')) {
+                            //         win.customSetting.$sha256 = s_policy;
+                            //     }
+                            //     if (s_policy.like('*nonce*')) {
+                            //         win.customSetting.$nonce = s_policy;
+                            //     }
+                            // }
                             if (!s_policy.contain('browser://') && !s_policy.contain("'none'")) {
                                 pList.forEach((p) => {
                                     if (!s_policy.contain('nonce-') && !s_policy.contain("'unsafe-inline'")) {

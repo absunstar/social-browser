@@ -245,7 +245,7 @@ child.electron.app.whenReady().then(() => {
                 return;
             }
 
-            let index2 = child.parent.var.session_list.findIndex((s) => s.name == webContents.session.name && s.proxy && s.proxy.enabled);
+            let index2 = child.parent.var.session_list.findIndex((s) => s.name == webContents.session.name && s.proxy && s.proxyEnabled);
             if (index2 !== -1) {
                 proxy = child.parent.var.session_list[index2].proxy;
                 callback(proxy.username, proxy.password);

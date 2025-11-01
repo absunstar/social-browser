@@ -785,8 +785,9 @@ module.exports = function (child) {
             } else {
                 page = (await child.puppeteerBrowser.pages())[0];
             }
+
             await page.setBypassCSP(true);
-            await page.setUserAgent(obj.navigator.userAgent);
+
 
             if (obj.referrer) {
                 await page.setExtraHTTPHeaders({
@@ -813,12 +814,7 @@ module.exports = function (child) {
                     }
                 };
 
-                if (!globalThis.chrome || !globalThis.chrome.runtime) {
-                    globalThis.chrome = {
-                        runtime: {},
-                        // etc.
-                    };
-                }
+                
 
                 const originalQuery = window.navigator.permissions.query;
                 window.navigator.permissions.query = (parameters) => {
@@ -841,10 +837,176 @@ module.exports = function (child) {
                 if (!navigator.languages || navigator.languages.length === 0) {
                     globalThis.navigator2.languages = globalThis.navigator2.languages || ['en-US', 'en'];
                 }
-                if (navigator.plugins.length === 0) {
-                    globalThis.navigator2.plugins = globalThis.navigator2.plugins || {
-                        get: () => [1, 2, 3, 4, 5],
-                    };
+
+
+                if (obj.customSetting) {
+                    if (
+                        obj.customSetting.session.privacy &&
+                        obj.customSetting.session.privacy.vpc &&
+                        obj.customSetting.session.privacy.vpc.mask_date &&
+                        obj.customSetting.session.privacy.vpc.timeZone &&
+                        obj.customSetting.session.privacy.vpc.timeZone.text
+                    ) {
+                        (function (o, acOffset) {
+                            const gmtNeg = function (n) {
+                                const _format = function (v) {
+                                    return (v < 10 ? '0' : '') + v;
+                                };
+                                return (n <= 0 ? '+' : '-') + _format((Math.abs(n) / 60) | 0) + _format(Math.abs(n) % 60);
+                            };
+
+                            const GMT = function (n) {
+                                const _format = function (v) {
+                                    return (v < 10 ? '0' : '') + v;
+                                };
+                                return (n <= 0 ? '-' : '+') + _format((Math.abs(n) / 60) | 0) + _format(Math.abs(n) % 60);
+                            };
+
+                            const resolvedOptions = Intl.DateTimeFormat().resolvedOptions();
+                            const {
+                                getDay,
+                                getDate,
+                                getYear,
+                                getMonth,
+                                getHours,
+                                toString,
+                                getMinutes,
+                                getSeconds,
+                                getFullYear,
+                                toLocaleString,
+                                getMilliseconds,
+                                getTimezoneOffset,
+                                toLocaleTimeString,
+                                toLocaleDateString,
+                            } = Date.prototype;
+
+                            Object.defineProperty(Date.prototype, '_offset', {
+                                configurable: true,
+                                get() {
+                                    return getTimezoneOffset.call(this);
+                                },
+                            });
+
+                            Object.defineProperty(Date.prototype, '_date', {
+                                configurable: true,
+                                get() {
+                                    return this._nd === undefined ? new Date(this.getTime() + (this._offset + o.offset * 60) * 60 * 1000) : this._nd;
+                                },
+                            });
+
+                            Object.defineProperty(Date.prototype, 'getDay', {
+                                value: function () {
+                                    return getDay.call(this._date);
+                                },
+                            });
+
+                            Object.defineProperty(Date.prototype, 'getDate', {
+                                value: function () {
+                                    return getDate.call(this._date);
+                                },
+                            });
+                            Object.defineProperty(Date.prototype, 'getYear', {
+                                value: function () {
+                                    return getYear.call(this._date);
+                                },
+                            });
+                            Object.defineProperty(Date.prototype, 'getTimezoneOffset', {
+                                value: function () {
+                                    return Number(o.offset * 60);
+                                },
+                            });
+                            Object.defineProperty(Date.prototype, 'getMonth', {
+                                value: function () {
+                                    return getMonth.call(this._date);
+                                },
+                            });
+                            Object.defineProperty(Date.prototype, 'getHours', {
+                                value: function () {
+                                    return getHours.call(this._date);
+                                },
+                            });
+                            Object.defineProperty(Date.prototype, 'getMinutes', {
+                                value: function () {
+                                    return getMinutes.call(this._date);
+                                },
+                            });
+                            Object.defineProperty(Date.prototype, 'getSeconds', {
+                                value: function () {
+                                    return getSeconds.call(this._date);
+                                },
+                            });
+                            Object.defineProperty(Date.prototype, 'getFullYear', {
+                                value: function () {
+                                    return getFullYear.call(this._date);
+                                },
+                            });
+
+                            Object.defineProperty(Date.prototype, 'getMilliseconds', {
+                                value: function () {
+                                    return getMilliseconds.call(this._date);
+                                },
+                            });
+                            Object.defineProperty(Date.prototype, 'toLocaleString', {
+                                value: function () {
+                                    return toLocaleString.call(this._date);
+                                },
+                            });
+                            Object.defineProperty(Date.prototype, 'toLocaleTimeString', {
+                                value: function () {
+                                    return toLocaleTimeString.call(this._date);
+                                },
+                            });
+                            Object.defineProperty(Date.prototype, 'toLocaleDateString', {
+                                value: function () {
+                                    return toLocaleDateString.call(this._date);
+                                },
+                            });
+
+                            Object.defineProperty(Intl.DateTimeFormat.prototype, 'resolvedOptions', {
+                                value: function () {
+                                    return Object.assign(resolvedOptions, { timeZone: o.text, locale: navigator.language });
+                                },
+                            });
+                            Object.defineProperty(Date.prototype, 'toString', {
+                                value: function () {
+                                    return toString
+                                        .call(this._date)
+                                        .replace(gmtNeg(acOffset), GMT(o.offset * 60))
+                                        .replace(/\(.*\)/, '(' + o.value + ')');
+                                },
+                            });
+                        })(obj.customSetting.session.privacy.vpc.timeZone, new Date().getTimezoneOffset());
+                    }
+
+                    if (obj.customSetting.session.privacy.vpc.block_rtc) {
+                        let RTCPeerConnection = function () {
+                            return {
+                                createDataChannel: function () {},
+                                createOffer: function () {
+                                    return new Promise((resolve, reject) => {
+                                        resolve({});
+                                    });
+                                },
+                                setLocalDescription: function () {
+                                    return new Promise((resolve, reject) => {
+                                        resolve({});
+                                    });
+                                },
+                            };
+                        };
+
+                        window.MediaStreamTrack = undefined;
+                        window.RTCPeerConnection = RTCPeerConnection;
+                        window.RTCSessionDescription = undefined;
+
+                        window.mozMediaStreamTrack = undefined;
+                        window.mozRTCPeerConnection = RTCPeerConnection;
+                        window.mozRTCSessionDescription = undefined;
+
+                        window.webkitMediaStreamTrack = undefined;
+                        window.webkitRTCPeerConnection = RTCPeerConnection;
+                        window.webkitRTCSessionDescription = undefined;
+                    }
                 }
 
                 globalThis.__define(
@@ -928,94 +1090,97 @@ module.exports = function (child) {
                         console.log(error, code);
                     }
                 };
-                globalThis.Worker2 = globalThis.Worker;
-                globalThis.Worker = function (url, options, _worker) {
-                    url = globalThis.handleURL(url);
 
-                    if (!url || url.indexOf('blob:') === 0) {
-                        return new globalThis.Worker2(url, options, _worker);
-                    }
+                if ((worker = true)) {
+                    globalThis.Worker2 = globalThis.Worker;
+                    globalThis.Worker = function (url, options, _worker) {
+                        url = globalThis.handleURL(url);
 
-                    console.log('New Worker : ' + url);
+                        if (!url || url.indexOf('blob:') === 0) {
+                            return new globalThis.Worker2(url, options, _worker);
+                        }
 
-                    let workerID = 'worker_' + Math.random().toString().replace('.', '') + '_';
+                        console.log('New Worker : ' + url);
 
-                    fetch(url)
-                        .then((response) => response.text())
-                        .then((code) => {
-                            let _id = _worker ? _worker.id : workerID;
-                            _id = 'globalThis.' + _id;
-                            code = code.replaceAll('window.location', 'location');
-                            code = code.replaceAll('document.location', 'location');
-                            code = code.replaceAll('self.trustedTypes', _id + '.trustedTypes');
-                            code = code.replaceAll('self', _id + '');
-                            code = code.replaceAll('location', _id + '.location');
-                            // if (!_worker) {
-                            //     code = code.replaceAll('this', _id);
-                            // }
-                            code = code.replaceAll(_id + '.' + _id, _id);
+                        let workerID = 'worker_' + Math.random().toString().replace('.', '') + '_';
 
-                            globalThis.addJS('(()=>{ try { ' + code + ' } catch (err) {console.log(err)} })();');
-                        });
+                        fetch(url)
+                            .then((response) => response.text())
+                            .then((code) => {
+                                let _id = _worker ? _worker.id : workerID;
+                                _id = 'globalThis.' + _id;
+                                code = code.replaceAll('window.location', 'location');
+                                code = code.replaceAll('document.location', 'location');
+                                code = code.replaceAll('self.trustedTypes', _id + '.trustedTypes');
+                                code = code.replaceAll('self', _id + '');
+                                code = code.replaceAll('location', _id + '.location');
+                                // if (!_worker) {
+                                //     code = code.replaceAll('this', _id);
+                                // }
+                                code = code.replaceAll(_id + '.' + _id, _id);
 
-                    if (_worker) {
-                        return _worker;
-                    } else {
-                        globalThis[workerID] = {
-                            id: workerID,
-                            url: url,
-                            addEventListener: function () {},
-                            importScripts: function (...args2) {
-                                args2.forEach((arg) => {
-                                    new Worker(arg, null, globalThis[workerID]);
-                                });
-                            },
-                            terminate: function () {},
-                            postMessage: function (data) {
-                                globalThis[workerID].onmessage({ data: data });
-                            },
-                            onmessage: function () {},
-                        };
+                                globalThis.addJS('(()=>{ try { ' + code + ' } catch (err) {console.log(err)} })();');
+                            });
 
-                        let loc = new URL(globalThis[workerID].url);
-                        globalThis[workerID].location = loc;
-                        globalThis.__define(globalThis[workerID], 'location', {
-                            protocol: loc.protocol,
-                            host: loc.host,
-                            hostname: loc.hostname,
-                            origin: loc.origin,
-                            port: loc.port,
-                            pathname: loc.pathname,
-                            hash: loc.hash,
-                            search: loc.search,
-                            href: globalThis[workerID].url,
-                            toString: function () {
-                                return globalThis[workerID].url;
-                            },
-                        });
-                        globalThis.__define(globalThis[workerID], 'window', {});
-                        globalThis.__define(globalThis[workerID], 'document', {});
-                        globalThis.__define(globalThis[workerID], 'trustedTypes', window.trustedTypes);
+                        if (_worker) {
+                            return _worker;
+                        } else {
+                            globalThis[workerID] = {
+                                id: workerID,
+                                url: url,
+                                addEventListener: function () {},
+                                importScripts: function (...args2) {
+                                    args2.forEach((arg) => {
+                                        new Worker(arg, null, globalThis[workerID]);
+                                    });
+                                },
+                                terminate: function () {},
+                                postMessage: function (data) {
+                                    globalThis[workerID].onmessage({ data: data });
+                                },
+                                onmessage: function () {},
+                            };
 
-                        globalThis.importScripts = globalThis[workerID].importScripts;
-                        return globalThis[workerID];
-                    }
-                };
+                            let loc = new URL(globalThis[workerID].url);
+                            globalThis[workerID].location = loc;
+                            globalThis.__define(globalThis[workerID], 'location', {
+                                protocol: loc.protocol,
+                                host: loc.host,
+                                hostname: loc.hostname,
+                                origin: loc.origin,
+                                port: loc.port,
+                                pathname: loc.pathname,
+                                hash: loc.hash,
+                                search: loc.search,
+                                href: globalThis[workerID].url,
+                                toString: function () {
+                                    return globalThis[workerID].url;
+                                },
+                            });
+                            globalThis.__define(globalThis[workerID], 'window', {});
+                            globalThis.__define(globalThis[workerID], 'document', {});
+                            globalThis.__define(globalThis[workerID], 'trustedTypes', window.trustedTypes);
 
-                globalThis.__define(globalThis.Worker, 'toString', function () {
-                    return 'Worker() { [native code] }';
-                });
-                globalThis.serviceWorker = {
-                    register: navigator.serviceWorker ? navigator.serviceWorker.register : {},
-                };
-
-                if (navigator.serviceWorker) {
-                    navigator.serviceWorker.register = function (...args) {
-                        return new Promise((resolve, reject) => {
-                            let worker = new globalThis.Worker(...args);
-                            resolve(worker);
-                        });
+                            globalThis.importScripts = globalThis[workerID].importScripts;
+                            return globalThis[workerID];
+                        }
                     };
+
+                    globalThis.__define(globalThis.Worker, 'toString', function () {
+                        return 'Worker() { [native code] }';
+                    });
+                    globalThis.serviceWorker = {
+                        register: navigator.serviceWorker ? navigator.serviceWorker.register : {},
+                    };
+
+                    if (navigator.serviceWorker) {
+                        navigator.serviceWorker.register = function (...args) {
+                            return new Promise((resolve, reject) => {
+                                let worker = new globalThis.Worker(...args);
+                                resolve(worker);
+                            });
+                        };
+                    }
                 }
 
                 globalThis.defineProperty2 = Object.defineProperty;
@@ -1077,9 +1242,12 @@ module.exports = function (child) {
             //     // })();
             // });
 
-            if (obj.screen) {
+          
+                 if (obj.screen) {
                 await page.setViewport({ width: obj.screen.width, height: obj.screen.height });
             }
+            
+           
 
             if (obj.url) {
                 await page.goto(obj.url);
@@ -1101,14 +1269,14 @@ module.exports = function (child) {
                     child.puppeteerBrowser.disconnected = true;
                     resolve();
                     // make problem and sign out of google and facebook
-                  //  child.setSessionCookies({ cookies: child.puppeteerBrowser.allCookies, partition: obj.partition });
+                    //  child.setSessionCookies({ cookies: child.puppeteerBrowser.allCookies, partition: obj.partition });
                     child.puppeteerBrowser = null;
-                    if (obj.windowID) {
-                        let win = child.electron.BrowserWindow.fromId(obj.windowID);
-                        if (win && !win.isDestroyed()) {
-                            win.webContents.reload();
-                        }
-                    }
+                    // if (obj.windowID) {
+                    //     let win = child.electron.BrowserWindow.fromId(obj.windowID);
+                    //     if (win && !win.isDestroyed()) {
+                    //         win.webContents.reload();
+                    //     }
+                    // }
                 });
             });
         } catch (error) {

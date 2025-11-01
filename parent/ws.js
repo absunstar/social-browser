@@ -499,11 +499,11 @@ module.exports = function init(parent) {
                     let userIndex = parent.var.session_list.findIndex((s) => s.name == message.partition);
                     if (userIndex !== -1) {
                         if (message.proxy) {
-                            message.proxy.mode = message.proxy.mode || 'fixed_servers';
                             parent.var.session_list[userIndex].proxy = message.proxy;
-                            parent.var.session_list[userIndex].proxy.enabled = true;
+                            parent.var.session_list[userIndex].proxyEnabled = true;
                         } else {
-                            parent.var.session_list[userIndex].proxy = { enabled: false };
+                             parent.var.session_list[userIndex].proxy = null;
+                            parent.var.session_list[userIndex].proxyEnabled = false;
                         }
                         parent.applay('session_list');
                     }

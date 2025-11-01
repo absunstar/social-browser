@@ -715,7 +715,7 @@ SOCIALBROWSER.showUserProxyMenu = function () {
                 SOCIALBROWSER.ws({ type: '[change-user-proxy]', partition: SOCIALBROWSER.getCurrentTabInfo().partition, proxy: proxy });
                 setTimeout(() => {
                     ipc('[window-reload]');
-                }, 1000 * 1);
+                }, 1000 * 2);
             },
         });
     });
