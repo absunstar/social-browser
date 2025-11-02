@@ -5002,6 +5002,28 @@ SOCIALBROWSER.init2 = function () {
                 return;
             }
 
+            SOCIALBROWSER.showMenu = function (menuList) {
+                SOCIALBROWSER.menuList = menuList;
+                SOCIALBROWSER.ipc('[show-menu]', {
+                    list: SOCIALBROWSER.menuList?.map((m) => ({
+                        label: m.label,
+                        sublabel: m.sublabel,
+                        visible: m.visible,
+                        type: m.type,
+                        checked: m.checked,
+                        iconURL: m.iconURL,
+                        submenu: m.submenu?.map((m2) => ({
+                            label: m2.label,
+                            type: m2.type,
+                            checked: m2.checked,
+                            sublabel: m2.sublabel,
+                            visible: m2.visible,
+                            iconURL: m2.iconURL,
+                            submenu: m2.submenu?.map((m3) => ({ label: m3.label, type: m3.type, checked: m3.checked, sublabel: m3.sublabel, visible: m3.visible, iconURL: m3.iconURL })),
+                        })),
+                    })),
+                });
+            };
             SOCIALBROWSER.contextmenu = function (e) {
                 if (SOCIALBROWSER.contextmenuBusy) {
                     return false;
@@ -5337,25 +5359,7 @@ SOCIALBROWSER.init2 = function () {
                     }
 
                     if (SOCIALBROWSER.menuList.length > 0) {
-                        SOCIALBROWSER.ipc('[show-menu]', {
-                            list: SOCIALBROWSER.menuList?.map((m) => ({
-                                label: m.label,
-                                sublabel: m.sublabel,
-                                visible: m.visible,
-                                type: m.type,
-                                checked: m.checked,
-                                iconURL: m.iconURL,
-                                submenu: m.submenu?.map((m2) => ({
-                                    label: m2.label,
-                                    type: m2.type,
-                                    checked: m2.checked,
-                                    sublabel: m2.sublabel,
-                                    visible: m2.visible,
-                                    iconURL: m2.iconURL,
-                                    submenu: m2.submenu?.map((m3) => ({ label: m3.label, type: m3.type, checked: m3.checked, sublabel: m3.sublabel, visible: m3.visible, iconURL: m3.iconURL })),
-                                })),
-                            })),
-                        });
+                        SOCIALBROWSER.showMenu(SOCIALBROWSER.menuList);
                     }
                 } catch (error) {
                     SOCIALBROWSER.log(error);
