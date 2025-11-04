@@ -1097,7 +1097,7 @@ module.exports = function (owner) {
                     ';q=0.9,' +
                     owner.languageList[owner.randomNumber(0, owner.languageList.length - 1)] +
                     ';q=0.8',
-                mask_date: false,
+                maskTimeZone: false,
                 timeZone: owner.timeZones[owner.randomNumber(0, owner.timeZones.length - 1)],
                 hide_webgl: true,
                 hide_mimetypes: true,

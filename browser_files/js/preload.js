@@ -1131,6 +1131,7 @@ SOCIALBROWSER.init2 = function () {
                     });
                 });
             };
+        
 
             SOCIALBROWSER.getIP = function () {
                 return SOCIALBROWSER.fetchJson('https://inet-ip.info/json?fewfeedcors=0');
@@ -7453,64 +7454,6 @@ SOCIALBROWSER.init2 = function () {
                             SOCIALBROWSER.log(err);
                         });
                 };
-
-                /* Handle xhr then handel fetch */
-                window.XMLHttpRequest0 = window.XMLHttpRequest;
-                window.XMLHttpRequest2 = function () {
-                    let fake = {
-                        xhr: new XMLHttpRequest0(),
-                    };
-
-                    fake.reMap = function () {
-                        fake.readyState = fake.xhr.readyState;
-                        fake.status = fake.xhr.status;
-                        fake.statusText = fake.xhr.statusText;
-                        fake.responseXML = fake.xhr.responseXML;
-                        fake.responseText = fake.xhr.responseText;
-                    };
-                    fake.reMap();
-
-                    fake.xhr.onreadystatechange = function (...args) {
-                        fake.reMap();
-                        if (fake.onreadystatechange) {
-                            fake.onreadystatechange(...args);
-                        }
-                    };
-
-                    fake.xhr.onload = function (...args) {
-                        fake.reMap();
-                        if (fake.onload) {
-                            fake.onload(...args);
-                        }
-                    };
-
-                    fake.open = function (...args) {
-                        fake.xhr.open(...args);
-                        fake.reMap();
-                    };
-                    fake.send = function (...args) {
-                        //  fake.setRequestHeader('x-server', 'social-browser2');
-                        fake.xhr.send(...args);
-                        fake.reMap();
-                    };
-                    fake.setRequestHeader = function (...args) {
-                        // console.log(...args);
-                        fake.xhr.setRequestHeader(...args);
-                        fake.reMap();
-                    };
-
-                    fake.abort = function (...args) {
-                        fake.xhr.abort(...args);
-                        fake.reMap();
-                    };
-                    fake.getAllResponseHeaders = function (...args) {
-                        return fake.xhr.getAllResponseHeaders(...args);
-                    };
-                    fake.getResponseHeader = function (...args) {
-                        return fake.xhr.getResponseHeader(...args);
-                    };
-                    return fake;
-                };
             })();
         }
 
@@ -7643,10 +7586,10 @@ SOCIALBROWSER.init2 = function () {
             if ((fingerPrintLOADED = true)) {
                 let maskDate = false;
                 let timeZone = null;
-                if (SOCIALBROWSER.proxy && SOCIALBROWSER.proxy.vpc && SOCIALBROWSER.proxy.vpc.mask_date && SOCIALBROWSER.proxy.vpc.timeZone) {
+                if (SOCIALBROWSER.proxy && SOCIALBROWSER.proxy.vpc && SOCIALBROWSER.proxy.vpc.maskTimeZone && SOCIALBROWSER.proxy.vpc.timeZone) {
                     maskDate = true;
                     timeZone = SOCIALBROWSER.proxy.vpc.timeZone;
-                } else if (SOCIALBROWSER.session.privacy.allowVPC && SOCIALBROWSER.session.privacy.vpc.mask_date && SOCIALBROWSER.session.privacy.vpc.timeZone) {
+                } else if (SOCIALBROWSER.session.privacy.allowVPC && SOCIALBROWSER.session.privacy.vpc.maskTimeZone && SOCIALBROWSER.session.privacy.vpc.timeZone) {
                     maskDate = true;
                     timeZone = SOCIALBROWSER.session.privacy.vpc.timeZone;
                 }
@@ -9104,39 +9047,38 @@ if (!SOCIALBROWSER.javaScriptOFF) {
                         ele.srcdoc0 = value;
                         if (ele.contentWindow) {
                             ele.contentWindow.chrome = chrome;
-                            if (ele.contentWindow.navigator) {
-                                SOCIALBROWSER.__define(
-                                    ele.contentWindow,
-                                    'navigator',
-                                    new Proxy(ele.contentWindow.navigator, {
-                                        setProperty: function (target, key, value) {
-                                            if (target.hasOwnProperty(key)) return target[key];
-                                            return (target[key] = value);
-                                        },
-                                        get: function (target, key, receiver) {
-                                            if (key === '_') {
-                                                return target;
-                                            }
+                            ele.contentWindow.navigator = ele.contentWindow.navigator || navigator;
+                            SOCIALBROWSER.__define(
+                                ele.contentWindow,
+                                'navigator',
+                                new Proxy(ele.contentWindow.navigator, {
+                                    setProperty: function (target, key, value) {
+                                        if (target.hasOwnProperty(key)) return target[key];
+                                        return (target[key] = value);
+                                    },
+                                    get: function (target, key, receiver) {
+                                        if (key === '_') {
+                                            return target;
+                                        }
 
-                                            if (typeof target[key] === 'function') {
-                                                return function (...args) {
-                                                    return target[key].apply(this === receiver ? target : this, args);
-                                                };
-                                            }
-                                            return Object.hasOwn(SOCIALBROWSER.navigator, key) ? SOCIALBROWSER.navigator[key] : target[key];
-                                        },
-                                        set: function (target, key, value) {
-                                            return this.setProperty(target, key, value);
-                                        },
-                                        defineProperty: function (target, key, desc) {
-                                            return this.setProperty(target, key, desc.value);
-                                        },
-                                        deleteProperty: function (target, key) {
-                                            return false;
-                                        },
-                                    }),
-                                );
-                            }
+                                        if (typeof target[key] === 'function') {
+                                            return function (...args) {
+                                                return target[key].apply(this === receiver ? target : this, args);
+                                            };
+                                        }
+                                        return Object.hasOwn(SOCIALBROWSER.navigator, key) ? SOCIALBROWSER.navigator[key] : target[key];
+                                    },
+                                    set: function (target, key, value) {
+                                        return this.setProperty(target, key, value);
+                                    },
+                                    defineProperty: function (target, key, desc) {
+                                        return this.setProperty(target, key, desc.value);
+                                    },
+                                    deleteProperty: function (target, key) {
+                                        return false;
+                                    },
+                                }),
+                            );
                         }
                         return ele;
                     },
@@ -9158,39 +9100,38 @@ if (!SOCIALBROWSER.javaScriptOFF) {
             if (ele && ele.tagName.like('iframe')) {
                 if (ele.contentWindow) {
                     ele.contentWindow.chrome = chrome;
-                    if (ele.contentWindow.navigator) {
-                        SOCIALBROWSER.__define(
-                            ele.contentWindow,
-                            'navigator',
-                            new Proxy(ele.contentWindow.navigator, {
-                                setProperty: function (target, key, value) {
-                                    if (target.hasOwnProperty(key)) return target[key];
-                                    return (target[key] = value);
-                                },
-                                get: function (target, key, receiver) {
-                                    if (key === '_') {
-                                        return target;
-                                    }
+                    ele.contentWindow.navigator = ele.contentWindow.navigator || navigator;
+                    SOCIALBROWSER.__define(
+                        ele.contentWindow,
+                        'navigator',
+                        new Proxy(ele.contentWindow.navigator, {
+                            setProperty: function (target, key, value) {
+                                if (target.hasOwnProperty(key)) return target[key];
+                                return (target[key] = value);
+                            },
+                            get: function (target, key, receiver) {
+                                if (key === '_') {
+                                    return target;
+                                }
 
-                                    if (typeof target[key] === 'function') {
-                                        return function (...args) {
-                                            return target[key].apply(this === receiver ? target : this, args);
-                                        };
-                                    }
-                                    return Object.hasOwn(SOCIALBROWSER.navigator, key) ? SOCIALBROWSER.navigator[key] : target[key];
-                                },
-                                set: function (target, key, value) {
-                                    return this.setProperty(target, key, value);
-                                },
-                                defineProperty: function (target, key, desc) {
-                                    return this.setProperty(target, key, desc.value);
-                                },
-                                deleteProperty: function (target, key) {
-                                    return false;
-                                },
-                            }),
-                        );
-                    }
+                                if (typeof target[key] === 'function') {
+                                    return function (...args) {
+                                        return target[key].apply(this === receiver ? target : this, args);
+                                    };
+                                }
+                                return Object.hasOwn(SOCIALBROWSER.navigator, key) ? SOCIALBROWSER.navigator[key] : target[key];
+                            },
+                            set: function (target, key, value) {
+                                return this.setProperty(target, key, value);
+                            },
+                            defineProperty: function (target, key, desc) {
+                                return this.setProperty(target, key, desc.value);
+                            },
+                            deleteProperty: function (target, key) {
+                                return false;
+                            },
+                        }),
+                    );
                 }
             }
             return ele;
@@ -9234,4 +9175,245 @@ if (!SOCIALBROWSER.isWhiteSite) {
         };
         SOCIALBROWSER.__setConstValue(JSON.stringify, 'toString', () => j);
     }
+        if ((windowFetch = false)) {
+                window.fetch0 = window.fetch;
+                let s = window.fetch.toString();
+
+                window.fetch = function (...args) {
+                    return new Promise((resolve, reject) => {
+                        window
+                            .fetch0(...args)
+                            .then((res) => {
+                                if (args[0].like('*fingerprint.com*')) {
+                                    res.text().then((text) => {
+                                        if (text.like('{*')) {
+                                            let data = JSON.parse(text);
+                                            if (data.botd && data.botd.data && data.botd.data.bot) {
+                                                data.botd.data.bot = {
+                                                    result: 'notDetected',
+                                                };
+                                            } else if (data.products && data.products.botd && data.products.botd.data && data.products.botd.data.bot) {
+                                                data.products.botd.data.bot = {
+                                                    result: 'notDetected',
+                                                };
+                                            }
+                                            res.text = function () {
+                                                return new Promise((resolve, reject) => {
+                                                    resolve(JSON.stringify(data));
+                                                });
+                                            };
+                                            res.json = function () {
+                                                return new Promise((resolve, reject) => {
+                                                    resolve(data);
+                                                });
+                                            };
+                                        }
+                                        resolve(res);
+                                    });
+                                } else {
+                                    resolve(res);
+                                }
+                            })
+                            .catch((err) => {
+                                reject(err);
+                            });
+                    });
+                };
+                SOCIALBROWSER.__setConstValue(window.fetch, 'toString', () => s);
+
+                window.XMLHttpRequest0 = window.XMLHttpRequest;
+                let s2 = window.XMLHttpRequest.toString();
+                window.XMLHttpRequest = function (...args) {
+                    let fake = {
+                        xhr: new XMLHttpRequest0(...args),
+                    };
+
+                    Object.defineProperty(fake, 'responseXML', {
+                        get: function () {
+                            return fake.xhr.responseXML;
+                        },
+                        set: function (value) {
+                            fake.xhr.responseXML = value;
+                        },
+                    });
+
+                      Object.defineProperty(fake, 'text', {
+                        get: function () {
+                            return fake.xhr.text;
+                        },
+                        set: function (value) {
+                            fake.xhr.text = value;
+                        },
+                    });
+
+                    Object.defineProperty(fake, 'responseText', {
+                        get: function () {
+                            return fake._responseText  || fake.xhr.responseText;
+                        },
+                        set: function (value) {
+                            fake.xhr.responseText = value;
+                        },
+                    });
+
+                    Object.defineProperty(fake, 'status', {
+                        get: function () {
+                            return fake.xhr.status;
+                        },
+                        set: function (value) {
+                            fake.xhr.status = value;
+                        },
+                    });
+
+                    Object.defineProperty(fake, 'readyState', {
+                        get: function () {
+                            return fake.xhr.readyState;
+                        },
+                        set: function (value) {
+                            fake.xhr.readyState = value;
+                        },
+                    });
+
+                    Object.defineProperty(fake, 'statusText', {
+                        get: function () {
+                            return fake.xhr.statusText;
+                        },
+                        set: function (value) {
+                            fake.xhr.statusText = value;
+                        },
+                    });
+
+                    Object.defineProperty(fake, 'upload', {
+                        get: function () {
+                            return fake.xhr.upload;
+                        },
+                        set: function (value) {
+                            fake.xhr.upload = value;
+                        },
+                    });
+
+                    Object.defineProperty(fake, 'response', {
+                        get: function () {
+                            return fake.xhr.response;
+                        },
+                        set: function (value) {
+                            fake.xhr.response = value;
+                        },
+                    });
+
+                    Object.defineProperty(fake, 'responseType', {
+                        get: function () {
+                            return fake.xhr.responseType;
+                        },
+                        set: function (value) {
+                            fake.xhr.responseType = value;
+                        },
+                    });
+
+                   
+
+                    Object.defineProperty(fake, 'timeout', {
+                        get: function () {
+                            return fake.xhr.timeout;
+                        },
+                        set: function (value) {
+                            fake.xhr.timeout = value;
+                        },
+                    });
+
+                    Object.defineProperty(fake, 'withCredentials', {
+                        get: function () {
+                            return fake.xhr.withCredentials;
+                        },
+                        set: function (value) {
+                            fake.xhr.withCredentials = value;
+                        },
+                    });
+
+                    fake.open = function (...args) {
+                        fake.url = args[1];
+                        fake.xhr.open(...args);
+                    };
+                    fake.send = function (...args) {
+                        //  fake.setRequestHeader('x-server', 'social-browser2');
+
+                        fake.xhr.send(...args);
+                    };
+
+                    fake.xhr.onreadystatechange = function (...args) {
+                        if (fake.url.like('*fingerprint.com*') && typeof fake.responseText === 'string') {
+                        if (fake.xhr.status === 200 && fake.xhr.readyState == 4) {
+                                if (fake.responseText.like('{"products":*')) {
+                                    let response = JSON.parse(fake.responseText);
+                                    response.products.botd = response.products.botd
+                                    response.products.botd.data = response.products.botd.data
+                                    response.products.botd.data.bot = {
+                                        result: 'notDetected',
+                                    };
+                                    fake._responseText = JSON.stringify(response);
+                                }
+                            }
+                        }
+                        if (fake.onreadystatechange) {
+                            setTimeout(() => {
+                                fake.onreadystatechange(...args);
+                            }, 100);
+                        }
+                    };
+                    fake.xhr.onload = function (...args) {
+                        if (fake.onload) {
+                            fake.onload(...args);
+                        }
+                    };
+                    fake.xhr.onloadstart = function (...args) {
+                        if (fake.onloadstart) {
+                            fake.onloadstart(...args);
+                        }
+                    };
+                    fake.xhr.onprogress = function (...args) {
+                        if (fake.onprogress) {
+                            fake.onprogress(...args);
+                        }
+                    };
+                    fake.xhr.onabort = function (...args) {
+                        if (fake.onabort) {
+                            fake.onabort(...args);
+                        }
+                    };
+                    fake.xhr.onerror = function (...args) {
+                        if (fake.onerror) {
+                            fake.onerror(...args);
+                        }
+                    };
+                    fake.xhr.ontimeout = function (...args) {
+                        if (fake.ontimeout) {
+                            fake.ontimeout(...args);
+                        }
+                    };
+                    fake.xhr.onloadend = function (...args) {
+                        if (fake.onloadend) {
+                            fake.onloadend(...args);
+                        }
+                    };
+
+                    fake.setRequestHeader = function (...args) {
+                        // console.log(...args);
+                        fake.xhr.setRequestHeader(...args);
+                    };
+
+                    fake.abort = function (...args) {
+                        fake.xhr.abort(...args);
+                    };
+                    fake.overrideMimeType = function(...args){
+                        fake.xhr.overrideMimeType(...args)
+                    }
+                    fake.getAllResponseHeaders = function (...args) {
+                        return fake.xhr.getAllResponseHeaders(...args);
+                    };
+                    fake.getResponseHeader = function (...args) {
+                        return fake.xhr.getResponseHeader(...args);
+                    };
+                    return fake;
+                };
+                SOCIALBROWSER.__setConstValue(window.XMLHttpRequest, 'toString', () => s2);
+            }
 }

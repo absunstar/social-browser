@@ -843,7 +843,7 @@ module.exports = function (child) {
                     if (
                         obj.customSetting.session.privacy &&
                         obj.customSetting.session.privacy.vpc &&
-                        obj.customSetting.session.privacy.vpc.mask_date &&
+                        obj.customSetting.session.privacy.vpc.maskTimeZone &&
                         obj.customSetting.session.privacy.vpc.timeZone &&
                         obj.customSetting.session.privacy.vpc.timeZone.text
                     ) {

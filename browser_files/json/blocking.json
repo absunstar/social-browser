@@ -46,7 +46,7 @@
             "hide_vega": true,
             "hide_connection": true,
             "hide_lang": true,
-            "mask_date": false,
+            "maskTimeZone": false,
             "allowVPC": true,
             "connection": {
                 "effectiveType": "4g",
