@@ -268,7 +268,7 @@ module.exports = function (child) {
             }
 
             ss.setDisplayMediaRequestHandler((request, callback) => {
-                callback({ video: request.frame })
+                callback({ video: request.frame });
 
                 // child.electron.desktopCapturer.getSources({ types: ['window', 'screen'] }).then((sources) => {
                 //     callback({ video: sources[0], audio: 'loopback' });
@@ -909,11 +909,13 @@ module.exports = function (child) {
             });
 
             ss.setPermissionRequestHandler((webContents, permission, callback) => {
-                let win = child.electron.BrowserWindow.fromWebContents(webContents);
-                if(win.customSetting.allowAllPermissions){
-                     return callback(true);
+                if (webContents) {
+                    let win = child.electron.BrowserWindow.fromWebContents(webContents);
+                    if (win.customSetting.allowAllPermissions) {
+                        return callback(true);
+                    }
                 }
-                // https://www.electronjs.org/docs/api/session
+
                 if (!child.parent.var.blocking.permissions) {
                     return callback(false);
                 }
@@ -925,10 +927,13 @@ module.exports = function (child) {
                 }
             });
             ss.setPermissionCheckHandler((webContents, permission, requestingOrigin, details) => {
-                  let win = child.electron.BrowserWindow.fromWebContents(webContents);
-                if(win.customSetting.allowAllPermissions){
-                     return true;
+                if (webContents) {
+                    let win = child.electron.BrowserWindow.fromWebContents(webContents);
+                    if (win.customSetting.allowAllPermissions) {
+                        return true;
+                    }
                 }
+
                 if (!child.parent.var.blocking.permissions) {
                     return false;
                 }
@@ -941,7 +946,6 @@ module.exports = function (child) {
             });
 
             ss.on('will-download', (event, item, webContents) => {
-
                 if (webContents && !webContents.isDestroyed()) {
                     webContents.send('[will-download]', { url: item.getURL() });
                     let win = child.electron.BrowserWindow.fromWebContents(webContents);
@@ -984,7 +988,7 @@ module.exports = function (child) {
                     item.setSavePath(child.path.join(child.parent.var.blocking.downloader.defaultDownloadPath, item.getFilename()));
                 }
 
-                if(dl.url.like('data*')){
+                if (dl.url.like('data*')) {
                     item.allowExternalDownloader = false;
                 }
 

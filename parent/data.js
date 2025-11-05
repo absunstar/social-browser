@@ -777,9 +777,8 @@ module.exports = function init(parent) {
                 return res.json();
             })
             .then((data) => {
-                if (obj.key) {
-                    parent.var.core.OnlineKey = obj.key;
-                }
+                parent.var.core.OnlineKey = obj.key || '';
+
                 parent.var.core.keyInfo = data;
 
                 if (data.done && data.activated) {

@@ -1005,10 +1005,11 @@ SOCIALBROWSER.init2 = function () {
                                 context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
                                 const imageDataURL = canvas.toDataURL('image/png');
-                                SOCIALBROWSER.$downloadURL(imageDataURL, 'screenshot-' + SOCIALBROWSER.domain+'-' + new Date().getTime() + '.png');
+                                SOCIALBROWSER.$downloadURL(imageDataURL, 'screenshot-' + SOCIALBROWSER.domain + '-' + new Date().getTime() + '.png');
                                 captureStream.getTracks().forEach((track) => track.stop());
 
                                 resolve({ imageDataURL: imageDataURL });
+                                SOCIALBROWSER.showUserMessage('ScreenShot Saved <br><img src="' + imageDataURL + '" />', 1000 * 5);
                             };
                         });
                     } catch (err) {
@@ -1201,13 +1202,21 @@ SOCIALBROWSER.init2 = function () {
             };
 
             SOCIALBROWSER.onLoad = SOCIALBROWSER.onload = function (fn) {
-                if (document.readyState !== 'loading') {
-                    fn();
-                } else {
-                    document.addEventListener('DOMContentLoaded', () => {
-                        fn();
-                    });
-                }
+                return new Promise((resolve, reject) => {
+                    if (document.readyState !== 'loading') {
+                        resolve();
+                        if (typeof fn === 'function') {
+                            fn();
+                        }
+                    } else {
+                        document.addEventListener('DOMContentLoaded', () => {
+                            resolve();
+                            if (typeof fn === 'function') {
+                                fn();
+                            }
+                        });
+                    }
+                });
             };
 
             SOCIALBROWSER.timeOffset = new Date().getTimezoneOffset();
@@ -2087,12 +2096,7 @@ SOCIALBROWSER.init2 = function () {
                 }
                 clearTimeout(SOCIALBROWSER.showUserMessageTimeout);
                 let div = document.querySelector('#__userMessageBox');
-                if (msg && msg.trim()) {
-                    let length = window.innerWidth / 8;
-                    if (msg.length > length) {
-                        msg = msg.substring(0, length) + '... ';
-                    }
-
+                if (msg) {
                     if (div) {
                         div.style.display = 'block';
                         div.innerHTML = SOCIALBROWSER.policy.createHTML(msg);
@@ -2481,6 +2485,17 @@ SOCIALBROWSER.init2 = function () {
                 return result.concat(childResults).flat();
             };
 
+            SOCIALBROWSER.$load = function () {
+                return new Promise((resolve, reject) => {
+                    if (document.readyState !== 'loading') {
+                        resolve();
+                    } else {
+                        document.addEventListener('DOMContentLoaded', () => {
+                            resolve();
+                        });
+                    }
+                });
+            };
             SOCIALBROWSER.$html = function (html) {
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(html, 'text/html');
@@ -9001,7 +9016,7 @@ SOCIALBROWSER.init2 = function () {
                 SOCIALBROWSER.togglePageImages();
             } else if (data.name == 'translate') {
                 SOCIALBROWSER.allowGoogleTranslate();
-            }else if (data.name == 'screen-shot') {
+            } else if (data.name == 'screen-shot') {
                 SOCIALBROWSER.$screenshot();
             }
         });

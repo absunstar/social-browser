@@ -145,6 +145,12 @@ video0 {
     font-weight: normal;
     display: block;
 }
+#__userMessageBox img {
+    width: 256px;
+    height: 256px;
+    object-fit: fill;
+    border: 2px solid #fff;
+}
 #__downloads {
     padding: 5px;
     font-family: sans-serif;
