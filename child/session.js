@@ -96,26 +96,6 @@ module.exports = function (child) {
             sessionIndex = child.session_name_list.findIndex((s) => s.name === name);
         }
 
-        setTimeout(() => {
-            child.parent.var.preload_list.forEach((p) => {
-                if (!ss.getPreloadScripts().some((pr) => pr.id === 'frame-preload_' + p.id)) {
-                    ss.registerPreloadScript({
-                        type: 'frame',
-                        id: 'frame-preload_' + p.id,
-                        filePath: p.path.replace('{dir}', child.parent.dir),
-                    });
-                }
-            });
-
-            ss.getPreloadScripts().forEach((pr) => {
-                if (!child.parent.var.preload_list.some((p) => pr.id === 'frame-preload_' + p.id)) {
-                    if (pr.id !== 'frame-preload' && pr.id !== 'service-preload') {
-                        ss.unregisterPreloadScript(pr.id);
-                    }
-                }
-            });
-        }, 1000);
-
         if (sessionIndex !== -1) {
             child.session_name_list[sessionIndex].user = user;
             child.allowSessionHandle = false;
@@ -146,6 +126,26 @@ module.exports = function (child) {
             sessionIndex = child.session_name_list.length - 1;
             // ss.setSpellCheckerLanguages(['en-US']);
             ss.allowNTLMCredentialsForDomains('*');
+        }
+
+        if ((preloads = true)) {
+            child.parent.var.preload_list.forEach((p) => {
+                if (!ss.getPreloadScripts().some((pr) => pr.id === 'frame-preload_' + p.id)) {
+                    ss.registerPreloadScript({
+                        type: 'frame',
+                        id: 'frame-preload_' + p.id,
+                        filePath: p.path.replace('{dir}', child.parent.dir),
+                    });
+                }
+            });
+
+            ss.getPreloadScripts().forEach((pr) => {
+                if (!child.parent.var.preload_list.some((p) => pr.id === 'frame-preload_' + p.id)) {
+                    if (pr.id !== 'frame-preload' && pr.id !== 'service-preload') {
+                        ss.unregisterPreloadScript(pr.id);
+                    }
+                }
+            });
         }
 
         let proxy = null;
@@ -222,16 +222,14 @@ module.exports = function (child) {
                         });
                     }
                 }
-            }  else {
-              
+            } else {
                 ss.setProxy({
-                     mode: 'fixed_servers',
+                    mode: 'fixed_servers',
                 }).then(() => {
                     child.log(`session ${name} Proxy Set Default `);
                 });
             }
         } else if (!proxy) {
-          
             ss.setProxy({
                 mode: 'system',
                 proxyBypassRules: 'localhost,127.0.0.1,::1,192.168.*',
@@ -270,9 +268,11 @@ module.exports = function (child) {
             }
 
             ss.setDisplayMediaRequestHandler((request, callback) => {
-                child.electron.desktopCapturer.getSources({ types: ['screen'] }).then((sources) => {
-                    callback({ video: sources[0], audio: 'loopback' });
-                });
+                callback({ video: request.frame })
+
+                // child.electron.desktopCapturer.getSources({ types: ['window', 'screen'] }).then((sources) => {
+                //     callback({ video: sources[0], audio: 'loopback' });
+                // });
             });
 
             ss.webRequest.onBeforeRequest(filter, function (details, callback) {
@@ -337,7 +337,7 @@ module.exports = function (child) {
                     }
 
                     if (win.customSetting.blockURLs) {
-                        if (url.like(win.customSetting.blockURLs)) {
+                        if (url.like(win.customSetting.blockURLs) || details.resourceType.like(win.customSetting.blockURLs)) {
                             callback({
                                 cancel: false,
                                 redirectURL: 'browser://html/logo.html',
@@ -346,7 +346,7 @@ module.exports = function (child) {
                         }
                     }
                     if (win.customSetting.allowURLs) {
-                        if (!url.like(win.customSetting.allowURLs)) {
+                        if (!url.like(win.customSetting.allowURLs) && !details.resourceType.like(win.customSetting.allowURLs)) {
                             callback({
                                 cancel: false,
                                 redirectURL: 'browser://html/logo.html',
@@ -685,6 +685,33 @@ module.exports = function (child) {
                     return;
                 }
 
+                if (win && win.customSetting) {
+                    if (win.customSetting.blockURLs) {
+                        if (url.like(win.customSetting.blockURLs) || details.resourceType.like(win.customSetting.blockURLs)) {
+                            callback({
+                                cancel: false,
+                                responseHeaders: {
+                                    ...details.responseHeaders,
+                                },
+                                statusLine: statusLine,
+                            });
+                            return;
+                        }
+                    }
+                    if (win.customSetting.allowURLs) {
+                        if (!url.like(win.customSetting.allowURLs) && !details.resourceType.like(win.customSetting.allowURLs)) {
+                            callback({
+                                cancel: false,
+                                responseHeaders: {
+                                    ...details.responseHeaders,
+                                },
+                                statusLine: statusLine,
+                            });
+                            return;
+                        }
+                    }
+                }
+
                 // custom header response
                 child.parent.var.customHeaderList.forEach((r) => {
                     if (r.type == 'response' && url.like(r.url)) {
@@ -882,6 +909,10 @@ module.exports = function (child) {
             });
 
             ss.setPermissionRequestHandler((webContents, permission, callback) => {
+                let win = child.electron.BrowserWindow.fromWebContents(webContents);
+                if(win.customSetting.allowAllPermissions){
+                     return callback(true);
+                }
                 // https://www.electronjs.org/docs/api/session
                 if (!child.parent.var.blocking.permissions) {
                     return callback(false);
@@ -894,6 +925,10 @@ module.exports = function (child) {
                 }
             });
             ss.setPermissionCheckHandler((webContents, permission, requestingOrigin, details) => {
+                  let win = child.electron.BrowserWindow.fromWebContents(webContents);
+                if(win.customSetting.allowAllPermissions){
+                     return true;
+                }
                 if (!child.parent.var.blocking.permissions) {
                     return false;
                 }
@@ -906,6 +941,7 @@ module.exports = function (child) {
             });
 
             ss.on('will-download', (event, item, webContents) => {
+
                 if (webContents && !webContents.isDestroyed()) {
                     webContents.send('[will-download]', { url: item.getURL() });
                     let win = child.electron.BrowserWindow.fromWebContents(webContents);
@@ -946,6 +982,10 @@ module.exports = function (child) {
 
                 if (child.parent.var.blocking.downloader.defaultDownloadPath && !item.setingdefaultSavePath) {
                     item.setSavePath(child.path.join(child.parent.var.blocking.downloader.defaultDownloadPath, item.getFilename()));
+                }
+
+                if(dl.url.like('data*')){
+                    item.allowExternalDownloader = false;
                 }
 
                 if (item.allowExternalDownloader) {

@@ -144,14 +144,16 @@
                 <a title="Translate" onclick=" ipc('[window-action]', { name: 'translate' })">
                     <i class="fas fa-language white"></i>
                 </a>
-                <a title="Open URL in  ( Chrome Browser Simulator ) [ Shared Cookies , User Data , Extentions ] "  onclick="ipc('[window-action]' , { name: 'open-in-chrome-session'})">
-                   <i class="fa-brands fa-chrome"></i>
+                <a title="Open URL in  ( Chrome Browser Simulator ) [ Shared Cookies , User Data , Extentions ] " onclick="ipc('[window-action]' , { name: 'open-in-chrome-session'})">
+                    <i class="fa-brands fa-chrome"></i>
                 </a>
 
                 <a title="User Scripts" onclick="SOCIALBROWSER.showScriptListMenu();">
                     <i class="fa-solid fa-code brown"></i>
                 </a>
-
+                <a title="Take Screen Shot ( current Page )" onclick=" ipc('[window-action]', { name: 'screen-shot' })">
+                    <i class="fa-solid fa-camera"></i>
+                </a>
                 <a class="space"> | </a>
 
                 <a title="Change User Proxy" onclick="SOCIALBROWSER.showUserProxyMenu();">

@@ -48,6 +48,8 @@ var SOCIALBROWSER = {
     },
 };
 
+globalThis.SOCIALBROWSER = SOCIALBROWSER;
+
 (function loadCore() {
     if ((coreLOADED = true)) {
         SOCIALBROWSER.escapeRegExp = function (s = '') {
@@ -558,10 +560,6 @@ SOCIALBROWSER.init2 = function () {
         },
     });
 
-    if (SOCIALBROWSER.customSetting.allowSocialBrowser) {
-        globalThis.SOCIALBROWSER = SOCIALBROWSER;
-    }
-
     SOCIALBROWSER.log(` ... ${document.location.href} ... `);
 
     if (!SOCIALBROWSER.customSetting.iframe && SOCIALBROWSER.isIframe()) {
@@ -981,27 +979,44 @@ SOCIALBROWSER.init2 = function () {
             SOCIALBROWSER.isNativeFunction = function (f) {
                 return f.toString().includes('[native code]');
             };
+            SOCIALBROWSER.$downloadURL = function (url, name) {
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = name;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            };
+            SOCIALBROWSER.$screenshot = async function (options = {}, callback) {
+                return new Promise((resolve, reject) => {
+                    try {
+                        SOCIALBROWSER.customSetting.allowAllPermissions = true;
 
-            SOCIALBROWSER.desktopCapturer = function (options = {}, callback) {
-                navigator.mediaDevices
-                    .getDisplayMedia({
-                        audio: false,
-                        video: {
-                            width: 1200,
-                            height: 800,
-                            frameRate: 30,
-                        },
-                    })
-                    .then((stream) => {
-                        callback(null, stream, video);
-                        if ((video = options.video)) {
-                            video.srcObject = stream;
-                            video.onloadedmetadata = (e) => video.play();
-                        }
-                    })
-                    .catch((err) => {
-                        callback(err);
-                    });
+                        navigator.mediaDevices0.getDisplayMedia({ video: true }).then((captureStream) => {
+                            const video = document.createElement('video');
+                            video.srcObject = captureStream;
+                            video.autoplay = true;
+
+                            video.onloadedmetadata = () => {
+                                const canvas = document.createElement('canvas');
+                                canvas.width = video.videoWidth;
+                                canvas.height = video.videoHeight;
+                                const context = canvas.getContext('2d');
+                                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                                const imageDataURL = canvas.toDataURL('image/png');
+                                SOCIALBROWSER.$downloadURL(imageDataURL, 'screenshot-' + SOCIALBROWSER.domain+'-' + new Date().getTime() + '.png');
+                                captureStream.getTracks().forEach((track) => track.stop());
+
+                                resolve({ imageDataURL: imageDataURL });
+                            };
+                        });
+                    } catch (err) {
+                        reject(err);
+                        console.error('Error $screenshot screen : ', err);
+                        SOCIALBROWSER.customSetting.allowAllPermissions = false;
+                    }
+                });
             };
             SOCIALBROWSER.addSession = function (session) {
                 if (SOCIALBROWSER.var.session_list.length > SOCIALBROWSER.var.core.browser.maxProfiles) {
@@ -1131,7 +1146,6 @@ SOCIALBROWSER.init2 = function () {
                     });
                 });
             };
-        
 
             SOCIALBROWSER.getIP = function () {
                 return SOCIALBROWSER.fetchJson('https://inet-ip.info/json?fewfeedcors=0');
@@ -1436,6 +1450,7 @@ SOCIALBROWSER.init2 = function () {
                     }, timeout);
                 });
             };
+
             SOCIALBROWSER.getOffset = function (el) {
                 const box = el.getBoundingClientRect();
                 let factor = SOCIALBROWSER.webContents.zoomFactor || 1;
@@ -1606,19 +1621,6 @@ SOCIALBROWSER.init2 = function () {
                         return element;
                     }
                 }
-            };
-
-            SOCIALBROWSER.$ = function (selector) {
-                if (selector instanceof HTMLElement) {
-                    return selector;
-                }
-                if (typeof selector !== 'string') {
-                    return null;
-                }
-                return document.querySelector(selector);
-            };
-            SOCIALBROWSER.$$ = function (selector) {
-                return document.querySelectorAll(selector);
             };
 
             SOCIALBROWSER.select = function (selector, value) {
@@ -2444,6 +2446,414 @@ SOCIALBROWSER.init2 = function () {
                 }
 
                 return true;
+            };
+        }
+
+        if (($$$$ = true)) {
+            SOCIALBROWSER.$ = function (selector) {
+                if (selector instanceof HTMLElement) {
+                    return selector;
+                }
+                if (typeof selector !== 'string') {
+                    return null;
+                }
+                if (selector.indexOf('/') == 0) {
+                    return document.evaluate(selector, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                } else {
+                    return document.querySelector(selector);
+                }
+            };
+            SOCIALBROWSER.$$ = function (selector) {
+                let arr = [];
+
+                document.querySelectorAll(selector).forEach((ele) => {
+                    arr.push(ele);
+                });
+                return arr;
+            };
+
+            SOCIALBROWSER.$$$ = function (selector, el = document.body) {
+                const childShadows = SOCIALBROWSER.$$('*')
+                    .map((el) => el.shadowRoot)
+                    .filter(Boolean);
+                const childResults = childShadows.map((child) => SOCIALBROWSER.$$$(selector, child));
+                const result = Array.from(el.querySelectorAll(selector));
+                return result.concat(childResults).flat();
+            };
+
+            SOCIALBROWSER.$html = function (html) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                return doc;
+            };
+
+            SOCIALBROWSER.$goBack = function () {
+                window.history.back();
+            };
+            SOCIALBROWSER.$goForward = function () {
+                window.history.forward();
+            };
+            SOCIALBROWSER.$submit = function (selector = 'form') {
+                SOCIALBROWSER.$select(selector).then((ele) => {
+                    ele.submit();
+                });
+            };
+
+            SOCIALBROWSER.$isElementExists = function (selector) {
+                if (selector instanceof HTMLElement) {
+                    return true;
+                } else if (typeof selector !== 'string') {
+                    return false;
+                } else {
+                    if (selector.indexOf('/') == 0) {
+                        return document.evaluate(selector, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue ? true : false;
+                    } else {
+                        return SOCIALBROWSER.$(selector) ? true : false;
+                    }
+                }
+            };
+
+            SOCIALBROWSER.$wait = function (ms = 200) {
+                return new Promise((resolve) => setTimeout(resolve, ms));
+            };
+            SOCIALBROWSER.$scrollIntoView = function (selector) {
+                return new Promise((resolve) => {
+                    SOCIALBROWSER.$select(selector).then((element) => {
+                        element.scrollIntoView();
+                        SOCIALBROWSER.$wait().then(() => resolve(element));
+                    });
+                });
+            };
+
+            SOCIALBROWSER.$selectByXpath = function (selector) {
+                return new Promise((resolve, reject) => {
+                    let element = document.evaluate(selector, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                    resolve(element);
+                });
+            };
+            SOCIALBROWSER.$select = function (selector) {
+                return new Promise((resolve, reject) => {
+                    if (selector instanceof HTMLElement) {
+                        resolve(selector);
+                    } else if (typeof selector !== 'string') {
+                        reject({ message: 'Selector Not String Type' });
+                    } else {
+                        if (selector.indexOf('/') == 0) {
+                            SOCIALBROWSER.$selectByXpath(selector).then((element) => {
+                                SOCIALBROWSER.$wait().then(() => resolve(element));
+                            });
+                        } else {
+                            let ele = SOCIALBROWSER.$(selector);
+                            if (ele) {
+                                ele.focus();
+                                SOCIALBROWSER.$wait().then(() => resolve(ele));
+                            } else {
+                                SOCIALBROWSER.$select(selector).then((ele) => {
+                                    SOCIALBROWSER.$wait().then(() => resolve(ele));
+                                });
+                            }
+                        }
+                    }
+                });
+            };
+            SOCIALBROWSER.$setValue = function (selector, value) {
+                return new Promise((resolve, reject) => {
+                    SOCIALBROWSER.$select(selector).then((ele) => {
+                        ele.focus();
+                        if (ele.tagName.like('select')) {
+                            const options = [...ele.options];
+                            let hasOptionValue = options.find((option) => option.value == value);
+                            let hasOptionLabel = !hasOptionValue ? options.find((option) => option.label.like(value)) : null;
+
+                            if (hasOptionValue || hasOptionLabel) {
+                                if (hasOptionValue) {
+                                    ele.value = value;
+                                } else if (hasOptionLabel) {
+                                    ele.value = hasOptionLabel.value;
+                                }
+                                let event = new Event('change');
+                                ele.dispatchEvent(event);
+                                SOCIALBROWSER.$wait().then(() => resolve(ele));
+                            }
+                        } else if (ele.tagName.like('input|textarea')) {
+                            const event = new Event('input', { bubbles: true });
+                            event.simulated = true;
+                            ele.value = value;
+                            ele.dispatchEvent(event);
+                            SOCIALBROWSER.$wait().then(() => resolve(ele));
+                        } else {
+                        }
+                    });
+                });
+            };
+
+            SOCIALBROWSER.$pressKey = function (key) {
+                SOCIALBROWSER.webContents.sendInputEvent({ type: 'keyDown', keyCode: key });
+                SOCIALBROWSER.webContents.sendInputEvent({ type: 'char', keyCode: key });
+                SOCIALBROWSER.webContents.sendInputEvent({ type: 'keyUp', keyCode: key });
+            };
+            SOCIALBROWSER.$enter = function () {
+                SOCIALBROWSER.$pressKey('enter');
+            };
+            SOCIALBROWSER.$pressKeys = function (keys) {
+                return new Promise((resolve, reject) => {
+                    let arr = keys.split('');
+                    arr.forEach((key, i) => {
+                        SOCIALBROWSER.$wait(100 * i).then(() => SOCIALBROWSER.$pressKey(key));
+                    });
+                    SOCIALBROWSER.$wait(100 * arr.length).then(() => resolve());
+                });
+            };
+
+            SOCIALBROWSER.$type = function (selector, text = '') {
+                return new Promise((resolve, reject) => {
+                    SOCIALBROWSER.$select(selector).then((ele) => {
+                        ele.focus();
+                        SOCIALBROWSER.$pressKeys(text).then(() => {
+                            setTimeout(() => {
+                                resolve(ele);
+                            }, 200);
+                        });
+                    });
+                });
+            };
+            SOCIALBROWSER.$empty = function (selector) {
+                return new Promise((resolve, reject) => {
+                    SOCIALBROWSER.$select(selector).then((ele) => {
+                        ele.focus();
+                        ele.value = '';
+                        ele.textContent = '';
+                        ele.innerText = '';
+                        ele.innerHTML = '';
+                        setTimeout(() => {
+                            resolve(ele);
+                        }, 200);
+                    });
+                });
+            };
+
+            SOCIALBROWSER.$paste = function (text) {
+                return new Promise((resolve, reject) => {
+                    SOCIALBROWSER.electron.clipboard.writeText(text.toString());
+                    SOCIALBROWSER.webContents.paste();
+                    setTimeout(() => {
+                        resolve(ele);
+                    }, 200);
+                });
+            };
+
+            SOCIALBROWSER.$getOffset = function (el) {
+                const box = el.getBoundingClientRect();
+                let factor = SOCIALBROWSER.webContents.zoomFactor || 1;
+
+                let left = box.left * factor;
+                let top = box.top * factor;
+
+                return {
+                    x: SOCIALBROWSER.randomNumber(left, left + box.width),
+                    y: SOCIALBROWSER.randomNumber(top, top + box.height),
+                };
+            };
+            SOCIALBROWSER.$isElementViewable = function (element) {
+                element = SOCIALBROWSER.$(element);
+                if (!element) {
+                    return false;
+                }
+                const style = SOCIALBROWSER.getElementStyle(element);
+                const rect = element.getBoundingClientRect();
+
+                return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0' && rect.width > 0 && rect.height > 0;
+            };
+
+            SOCIALBROWSER.$isElementInViewArea = function (element) {
+                element = SOCIALBROWSER.$(element);
+                if (!element) {
+                    return false;
+                }
+                const rect = element.getBoundingClientRect();
+                return (
+                    rect.top >= 0 &&
+                    rect.left >= 0 &&
+                    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+                );
+            };
+
+            SOCIALBROWSER.$mouseMoveByPosition = function (x, y, move = true) {
+                return new Promise((resolve, reject) => {
+                    x = Math.floor(x);
+                    y = Math.floor(y);
+
+                    if (x < 1 || y < 1) {
+                        return;
+                    }
+
+                    SOCIALBROWSER.window.focus();
+                    if (move) {
+                        let steps = 100;
+
+                        for (let index = 0; index < steps; index++) {
+                            SOCIALBROWSER.$wait(10 * index).then(() => {
+                                SOCIALBROWSER.webContents.sendInputEvent({
+                                    type: 'mouseMove',
+                                    x: x - steps + index,
+                                    y: y - steps + index,
+                                    movementX: x - steps + index,
+                                    movementY: y - steps + index,
+                                    globalX: x - steps + index,
+                                    globalY: y - steps + index,
+                                });
+                                SOCIALBROWSER.webContents.sendInputEvent({
+                                    type: 'mouseEnter',
+                                    x: x - steps + index,
+                                    y: y - steps + index,
+                                    movementX: x - steps + index,
+                                    movementY: y - steps + index,
+                                    globalX: x - steps + index,
+                                    globalY: y - steps + index,
+                                });
+                            });
+                        }
+                        SOCIALBROWSER.$wait(steps * 10).then(() => resolve());
+                    } else {
+                        SOCIALBROWSER.webContents.sendInputEvent({
+                            type: 'mouseMove',
+                            x: x,
+                            y: y,
+                            movementX: x,
+                            movementY: y,
+                            globalX: x,
+                            globalY: y,
+                        });
+                        SOCIALBROWSER.webContents.sendInputEvent({
+                            type: 'mouseEnter',
+                            x: x,
+                            y: y,
+                            movementX: x,
+                            movementY: y,
+                            globalX: x,
+                            globalY: y,
+                        });
+                        SOCIALBROWSER.$wait().then(() => resolve());
+                    }
+                });
+            };
+
+            SOCIALBROWSER.$clickByPosition = function (x, y, move = true) {
+                return new Promise((resolve, reject) => {
+                    x = Math.floor(x);
+                    y = Math.floor(y);
+                    if (x < 1 || y < 1) {
+                        return;
+                    }
+
+                    if (move) {
+                        SOCIALBROWSER.$mouseMoveByPosition(x, y, move).then(() => {
+                            SOCIALBROWSER.window.focus();
+
+                            SOCIALBROWSER.webContents.sendInputEvent({ type: 'mouseDown', x: x, y: y, movementX: x, movementY: y, button: 'left', clickCount: 1 });
+                            setTimeout(() => {
+                                SOCIALBROWSER.webContents.sendInputEvent({ type: 'mouseUp', x: x, y: y, movementX: x, movementY: y, button: 'left', clickCount: 1 });
+                                resolve();
+                            }, 50);
+                        });
+                    } else {
+                        SOCIALBROWSER.window.focus();
+
+                        SOCIALBROWSER.webContents.sendInputEvent({ type: 'mouseDown', x: x, y: y, movementX: x, movementY: y, button: 'left', clickCount: 1 });
+                        setTimeout(() => {
+                            SOCIALBROWSER.webContents.sendInputEvent({ type: 'mouseUp', x: x, y: y, movementX: x, movementY: y, button: 'left', clickCount: 1 });
+                            resolve();
+                        }, 50);
+                    }
+                });
+            };
+            SOCIALBROWSER.$hover = function (selector, realPerson = true, move = true) {
+                return new Promise((resolve, reject) => {
+                    SOCIALBROWSER.$select(selector).then((element) => {
+                        let offset = SOCIALBROWSER.$getOffset(element);
+                        if (realPerson && SOCIALBROWSER.window.isVisible()) {
+                            SOCIALBROWSER.$mouseMoveByPosition(offset.x, offset.y, move).then(() => {
+                                resolve(element);
+                            });
+                        } else {
+                            const eventNames = ['mouseover', 'mouseenter', 'mouseout'];
+                            eventNames.forEach((eventName) => {
+                                const event = new MouseEvent(eventName, {
+                                    detail: eventName === 'mouseover' ? 0 : 1,
+                                    view: window,
+                                    bubbles: true,
+                                    cancelable: true,
+                                    clientX: element.clientX,
+                                    clientY: element.clientY,
+                                });
+                                element.dispatchEvent(event);
+                            });
+                            resolve(element);
+                        }
+                    });
+                });
+            };
+            SOCIALBROWSER.$click = function (selector, realPerson = true, move = true, view = true) {
+                return new Promise((resolve, reject) => {
+                    SOCIALBROWSER.$select(selector).then((element) => {
+                        if (view) {
+                            if (!SOCIALBROWSER.$isElementViewable(element) || !SOCIALBROWSER.$isElementInViewArea(element)) {
+                                element.scrollIntoView({
+                                    behavior: 'auto',
+                                    block: 'center',
+                                    inline: 'center',
+                                });
+                                window.scroll(window.scrollX, window.scrollY - (element.clientHeight + window.innerHeight / 2));
+                            }
+
+                            if (!SOCIALBROWSER.$isElementViewable(element) || !SOCIALBROWSER.$isElementInViewArea(element)) {
+                                element.scrollIntoView({
+                                    behavior: 'auto',
+                                    block: 'center',
+                                    inline: 'center',
+                                });
+                                if (window.scrollY !== 0) {
+                                    let y = window.scrollY - element.clientHeight;
+                                    if (y < 0) {
+                                        y = 0;
+                                    }
+                                    window.scroll(window.scrollX, y);
+                                }
+                            }
+                        }
+
+                        if (!SOCIALBROWSER.$isElementViewable(element) || !SOCIALBROWSER.$isElementInViewArea(element)) {
+                            realPerson = false;
+                        }
+
+                        let offset = SOCIALBROWSER.$getOffset(element);
+
+                        if (realPerson && SOCIALBROWSER.window.isVisible()) {
+                            SOCIALBROWSER.$clickByPosition(offset.x, offset.y, move).then(() => {
+                                setTimeout(() => {
+                                    resolve(element);
+                                }, 200);
+                            });
+                        } else {
+                            const eventNames = ['mouseover', 'mouseenter', 'mousedown', 'mouseup', 'click', 'mouseout'];
+                            eventNames.forEach((eventName) => {
+                                const event = new MouseEvent(eventName, {
+                                    detail: eventName === 'mouseover' ? 0 : 1,
+                                    view: window,
+                                    bubbles: true,
+                                    cancelable: true,
+                                    clientX: element.clientX,
+                                    clientY: element.clientY,
+                                });
+                                element.dispatchEvent(event);
+                            });
+                            setTimeout(() => {
+                                resolve(element);
+                            }, 200);
+                        }
+                    });
+                });
             };
         }
 
@@ -8591,6 +9001,8 @@ SOCIALBROWSER.init2 = function () {
                 SOCIALBROWSER.togglePageImages();
             } else if (data.name == 'translate') {
                 SOCIALBROWSER.allowGoogleTranslate();
+            }else if (data.name == 'screen-shot') {
+                SOCIALBROWSER.$screenshot();
             }
         });
 
@@ -8950,6 +9362,7 @@ if ((navigatorHandle = false)) {
 if (!SOCIALBROWSER.javaScriptOFF) {
     if (SOCIALBROWSER.isWhiteSite) {
         for (const key in SOCIALBROWSER.navigator) {
+            SOCIALBROWSER.__setConstValue(navigator, key + '0', navigator[key]);
             SOCIALBROWSER.__setConstValue(navigator, key, SOCIALBROWSER.navigator[key]);
         }
     } else {
@@ -8965,6 +9378,9 @@ if (!SOCIALBROWSER.javaScriptOFF) {
                 get: function (target, key, receiver) {
                     if (key === '_') {
                         return target;
+                    }
+                    if (key.like('*0*')) {
+                        return target[key.replace('0', '')];
                     }
 
                     if (typeof target[key] === 'function') {
@@ -9175,245 +9591,243 @@ if (!SOCIALBROWSER.isWhiteSite) {
         };
         SOCIALBROWSER.__setConstValue(JSON.stringify, 'toString', () => j);
     }
-        if ((windowFetch = false)) {
-                window.fetch0 = window.fetch;
-                let s = window.fetch.toString();
+    if (document.location.href.like('*fingerprint.com*')) {
+        window.fetch0 = window.fetch;
+        let s = window.fetch.toString();
 
-                window.fetch = function (...args) {
-                    return new Promise((resolve, reject) => {
-                        window
-                            .fetch0(...args)
-                            .then((res) => {
-                                if (args[0].like('*fingerprint.com*')) {
-                                    res.text().then((text) => {
-                                        if (text.like('{*')) {
-                                            let data = JSON.parse(text);
-                                            if (data.botd && data.botd.data && data.botd.data.bot) {
-                                                data.botd.data.bot = {
-                                                    result: 'notDetected',
-                                                };
-                                            } else if (data.products && data.products.botd && data.products.botd.data && data.products.botd.data.bot) {
-                                                data.products.botd.data.bot = {
-                                                    result: 'notDetected',
-                                                };
-                                            }
-                                            res.text = function () {
-                                                return new Promise((resolve, reject) => {
-                                                    resolve(JSON.stringify(data));
-                                                });
-                                            };
-                                            res.json = function () {
-                                                return new Promise((resolve, reject) => {
-                                                    resolve(data);
-                                                });
-                                            };
-                                        }
-                                        resolve(res);
-                                    });
-                                } else {
-                                    resolve(res);
-                                }
-                            })
-                            .catch((err) => {
-                                reject(err);
-                            });
-                    });
-                };
-                SOCIALBROWSER.__setConstValue(window.fetch, 'toString', () => s);
-
-                window.XMLHttpRequest0 = window.XMLHttpRequest;
-                let s2 = window.XMLHttpRequest.toString();
-                window.XMLHttpRequest = function (...args) {
-                    let fake = {
-                        xhr: new XMLHttpRequest0(...args),
-                    };
-
-                    Object.defineProperty(fake, 'responseXML', {
-                        get: function () {
-                            return fake.xhr.responseXML;
-                        },
-                        set: function (value) {
-                            fake.xhr.responseXML = value;
-                        },
-                    });
-
-                      Object.defineProperty(fake, 'text', {
-                        get: function () {
-                            return fake.xhr.text;
-                        },
-                        set: function (value) {
-                            fake.xhr.text = value;
-                        },
-                    });
-
-                    Object.defineProperty(fake, 'responseText', {
-                        get: function () {
-                            return fake._responseText  || fake.xhr.responseText;
-                        },
-                        set: function (value) {
-                            fake.xhr.responseText = value;
-                        },
-                    });
-
-                    Object.defineProperty(fake, 'status', {
-                        get: function () {
-                            return fake.xhr.status;
-                        },
-                        set: function (value) {
-                            fake.xhr.status = value;
-                        },
-                    });
-
-                    Object.defineProperty(fake, 'readyState', {
-                        get: function () {
-                            return fake.xhr.readyState;
-                        },
-                        set: function (value) {
-                            fake.xhr.readyState = value;
-                        },
-                    });
-
-                    Object.defineProperty(fake, 'statusText', {
-                        get: function () {
-                            return fake.xhr.statusText;
-                        },
-                        set: function (value) {
-                            fake.xhr.statusText = value;
-                        },
-                    });
-
-                    Object.defineProperty(fake, 'upload', {
-                        get: function () {
-                            return fake.xhr.upload;
-                        },
-                        set: function (value) {
-                            fake.xhr.upload = value;
-                        },
-                    });
-
-                    Object.defineProperty(fake, 'response', {
-                        get: function () {
-                            return fake.xhr.response;
-                        },
-                        set: function (value) {
-                            fake.xhr.response = value;
-                        },
-                    });
-
-                    Object.defineProperty(fake, 'responseType', {
-                        get: function () {
-                            return fake.xhr.responseType;
-                        },
-                        set: function (value) {
-                            fake.xhr.responseType = value;
-                        },
-                    });
-
-                   
-
-                    Object.defineProperty(fake, 'timeout', {
-                        get: function () {
-                            return fake.xhr.timeout;
-                        },
-                        set: function (value) {
-                            fake.xhr.timeout = value;
-                        },
-                    });
-
-                    Object.defineProperty(fake, 'withCredentials', {
-                        get: function () {
-                            return fake.xhr.withCredentials;
-                        },
-                        set: function (value) {
-                            fake.xhr.withCredentials = value;
-                        },
-                    });
-
-                    fake.open = function (...args) {
-                        fake.url = args[1];
-                        fake.xhr.open(...args);
-                    };
-                    fake.send = function (...args) {
-                        //  fake.setRequestHeader('x-server', 'social-browser2');
-
-                        fake.xhr.send(...args);
-                    };
-
-                    fake.xhr.onreadystatechange = function (...args) {
-                        if (fake.url.like('*fingerprint.com*') && typeof fake.responseText === 'string') {
-                        if (fake.xhr.status === 200 && fake.xhr.readyState == 4) {
-                                if (fake.responseText.like('{"products":*')) {
-                                    let response = JSON.parse(fake.responseText);
-                                    response.products.botd = response.products.botd
-                                    response.products.botd.data = response.products.botd.data
-                                    response.products.botd.data.bot = {
-                                        result: 'notDetected',
+        window.fetch = function (...args) {
+            return new Promise((resolve, reject) => {
+                window
+                    .fetch0(...args)
+                    .then((res) => {
+                        if (args[0].like('*fingerprint.com*')) {
+                            res.text().then((text) => {
+                                if (text.like('{*')) {
+                                    let data = JSON.parse(text);
+                                    if (data.botd && data.botd.data && data.botd.data.bot) {
+                                        data.botd.data.bot = {
+                                            result: 'notDetected',
+                                        };
+                                    } else if (data.products && data.products.botd && data.products.botd.data && data.products.botd.data.bot) {
+                                        data.products.botd.data.bot = {
+                                            result: 'notDetected',
+                                        };
+                                    }
+                                    res.text = function () {
+                                        return new Promise((resolve, reject) => {
+                                            resolve(JSON.stringify(data));
+                                        });
                                     };
-                                    fake._responseText = JSON.stringify(response);
+                                    res.json = function () {
+                                        return new Promise((resolve, reject) => {
+                                            resolve(data);
+                                        });
+                                    };
                                 }
-                            }
+                                resolve(res);
+                            });
+                        } else {
+                            resolve(res);
                         }
-                        if (fake.onreadystatechange) {
-                            setTimeout(() => {
-                                fake.onreadystatechange(...args);
-                            }, 100);
-                        }
-                    };
-                    fake.xhr.onload = function (...args) {
-                        if (fake.onload) {
-                            fake.onload(...args);
-                        }
-                    };
-                    fake.xhr.onloadstart = function (...args) {
-                        if (fake.onloadstart) {
-                            fake.onloadstart(...args);
-                        }
-                    };
-                    fake.xhr.onprogress = function (...args) {
-                        if (fake.onprogress) {
-                            fake.onprogress(...args);
-                        }
-                    };
-                    fake.xhr.onabort = function (...args) {
-                        if (fake.onabort) {
-                            fake.onabort(...args);
-                        }
-                    };
-                    fake.xhr.onerror = function (...args) {
-                        if (fake.onerror) {
-                            fake.onerror(...args);
-                        }
-                    };
-                    fake.xhr.ontimeout = function (...args) {
-                        if (fake.ontimeout) {
-                            fake.ontimeout(...args);
-                        }
-                    };
-                    fake.xhr.onloadend = function (...args) {
-                        if (fake.onloadend) {
-                            fake.onloadend(...args);
-                        }
-                    };
+                    })
+                    .catch((err) => {
+                        reject(err);
+                    });
+            });
+        };
+        SOCIALBROWSER.__setConstValue(window.fetch, 'toString', () => s);
 
-                    fake.setRequestHeader = function (...args) {
-                        // console.log(...args);
-                        fake.xhr.setRequestHeader(...args);
-                    };
+        window.XMLHttpRequest0 = window.XMLHttpRequest;
+        let s2 = window.XMLHttpRequest.toString();
+        window.XMLHttpRequest = function (...args) {
+            let fake = {
+                xhr: new XMLHttpRequest0(...args),
+            };
 
-                    fake.abort = function (...args) {
-                        fake.xhr.abort(...args);
-                    };
-                    fake.overrideMimeType = function(...args){
-                        fake.xhr.overrideMimeType(...args)
+            Object.defineProperty(fake, 'responseXML', {
+                get: function () {
+                    return fake.xhr.responseXML;
+                },
+                set: function (value) {
+                    fake.xhr.responseXML = value;
+                },
+            });
+
+            Object.defineProperty(fake, 'text', {
+                get: function () {
+                    return fake.xhr.text;
+                },
+                set: function (value) {
+                    fake.xhr.text = value;
+                },
+            });
+
+            Object.defineProperty(fake, 'responseText', {
+                get: function () {
+                    return fake._responseText || fake.xhr.responseText;
+                },
+                set: function (value) {
+                    fake.xhr.responseText = value;
+                },
+            });
+
+            Object.defineProperty(fake, 'status', {
+                get: function () {
+                    return fake.xhr.status;
+                },
+                set: function (value) {
+                    fake.xhr.status = value;
+                },
+            });
+
+            Object.defineProperty(fake, 'readyState', {
+                get: function () {
+                    return fake.xhr.readyState;
+                },
+                set: function (value) {
+                    fake.xhr.readyState = value;
+                },
+            });
+
+            Object.defineProperty(fake, 'statusText', {
+                get: function () {
+                    return fake.xhr.statusText;
+                },
+                set: function (value) {
+                    fake.xhr.statusText = value;
+                },
+            });
+
+            Object.defineProperty(fake, 'upload', {
+                get: function () {
+                    return fake.xhr.upload;
+                },
+                set: function (value) {
+                    fake.xhr.upload = value;
+                },
+            });
+
+            Object.defineProperty(fake, 'response', {
+                get: function () {
+                    return fake.xhr.response;
+                },
+                set: function (value) {
+                    fake.xhr.response = value;
+                },
+            });
+
+            Object.defineProperty(fake, 'responseType', {
+                get: function () {
+                    return fake.xhr.responseType;
+                },
+                set: function (value) {
+                    fake.xhr.responseType = value;
+                },
+            });
+
+            Object.defineProperty(fake, 'timeout', {
+                get: function () {
+                    return fake.xhr.timeout;
+                },
+                set: function (value) {
+                    fake.xhr.timeout = value;
+                },
+            });
+
+            Object.defineProperty(fake, 'withCredentials', {
+                get: function () {
+                    return fake.xhr.withCredentials;
+                },
+                set: function (value) {
+                    fake.xhr.withCredentials = value;
+                },
+            });
+
+            fake.open = function (...args) {
+                fake.url = args[1];
+                fake.xhr.open(...args);
+            };
+            fake.send = function (...args) {
+                //  fake.setRequestHeader('x-server', 'social-browser2');
+
+                fake.xhr.send(...args);
+            };
+
+            fake.xhr.onreadystatechange = function (...args) {
+                if (fake.url.like('*fingerprint.com*') && typeof fake.responseText === 'string') {
+                    if (fake.xhr.status === 200 && fake.xhr.readyState == 4) {
+                        if (fake.responseText.like('{"products":*')) {
+                            let response = JSON.parse(fake.responseText);
+                            response.products.botd = response.products.botd;
+                            response.products.botd.data = response.products.botd.data;
+                            response.products.botd.data.bot = {
+                                result: 'notDetected',
+                            };
+                            fake._responseText = JSON.stringify(response);
+                        }
                     }
-                    fake.getAllResponseHeaders = function (...args) {
-                        return fake.xhr.getAllResponseHeaders(...args);
-                    };
-                    fake.getResponseHeader = function (...args) {
-                        return fake.xhr.getResponseHeader(...args);
-                    };
-                    return fake;
-                };
-                SOCIALBROWSER.__setConstValue(window.XMLHttpRequest, 'toString', () => s2);
-            }
+                }
+                if (fake.onreadystatechange) {
+                    setTimeout(() => {
+                        fake.onreadystatechange(...args);
+                    }, 100);
+                }
+            };
+            fake.xhr.onload = function (...args) {
+                if (fake.onload) {
+                    fake.onload(...args);
+                }
+            };
+            fake.xhr.onloadstart = function (...args) {
+                if (fake.onloadstart) {
+                    fake.onloadstart(...args);
+                }
+            };
+            fake.xhr.onprogress = function (...args) {
+                if (fake.onprogress) {
+                    fake.onprogress(...args);
+                }
+            };
+            fake.xhr.onabort = function (...args) {
+                if (fake.onabort) {
+                    fake.onabort(...args);
+                }
+            };
+            fake.xhr.onerror = function (...args) {
+                if (fake.onerror) {
+                    fake.onerror(...args);
+                }
+            };
+            fake.xhr.ontimeout = function (...args) {
+                if (fake.ontimeout) {
+                    fake.ontimeout(...args);
+                }
+            };
+            fake.xhr.onloadend = function (...args) {
+                if (fake.onloadend) {
+                    fake.onloadend(...args);
+                }
+            };
+
+            fake.setRequestHeader = function (...args) {
+                // console.log(...args);
+                fake.xhr.setRequestHeader(...args);
+            };
+
+            fake.abort = function (...args) {
+                fake.xhr.abort(...args);
+            };
+            fake.overrideMimeType = function (...args) {
+                fake.xhr.overrideMimeType(...args);
+            };
+            fake.getAllResponseHeaders = function (...args) {
+                return fake.xhr.getAllResponseHeaders(...args);
+            };
+            fake.getResponseHeader = function (...args) {
+                return fake.xhr.getResponseHeader(...args);
+            };
+            return fake;
+        };
+        SOCIALBROWSER.__setConstValue(window.XMLHttpRequest, 'toString', () => s2);
+    }
 }
