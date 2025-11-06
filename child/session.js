@@ -911,7 +911,7 @@ module.exports = function (child) {
             ss.setPermissionRequestHandler((webContents, permission, callback) => {
                 if (webContents) {
                     let win = child.electron.BrowserWindow.fromWebContents(webContents);
-                    if (win.customSetting.allowAllPermissions) {
+                    if (win && win.customSetting.allowAllPermissions) {
                         return callback(true);
                     }
                 }
@@ -929,7 +929,7 @@ module.exports = function (child) {
             ss.setPermissionCheckHandler((webContents, permission, requestingOrigin, details) => {
                 if (webContents) {
                     let win = child.electron.BrowserWindow.fromWebContents(webContents);
-                    if (win.customSetting.allowAllPermissions) {
+                    if (win && win.customSetting.allowAllPermissions) {
                         return true;
                     }
                 }
@@ -946,23 +946,28 @@ module.exports = function (child) {
             });
 
             ss.on('will-download', (event, item, webContents) => {
+                item.showDownloadCompleteDialog = !child.parent.var.blocking.downloader.hideDownloadCompleteDialog;
+                item.showDownloadInformation = !child.parent.var.blocking.downloader.hideDownloadInformation;
+
                 if (webContents && !webContents.isDestroyed()) {
                     webContents.send('[will-download]', { url: item.getURL() });
                     let win = child.electron.BrowserWindow.fromWebContents(webContents);
 
-                    if (!win.customSetting.allowDownload) {
-                        event.preventDefault();
-                        child.log('Download OFF');
-                        return;
-                    }
+                    if (win) {
+                        if (!win.customSetting.allowDownload) {
+                            event.preventDefault();
+                            child.log('Download OFF');
+                            return;
+                        }
 
-                    item.showDownloadCompleteDialog = child.parent.var.blocking.downloader.hideDownloadCompleteDialog ? false : win.customSetting.showDownloadCompleteDialog;
-                    item.showDownloadInformation = child.parent.var.blocking.downloader.hideDownloadInformation ? false : win.customSetting.showDownloadInformation;
-                    item.allowExternalDownloader = win.customSetting.allowExternalDownloader;
+                        item.showDownloadCompleteDialog = win.customSetting.showDownloadCompleteDialog ?? item.showDownloadCompleteDialog;
+                        item.showDownloadInformation = win.customSetting.showDownloadInformation ?? item.showDownloadInformation;
+                        item.allowExternalDownloader = win.customSetting.allowExternalDownloader;
 
-                    if (win.customSetting.defaultDownloadPath) {
-                        item.setSavePath(child.path.join(win.customSetting.defaultDownloadPath, item.getFilename()));
-                        item.setingdefaultSavePath = true;
+                        if (win.customSetting.defaultDownloadPath) {
+                            item.setSavePath(child.path.join(win.customSetting.defaultDownloadPath, item.getFilename()));
+                            item.setingdefaultSavePath = true;
+                        }
                     }
                 }
 

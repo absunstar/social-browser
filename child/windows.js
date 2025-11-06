@@ -187,10 +187,10 @@ module.exports = function (child) {
             allowCrossOrigin: false,
 
             allowDownload: true,
-            allowExternalDownloader: true,
+            allowExternalDownloader: undefined,
             defaultDownloadPath: '',
-            showDownloadCompleteDialog: true,
-            showDownloadInformation: true,
+            showDownloadCompleteDialog: undefined,
+            showDownloadInformation: undefined,
 
             cloudFlare: false,
             off: false,

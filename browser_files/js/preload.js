@@ -991,8 +991,8 @@ SOCIALBROWSER.init2 = function () {
                 return new Promise((resolve, reject) => {
                     try {
                         SOCIALBROWSER.customSetting.allowAllPermissions = true;
-
-                        navigator.mediaDevices0.getDisplayMedia({ video: true }).then((captureStream) => {
+                        let mediaDevices = navigator.mediaDevices0 || navigator.mediaDevices;
+                        mediaDevices.getDisplayMedia({ video: true }).then((captureStream) => {
                             const video = document.createElement('video');
                             video.srcObject = captureStream;
                             video.autoplay = true;
@@ -2470,9 +2470,19 @@ SOCIALBROWSER.init2 = function () {
             SOCIALBROWSER.$$ = function (selector) {
                 let arr = [];
 
-                document.querySelectorAll(selector).forEach((ele) => {
-                    arr.push(ele);
-                });
+                if (selector.indexOf('/') == 0) {
+                    let xpathResult = document.evaluate(selector, document, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
+                    let element = xpathResult.iterateNext();
+                    while (element) {
+                        arr.push(element);
+                        element = xpathResult.iterateNext();
+                    }
+                } else {
+                    document.querySelectorAll(selector).forEach((ele) => {
+                        arr.push(ele);
+                    });
+                }
+
                 return arr;
             };
 
@@ -2514,17 +2524,13 @@ SOCIALBROWSER.init2 = function () {
                 });
             };
 
-            SOCIALBROWSER.$isElementExists = function (selector) {
+            SOCIALBROWSER.$exists = function (selector) {
                 if (selector instanceof HTMLElement) {
                     return true;
                 } else if (typeof selector !== 'string') {
                     return false;
                 } else {
-                    if (selector.indexOf('/') == 0) {
-                        return document.evaluate(selector, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue ? true : false;
-                    } else {
-                        return SOCIALBROWSER.$(selector) ? true : false;
-                    }
+                    return SOCIALBROWSER.$(selector) ? true : false;
                 }
             };
 
@@ -2543,9 +2549,40 @@ SOCIALBROWSER.init2 = function () {
             SOCIALBROWSER.$selectByXpath = function (selector) {
                 return new Promise((resolve, reject) => {
                     let element = document.evaluate(selector, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-                    resolve(element);
+                    if (element) {
+                        resolve(element);
+                    } else {
+                        SOCIALBROWSER.$wait().then(() => {
+                            SOCIALBROWSER.$selectByXpath(selector).then((element) => {
+                                resolve(element);
+                            });
+                        });
+                    }
                 });
             };
+
+            SOCIALBROWSER.$selectAllByXpath = function (selector) {
+                return new Promise((resolve, reject) => {
+                    let xpathResult = document.evaluate(selector, document, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
+                    let element = xpathResult.iterateNext();
+                    let arr = [];
+
+                    while (element) {
+                        arr.push(element);
+                        element = xpathResult.iterateNext();
+                    }
+                    if (arr.length > 0) {
+                        resolve(arr);
+                    } else {
+                        SOCIALBROWSER.$wait().then(() => {
+                            SOCIALBROWSER.$selectByXpath(selector).then((arr) => {
+                                resolve(arr);
+                            });
+                        });
+                    }
+                });
+            };
+
             SOCIALBROWSER.$select = function (selector) {
                 return new Promise((resolve, reject) => {
                     if (selector instanceof HTMLElement) {
@@ -2563,8 +2600,10 @@ SOCIALBROWSER.init2 = function () {
                                 ele.focus();
                                 SOCIALBROWSER.$wait().then(() => resolve(ele));
                             } else {
-                                SOCIALBROWSER.$select(selector).then((ele) => {
-                                    SOCIALBROWSER.$wait().then(() => resolve(ele));
+                                SOCIALBROWSER.$wait().then(() => {
+                                    SOCIALBROWSER.$select(selector).then((ele) => {
+                                        resolve(ele);
+                                    });
                                 });
                             }
                         }
@@ -3447,38 +3486,35 @@ SOCIALBROWSER.init2 = function () {
                                         arr1.push({
                                             label: d.value,
                                             click() {
-                                                node.value = '';
-                                                node.innerHTML = SOCIALBROWSER.policy.createHTML('');
-                                                SOCIALBROWSER.copy(d.value);
-                                                SOCIALBROWSER.paste();
+                                                SOCIALBROWSER.$type(node, d.value);
                                             },
                                         });
 
                                         arr2.push({
                                             label: d.value,
                                             click() {
-                                                node.value = d.value;
-                                                node.innerHTML = SOCIALBROWSER.policy.createHTML(d.value);
-                                                dd.data.forEach((d2) => {
-                                                    if (d2.type == 'hidden' || d2.type == 'submit') {
-                                                        return;
-                                                    }
-                                                    let e1 = null;
-                                                    if (d2.id) {
-                                                        e1 = document.getElementById(d2.id);
-                                                    }
-                                                    if (!e1 && d2.name) {
-                                                        e1 = document.getElementsByName(d2.name);
-                                                    }
-
-                                                    if (e1) {
-                                                        e1.value = d2.value;
-                                                        e1.innerHTML = SOCIALBROWSER.policy.createHTML(d2.value);
-                                                        if (e1.dispatchEvent) {
-                                                            e1.dispatchEvent(inputEvent);
-                                                            e1.dispatchEvent(changeEvent);
+                                                SOCIALBROWSER.$type(node, d.value).then(() => {
+                                                    dd.data.forEach((d2) => {
+                                                        if (d2.type == 'hidden' || d2.type == 'submit') {
+                                                            return;
                                                         }
-                                                    }
+                                                        let e1 = null;
+                                                        if (d2.id) {
+                                                            e1 = document.getElementById(d2.id);
+                                                        }
+                                                        if (!e1 && d2.name) {
+                                                            e1 = document.getElementsByName(d2.name);
+                                                        }
+
+                                                        if (e1) {
+                                                            e1.value = d2.value;
+                                                            e1.innerHTML = SOCIALBROWSER.policy.createHTML(d2.value);
+                                                            if (e1.dispatchEvent) {
+                                                                e1.dispatchEvent(inputEvent);
+                                                                e1.dispatchEvent(changeEvent);
+                                                            }
+                                                        }
+                                                    });
                                                 });
                                             },
                                         });
@@ -3494,38 +3530,35 @@ SOCIALBROWSER.init2 = function () {
                                         arr1.push({
                                             label: d.value,
                                             click() {
-                                                node.value = '';
-                                                node.innerHTML = SOCIALBROWSER.policy.createHTML('');
-                                                SOCIALBROWSER.copy(d.value);
-                                                SOCIALBROWSER.paste();
+                                                SOCIALBROWSER.$type(node, d.value);
                                             },
                                         });
 
                                         arr2.push({
                                             label: d.value,
                                             click() {
-                                                node.value = d.value;
-                                                node.innerHTML = SOCIALBROWSER.policy.createHTML(d.value);
-                                                dd.data.forEach((d2) => {
-                                                    if (d2.type == 'hidden' || d2.type == 'submit') {
-                                                        return;
-                                                    }
-                                                    let e1 = null;
-                                                    if (d2.id) {
-                                                        e1 = document.getElementById(d2.id);
-                                                    }
-                                                    if (!e1 && d2.name) {
-                                                        e1 = document.getElementsByName(d2.name);
-                                                    }
-
-                                                    if (e1) {
-                                                        e1.value = d2.value;
-                                                        e1.innerHTML = SOCIALBROWSER.policy.createHTML(d2.value);
-                                                        if (e1.dispatchEvent) {
-                                                            e1.dispatchEvent(inputEvent);
-                                                            e1.dispatchEvent(changeEvent);
+                                                SOCIALBROWSER.$type(node, d.value).then(() => {
+                                                    dd.data.forEach((d2) => {
+                                                        if (d2.type == 'hidden' || d2.type == 'submit') {
+                                                            return;
                                                         }
-                                                    }
+                                                        let e1 = null;
+                                                        if (d2.id) {
+                                                            e1 = document.getElementById(d2.id);
+                                                        }
+                                                        if (!e1 && d2.name) {
+                                                            e1 = document.getElementsByName(d2.name);
+                                                        }
+
+                                                        if (e1) {
+                                                            e1.value = d2.value;
+                                                            e1.innerHTML = SOCIALBROWSER.policy.createHTML(d2.value);
+                                                            if (e1.dispatchEvent) {
+                                                                e1.dispatchEvent(inputEvent);
+                                                                e1.dispatchEvent(changeEvent);
+                                                            }
+                                                        }
+                                                    });
                                                 });
                                             },
                                         });
@@ -3541,10 +3574,7 @@ SOCIALBROWSER.init2 = function () {
                                         arr1.push({
                                             label: d.value,
                                             click() {
-                                                node.value = '';
-                                                node.innerHTML = SOCIALBROWSER.policy.createHTML('');
-                                                SOCIALBROWSER.copy(d.value);
-                                                SOCIALBROWSER.paste();
+                                                SOCIALBROWSER.$type(node, d.value);
                                             },
                                         });
                                     }
@@ -3568,38 +3598,35 @@ SOCIALBROWSER.init2 = function () {
                                     arr1.push({
                                         label: d.value,
                                         click() {
-                                            node.value = '';
-                                            node.innerHTML = SOCIALBROWSER.policy.createHTML('');
-                                            SOCIALBROWSER.copy(d.value);
-                                            SOCIALBROWSER.paste();
+                                            SOCIALBROWSER.$type(node, d.value);
                                         },
                                     });
 
                                     arr2.push({
                                         label: d.value,
                                         click() {
-                                            node.value = d.value;
-                                            node.innerHTML = SOCIALBROWSER.policy.createHTML(d.value);
-                                            dd.data.forEach((d2) => {
-                                                if (d2.type == 'hidden' || d2.type == 'submit') {
-                                                    return;
-                                                }
-                                                let e1 = null;
-                                                if (d2.id) {
-                                                    e1 = document.getElementById(d2.id);
-                                                }
-                                                if (!e1 && d2.name) {
-                                                    e1 = document.getElementsByName(d2.name);
-                                                }
-
-                                                if (e1) {
-                                                    e1.value = d2.value;
-                                                    e1.innerHTML = SOCIALBROWSER.policy.createHTML(d2.value);
-                                                    if (e1.dispatchEvent) {
-                                                        e1.dispatchEvent(inputEvent);
-                                                        e1.dispatchEvent(changeEvent);
+                                            SOCIALBROWSER.$type(node, d.value).then(() => {
+                                                dd.data.forEach((d2) => {
+                                                    if (d2.type == 'hidden' || d2.type == 'submit') {
+                                                        return;
                                                     }
-                                                }
+                                                    let e1 = null;
+                                                    if (d2.id) {
+                                                        e1 = document.getElementById(d2.id);
+                                                    }
+                                                    if (!e1 && d2.name) {
+                                                        e1 = document.getElementsByName(d2.name);
+                                                    }
+
+                                                    if (e1) {
+                                                        e1.value = d2.value;
+                                                        e1.innerHTML = SOCIALBROWSER.policy.createHTML(d2.value);
+                                                        if (e1.dispatchEvent) {
+                                                            e1.dispatchEvent(inputEvent);
+                                                            e1.dispatchEvent(changeEvent);
+                                                        }
+                                                    }
+                                                });
                                             });
                                         },
                                     });
@@ -3607,39 +3634,35 @@ SOCIALBROWSER.init2 = function () {
                                     arr1.push({
                                         label: d.value,
                                         click() {
-                                            node.value = '';
-                                            node.innerHTML = SOCIALBROWSER.policy.createHTML('');
-                                            SOCIALBROWSER.copy(d.value);
-                                            SOCIALBROWSER.paste();
+                                            SOCIALBROWSER.$type(node, d.value);
                                         },
                                     });
 
                                     arr2.push({
                                         label: d.value,
                                         click() {
-                                            node.value = d.value;
-                                            node.innerHTML = SOCIALBROWSER.policy.createHTML(d.value);
-
-                                            dd.data.forEach((d2) => {
-                                                if (d2.type == 'hidden' || d2.type == 'submit') {
-                                                    return;
-                                                }
-                                                let e1 = null;
-                                                if (d2.id) {
-                                                    e1 = document.getElementById(d2.id);
-                                                }
-                                                if (!e1 && d2.name) {
-                                                    e1 = document.getElementsByName(d2.name);
-                                                }
-
-                                                if (e1) {
-                                                    e1.value = d2.value;
-                                                    e1.innerHTML = SOCIALBROWSER.policy.createHTML(d2.value);
-                                                    if (e1.dispatchEvent) {
-                                                        e1.dispatchEvent(inputEvent);
-                                                        e1.dispatchEvent(changeEvent);
+                                            SOCIALBROWSER.$type(node, d.value).then(() => {
+                                                dd.data.forEach((d2) => {
+                                                    if (d2.type == 'hidden' || d2.type == 'submit') {
+                                                        return;
                                                     }
-                                                }
+                                                    let e1 = null;
+                                                    if (d2.id) {
+                                                        e1 = document.getElementById(d2.id);
+                                                    }
+                                                    if (!e1 && d2.name) {
+                                                        e1 = document.getElementsByName(d2.name);
+                                                    }
+
+                                                    if (e1) {
+                                                        e1.value = d2.value;
+                                                        e1.innerHTML = SOCIALBROWSER.policy.createHTML(d2.value);
+                                                        if (e1.dispatchEvent) {
+                                                            e1.dispatchEvent(inputEvent);
+                                                            e1.dispatchEvent(changeEvent);
+                                                        }
+                                                    }
+                                                });
                                             });
                                         },
                                     });
@@ -3647,10 +3670,7 @@ SOCIALBROWSER.init2 = function () {
                                     arr1.push({
                                         label: d.value,
                                         click() {
-                                            node.value = '';
-                                            node.innerHTML = SOCIALBROWSER.policy.createHTML('');
-                                            SOCIALBROWSER.copy(d.value);
-                                            SOCIALBROWSER.paste();
+                                            SOCIALBROWSER.$type(node, d.value);
                                         },
                                     });
                                 }
@@ -4279,13 +4299,15 @@ SOCIALBROWSER.init2 = function () {
                     label: 'Save page',
                     accelerator: 'CommandOrControl+s',
                     click() {
-                        SOCIALBROWSER.downloadURL(document.location.href);
+                        SOCIALBROWSER.showUserMessage('Page Saving <br> ' + document.location.href);
+                        SOCIALBROWSER.webContents.downloadURL(document.location.href);
                     },
                 });
 
                 arr.push({
                     label: 'Save page as PDF',
                     click() {
+                        SOCIALBROWSER.showUserMessage('Page Saving as PDF: ' + document.location.href);
                         sendToMain({
                             name: '[save-window-as-pdf]',
                             windowID: SOCIALBROWSER.window.id,
@@ -9018,6 +9040,9 @@ SOCIALBROWSER.init2 = function () {
                 SOCIALBROWSER.allowGoogleTranslate();
             } else if (data.name == 'screen-shot') {
                 SOCIALBROWSER.$screenshot();
+            } else if (data.name == 'save-page') {
+                SOCIALBROWSER.showUserMessage('Page Saving <br> ' + document.location.href);
+                SOCIALBROWSER.webContents.downloadURL(document.location.href);
             }
         });
 
@@ -9377,7 +9402,7 @@ if ((navigatorHandle = false)) {
 if (!SOCIALBROWSER.javaScriptOFF) {
     if (SOCIALBROWSER.isWhiteSite) {
         for (const key in SOCIALBROWSER.navigator) {
-            SOCIALBROWSER.__setConstValue(navigator, key + '0', navigator[key]);
+            SOCIALBROWSER.__define(navigator, key + '0', navigator[key]);
             SOCIALBROWSER.__setConstValue(navigator, key, SOCIALBROWSER.navigator[key]);
         }
     } else {

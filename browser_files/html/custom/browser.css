@@ -146,10 +146,11 @@ video0 {
     display: block;
 }
 #__userMessageBox img {
-    width: 256px;
-    height: 256px;
+    width: 400px;
+    height: 200px;
     object-fit: fill;
     border: 2px solid #fff;
+    margin-top: 30px;
 }
 #__downloads {
     padding: 5px;
