@@ -329,9 +329,7 @@ if (SOCIALBROWSER.href.indexOf('http://127.0.0.1:60080') === 0) {
 
 SOCIALBROWSER.propertyList =
     'download_list,faList,scripts_files,user_data,user_data_input,sites,preload_list,scriptList,privateKeyList,googleExtensionList,ad_list,proxy_list,proxy,core,bookmarks,session_list,userAgentList,blocking,video_quality_list,customHeaderList';
-if (SOCIALBROWSER.isLocal) {
-    SOCIALBROWSER.propertyList = '*';
-}
+
 
 SOCIALBROWSER.callSync = SOCIALBROWSER.ipcSync = function (channel, value = {}) {
     try {
@@ -2506,6 +2504,36 @@ SOCIALBROWSER.init2 = function () {
                     }
                 });
             };
+            SOCIALBROWSER.$json = function (str) {
+                return new Promise((resolve, reject) => {
+                    resolve(JSON.parse(str));
+                });
+            };
+            SOCIALBROWSER.$fetch = function (url, _options = {}) {
+                let options = {};
+
+                if (typeof url == 'string' && typeof _options !== 'object') {
+                    options = { url: url };
+                } else if (typeof url == 'string' && typeof _options == 'object') {
+                    options = { url: url, ..._options };
+                } else if (typeof url == 'object') {
+                    options = { ...url };
+                }
+
+                options.id = new Date().getTime() + Math.random();
+                options.url = SOCIALBROWSER.handleURL(options.url);
+
+                return new Promise((resolve, reject) => {
+                    let newOptions = SOCIALBROWSER.cloneObject(options);
+                    SOCIALBROWSER.ipc('[fetch]', newOptions).then((response) => {
+                        response.json = function () {
+                            return SOCIALBROWSER.$json(response.body);
+                        };
+                        resolve(response);
+                    });
+                });
+            };
+            
             SOCIALBROWSER.$html = function (html) {
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(html, 'text/html');
@@ -2642,6 +2670,7 @@ SOCIALBROWSER.init2 = function () {
             };
 
             SOCIALBROWSER.$pressKey = function (key) {
+                SOCIALBROWSER.window.focus();
                 SOCIALBROWSER.webContents.sendInputEvent({ type: 'keyDown', keyCode: key });
                 SOCIALBROWSER.webContents.sendInputEvent({ type: 'char', keyCode: key });
                 SOCIALBROWSER.webContents.sendInputEvent({ type: 'keyUp', keyCode: key });
@@ -2691,7 +2720,7 @@ SOCIALBROWSER.init2 = function () {
                     SOCIALBROWSER.electron.clipboard.writeText(text.toString());
                     SOCIALBROWSER.webContents.paste();
                     setTimeout(() => {
-                        resolve(ele);
+                        resolve();
                     }, 200);
                 });
             };
@@ -5472,6 +5501,7 @@ SOCIALBROWSER.init2 = function () {
                     })),
                 });
             };
+
             SOCIALBROWSER.contextmenu = function (e) {
                 if (SOCIALBROWSER.contextmenuBusy) {
                     return false;
@@ -5485,7 +5515,6 @@ SOCIALBROWSER.init2 = function () {
                     return false;
                 }
                 try {
-                    SOCIALBROWSER.window.show();
 
                     e = e || { x: 0, y: 0 };
                     SOCIALBROWSER.memoryText = () => SOCIALBROWSER.readCopy();

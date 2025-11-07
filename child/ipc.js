@@ -785,19 +785,23 @@ module.exports = function init(child) {
     });
 
     child.ipcMain.handle('[fetch]', async (e, options) => {
+
         options.body = options.body || options.data || options.payload;
+
         if (options.body && typeof options.body != 'string') {
             options.body = JSON.stringify(options.body);
         }
+
         options.return = options.return || 'all';
+
         let response = await child.api.fetch(options.url, {
             mode: 'cors',
-            method: options.method || 'get',
-            headers: options.headers || {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.4638.54 Safari/537.36',
+            method: 'get',
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.4638.54 Safari/537.36',
             },
-            body: options.body,
-            redirect: options.redirect || 'follow',
+            redirect: 'follow',
+            ...options
         });
 
         if (response) {
