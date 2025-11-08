@@ -510,6 +510,12 @@ SOCIALBROWSER.openNewPopup = function (options = {}) {
 SOCIALBROWSER.selectFile = function (options) {
     return SOCIALBROWSER.ipcSync('[select-file]', options);
 };
+SOCIALBROWSER.selectSaveFile = function (options) {
+    return SOCIALBROWSER.ipcSync('[select-save-file]', options);
+};
+SOCIALBROWSER.writeFile = function (options) {
+    return SOCIALBROWSER.ipcSync('[write-file]', options);
+};
 SOCIALBROWSER.selectFolder = function () {
     return SOCIALBROWSER.ipcSync('[select-folder]');
 };
@@ -2631,6 +2637,35 @@ SOCIALBROWSER.init2 = function () {
                                 SOCIALBROWSER.$wait().then(() => {
                                     SOCIALBROWSER.$select(selector).then((ele) => {
                                         resolve(ele);
+                                    });
+                                });
+                            }
+                        }
+                    }
+                });
+            };
+            
+            SOCIALBROWSER.$selectAll = function (selector) {
+                return new Promise((resolve, reject) => {
+                    if (selector instanceof HTMLElement) {
+                        resolve([selector]);
+                    } else if (typeof selector !== 'string') {
+                        reject({ message: 'Selector Not String Type' });
+                    } else if (Array.isArray(selector)) {
+                         resolve(selector);
+                    } else {
+                        if (selector.indexOf('/') == 0) {
+                            SOCIALBROWSER.$selectAllByXpath(selector).then((elements) => {
+                                SOCIALBROWSER.$wait().then(() => resolve(elements));
+                            });
+                        } else {
+                            let arr = SOCIALBROWSER.$$(selector);
+                            if (arr.length> 0) {
+                                SOCIALBROWSER.$wait().then(() => resolve(arr));
+                            } else {
+                                SOCIALBROWSER.$wait().then(() => {
+                                    SOCIALBROWSER.$selectAll(selector).then((elements) => {
+                                        resolve(elements);
                                     });
                                 });
                             }
