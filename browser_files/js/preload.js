@@ -3463,6 +3463,14 @@ SOCIALBROWSER.init2 = function () {
     })();
 
     (function prepareFn() {
+        Object.defineProperty(globalThis, 'SOCIALBROWSER', {
+    get: function () {
+        if (SOCIALBROWSER.loaded && !SOCIALBROWSER.customSetting.allowSocialBrowser) {
+            return undefined;
+        }
+        return SOCIALBROWSER;
+    },
+});
         if (SOCIALBROWSER.customSetting.proxy) {
             SOCIALBROWSER.proxy = SOCIALBROWSER.customSetting.proxy;
         } else if (SOCIALBROWSER.session.proxy && SOCIALBROWSER.session.proxyEnabled) {
@@ -9970,16 +9978,7 @@ if (!SOCIALBROWSER.isWhiteSite) {
     }
 }
 
-Object.defineProperty(globalThis, 'SOCIALBROWSER', {
-    get: function () {
-        if (SOCIALBROWSER.loaded && !SOCIALBROWSER.customSetting.allowSocialBrowser) {
-            return undefined;
-        }
-        return SOCIALBROWSER;
-    },
-});
 
-process.SOCIALBROWSER = SOCIALBROWSER;
 
 SOCIALBROWSER.onLoad(() => {
     SOCIALBROWSER.loaded = true;
