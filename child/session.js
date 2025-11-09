@@ -315,7 +315,7 @@ module.exports = function (child) {
                     return;
                 }
 
-                if (child.isWiteURL(mainURL)) {
+                if (child.isWhiteURL(mainURL)) {
                     callback({
                         cancel: false,
                     });
@@ -385,37 +385,51 @@ module.exports = function (child) {
 
                 // return js will crach if needed request not js
                 if (!child.isAllowURL(url)) {
+                    child.log('Session Not Allow URL : ', url);
+
                     if (win && !win.isDestroyed() && !win.webContents.isDestroyed()) {
-                        win.webContents.send('[show-user-message]', { message: 'Blocked URL <p><a>' + url + '</a></p>' });
+                        win.webContents.send('[show-user-message]', { message: 'Not Allow URL : ' + details.resourceType + ' <p><a>' + url + '</a></p>' });
                     }
 
-                    if (url.like('*.js') || details.resourceType == 'script') {
-                        let query = '';
-                        if (url.split('?')[1]) {
-                            query += url.split('?')[1] + '&x-url=' + url.split('?')[0];
-                        } else {
-                            query += 'x-url=' + url;
-                        }
+                    let url2 = url.split('?')[0];
+                    let query = '';
+                    if (url.split('?')[1]) {
+                        query += url.split('?')[1] + '&x-url=' + url.split('?')[0];
+                    } else {
+                        query += 'x-url=' + url;
+                    }
 
+                    if (url2.like('*.js') || details.resourceType.like('script')) {
                         callback({
                             cancel: false,
                             redirectURL: 'browser://js/fake.js?' + query,
                         });
-                    } else if (url.like('*.css') || details.resourceType == 'stylesheet') {
-                        let query = '';
-                        if (url.split('?')[1]) {
-                            query += url.split('?')[1] + '&x-url=' + url.split('?')[0];
-                        } else {
-                            query += 'x-url=' + url;
-                        }
-
+                    } else if (url2.like('*.css') || details.resourceType.like('stylesheet')) {
                         callback({
                             cancel: false,
                             redirectURL: 'browser://css/fake.css?' + query,
                         });
+                    } else if (url2.like('*.ico|*.jpg|*.png|*.webp') || details.resourceType.like('image')) {
+                        callback({
+                            cancel: false,
+                            redirectURL: 'browser://images/fake.jpg?' + query,
+                        });
+                    } else if (url2.like('*.json')) {
+                        let query = '';
+
+                        callback({
+                            cancel: false,
+                            redirectURL: 'browser://json/fake.json?' + query,
+                        });
+                    } else if (url2.like('*.html')) {
+                        callback({
+                            cancel: false,
+                            redirectURL: 'browser://html/fake.html?' + query,
+                        });
                     } else {
                         callback({
-                            cancel: true,
+                            cancel: false,
+                            redirectURL: 'browser://txt/fake.txt?' + query,
                         });
                     }
                     return;
@@ -608,7 +622,7 @@ module.exports = function (child) {
                     }
                 });
 
-                if (child.isWiteURL(mainURL)) {
+                if (child.isWhiteURL(mainURL)) {
                     callback({
                         cancel: false,
                         requestHeaders: details.requestHeaders,
@@ -656,6 +670,10 @@ module.exports = function (child) {
                 let _ss = child.session_name_list.find((s) => s.name == name);
                 _ss.user.privacy.vpc = _ss.user.privacy.vpc || {};
                 let win = null;
+
+                // if(url.like('*fake.js*')){
+                //     details.responseHeaders['Content-Length'.toLowerCase()] = 50 * 1000;
+                // }
 
                 if (details.webContents) {
                     win = child.electron.BrowserWindow.fromWebContents(details.webContents);
@@ -794,8 +812,6 @@ module.exports = function (child) {
 
                         if (a_orgin) {
                             details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = a_orgin;
-                        } else {
-                            details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = [details['referrer']] || [details['referer']] || ['*'];
                         }
                     }
 
@@ -870,7 +886,7 @@ module.exports = function (child) {
                     }
                 }
 
-                if (child.isWiteURL(mainURL)) {
+                if (child.isWhiteURL(mainURL)) {
                     callback({
                         cancel: false,
                         responseHeaders: {

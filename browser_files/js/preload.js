@@ -1,4 +1,4 @@
-var SOCIALBROWSER = {
+const SOCIALBROWSER = {
     navigator: {},
     var: {
         core: { id: '' },
@@ -47,8 +47,6 @@ var SOCIALBROWSER = {
         }
     },
 };
-
-globalThis.SOCIALBROWSER = SOCIALBROWSER;
 
 (function loadCore() {
     if ((coreLOADED = true)) {
@@ -329,7 +327,6 @@ if (SOCIALBROWSER.href.indexOf('http://127.0.0.1:60080') === 0) {
 
 SOCIALBROWSER.propertyList =
     'download_list,faList,scripts_files,user_data,user_data_input,sites,preload_list,scriptList,privateKeyList,googleExtensionList,ad_list,proxy_list,proxy,core,bookmarks,session_list,userAgentList,blocking,video_quality_list,customHeaderList';
-
 
 SOCIALBROWSER.callSync = SOCIALBROWSER.ipcSync = function (channel, value = {}) {
     try {
@@ -2539,7 +2536,7 @@ SOCIALBROWSER.init2 = function () {
                     });
                 });
             };
-            
+
             SOCIALBROWSER.$html = function (html) {
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(html, 'text/html');
@@ -2644,7 +2641,7 @@ SOCIALBROWSER.init2 = function () {
                     }
                 });
             };
-            
+
             SOCIALBROWSER.$selectAll = function (selector) {
                 return new Promise((resolve, reject) => {
                     if (selector instanceof HTMLElement) {
@@ -2652,7 +2649,7 @@ SOCIALBROWSER.init2 = function () {
                     } else if (typeof selector !== 'string') {
                         reject({ message: 'Selector Not String Type' });
                     } else if (Array.isArray(selector)) {
-                         resolve(selector);
+                        resolve(selector);
                     } else {
                         if (selector.indexOf('/') == 0) {
                             SOCIALBROWSER.$selectAllByXpath(selector).then((elements) => {
@@ -2660,7 +2657,7 @@ SOCIALBROWSER.init2 = function () {
                             });
                         } else {
                             let arr = SOCIALBROWSER.$$(selector);
-                            if (arr.length> 0) {
+                            if (arr.length > 0) {
                                 SOCIALBROWSER.$wait().then(() => resolve(arr));
                             } else {
                                 SOCIALBROWSER.$wait().then(() => {
@@ -3867,8 +3864,14 @@ SOCIALBROWSER.init2 = function () {
                             partition: SOCIALBROWSER.partition,
                             user_name: SOCIALBROWSER.session.display,
                             windowID: SOCIALBROWSER.window.id,
-                            center: true,
                         });
+                    },
+                });
+                arr.push({
+                    label: ' in ( New Ghost tab )',
+                    click() {
+                        let ghost = SOCIALBROWSER.md5((new Date().getTime().toString() + Math.random().toString()).replace('.', '')) + '@' + SOCIALBROWSER.tempMailServer;
+                        SOCIALBROWSER.ipc('[open new tab]', { url: url, referrer: document.location.href, partition: ghost, user_name: ghost, windowID: SOCIALBROWSER.window.id });
                     },
                 });
                 arr.push({
@@ -4890,6 +4893,17 @@ SOCIALBROWSER.init2 = function () {
                         SOCIALBROWSER.customSetting.off = !SOCIALBROWSER.customSetting.off;
                     },
                 });
+                if (SOCIALBROWSER.developerMode) {
+                    arr.push({
+                        label: 'Allow SocialBrowser',
+                        type: 'checkbox',
+                        checked: SOCIALBROWSER.customSetting.allowSocialBrowser || false,
+                        click() {
+                            SOCIALBROWSER.customSetting.allowSocialBrowser = !SOCIALBROWSER.customSetting.allowSocialBrowser;
+                            document.location.reload();
+                        },
+                    });
+                }
                 if (arr.length > 0) {
                     SOCIALBROWSER.menuList.push({
                         label: 'Custom Setting',
@@ -5550,7 +5564,6 @@ SOCIALBROWSER.init2 = function () {
                     return false;
                 }
                 try {
-
                     e = e || { x: 0, y: 0 };
                     SOCIALBROWSER.memoryText = () => SOCIALBROWSER.readCopy();
                     SOCIALBROWSER.selectedText = () => (getSelection() || '').toString().trim();
@@ -6250,39 +6263,41 @@ SOCIALBROWSER.init2 = function () {
     })();
 
     (function loadGoogleExtensions() {
-        SOCIALBROWSER.var.googleExtensionList.forEach((ext) => {
-            if (ext.manifest.host_permissions) {
-                ext.manifest.host_permissions.forEach((host) => {
-                    if (document.location.href.like(host)) {
-                        ext.$approved = true;
-                        SOCIALBROWSER.chromeExtensionDetected = true;
-                        SOCIALBROWSER.log('Google Extension Host Permission Loaded : ' + ext.manifest.name + ' on ' + document.location.href);
-                    }
-                });
-            }
-            ext.manifest.content_scripts.forEach((script) => {
-                script.matches.forEach((match) => {
-                    if ((ext.$approved = true || document.location.href.like(match))) {
-                        SOCIALBROWSER.chromeExtensionDetected = true;
-                        SOCIALBROWSER.log('Google Extension Script Loaded : ' + ext.manifest.name + ' on ' + document.location.href);
-                        script.js.forEach((jsfile) => {
-                            let path = ext.path + '/' + jsfile;
-                            let content = SOCIALBROWSER.readFile(path);
-                            SOCIALBROWSER.onLoad(() => {
+        if (false) {
+            SOCIALBROWSER.var.googleExtensionList.forEach((ext) => {
+                if (ext.manifest.host_permissions) {
+                    ext.manifest.host_permissions.forEach((host) => {
+                        if (document.location.href.like(host)) {
+                            ext.$approved = true;
+                            SOCIALBROWSER.chromeExtensionDetected = true;
+                            SOCIALBROWSER.log('Google Extension Host Permission Loaded : ' + ext.manifest.name + ' on ' + document.location.href);
+                        }
+                    });
+                }
+
+                ext.manifest.content_scripts.forEach((script) => {
+                    script.matches.forEach((match) => {
+                        if ((ext.$approved = true || document.location.href.like(match))) {
+                            SOCIALBROWSER.chromeExtensionDetected = true;
+                            SOCIALBROWSER.log('Google Extension Script Loaded : ' + ext.manifest.name + ' on ' + document.location.href);
+                            script.js.forEach((jsfile) => {
+                                let path = ext.path + '/' + jsfile;
+                                let content = SOCIALBROWSER.readFile(path);
+
                                 let bg = ext.manifest.background?.service_worker;
                                 if (bg) {
                                     let path2 = ext.path + '/' + bg;
-                                    let content2 = SOCIALBROWSER.readFile(path2);
+                                    let service_worker_script = SOCIALBROWSER.readFile(path2);
                                     SOCIALBROWSER.domainStorage = path2;
 
-                                    content2 = content2
+                                    service_worker_script = service_worker_script
                                         .replaceAll('localStorage.setItem ', 'SOCIALBROWSER.setStorage')
                                         .replaceAll('localStorage.getItem', 'SOCIALBROWSER.getStorage')
                                         .replaceAll('localStorage.removeItem', 'SOCIALBROWSER.deleteStorage')
                                         .replaceAll('sessionStorage.setItem ', 'SOCIALBROWSER.setStorage')
                                         .replaceAll('sessionStorage.getItem', 'SOCIALBROWSER.getStorage')
                                         .replaceAll('sessionStorage.removeItem', 'SOCIALBROWSER.deleteStorage');
-                                    SOCIALBROWSER.backgroundWorker = SOCIALBROWSER.executeJavaScriptCodeInWorker(path2, content2);
+                                    SOCIALBROWSER.backgroundWorker = SOCIALBROWSER.executeJavaScriptCodeInWorker(path2, service_worker_script);
                                 }
                                 content = content
                                     .replaceAll('localStorage.setItem ', 'SOCIALBROWSER.setStorage')
@@ -6293,11 +6308,11 @@ SOCIALBROWSER.init2 = function () {
                                     .replaceAll('sessionStorage.removeItem', 'SOCIALBROWSER.deleteStorage');
                                 SOCIALBROWSER.contentWorker = SOCIALBROWSER.executeJavaScriptCodeInWorker(path, content);
                             });
-                        });
-                    }
+                        }
+                    });
                 });
             });
-        });
+        }
     })();
 
     if (SOCIALBROWSER.chromeExtensionDetected || SOCIALBROWSER.customSetting.chrome || document.location.href.like('*chrome-extension://*')) {
@@ -8299,6 +8314,7 @@ SOCIALBROWSER.init2 = function () {
                     });
                     SOCIALBROWSER.__setConstValue(navigator.geolocation.clearWatch, 'toString', () => s3);
                 }
+
                 if (true) {
                     SOCIALBROWSER.navigator.plugins = Object.create(Object.getPrototypeOf(navigator.plugins || {}));
 
@@ -8318,6 +8334,8 @@ SOCIALBROWSER.init2 = function () {
                         SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[name], 'description', description);
                         SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[index], 'length', 2);
                         SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[name], 'length', 2);
+                           SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[index], 'version', 1);
+                        SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.plugins[name], 'version', 1);
                     }
                 }
 
@@ -9935,3 +9953,18 @@ if (!SOCIALBROWSER.isWhiteSite) {
         SOCIALBROWSER.__setConstValue(window.XMLHttpRequest, 'toString', () => s2);
     }
 }
+
+Object.defineProperty(globalThis, 'SOCIALBROWSER', {
+    get: function () {
+        if (SOCIALBROWSER.loaded && !SOCIALBROWSER.customSetting.allowSocialBrowser) {
+            return undefined;
+        }
+        return SOCIALBROWSER;
+    },
+});
+
+process.SOCIALBROWSER = SOCIALBROWSER;
+
+SOCIALBROWSER.onLoad(() => {
+    SOCIALBROWSER.loaded = true;
+});

@@ -1,12 +1,12 @@
 /** This Code Will Run Every Time Script Loaded  */
 
-if (window.SOCIALBROWSER) {
-    SOCIALBROWSER.log('Blocked URL <p><a> ##query.x-url## </a></p>');
-}
-
-window.queryOnLoad = '##query.onload##';
-if (window[window.queryOnLoad]) {
-    window[window.queryOnLoad]();
+if (true) {
+    let query = SOCIALBROWSER.fromJson('##query.*##');
+    for (const key in query) {
+        if (typeof window[key] == 'function') {
+            window[key]();
+        }
+    }
 }
 
 if (false) {

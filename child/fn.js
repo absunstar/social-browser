@@ -324,7 +324,7 @@ module.exports = function (child) {
         });
     };
 
-    child.isWiteURL = function (url) {
+    child.isWhiteURL = function (url) {
         return child.parent.var.blocking.white_list?.some((item) => url.like(item.url));
     };
 

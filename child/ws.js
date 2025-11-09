@@ -186,7 +186,7 @@ module.exports = function (child) {
                     });
                 } else if (message.type == '[tracking-info]') {
                     child.getAllWindows().forEach((win) => {
-                        if (win && !win.isDestroyed()) {
+                        if (win && !win.isDestroyed() && win.webContents && !win.webContents.isDestroyed()) {
                             win.webContents.send('[tracking-info]', message);
                         }
                     });

@@ -9,6 +9,8 @@ module.exports = function init(parent) {
         _0x14xo: !0,
         public: true,
         lang: 'en',
+        log: true,
+        help: true,
         https: {
             enabled: true,
             port: 60043,
@@ -55,19 +57,35 @@ module.exports = function init(parent) {
         path: parent.files_dir + '/js2',
         parser: 'js',
     });
-    parent.api.onGET({
+
+    parent.api.onALL({
         name: '/js',
         path: parent.files_dir + '/js',
         parser: 'js',
     });
+    parent.api.onALL({
+        name: '/css',
+        path: parent.files_dir + '/css',
+        parser: 'css',
+    });
+    parent.api.onALL({
+        name: '/images',
+        path: parent.files_dir + '/images',
+    });
+    parent.api.onGET({
+        name: '/txt',
+        path: parent.files_dir + '/txt',
+    });
+    parent.api.onALL({
+        name: '/html',
+        path: parent.files_dir + '/html',
+    });
+
     parent.api.onGET({
         name: '/',
         path: parent.files_dir,
     });
-    parent.api.onALL({
-        name: '/txt',
-        path: parent.files_dir + '/txt',
-    });
+
     parent.api.onGET({
         name: '/chat',
         path: parent.files_dir + '/html/chat.html',
