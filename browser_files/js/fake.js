@@ -1,102 +1,37 @@
-/** This Code Will Run Every Time Script Loaded  */
+(() => {
+    window.adsbygoogle = window.adsbygoogle || {
+        loaded: true,
+        pageState: {
+            stavq: 2021,
+            jTCuI: 'r20251105',
+            OmOVT: false,
+            xujKL: false,
+            AyxaY: 1770789904,
+            SLqBY: '.google.com.eg',
+            xVQAt: 'r20190131',
+            OSCLM: {
+                UWEfJ: false,
+                YguOd: false,
+                SVQEK: false,
+            },
+            jzoix: {
+                PygXN: [],
+            },
+            gjPrg: '',
+            ANqoe: '',
+            FJPve: false,
+            GLnKw: false,
+            tYcft: {},
+            EGzMj: {},
+            uNjDc: false,
+        },
+        push: () => {},
+    };
 
-if (true) {
     let query = SOCIALBROWSER.fromJson('##query.*##');
     for (const key in query) {
         if (typeof window[key] == 'function') {
             window[key]();
         }
     }
-}
-
-if (false) {
-    window.grecaptcha = window.grecaptcha || {
-        render: function (name, options) {
-            if (options.callback) {
-                setTimeout(() => {
-                    options.callback();
-                }, 1000);
-            }
-            if (options.sitekey) {
-                window.grecaptcha.sitekey = options.sitekey;
-            }
-        },
-        reset: function () {},
-    };
-
-    SOCIALBROWSER.__define(window, 'fuckAdBlock', {
-        fnList: [],
-        debug: {
-            set: function (bool) {
-                return window['fuckAdBlock'];
-            },
-        },
-
-        setOption: function (fn) {},
-        check: function () {
-            setTimeout(() => {
-                this.fnList.forEach((fn) => {
-                    fn();
-                });
-            }, 100);
-        },
-        emitEvent: function (fn) {},
-        clearEvent: function () {
-            this.fnList = [];
-        },
-        on: function (detected, fn) {
-            if (!detected) {
-                this.onNotDetected(fn);
-            }
-            return this;
-        },
-        onNotDetected: function (fn) {
-            this.fnList.push(fn);
-            SOCIALBROWSER.onLoad(fn);
-            return this;
-        },
-        _var: { event: { notDetected: [window] } },
-    });
-
-    SOCIALBROWSER.__define(window, 'FuckAdBlock', window['fuckAdBlock']);
-
-    if (document.location.href.indexOf('egybest') !== -1) {
-        SOCIALBROWSER.blockPopup = true;
-        // SOCIALBROWSER.copyPopupURL = true;
-        window._AdBlock_init = {};
-
-        SOCIALBROWSER.onLoad(() => {
-            setInterval(() => {
-                if ((el = document.querySelector('#GlobalFrame'))) {
-                    el.style.display = 'none';
-                }
-                if ((el = document.querySelector('#Shadow'))) {
-                    el.style.display = 'none';
-                }
-                if ((el = document.querySelector('#body'))) {
-                    el.classList.remove('hide');
-                }
-            }, 1000);
-        });
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        if (document.querySelector('body') && document.querySelector('body').innerHTML.like('*FuckAdBlock*')) {
-            delete window['fuckAdBlock'];
-            delete window['FuckAdBlock'];
-        }
-
-        if (document.location.href.like('*streamtape.com*')) {
-            let p = document.querySelector('.plyr-container');
-            if (p) {
-                p.classList.remove('plyr-container');
-                var style = document.createElement('style');
-                style.id = 'mycss';
-                style.type = 'text/css';
-                style.innerText = `.plyr-container2{width: 100% !important;height: 100% !important;}`;
-                document.getElementsByTagName('head')[0].appendChild(style);
-                p.classList.add('plyr-container2');
-            }
-        }
-    });
-}
+})();

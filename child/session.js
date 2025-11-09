@@ -385,11 +385,14 @@ module.exports = function (child) {
 
                 // return js will crach if needed request not js
                 if (!child.isAllowURL(url)) {
+
                     child.log('Session Not Allow URL : ', url);
 
                     if (win && !win.isDestroyed() && !win.webContents.isDestroyed()) {
                         win.webContents.send('[show-user-message]', { message: 'Not Allow URL : ' + details.resourceType + ' <p><a>' + url + '</a></p>' });
                     }
+
+                
 
                     let url2 = url.split('?')[0];
                     let query = '';
@@ -428,7 +431,7 @@ module.exports = function (child) {
                         });
                     } else {
                         callback({
-                            cancel: false,
+                            cancel: true,
                             redirectURL: 'browser://txt/fake.txt?' + query,
                         });
                     }

@@ -52,7 +52,7 @@ module.exports = function init(parent) {
         res.end();
     });
 
-    parent.api.onGET({
+    parent.api.onALL({
         name: '/js',
         path: parent.files_dir + '/js2',
         parser: 'js',
@@ -81,7 +81,7 @@ module.exports = function init(parent) {
         path: parent.files_dir + '/html',
     });
 
-    parent.api.onGET({
+    parent.api.onALL({
         name: '/',
         path: parent.files_dir,
     });

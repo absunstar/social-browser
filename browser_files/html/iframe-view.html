@@ -4,7 +4,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-        <title>Youtube View : ##query.url##</title>
+        <title>IFrame View : ##query.url##</title>
         <style>
             body {
                 background-image: url('browser://images/loading.gif');
@@ -30,9 +30,7 @@
         <script>
             SOCIALBROWSER.window.eval = () => {
                 SOCIALBROWSER.onload(() => {
-                    if (document.location.hostname.contains('youtube')) {
-                        SOCIALBROWSER.window.title = document.querySelector('title').innerText;
-                    }
+                    SOCIALBROWSER.window.title = document.querySelector('title').innerText;
                 });
             };
         </script>
