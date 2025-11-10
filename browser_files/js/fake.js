@@ -1,4 +1,6 @@
 (() => {
+    const SOCIALBROWSER = globalThis.SOCIALBROWSER;
+    
     window.adsbygoogle = window.adsbygoogle || {
         loaded: true,
         pageState: {

@@ -175,7 +175,7 @@ module.exports = function (child) {
             allowNewWindows: true,
             allowSaveUserData: true,
             allowSaveUrls: true,
-            allowSocialBrowser: true,
+            allowSocialBrowser: false,
             allowRedirect: true,
             allowSelfRedirect: true,
             allowSelfWindow: false,
@@ -543,7 +543,6 @@ module.exports = function (child) {
             if (win.customSetting.showDevTools) {
                 win.openDevTools();
             }
-
             if (win.customSetting.windowType === 'main') {
                 win.show();
 
@@ -620,11 +619,11 @@ module.exports = function (child) {
                 if (proxyRules && proxy.direct) {
                     proxyRules += startline + 'direct://';
                 }
-                
+
                 if (proxyRules) {
                     ss.closeAllConnections().then(() => {
                         ss.setProxy({
-                            mode:  'fixed_servers',
+                            mode: 'fixed_servers',
                             proxyRules: proxyRules,
                             proxyBypassRules: proxy.ignore || 'localhost,127.0.0.1,::1,192.168.*',
                         }).then(() => {

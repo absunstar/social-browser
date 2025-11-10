@@ -1004,7 +1004,7 @@ module.exports = function (owner) {
                 name: 'Firefox',
                 vendor: 'Mozilla',
                 prefix: '',
-                randomMajor: () => owner.randomNumber(138, 142),
+                randomMajor: () => owner.randomNumber(142, 144),
                 randomMinor: () => owner.randomNumber(0, 9),
                 randomPatch: () => owner.randomNumber(0, 99),
             },

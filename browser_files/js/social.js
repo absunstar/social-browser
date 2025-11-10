@@ -1,3 +1,4 @@
+
 var socialTabsDom = document.querySelector('.social-tabs');
 var socialTabs = new SocialTabs();
 var currentTabId = null;
@@ -837,7 +838,7 @@ SOCIALBROWSER.showWindowsMenu = function () {
         sublabel: SOCIALBROWSER.getCurrentTabInfo().url,
         iconURL: 'http://127.0.0.1:60080/images/page.png',
         click: () => {
-            ipc('[window-action]', { name: 'new-ghost-window' });
+            ipc('[window-action]', { name: 'open-in-ghost-window' });
         },
     });
 

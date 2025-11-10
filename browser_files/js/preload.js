@@ -48,7 +48,6 @@ const SOCIALBROWSER = {
     },
 };
 
-
 (function loadCore() {
     if ((coreLOADED = true)) {
         SOCIALBROWSER.escapeRegExp = function (s = '') {
@@ -322,7 +321,7 @@ SOCIALBROWSER.domain = SOCIALBROWSER.domain.slice(SOCIALBROWSER.domain.length - 
 SOCIALBROWSER.domainStorage = SOCIALBROWSER.domain;
 
 SOCIALBROWSER.href = document.location.href;
-if (SOCIALBROWSER.href.indexOf('http://127.0.0.1:60080') === 0) {
+if (SOCIALBROWSER.href.like('*60080*|browser*')) {
     SOCIALBROWSER.isLocal = true;
 }
 
@@ -3463,14 +3462,30 @@ SOCIALBROWSER.init2 = function () {
     })();
 
     (function prepareFn() {
-        Object.defineProperty(globalThis, 'SOCIALBROWSER', {
-    get: function () {
-        if (SOCIALBROWSER.loaded && !SOCIALBROWSER.customSetting.allowSocialBrowser) {
-            return undefined;
+        if (!SOCIALBROWSER.isLocal && !SOCIALBROWSER.customSetting.allowSocialBrowser) {
+            globalThis = new Proxy(globalThis, {
+                get(target, property, receiver) {
+                    if (property == 'SOCIALBROWSER') {
+                        return SOCIALBROWSER;
+                    }
+
+                    if (typeof target[property] instanceof Function) {
+                        return function (...args) {
+                            return target[property].apply(this === receiver ? target : this, args);
+                        };
+                    }
+
+                    return target[property];
+                },
+                set(target, property, value, receiver) {
+                    target[property] = value;
+                    return true;
+                },
+            });
+        } else {
+            globalThis.SOCIALBROWSER = SOCIALBROWSER;
         }
-        return SOCIALBROWSER;
-    },
-});
+
         if (SOCIALBROWSER.customSetting.proxy) {
             SOCIALBROWSER.proxy = SOCIALBROWSER.customSetting.proxy;
         } else if (SOCIALBROWSER.session.proxy && SOCIALBROWSER.session.proxyEnabled) {
@@ -4260,14 +4275,14 @@ SOCIALBROWSER.init2 = function () {
                     type: 'separator',
                 });
                 arr.push({
-                    label: '[ Social Data]  / copy as [ Encripted Text ] to Clipboard',
+                    label: '[ Social Data]  / Copy as [ Encripted Text ] to Clipboard',
                     click() {
                         SOCIALBROWSER.copy(SOCIALBROWSER.hideObject(SOCIALBROWSER.getSiteData()));
                         alert('Site Data Text Copied !!');
                     },
                 });
                 arr.push({
-                    label: '[ Social Data]  / copy as [ online Code ] to Clipboard',
+                    label: '[ Social Data]  / Copy as [ online Code ] to Clipboard',
                     click() {
                         let code = SOCIALBROWSER.hideObject(SOCIALBROWSER.getSiteData());
                         SOCIALBROWSER.fetchJson({
@@ -4286,25 +4301,23 @@ SOCIALBROWSER.init2 = function () {
                         });
                     },
                 });
+
                 arr.push({
-                    type: 'separator',
-                });
-                arr.push({
-                    label: '[ Social Data]  / import from Clipboard ( in current profile )',
+                    label: '[ Social Data]  / Import from Clipboard ( in current profile )',
                     click() {
                         let txt = SOCIALBROWSER.clipboard.readText();
                         SOCIALBROWSER.importSiteData(txt, 0);
                     },
                 });
                 arr.push({
-                    label: '[ Social Data]  / import from Clipboard ( in Real profile )',
+                    label: '[ Social Data]  / Import from Clipboard ( in Real profile )',
                     click() {
                         let txt = SOCIALBROWSER.clipboard.readText();
                         SOCIALBROWSER.importSiteData(txt, 1);
                     },
                 });
                 arr.push({
-                    label: '[ Social Data]  / import from Clipboard ( in Ghost profile )',
+                    label: '[ Social Data]  / Import from Clipboard ( in Ghost profile )',
                     click() {
                         let txt = SOCIALBROWSER.clipboard.readText();
                         SOCIALBROWSER.importSiteData(txt, 2);
@@ -4322,7 +4335,7 @@ SOCIALBROWSER.init2 = function () {
                     },
                 });
                 arr.push({
-                    label: '[ Session Cookies]  / import from [ JSON Text ] from Clipboard',
+                    label: '[ Session Cookies]  / Import from [ JSON Text ] from Clipboard',
                     click() {
                         SOCIALBROWSER.setDomainCookies({ cookies: SOCIALBROWSER.fromJson(SOCIALBROWSER.clipboard.readText()) });
                         alert('Site Cookies Imported !!');
@@ -4333,14 +4346,14 @@ SOCIALBROWSER.init2 = function () {
                     type: 'separator',
                 });
                 arr.push({
-                    label: '[ HTTP Cookies ] / copy as [ Text ] to Clipboard',
+                    label: '[ HTTP Cookies ] / Copy as [ Text ] to Clipboard',
                     click() {
                         SOCIALBROWSER.copy(SOCIALBROWSER.getHttpCookie());
                         alert('Site HTTP Cookies Text Copied !!');
                     },
                 });
                 arr.push({
-                    label: '[ HTTP Cookies ] / set from [ Text ] from Clipboard',
+                    label: '[ HTTP Cookies ] / Set from [ Text ] from Clipboard',
                     click() {
                         SOCIALBROWSER.setHttpCookie({ cookie: SOCIALBROWSER.clipboard.readText(), mode: 0 });
                         alert('Site HTTP Cookies Set !!');
@@ -4348,10 +4361,10 @@ SOCIALBROWSER.init2 = function () {
                     },
                 });
                 arr.push({
-                    label: '[ HTTP Cookies ] / remove',
+                    label: '[ HTTP Cookies ] / Remove Imported Cookies',
                     click() {
                         SOCIALBROWSER.setHttpCookie({ cookie: '', off: true });
-                        alert('Site HTTP Cookies Removed !!');
+                        alert('Imported HTTP Cookies Removed !!');
                         document.location.reload();
                     },
                 });
@@ -4904,7 +4917,7 @@ SOCIALBROWSER.init2 = function () {
                 });
                 if (SOCIALBROWSER.developerMode) {
                     arr.push({
-                        label: 'Allow SocialBrowser',
+                        label: 'Allow Javascript SOCIALBROWSER',
                         type: 'checkbox',
                         checked: SOCIALBROWSER.customSetting.allowSocialBrowser || false,
                         click() {
@@ -8930,7 +8943,7 @@ SOCIALBROWSER.init2 = function () {
                     center: true,
                     alwaysOnTop: true,
                 });
-            } else if (data.name == 'new-ghost-window') {
+            } else if (data.name == 'open-in-ghost-window') {
                 let browser = SOCIALBROWSER.getRandomBrowser('pc');
                 let ghost = SOCIALBROWSER.md5((new Date().getTime().toString() + Math.random().toString()).replace('.', '')) + '@' + SOCIALBROWSER.tempMailServer;
                 SOCIALBROWSER.ipc('[open new popup]', {
@@ -9709,7 +9722,6 @@ if (!SOCIALBROWSER.javaScriptOFF) {
 }
 
 if (!SOCIALBROWSER.isWhiteSite) {
-
     if ((stringify0 = true)) {
         JSON.stringify0 = JSON.stringify;
         let j = JSON.stringify.toString();
@@ -9977,9 +9989,3 @@ if (!SOCIALBROWSER.isWhiteSite) {
         }
     }
 }
-
-
-
-SOCIALBROWSER.onLoad(() => {
-    SOCIALBROWSER.loaded = true;
-});

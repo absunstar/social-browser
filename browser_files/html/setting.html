@@ -12,6 +12,7 @@
                 --form-color: #212529;
 
                 --bs-body-color: #3f9dff;
+                 --font-family: monospace ;
                 --bs-body-font-family: var(--font-family);
 
                 --input-color: #795548;
@@ -33,7 +34,7 @@
                 --fieldset-border: 1px solid #d1d1d1;
                 --modal-color: #000000;
                 --modal-background: #00000026;
-                --font-family: monospace, 'Cairo';
+               
                 --btn-add-color: #272727;
                 --btn-add-background-color: #fff;
                 --btn-delete-color: red;
@@ -975,7 +976,7 @@
                                         <i-button ng-click="setting.$showProfilesControlPanel =!setting.$showProfilesControlPanel " label="Show /  Hide Profiles Control Panel"></i-button>
                                     </div>
 
-                                    <fieldset ng-show="setting.$showProfilesControlPanel">
+                                    <fieldset ng-hide="setting.$showProfilesControlPanel">
                                         <legend>Profiles Control Panel</legend>
                                         <div class="row">
                                             <div class="row padding margin">
@@ -1621,7 +1622,7 @@
                                 </fieldset>
                                 <hr />
                                 <fieldset>
-                                    <legend>Google Extentions [ Limited Support ]</legend>
+                                    <legend>Google Extentions [ Chrome Browser Simulator  ]</legend>
                                     <div class="row">
                                         <i-button type="import" ng-click="loadGoogleExtension()" label="Load Google Extension From Folder"></i-button>
 

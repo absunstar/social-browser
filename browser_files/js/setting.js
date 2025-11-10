@@ -1,4 +1,5 @@
 app.controller('mainController', ($scope, $http, $timeout) => {
+     
     $scope.userAgentBrowserList = SOCIALBROWSER.userAgentBrowserList.map((b) => ({ name: b.name }));
     $scope.userAgentDeviceList = SOCIALBROWSER.userAgentDeviceList;
     if (SOCIALBROWSER.var.core.flags.like('*v2*')) {

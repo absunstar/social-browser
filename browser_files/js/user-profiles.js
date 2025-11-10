@@ -1,3 +1,5 @@
+var SOCIALBROWSER = globalThis.SOCIALBROWSER;
+
 setTimeout(() => {
     $('.loaded').css('visibility', 'visible');
 }, 1000 * 1);
