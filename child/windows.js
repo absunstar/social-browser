@@ -174,7 +174,7 @@ module.exports = function (child) {
             allowNewWindows: true,
             allowSaveUserData: true,
             allowSaveUrls: true,
-            allowSocialBrowser: false,
+            allowSocialBrowser: true,
             allowRedirect: true,
             allowSelfRedirect: true,
             allowSelfWindow: false,
@@ -241,7 +241,7 @@ module.exports = function (child) {
             defaultSetting.webPreferences.nodeIntegrationInWorker = true;
             defaultSetting.webPreferences.webSecurity = false;
             defaultSetting.webPreferences.allowRunningInsecureContent = true;
-             setting.showDevTools = true;
+          //   setting.showDevTools = true;
         } else if (setting.windowType === 'youtube') {
             // setting.url = 'browser://youtube-view?url=' + setting.url;
             // setting.iframe = false;

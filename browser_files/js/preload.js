@@ -767,7 +767,6 @@ SOCIALBROWSER.init2 = function () {
                         isWorker: true,
                         url: 'browser://newTab',
                         show: false,
-                        allowSocialBrowser: true,
                         eval: () => {
                             SOCIALBROWSER.eval(codeString);
                         },
@@ -785,7 +784,6 @@ SOCIALBROWSER.init2 = function () {
                         isWorker: true,
                         url: url,
                         show: false,
-                        allowSocialBrowser: true,
                         eval: () => {
                             SOCIALBROWSER.onLoad(() => {
                                 let code = document.querySelector('body pre')?.textContent;
@@ -3575,9 +3573,7 @@ SOCIALBROWSER.init2 = function () {
     })();
 
     (function prepareFn() {
-        if (SOCIALBROWSER.isLocal || SOCIALBROWSER.customSetting.allowSocialBrowser) {
-            globalThis.SOCIALBROWSER = SOCIALBROWSER;
-        }
+        
 
         if (SOCIALBROWSER.customSetting.isWorker) {
             self.workerGlobal = self;
@@ -3603,7 +3599,7 @@ SOCIALBROWSER.init2 = function () {
             };
         }
 
-        if (true) {
+        if (!SOCIALBROWSER.customSetting.allowSocialBrowser) {
             globalThis = new Proxy(globalThis, {
                 apply(target, thisArg, argumentsList) {
                     return Reflect.apply(target, thisArg, argumentsList);
