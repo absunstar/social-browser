@@ -30,6 +30,7 @@ const SOCIALBROWSER = {
     },
     menu_list: [],
     video_list: [],
+    windowOpenList: [],
     events: [],
     eventOff: '',
     eventOn: '',
@@ -214,11 +215,11 @@ SOCIALBROWSER.require = function (path, ...args) {
     try {
         const fn = require(path);
 
-        if (typeof fn === 'function') {
+        if (fn instanceof Function) {
             if (args.length > 0) {
                 return fn(...args);
             }
-            return fn(SOCIALBROWSER, window, document);
+            return fn(globalThis.SOCIALBROWSER, window, document);
         } else {
             return fn;
         }
@@ -248,10 +249,11 @@ SOCIALBROWSER.newFunction = function (code) {
 };
 
 SOCIALBROWSER.eval = function (code, jsFile = false) {
-    if (typeof code == 'function') {
+    if (code instanceof Function) {
         code = code.toString();
         code = code.slice(code.indexOf('{') + 1, code.lastIndexOf('}'));
     }
+    code = 'var SOCIALBROWSER = globalThis.SOCIALBROWSER;' + code;
     try {
         if (SOCIALBROWSER.customSetting.sandbox) {
             SOCIALBROWSER.executeJavaScript(code);
@@ -328,31 +330,33 @@ if (SOCIALBROWSER.href.like('*60080*|browser*')) {
 SOCIALBROWSER.propertyList =
     'download_list,faList,scripts_files,user_data,user_data_input,sites,preload_list,scriptList,privateKeyList,googleExtensionList,ad_list,proxy_list,proxy,core,bookmarks,session_list,userAgentList,blocking,video_quality_list,customHeaderList';
 
-SOCIALBROWSER.callSync = SOCIALBROWSER.ipcSync = function (channel, value = {}) {
+SOCIALBROWSER.callSync = SOCIALBROWSER.ipcSync = function (channel, value = {}, direct = false) {
     try {
-        if (typeof value == 'object') {
-            if (channel == '[open new popup]' || channel == '[open new tab]') {
-                if (!SOCIALBROWSER.isLocal) {
-                    value.referrer = value.referrer || document.location.href;
-                }
-                value.parentSetting = SOCIALBROWSER._customSetting;
+        if (direct) {
+            return SOCIALBROWSER.ipcRenderer.sendSync(channel, value);
+        } else {
+            if (typeof value == 'object') {
+                // if (SOCIALBROWSER.window) {
+                //     value.windowID = value.windowID || SOCIALBROWSER.window.id;
+                //     value.windowID = parseInt(value.windowID);
+                // }
+                // if (SOCIALBROWSER.webContents) {
+                //     value.parentFrame = {
+                //         processId: SOCIALBROWSER.webContents.getProcessId(),
+                //         frameToken: SOCIALBROWSER.electron.webFrame.frameToken,
+                //     };
+                // }
 
-                if (value.parentSetting && value.parentSetting.parentSetting) {
-                    value.parentSetting.parentSetting = undefined;
-                }
-                if (SOCIALBROWSER.window) {
-                    value.windowID = value.windowID || SOCIALBROWSER.window.id;
-                    value.windowID = parseInt(value.windowID);
-                }
-                if (SOCIALBROWSER.webContents) {
-                    value.processId = SOCIALBROWSER.webContents.getProcessId();
-                    value.frameToken = SOCIALBROWSER.electron.webFrame.frameToken;
+                if (channel == '[open new popup]' || channel == '[open new tab]') {
+                    if (!SOCIALBROWSER.isLocal) {
+                        value.referrer = value.referrer || document.location.href;
+                    }
+                    value = SOCIALBROWSER.cloneObject(value);
                 }
             }
 
-            value = SOCIALBROWSER.cloneObject(value);
+            return SOCIALBROWSER.ipcRenderer.sendSync(channel, value);
         }
-        return SOCIALBROWSER.ipcRenderer.sendSync(channel, value);
     } catch (error) {
         SOCIALBROWSER.log(channel, error);
         SOCIALBROWSER.log(value);
@@ -360,26 +364,32 @@ SOCIALBROWSER.callSync = SOCIALBROWSER.ipcSync = function (channel, value = {}) 
     }
 };
 
-SOCIALBROWSER.invoke = SOCIALBROWSER.ipc = function (channel, value = {}, log = false) {
-    if (typeof value == 'object') {
-        if (channel == '[open new popup]' || channel == '[open new tab]') {
-            if (!SOCIALBROWSER.isLocal) {
-                value.referrer = value.referrer || document.location.href;
+SOCIALBROWSER.invoke = SOCIALBROWSER.ipc = function (channel, value = {}, direct = false) {
+    if (direct) {
+        return SOCIALBROWSER.ipcRenderer.invoke(channel, value);
+    } else {
+        if (typeof value == 'object') {
+            if (SOCIALBROWSER.window) {
+                value.windowID = value.windowID || SOCIALBROWSER.window.id;
+                value.windowID = parseInt(value.windowID);
             }
-            value.parentSetting = SOCIALBROWSER._customSetting;
-            if (value.parentSetting && value.parentSetting.parentSetting) {
-                value.parentSetting.parentSetting = undefined;
+            if (SOCIALBROWSER.webContents) {
+                value.parentFrame = {
+                    processId: SOCIALBROWSER.webContents.getProcessId(),
+                    frameToken: SOCIALBROWSER.electron.webFrame.frameToken,
+                };
+            }
+
+            if (channel == '[open new popup]' || channel == '[open new tab]') {
+                if (!SOCIALBROWSER.isLocal) {
+                    value.referrer = value.referrer || document.location.href;
+                }
+                value = SOCIALBROWSER.cloneObject(value);
             }
         }
-        value.windowID = value.windowID || SOCIALBROWSER._window.id;
-        value.windowID = parseInt(value.windowID);
-        value.processId = SOCIALBROWSER.webContents.getProcessId();
-        value.frameToken = SOCIALBROWSER.electron.webFrame.frameToken;
 
-        value = SOCIALBROWSER.cloneObject(value);
+        return SOCIALBROWSER.ipcRenderer.invoke(channel, value);
     }
-
-    return SOCIALBROWSER.ipcRenderer.invoke(channel, value);
 };
 SOCIALBROWSER.on = function (name, callback) {
     return SOCIALBROWSER.ipcRenderer.on(name, callback);
@@ -529,7 +539,6 @@ SOCIALBROWSER.init2 = function () {
     SOCIALBROWSER.files_dir = SOCIALBROWSER.browserData.files_dir;
     SOCIALBROWSER.injectedHTML = SOCIALBROWSER.browserData.injectedHTML;
     SOCIALBROWSER.injectedCSS = SOCIALBROWSER.browserData.injectedCSS;
-    SOCIALBROWSER.parentAssignWindow = SOCIALBROWSER.browserData.parentAssignWindow;
     SOCIALBROWSER.newTabData = SOCIALBROWSER.browserData.newTabData;
     SOCIALBROWSER.session = { ...SOCIALBROWSER.session, ...SOCIALBROWSER.browserData.session };
     SOCIALBROWSER.partition = SOCIALBROWSER.browserData.partition;
@@ -715,7 +724,7 @@ SOCIALBROWSER.init2 = function () {
 
             SOCIALBROWSER.workerCodeString = '';
             SOCIALBROWSER.executeJavaScriptWorker = function (_id, code, url) {
-                _id = 'globalThis.' + _id;
+                _id = 'window.' + _id;
                 code = code.replaceAll('globalThis', _id + '');
                 code = code.replaceAll('window.location', 'location');
                 code = code.replaceAll('document.location', 'location');
@@ -731,7 +740,7 @@ SOCIALBROWSER.init2 = function () {
                 code = code.replaceAll(_id + '.' + _id, _id);
                 code = code + ';if(onmessage) { ' + _id + '.onmessage2 = onmessage; }';
                 code = code + ';SOCIALBROWSER.showUserMessage("Web Worker Detected <p><a>' + url + '</a></p>")';
-                code = `${_id}._ =  function(window , unsafeWindow , location  , postMessage ){ try { ${code} } catch (err) {SOCIALBROWSER.alert(err)} };${_id}._(${_id}  , window , ${_id}.location  , ${_id}.postMessage2);`;
+                code = `${_id}._ =  function(window , unsafeWindow , location  , postMessage ){ try { ${code} } catch (err) {globalThis.SOCIALBROWSER.alert(err)} };${_id}._(${_id}  , window , ${_id}.location  , ${_id}.postMessage2);`;
                 SOCIALBROWSER.workerCodeString += code + '\n//# sourceURL=' + url + '\n';
 
                 SOCIALBROWSER.executeJavaScript(code)
@@ -745,15 +754,58 @@ SOCIALBROWSER.init2 = function () {
             SOCIALBROWSER.serviceWorker = navigator.serviceWorker;
 
             window.Worker0 = window.Worker;
-            SOCIALBROWSER.Worker = function (url, options, _worker, codeString = null) {
+            SOCIALBROWSER.newWorker = function (url, options, _worker, codeString = null) {
                 if (!codeString && SOCIALBROWSER.var.blocking.javascript.allowWorkerByVideo && document.querySelector('video')) {
-                    SOCIALBROWSER.showUserMessage('Web Worker video Detected');
+                    SOCIALBROWSER.showUserMessage('Web Worker video Detected <br>' + url);
                     return new window.Worker0(url, options, _worker);
                 }
 
-                SOCIALBROWSER.log('New Worker : ' + url);
-                if (!codeString) {
-                    url = SOCIALBROWSER.handleURL(url.toString());
+                SOCIALBROWSER.showUserMessage('New Worker Running <p>' + url + '</p>');
+
+                if (codeString) {
+                    return SOCIALBROWSER.openWindow({
+                        isWorker: true,
+                        url: 'browser://newTab',
+                        show: false,
+                        allowSocialBrowser: true,
+                        eval: () => {
+                            SOCIALBROWSER.eval(codeString);
+                        },
+                    });
+                } else {
+                    if (url instanceof URL) {
+                        url = url.href;
+                    } else {
+                        url = SOCIALBROWSER.handleURL(url.toString());
+                    }
+                    if (options && options.type == 'module') {
+                        SOCIALBROWSER.showUserMessage('New Module Worker Running <p>' + url + '</p>');
+                    }
+                    return SOCIALBROWSER.openWindow({
+                        isWorker: true,
+                        url: url,
+                        show: false,
+                        allowSocialBrowser: true,
+                        eval: () => {
+                            SOCIALBROWSER.onLoad(() => {
+                                let code = document.querySelector('body pre')?.textContent;
+                                if (code) {
+                                    code = code
+                                        .replaceAll('self.importScripts', 'importScripts')
+                                        .replaceAll('document', 'undefined')
+                                        .replaceAll('debugger;', '')
+                                        .replaceAll('importScripts', 'await importScripts');
+                                    code = '(async()=>{' + code + '})()';
+                                    document.querySelector('body pre').textContent = code;
+                                    if (code.contain('import*as ')) {
+                                        SOCIALBROWSER.addJS(code, { type: 'module' });
+                                    } else {
+                                        SOCIALBROWSER.eval(code);
+                                    }
+                                }
+                            });
+                        },
+                    });
                 }
 
                 let workerID = 'worker_' + SOCIALBROWSER.md5(url) + '_';
@@ -767,8 +819,12 @@ SOCIALBROWSER.init2 = function () {
                                 .then((code) => {
                                     if (code) {
                                         let _id = _worker ? _worker.id : workerID;
-
-                                        SOCIALBROWSER.executeJavaScriptWorker(_id, code, url);
+                                        globalThis[workerID] = SOCIALBROWSER.openWindow({
+                                            show: true,
+                                            url: url,
+                                            eval: code,
+                                        });
+                                        //  SOCIALBROWSER.executeJavaScriptWorker(_id, code, url);
                                     } else {
                                         globalThis[workerID] = new window.Worker0(url, options, _worker);
                                     }
@@ -787,7 +843,16 @@ SOCIALBROWSER.init2 = function () {
                             .then((code) => {
                                 SOCIALBROWSER.workerCodeString += code + '\n//# First sourceURL=' + url + '\n';
                                 let _id = _worker ? _worker.id : workerID;
-                                SOCIALBROWSER.executeJavaScriptWorker(_id, code, url);
+                                globalThis[_id] = SOCIALBROWSER.openWindow({
+                                    url: url,
+                                    show: true,
+                                    eval: () => {
+                                        SOCIALBROWSER.onLoad(() => {
+                                            SOCIALBROWSER.eval(document.querySelector('body pre').textContent);
+                                        });
+                                    },
+                                });
+                                // SOCIALBROWSER.executeJavaScriptWorker(_id, code, url);
                             });
                     }
                 } else {
@@ -796,6 +861,8 @@ SOCIALBROWSER.init2 = function () {
                         SOCIALBROWSER.executeJavaScriptWorker(_id, codeString, url);
                     }
                 }
+
+                return globalThis[workerID];
 
                 if (_worker) {
                     return _worker;
@@ -877,7 +944,7 @@ SOCIALBROWSER.init2 = function () {
                 }
             };
             SOCIALBROWSER.executeJavaScriptCodeInWorker = function (url, codeString) {
-                return SOCIALBROWSER.Worker(url, null, null, codeString);
+                return SOCIALBROWSER.newWorker(url, null, null, codeString);
             };
 
             SOCIALBROWSER.sendMessage = SOCIALBROWSER.message = function (message) {
@@ -1276,7 +1343,7 @@ SOCIALBROWSER.init2 = function () {
                     SOCIALBROWSER.log(error);
                 }
             };
-            SOCIALBROWSER.addJS = SOCIALBROWSER.addjs = function (code) {
+            SOCIALBROWSER.addJS = SOCIALBROWSER.addjs = function (code, options = {}) {
                 try {
                     let body = document.body || document.head || document.documentElement;
                     if (body && code) {
@@ -1284,6 +1351,9 @@ SOCIALBROWSER.init2 = function () {
                         _script.id = '_script_' + SOCIALBROWSER.md5(code);
                         _script.textContent = SOCIALBROWSER.policy.createScript(code);
                         _script.nonce = 'social';
+                        for (const key in options) {
+                            _script[key] = options[key];
+                        }
                         if (!document.querySelector('#' + _script.id)) {
                             body.appendChild(_script);
                         }
@@ -1786,8 +1856,10 @@ SOCIALBROWSER.init2 = function () {
                 } else if (u.like('*://*')) {
                     u = u;
                 } else if (u.split('?')[0].split('.').length < 3) {
-                    let page = window.location.pathname.split('/').pop();
-                    u = window.location.origin + window.location.pathname.replace(page, '') + u;
+                    let page = document.location.pathname.split('/').pop();
+                    u = document.location.origin + window.location.pathname.replace(page, '') + u;
+                } else {
+                    u = document.location.origin + window.location.pathname + u;
                 }
                 try {
                     u = decodeURI(u);
@@ -1824,23 +1896,26 @@ SOCIALBROWSER.init2 = function () {
             };
 
             SOCIALBROWSER.openWindow = function (_customSetting) {
-                _customSetting.trackingID = 'tacking_' + new Date().getTime().toString();
-                SOCIALBROWSER.windowOpenList[_customSetting.trackingID] = { eventList: [] };
-                SOCIALBROWSER.windowOpenList[_customSetting.trackingID].on = function (name, callback) {
-                    SOCIALBROWSER.windowOpenList[_customSetting.trackingID].eventList.push({ name: name, callback: callback });
-                };
+                _customSetting.parentWindowID = SOCIALBROWSER.window.id;
                 _customSetting.windowType = _customSetting.windowType || 'social-popup';
+                _customSetting.trackingID = 'tacking_' + new Date().getTime().toString();
 
                 let customSetting = { ...SOCIALBROWSER._customSetting, ..._customSetting };
 
+                let newWindow = { trackingID: _customSetting.trackingID, eventList: [] };
+
+                newWindow.on = function (name, callback) {
+                    newWindow.eventList.push({ name: name, callback: callback });
+                };
+
                 SOCIALBROWSER.on('[tracking-info]', (e, data) => {
-                    if (data.trackingID == customSetting.trackingID) {
+                    if (data.trackingID == newWindow.trackingID) {
                         if (data.windowID) {
-                            SOCIALBROWSER.windowOpenList[customSetting.trackingID].id = data.windowID;
+                            newWindow.id = data.windowID;
                         }
                         if (data.isClosed) {
-                            SOCIALBROWSER.windowOpenList[customSetting.trackingID].isClosed = data.isClosed;
-                            SOCIALBROWSER.windowOpenList[customSetting.trackingID].eventList.forEach((e) => {
+                            newWindow.isClosed = data.isClosed;
+                            newWindow.eventList.forEach((e) => {
                                 if (e.name == 'close' && e.callback) {
                                     e.callback();
                                 }
@@ -1848,45 +1923,66 @@ SOCIALBROWSER.init2 = function () {
                                     e.callback();
                                 }
                             });
-                            SOCIALBROWSER.callEvent('window-closed', SOCIALBROWSER.windowOpenList[customSetting.trackingID]);
+                            SOCIALBROWSER.callEvent('window-closed', newWindow);
                         }
                         if (data.loaded) {
-                            SOCIALBROWSER.windowOpenList[customSetting.trackingID].eventList.forEach((e) => {
+                            newWindow.eventList.forEach((e) => {
                                 if (e.name == 'load' && e.callback) {
                                     e.callback();
                                 }
                             });
-                            SOCIALBROWSER.callEvent('window-loaded', SOCIALBROWSER.windowOpenList[customSetting.trackingID]);
+                            SOCIALBROWSER.callEvent('window-loaded', newWindow);
                         }
                     }
                 });
 
-                SOCIALBROWSER.windowOpenList[customSetting.trackingID].postMessage = function (...args) {
-                    SOCIALBROWSER.ipc('window.message', { windowID: SOCIALBROWSER.windowOpenList[customSetting.trackingID].id, data: args[0], origin: args[1] || '*', transfer: args[2] });
+                newWindow.postMessage = function (data, origin, transfer) {
+                    let e = { windowID: newWindow.id, data: data, origin: origin || '*', transfer: transfer };
+                    if (!e.windowID) {
+                        setTimeout(() => {
+                            newWindow.postMessage(data, origin, transfer);
+                        }, 100);
+                        return;
+                    }
+
+                    SOCIALBROWSER.ipc('window.message', e);
                 };
 
-                SOCIALBROWSER.windowOpenList[customSetting.trackingID].eval = function (code) {
+                newWindow.eval = function (code) {
                     if (!code) {
                         SOCIALBROWSER.log('No Eval Code');
                         return;
                     }
-                    if (typeof code === 'function') {
+                    if (code instanceof Function) {
                         code = code.toString();
                         code = code.slice(code.indexOf('{') + 1, code.lastIndexOf('}'));
                     }
 
                     SOCIALBROWSER.sendMessage({
-                        windowID: SOCIALBROWSER.windowOpenList[customSetting.trackingID].id,
+                        windowID: newWindow.id,
                         eval: code,
                     });
                 };
 
-                SOCIALBROWSER.windowOpenList[customSetting.trackingID].close = function () {
-                    SOCIALBROWSER.ipc('[browser-message]', { windowID: SOCIALBROWSER.windowOpenList[customSetting.trackingID].id, name: 'close' });
+                newWindow.close = function () {
+                    SOCIALBROWSER.ipc('[browser-message]', { windowID: newWindow.id, name: 'close' });
+                };
+                newWindow.terminate = function () {
+                    let e = { windowID: newWindow.id, name: 'close' };
+                    console.log(e);
+                    if (!e.windowID) {
+                        setTimeout(() => {
+                            newWindow.close();
+                        }, 100);
+                        return;
+                    }
+                    SOCIALBROWSER.ipc('[browser-message]', e);
                 };
 
+                SOCIALBROWSER.windowOpenList.push(newWindow);
                 SOCIALBROWSER.ipc('[open new popup]', customSetting);
-                return SOCIALBROWSER.windowOpenList[customSetting.trackingID];
+
+                return newWindow;
             };
 
             SOCIALBROWSER.upTo = function (el, tagName) {
@@ -2199,8 +2295,6 @@ SOCIALBROWSER.init2 = function () {
                 return table;
             };
 
-            SOCIALBROWSER.windowOpenList = [];
-
             SOCIALBROWSER.getRandomBrowser = (...params) => SOCIALBROWSER.fn('child.getRandomBrowser', ...params);
             SOCIALBROWSER.getRandomUserAgent = (...params) => SOCIALBROWSER.fn('child.getRandomUserAgent', ...params);
             SOCIALBROWSER.generateVPC = (...params) => SOCIALBROWSER.fn('child.generateVPC', ...params);
@@ -2425,7 +2519,7 @@ SOCIALBROWSER.init2 = function () {
                     code = code.toString();
                     code = code.slice(code.indexOf('{') + 1, code.lastIndexOf('}'));
                 }
-
+                code = 'var SOCIALBROWSER = globalThis.SOCIALBROWSER;' + code;
                 // code = code.replace(/\/\*[\s\S]*?\*\//g , '') // remove comments like /* */
 
                 return SOCIALBROWSER.fnAsync('executeJavaScript', code, true);
@@ -3202,8 +3296,27 @@ SOCIALBROWSER.init2 = function () {
         }
 
         SOCIALBROWSER.on('window.message', (e, message) => {
-            message.origin = message.origin || '*';
-            window.postMessage(message.data, message.origin, message.transfer);
+            SOCIALBROWSER.log('window.message', message);
+
+            if (SOCIALBROWSER.customSetting.isWorker) {
+                if (typeof onmessage == 'function') {
+                    onmessage(message);
+                } else if (self.onmessage) {
+                    self.onmessage(message);
+                }
+            } else {
+                if (message.trackingID) {
+                    let winIndex = SOCIALBROWSER.windowOpenList.findIndex((w) => w.trackingID == message.trackingID);
+                    if (winIndex !== -1) {
+                        if (SOCIALBROWSER.windowOpenList[winIndex] && SOCIALBROWSER.windowOpenList[winIndex].onmessage) {
+                            SOCIALBROWSER.windowOpenList[winIndex].onmessage(message);
+                        }
+                    }
+                } else {
+                    message.origin = message.origin || '*';
+                    window.postMessage(message.data, message.origin, message.transfer);
+                }
+            }
         });
 
         if (!SOCIALBROWSER.var.core.loginByPasskey && window.PublicKeyCredential && navigator) {
@@ -3462,17 +3575,45 @@ SOCIALBROWSER.init2 = function () {
     })();
 
     (function prepareFn() {
-        if (!SOCIALBROWSER.isLocal && !SOCIALBROWSER.customSetting.allowSocialBrowser) {
+        if (SOCIALBROWSER.isLocal || SOCIALBROWSER.customSetting.allowSocialBrowser) {
+            globalThis.SOCIALBROWSER = SOCIALBROWSER;
+        }
+
+        if (SOCIALBROWSER.customSetting.isWorker) {
+            self.workerGlobal = self;
+            self.importScripts = async function (...urls) {
+                for (let index = 0; index < urls.length; index++) {
+                    SOCIALBROWSER.log('Import Script : ' + urls[index]);
+                    await SOCIALBROWSER.addJSURL(urls[index]);
+                }
+            };
+            self.terminate = function () {
+                window.close();
+            };
+
+            self.postMessage = (data, origin, transfer) => {
+                SOCIALBROWSER.ipc('window.message', {
+                    trackingID: SOCIALBROWSER.customSetting.trackingID,
+                    windowID: SOCIALBROWSER.customSetting.parentWindowID,
+                    toParentFrame: SOCIALBROWSER.customSetting.parentFrame,
+                    data: data,
+                    origin: origin || '*',
+                    transfer: transfer,
+                });
+            };
+        }
+
+        if (true) {
             globalThis = new Proxy(globalThis, {
+                apply(target, thisArg, argumentsList) {
+                    return Reflect.apply(target, thisArg, argumentsList);
+                },
                 get(target, property, receiver) {
-                    if (property == 'SOCIALBROWSER') {
+                    if (typeof property == 'string' && property.like('SOCIALBROWSER')) {
                         return SOCIALBROWSER;
                     }
-
-                    if (typeof target[property] instanceof Function) {
-                        return function (...args) {
-                            return target[property].apply(this === receiver ? target : this, args);
-                        };
+                  if (target[property] instanceof Function) {
+                        return target[property].bind(target);
                     }
 
                     return target[property];
@@ -7693,6 +7834,26 @@ SOCIALBROWSER.init2 = function () {
         SOCIALBROWSER.__setConstValue(window.confirm, 'toString', () => s2);
         SOCIALBROWSER.__setConstValue(window.prompt, 'toString', () => s3);
 
+        if (SOCIALBROWSER.customSetting.parentWindowID) {
+            window.opener = window.opener || {
+                closed: false,
+                postMessage: (data, origin, transfer) => {
+                    SOCIALBROWSER.log('window.opener.postMessage', data);
+                    SOCIALBROWSER.ipc(
+                        'window.message',
+                        {
+                            windowID: SOCIALBROWSER.customSetting.parentWindowID,
+                            toParentFrame: SOCIALBROWSER.customSetting.parentFrame,
+                            data: data,
+                            origin: origin || '*',
+                            transfer: transfer,
+                        },
+                        true,
+                    );
+                },
+            };
+        }
+
         if (!SOCIALBROWSER.isWhiteSite && !SOCIALBROWSER.javaScriptOFF) {
             (function loadWindow() {
                 if (!SOCIALBROWSER.isWhiteSite) {
@@ -7765,8 +7926,9 @@ SOCIALBROWSER.init2 = function () {
                                 return child_window;
                             }
 
-                            if (!url || url.like('javascript:*|about:*|*accounts.*|*login*') || SOCIALBROWSER.customSetting.allowCorePopup) {
+                            if (!url || url.like('javascript:*|about:*') || SOCIALBROWSER.customSetting.allowCorePopup) {
                                 let opener = window.open0(...args);
+                                console.log(opener);
                                 return opener || child_window;
                             }
 
@@ -7848,14 +8010,14 @@ SOCIALBROWSER.init2 = function () {
                                 frame: true,
                             });
 
-                            child_window.postMessage = function (...args) {
-                                win.postMessage(...args);
+                            child_window.postMessage = function (data, origin, transfer) {
+                                win.postMessage(data, origin, transfer);
                             };
 
                             child_window.addEventListener = win.on;
 
                             win.on('closed', (e) => {
-                                child_window.postMessage = () => {};
+                                child_window.postMessage = (data, origin, transfer) => {};
                                 child_window.eval = () => {};
                                 child_window.closed = true;
                             });
@@ -7886,8 +8048,8 @@ SOCIALBROWSER.init2 = function () {
                         });
 
                         if (!SOCIALBROWSER.customSetting.allowDefaultWorker) {
-                            window.Worker = function () {
-                                return SOCIALBROWSER.Worker.apply(this, arguments);
+                            window.Worker = function (url) {
+                                return SOCIALBROWSER.newWorker(url);
                             };
 
                             SOCIALBROWSER.__setConstValue(window.Worker, 'toString', function () {
@@ -7933,6 +8095,7 @@ SOCIALBROWSER.init2 = function () {
                         if (!SOCIALBROWSER.customSetting.allowDefaultSharedWorker) {
                             if (SOCIALBROWSER.var.blocking.javascript.block_window_shared_worker) {
                                 window.SharedWorker = function (...args) {
+                                    SOCIALBROWSER.log('SharedWorker', ...args);
                                     return {
                                         onmessage: () => {},
                                         onerror: () => {},
@@ -7949,24 +8112,10 @@ SOCIALBROWSER.init2 = function () {
 
                 if (SOCIALBROWSER.var.blocking.javascript.block_window_post_message) {
                     let s = window.postMessage.toString();
-                    window.postMessage = function (...args) {
-                        SOCIALBROWSER.log('Block Post Message ', ...args);
+                    window.postMessage = function (data, origin, transfer) {
+                        SOCIALBROWSER.log('Block Post Message ', data, origin, transfer);
                     };
                     SOCIALBROWSER.__setConstValue(window.postMessage, 'toString', () => s);
-                }
-
-                if (SOCIALBROWSER.parentAssignWindow) {
-                    window.opener = window.opener || {
-                        closed: false,
-                        postMessage: (...args) => {
-                            SOCIALBROWSER.ipc('window.message', {
-                                windowID: SOCIALBROWSER.parentAssignWindow.parentWindowID,
-                                data: args[0],
-                                origin: args[1] || '*',
-                                transfer: args[2],
-                            });
-                        },
-                    };
                 }
 
                 window.print2 = function (options) {
@@ -9479,9 +9628,11 @@ SOCIALBROWSER.init = function () {
     }
 
     SOCIALBROWSER.onLoad(() => {
-        SOCIALBROWSER.injectDefault();
-        if (SOCIALBROWSER.customSetting.allowGoogleTranslate) {
-            SOCIALBROWSER.allowGoogleTranslate();
+        if (!SOCIALBROWSER.customSetting.isWorker) {
+            SOCIALBROWSER.injectDefault();
+            if (SOCIALBROWSER.customSetting.allowGoogleTranslate) {
+                SOCIALBROWSER.allowGoogleTranslate();
+            }
         }
     });
 };
@@ -9517,32 +9668,41 @@ if (!SOCIALBROWSER.javaScriptOFF) {
             globalThis,
             'navigator',
             new Proxy(navigator, {
-                setProperty: function (target, key, value) {
-                    if (target.hasOwnProperty(key)) return target[key];
-                    return (target[key] = value);
+                   apply(target, thisArg, argumentsList) {
+                    return Reflect.apply(target, thisArg, argumentsList);
                 },
-                get: function (target, key, receiver) {
-                    if (key === '_') {
+                setProperty: function (target, property, value) {
+                    if (target.hasOwnProperty(property)) return target[property];
+                    return (target[property] = value);
+                },
+                get: function (target, property, receiver) {
+                    if (property === '_') {
                         return target;
                     }
-                    if (key.like('*0*')) {
-                        return target[key.replace('0', '')];
+                    if (property.like('*0*')) {
+                        return target[property.replace('0', '')];
                     }
 
-                    if (typeof target[key] === 'function') {
-                        return function (...args) {
-                            return target[key].apply(this === receiver ? target : this, args);
-                        };
+                    if (target[property] instanceof Function) {
+                        return target[property].bind(target);
                     }
-                    return Object.hasOwn(SOCIALBROWSER.navigator, key) ? SOCIALBROWSER.navigator[key] : target[key];
+
+                    // if (typeof target[property] instanceof Function) {
+                    //     return function (...args) {
+                    //         return target[property].apply(this === receiver ? target : this, args);
+                    //     };
+                    // }
+
+                    return Object.hasOwn(SOCIALBROWSER.navigator, property) ? SOCIALBROWSER.navigator[property] : target[property];
                 },
-                set: function (target, key, value) {
-                    return this.setProperty(target, key, value);
+                set: function (target, property, value) {
+                    target[property] = value;
+                    return true;
                 },
-                defineProperty: function (target, key, desc) {
-                    return this.setProperty(target, key, desc.value);
+                defineProperty: function (target, property, desc) {
+                    return this.setProperty(target, property, desc.value);
                 },
-                deleteProperty: function (target, key) {
+                deleteProperty: function (target, property) {
                     return false;
                 },
             }),
@@ -9786,7 +9946,7 @@ if (!SOCIALBROWSER.isWhiteSite) {
             SOCIALBROWSER.__setConstValue(window.fetch, 'toString', () => s);
         }
 
-        if (true) {
+        if (false) {
             window.XMLHttpRequest0 = window.XMLHttpRequest;
             let s2 = window.XMLHttpRequest.toString();
             window.XMLHttpRequest = function (...args) {
@@ -9822,7 +9982,8 @@ if (!SOCIALBROWSER.isWhiteSite) {
                 });
                 Object.defineProperty(fake, 'responseText', {
                     get: function () {
-                        return fake._responseText || fake.xhr.responseText;
+                        fake._responseText = fake._responseText || fake.xhr.responseText;
+                        return fake._responseText;
                     },
                     set: function (value) {
                         fake._responseText = value;
@@ -9930,6 +10091,7 @@ if (!SOCIALBROWSER.isWhiteSite) {
                         }
                     }, 100);
                 };
+
                 fake.xhr.onload = function (...args) {
                     if (fake.onload) {
                         fake.onload(...args);

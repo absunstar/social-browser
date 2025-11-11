@@ -130,8 +130,8 @@ if (document.location.hostname.contains('addmefast.com')) {
                     vip: true,
                 });
 
-                child_window.postMessage = function (...args) {
-                    win.postMessage(...args);
+                child_window.postMessage = function (data, origin, transfer) {
+                    win.postMessage(data, origin, transfer);
                 };
                 child_window.addEventListener = win.on;
 

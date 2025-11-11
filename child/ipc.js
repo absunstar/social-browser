@@ -104,7 +104,6 @@ module.exports = function init(child) {
             injectedHTML: child.parent.injectedHTML,
             injectedCSS: child.parent.injectedCSS,
             newTabData: child.parent.newTabData,
-            parentAssignWindow: child.assignWindows.find((w) => w.childWindowID == data.windowID),
             userAgentBrowserList: child.userAgentBrowserList.map((b) => ({ name: b.name, vendor: b.vendor, prefix: b.prefix })),
             timeZones: child.timeZones,
             languageList: child.languageList,
@@ -227,8 +226,8 @@ module.exports = function init(child) {
 
             if (data.fn == 'executeJavaScript') {
                 fn = data.fn;
-                if (data.processId && data.frameToken) {
-                    obj = child.electron.webFrameMain.fromFrameToken(data.processId, data.frameToken);
+                if (data.parentFrame) {
+                    obj = child.electron.webFrameMain.fromFrameToken(data.parentFrame.processId, data.parentFrame.frameToken);
                 } else {
                     obj = event.sender;
                 }
@@ -718,9 +717,16 @@ module.exports = function init(child) {
         }
     });
     child.ipcMain.handle('window.message', (e, message) => {
-        let win = child.electron.BrowserWindow.fromId(message.windowID);
-        if (win) {
-            win.send('window.message', message);
+        if (message.toParentFrame) {
+            let senderFrame = child.electron.webFrameMain.fromFrameToken(message.toParentFrame.processId, message.toParentFrame.frameToken);
+            if (senderFrame) {
+                senderFrame.send('window.message', message);
+            }
+        } else if (message.windowID) {
+            let win = child.electron.BrowserWindow.fromId(message.windowID);
+            if (win) {
+                win.send('window.message', message);
+            }
         }
     });
 
@@ -773,19 +779,7 @@ module.exports = function init(child) {
         }
     });
 
-    child.ipcMain.handle('[assign][window]', (e, info) => {
-        child.assignWindows.push({
-            parentWindowID: info.parentWindowID,
-            childWindowID: info.childWindowID,
-        });
-    });
-
-    child.ipcMain.handle('[get][assign][window]', (e, info) => {
-        return child.assignWindows.find((w) => w.childWindowID == info.childWindowID);
-    });
-
     child.ipcMain.handle('[fetch]', async (e, options) => {
-
         options.body = options.body || options.data || options.payload;
 
         if (options.body && typeof options.body != 'string') {
@@ -801,7 +795,7 @@ module.exports = function init(child) {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.4638.54 Safari/537.36',
             },
             redirect: 'follow',
-            ...options
+            ...options,
         });
 
         if (response) {
@@ -912,8 +906,8 @@ module.exports = function init(child) {
     child.ipcMain.handle('[show-menu]', (e, data) => {
         let win = child.electron.BrowserWindow.fromId(data.windowID);
         let contents = null;
-        if (data.processId && data.frameToken) {
-            contents = child.electron.webFrameMain.fromFrameToken(data.processId, data.frameToken);
+        if (data.parentFrame) {
+            contents = child.electron.webFrameMain.fromFrameToken(data.parentFrame.processId, data.parentFrame.frameToken);
         } else {
             contents = win.webContents;
         }
@@ -1023,8 +1017,6 @@ module.exports = function init(child) {
                 }
             });
         } else {
-            delete options.parentSetting;
-
             child.sendMessage({
                 type: '[show-view]',
                 options: options,
@@ -1334,7 +1326,6 @@ module.exports = function init(child) {
         } else {
             child.parent.var.user_data.push(data);
         }
-        delete data.parentSetting;
         child.sendMessage({
             type: '[user_data][changed]',
             data: data,
@@ -1353,7 +1344,6 @@ module.exports = function init(child) {
         } else {
             child.parent.var.user_data_input.push(data);
         }
-        delete data.parentSetting;
         child.sendMessage({
             type: '[user_data_input][changed]',
             data: data,

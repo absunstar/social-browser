@@ -314,6 +314,15 @@ module.exports = function (child) {
 
                     return;
                 }
+                if(mainURL){
+                   if(new URL(mainURL).hostname.like(new URL(url).hostname)){
+                     callback({
+                        cancel: false,
+                    });
+                    return;
+                } 
+                }
+                
 
                 if (child.isWhiteURL(mainURL)) {
                     callback({
@@ -930,7 +939,7 @@ module.exports = function (child) {
             ss.setPermissionRequestHandler((webContents, permission, callback) => {
                 if (webContents) {
                     let win = child.electron.BrowserWindow.fromWebContents(webContents);
-                    if (win && win.customSetting.allowAllPermissions) {
+                    if (win && win.customSetting && win.customSetting.allowAllPermissions) {
                         return callback(true);
                     }
                 }
@@ -948,7 +957,7 @@ module.exports = function (child) {
             ss.setPermissionCheckHandler((webContents, permission, requestingOrigin, details) => {
                 if (webContents) {
                     let win = child.electron.BrowserWindow.fromWebContents(webContents);
-                    if (win && win.customSetting.allowAllPermissions) {
+                    if (win &&win.customSetting &&  win.customSetting.allowAllPermissions) {
                         return true;
                     }
                 }

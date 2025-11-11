@@ -384,7 +384,6 @@ module.exports = function init(parent) {
             );
             parent.var.user_data_input.forEach((d, i) => {
                 delete parent.var.user_data_input[i].options;
-                delete parent.var.user_data_input[i].parentSetting;
                 parent.var.user_data_input[i].hostname = parent.var.user_data_input[i].hostname || parent.var.user_data_input[i].host;
 
                 if (!parent.var.user_data_input[i].hostname) {
@@ -398,7 +397,6 @@ module.exports = function init(parent) {
             );
             parent.var.user_data.forEach((d, i) => {
                 delete parent.var.user_data[i].options;
-                delete parent.var.user_data[i].parentSetting;
                 parent.var.user_data[i].hostname = parent.var.user_data[i].hostname || parent.var.user_data[i].host;
 
                 if (!parent.var.user_data[i].hostname) {

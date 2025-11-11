@@ -1,5 +1,4 @@
 module.exports = function (child) {
-    child.assignWindows = [];
     child.offset = {
         x: 8,
         y: 78 + 30,
@@ -242,7 +241,7 @@ module.exports = function (child) {
             defaultSetting.webPreferences.nodeIntegrationInWorker = true;
             defaultSetting.webPreferences.webSecurity = false;
             defaultSetting.webPreferences.allowRunningInsecureContent = true;
-            // setting.showDevTools = true;
+             setting.showDevTools = true;
         } else if (setting.windowType === 'youtube') {
             // setting.url = 'browser://youtube-view?url=' + setting.url;
             // setting.iframe = false;
@@ -330,7 +329,7 @@ module.exports = function (child) {
         }
 
         if ((handleCookies = true)) {
-            let domainName = child.url.parse(setting.url).hostname.split('.');
+            let domainName = child.url.parse(setting.url.replace('blob:' , '')).hostname?.split('.') || ['domainName' , 'com'];
             domainName = domainName.slice(domainName.length - 2).join('.');
 
             if (Array.isArray(setting.cookieList) && setting.cookieList.length > 0) {
@@ -393,7 +392,12 @@ module.exports = function (child) {
             customSetting.allowSaveUserData = false;
         }
 
-        let win = new child.electron.BrowserWindow({ ...customSetting, parent: setting.parent });
+        let parentWindow = null;
+        if(customSetting.parentWindowID){
+            parentWindow = child.electron.BrowserWindow.fromId(customSetting.parentWindowID)
+        }
+
+        let win = new child.electron.BrowserWindow({ ...customSetting, parent: parentWindow });
 
         if ((customFunctions = true)) {
             win.injectHTML = function (htmlString) {
@@ -424,10 +428,7 @@ module.exports = function (child) {
             });
         }
 
-        if (customSetting.parent) {
-            customSetting.parentID = customSetting.parent.id;
-            customSetting.parent = undefined;
-        }
+       
         customSetting.windowID = win.id;
         win.customSetting = customSetting;
         win.customSetting.windowSetting = win.customSetting.windowSetting || [];
@@ -488,13 +489,6 @@ module.exports = function (child) {
         }
 
         win.setContentProtection(win.customSetting.contentProtection || false);
-
-        if (win.customSetting.parentSetting && win.customSetting.parentSetting.windowID) {
-            child.assignWindows.push({
-                parentWindowID: win.customSetting.parentSetting.windowID,
-                childWindowID: win.id,
-            });
-        }
 
         if (win.customSetting.windowType === 'main') {
             child.mainWindow = win;
@@ -709,6 +703,12 @@ module.exports = function (child) {
                 child.sendMessage({ type: '[tracking-info]', trackingID: win.customSetting.trackingID, windowID: win.id, isClosed: true });
             }
 
+              child.getAllWindows().forEach((win2) => {
+                if (win2 && win2.customSetting && win2.customSetting.parentWindowID == win.id && !win2.isDestroyed()) {
+                    win2.close();
+                }
+            });
+
             setTimeout(() => {
                 if (win && !win.isDestroyed()) {
                     win.destroy();
@@ -718,6 +718,7 @@ module.exports = function (child) {
 
         win.on('closed', () => {
             // win = null;
+          
         });
 
         win.on('app-command', (e, cmd) => {
@@ -1025,7 +1026,8 @@ module.exports = function (child) {
             child.log('will-redirect : ', url);
             child.handleCustomSeting(url, win, e.isMainFrame);
 
-            if (url.like('https://accounts.google.com*') && e.isMainFrame && win.customSetting.iframe && win.customSetting.windowType === 'view') {
+            if(false){
+                    if (url.like('javascript:*|*accounts.google*|*account.facebook*|*login.microsoft*|*appleid.apple*') && e.isMainFrame && win.customSetting.iframe && win.customSetting.windowType === 'view') {
                 e.preventDefault();
                 let old_customeSetting = { ...win.customSetting };
 
@@ -1036,7 +1038,7 @@ module.exports = function (child) {
 
                 let newWin = child.createNewWindow({
                     old_customeSetting,
-                    parent: win,
+                    parentWindowID : win.id,
                     defaultUserAgent: {
                         url: 'Mozilla/5.0 (MacIntel) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.2038.57  Safari/537.36',
                         device: {
@@ -1084,6 +1086,8 @@ module.exports = function (child) {
 
                 return;
             }
+            }
+        
 
             if ((!win.customSetting.allowAds && !child.isAllowURL(url)) || !win.customSetting.allowRedirect) {
                 e.preventDefault();
@@ -1215,14 +1219,18 @@ module.exports = function (child) {
                 }
 
                 let allow = false;
+              
 
-                if ((url.like('*about:*') && child.parent.var.blocking.popup.allow_blank) || url.like('javascript:*|*accounts.google*|*account.facebook*|*login.microsoft*|*appleid.apple*')) {
+                if(true){
+                    if ((url.like('*about:*') && child.parent.var.blocking.popup.allow_blank) || url.like('javascript:*|*accounts.google*|*account.facebook*|*login.microsoft*|*appleid.apple*')) {
+                    child.log('Run Default window', url);
                     return {
                         action: 'allow',
                         overrideBrowserWindowOptions: {
                             ...customSetting,
                             customSetting: customSetting,
-                            parent: win,
+                            parentWindowID : win.id,
+                            parent : win,
                             alwaysOnTop: true,
                             skipTaskbar: false,
                             show: true,
@@ -1253,8 +1261,10 @@ module.exports = function (child) {
                         },
                     };
                 }
-
-                if (!win.customSetting.allowNewWindows || (isPopup && !win.customSetting.allowPopup) || (!win.customSetting.allowAds && !child.isAllowURL(url))) {
+                }
+                
+                if(!allow){
+                     if (!win.customSetting.allowNewWindows || (isPopup && !win.customSetting.allowPopup) || (!win.customSetting.allowAds && !child.isAllowURL(url))) {
                     child.log('Block-open-window', url);
                     win.webContents.send('[show-user-message]', { message: 'Blocked Open Window <p><a>' + url + '</a></p>' });
                     return { action: 'deny' };
@@ -1277,6 +1287,8 @@ module.exports = function (child) {
                         }
                     }
                 }
+                }
+               
 
                 if (allow) {
                     if (!isPopup && win.customSetting.windowType == 'view') {
@@ -1294,7 +1306,7 @@ module.exports = function (child) {
                             windowType: 'popup',
                             show: true,
                             modal: true,
-                            parent: win,
+                            parentWindowID : win.id,
                             url: url,
                             referrer: win.getURL(),
                         });
@@ -1366,40 +1378,7 @@ module.exports = function (child) {
                 loadOptions.extraHeaders = `content-type: ${contentType}; boundary=${boundary}`;
             }
 
-            if (real_url.like('*#___new_tab___*')) {
-                child.sendMessage({
-                    type: '[open new tab]',
-                    url: real_url.replace('#___new_tab___', '').replace('#___new_popup___', '').replace('#___trusted_window___', ''),
-                    partition: win.customSetting.partition,
-                    user_name: win.customSetting.user_name,
-                });
-                return;
-            }
-
-            if (real_url.like('*#___trusted_window___*')) {
-                child.createNewWindow({
-                    windowType: 'popup',
-                    title: 'New Popup',
-                    center: true,
-                    trusted: true,
-                    url: real_url.replace('#___new_tab___', '').replace('#___new_popup___', '').replace('#___trusted_window___', ''),
-                    partition: win.customSetting.partition,
-                    user_name: win.customSetting.user_name,
-                });
-                return;
-            }
-
-            if (real_url.like('*#___new_popup___*')) {
-                child.createNewWindow({
-                    windowType: 'popup',
-                    title: 'New Popup',
-                    center: true,
-                    url: real_url.replace('#___new_tab___', '').replace('#___new_popup___', '').replace('#___trusted_window___', ''),
-                    partition: win.customSetting.partition,
-                    user_name: win.customSetting.user_name,
-                });
-                return;
-            }
+            
 
             let url_parser = child.url.parse(real_url);
             let current_url_parser = child.url.parse(win.getURL());

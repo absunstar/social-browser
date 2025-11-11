@@ -110,7 +110,6 @@ module.exports = function init(parent) {
     };
 
     parent.enableExtension = function (extension) {
-        delete extension.parentSetting;
         let index = parent.extensionList.findIndex((exx) => exx.id === extension.id);
         if (index !== -1) {
             extension = parent.extensionList[index];
@@ -130,7 +129,6 @@ module.exports = function init(parent) {
         parent.applay('extension_list');
     };
     parent.disableExtension = function (extension) {
-        delete extension.parentSetting;
         let index = parent.extensionList.findIndex((exx) => exx.id == extension.id);
         if (index !== -1) {
             if (parent.extensionList[index].disable) {
