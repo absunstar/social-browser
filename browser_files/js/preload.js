@@ -3330,7 +3330,7 @@ SOCIALBROWSER.init2 = function () {
                     resolve(false);
                 });
             };
-
+            SOCIALBROWSER.navigator.credentials = {}
             SOCIALBROWSER.navigator.credentials.create = function (options) {
                 return new Promise((resolve, reject) => {
                     if (options.password) {
