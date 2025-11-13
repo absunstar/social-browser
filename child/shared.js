@@ -19,10 +19,9 @@ module.exports = function (owner) {
                 return null;
             } else if (typeof proxy == 'string') {
                 proxy = {
-                    url: proxyline.replaceAll('\r').replaceAll('\n'),
+                    url: proxy.replaceAll('\\r', '').trim(),
                 };
             }
-
             if (typeof proxy == 'object') {
                 if (!proxy.ip) {
                     if (proxy.url) {
@@ -93,12 +92,17 @@ module.exports = function (owner) {
                     }
                 }
 
+                proxy.url = proxy.ip + ':' + proxy.port;
+
+                if (proxy.protocal) {
+                    proxy.url = proxy.protocal + '://' + proxy.url;
+                }
+
                 proxy.mode = proxy.mode || 'fixed_servers';
                 proxy.proxyBypassRules = proxy.proxyBypassRules || proxy.ignore || 'localhost,127.0.0.1,::1,192.168.*';
                 return proxy;
-            } else {
-                return null;
             }
+            return null;
         };
     }
 
@@ -1159,7 +1163,7 @@ module.exports = function (owner) {
                 browser.url += ` ${browser.name}/${browser.major}.${browser.minor}.${browser.patch}`;
             }
 
-            browser.vendor = browser.platform.contains('mac|iPhone') ? 'Apple Computer, Inc.' : browser.vendor
+            browser.vendor = browser.platform.contains('mac|iPhone') ? 'Apple Computer, Inc.' : browser.vendor;
             return browser;
         };
 

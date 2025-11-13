@@ -16,6 +16,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     $scope.setting_busy = true;
     $scope.timezones = [...SOCIALBROWSER.timeZones];
     $scope.timezones2 = [...SOCIALBROWSER.timeZones];
+    $scope.$limitProxy = 100;
 
     $scope.selectFolder = function () {
         return SOCIALBROWSER.ipcSync('[select-folder]');
@@ -36,16 +37,6 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         }
     };
 
-    $scope.do_click = function (proxy) {
-        let input = document.querySelector('#input_proxy');
-        if (!input.getAttribute('x-handle')) {
-            input.setAttribute('x-handle', 'yes');
-            input.addEventListener('change', () => {
-                $scope.import(input.files, proxy);
-            });
-        }
-        input.click();
-    };
     $scope.generateVPC = function (session) {
         if (typeof session == 'string' && session == '*') {
             $scope.setting.session_list
@@ -189,21 +180,15 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         $scope.$applyAsync();
     };
 
-    $scope.importProxyList = function () {
-        let file = SOCIALBROWSER.ipcSync('[select-file]');
-        if (file) {
-            SOCIALBROWSER.ipc('[import-proxy-list]', { path: file });
-        }
-    };
     $scope.importProxyList_text = function () {
-        SOCIALBROWSER.ipc('[import-proxy-list]', { text: SOCIALBROWSER.readCopy() });
+        $scope.importProxyList(SOCIALBROWSER.readCopy());
     };
 
     $scope.importProxyList_search = function () {
         SOCIALBROWSER.fetch({ url: 'https://api.proxyscrape.com/v4/free-proxy-list/get?request=display_proxies&proxy_format=protocolipport&format=text' }).then((res) => {
             if (res.status == 200) {
                 let text = res.body;
-                SOCIALBROWSER.ipc('[import-proxy-list]', { text: text });
+                $scope.importProxyList(text);
             }
         });
     };
@@ -211,41 +196,65 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         SOCIALBROWSER.fetch({ url: SOCIALBROWSER.readCopy() }).then((res) => {
             if (res.status == 200) {
                 let text = res.body;
-                SOCIALBROWSER.ipc('[import-proxy-list]', { text: text });
+                $scope.importProxyList(text);
             }
         });
     };
 
-    $scope.import = function (files, proxy) {
-        var fd = new FormData();
-        fd.append('proxyFile', files[0]);
-        $http
-            .post('/api/proxy/import', fd, {
-                withCredentials: true,
-                headers: {
-                    'Content-Type': undefined,
-                },
-                uploadEventHandlers: {
-                    progress: function (e) {
-                        proxy.uploadStatus = 'Uploading : ' + Math.round((e.loaded * 100) / e.total) + ' %';
-                        if (e.loaded == e.total) {
-                            proxy.uploadStatus = '100%';
+    $scope.importProxyList = function (text) {
+        if (!text) {
+            let path = SOCIALBROWSER.selectFile();
+            if (path) {
+                text = SOCIALBROWSER.readFile(path);
+                if (path.like('*.social')) {
+                    let arr = SOCIALBROWSER.showObject(text);
+                    arr.forEach((line) => {
+                        let proxy = SOCIALBROWSER.handleProxy(line);
+                        if (proxy && proxy.url) {
+                            if (!$scope.setting.proxy_list.some((p) => p.ip == proxy.ip && p.port == proxy.port)) {
+                                SOCIALBROWSER.showUserMessage('New Proxy Added : ' + proxy.url);
+                                $scope.setting.proxy_list.push(proxy);
+                            }
                         }
-                    },
-                },
-                transformRequest: angular.identity,
-            })
-            .then(
-                function (res) {
-                    if (res.data && res.data.done) {
-                        proxy.uploadStatus = 'Proxies Added ';
-                        $scope.loadSetting();
+                    });
+                    $scope.$applyAsync();
+                    text = null
+                }
+            }
+        }
+
+        if (text) {
+            let arr = text.split('\n');
+            arr.forEach((line) => {
+                let proxy = SOCIALBROWSER.handleProxy(line);
+                if (proxy) {
+                    if (!$scope.setting.proxy_list.some((p) => p.ip == proxy.ip && p.port == proxy.port)) {
+                        SOCIALBROWSER.showUserMessage('New Proxy Added : ' + proxy.url);
+                        $scope.setting.proxy_list.push(proxy);
                     }
-                },
-                function (error) {
-                    proxy.uploadStatus = error;
-                },
-            );
+                }
+            });
+            $scope.$applyAsync();
+        }
+    };
+
+    $scope.exportProxyList = async function () {
+        let rand = SOCIALBROWSER.md5(SOCIALBROWSER.var.core.id + new Date().getTime());
+        let file = SOCIALBROWSER.selectSaveFile({ defaultPath: 'proxyList_' + rand + '.social' });
+        if (file) {
+            let arr = $scope.setting.proxy_list.filter((s) => s.$selected);
+            if (arr.length == 0) {
+                let msg = 'You Not Selected Any Proxy';
+                SOCIALBROWSER.showUserMessage(msg);
+                SOCIALBROWSER.alert(msg);
+                return;
+            }
+            SOCIALBROWSER.writeFile({ path: file, data: SOCIALBROWSER.hideObject(arr) });
+            let msg = arr.length + ' Selected Proxies Exported';
+            SOCIALBROWSER.showUserMessage(msg);
+            SOCIALBROWSER.alert(msg);
+            $scope.$applyAsync();
+        }
     };
 
     $scope.goBack = function () {
@@ -837,9 +846,13 @@ app.controller('mainController', ($scope, $http, $timeout) => {
             $scope.setting.scriptList.splice(index, 1);
         }
     };
-
+    $scope.toggleselectedProxies = function () {
+        $scope.setting.proxy_list.forEach((se, i) => {
+            se.$selected = !se.$selected;
+        });
+    };
     $scope.addProxy = function () {
-        $scope.setting.proxy_list.push({ ...$scope.$proxy });
+        $scope.setting.proxy_list.push(SOCIALBROWSER.handleProxy({ ...$scope.$proxy }));
         $scope.$proxy = {
             socks5: false,
             socks4: false,

@@ -629,7 +629,7 @@ module.exports = function (child) {
             } else if (file.path.like('*.txt')) {
                 let docs2 = child.api.readFileSync(file.path).toString().split('\n');
                 docs2.forEach((line) => {
-                    docs.push(child.proxyHandle(line));
+                    docs.push(child.handleProxy(line));
                 });
             } else {
                 docs = child.api.fromJson(child.api.readFileSync(file.path).toString());
@@ -638,7 +638,7 @@ module.exports = function (child) {
             let arr = file.text.split('\n');
 
             arr.forEach((line) => {
-                docs.push(child.proxyHandle(line));
+                docs.push(child.handleProxy(line));
             });
         }
 

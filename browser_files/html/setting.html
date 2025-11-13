@@ -12,7 +12,7 @@
                 --form-color: #212529;
 
                 --bs-body-color: #3f9dff;
-                 --font-family: monospace ;
+                --font-family: monospace;
                 --bs-body-font-family: var(--font-family);
 
                 --input-color: #795548;
@@ -34,7 +34,7 @@
                 --fieldset-border: 1px solid #d1d1d1;
                 --modal-color: #000000;
                 --modal-background: #00000026;
-               
+
                 --btn-add-color: #272727;
                 --btn-add-background-color: #fff;
                 --btn-delete-color: red;
@@ -58,6 +58,9 @@
             body {
                 padding: 0px !important;
                 margin: 10px 0px 0px 0px !important;
+            }
+            i-button button {
+                max-height: max-content !important;
             }
             .v-center {
                 display: flex;
@@ -310,8 +313,11 @@
                         <div class="tabs-content">
                             <div class="row center">
                                 <i-button loading="{{setting_busy}}" class="big-button" type="save" ng-click="saveSetting(true)" label="Save All Setting"></i-button>
+                                <br />
+                                <br />
                             </div>
                             <div id="emails_tab" class="tab-content">
+                                <h2 class="center">Email Setting</h2>
                                 <fieldset>
                                     <legend>Temp Email Setting</legend>
                                     <div class="row margin padding">
@@ -329,107 +335,106 @@
                             </div>
 
                             <div id="basic_tab" class="tab-content">
-                                <div class="row">
-                                    <fieldset>
-                                        <div class="row">
-                                            <div class="col6">
-                                                <i-checkbox class="" label="send X-BROWSER Headers" ng-model="setting.blocking.core.send_browser_id"></i-checkbox>
-                                                <i-checkbox class="" label="Auto Clear Cache Storage" ng-model="setting.core.autoClearCacheStorage"></i-checkbox>
-                                            </div>
-                                            <div class="col6">
-                                                <i-button type="view" label="Open Social Browser Data Folder" ng-click="openSocialDataFolder();"></i-button>
-                                            </div>
-                                        </div>
-                                    </fieldset>
-
-                                    <fieldset>
-                                        <legend>Basic</legend>
-
-                                        <div class="row padding">
-                                            <i-control type="password" class="col3" label="setting Password" ng-model="setting.core.password"> </i-control>
-                                            <i-control class="col3" label="Home Page" ng-model="setting.core.home_page"></i-control>
-                                            <i-control class="col3" label="New Tab" ng-model="setting.core.default_page"></i-control>
-                                            <i-control type="number" class="col3" label="Max Opend Tabs" ng-model="setting.core.browser.maxTabs"></i-control>
-                                        </div>
-
-                                        <div class="row">
-                                            <i-list
-                                                class="col6"
-                                                ng-search="search.$userAgentURL"
-                                                primary="name"
-                                                items="setting.userAgentList"
-                                                ng-model="setting.core.defaultUserAgent"
-                                                label="Default User Agent"
-                                            ></i-list>
-                                            <div class="col">
-                                                <i-button label="Edit User Agent List" type="edit" onclick="document.querySelector('#userAgntList').click()"></i-button>
-                                            </div>
-                                            <i-control disabled class="row" label="User Agent URL" ng-model="setting.core.defaultUserAgent.url"></i-control>
-                                        </div>
-                                    </fieldset>
-
-                                    <fieldset>
-                                        <legend>Activation</legend>
-                                        <div class="row padding center">
-                                            <h2 class="bold red" ng-hide="setting.core.browser.activated">Browser Not Active <span>&#215;</span></h2>
-                                            <h2 class="bold green" ng-show="setting.core.browser.activated">Browser Active <span>&#10003;</span></h2>
-                                            <p class="bold font-16"><b>Max Profils : </b> ( {{setting.core.browser.maxProfiles}} )</p>
-                                            <br />
-                                            <p class="bold font-16 orange">{{setting.core.browser.message}}</p>
-                                            <br />
-                                            <p ng-show="setting.core.keyInfo.endDate" class="bold font-20 red">Expire Date : {{setting.core.keyInfo.endDate | xdate}}</p>
-                                        </div>
-
-                                        <div class="row padding">
-                                            <i-control disabled class="col8" label="Browser ID" ng-model="setting.core.id"> </i-control>
-                                            <div class="col">
-                                                <i-button type="copy" label="copy" ng-click="copy(setting.core.id)"></i-button>
-                                            </div>
-                                        </div>
-
-                                        <div class="row padding">
-                                            <i-control disabled class="col8" label="Device ID" ng-model="setting.core.DeviceId"> </i-control>
-                                            <div class="col">
-                                                <i-button type="copy" label="copy" ng-click="copy(setting.core.DeviceId)"></i-button>
-                                            </div>
-                                        </div>
-
-                                        <div class="row padding">
-                                            <i-control class="col8" type="password" label="Browser Key ( Only This Browser Version )" ng-model="setting.core.BrowserKey"> </i-control>
-                                            <div class="col">
-                                                <i-button type="approve" label="Activate" ng-click="activated()"></i-button>
-                                            </div>
-                                        </div>
-
-                                        <div class="row padding">
-                                            <i-control class="col8" type="password" label="Device Key ( All Browsers on This PC )" ng-model="setting.core.DeviceKey"> </i-control>
-                                            <div class="col">
-                                                <i-button type="approve" label="Activate" ng-click="activated()"></i-button>
-                                            </div>
-                                        </div>
-
-                                        <div class="row padding">
-                                            <i-control class="col8" type="password" label="Online Key ( Subscription Plan )" ng-model="setting.core.OnlineKey"> </i-control>
-                                            <div class="col">
-                                                <i-button type="approve" label="Activate By Online Key" ng-click="activatedByOnlineKey()"></i-button>
-                                            </div>
-                                        </div>
-                                    </fieldset>
-                                    <div class="row padding">
-                                        <div class="col">
-                                            <i-button type="list" ng-click="showBlackListModal()" label="Black Site List"></i-button>
-                                            <i-button type="list" ng-click="showWhiteListModal()" label="White Site List"></i-button>
-                                            <i-button type="list" ng-click="showVipSiteListModal()" label="Vip Site List "></i-button>
+                                <h2 class="center">Basic Profiles</h2>
+                                <fieldset>
+                                    <div class="row">
+                                        <div class="col6">
+                                            <i-checkbox class="" label="send X-BROWSER Headers" ng-model="setting.blocking.core.send_browser_id"></i-checkbox>
+                                            <i-checkbox class="" label="Auto Clear Cache Storage" ng-model="setting.core.autoClearCacheStorage"></i-checkbox>
                                         </div>
                                         <div class="col6">
-                                            <div class="row hide">
-                                                <div class="col6">
-                                                    <div><a class="btn" href="/api/var/export"> Export Data </a></div>
-                                                </div>
-                                                <div class="col6">
-                                                    <div>
-                                                        <i-upload type="bg-white" api="/api/var/import" ng-model="setting.import_file_url" label="Import Data"> </i-upload>
-                                                    </div>
+                                            <i-button type="view" label="Open Social Browser Data Folder" ng-click="openSocialDataFolder();"></i-button>
+                                        </div>
+                                    </div>
+                                </fieldset>
+
+                                <fieldset>
+                                    <legend>Basic</legend>
+
+                                    <div class="row padding">
+                                        <i-control type="password" class="col3" label="setting Password" ng-model="setting.core.password"> </i-control>
+                                        <i-control class="col3" label="Home Page" ng-model="setting.core.home_page"></i-control>
+                                        <i-control class="col3" label="New Tab" ng-model="setting.core.default_page"></i-control>
+                                        <i-control type="number" class="col3" label="Max Opend Tabs" ng-model="setting.core.browser.maxTabs"></i-control>
+                                    </div>
+
+                                    <div class="row">
+                                        <i-list
+                                            class="col6"
+                                            ng-search="search.$userAgentURL"
+                                            primary="name"
+                                            items="setting.userAgentList"
+                                            ng-model="setting.core.defaultUserAgent"
+                                            label="Default User Agent"
+                                        ></i-list>
+                                        <div class="col">
+                                            <i-button label="Edit User Agent List" type="edit" onclick="document.querySelector('#userAgntList').click()"></i-button>
+                                        </div>
+                                        <i-control disabled class="row" label="User Agent URL" ng-model="setting.core.defaultUserAgent.url"></i-control>
+                                    </div>
+                                </fieldset>
+
+                                <fieldset>
+                                    <legend>Activation</legend>
+                                    <div class="row padding center">
+                                        <h2 class="bold red" ng-hide="setting.core.browser.activated">Browser Not Active <span>&#215;</span></h2>
+                                        <h2 class="bold green" ng-show="setting.core.browser.activated">Browser Active <span>&#10003;</span></h2>
+                                        <p class="bold font-16"><b>Max Profils : </b> ( {{setting.core.browser.maxProfiles}} )</p>
+                                        <br />
+                                        <p class="bold font-16 orange">{{setting.core.browser.message}}</p>
+                                        <br />
+                                        <p ng-show="setting.core.keyInfo.endDate" class="bold font-20 red">Expire Date : {{setting.core.keyInfo.endDate | xdate}}</p>
+                                    </div>
+
+                                    <div class="row padding">
+                                        <i-control disabled class="col8" label="Browser ID" ng-model="setting.core.id"> </i-control>
+                                        <div class="col">
+                                            <i-button type="copy" label="copy" ng-click="copy(setting.core.id)"></i-button>
+                                        </div>
+                                    </div>
+
+                                    <div class="row padding">
+                                        <i-control disabled class="col8" label="Device ID" ng-model="setting.core.DeviceId"> </i-control>
+                                        <div class="col">
+                                            <i-button type="copy" label="copy" ng-click="copy(setting.core.DeviceId)"></i-button>
+                                        </div>
+                                    </div>
+
+                                    <div class="row padding">
+                                        <i-control class="col8" type="password" label="Browser Key ( Only This Browser Version )" ng-model="setting.core.BrowserKey"> </i-control>
+                                        <div class="col">
+                                            <i-button type="approve" label="Activate" ng-click="activated()"></i-button>
+                                        </div>
+                                    </div>
+
+                                    <div class="row padding">
+                                        <i-control class="col8" type="password" label="Device Key ( All Browsers on This PC )" ng-model="setting.core.DeviceKey"> </i-control>
+                                        <div class="col">
+                                            <i-button type="approve" label="Activate" ng-click="activated()"></i-button>
+                                        </div>
+                                    </div>
+
+                                    <div class="row padding">
+                                        <i-control class="col8" type="password" label="Online Key ( Subscription Plan )" ng-model="setting.core.OnlineKey"> </i-control>
+                                        <div class="col">
+                                            <i-button type="approve" label="Activate By Online Key" ng-click="activatedByOnlineKey()"></i-button>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                                <div class="row padding">
+                                    <div class="col">
+                                        <i-button type="list" ng-click="showBlackListModal()" label="Black Site List"></i-button>
+                                        <i-button type="list" ng-click="showWhiteListModal()" label="White Site List"></i-button>
+                                        <i-button type="list" ng-click="showVipSiteListModal()" label="Vip Site List "></i-button>
+                                    </div>
+                                    <div class="col6">
+                                        <div class="row hide">
+                                            <div class="col6">
+                                                <div><a class="btn" href="/api/var/export"> Export Data </a></div>
+                                            </div>
+                                            <div class="col6">
+                                                <div>
+                                                    <i-upload type="bg-white" api="/api/var/import" ng-model="setting.import_file_url" label="Import Data"> </i-upload>
                                                 </div>
                                             </div>
                                         </div>
@@ -437,6 +442,7 @@
                                 </div>
                             </div>
                             <div id="login_tab" class="tab-content">
+                                <h2 class="center">Login Setting</h2>
                                 <div class="row padding">
                                     <fieldset ng-hide="login_busy">
                                         <legend>Login Information</legend>
@@ -460,6 +466,7 @@
                             </div>
 
                             <div id="blocking_tab" class="tab-content">
+                                <h2 class="center">Blocking Setting</h2>
                                 <div class="row">
                                     <fieldset>
                                         <legend>Popup window</legend>
@@ -550,6 +557,7 @@
                                 </div>
                             </div>
                             <div id="privacy_tab" class="tab-content">
+                                <h2 class="center">Virtual PC Setting</h2>
                                 <div class="row padding">
                                     <i-checkbox label="Enable Virtual PC" ng-model="setting.blocking.privacy.allowVPC"></i-checkbox>
 
@@ -728,6 +736,7 @@
                             </div>
 
                             <div id="javascript_tab" class="tab-content">
+                                <h2 class="center">Javascript Setting</h2>
                                 <div class="row">
                                     <fieldset>
                                         <legend>Javascript</legend>
@@ -763,6 +772,7 @@
                             </div>
 
                             <div id="youtube_tab" class="tab-content">
+                                <h2 class="center">Youtube Setting</h2>
                                 <div class="row">
                                     <fieldset>
                                         <legend>Youtube</legend>
@@ -790,6 +800,7 @@
                                 </div>
                             </div>
                             <div id="facebook_tab" class="tab-content">
+                                <h2 class="center">Facebook Setting</h2>
                                 <div class="row">
                                     <fieldset>
                                         <legend>Facebook</legend>
@@ -804,6 +815,7 @@
                             </div>
 
                             <div id="safty_tab" class="tab-content">
+                                <h2 class="center">Safty Setting</h2>
                                 <div class="row">
                                     <fieldset>
                                         <legend>Children Safty Mode</legend>
@@ -822,6 +834,7 @@
                             </div>
 
                             <div id="proxy_tab" class="tab-content">
+                                <h2 class="center">Proxy Setting</h2>
                                 <div class="row">
                                     <fieldset>
                                         <legend>Proxy</legend>
@@ -898,6 +911,7 @@
                                 </div>
                             </div>
                             <div id="menu_tab" class="tab-content">
+                                <h2 class="center">Context Menu Setting</h2>
                                 <div class="row">
                                     <fieldset>
                                         <legend>Fast Open Menu</legend>
@@ -918,6 +932,7 @@
                                 </div>
                             </div>
                             <div id="downloader_tab" class="tab-content">
+                                <h2 class="center">Downloader Setting</h2>
                                 <div class="row">
                                     <fieldset>
                                         <legend>Internal Downloader</legend>
@@ -1012,24 +1027,30 @@
                                                 <legend>Bulk Actions for Selected Profiles</legend>
                                                 <div class="row">
                                                     <div class="row">
-                                                        <div class="col4"><i-button ng-click="exportSelectedProfilesAndData()" label="Export Selected Profiles + All Data"></i-button></div>
-                                                        <div class="col4"><i-button ng-click="importSelectedProfilesAndData()" label="Import Profiles + All Data"></i-button></div>
+                                                        <div class="col">
+                                                            <i-button type="export" ng-click="exportSelectedProfilesAndData()" label="Export Selected Profiles + All Data to file"></i-button>
+                                                        </div>
+                                                        <div class="col">
+                                                            <i-button type="import" ng-click="importSelectedProfilesAndData()" label="Import Profiles + All Data from file"></i-button>
+                                                        </div>
                                                     </div>
                                                     <div class="row">
-                                                        <div class="col4"><i-button ng-click="exportSelectedProfiles()" label="Export Selected Profiles"></i-button></div>
-                                                        <div class="col4"><i-button ng-click="importSelectedProfiles()" label="Import Profiles"></i-button></div>
+                                                        <div class="col"><i-button type="export" ng-click="exportSelectedProfiles()" label="Export Selected Profiles to file"></i-button></div>
+                                                        <div class="col"><i-button type="import" ng-click="importSelectedProfiles()" label="Import Profiles from file"></i-button></div>
                                                     </div>
                                                     <div class="row">
-                                                        <div class="col4"><i-button type="reset" label="Generate Virual PC for Selected Profiles" ng-click="generateVPC('*')"></i-button></div>
-                                                        <div class="col4"><i-button type="stop" label="Stop AllVirual PC for Selected Profiles" ng-click="stopAllVPC('*')"></i-button></div>
+                                                        <div class="col"><i-button type="reset" label="Generate Virual PC for Selected Profiles" ng-click="generateVPC('*')"></i-button></div>
+                                                        <div class="col"><i-button type="stop" label="Stop AllVirual PC for Selected Profiles" ng-click="stopAllVPC('*')"></i-button></div>
                                                     </div>
                                                     <div class="row">
-                                                        <div class="col4"><i-button type="reset" label="Assign Random User Agent for Selected Profiles" ng-click="generateUserAgent('*')"></i-button></div>
-                                                        <div class="col4"><i-button type="stop" label="Stop All User Agent for Selected Profiles" ng-click="stopAllUserAgent('*')"></i-button></div>
+                                                        <div class="col">
+                                                            <i-button type="reset" label="Assign Random User Agent for Selected Profiles" ng-click="generateUserAgent('*')"></i-button>
+                                                        </div>
+                                                        <div class="col"><i-button type="stop" label="Stop All User Agent for Selected Profiles" ng-click="stopAllUserAgent('*')"></i-button></div>
                                                     </div>
                                                     <div class="row">
-                                                        <div class="col4"><i-button type="reset" label="Assign Random Proxy for Selected Profiles" ng-click="generateProxy('*')"></i-button></div>
-                                                        <div class="col4"><i-button type="stop" label="Stop All Proxy for Selected Profiles" ng-click="stopAllProxy('*')"></i-button></div>
+                                                        <div class="col"><i-button type="reset" label="Assign Random Proxy for Selected Profiles" ng-click="generateProxy('*')"></i-button></div>
+                                                        <div class="col"><i-button type="stop" label="Stop All Proxy for Selected Profiles" ng-click="stopAllProxy('*')"></i-button></div>
                                                     </div>
                                                 </div>
                                             </fieldset>
@@ -1413,14 +1434,14 @@
                                     <h2 class="center">User Script Manager <small class="green"> ( JavaScript , CSS , HTML , Tampermonkey , Violentmonkey , Greasemonkey ) </small></h2>
 
                                     <div class="row padding margin">
-                                        <div class="col4"><i-button type="add" label="New User Script" ng-click="showAddScript()"></i-button></div>
-                                        <div class="col4"><i-button type="add" label="Import Script from Copy URL" ng-click="showAddScript('url')"></i-button></div>
-                                        <div class="col4"><i-button type="add" label="Import Script from Local File" ng-click="showAddScript('file')"></i-button></div>
+                                        <div class="col"><i-button type="add" label="New User Script" ng-click="showAddScript()"></i-button></div>
+                                        <div class="col"><i-button type="add" label="Import Script from Copy URL" ng-click="showAddScript('url')"></i-button></div>
+                                        <div class="col"><i-button type="add" label="Import Script from Local File" ng-click="showAddScript('file')"></i-button></div>
                                     </div>
                                     <div class="row padding margin">
-                                        <div class="col4"><i-button type="search" label="open openuserjs.org" ng-click="openPopup('https://openuserjs.org/')"></i-button></div>
-                                        <div class="col4"><i-button type="search" label="open userscript.zone" ng-click="openPopup('https://www.userscript.zone/')"></i-button></div>
-                                        <div class="col4"><i-button type="search" label="open greasyfork.org" ng-click="openPopup('https://greasyfork.org/en/scripts')"></i-button></div>
+                                        <div class="col"><i-button type="search" label="open openuserjs.org" ng-click="openPopup('https://openuserjs.org/')"></i-button></div>
+                                        <div class="col"><i-button type="search" label="open userscript.zone" ng-click="openPopup('https://www.userscript.zone/')"></i-button></div>
+                                        <div class="col"><i-button type="search" label="open greasyfork.org" ng-click="openPopup('https://greasyfork.org/en/scripts')"></i-button></div>
                                     </div>
                                     <div class="row">
                                         <table class="table hover">
@@ -1466,16 +1487,22 @@
                             </div>
 
                             <div id="proxy_list_tab" class="tab-content">
-                                <div class="row padding">
-                                    <i-button type="import" ng-click="importProxyList()" label="Import Proxy List from File"></i-button>
-                                    <i-button type="import" ng-click="importProxyList_text()" label="Import Proxy List from Copy Text"></i-button>
-                                    <i-button type="import" ng-click="importProxyList_api()" label="Import Proxy List from Copy API URL (Text Response)"></i-button>
-                                    <i-button type="search" ng-click="importProxyList_search()" label="Search and Download Free Proxy List "></i-button>
+                                <h2 class="center">Proxy List Setting</h2>
+                                <div class="row">
+                                    <div class="row padding">
+                                        <i-button class="col" type="import" ng-click="importProxyList()" label="Import Proxy List from File"></i-button>
+                                        <i-button class="col" type="import" ng-click="importProxyList_text()" label="Import Proxy List from Copy Text"></i-button>
+                                        <i-button class="col" type="import" ng-click="importProxyList_api()" label="Import Proxy List from Copy API URL (Text Response)"></i-button>
+                                        <div class="row">
+                                            <i-button class="col" type="search" ng-click="importProxyList_search()" label="Search and Download Free Proxy List "></i-button>
+                                            <i-button class="col" type="export" ng-click="exportProxyList()" label="Export Proxy List "></i-button>
+                                        </div>
+                                    </div>
 
                                     <div class="row center">
-                                        <i-checkbox class="row" label="Show proxy options" ng-model="setting.blocking.context_menu.proxy_options"></i-checkbox>
-                                        <i-checkbox class="row" label="Close Window on Proxy Error Loading" ng-model="setting.blocking.proxy_error_close_window"></i-checkbox>
-                                        <i-checkbox class="row" label="Remove Proxy on Error Loading" ng-model="setting.blocking.proxy_error_remove_proxy"></i-checkbox>
+                                        <i-checkbox class="row" label="Show proxy Menu Options" ng-model="setting.blocking.context_menu.proxy_options"></i-checkbox>
+                                        <i-checkbox class="row" label="Close Window on Proxy Error Loading" ng-model="setting.blocking.closeWindowOnProxyLoadingError"></i-checkbox>
+                                        <i-checkbox class="row" label="Remove Proxy on Window Error Loading" ng-model="setting.blocking.removeProxyOnLoadingError"></i-checkbox>
                                     </div>
 
                                     <div class="row padding margin">
@@ -1535,15 +1562,22 @@
                                         <table class="table hover">
                                             <tr>
                                                 <th>
-                                                    <span> Count : ({{setting.proxy_list.length}})</span>
-                                                    <i-button type="delete" ng-click="setting.proxy_list = []" label="Remove All"></i-button>
+                                                    <p> Count : ({{setting.proxy_list.length}})</p>
+                                                    <div class="row center">
+                                                        <i-button type="delete" ng-click="setting.proxy_list = []" label="Remove All"></i-button>
+                                                    </div>
+                                                    <div class="row center"><i-button label="Toggle Select" ng-click="toggleselectedProxies()"></i-button></div>
                                                 </th>
-                                                <th>Proxy Details <i-control ng-model="$proxy2"></i-control></th>
+                                                <th>
+                                                    <i-control label="Search in Proxy List" ng-model="searchProxy"></i-control>
+                                                    <i-control label="Show Proxies Limit" ng-model="$limitProxy"></i-control>
+                                                </th>
                                             </tr>
-                                            <tr ng-repeat="_se in setting.proxy_list | limitTo : 100 | filter:$proxy2 | orderBy : 'ip' track by $index">
+                                            <tr ng-repeat="_se in setting.proxy_list | limitTo : $limitProxy | filter:searchProxy track by $index">
                                                 <td>
                                                     <span class="bold"> ( {{$index + 1}} ) </span>
                                                     <i-button type="delete" ng-click="removeProxy(_se)"></i-button>
+                                                      <div class="col"><i-checkbox ng-model="_se.$selected"></i-checkbox></div>
                                                 </td>
                                                 <td>
                                                     <div class="row">
@@ -1594,6 +1628,7 @@
                             </div>
 
                             <div id="extension_list_tab" class="tab-content">
+                                <h2 class="center">Extentions Setting</h2>
                                 <fieldset>
                                     <legend>Custom Extentions</legend>
                                     <div class="row">
@@ -1622,7 +1657,7 @@
                                 </fieldset>
                                 <hr />
                                 <fieldset>
-                                    <legend>Google Extentions [ Chrome Browser Simulator  ]</legend>
+                                    <legend>Google Extentions [ Chrome Browser Simulator ]</legend>
                                     <div class="row">
                                         <i-button type="import" ng-click="loadGoogleExtension()" label="Load Google Extension From Folder"></i-button>
 
@@ -1652,6 +1687,7 @@
                             </div>
 
                             <div id="passwords_tab" class="tab-content">
+                                <h2 class="center">Passwords Setting</h2>
                                 <div class="row">
                                     <fieldset>
                                         <legend>New Site Password</legend>
@@ -1695,6 +1731,7 @@
                             </div>
 
                             <div id="fa_tab" class="tab-content">
+                                <h2 class="center">2FA Setting</h2>
                                 <div class="row">
                                     <fieldset>
                                         <legend>New 2FA Code</legend>
@@ -1729,7 +1766,9 @@
                                     </tr>
                                 </table>
                             </div>
+
                             <div id="keys_tab" class="tab-content">
+                                <h2 class="center">Encripted Keys Setting</h2>
                                 <div class="row">
                                     <fieldset>
                                         <legend>New Private Key</legend>
@@ -1763,6 +1802,7 @@
                             </div>
 
                             <div id="bookmarks_tab" class="tab-content">
+                                <h2 class="center">Bookmark Setting</h2>
                                 <table class="table hover">
                                     <tr>
                                         <th>Index</th>
@@ -1778,7 +1818,9 @@
                                     </tr>
                                 </table>
                             </div>
+
                             <div id="user_data_tab" class="tab-content">
+                                <h2 class="center">User Data Setting</h2>
                                 <div class="row">
                                     <div class="col6"><i-button type="clear" ng-click="clearUserData()" label="Clear All User Data"></i-button></div>
                                 </div>
@@ -1800,6 +1842,7 @@
                             </div>
 
                             <div id="urls_tab" class="tab-content">
+                                <h2 class="center">URLs Setting</h2>
                                 <table class="table hover">
                                     <tr>
                                         <th>Index ( {{setting.urls.length}} )</th>

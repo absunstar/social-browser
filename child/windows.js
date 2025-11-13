@@ -385,7 +385,7 @@ module.exports = function (child) {
         customSetting.webPreferences.webaudio = customSetting.allowAudio;
 
         customSetting.loading_icon = 'browser://images/loading.gif';
-        customSetting.error_icon = 'browser://images/no.jpg';
+        customSetting.iconErrorURL = 'browser://images/no.jpg';
 
         if (customSetting.vip) {
             customSetting.allowSaveUrls = false;
@@ -881,7 +881,7 @@ module.exports = function (child) {
         win.webContents.on('did-fail-load', (event, errorCode, errorDescription, validatedURL, isMainFrame, frameProcessId, frameRoutingId) => {
             event.preventDefault();
             if (isMainFrame && validatedURL == win.getURL()) {
-                if (child.parent.var.blocking.proxy_error_remove_proxy && win.customSetting.proxy) {
+                if (child.parent.var.blocking.removeProxyOnLoadingError && win.customSetting.proxy) {
                     child.sendMessage({
                         type: '[remove-proxy]',
                         proxy: win.customSetting.proxy,
@@ -889,11 +889,11 @@ module.exports = function (child) {
                 }
 
                 if (win.customSetting.windowType.like('*popup*')) {
-                    if (win.customSetting.proxy && child.parent.var.blocking.proxy_error_close_window) {
+                    if (win.customSetting.proxy && child.parent.var.blocking.closeWindowOnProxyLoadingError) {
                         return win.close();
                     }
                 } else {
-                    win.customSetting.iconURL = win.customSetting.error_icon;
+                    win.customSetting.iconURL = win.customSetting.iconErrorURL;
                     child.updateTab(win);
                 }
             }

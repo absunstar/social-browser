@@ -3574,8 +3574,6 @@ SOCIALBROWSER.init2 = function () {
     })();
 
     (function prepareFn() {
-        
-
         if (SOCIALBROWSER.customSetting.isWorker) {
             self.workerGlobal = self;
             self.importScripts = async function (...urls) {
@@ -3609,7 +3607,7 @@ SOCIALBROWSER.init2 = function () {
                     if (typeof property == 'string' && property.like('SOCIALBROWSER')) {
                         return SOCIALBROWSER;
                     }
-                  if (target[property] instanceof Function) {
+                    if (target[property] instanceof Function) {
                         return target[property].bind(target);
                     }
 
@@ -5463,7 +5461,90 @@ SOCIALBROWSER.init2 = function () {
 
                     if (SOCIALBROWSER.var.blocking.context_menu.proxy_options) {
                         let arr = [];
-
+                        arr.push({
+                            label: 'open current URL in 5 Random Proxies ( Ghost Profile )',
+                            click() {
+                                SOCIALBROWSER.startProxyIndex = SOCIALBROWSER.startProxyIndex || 0;
+                                SOCIALBROWSER.var.proxy_list.slice(SOCIALBROWSER.startProxyIndex, SOCIALBROWSER.startProxyIndex + 5).forEach((p, i) => {
+                                    setTimeout(() => {
+                                        SOCIALBROWSER.openNewPopup({
+                                            show: true,
+                                            url: document.location.href,
+                                            proxy: p,
+                                            partition: 'x-ghost_' + new Date().getTime(),
+                                            iframe: true,
+                                            center: true,
+                                            eval: () => {
+                                                SOCIALBROWSER.onLoad(() => {
+                                                    SOCIALBROWSER.$('title').innerHTML += ' , Prxoy : ' + SOCIALBROWSER.customSetting.proxy.url;
+                                                });
+                                            },
+                                        });
+                                    }, 1000 * i);
+                                });
+                                SOCIALBROWSER.startProxyIndex += 5;
+                                if (SOCIALBROWSER.startProxyIndex > SOCIALBROWSER.var.proxy_list.length - 1) {
+                                    SOCIALBROWSER.startProxyIndex = 0;
+                                }
+                            },
+                        });
+                        arr.push({
+                            label: 'open current URL in 10 Random Proxies ( Ghost Profile )',
+                            click() {
+                                SOCIALBROWSER.startProxyIndex = SOCIALBROWSER.startProxyIndex || 0;
+                                SOCIALBROWSER.var.proxy_list.slice(SOCIALBROWSER.startProxyIndex, SOCIALBROWSER.startProxyIndex + 10).forEach((p, i) => {
+                                    setTimeout(() => {
+                                        SOCIALBROWSER.openNewPopup({
+                                            show: true,
+                                            url: document.location.href,
+                                            proxy: p,
+                                            partition: 'x-ghost_' + new Date().getTime(),
+                                            iframe: true,
+                                            center: true,
+                                              eval: () => {
+                                                SOCIALBROWSER.onLoad(() => {
+                                                    SOCIALBROWSER.$('title').innerHTML += ' , Prxoy : ' + SOCIALBROWSER.customSetting.proxy.url;
+                                                });
+                                            },
+                                        });
+                                    }, 1000 * 2 * i);
+                                });
+                                SOCIALBROWSER.startProxyIndex += 10;
+                                if (SOCIALBROWSER.startProxyIndex > SOCIALBROWSER.var.proxy_list.length - 1) {
+                                    SOCIALBROWSER.startProxyIndex = 0;
+                                }
+                            },
+                        });
+                        arr.push({
+                            label: 'open current URL in 50 Random Proxies ( Ghost Profile )',
+                            click() {
+                                SOCIALBROWSER.startProxyIndex = SOCIALBROWSER.startProxyIndex || 0;
+                                SOCIALBROWSER.var.proxy_list.slice(SOCIALBROWSER.startProxyIndex, SOCIALBROWSER.startProxyIndex + 50).forEach((p, i) => {
+                                    setTimeout(() => {
+                                        SOCIALBROWSER.openNewPopup({
+                                            show: true,
+                                            url: document.location.href,
+                                            proxy: p,
+                                            partition: 'x-ghost_' + new Date().getTime(),
+                                            iframe: true,
+                                            center: true,
+                                              eval: () => {
+                                                SOCIALBROWSER.onLoad(() => {
+                                                    SOCIALBROWSER.$('title').innerHTML += ' , Prxoy : ' + SOCIALBROWSER.customSetting.proxy.url;
+                                                });
+                                            },
+                                        });
+                                    }, 1000 * 3 * i);
+                                });
+                                SOCIALBROWSER.startProxyIndex += 50;
+                                if (SOCIALBROWSER.startProxyIndex > SOCIALBROWSER.var.proxy_list.length - 1) {
+                                    SOCIALBROWSER.startProxyIndex = 0;
+                                }
+                            },
+                        });
+                        arr.push({
+                            type: 'separator',
+                        });
                         SOCIALBROWSER.var.proxy_list.slice(0, 50).forEach((p) => {
                             if (!p) {
                                 return;
@@ -5485,7 +5566,7 @@ SOCIALBROWSER.init2 = function () {
 
                         if (arr.length > 0) {
                             SOCIALBROWSER.menuList.push({
-                                label: 'Open current page with proxy + ghost user',
+                                label: 'Proxy Menu Options',
                                 type: 'submenu',
                                 submenu: arr,
                             });
@@ -9665,7 +9746,7 @@ if (!SOCIALBROWSER.javaScriptOFF) {
             globalThis,
             'navigator',
             new Proxy(navigator, {
-                   apply(target, thisArg, argumentsList) {
+                apply(target, thisArg, argumentsList) {
                     return Reflect.apply(target, thisArg, argumentsList);
                 },
                 setProperty: function (target, property, value) {
@@ -9905,7 +9986,7 @@ if (!SOCIALBROWSER.isWhiteSite) {
                     window
                         .fetch0(...args)
                         .then((res) => {
-                            if (args[0].like('*fingerprint.com*')) {
+                            if (typeof args[0] == 'string' && args[0].like('*fingerprint.com*')) {
                                 res.text().then((text) => {
                                     if (text.like('{*')) {
                                         let data = JSON.parse(text);

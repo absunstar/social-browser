@@ -408,6 +408,13 @@ module.exports = function init(parent) {
         if (name == 'proxy_mode_list') {
             parent.var.proxy_mode_list = browserVarContent;
         }
+
+          if (name == 'proxy_list') {
+            parent.var[name].forEach((proxy , i)=>{
+                parent.var[name][i] = parent.handleProxy(proxy)
+            });
+        }
+
         if (name == 'blocking') {
             parent.var.blocking.open_list = parent.var.blocking.open_list || [];
             parent.var.blocking.core = parent.var.blocking.core || {};
