@@ -324,6 +324,17 @@ module.exports = function init(child) {
 
         event.returnValue = obj;
     });
+      child.ipcMain.on('[window.actions]', async (event, data = {}) => {
+        let currentWindow = child.electron.BrowserWindow.fromId(data.windowID);
+        let result = undefined;
+        if (data.action == 'location.href') {
+           result = currentWindow.getURL();
+        }else if (data.action == 'location.replace') {
+            currentWindow.send('[send-render-message]' , {name : 'location.replace' , url : data.url});
+        }
+
+        event.returnValue = result;
+    });
 
     child.ipcMain.on('[webContents]', async (event, data = { id: 1 }) => {
         let webContents = event.sender;
@@ -721,6 +732,13 @@ module.exports = function init(child) {
             let senderFrame = child.electron.webFrameMain.fromFrameToken(message.toParentFrame.processId, message.toParentFrame.frameToken);
             if (senderFrame) {
                 senderFrame.send('window.message', message);
+            } else {
+                if (message.windowID) {
+                    let win = child.electron.BrowserWindow.fromId(message.windowID);
+                    if (win) {
+                        win.send('window.message', message);
+                    }
+                }
             }
         } else if (message.windowID) {
             let win = child.electron.BrowserWindow.fromId(message.windowID);

@@ -974,7 +974,7 @@ module.exports = function (child) {
             child.log('will-redirect : ', url);
             child.handleCustomSeting(url, win, e.isMainFrame);
 
-            if (false) {
+            if ((redirectTruestedWindow = true)) {
                 if (
                     url.like('javascript:*|*accounts.google*|*account.facebook*|*login.microsoft*|*appleid.apple*') &&
                     e.isMainFrame &&
@@ -1172,7 +1172,7 @@ module.exports = function (child) {
 
                 let allow = false;
 
-                if (true) {
+                if ((newDeafultWindow = true)) {
                     if ((url.like('*about:*') && child.parent.var.blocking.popup.allow_blank) || url.like('javascript:*|*accounts.google*|*account.facebook*|*login.microsoft*|*appleid.apple*')) {
                         child.log('Run Default window', url);
                         return {
@@ -1215,12 +1215,6 @@ module.exports = function (child) {
                 }
 
                 if (!allow) {
-                    if (!win.customSetting.allowNewWindows || (isPopup && !win.customSetting.allowPopup) || (!win.customSetting.allowAds && !child.isAllowURL(url))) {
-                        child.log('Block-open-window', url);
-                        win.webContents.send('[show-user-message]', { message: 'Blocked Open Window <p><a>' + url + '</a></p>' });
-                        return { action: 'deny' };
-                    }
-
                     if (win.customSetting.allowPopup) {
                         allow = true;
                     } else {
@@ -1235,6 +1229,13 @@ module.exports = function (child) {
                                 allow = true;
                             } else if (child.parent.var.blocking.popup.allow_external && !url_parser.hostname.contains(current_url_parser.hostname)) {
                                 allow = true;
+                            }
+                        }
+                        if (!allow) {
+                            if (!win.customSetting.allowNewWindows || (isPopup && !win.customSetting.allowPopup) || (!win.customSetting.allowAds && !child.isAllowURL(url))) {
+                                child.log('Block-open-window', url);
+                                win.webContents.send('[show-user-message]', { message: 'Blocked Open Window <p><a>' + url + '</a></p>' });
+                                return { action: 'deny' };
                             }
                         }
                     }

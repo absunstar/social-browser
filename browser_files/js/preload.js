@@ -1935,7 +1935,7 @@ SOCIALBROWSER.init2 = function () {
                 });
 
                 newWindow.postMessage = function (data, origin, transfer) {
-                    let e = { windowID: newWindow.id, data: data, origin: origin || '*', transfer: transfer };
+                    let e = { windowID: newWindow.id, data: data, origin: origin, transfer: transfer };
                     if (!e.windowID) {
                         setTimeout(() => {
                             newWindow.postMessage(data, origin, transfer);
@@ -3295,8 +3295,10 @@ SOCIALBROWSER.init2 = function () {
         }
 
         SOCIALBROWSER.on('window.message', (e, message) => {
-            SOCIALBROWSER.log('window.message', message);
-
+            SOCIALBROWSER.log('ipc window.message', message);
+            // if(typeof message.data == 'string' && message.data.indexOf('{') == 0){
+            //     message.data = JSON.parse(message.data)
+            // }
             if (SOCIALBROWSER.customSetting.isWorker) {
                 if (typeof onmessage == 'function') {
                     onmessage(message);
@@ -3312,7 +3314,6 @@ SOCIALBROWSER.init2 = function () {
                         }
                     }
                 } else {
-                    message.origin = message.origin || '*';
                     window.postMessage(message.data, message.origin, message.transfer);
                 }
             }
@@ -3592,7 +3593,7 @@ SOCIALBROWSER.init2 = function () {
                     windowID: SOCIALBROWSER.customSetting.parentWindowID,
                     toParentFrame: SOCIALBROWSER.customSetting.parentFrame,
                     data: data,
-                    origin: origin || '*',
+                    origin: origin,
                     transfer: transfer,
                 });
             };
@@ -5480,7 +5481,7 @@ SOCIALBROWSER.init2 = function () {
                                                 });
                                             },
                                         });
-                                    }, 1000 * i);
+                                    }, 1000 * 2 * i);
                                 });
                                 SOCIALBROWSER.startProxyIndex += 5;
                                 if (SOCIALBROWSER.startProxyIndex > SOCIALBROWSER.var.proxy_list.length - 1) {
@@ -5501,13 +5502,13 @@ SOCIALBROWSER.init2 = function () {
                                             partition: 'x-ghost_' + new Date().getTime(),
                                             iframe: true,
                                             center: true,
-                                              eval: () => {
+                                            eval: () => {
                                                 SOCIALBROWSER.onLoad(() => {
                                                     SOCIALBROWSER.$('title').innerHTML += ' , Prxoy : ' + SOCIALBROWSER.customSetting.proxy.url;
                                                 });
                                             },
                                         });
-                                    }, 1000 * 2 * i);
+                                    }, 1000 * 3 * i);
                                 });
                                 SOCIALBROWSER.startProxyIndex += 10;
                                 if (SOCIALBROWSER.startProxyIndex > SOCIALBROWSER.var.proxy_list.length - 1) {
@@ -5528,13 +5529,13 @@ SOCIALBROWSER.init2 = function () {
                                             partition: 'x-ghost_' + new Date().getTime(),
                                             iframe: true,
                                             center: true,
-                                              eval: () => {
+                                            eval: () => {
                                                 SOCIALBROWSER.onLoad(() => {
                                                     SOCIALBROWSER.$('title').innerHTML += ' , Prxoy : ' + SOCIALBROWSER.customSetting.proxy.url;
                                                 });
                                             },
                                         });
-                                    }, 1000 * 3 * i);
+                                    }, 1000 * 5 * i);
                                 });
                                 SOCIALBROWSER.startProxyIndex += 50;
                                 if (SOCIALBROWSER.startProxyIndex > SOCIALBROWSER.var.proxy_list.length - 1) {
@@ -7913,8 +7914,13 @@ SOCIALBROWSER.init2 = function () {
         SOCIALBROWSER.__setConstValue(window.prompt, 'toString', () => s3);
 
         if (SOCIALBROWSER.customSetting.parentWindowID) {
-            window.opener = window.opener || {
+            window.opener = window.opener || Object.create(Window.prototype);
+            Object.assign(window.opener, {
                 closed: false,
+                opener: window,
+                innerHeight: 1028,
+                innerWidth: 720,
+
                 postMessage: (data, origin, transfer) => {
                     SOCIALBROWSER.log('window.opener.postMessage', data);
                     SOCIALBROWSER.ipc(
@@ -7923,13 +7929,64 @@ SOCIALBROWSER.init2 = function () {
                             windowID: SOCIALBROWSER.customSetting.parentWindowID,
                             toParentFrame: SOCIALBROWSER.customSetting.parentFrame,
                             data: data,
-                            origin: origin || '*',
+                            origin: origin,
                             transfer: transfer,
                         },
                         true,
                     );
                 },
-            };
+                eval: function () {},
+                close: function () {},
+                focus: function () {},
+                blur: function () {},
+                print: function () {},
+                document: {
+                    write: function () {},
+                    open: function () {},
+                    close: function () {},
+                },
+                location: {
+                    href: SOCIALBROWSER.ipcSync(
+                        '[window.actions]',
+                        {
+                            windowID: SOCIALBROWSER.customSetting.parentWindowID,
+                            action: 'location.href',
+                        },
+                        true,
+                    ),
+                    replace: function (url) {
+                        SOCIALBROWSER.ipcSync(
+                            '[window.actions]',
+                            {
+                                windowID: SOCIALBROWSER.customSetting.parentWindowID,
+                                action: 'location.replace',
+                                url: url,
+                            },
+                            true,
+                        );
+                    },
+                },
+                self: window.opener,
+                window: window.opener,
+            });
+
+            // window.opener = window.opener || {
+            //     closed: false,
+            //     postMessage: (data, origin, transfer) => {
+            //         SOCIALBROWSER.log('window.opener.postMessage', data);
+            //         SOCIALBROWSER.ipc(
+            //             'window.message',
+            //             {
+            //                 windowID: SOCIALBROWSER.customSetting.parentWindowID,
+            //                 toParentFrame: SOCIALBROWSER.customSetting.parentFrame,
+            //                 data: data,
+            //                 origin: origin || '*',
+            //                 transfer: transfer,
+            //             },
+            //             true,
+            //         );
+            //     },
+            // };
         }
 
         if (!SOCIALBROWSER.isWhiteSite && !SOCIALBROWSER.javaScriptOFF) {
@@ -7957,7 +8014,7 @@ SOCIALBROWSER.init2 = function () {
                                 opener: window,
                                 innerHeight: 1028,
                                 innerWidth: 720,
-
+                               
                                 postMessage: function (...args) {
                                     //  SOCIALBROWSER.log('postMessage child_window', args);
                                 },
@@ -8004,7 +8061,11 @@ SOCIALBROWSER.init2 = function () {
                                 return child_window;
                             }
 
-                            if (!url || url.like('javascript:*|about:*') || SOCIALBROWSER.customSetting.allowCorePopup) {
+                            if (
+                                !url ||
+                                url.like('javascript:*|about:*|javascript:*|*accounts.google*|*account.facebook*|*login.microsoft*|*appleid.apple*') ||
+                                SOCIALBROWSER.customSetting.allowCorePopup
+                            ) {
                                 let opener = window.open0(...args);
                                 console.log(opener);
                                 return opener || child_window;
@@ -8099,6 +8160,7 @@ SOCIALBROWSER.init2 = function () {
                                 child_window.eval = () => {};
                                 child_window.closed = true;
                             });
+                             
 
                             child_window.eval = win.eval;
 
@@ -9486,7 +9548,9 @@ SOCIALBROWSER.init2 = function () {
                 SOCIALBROWSER.ipc('[open new popup]', data);
             } else if (data.name == '[show-user-message]') {
                 SOCIALBROWSER.showUserMessage(data.message);
-            } else {
+            }else if (data.name == 'location.replace') {
+                window.location.replace(data.url)
+            }  else {
                 console.log(data);
             }
         });
@@ -9960,7 +10024,7 @@ if (!SOCIALBROWSER.javaScriptOFF) {
 }
 
 if (!SOCIALBROWSER.isWhiteSite) {
-    if ((stringify0 = true)) {
+    if ((stringify0 = false)) {
         JSON.stringify0 = JSON.stringify;
         let j = JSON.stringify.toString();
         JSON.stringify = function (...args) {
