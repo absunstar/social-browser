@@ -157,78 +157,20 @@ module.exports = function (child) {
         } else if (child.parent.var.proxy && child.parent.var.proxyEnabled) {
             proxy = child.parent.var.proxy;
         }
+        proxy = child.handleProxy(proxy);
 
         if (proxy && JSON.stringify(child.session_name_list[sessionIndex].proxy) !== JSON.stringify(proxy)) {
             child.session_name_list[sessionIndex].proxy = proxy;
 
-            if (proxy.url || (proxy.ip && proxy.port)) {
-                if (proxy.url) {
-                    ss.closeAllConnections().then(() => {
-                        ss.setProxy({
-                            mode: 'fixed_servers',
-                            proxyRules: proxy.url,
-                            proxyBypassRules: proxy.ignore || 'localhost,127.0.0.1,::1,192.168.*',
-                        })
-                            .then(() => {
-                                child.log(`session ${name} Proxy Set : ${proxy.url}`);
-                            })
-                            .catch((err) => {
-                                child.log(err);
-                            });
+            ss.closeAllConnections().then(() => {
+                ss.setProxy(proxy)
+                    .then(() => {
+                        child.log(`session ${name} Proxy Set : ${proxy.proxyRules}`);
+                    })
+                    .catch((err) => {
+                        child.log(err);
                     });
-                } else if (proxy.ip && proxy.port) {
-                    let proxyRules = '';
-                    let startline = ',';
-                    if (proxy.socks4) {
-                        proxyRules += startline + 'socks4://' + proxy.ip + ':' + proxy.port;
-                        startline = ',';
-                    }
-                    if (proxy.socks5) {
-                        proxyRules += startline + 'socks5://' + proxy.ip + ':' + proxy.port;
-                        startline = ',';
-                    }
-                    if (proxy.ftp) {
-                        proxyRules += startline + 'ftp://' + proxy.ip + ':' + proxy.port;
-                        startline = ',';
-                    }
-                    if (proxy.http) {
-                        proxyRules += startline + 'http://' + proxy.ip + ':' + proxy.port;
-                        startline = ',';
-                    }
-                    if (proxy.https) {
-                        proxyRules += startline + 'https://' + proxy.ip + ':' + proxy.port;
-                        startline = ',';
-                    }
-                    if (!proxy.http && !proxy.https && !proxy.ftp && !proxy.socks5 && !proxy.socks4) {
-                        proxyRules = proxy.ip + ':' + proxy.port;
-                        startline = ',';
-                    }
-                    if (proxyRules && proxy.direct) {
-                        proxyRules += startline + 'direct://';
-                    }
-                    if (proxyRules) {
-                        ss.closeAllConnections().then(() => {
-                            ss.setProxy({
-                                mode: 'fixed_servers',
-                                proxyRules: proxyRules,
-                                proxyBypassRules: proxy.ignore || 'localhost,127.0.0.1,::1,192.168.*',
-                            })
-                                .then(() => {
-                                    child.log(`session ${name} Proxy Set : ${proxyRules}`);
-                                })
-                                .catch((err) => {
-                                    child.log(err);
-                                });
-                        });
-                    }
-                }
-            } else {
-                ss.setProxy({
-                    mode: 'fixed_servers',
-                }).then(() => {
-                    child.log(`session ${name} Proxy Set Default `);
-                });
-            }
+            });
         } else if (!proxy) {
             ss.setProxy({
                 mode: 'system',
@@ -314,15 +256,14 @@ module.exports = function (child) {
 
                     return;
                 }
-                if(mainURL){
-                   if(new URL(mainURL).hostname.like(new URL(url).hostname)){
-                     callback({
-                        cancel: false,
-                    });
-                    return;
-                } 
+                if (mainURL) {
+                    if (new URL(mainURL).hostname.like(new URL(url).hostname)) {
+                        callback({
+                            cancel: false,
+                        });
+                        return;
+                    }
                 }
-                
 
                 if (child.isWhiteURL(mainURL)) {
                     callback({
@@ -394,14 +335,11 @@ module.exports = function (child) {
 
                 // return js will crach if needed request not js
                 if (!child.isAllowURL(url)) {
-
                     child.log('Session Not Allow URL : ', url);
 
                     if (win && !win.isDestroyed() && !win.webContents.isDestroyed()) {
                         win.webContents.send('[show-user-message]', { message: 'Not Allow URL : ' + details.resourceType + ' <p><a>' + url + '</a></p>' });
                     }
-
-                
 
                     let url2 = url.split('?')[0];
                     let query = '';
@@ -957,7 +895,7 @@ module.exports = function (child) {
             ss.setPermissionCheckHandler((webContents, permission, requestingOrigin, details) => {
                 if (webContents) {
                     let win = child.electron.BrowserWindow.fromWebContents(webContents);
-                    if (win &&win.customSetting &&  win.customSetting.allowAllPermissions) {
+                    if (win && win.customSetting && win.customSetting.allowAllPermissions) {
                         return true;
                     }
                 }

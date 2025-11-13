@@ -241,7 +241,7 @@ module.exports = function (child) {
             defaultSetting.webPreferences.nodeIntegrationInWorker = true;
             defaultSetting.webPreferences.webSecurity = false;
             defaultSetting.webPreferences.allowRunningInsecureContent = true;
-          //   setting.showDevTools = true;
+            //   setting.showDevTools = true;
         } else if (setting.windowType === 'youtube') {
             // setting.url = 'browser://youtube-view?url=' + setting.url;
             // setting.iframe = false;
@@ -329,7 +329,7 @@ module.exports = function (child) {
         }
 
         if ((handleCookies = true)) {
-            let domainName = child.url.parse(setting.url.replace('blob:' , '')).hostname?.split('.') || ['domainName' , 'com'];
+            let domainName = child.url.parse(setting.url.replace('blob:', '')).hostname?.split('.') || ['domainName', 'com'];
             domainName = domainName.slice(domainName.length - 2).join('.');
 
             if (Array.isArray(setting.cookieList) && setting.cookieList.length > 0) {
@@ -393,8 +393,8 @@ module.exports = function (child) {
         }
 
         let parentWindow = null;
-        if(customSetting.parentWindowID){
-            parentWindow = child.electron.BrowserWindow.fromId(customSetting.parentWindowID)
+        if (customSetting.parentWindowID) {
+            parentWindow = child.electron.BrowserWindow.fromId(customSetting.parentWindowID);
         }
 
         let win = new child.electron.BrowserWindow({ ...customSetting, parent: parentWindow });
@@ -428,7 +428,6 @@ module.exports = function (child) {
             });
         }
 
-       
         customSetting.windowID = win.id;
         win.customSetting = customSetting;
         win.customSetting.windowSetting = win.customSetting.windowSetting || [];
@@ -564,68 +563,18 @@ module.exports = function (child) {
 
         win.setMenuBarVisibility(false);
 
-        if ((proxy = win.customSetting.proxy)) {
+        if ((proxy = child.handleProxy(win.customSetting.proxy))) {
             let ss = win.webContents.session;
 
-            if (proxy.url) {
-                ss.closeAllConnections().then(() => {
-                    ss.setProxy({
-                        mode: 'fixed_servers',
-                        proxyRules: proxy.url,
-                        proxyBypassRules: proxy.ignore || 'localhost,127.0.0.1,::1,192.168.*',
+            ss.closeAllConnections().then(() => {
+                ss.setProxy(proxy)
+                    .then(() => {
+                        child.log(`window Proxy Set : ${proxy.proxyRules}`);
                     })
-                        .then(() => {
-                            child.log(`window Proxy Set : ${proxy.url}`);
-                        })
-                        .catch((err) => {
-                            child.log(err);
-                        });
-                });
-            } else if (proxy.ip && proxy.port) {
-                let proxyRules = '';
-                let startline = '';
-
-                if (proxy.socks4) {
-                    proxyRules += startline + 'socks4://' + proxy.ip + ':' + proxy.port;
-                    startline = ',';
-                }
-                if (proxy.socks5) {
-                    proxyRules += startline + 'socks5://' + proxy.ip + ':' + proxy.port;
-                    startline = ',';
-                }
-                if (proxy.ftp) {
-                    proxyRules += startline + 'ftp://' + proxy.ip + ':' + proxy.port;
-                    startline = ',';
-                }
-                if (proxy.http) {
-                    proxyRules += startline + 'http://' + proxy.ip + ':' + proxy.port;
-                    startline = ',';
-                }
-                if (proxy.https) {
-                    proxyRules += startline + 'https://' + proxy.ip + ':' + proxy.port;
-                    startline = ',';
-                }
-                if (!proxy.http && !proxy.https && !proxy.ftp && !proxy.socks5 && !proxy.socks4) {
-                    proxyRules = proxy.ip + ':' + proxy.port;
-                    startline = ',';
-                }
-
-                if (proxyRules && proxy.direct) {
-                    proxyRules += startline + 'direct://';
-                }
-
-                if (proxyRules) {
-                    ss.closeAllConnections().then(() => {
-                        ss.setProxy({
-                            mode: 'fixed_servers',
-                            proxyRules: proxyRules,
-                            proxyBypassRules: proxy.ignore || 'localhost,127.0.0.1,::1,192.168.*',
-                        }).then(() => {
-                            child.log('window Proxy Set : ' + proxyRules);
-                        });
+                    .catch((err) => {
+                        child.log(err);
                     });
-                }
-            }
+            });
         } else {
             child.handleSession({ name: win.customSetting.partition });
         }
@@ -703,7 +652,7 @@ module.exports = function (child) {
                 child.sendMessage({ type: '[tracking-info]', trackingID: win.customSetting.trackingID, windowID: win.id, isClosed: true });
             }
 
-              child.getAllWindows().forEach((win2) => {
+            child.getAllWindows().forEach((win2) => {
                 if (win2 && win2.customSetting && win2.customSetting.parentWindowID == win.id && !win2.isDestroyed()) {
                     win2.close();
                 }
@@ -718,7 +667,6 @@ module.exports = function (child) {
 
         win.on('closed', () => {
             // win = null;
-          
         });
 
         win.on('app-command', (e, cmd) => {
@@ -1026,68 +974,72 @@ module.exports = function (child) {
             child.log('will-redirect : ', url);
             child.handleCustomSeting(url, win, e.isMainFrame);
 
-            if(false){
-                    if (url.like('javascript:*|*accounts.google*|*account.facebook*|*login.microsoft*|*appleid.apple*') && e.isMainFrame && win.customSetting.iframe && win.customSetting.windowType === 'view') {
-                e.preventDefault();
-                let old_customeSetting = { ...win.customSetting };
+            if (false) {
+                if (
+                    url.like('javascript:*|*accounts.google*|*account.facebook*|*login.microsoft*|*appleid.apple*') &&
+                    e.isMainFrame &&
+                    win.customSetting.iframe &&
+                    win.customSetting.windowType === 'view'
+                ) {
+                    e.preventDefault();
+                    let old_customeSetting = { ...win.customSetting };
 
-                delete old_customeSetting.$defaultUserAgent;
-                delete old_customeSetting.defaultUserAgent;
-                delete old_customeSetting.userAgentURL;
-                delete old_customeSetting.$userAgentURL;
+                    delete old_customeSetting.$defaultUserAgent;
+                    delete old_customeSetting.defaultUserAgent;
+                    delete old_customeSetting.userAgentURL;
+                    delete old_customeSetting.$userAgentURL;
 
-                let newWin = child.createNewWindow({
-                    old_customeSetting,
-                    parentWindowID : win.id,
-                    defaultUserAgent: {
-                        url: 'Mozilla/5.0 (MacIntel) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.2038.57  Safari/537.36',
-                        device: {
-                            name: 'PC',
-                            platformList: [
-                                { name: 'Windows NT 6.1; WOW64', code: 'Win32' },
-                                { name: 'Windows NT 10.0; Win64; x64', code: 'Win32' },
-                                { name: 'Windows NT 11.0; Win64; x64', code: 'Win32' },
-                                { name: 'Windows NT 10.0', code: 'Win32' },
-                                { name: 'Windows NT 11.0', code: 'Win32' },
-                                { name: 'MacIntel', code: 'MacIntel' },
-                                { name: 'Macintosh; Intel Mac OS X 13_0', code: 'MacIntel' },
-                                { name: 'Macintosh; Intel Mac OS X 14_0', code: 'MacIntel' },
-                                { name: 'Macintosh; Intel Mac OS X 15_0', code: 'MacIntel' },
-                                { name: 'Macintosh; Intel Mac OS X 16_0', code: 'MacIntel' },
-                                { name: 'Linux x86_64', code: 'Linux x86_64' },
-                                { name: 'X11; Ubuntu; Linux x86_64', code: 'Linux x86_64' },
-                            ],
-                            screenList: ['2560*1440', '1920*1080', '1792*1120', '1680*1050', '1600*900', '1536*864', '1440*900', '1366*768', '1280*800', '1280*720', '1024*768', '1024*600'],
+                    let newWin = child.createNewWindow({
+                        old_customeSetting,
+                        parentWindowID: win.id,
+                        defaultUserAgent: {
+                            url: 'Mozilla/5.0 (MacIntel) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.2038.57  Safari/537.36',
+                            device: {
+                                name: 'PC',
+                                platformList: [
+                                    { name: 'Windows NT 6.1; WOW64', code: 'Win32' },
+                                    { name: 'Windows NT 10.0; Win64; x64', code: 'Win32' },
+                                    { name: 'Windows NT 11.0; Win64; x64', code: 'Win32' },
+                                    { name: 'Windows NT 10.0', code: 'Win32' },
+                                    { name: 'Windows NT 11.0', code: 'Win32' },
+                                    { name: 'MacIntel', code: 'MacIntel' },
+                                    { name: 'Macintosh; Intel Mac OS X 13_0', code: 'MacIntel' },
+                                    { name: 'Macintosh; Intel Mac OS X 14_0', code: 'MacIntel' },
+                                    { name: 'Macintosh; Intel Mac OS X 15_0', code: 'MacIntel' },
+                                    { name: 'Macintosh; Intel Mac OS X 16_0', code: 'MacIntel' },
+                                    { name: 'Linux x86_64', code: 'Linux x86_64' },
+                                    { name: 'X11; Ubuntu; Linux x86_64', code: 'Linux x86_64' },
+                                ],
+                                screenList: ['2560*1440', '1920*1080', '1792*1120', '1680*1050', '1600*900', '1536*864', '1440*900', '1366*768', '1280*800', '1280*720', '1024*768', '1024*600'],
+                            },
+                            engine: { name: 'Opera' },
+                            platform: 'MacIntel',
+                            vendor: 'Apple Computer, Inc.',
+                            name: 'Opera PC MacIntel',
                         },
-                        engine: { name: 'Opera' },
-                        platform: 'MacIntel',
-                        vendor: 'Apple Computer, Inc.',
-                        name: 'Opera PC MacIntel',
-                    },
-                    webPreferences: undefined,
-                    iframe: false, // Must , if not set will be unsafty browser
-                    skipTaskbar: false,
-                    windowType: 'popup',
-                    alwaysOnTop: true,
-                    resizable: true,
-                    show: win.customSetting.windowType == 'view' ? true : win.isVisible(),
-                    width: undefined,
-                    height: undefined,
-                    x: undefined,
-                    y: undefined,
-                    url: url,
-                });
+                        webPreferences: undefined,
+                        iframe: false, // Must , if not set will be unsafty browser
+                        skipTaskbar: false,
+                        windowType: 'popup',
+                        alwaysOnTop: true,
+                        resizable: true,
+                        show: win.customSetting.windowType == 'view' ? true : win.isVisible(),
+                        width: undefined,
+                        height: undefined,
+                        x: undefined,
+                        y: undefined,
+                        url: url,
+                    });
 
-                newWin.on('close', (e) => {
-                    if (win && !win.isDestroyed()) {
-                        win.loadURL(newWin.getURL());
-                    }
-                });
+                    newWin.on('close', (e) => {
+                        if (win && !win.isDestroyed()) {
+                            win.loadURL(newWin.getURL());
+                        }
+                    });
 
-                return;
+                    return;
+                }
             }
-            }
-        
 
             if ((!win.customSetting.allowAds && !child.isAllowURL(url)) || !win.customSetting.allowRedirect) {
                 e.preventDefault();
@@ -1219,76 +1171,74 @@ module.exports = function (child) {
                 }
 
                 let allow = false;
-              
 
-                if(true){
+                if (true) {
                     if ((url.like('*about:*') && child.parent.var.blocking.popup.allow_blank) || url.like('javascript:*|*accounts.google*|*account.facebook*|*login.microsoft*|*appleid.apple*')) {
-                    child.log('Run Default window', url);
-                    return {
-                        action: 'allow',
-                        overrideBrowserWindowOptions: {
-                            ...customSetting,
-                            customSetting: customSetting,
-                            parentWindowID : win.id,
-                            parent : win,
-                            alwaysOnTop: true,
-                            skipTaskbar: false,
-                            show: true,
-                            frame: true,
-                            fullscreenable: false,
-                            webPreferences: {
-                                defaultEncoding: 'UTF8',
-                                enableRemoteModule: true,
-                                devTools: true,
-                                spellcheck: false,
-                                sandbox: true,
-                                contextIsolation: false, // false -> can access preload window functions
-                                partition: setting.partition,
-                                preload: setting.preload,
-                                javascript: true,
-                                nativeWindowOpen: false,
-                                nodeIntegration: false,
-                                nodeIntegrationInSubFrames: true, // google login error
-                                nodeIntegrationInWorker: false,
-                                experimentalFeatures: false,
-                                experimentalCanvasFeatures: false,
-                                navigateOnDragDrop: true,
-                                webSecurity: true,
-                                allowRunningInsecureContent: false,
-                                plugins: true,
-                                preload: child.parent.files_dir + '/js/preload.js',
+                        child.log('Run Default window', url);
+                        return {
+                            action: 'allow',
+                            overrideBrowserWindowOptions: {
+                                ...customSetting,
+                                customSetting: customSetting,
+                                parentWindowID: win.id,
+                                parent: win,
+                                alwaysOnTop: true,
+                                skipTaskbar: false,
+                                show: true,
+                                frame: true,
+                                fullscreenable: false,
+                                webPreferences: {
+                                    defaultEncoding: 'UTF8',
+                                    enableRemoteModule: true,
+                                    devTools: true,
+                                    spellcheck: false,
+                                    sandbox: true,
+                                    contextIsolation: false, // false -> can access preload window functions
+                                    partition: setting.partition,
+                                    preload: setting.preload,
+                                    javascript: true,
+                                    nativeWindowOpen: false,
+                                    nodeIntegration: false,
+                                    nodeIntegrationInSubFrames: true, // google login error
+                                    nodeIntegrationInWorker: false,
+                                    experimentalFeatures: false,
+                                    experimentalCanvasFeatures: false,
+                                    navigateOnDragDrop: true,
+                                    webSecurity: true,
+                                    allowRunningInsecureContent: false,
+                                    plugins: true,
+                                    preload: child.parent.files_dir + '/js/preload.js',
+                                },
                             },
-                        },
-                    };
-                }
-                }
-                
-                if(!allow){
-                     if (!win.customSetting.allowNewWindows || (isPopup && !win.customSetting.allowPopup) || (!win.customSetting.allowAds && !child.isAllowURL(url))) {
-                    child.log('Block-open-window', url);
-                    win.webContents.send('[show-user-message]', { message: 'Blocked Open Window <p><a>' + url + '</a></p>' });
-                    return { action: 'deny' };
-                }
-
-                if (win.customSetting.allowPopup) {
-                    allow = true;
-                } else {
-                    let url_parser = child.url.parse(url);
-                    let current_url_parser = child.url.parse(win.getURL());
-
-                    if (!allow) {
-                        allow = win.customSetting.isWhiteSite || child.parent.var.blocking.white_list.some((d) => url_parser.hostname.like(d.url) || current_url_parser.hostname.like(d.url));
+                        };
                     }
-                    if (!allow) {
-                        if (child.parent.var.blocking.popup.allow_internal && url_parser.hostname.contains(current_url_parser.hostname)) {
-                            allow = true;
-                        } else if (child.parent.var.blocking.popup.allow_external && !url_parser.hostname.contains(current_url_parser.hostname)) {
-                            allow = true;
+                }
+
+                if (!allow) {
+                    if (!win.customSetting.allowNewWindows || (isPopup && !win.customSetting.allowPopup) || (!win.customSetting.allowAds && !child.isAllowURL(url))) {
+                        child.log('Block-open-window', url);
+                        win.webContents.send('[show-user-message]', { message: 'Blocked Open Window <p><a>' + url + '</a></p>' });
+                        return { action: 'deny' };
+                    }
+
+                    if (win.customSetting.allowPopup) {
+                        allow = true;
+                    } else {
+                        let url_parser = child.url.parse(url);
+                        let current_url_parser = child.url.parse(win.getURL());
+
+                        if (!allow) {
+                            allow = win.customSetting.isWhiteSite || child.parent.var.blocking.white_list.some((d) => url_parser.hostname.like(d.url) || current_url_parser.hostname.like(d.url));
+                        }
+                        if (!allow) {
+                            if (child.parent.var.blocking.popup.allow_internal && url_parser.hostname.contains(current_url_parser.hostname)) {
+                                allow = true;
+                            } else if (child.parent.var.blocking.popup.allow_external && !url_parser.hostname.contains(current_url_parser.hostname)) {
+                                allow = true;
+                            }
                         }
                     }
                 }
-                }
-               
 
                 if (allow) {
                     if (!isPopup && win.customSetting.windowType == 'view') {
@@ -1306,7 +1256,7 @@ module.exports = function (child) {
                             windowType: 'popup',
                             show: true,
                             modal: true,
-                            parentWindowID : win.id,
+                            parentWindowID: win.id,
                             url: url,
                             referrer: win.getURL(),
                         });
@@ -1377,8 +1327,6 @@ module.exports = function (child) {
                 loadOptions.postData = postBody.data;
                 loadOptions.extraHeaders = `content-type: ${contentType}; boundary=${boundary}`;
             }
-
-            
 
             let url_parser = child.url.parse(real_url);
             let current_url_parser = child.url.parse(win.getURL());

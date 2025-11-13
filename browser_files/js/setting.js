@@ -1,5 +1,4 @@
 app.controller('mainController', ($scope, $http, $timeout) => {
-     
     $scope.userAgentBrowserList = SOCIALBROWSER.userAgentBrowserList.map((b) => ({ name: b.name }));
     $scope.userAgentDeviceList = SOCIALBROWSER.userAgentDeviceList;
     if (SOCIALBROWSER.var.core.flags.like('*v2*')) {
@@ -55,15 +54,18 @@ app.controller('mainController', ($scope, $http, $timeout) => {
                     $scope.setting.session_list[i].privacy.vpc = SOCIALBROWSER.generateVPC();
                     $scope.setting.session_list[i].privacy.allowVPC = true;
                     $scope.setting.session_list[i].defaultUserAgent = SOCIALBROWSER.getRandomBrowser('pc');
+                    SOCIALBROWSER.showUserMessage('Generate Virual PC for Profile : ' + s.display);
                 });
         } else {
             if (session) {
                 session.privacy.vpc = SOCIALBROWSER.generateVPC();
                 session.privacy.allowVPC = true;
                 session.defaultUserAgent = SOCIALBROWSER.getRandomBrowser('pc');
+                SOCIALBROWSER.showUserMessage('Generate Virual PC for Profile : ' + session.display);
             } else {
                 SOCIALBROWSER.var.blocking.privacy.vpc = SOCIALBROWSER.generateVPC();
                 $scope.setting.blocking.privacy.vpc = { ...SOCIALBROWSER.var.blocking.privacy.vpc };
+                SOCIALBROWSER.showUserMessage('Generate Virual PC for Default ');
             }
         }
 
@@ -74,11 +76,13 @@ app.controller('mainController', ($scope, $http, $timeout) => {
             $scope.setting.session_list
                 .filter((s) => s.$selected)
                 .forEach((s, i) => {
-                    $scope.setting.session_list[i].defaultUserAgent = $SOCIALBROWSER.getRandomBrowser('pc');
+                    $scope.setting.session_list[i].defaultUserAgent = SOCIALBROWSER.getRandomBrowser('pc');
+                    SOCIALBROWSER.showUserMessage('Generate User Agent for Profile : ' + s.display);
                 });
         } else {
             if (session) {
                 session.defaultUserAgent = SOCIALBROWSER.getRandomBrowser('pc');
+                SOCIALBROWSER.showUserMessage('Generate User Agent for Profile : ' + session.display);
             }
         }
 
@@ -96,11 +100,13 @@ app.controller('mainController', ($scope, $http, $timeout) => {
                     if (index >= $scope.setting.proxy_list.length) {
                         index = 0;
                     }
+                    SOCIALBROWSER.showUserMessage('Generate Proxy for Profile : ' + s.display);
                 });
         } else {
             if (session) {
                 session.proxy = $scope.setting.proxy_list[index];
                 session.proxyEnabled = true;
+                SOCIALBROWSER.showUserMessage('Generate Proxy for Profile : ' + session.display);
             }
         }
 
@@ -112,12 +118,15 @@ app.controller('mainController', ($scope, $http, $timeout) => {
                 .filter((s) => s.$selected)
                 .forEach((s) => {
                     s.privacy.allowVPC = false;
+                    SOCIALBROWSER.showUserMessage('Stop Virual PC for Profile : ' + s.display);
                 });
         } else {
             if (session) {
                 session.privacy.allowVPC = false;
+                SOCIALBROWSER.showUserMessage('Stop Virual PC for Profile : ' + session.display);
             } else {
                 $scope.setting.blocking.privacy.vpc = { ...SOCIALBROWSER.var.blocking.privacy.vpc };
+                SOCIALBROWSER.showUserMessage('Stop Virual PC for Default : ');
             }
         }
 
@@ -129,12 +138,15 @@ app.controller('mainController', ($scope, $http, $timeout) => {
                 .filter((s) => s.$selected)
                 .forEach((s) => {
                     s.defaultUserAgent = null;
+                    SOCIALBROWSER.showUserMessage('Stop User Agent for Profile : ' + s.display);
                 });
         } else {
             if (session) {
                 session.defaultUserAgent = null;
+                SOCIALBROWSER.showUserMessage('Stop User Agent for Profile : ' + session.display);
             } else {
                 $scope.setting.core.defaultUserAgent = null;
+                SOCIALBROWSER.showUserMessage('Stop User Agent for Default : ');
             }
         }
 
@@ -146,10 +158,14 @@ app.controller('mainController', ($scope, $http, $timeout) => {
                 .filter((s) => s.$selected)
                 .forEach((s) => {
                     s.proxy = null;
+                    s.proxyEnabled = false;
+                    SOCIALBROWSER.showUserMessage('Stop Proxy for Profile : ' + s.display);
                 });
         } else {
             if (session) {
                 session.proxy = null;
+                session.proxyEnabled = false;
+                SOCIALBROWSER.showUserMessage('Stop Proxy for Profile : ' + session.display);
             }
         }
 
@@ -160,12 +176,11 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         for (let index = 0; index < 100; index++) {
             let browser = SOCIALBROWSER.getRandomBrowser();
             let newBrowser = {
+                name: browser.name + ' ' + browser.device.name + ' ' + browser.platform,
                 url: browser.url,
                 device: browser.device,
                 engine: { name: browser.name },
                 platform: browser.platform,
-                vendor: browser.platform.contains('mac|iPhone') ? 'Apple Computer, Inc.' : browser.vendor,
-                name: browser.name + ' ' + browser.device.name + ' ' + browser.platform,
             };
             if (!$scope.setting.userAgentList.some((u) => u.name == newBrowser.name)) {
                 $scope.setting.userAgentList.push(newBrowser);
@@ -845,7 +860,6 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     $scope.checkProxy = function (_se) {
         SOCIALBROWSER.ipc('[proxy-check-request]', { proxy: _se });
     };
-
 
     $scope.addPreload = function () {
         if ($scope.preload && $scope.preload.path && $scope.preload.url) {

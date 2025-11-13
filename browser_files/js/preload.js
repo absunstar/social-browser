@@ -2293,6 +2293,7 @@ SOCIALBROWSER.init2 = function () {
                 return table;
             };
 
+            SOCIALBROWSER.handleProxy = (...params) => SOCIALBROWSER.fn('child.handleProxy', ...params);
             SOCIALBROWSER.getRandomBrowser = (...params) => SOCIALBROWSER.fn('child.getRandomBrowser', ...params);
             SOCIALBROWSER.getRandomUserAgent = (...params) => SOCIALBROWSER.fn('child.getRandomUserAgent', ...params);
             SOCIALBROWSER.generateVPC = (...params) => SOCIALBROWSER.fn('child.generateVPC', ...params);

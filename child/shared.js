@@ -13,7 +13,95 @@ module.exports = function (owner) {
             max = Math.floor(max);
             return Math.floor(Math.random() * (max - min + 1) + min);
         };
+
+        owner.handleProxy = function (proxy) {
+            if (!proxy) {
+                return null;
+            } else if (typeof proxy == 'string') {
+                proxy = {
+                    url: proxyline.replaceAll('\r').replaceAll('\n'),
+                };
+            }
+
+            if (typeof proxy == 'object') {
+                if (!proxy.ip) {
+                    if (proxy.url) {
+                        let arr = proxy.url.split('://');
+                        if (arr.length == 2) {
+                            proxy.protocal = arr[0];
+                            proxy.url = arr[1];
+                        }
+                    }
+                    let arr = proxy.url.split('@');
+                    if (arr.length == 2) {
+                        proxy.url = arr[1];
+                        let auth = arr[0];
+                        auth = auth.split(':');
+                        proxy.username = auth[0];
+                        proxy.password = auth[1];
+                    }
+                    let parts = proxy.url.split(':');
+                    proxy.ip = parts[0];
+                    proxy.port = parts[1];
+                    proxy.username = proxy.username || parts[2];
+                    proxy.password = proxy.password || parts[3];
+                }
+
+                if (!proxy.ip) {
+                    return null;
+                }
+
+                if (proxy.ip && !proxy.port) {
+                    proxy.port = 80;
+                }
+
+                if (!proxy.proxyRules) {
+                    proxy.proxyRules = '';
+                    let startline = '';
+
+                    if (proxy.socks4) {
+                        proxy.proxyRules += startline + 'socks4://' + proxy.ip + ':' + proxy.port;
+                        startline = ',';
+                    }
+                    if (proxy.socks5) {
+                        proxy.proxyRules += startline + 'socks5://' + proxy.ip + ':' + proxy.port;
+                        startline = ',';
+                    }
+                    if (proxy.ftp) {
+                        proxy.proxyRules += startline + 'ftp://' + proxy.ip + ':' + proxy.port;
+                        startline = ',';
+                    }
+                    if (proxy.http) {
+                        proxy.proxyRules += startline + 'http://' + proxy.ip + ':' + proxy.port;
+                        startline = ',';
+                    }
+                    if (proxy.https) {
+                        proxy.proxyRules += startline + 'https://' + proxy.ip + ':' + proxy.port;
+                        startline = ',';
+                    }
+                    if (!proxy.http && !proxy.https && !proxy.ftp && !proxy.socks5 && !proxy.socks4) {
+                        if (proxy.protocal) {
+                            proxy.proxyRules = proxy.protocal + '://' + proxy.ip + ':' + proxy.port;
+                        } else {
+                            proxy.proxyRules = proxy.ip + ':' + proxy.port;
+                        }
+                        startline = ',';
+                    }
+
+                    if (proxy.proxyRules && proxy.direct) {
+                        proxy.proxyRules += startline + 'direct://';
+                    }
+                }
+
+                proxy.mode = proxy.mode || 'fixed_servers';
+                proxy.proxyBypassRules = proxy.proxyBypassRules || proxy.ignore || 'localhost,127.0.0.1,::1,192.168.*';
+                return proxy;
+            } else {
+                return null;
+            }
+        };
     }
+
     if ((like = true)) {
         owner.escapeRegExp = function (s) {
             if (!s) {
@@ -1070,6 +1158,8 @@ module.exports = function (owner) {
             if (browser.name.contains('Edge')) {
                 browser.url += ` ${browser.name}/${browser.major}.${browser.minor}.${browser.patch}`;
             }
+
+            browser.vendor = browser.platform.contains('mac|iPhone') ? 'Apple Computer, Inc.' : browser.vendor
             return browser;
         };
 
@@ -1081,7 +1171,7 @@ module.exports = function (owner) {
             let browser = owner.getRandomBrowser();
             return {
                 hide_memory: true,
-                memory_count: [2 , 4 , 8 ][owner.randomNumber(0,2)],
+                memory_count: [2, 4, 8][owner.randomNumber(0, 2)],
                 hide_cpu: true,
                 cpu_count: owner.randomNumber(1, 24),
                 hide_lang: true,

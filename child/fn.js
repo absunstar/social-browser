@@ -620,8 +620,8 @@ module.exports = function (child) {
                     } else if (row.length == 4) {
                         tmp.ip = row[0].replaceAll('"', '');
                         tmp.port = row[1].replaceAll('"', '');
-                        tmp.username = row[0].replaceAll('"', '');
-                        tmp.password = row[1].replaceAll('"', '');
+                        tmp.username = row[2].replaceAll('"', '');
+                        tmp.password = row[3].replaceAll('"', '');
                     } else {
                     }
                     docs.push(tmp);
@@ -629,25 +629,7 @@ module.exports = function (child) {
             } else if (file.path.like('*.txt')) {
                 let docs2 = child.api.readFileSync(file.path).toString().split('\n');
                 docs2.forEach((line) => {
-                    line = line.replace('\r', '');
-                    if (line.like('*://*')) {
-                        let parts = line.replace('\r').split('://')[1].split(':');
-                        docs.push({
-                            url: line,
-                            ip: parts[0],
-                            port: parts[1],
-                            username: parts[2],
-                            password: parts[3],
-                        });
-                    } else {
-                        let parts = line.replace('\r').split(':');
-                        docs.push({
-                            ip: parts[0],
-                            port: parts[1],
-                            username: parts[2],
-                            password: parts[3],
-                        });
-                    }
+                    docs.push(child.proxyHandle(line));
                 });
             } else {
                 docs = child.api.fromJson(child.api.readFileSync(file.path).toString());
@@ -656,25 +638,7 @@ module.exports = function (child) {
             let arr = file.text.split('\n');
 
             arr.forEach((line) => {
-                line = line.replace('\r', '');
-                if (line.like('*://*')) {
-                    let parts = line.replace('\r').split('://')[1].split(':');
-                    docs.push({
-                        url: line,
-                        ip: parts[0],
-                        port: parts[1],
-                        username: parts[2],
-                        password: parts[3],
-                    });
-                } else {
-                    let parts = line.replace('\r').split(':');
-                    docs.push({
-                        ip: parts[0],
-                        port: parts[1],
-                        username: parts[2],
-                        password: parts[3],
-                    });
-                }
+                docs.push(child.proxyHandle(line));
             });
         }
 
@@ -788,7 +752,6 @@ module.exports = function (child) {
 
             await page.setBypassCSP(true);
 
-
             if (obj.referrer) {
                 await page.setExtraHTTPHeaders({
                     Referer: obj.referrer,
@@ -814,8 +777,6 @@ module.exports = function (child) {
                     }
                 };
 
-                
-
                 const originalQuery = window.navigator.permissions.query;
                 window.navigator.permissions.query = (parameters) => {
                     return parameters.name === 'notifications' ? Promise.resolve({ state: Notification.permission }) : originalQuery(parameters);
@@ -837,7 +798,6 @@ module.exports = function (child) {
                 if (!navigator.languages || navigator.languages.length === 0) {
                     globalThis.navigator2.languages = globalThis.navigator2.languages || ['en-US', 'en'];
                 }
-
 
                 if (obj.customSetting) {
                     if (
@@ -1242,12 +1202,9 @@ module.exports = function (child) {
             //     // })();
             // });
 
-          
-                 if (obj.screen) {
+            if (obj.screen) {
                 await page.setViewport({ width: obj.screen.width, height: obj.screen.height });
             }
-            
-           
 
             if (obj.url) {
                 await page.goto(obj.url);
