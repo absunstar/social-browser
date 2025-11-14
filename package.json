@@ -111,7 +111,7 @@
         "appx": {}
     },
     "dependencies": {
-        "isite": "^2025.11.3",
+        "isite": "^2025.11.4",
         "puppeteer-core": "^24.22.0"
     },
     "devDependencies": {

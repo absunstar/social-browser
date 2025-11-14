@@ -84,15 +84,18 @@
         </div>
 
         <div class="row">
-            <div class="row" ng-repeat="_se in setting.session_list | filter:session.display track by $index  ">
-                <div class="col-11">
+            <div ng-hide="_se.hide" class="row" ng-repeat="_se in setting.session_list | filter:session.display track by $index  ">
+                <div class="col-10">
                     <div class="user-box" ng-click="selectSession(_se)">
                         <img src="http://127.0.0.1:60080/images/user.png" />
                         <p><span class="bold"> ( {{$index + 1}} / {{setting.session_list.length}} ) </span> {{_se.display}}</p>
                     </div>
                 </div>
                 <div class="col-1">
-                    <i-button type="delete" ng-click="removeSession(_se)"></i-button>
+                    <i-button class2="bg-orange" title="Hide User Profile" type="cancel" ng-click="hideSession(_se)"></i-button>
+                </div>
+                 <div class="col-1">
+                    <i-button title="Remove User Profile" type="delete" ng-click="removeSession(_se)"></i-button>
                 </div>
             </div>
         </div>

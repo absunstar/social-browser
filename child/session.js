@@ -3,6 +3,32 @@ module.exports = function (child) {
     child.session_name_list = [];
     child.allowSessionHandle = false;
 
+    child.changeProxy = function (proxy, sessionName) {
+        return new Promise((resolve, reject) => {
+            child.electron.app
+                .setProxy(proxy)
+                .then(() => {
+                    child.log(`App Session ${sessionName} Proxy Mode : ${proxy.mode} , ${proxy.proxyRules}`);
+                })
+                .catch((err) => {
+                    child.log(err);
+                });
+            let session = child.electron.session.fromPartition(sessionName);
+            session.closeAllConnections().then(() => {
+                session
+                    .setProxy(proxy)
+                    .then(() => {
+                        child.log(` Session ${sessionName} Proxy Mode : ${proxy.mode} , ${proxy.proxyRules}`);
+                        resolve();
+                    })
+                    .catch((err) => {
+                        child.log(err);
+                        reject(err);
+                    });
+            });
+        });
+    };
+
     child.loadGoogleExtension = function (extensionInfo) {
         console.log('Load Google Extension', extensionInfo);
         return true;
@@ -161,23 +187,15 @@ module.exports = function (child) {
 
         if (proxy && JSON.stringify(child.session_name_list[sessionIndex].proxy) !== JSON.stringify(proxy)) {
             child.session_name_list[sessionIndex].proxy = proxy;
-
-            ss.closeAllConnections().then(() => {
-                ss.setProxy(proxy)
-                    .then(() => {
-                        child.log(`session ${name} Proxy Set : ${proxy.proxyRules}`);
-                    })
-                    .catch((err) => {
-                        child.log(err);
-                    });
-            });
+            child.changeProxy(proxy, name);
         } else if (!proxy) {
-            ss.setProxy({
-                mode: 'system',
-                proxyBypassRules: 'localhost,127.0.0.1,::1,192.168.*',
-            }).then(() => {
-                child.log(`session ${name} Proxy Set : system `);
-            });
+            child.changeProxy(
+                {
+                    mode: 'system',
+                    proxyBypassRules: 'localhost,127.0.0.1,::1,192.168.*',
+                },
+                name,
+            );
         }
 
         const filter = {
@@ -1000,6 +1018,7 @@ module.exports = function (child) {
                     child.sendMessage({ type: '$download_item', data: dl });
                 }
 
+                child.downloadingBusy = true;
                 item.on('updated', (event, state) => {
                     if (!item.getSavePath()) {
                         return;
@@ -1035,6 +1054,7 @@ module.exports = function (child) {
                 });
 
                 item.once('done', (event, state) => {
+                    child.downloadingBusy = false;
                     if (!item.getSavePath()) {
                         return;
                     }

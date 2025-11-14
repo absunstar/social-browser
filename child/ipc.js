@@ -324,13 +324,13 @@ module.exports = function init(child) {
 
         event.returnValue = obj;
     });
-      child.ipcMain.on('[window.actions]', async (event, data = {}) => {
+    child.ipcMain.on('[window.actions]', async (event, data = {}) => {
         let currentWindow = child.electron.BrowserWindow.fromId(data.windowID);
         let result = undefined;
         if (data.action == 'location.href') {
-           result = currentWindow.getURL();
-        }else if (data.action == 'location.replace') {
-            currentWindow.send('[send-render-message]' , {name : 'location.replace' , url : data.url});
+            result = currentWindow.getURL();
+        } else if (data.action == 'location.replace') {
+            currentWindow.send('[send-render-message]', { name: 'location.replace', url: data.url });
         }
 
         event.returnValue = result;
@@ -798,42 +798,64 @@ module.exports = function init(child) {
     });
 
     child.ipcMain.handle('[fetch]', async (e, options) => {
-        options.body = options.body || options.data || options.payload;
+        try {
+            options.body = options.body || options.data || options.payload;
 
-        if (options.body && typeof options.body != 'string') {
-            options.body = JSON.stringify(options.body);
-        }
+            if (options.body && typeof options.body != 'string') {
+                options.body = JSON.stringify(options.body);
+            }
+            options.headers = options.headers || {};
+            options.return = options.return || 'all';
+            let request = {
+                mode: 'cors',
+                method: 'get',
+                redirect: 'follow',
+                ...options,
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.4638.54 Safari/537.36',
+                    ...options.headers,
+                },
+            };
 
-        options.return = options.return || 'all';
+            let response = await child.api.fetch(options.url, request);
 
-        let response = await child.api.fetch(options.url, {
-            mode: 'cors',
-            method: 'get',
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.4638.54 Safari/537.36',
-            },
-            redirect: 'follow',
-            ...options,
-        });
-
-        if (response) {
-            if (options.return == 'json') {
-                return response.json();
-            } else if (options.return == 'text') {
-                return await response.text();
+            if (response) {
+                if (options.return == 'json') {
+                    return response.json();
+                } else if (options.return == 'text') {
+                    return await response.text();
+                } else {
+                    let responseText = await response.text();
+                    let headers = await response.headers.raw();
+                    let resData = {
+                        ok: response.ok,
+                        status: response.status,
+                        statusText: response.statusText,
+                        headers: headers,
+                        body: responseText,
+                        url: options.url,
+                        request: {
+                            headers: request.headers,
+                        },
+                    };
+                    return resData;
+                }
             } else {
-                let responseText = await response.text();
-                let headers = await response.headers.raw();
                 let resData = {
-                    ok: response.ok,
-                    status: response.status,
-                    statusText: response.statusText,
-                    headers: headers,
-                    body: responseText,
+                    error: 'No Response',
                     url: options.url,
+                    request: {
+                        headers: request.headers,
+                    },
                 };
                 return resData;
             }
+        } catch (error) {
+            let resData = {
+                error: error.message,
+                url: options.url,
+            };
+            return resData;
         }
     });
 

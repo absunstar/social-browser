@@ -878,13 +878,20 @@
                                                         <div class="row">
                                                             <i-checkbox class="" label="Enabled" ng-model="setting.proxy.locationEnabled"></i-checkbox>
                                                             <div class="row padding" ng-show="setting.proxy.locationEnabled">
+                                                                <div class="row">
+                                                                    <i-button
+                                                                        loading="{{setting.proxy.busy}}"
+                                                                        label="Auto Detected Location"
+                                                                        ng-click="autoUpdateProxyLocation(setting.proxy)"
+                                                                    ></i-button>
+                                                                </div>
                                                                 <div class="row padding v-center">
                                                                     <div class="col">
                                                                         <i-checkbox label="Hide Date ( problem in some sites )" ng-model="setting.proxy.vpc.maskTimeZone"></i-checkbox>
                                                                     </div>
                                                                     <div class="col" ng-show="setting.proxy.vpc.maskTimeZone">
                                                                         <i-list
-                                                                            items="timezones2"
+                                                                            items="timezones"
                                                                             primary="value"
                                                                             display="text"
                                                                             label="Select Time Zone"
@@ -1078,6 +1085,7 @@
                                                     <div class="row center">
                                                         <div class="col">{{$index + 1}}</div>
                                                         <div class="col"><i-checkbox ng-model="_se.$selected"></i-checkbox></div>
+                                                        <div class="col"><i-checkbox label="Hide" ng-model="_se.hide"></i-checkbox></div>
                                                     </div>
                                                 </td>
                                                 <td>
@@ -1158,13 +1166,20 @@
                                                             <legend>Proxy Location Setting</legend>
                                                             <i-checkbox class="" label="Enabled" ng-model="currentSession.proxy.locationEnabled"></i-checkbox>
                                                             <div class="row padding" ng-show="currentSession.proxy.locationEnabled">
+                                                                <div class="row">
+                                                                    <i-button
+                                                                        loading="{{currentSession.proxy.busy}}"
+                                                                        label="Auto Detected Location"
+                                                                        ng-click="autoUpdateProxyLocation(currentSession.proxy)"
+                                                                    ></i-button>
+                                                                </div>
                                                                 <div class="row padding v-center">
                                                                     <div class="col">
                                                                         <i-checkbox label="Hide Date ( problem in some sites )" ng-model="currentSession.proxy.vpc.maskTimeZone"></i-checkbox>
                                                                     </div>
                                                                     <div class="col" ng-show="currentSession.proxy.vpc.maskTimeZone">
                                                                         <i-list
-                                                                            items="timezones2"
+                                                                            items="timezones"
                                                                             primary="value"
                                                                             display="text"
                                                                             label="Select Time Zone"
@@ -1234,7 +1249,7 @@
                                                         <div class="col">
                                                             <i-list
                                                                 ng-disabled="currentSession.privacy.vpc.maskTimeZone !== true"
-                                                                items="timezones2"
+                                                                items="timezones"
                                                                 primary="value"
                                                                 display="text"
                                                                 label="Select Time Zone"
@@ -1531,23 +1546,30 @@
 
                                                 <fieldset>
                                                     <legend>Proxy Location Setting</legend>
-                                                    <i-checkbox class="" label="Enabled" ng-model="$proxy.locationEnabled"></i-checkbox>
-                                                    <div class="row padding" ng-show="$proxy.locationEnabled">
-                                                        <div class="row padding v-center">
-                                                            <div class="col">
-                                                                <i-checkbox label="Hide Date ( problem in some sites )" ng-model="$proxy.vpc.maskTimeZone"></i-checkbox>
+
+                                                    <div class="row">
+                                                        <i-checkbox class="" label="Enabled" ng-model="$proxy.locationEnabled"></i-checkbox>
+
+                                                        <div class="row padding" ng-show="$proxy.locationEnabled">
+                                                            <div class="row">
+                                                                <i-button loading="{{$proxy.busy}}" label="Auto Detected Location" ng-click="autoUpdateProxyLocation($proxy)"></i-button>
                                                             </div>
-                                                            <div class="col" ng-show="$proxy.vpc.maskTimeZone">
-                                                                <i-list items="timezones2" primary="value" display="text" label="Select Time Zone" ng-model="$proxy.vpc.timeZone"></i-list>
+                                                            <div class="row padding v-center">
+                                                                <div class="col">
+                                                                    <i-checkbox label="Hide Date ( problem in some sites )" ng-model="$proxy.vpc.maskTimeZone"></i-checkbox>
+                                                                </div>
+                                                                <div class="col" ng-show="$proxy.vpc.maskTimeZone">
+                                                                    <i-list items="timezones" primary="value" display="text" label="Select Time Zone" ng-model="$proxy.vpc.timeZone"></i-list>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="row padding v-center">
-                                                            <div class="col">
-                                                                <i-checkbox label="Hide Current Location( Custom )" ng-model="$proxy.vpc.hide_location"></i-checkbox>
-                                                            </div>
-                                                            <div class="col" ng-show="$proxy.vpc.hide_location">
-                                                                <i-control ng-model="$proxy.vpc.location.latitude" label="Latitude"></i-control>
-                                                                <i-control ng-model="$proxy.vpc.location.longitude" label="Longitude"></i-control>
+                                                            <div class="row padding v-center">
+                                                                <div class="col">
+                                                                    <i-checkbox label="Hide Current Location( Custom )" ng-model="$proxy.vpc.hide_location"></i-checkbox>
+                                                                </div>
+                                                                <div class="col" ng-show="$proxy.vpc.hide_location">
+                                                                    <i-control ng-model="$proxy.vpc.location.latitude" label="Latitude"></i-control>
+                                                                    <i-control ng-model="$proxy.vpc.location.longitude" label="Longitude"></i-control>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1562,7 +1584,7 @@
                                         <table class="table hover">
                                             <tr>
                                                 <th>
-                                                    <p> Count : ({{setting.proxy_list.length}})</p>
+                                                    <p>Count : ({{setting.proxy_list.length}})</p>
                                                     <div class="row center">
                                                         <i-button type="delete" ng-click="setting.proxy_list = []" label="Remove All"></i-button>
                                                     </div>
@@ -1577,7 +1599,7 @@
                                                 <td>
                                                     <span class="bold"> ( {{$index + 1}} ) </span>
                                                     <i-button type="delete" ng-click="removeProxy(_se)"></i-button>
-                                                      <div class="col"><i-checkbox ng-model="_se.$selected"></i-checkbox></div>
+                                                    <div class="col"><i-checkbox ng-model="_se.$selected"></i-checkbox></div>
                                                 </td>
                                                 <td>
                                                     <div class="row">
@@ -1601,12 +1623,15 @@
                                                         <legend>Proxy Location Setting</legend>
                                                         <i-checkbox class="" label="Enabled" ng-model="_se.locationEnabled"></i-checkbox>
                                                         <div class="row padding" ng-show="_se.locationEnabled">
+                                                            <div class="row">
+                                                                <i-button loading="{{_se.busy}}" label="Auto Detected Location" ng-click="autoUpdateProxyLocation(_se)"></i-button>
+                                                            </div>
                                                             <div class="row padding v-center">
                                                                 <div class="col">
                                                                     <i-checkbox label="Hide Date ( problem in some sites )" ng-model="_se.vpc.maskTimeZone"></i-checkbox>
                                                                 </div>
                                                                 <div class="col" ng-show="_se.vpc.maskTimeZone">
-                                                                    <i-list items="timezones2" primary="value" display="text" label="Select Time Zone" ng-model="_se.vpc.timeZone"></i-list>
+                                                                    <i-list items="timezones" primary="value" display="text" label="Select Time Zone" ng-model="_se.vpc.timeZone"></i-list>
                                                                 </div>
                                                             </div>
                                                             <div class="row padding v-center">

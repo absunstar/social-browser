@@ -564,17 +564,7 @@ module.exports = function (child) {
         win.setMenuBarVisibility(false);
 
         if ((proxy = child.handleProxy(win.customSetting.proxy))) {
-            let ss = win.webContents.session;
-
-            ss.closeAllConnections().then(() => {
-                ss.setProxy(proxy)
-                    .then(() => {
-                        child.log(`window Proxy Set : ${proxy.proxyRules}`);
-                    })
-                    .catch((err) => {
-                        child.log(err);
-                    });
-            });
+            child.changeProxy(proxy , win.customSetting.partition);
         } else {
             child.handleSession({ name: win.customSetting.partition });
         }

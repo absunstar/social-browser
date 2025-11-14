@@ -1146,6 +1146,17 @@ SOCIALBROWSER.init2 = function () {
 
                 return session;
             };
+            SOCIALBROWSER.hideSession = function (session) {
+                if (typeof session == 'string') {
+                    session = {
+                        display: session,
+                    };
+                }
+
+                SOCIALBROWSER.ws({ type: '[hide-session]', session: session });
+
+                return session;
+            };
             SOCIALBROWSER.add2faCode = function (fa) {
                 if (typeof fa == 'string') {
                     let password = SOCIALBROWSER.var.user_data_input.find((d) => d.partition == SOCIALBROWSER.partition && d.hostname.contains(SOCIALBROWSER.domain));
@@ -1214,8 +1225,12 @@ SOCIALBROWSER.init2 = function () {
                 });
             };
 
-            SOCIALBROWSER.getIP = function () {
-                return SOCIALBROWSER.fetchJson('https://inet-ip.info/json?fewfeedcors=0');
+            SOCIALBROWSER.getIPinformation = function (ip) {
+                if (ip) {
+                    return SOCIALBROWSER.$fetch('https://inet-ip.info/json', { method: 'post', body: { ip: ip } }).then((res) => res.json());
+                } else {
+                    return SOCIALBROWSER.$fetch('https://inet-ip.info/json').then((res) => res.json());
+                }
             };
             SOCIALBROWSER.rand = {
                 noise: function () {
@@ -2625,6 +2640,9 @@ SOCIALBROWSER.init2 = function () {
                         response.json = function () {
                             return SOCIALBROWSER.$json(response.body);
                         };
+                        response.text = function () {
+                            return response.body;
+                        };
                         resolve(response);
                     });
                 });
@@ -3330,7 +3348,7 @@ SOCIALBROWSER.init2 = function () {
                     resolve(false);
                 });
             };
-            SOCIALBROWSER.navigator.credentials = {}
+            SOCIALBROWSER.navigator.credentials = {};
             SOCIALBROWSER.navigator.credentials.create = function (options) {
                 return new Promise((resolve, reject) => {
                     if (options.password) {
@@ -4131,20 +4149,22 @@ SOCIALBROWSER.init2 = function () {
                         type: 'separator',
                     });
 
-                    SOCIALBROWSER.var.session_list.forEach((ss, i) => {
-                        arr.push({
-                            label: ` As ( ${i + 1} ) [ ${ss.display} ] `,
-                            click() {
-                                SOCIALBROWSER.ipc('[open new tab]', {
-                                    referrer: document.location.href,
-                                    url: url,
-                                    partition: ss.name,
-                                    user_name: ss.display,
-                                    windowID: SOCIALBROWSER.window.id,
-                                });
-                            },
+                    SOCIALBROWSER.var.session_list
+                        .filter((s) => !s.hide)
+                        .forEach((ss, i) => {
+                            arr.push({
+                                label: ` As ( ${i + 1} ) [ ${ss.display} ] `,
+                                click() {
+                                    SOCIALBROWSER.ipc('[open new tab]', {
+                                        referrer: document.location.href,
+                                        url: url,
+                                        partition: ss.name,
+                                        user_name: ss.display,
+                                        windowID: SOCIALBROWSER.window.id,
+                                    });
+                                },
+                            });
                         });
-                    });
 
                     return arr;
                 }
@@ -5304,19 +5324,21 @@ SOCIALBROWSER.init2 = function () {
                 });
                 arr.push({ type: 'separator' });
 
-                SOCIALBROWSER.var.session_list.forEach((s, i) => {
-                    let currentID = SOCIALBROWSER.partition.replace('persist:', '');
-                    let userID = s.name.replace('persist:', '');
-                    arr.push({
-                        label: ` As ( ${i + 1} ) [ ${s.display} ] `,
-                        click() {
-                            SOCIALBROWSER.openInChrome({
-                                userDataDir: SOCIALBROWSER.userDataDir.replace(currentID, userID) + '/chrome',
-                                //  args: ['--start-maximized', '--profile-directory=' + s.name],
-                            });
-                        },
+                SOCIALBROWSER.var.session_list
+                    .filter((s) => !s.hide)
+                    .forEach((s, i) => {
+                        let currentID = SOCIALBROWSER.partition.replace('persist:', '');
+                        let userID = s.name.replace('persist:', '');
+                        arr.push({
+                            label: ` As ( ${i + 1} ) [ ${s.display} ] `,
+                            click() {
+                                SOCIALBROWSER.openInChrome({
+                                    userDataDir: SOCIALBROWSER.userDataDir.replace(currentID, userID) + '/chrome',
+                                    //  args: ['--start-maximized', '--profile-directory=' + s.name],
+                                });
+                            },
+                        });
                     });
-                });
 
                 if (arr.length > 0) {
                     SOCIALBROWSER.menuList.push({
@@ -8014,7 +8036,7 @@ SOCIALBROWSER.init2 = function () {
                                 opener: window,
                                 innerHeight: 1028,
                                 innerWidth: 720,
-                               
+
                                 postMessage: function (...args) {
                                     //  SOCIALBROWSER.log('postMessage child_window', args);
                                 },
@@ -8160,7 +8182,6 @@ SOCIALBROWSER.init2 = function () {
                                 child_window.eval = () => {};
                                 child_window.closed = true;
                             });
-                             
 
                             child_window.eval = win.eval;
 
@@ -9548,9 +9569,9 @@ SOCIALBROWSER.init2 = function () {
                 SOCIALBROWSER.ipc('[open new popup]', data);
             } else if (data.name == '[show-user-message]') {
                 SOCIALBROWSER.showUserMessage(data.message);
-            }else if (data.name == 'location.replace') {
-                window.location.replace(data.url)
-            }  else {
+            } else if (data.name == 'location.replace') {
+                window.location.replace(data.url);
+            } else {
                 console.log(data);
             }
         });

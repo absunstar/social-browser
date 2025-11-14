@@ -59,6 +59,9 @@ app.controller('mainController', ($scope, $http, $interval, $timeout) => {
     $scope.removeSession = function (_se) {
         SOCIALBROWSER.removeSession(_se);
     };
+       $scope.hideSession = function (_se) {
+        SOCIALBROWSER.hideSession(_se);
+    };
 
     $scope.loadSetting = function () {
         $scope.setting.session_list = [];

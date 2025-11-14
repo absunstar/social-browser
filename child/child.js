@@ -166,6 +166,7 @@ if (child.electron.app.dock) {
 //child.electron.app.commandLine.appendSwitch('enable-features', 'PDFViewerUpdate');
 
 child.mkdirSync(child.userDataDir);
+child.electron.app.setName('Social Browser - ' + child.partition);
 child.electron.app.setPath('userData', child.userDataDir);
 child.electron.protocol.registerSchemesAsPrivileged([
     { scheme: 'browser', privileges: { bypassCSP: true, standard: true, secure: true, supportFetchAPI: true, allowServiceWorkers: true, corsEnabled: true, stream: true } },
@@ -220,7 +221,7 @@ child.electron.app.whenReady().then(() => {
     });
 
     child.tryClosing = function () {
-        if (child.partition.contains('persist:') && child.electron.BrowserWindow.getAllWindows().length === 0) {
+        if (!child.downloadingBusy && child.partition.contains('persist:') && child.electron.BrowserWindow.getAllWindows().length === 0) {
             child.log('window-all-closed :  process.exit() : ' + child.partition + ' : ' + child.index);
             process.exit();
         }

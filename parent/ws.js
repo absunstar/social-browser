@@ -345,10 +345,10 @@ module.exports = function init(parent) {
                     parent.set_var('proxy_list', parent.var.proxy_list);
                     break;
 
-                    case '[cookies-data]':
+                case '[cookies-data]':
                     let cookies = message.cookies;
                     parent.clientList.forEach((client) => {
-                        if (client && client.uuid == message.uuid ) {
+                        if (client && client.uuid == message.uuid) {
                             client.cookies = cookies;
                         }
                     });
@@ -480,8 +480,8 @@ module.exports = function init(parent) {
                                 parent.applay('session_list');
                             }
                         }
-                    }else{
-                         parent.sendMessage({type : '[send-render-message]' , data :{ name : '[show-user-message]' , message : 'Max Profiles Detected : ' + parent.var.core.browser.maxProfiles }})
+                    } else {
+                        parent.sendMessage({ type: '[send-render-message]', data: { name: '[show-user-message]', message: 'Max Profiles Detected : ' + parent.var.core.browser.maxProfiles } });
                     }
 
                     break;
@@ -495,6 +495,14 @@ module.exports = function init(parent) {
                         parent.applay('session_list');
                     }
                     break;
+                case '[hide-session]':
+                    let hideSessionIndex = parent.var.session_list.findIndex((s) => s && (s.name == message.session.name || s.display == message.session.display));
+                    if (hideSessionIndex !== -1) {
+                        parent.var.session_list[hideSessionIndex].hide = true;
+                        parent.applay('session_list');
+                    }
+
+                    break;
                 case '[change-user-proxy]':
                     let userIndex = parent.var.session_list.findIndex((s) => s.name == message.partition);
                     if (userIndex !== -1) {
@@ -502,7 +510,7 @@ module.exports = function init(parent) {
                             parent.var.session_list[userIndex].proxy = message.proxy;
                             parent.var.session_list[userIndex].proxyEnabled = true;
                         } else {
-                             parent.var.session_list[userIndex].proxy = null;
+                            parent.var.session_list[userIndex].proxy = null;
                             parent.var.session_list[userIndex].proxyEnabled = false;
                         }
                         parent.applay('session_list');
@@ -605,7 +613,6 @@ module.exports = function init(parent) {
         parent.clientList.forEach((client) => {
             if (client.ws) {
                 client.ws.send(message);
-                
             }
         });
     };

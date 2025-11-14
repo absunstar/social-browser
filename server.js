@@ -193,6 +193,10 @@
             browser.log('network-disconnected');
         });
 
+        browser.electron.app.on('window-all-closed', (e) => {
+            e.preventDefault();
+        });
+
         // browser.var.session_list.forEach((s1) => {
         //   let s2 = '__cookies_' + s1.name.replace(':', '_list');
         //   if (browser.var[s2].length === 0) {

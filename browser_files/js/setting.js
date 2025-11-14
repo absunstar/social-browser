@@ -15,7 +15,6 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     $scope.busy = true;
     $scope.setting_busy = true;
     $scope.timezones = [...SOCIALBROWSER.timeZones];
-    $scope.timezones2 = [...SOCIALBROWSER.timeZones];
     $scope.$limitProxy = 100;
 
     $scope.selectFolder = function () {
@@ -180,6 +179,30 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         $scope.$applyAsync();
     };
 
+    $scope.autoUpdateProxyLocation = function (proxy) {
+        proxy.busy = true;
+
+        SOCIALBROWSER.getIPinformation(proxy.ip)
+            .then((data) => {
+                proxy.data = data;
+                proxy.vpc = proxy.vpc || {};
+                proxy.vpc.hide_location = true;
+                proxy.vpc.location = {
+                    latitude: data.city.Location.Latitude,
+                    longitude: data.city.Location.Longitude,
+                };
+                proxy.vpc.maskTimeZone = true;
+                proxy.vpc.timeZone = $scope.timezones.find((t) => t.value.like(data.city.Location.TimeZone) || t.text.like(data.city.Location.TimeZone) || t.utc.includes(data.city.Location.TimeZone));
+                proxy.busy = false;
+                $scope.$applyAsync();
+            })
+            .catch((err) => {
+                proxy.busy = false;
+                $scope.$applyAsync();
+                alert(err.message);
+            });
+    };
+
     $scope.importProxyList_text = function () {
         $scope.importProxyList(SOCIALBROWSER.readCopy());
     };
@@ -218,7 +241,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
                         }
                     });
                     $scope.$applyAsync();
-                    text = null
+                    text = null;
                 }
             }
         }
