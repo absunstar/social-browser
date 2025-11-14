@@ -59,6 +59,7 @@
                 padding: 0px !important;
                 margin: 10px 0px 0px 0px !important;
             }
+
             i-button button {
                 max-height: max-content !important;
             }
@@ -77,6 +78,9 @@
                 --table-color: #ffc107;
                 --bs-table-color-state: #fff;
                 margin: 5px;
+            }
+            .table td {
+                vertical-align: top;
             }
             .tabs .tabs-header .tab-link {
                 font-size: 18px;
@@ -190,6 +194,9 @@
                 background: #bbb;
                 border: none;
                 color: #6a6969;
+            }
+            i-checkbox label {
+                white-space: nowrap;
             }
             i-button:hover {
                 transform: scale(1.1);
@@ -880,6 +887,7 @@
                                                             <div class="row padding" ng-show="setting.proxy.locationEnabled">
                                                                 <div class="row">
                                                                     <i-button
+                                                                        type="approve"
                                                                         loading="{{setting.proxy.busy}}"
                                                                         label="Auto Detected Location"
                                                                         ng-click="autoUpdateProxyLocation(setting.proxy)"
@@ -1168,6 +1176,7 @@
                                                             <div class="row padding" ng-show="currentSession.proxy.locationEnabled">
                                                                 <div class="row">
                                                                     <i-button
+                                                                        type="approve"
                                                                         loading="{{currentSession.proxy.busy}}"
                                                                         label="Auto Detected Location"
                                                                         ng-click="autoUpdateProxyLocation(currentSession.proxy)"
@@ -1552,7 +1561,7 @@
 
                                                         <div class="row padding" ng-show="$proxy.locationEnabled">
                                                             <div class="row">
-                                                                <i-button loading="{{$proxy.busy}}" label="Auto Detected Location" ng-click="autoUpdateProxyLocation($proxy)"></i-button>
+                                                                <i-button type="approve" loading="{{$proxy.busy}}" label="Auto Detected Location" ng-click="autoUpdateProxyLocation($proxy)"></i-button>
                                                             </div>
                                                             <div class="row padding v-center">
                                                                 <div class="col">
@@ -1581,14 +1590,18 @@
                                     </div>
 
                                     <div class="row">
+                                        <div class="row">
+                                            <i-button type="approve" loading="{{proxyBusy}}" label="Auto Detected Location for Selected Proxies" ng-click="autoUpdateProxyLocations()"></i-button>
+                                        </div>
+
                                         <table class="table hover">
                                             <tr>
                                                 <th>
-                                                    <p>Count : ({{setting.proxy_list.length}})</p>
                                                     <div class="row center">
+                                                        <p>Count : ({{setting.proxy_list.length}})</p>
                                                         <i-button type="delete" ng-click="setting.proxy_list = []" label="Remove All"></i-button>
+                                                        <i-button label="Toggle Select" ng-click="toggleselectedProxies()"></i-button>
                                                     </div>
-                                                    <div class="row center"><i-button label="Toggle Select" ng-click="toggleselectedProxies()"></i-button></div>
                                                 </th>
                                                 <th>
                                                     <i-control label="Search in Proxy List" ng-model="searchProxy"></i-control>
@@ -1597,9 +1610,13 @@
                                             </tr>
                                             <tr ng-repeat="_se in setting.proxy_list | limitTo : $limitProxy | filter:searchProxy track by $index">
                                                 <td>
-                                                    <span class="bold"> ( {{$index + 1}} ) </span>
-                                                    <i-button type="delete" ng-click="removeProxy(_se)"></i-button>
-                                                    <div class="col"><i-checkbox ng-model="_se.$selected"></i-checkbox></div>
+                                                    <div class="row center">
+                                                        <i-checkbox label="select" ng-model="_se.$selected"></i-checkbox>
+                                                        <br>
+                                                        <p class="bold">( {{$index + 1}} )</p>
+                                                        <br>
+                                                        <i-button type="delete" ng-click="removeProxy(_se)"></i-button>
+                                                    </div>
                                                 </td>
                                                 <td>
                                                     <div class="row">
@@ -1624,7 +1641,7 @@
                                                         <i-checkbox class="" label="Enabled" ng-model="_se.locationEnabled"></i-checkbox>
                                                         <div class="row padding" ng-show="_se.locationEnabled">
                                                             <div class="row">
-                                                                <i-button loading="{{_se.busy}}" label="Auto Detected Location" ng-click="autoUpdateProxyLocation(_se)"></i-button>
+                                                                <i-button type="approve" loading="{{_se.busy}}" label="Auto Detected Location" ng-click="autoUpdateProxyLocation(_se)"></i-button>
                                                             </div>
                                                             <div class="row padding v-center">
                                                                 <div class="col">

@@ -180,27 +180,47 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     };
 
     $scope.autoUpdateProxyLocation = function (proxy) {
-        proxy.busy = true;
+        return new Promise((resolve, reject) => {
+            proxy.busy = true;
+           
+            SOCIALBROWSER.getIPinformation(proxy.ip)
+                .then((data) => {
+                    proxy.data = data;
+                    proxy.locationEnabled = true;
+                    proxy.vpc = proxy.vpc || {};
+                    proxy.vpc.hide_location = true;
+                    proxy.vpc.location = {
+                        latitude: data.city.Location.Latitude,
+                        longitude: data.city.Location.Longitude,
+                    };
+                    proxy.vpc.maskTimeZone = true;
+                    proxy.vpc.timeZone = $scope.timezones.find(
+                        (t) => t.value.like(data.city.Location.TimeZone) || t.text.like(data.city.Location.TimeZone) || t.utc.includes(data.city.Location.TimeZone),
+                    );
+                    proxy.busy = false;
+                    $scope.$applyAsync();
+                    resolve();
+                })
+                .catch((err) => {
+                    proxy.busy = false;
+                    $scope.$applyAsync();
+                    alert(err.message);
+                    reject();
+                });
+        });
+    };
 
-        SOCIALBROWSER.getIPinformation(proxy.ip)
-            .then((data) => {
-                proxy.data = data;
-                proxy.vpc = proxy.vpc || {};
-                proxy.vpc.hide_location = true;
-                proxy.vpc.location = {
-                    latitude: data.city.Location.Latitude,
-                    longitude: data.city.Location.Longitude,
-                };
-                proxy.vpc.maskTimeZone = true;
-                proxy.vpc.timeZone = $scope.timezones.find((t) => t.value.like(data.city.Location.TimeZone) || t.text.like(data.city.Location.TimeZone) || t.utc.includes(data.city.Location.TimeZone));
-                proxy.busy = false;
-                $scope.$applyAsync();
-            })
-            .catch((err) => {
-                proxy.busy = false;
-                $scope.$applyAsync();
-                alert(err.message);
-            });
+    $scope.autoUpdateProxyLocations = async function () {
+        $scope.proxyBusy = true;
+        let arr = $scope.setting.proxy_list.filter((p) => p.$selected);
+        SOCIALBROWSER.alert('Auto Update Proxies Location : ' + arr.length);
+        for (let index = 0; index < arr.length; index++) {
+            const proxy = arr[index];
+            await $scope.autoUpdateProxyLocation(proxy);
+             SOCIALBROWSER.alert('Auto Updated Proxy : ' + proxy.ip+ ' ( ' + index + ' / ' + arr.length + ' ) ');
+        }
+        $scope.proxyBusy = false;
+        SOCIALBROWSER.showUserMessage('ALL Selected Proxies Updated Location');
     };
 
     $scope.importProxyList_text = function () {
