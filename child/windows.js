@@ -184,9 +184,10 @@ module.exports = function (child) {
 
             allowGoogleTranslate: false,
             allowCrossOrigin: false,
+            allowCorePopup : false,
 
             allowDownload: true,
-            allowExternalDownloader: undefined,
+            allowExternalDownloader: true,
             defaultDownloadPath: '',
             showDownloadCompleteDialog: undefined,
             showDownloadInformation: undefined,

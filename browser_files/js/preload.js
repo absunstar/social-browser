@@ -8085,7 +8085,7 @@ SOCIALBROWSER.init2 = function () {
 
                             if (
                                 !url ||
-                                url.like('javascript:*|about:*|javascript:*|*accounts.google*|*account.facebook*|*login.microsoft*|*appleid.apple*') ||
+                                url.like('javascript:*|about:*|*accounts.google*|*account.facebook*|*login.microsoft*|*appleid.apple*') ||
                                 SOCIALBROWSER.customSetting.allowCorePopup
                             ) {
                                 let opener = window.open0(...args);
