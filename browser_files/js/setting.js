@@ -182,7 +182,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     $scope.autoUpdateProxyLocation = function (proxy) {
         return new Promise((resolve, reject) => {
             proxy.busy = true;
-           
+
             SOCIALBROWSER.getIPinformation(proxy.ip)
                 .then((data) => {
                     proxy.data = data;
@@ -217,7 +217,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         for (let index = 0; index < arr.length; index++) {
             const proxy = arr[index];
             await $scope.autoUpdateProxyLocation(proxy);
-             SOCIALBROWSER.alert('Auto Updated Proxy : ' + proxy.ip+ ' ( ' + index + ' / ' + arr.length + ' ) ');
+            SOCIALBROWSER.alert('Auto Updated Proxy : ' + proxy.ip + ' ( ' + index + ' / ' + arr.length + ' ) ');
         }
         $scope.proxyBusy = false;
         SOCIALBROWSER.showUserMessage('ALL Selected Proxies Updated Location');
@@ -334,16 +334,39 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         }
     };
     $scope.importSelectedProfiles = function () {
-        let file = SOCIALBROWSER.ipcSync('[select-open-file]', {
+        let path = SOCIALBROWSER.ipcSync('[select-open-file]', {
             filters: [
                 { name: 'Social Files', extensions: ['social'] },
                 { name: 'All Files', extensions: ['*'] },
             ],
         });
-        if (file) {
-            let data = SOCIALBROWSER.ipcSync('[read-file]', file);
-            let arr = SOCIALBROWSER.showObject(data);
-            arr.forEach((profile) => {
+        if (path) {
+            let profileList = [];
+            let data = SOCIALBROWSER.readFile(path);
+            if (path.like('*.social')) {
+                profileList = SOCIALBROWSER.showObject(data);
+            } else {
+                let arr = data.split('\n');
+                arr.forEach((line) => {
+                    line = line.replaceAll('\\r', '').trim();
+                    if (line) {
+                        line = line.split(':');
+                        profileList.push({
+                            name: 'persist:' + SOCIALBROWSER.md5(line[0]),
+                            display: line[0],
+                            can_delete: true,
+                            time: new Date().getTime(),
+                            privacy: {
+                                allowVPC: true,
+                                vpc: SOCIALBROWSER.generateVPC(),
+                            },
+                            defaultUserAgent: SOCIALBROWSER.getRandomBrowser('pc', 'chrome'),
+                        });
+                    }
+                });
+            }
+            SOCIALBROWSER.alert('Importing User Profiles : ' + profileList.length);
+            profileList.forEach((profile) => {
                 let index = $scope.setting.session_list.findIndex((s) => s.name == profile.name);
                 if (index === -1) {
                     console.log('Profile Not Exists : ' + profile.name);

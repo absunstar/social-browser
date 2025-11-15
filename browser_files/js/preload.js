@@ -2541,13 +2541,15 @@ SOCIALBROWSER.init2 = function () {
 
             SOCIALBROWSER.alertTimeout = null;
             SOCIALBROWSER.alert = function (msg, time = 1000 * 3) {
+SOCIALBROWSER.log(msg);
+
                 if (typeof msg !== 'string') {
                     return false;
                 }
                 msg = msg.trim();
 
-                SOCIALBROWSER.log(msg);
                 clearTimeout(SOCIALBROWSER.alertTimeout);
+                
                 let div = SOCIALBROWSER.$('#__alertBox');
                 if (div) {
                     div.innerHTML = SOCIALBROWSER.policy.createHTML(msg.replace(/\n/g, '<br>'));
