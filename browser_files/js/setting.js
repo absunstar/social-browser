@@ -41,19 +41,19 @@ app.controller('mainController', ($scope, $http, $timeout) => {
             $scope.setting.session_list
                 .filter((s) => s.$selected)
                 .forEach((s, i) => {
-                    $scope.setting.session_list[i].privacy.vpc = SOCIALBROWSER.generateVPC();
+                    $scope.setting.session_list[i].privacy.vpc = SOCIALBROWSER.generateVPC('pc');
                     $scope.setting.session_list[i].privacy.allowVPC = true;
                     $scope.setting.session_list[i].defaultUserAgent = SOCIALBROWSER.getRandomBrowser('pc');
                     SOCIALBROWSER.showUserMessage('Generate Virual PC for Profile : ' + s.display);
                 });
         } else {
             if (session) {
-                session.privacy.vpc = SOCIALBROWSER.generateVPC();
+                session.privacy.vpc = SOCIALBROWSER.generateVPC('pc');
                 session.privacy.allowVPC = true;
                 session.defaultUserAgent = SOCIALBROWSER.getRandomBrowser('pc');
                 SOCIALBROWSER.showUserMessage('Generate Virual PC for Profile : ' + session.display);
             } else {
-                SOCIALBROWSER.var.blocking.privacy.vpc = SOCIALBROWSER.generateVPC();
+                SOCIALBROWSER.var.blocking.privacy.vpc = SOCIALBROWSER.generateVPC('pc');
                 $scope.setting.blocking.privacy.vpc = { ...SOCIALBROWSER.var.blocking.privacy.vpc };
                 SOCIALBROWSER.showUserMessage('Generate Virual PC for Default ');
             }
@@ -164,7 +164,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
 
     $scope.generateLatestUserAgentList = function () {
         for (let index = 0; index < 100; index++) {
-            let browser = SOCIALBROWSER.getRandomBrowser();
+            let browser = SOCIALBROWSER.getRandomBrowser('pc');
             let newBrowser = {
                 name: browser.name + ' ' + browser.device.name + ' ' + browser.platform,
                 url: browser.url,
@@ -358,9 +358,9 @@ app.controller('mainController', ($scope, $http, $timeout) => {
                             time: new Date().getTime(),
                             privacy: {
                                 allowVPC: true,
-                                vpc: SOCIALBROWSER.generateVPC(),
+                                vpc: SOCIALBROWSER.generateVPC('pc'),
                             },
-                            defaultUserAgent: SOCIALBROWSER.getRandomBrowser('pc', 'chrome'),
+                            defaultUserAgent: SOCIALBROWSER.getRandomBrowser('pc'),
                         });
                     }
                 });

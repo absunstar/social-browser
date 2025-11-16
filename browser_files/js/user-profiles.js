@@ -34,17 +34,23 @@ app.controller('mainController', ($scope, $http, $interval, $timeout) => {
         $scope.setting.session_list.forEach((se, i) => {
             if (se.name === _se.name) {
                 $scope.setting.core.session = se;
-                $scope.saveSessions();
+                SOCIALBROWSER.ipc('[update-browser-var]', {
+                    name: 'core',
+                    data: $scope.setting.core,
+                });
                 $scope.session = {};
                 SOCIALBROWSER.ipc('[open new tab]', {
-                    referrer: document.location.href,
                     url: $scope.setting.core.default_page,
                     partition: se.name,
                     user_name: se.display,
                 });
                 SOCIALBROWSER.window.hide();
+                se.$current = true;
+            } else {
+                se.$current = false;
             }
         });
+        $scope.$applyAsync();
     };
 
     $scope.addSession = function () {
@@ -59,13 +65,18 @@ app.controller('mainController', ($scope, $http, $interval, $timeout) => {
     $scope.removeSession = function (_se) {
         SOCIALBROWSER.removeSession(_se);
     };
-       $scope.hideSession = function (_se) {
+    $scope.hideSession = function (_se) {
         SOCIALBROWSER.hideSession(_se);
     };
 
     $scope.loadSetting = function () {
         $scope.setting.session_list = [];
         SOCIALBROWSER.var.session_list.forEach((s) => {
+            if (s.name == SOCIALBROWSER.var.core.session.name) {
+                s.$current = true;
+            } else {
+                s.$current = false;
+            }
             $scope.setting.session_list.push({ ...s });
         });
         $scope.setting.core = SOCIALBROWSER.var.core;

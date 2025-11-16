@@ -2123,8 +2123,8 @@ module.exports = function (owner) {
             return owner.getRandomBrowser().url;
         };
 
-        owner.generateVPC = function () {
-            let browser = owner.getRandomBrowser();
+        owner.generateVPC = function (...args) {
+            let browser = owner.getRandomBrowser(...args);
             return {
                 hide_memory: true,
                 memory_count: [2, 4, 8][owner.randomNumber(0, 2)],

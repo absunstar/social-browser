@@ -790,14 +790,12 @@ module.exports = function init(parent) {
                     parent.var.core.browser.activated = true;
                     parent.var.core.browser.message = data.message || 'Browser Activated';
                     parent.var.core.browser.maxProfiles = data.maxProfiles || parent.var.core.browser.maxProfiles;
-                } else if (data.done && !data.activated) {
+                } else if (data.done && data.activated === false) {
                     parent.var.core.browser.activated = false;
                     parent.var.core.browser.message = data.message || 'Browser Not Activated';
                     parent.var.core.browser.maxProfiles = data.maxProfiles || 10;
-                } else {
-                    parent.var.core.browser.activated = false;
-                    parent.var.core.browser.message = data.message || 'Browser Can Not Activated';
-                }
+                } 
+                // not else / my be network redirect or wrong response
                 parent.shareBrowserVar('core');
                 callback(null, data);
             })

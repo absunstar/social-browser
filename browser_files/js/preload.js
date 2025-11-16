@@ -1121,12 +1121,12 @@ SOCIALBROWSER.init2 = function () {
                     if (!session.privacy) {
                         session.privacy = {
                             allowVPC: true,
-                            vpc: SOCIALBROWSER.generateVPC(),
+                            vpc: SOCIALBROWSER.generateVPC('pc'),
                         };
                     }
 
                     if (!session.defaultUserAgent) {
-                        session.defaultUserAgent = SOCIALBROWSER.getRandomBrowser('pc', 'chrome');
+                        session.defaultUserAgent = SOCIALBROWSER.getRandomBrowser('pc');
                     }
 
                     SOCIALBROWSER.ws({ type: '[add-session]', session: session });
@@ -2549,7 +2549,7 @@ SOCIALBROWSER.log(msg);
                 msg = msg.trim();
 
                 clearTimeout(SOCIALBROWSER.alertTimeout);
-                
+
                 let div = SOCIALBROWSER.$('#__alertBox');
                 if (div) {
                     div.innerHTML = SOCIALBROWSER.policy.createHTML(msg.replace(/\n/g, '<br>'));
@@ -3568,7 +3568,7 @@ SOCIALBROWSER.log(msg);
 
         if (SOCIALBROWSER.sessionId() == 0 && !SOCIALBROWSER.session.privacy.vpc) {
             SOCIALBROWSER.session.privacy.allowVPC = true;
-            SOCIALBROWSER.session.privacy.vpc = SOCIALBROWSER.getStorage('vpc') || SOCIALBROWSER.generateVPC();
+            SOCIALBROWSER.session.privacy.vpc = SOCIALBROWSER.getStorage('vpc') || SOCIALBROWSER.generateVPC('pc');
             SOCIALBROWSER.setStorage('vpc', SOCIALBROWSER.session.privacy.vpc);
         }
 
@@ -4115,7 +4115,7 @@ SOCIALBROWSER.log(msg);
                             partition: ghost,
                             user_name: ghost,
                             defaultUserAgent: SOCIALBROWSER.getRandomBrowser('pc'),
-                            vpc: SOCIALBROWSER.generateVPC(),
+                            vpc: SOCIALBROWSER.generateVPC('pc'),
                             show: true,
                             iframe: true,
                             iframe: true,
@@ -4813,7 +4813,7 @@ SOCIALBROWSER.log(msg);
                                 partition: ghost,
                                 user_name: ghost,
                                 defaultUserAgent: SOCIALBROWSER.getRandomBrowser('pc'),
-                                vpc: SOCIALBROWSER.generateVPC(),
+                                vpc: SOCIALBROWSER.generateVPC('pc'),
                                 url: f.src,
                                 referrer: document.location.href,
                                 show: true,
@@ -5729,7 +5729,7 @@ SOCIALBROWSER.log(msg);
                                     partition: ghost,
                                     user_name: ghost,
                                     defaultUserAgent: SOCIALBROWSER.getRandomBrowser('pc'),
-                                    vpc: SOCIALBROWSER.generateVPC(),
+                                    vpc: SOCIALBROWSER.generateVPC('pc'),
                                     main_window_id: SOCIALBROWSER.window.id,
                                 });
                             },
@@ -9264,7 +9264,7 @@ SOCIALBROWSER.log(msg);
                     url: document.location.href,
                     referrer: document.location.href,
                     defaultUserAgent: browser,
-                    vpc: SOCIALBROWSER.generateVPC(),
+                    vpc: SOCIALBROWSER.generateVPC('pc'),
                     width: browser.screen.width,
                     height: browser.screen.height,
                     show: true,
@@ -9281,7 +9281,7 @@ SOCIALBROWSER.log(msg);
                     url: document.location.href,
                     referrer: document.location.href,
                     defaultUserAgent: browser,
-                    vpc: SOCIALBROWSER.generateVPC(),
+                    vpc: SOCIALBROWSER.generateVPC('mobile', 'chrome'),
                     width: browser.screen.width,
                     height: browser.screen.height,
                     show: true,

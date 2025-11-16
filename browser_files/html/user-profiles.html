@@ -86,7 +86,7 @@
         <div class="row">
             <div ng-hide="_se.hide" class="row" ng-repeat="_se in setting.session_list | filter:session.display track by $index  ">
                 <div class="col-10">
-                    <div class="user-box" ng-click="selectSession(_se)">
+                    <div class="user-box" ng-click="selectSession(_se)" ng-class="{'bg-green' : _se.$current}">
                         <img src="http://127.0.0.1:60080/images/user.png" />
                         <p><span class="bold"> ( {{$index + 1}} / {{setting.session_list.length}} ) </span> {{_se.display}}</p>
                     </div>

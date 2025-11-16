@@ -1090,10 +1090,10 @@
                                             </tr>
                                             <tr ng-repeat="_se in setting.session_list | filter:session track by $index">
                                                 <td class="bold">
-                                                    <div class="row center">
-                                                        <div class="col">{{$index + 1}}</div>
-                                                        <div class="col"><i-checkbox ng-model="_se.$selected"></i-checkbox></div>
-                                                        <div class="col"><i-checkbox label="Hide" ng-model="_se.hide"></i-checkbox></div>
+                                                    <div class="row ">
+                                                        <div >{{$index + 1}}</div>
+                                                        <div ><i-checkbox label="Hide" ng-model="_se.hide"></i-checkbox></div>
+                                                        <div ><i-checkbox label="select" ng-model="_se.$selected"></i-checkbox></div>
                                                     </div>
                                                 </td>
                                                 <td>
