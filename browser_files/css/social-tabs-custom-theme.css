@@ -9,7 +9,7 @@
   transition: all 0.4s ease;
 }
 
-.social-tabs {
+.browser-tabs {
   margin: 0px;
   box-sizing: border-box;
   position: relative;
@@ -19,22 +19,22 @@
   overflow: hidden;
 }
 
-.social-tabs .social-tab.social-tab-current .social-tab-background > svg .social-tab-background {
+.browser-tabs .social-tab.social-tab-current .social-tab-background > svg .social-tab-background {
   fill: var(--social-current-tab-fill);
 }
 
-.social-tabs .social-tab .social-tab-background > svg .social-tab-shadow {
+.browser-tabs .social-tab .social-tab-background > svg .social-tab-shadow {
   fill: none;
   stroke: #000;
   stroke-width: 0.5px;
 }
 
-.social-tabs .social-tab .social-tab-background > svg .social-tab-background {
+.browser-tabs .social-tab .social-tab-background > svg .social-tab-background {
   fill: var(--social-other-tab-fill);
   transform: translateX(0.25px) translateY(0.25px);
 }
 
-.social-tabs .social-tabs-bottom-bar {
+.browser-tabs .browser-tabs-bottom-bar {
   position: absolute;
   bottom: 0;
   height: 2px;
@@ -45,7 +45,7 @@
   z-index: 20;
 }
 
-.social-tabs .social-tab-title {
+.browser-tabs .social-tab-title {
   position: relative;
   display: inline-block;
   vertical-align: top;
@@ -59,7 +59,7 @@
   max-width: calc(100% - 70px);
   pointer-events: none;
 }
-.social-tabs .social-tab-title p {
+.browser-tabs .social-tab-title p {
   margin: 0px;
   padding: 0px;
   width: 100%;
@@ -118,10 +118,7 @@
 }
 
 .address-input .url {
-  display: inline;
-  padding: 5px;
-  vertical-align: sub;
-  margin: 5px;
+    white-space: nowrap;
 }
 
 .address-input .browser {
@@ -134,7 +131,15 @@
   padding: 1px 7px;
   border-radius: 3px;
 }
-
+.address-input .proxy {
+  vertical-align: -webkit-baseline-middle;
+  display: inline-block;
+  color: white;
+  background: #FF9800;
+  padding: 1px 7px;
+  font-weight: bold;
+  border-radius: 5px;
+}
 .address-input .https {
   vertical-align: -webkit-baseline-middle;
   display: inline-block;

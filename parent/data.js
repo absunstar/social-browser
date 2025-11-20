@@ -801,13 +801,13 @@ module.exports = function init(parent) {
             })
             .catch((err) => {
                 if (err) {
-                    if (parent.var.core.keyInfo && parent.var.core.keyInfo.endDate && parent.api.getDate(parent.var.core.keyInfo.endDate).getTime() < parent.api.getDate().getTime()) {
-                        parent.var.core.browser.activated = false;
-                        parent.var.core.browser.message = 'Your Key Expire Date , Update Key or Subscription and get New Key';
+                    if (parent.var.core.keyInfo && parent.var.core.keyInfo.endDate && parent.api.getDate(parent.var.core.keyInfo.endDate).getTime() > parent.api.getDate().getTime()) {
+                        parent.var.core.browser.activated = true;
+                        parent.var.core.browser.message = 'Activated by Key Expire Date';
                     } else if (parent.var.session_list.length <= parent.var.core.browser.maxProfiles) {
                         parent.var.core.browser.activated = true;
                         parent.var.core.browser.message = 'Free Activated';
-                    } else {
+                    } else if (parent.var.session_list.length > parent.var.core.browser.maxProfiles){
                         parent.var.core.browser.activated = false;
                         parent.var.core.browser.message = 'Must Activated by [ Device Key ] or [ Online Key ] to use more than ' + parent.var.core.browser.maxProfiles + ' profiles';
                     }

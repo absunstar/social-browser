@@ -14,6 +14,7 @@ module.exports = function (child) {
                     child.log(err);
                 });
             let session = child.electron.session.fromPartition(sessionName);
+            session.proxy = proxy;
             session.closeAllConnections().then(() => {
                 session
                     .setProxy(proxy)

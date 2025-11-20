@@ -16,13 +16,13 @@
         <link rel="stylesheet" href="http://127.0.0.1:60080/css/theme.css" />
 
         <link rel="stylesheet" href="http://127.0.0.1:60080/css/social.css" />
-        <link rel="stylesheet" href="http://127.0.0.1:60080/css/social-tabs.css" />
+        <link rel="stylesheet" href="http://127.0.0.1:60080/css/browser-tabs.css" />
 
         <link rel="stylesheet" href="http://127.0.0.1:60080/css/font-awesome-6.css" />
 
         <link rel="stylesheet" href="http://127.0.0.1:60080/css/fonts.css" />
 
-        <link rel="stylesheet" href="http://127.0.0.1:60080/css/social-tabs-current-theme.css" />
+        <link rel="stylesheet" href="http://127.0.0.1:60080/css/browser-tabs-current-theme.css" />
 
         <style>
             html,
@@ -66,7 +66,7 @@
     </head>
 
     <body>
-        <div class="social-tabs app-region">
+        <div class="browser-tabs app-region">
             <div title="Close Browser" class="social-close">
                 <i class="fa-solid fa-xmark"></i>
             </div>
@@ -79,9 +79,9 @@
 
             <div onclick="ipc('[show-profiles]')" id="user_name"></div>
 
-            <div class="social-tabs-content"></div>
+            <div class="browser-tabs-content"></div>
 
-            <div class="social-tabs-bottom-bar"></div>
+            <div class="browser-tabs-bottom-bar"></div>
         </div>
 
         <div class="row social-address-bar">
@@ -95,26 +95,28 @@
                 <a class="reload" title="Reload All Page Files" onclick="ipc('[window-reload]')">
                     <i class="fa fa-refresh"></i>
                 </a>
-                <div class="address-input pointer">
+                <div class="address-input pointer" onclick="ipc('[show-addressbar]' , {url : SOCIALBROWSER.getCurrentTabInfo().url})">
+                    <div class="proxy"></div>
                     <div class="https protocol"></div>
                     <div class="http protocol"></div>
                     <div class="ftp protocol"></div>
                     <div class="file protocol"></div>
                     <div class="browser protocol"></div>
-                    <p class="url" onclick="ipc('[show-addressbar]' , {url : this.getAttribute('title')})"></p>
+                    <p class="url"></p>
                 </div>
 
+                <a title="Copy URL" onclick="copyCurrentURL();">
+                    <i class="fas fa-copy"></i>
+                </a>
+                <a class="space"> | </a>
                 <a title="Bookmarks" class="bookmarks" onclick="showBookmarksMenu();">
                     <i class="fa fa-star"></i>
                 </a>
-
-                <a class="space"> | </a>
 
                 <a title="Downloads" onclick="showDownloads()">
                     <i class="fa fa-download"></i>
                 </a>
 
-                <a class="space"> | </a>
                 <a class="developer-tools" title="Developer Tools" onclick="ipc('[show-window-dev-tools]')">
                     <i class="fa fa-bug"></i>
                 </a>
@@ -157,8 +159,8 @@
                 <a title="Take Screen Shot ( current Page )" onclick=" ipc('[window-action]', { name: 'screen-shot' })">
                     <i class="fa-solid fa-camera"></i>
                 </a>
-                 <a title="Save ( current Page )" onclick=" ipc('[window-action]', { name: 'save-page' })">
-                   <i class="fas fa-save"></i>
+                <a title="Save ( current Page )" onclick=" ipc('[window-action]', { name: 'save-page' })">
+                    <i class="fas fa-save"></i>
                 </a>
                 <a class="space"> | </a>
 
@@ -235,7 +237,7 @@
         <script src="http://127.0.0.1:60080/js/jquery.js"></script>
 
         <script src="http://127.0.0.1:60080/js/draggabilly.js"></script>
-        <script src="http://127.0.0.1:60080/js/social-tabs.js"></script>
+        <script src="http://127.0.0.1:60080/js/browser-tabs.js"></script>
         <script src="http://127.0.0.1:60080/js/social.js"></script>
 
         <script>

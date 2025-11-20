@@ -5659,7 +5659,7 @@ SOCIALBROWSER.log(msg);
                             label: 'Hide tab',
                             click() {
                                 node.classList.add('display-none');
-                                socialTabs.layoutTabs();
+                                browserTabs.layoutTabs();
                             },
                         });
                         SOCIALBROWSER.menuList.push({
@@ -5670,7 +5670,7 @@ SOCIALBROWSER.log(msg);
                                         el.classList.add('display-none');
                                     }
                                 });
-                                socialTabs.layoutTabs();
+                                browserTabs.layoutTabs();
                             },
                         });
                         SOCIALBROWSER.menuList.push({
@@ -5679,7 +5679,7 @@ SOCIALBROWSER.log(msg);
                                 document.querySelectorAll('.social-tab').forEach((t) => {
                                     t.classList.remove('display-none');
                                 });
-                                socialTabs.layoutTabs();
+                                browserTabs.layoutTabs();
                             },
                         });
                         SOCIALBROWSER.menuList.push({

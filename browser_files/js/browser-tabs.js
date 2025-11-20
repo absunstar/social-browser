@@ -1,4 +1,3 @@
-
 const tabList = [];
 
 const tabsvg =
@@ -74,7 +73,7 @@ client.on('setting changed', (arr) => {
 
 let instanceId = 0;
 
-class SocialTabs {
+class BrowserTabs {
     constructor() {
         this.draggabillyInstances = [];
     }
@@ -84,7 +83,7 @@ class SocialTabs {
         this.options = options;
 
         this.instanceId = instanceId;
-        this.el.setAttribute('data-social-tabs-instance-id', this.instanceId);
+        this.el.setAttribute('data-browser-tabs-instance-id', this.instanceId);
         instanceId += 1;
 
         this.setupStyleEl();
@@ -144,7 +143,7 @@ class SocialTabs {
     }
 
     get tabContentEl() {
-        return this.el.querySelector('.social-tabs-content');
+        return this.el.querySelector('.browser-tabs-content');
     }
 
     get tabWidth() {
@@ -203,7 +202,7 @@ class SocialTabs {
     }
 
     fixZIndexes() {
-        const bottomBarEl = this.el.querySelector('.social-tabs-bottom-bar');
+        const bottomBarEl = this.el.querySelector('.browser-tabs-bottom-bar');
         const tabEls = this.tabEls;
 
         tabEls.forEach((tabEl, i) => {
@@ -236,7 +235,7 @@ class SocialTabs {
             SOCIALBROWSER.ipc('[open new tab]', {
                 ...tabProperties,
                 windowType: 'view',
-                url: tabProperties.url || defaultTapProperties.url,
+                url: tabProperties.url || (SOCIALBROWSER.isValidURL(SOCIALBROWSER.readCopy()) ? SOCIALBROWSER.readCopy() : defaultTapProperties.url),
                 source: 'session',
                 mainWindowID: SOCIALBROWSER.window.id,
             });
@@ -380,7 +379,7 @@ class SocialTabs {
     }
 
     setupDraggabilly() {
-        let socialTabs = document.querySelector('.social-tabs');
+        let browserTabs = document.querySelector('.browser-tabs');
         const tabEls = this.tabEls;
         const tabEffectiveWidth = this.tabEffectiveWidth;
         const tabPositions = this.tabPositions;
@@ -397,10 +396,10 @@ class SocialTabs {
             this.draggabillyInstances.push(draggabillyInstance);
 
             draggabillyInstance.on('dragStart', () => {
-                socialTabs.classList.remove('app-region');
+                browserTabs.classList.remove('app-region');
                 this.cleanUpPreviouslyDraggedTabs();
                 tabEl.classList.add('social-tab-currently-dragged');
-                this.el.classList.add('social-tabs-sorting');
+                this.el.classList.add('browser-tabs-sorting');
             });
 
             draggabillyInstance.on('dragMove', (event, pointer, moveVector) => {
@@ -418,7 +417,7 @@ class SocialTabs {
 
             draggabillyInstance.on('dragEnd', () => {
                 setTimeout(() => {
-                    socialTabs.classList.add('app-region');
+                    browserTabs.classList.add('app-region');
                 }, 1000 * 2);
                 const finalTranslateX = parseFloat(tabEl.style.left, 10);
                 tabEl.style.transform = `translate3d(0, 0, 0)`;
@@ -430,7 +429,7 @@ class SocialTabs {
 
                     requestAnimationFrame(() => {
                         tabEl.classList.remove('social-tab-currently-dragged');
-                        this.el.classList.remove('social-tabs-sorting');
+                        this.el.classList.remove('browser-tabs-sorting');
                         tabEl.classList.add('social-tab-just-dragged');
 
                         requestAnimationFrame(() => {
@@ -456,4 +455,4 @@ class SocialTabs {
     }
 }
 
-window.SocialTabs = SocialTabs;
+window.BrowserTabs = BrowserTabs;

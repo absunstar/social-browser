@@ -1,6 +1,5 @@
-
-var socialTabsDom = document.querySelector('.social-tabs');
-var socialTabs = new SocialTabs();
+var browserTabsDom = document.querySelector('.browser-tabs');
+var browserTabs = new BrowserTabs();
 var currentTabId = null;
 var opendTabList = [];
 let $addressbar = $('.address-input .url');
@@ -454,6 +453,10 @@ function showSettingMenu() {
             })),
         })),
     });
+}
+
+function copyCurrentURL() {
+    SOCIALBROWSER.copy(SOCIALBROWSER.getCurrentTabInfo().url);
 }
 
 function showBookmarksMenu() {
@@ -915,7 +918,7 @@ SOCIALBROWSER.showWindowsMenu = function () {
     });
 };
 
-socialTabs.init(socialTabsDom, {
+browserTabs.init(browserTabsDom, {
     tabOverlapDistance: 10,
     minWidth: 35,
     maxWidth: 270,
@@ -946,19 +949,19 @@ function hideAddressBar() {
 }
 
 function showSocialTabs() {
-    $('.social-tabs').show();
+    $('.browser-tabs').show();
     $('.social-address-bar').show();
-    socialTabs.layoutTabs();
-    socialTabs.fixZIndexes();
-    socialTabs.setupDraggabilly();
+    browserTabs.layoutTabs();
+    browserTabs.fixZIndexes();
+    browserTabs.setupDraggabilly();
 }
 
 function hideSocialTabs() {
-    $('.social-tabs').hide();
+    $('.browser-tabs').hide();
     $('.social-address-bar').hide();
-    socialTabs.layoutTabs();
-    socialTabs.fixZIndexes();
-    socialTabs.setupDraggabilly();
+    browserTabs.layoutTabs();
+    browserTabs.fixZIndexes();
+    browserTabs.setupDraggabilly();
 }
 
 function handleURL(u) {
@@ -992,7 +995,7 @@ $('.social-minmize').click(() => {
     ipc('[browser-message]', { name: 'minmize', windowID: SOCIALBROWSER.window.id });
 });
 
-socialTabsDom.addEventListener('activeTabChange', ({ detail }) => {
+browserTabsDom.addEventListener('activeTabChange', ({ detail }) => {
     currentTabId = detail.tabEl.id;
     SOCIALBROWSER.currentTabInfo = SOCIALBROWSER.getCurrentTabInfo();
 
@@ -1030,12 +1033,14 @@ socialTabsDom.addEventListener('activeTabChange', ({ detail }) => {
         $('.address-input .file').css('display', 'none');
         $('.address-input .ftp').css('display', 'none');
         $('.address-input .browser').css('display', 'none');
+        $('.address-input .proxy').css('display', 'none');
 
         $('.address-input .https').html('');
         $('.address-input .http').html('');
         $('.address-input .file').html('');
         $('.address-input .ftp').html('');
         $('.address-input .browser').html('');
+        $('.address-input .proxy').html('');
 
         if (
             $('#' + currentTabId)
@@ -1045,7 +1050,7 @@ socialTabsDom.addEventListener('activeTabChange', ({ detail }) => {
             $('.address-input .browser').html('browser');
             $('.address-input .browser').css('display', 'inline-block');
             url = $('#' + currentTabId).attr('url');
-            let arr = url.split('/');
+            let arr = url.split('//');
             setURL(arr[arr.length - 1], url);
         } else {
             let protocol = '';
@@ -1104,9 +1109,14 @@ socialTabsDom.addEventListener('activeTabChange', ({ detail }) => {
             handleUrlText();
         }
     }
+
+    if ($('#' + currentTabId).attr('proxy') && $('#' + currentTabId).attr('proxy') != 'undefined') {
+        $('.address-input .proxy').html($('#' + currentTabId).attr('proxy'));
+        $('.address-input .proxy').css('display', 'inline-block');
+    }
 });
 
-socialTabsDom.addEventListener('tabAdd', ({ detail }) => {
+browserTabsDom.addEventListener('tabAdd', ({ detail }) => {
     currentTabId = detail.tabEl.id;
     if (currentTabId && currentTabId != null && currentTabId.length > 0) {
         opendTabList.push({
@@ -1128,7 +1138,7 @@ socialTabsDom.addEventListener('tabAdd', ({ detail }) => {
     }
 });
 
-socialTabsDom.addEventListener('tabRemove', ({ detail }) => {
+browserTabsDom.addEventListener('tabRemove', ({ detail }) => {
     currentTabId = detail.id;
 
     ipc('[close-view]', {
@@ -1166,7 +1176,7 @@ function renderNewTabData(op) {
         iconURL: 'browser://images/loading.gif',
         mainWindowID: SOCIALBROWSER.window.id,
     };
-    socialTabs.addTab(tab);
+    browserTabs.addTab(tab);
     // console.log(tab);
 }
 
@@ -1207,7 +1217,7 @@ SOCIALBROWSER.on('[update-tab-properties]', (event, data) => {
         }
     }
 
-    if (socialTabs.tabEls.length === 2 && !SOCIALBROWSER.showViewDone && !SOCIALBROWSER.window.isMinimized() && SOCIALBROWSER.window.isVisible()) {
+    if (browserTabs.tabEls.length === 2 && !SOCIALBROWSER.showViewDone && !SOCIALBROWSER.window.isMinimized() && SOCIALBROWSER.window.isVisible()) {
         ipc('[show-view]', {
             x: 0,
             y: 0,
@@ -1240,23 +1250,30 @@ SOCIALBROWSER.on('[update-tab-properties]', (event, data) => {
             $('.Page-audio i').css('color', '#f44336');
         }
 
+        $('.address-input .proxy').css('display', 'none');
         $('.address-input .http').css('display', 'none');
         $('.address-input .https').css('display', 'none');
         $('.address-input .file').css('display', 'none');
         $('.address-input .ftp').css('display', 'none');
         $('.address-input .browser').css('display', 'none');
 
+        $('.address-input .proxy').html('');
         $('.address-input .https').html('');
         $('.address-input .http').html('');
         $('.address-input .file').html('');
         $('.address-input .ftp').html('');
         $('.address-input .browser').html('');
 
+        if (data.proxy) {
+            $('.address-input .proxy').html(data.proxy);
+            $('.address-input .proxy').css('display', 'inline-block');
+        }
+
         if (data.url.like('http://127.0.0.1:60080*|browser*')) {
             $('.address-input .browser').html('browser');
             $('.address-input .browser').css('display', 'inline-block');
             url = $('#' + currentTabId).attr('url');
-            let arr = url.split('/');
+            let arr = url.split('//');
             setURL(arr[arr.length - 1], url);
         } else {
             let protocol = '';
@@ -1301,11 +1318,12 @@ SOCIALBROWSER.on('[update-tab-properties]', (event, data) => {
         }
     }
 });
+
 function renderMessage(cm) {
     if (!cm) {
         return;
     } else if (cm.name == '[remove-tab]') {
-        socialTabs.removeTab(socialTabs.removeTab(socialTabsDom.querySelector('#' + cm.tabID)));
+        browserTabs.removeTab(browserTabs.removeTab(browserTabsDom.querySelector('#' + cm.tabID)));
     } else if (cm.name == 'set-setting') {
         for (let k of Object.keys(cm.var)) {
             SOCIALBROWSER.var[k] = cm.var[k];
@@ -1379,11 +1397,11 @@ function playMiniIframe(cm) {
 }
 
 function closeCurrentTab() {
-    socialTabs.removeTab(socialTabsDom.querySelector('.social-tab-current'));
+    browserTabs.removeTab(browserTabsDom.querySelector('.social-tab-current'));
 }
 
 function closeTab(id) {
-    socialTabs.removeTab(socialTabsDom.querySelector('#' + id));
+    browserTabs.removeTab(browserTabsDom.querySelector('#' + id));
 }
 
 function ExitSocialWindow(noTabs = false) {
@@ -1433,7 +1451,7 @@ function handleUrlText() {
     }
     let w = document.querySelectorAll('.address-input')[0].clientWidth / 11;
     if (url.length > w) {
-        setURL(url.substring(0, w), url);
+        setURL(url, url);
     } else {
         setURL(url, url);
     }

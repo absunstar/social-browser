@@ -25,7 +25,7 @@ module.exports = function (child) {
                 }),
                 windowType: 'addressbar',
                 vip: true,
-                allowMenu: false,
+                allowMenu:  child.isDeveloperMode(),
                 show: false,
                 width: win.getBounds().width - 200,
                 height: 500,
@@ -78,7 +78,7 @@ module.exports = function (child) {
                 }),
                 windowType: 'profiles',
                 vip: true,
-                allowMenu: false,
+                allowMenu: child.isDeveloperMode(),
                 show: false,
                 width: 800,
                 height: 800,
@@ -184,7 +184,7 @@ module.exports = function (child) {
 
             allowGoogleTranslate: false,
             allowCrossOrigin: false,
-            allowCorePopup : false,
+            allowCorePopup: false,
 
             allowDownload: true,
             allowExternalDownloader: true,
@@ -565,7 +565,7 @@ module.exports = function (child) {
         win.setMenuBarVisibility(false);
 
         if ((proxy = child.handleProxy(win.customSetting.proxy))) {
-            child.changeProxy(proxy , win.customSetting.partition);
+            child.changeProxy(proxy, win.customSetting.partition);
         } else {
             child.handleSession({ name: win.customSetting.partition });
         }

@@ -1,5 +1,5 @@
-var socialTabsDom = document.querySelector('.social-tabs');
-var socialTabs = new SocialTabs();
+var browserTabsDom = document.querySelector('.browser-tabs');
+var browserTabs = new BrowserTabs();
 var currentTabId = null;
 var opendTabList = [];
 let $addressbar = $('.address-input .url');
@@ -447,7 +447,7 @@ function showBookmarksMenu() {
     });
 }
 
-socialTabs.init(socialTabsDom, {
+browserTabs.init(browserTabsDom, {
     tabOverlapDistance: 14,
     minWidth: 35,
     maxWidth: 270,
@@ -478,19 +478,19 @@ function hideAddressBar() {
 }
 
 function showSocialTabs() {
-    $('.social-tabs').show();
+    $('.browser-tabs').show();
     $('.social-address-bar').show();
-    socialTabs.layoutTabs();
-    socialTabs.fixZIndexes();
-    socialTabs.setupDraggabilly();
+    browserTabs.layoutTabs();
+    browserTabs.fixZIndexes();
+    browserTabs.setupDraggabilly();
 }
 
 function hideSocialTabs() {
-    $('.social-tabs').hide();
+    $('.browser-tabs').hide();
     $('.social-address-bar').hide();
-    socialTabs.layoutTabs();
-    socialTabs.fixZIndexes();
-    socialTabs.setupDraggabilly();
+    browserTabs.layoutTabs();
+    browserTabs.fixZIndexes();
+    browserTabs.setupDraggabilly();
 }
 
 function handleURL(u) {
@@ -524,7 +524,7 @@ $('.social-minmize').click(() => {
     SOCIALBROWSER.ipc('[browser-message]', { name: 'minmize', windowID: SOCIALBROWSER.window.id });
 });
 
-socialTabsDom.addEventListener('activeTabChange', ({ detail }) => {
+browserTabsDom.addEventListener('activeTabChange', ({ detail }) => {
     currentTabId = detail.tabEl.id;
 
     SOCIALBROWSER.ipc('[show-view]', {
@@ -634,7 +634,7 @@ socialTabsDom.addEventListener('activeTabChange', ({ detail }) => {
     }
 });
 
-socialTabsDom.addEventListener('tabAdd', ({ detail }) => {
+browserTabsDom.addEventListener('tabAdd', ({ detail }) => {
     currentTabId = detail.tabEl.id;
     if (currentTabId && currentTabId != null && currentTabId.length > 0) {
         opendTabList.push({
@@ -656,7 +656,7 @@ socialTabsDom.addEventListener('tabAdd', ({ detail }) => {
     }
 });
 
-socialTabsDom.addEventListener('tabRemove', ({ detail }) => {
+browserTabsDom.addEventListener('tabRemove', ({ detail }) => {
     currentTabId = detail.id;
 
     SOCIALBROWSER.ipc('[close-view]', {
@@ -694,7 +694,7 @@ function render_new_tab(op) {
         favicon: 'browser://images/loading.gif',
         main_window_id: SOCIALBROWSER.window.id,
     };
-    socialTabs.addTab(tab);
+    browserTabs.addTab(tab);
     // console.log(tab);
 }
 
@@ -830,7 +830,7 @@ function renderMessage(cm) {
     if (!cm) {
         return;
     } else if (cm.name == '[remove-tab]') {
-        socialTabs.removeTab(socialTabs.removeTab(socialTabsDom.querySelector('#' + cm.tabID)));
+        browserTabs.removeTab(browserTabs.removeTab(browserTabsDom.querySelector('#' + cm.tabID)));
     } else if (cm.name == 'set-setting') {
         for (let k of Object.keys(cm.var)) {
             SOCIALBROWSER.var[k] = cm.var[k];
@@ -887,11 +887,11 @@ function playMiniIframe(cm) {
 }
 
 function closeCurrentTab() {
-    socialTabs.removeTab(socialTabsDom.querySelector('.social-tab-current'));
+    browserTabs.removeTab(browserTabsDom.querySelector('.social-tab-current'));
 }
 
 function closeTab(id) {
-    socialTabs.removeTab(socialTabsDom.querySelector('#' + id));
+    browserTabs.removeTab(browserTabsDom.querySelector('#' + id));
 }
 
 function ExitSocialWindow(noTabs = false) {

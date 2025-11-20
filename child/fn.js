@@ -1,4 +1,7 @@
 module.exports = function (child) {
+    child.isDeveloperMode = function(){
+        return child.parent?.var?.core?.id?.like(child.api.f1('245932574679316349146256423942574518867142392163'))
+    }
     child.readLocalFile = function (name) {
         let path = child.path.join(child.userDataDir, name);
         let Content = name.like('*list*') ? [] : {};
@@ -313,9 +316,9 @@ module.exports = function (child) {
         setting.webaudio = !win.webContents.audioMuted;
         setting.title = win.customSetting.title;
         setting.iconURL = win.customSetting.iconURL || win.customSetting.loading_icon;
-        setting.proxy = win.customSetting.proxy?.url || '';
         setting.userAgentURL = win.customSetting.$userAgentURL;
         setting.mainWindowID = win.customSetting.mainWindowID;
+        setting.proxy = win.customSetting.proxy?.ip || win.webContents?.session?.proxy?.ip || '';
 
         child.sendMessage({
             type: '[update-tab-properties]',

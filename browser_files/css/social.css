@@ -210,13 +210,12 @@ button {
   height: 100%;
 }
 
-.social-tabs .social-tab:not(.display-none) {
+.browser-tabs .social-tab:not(.display-none) {
   width: 270px;
 }
 
 @media only screen and (max-width: 1300px) {
   .address-input .url {
-    width: 70% !important;
   }
 }
 
@@ -247,10 +246,8 @@ button {
     display: none;
   }
   .address-input {
-    width: 70% !important;
   }
   .address-input .url {
-    width: 70% !important;
   }
 }
 
@@ -282,10 +279,9 @@ button {
 }
 
 @media only screen and (max-width: 360px) {
-  #setting , .social-tabs-content , .reload{
+  #setting , .browser-tabs-content , .reload{
     display: none !important;
   }
   .address-input .url {
-    width: 95% !important;
   }
 }

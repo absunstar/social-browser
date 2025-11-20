@@ -1,7 +1,7 @@
 .app-region{
     -webkit-app-region: drag;
 }
-.social-tabs {
+.browser-tabs {
     -webkit-user-select: none;
     margin: 0px;
     box-sizing: border-box;
@@ -13,12 +13,12 @@
     overflow: hidden;
 }
 
-.social-tabs * {
+.browser-tabs * {
     box-sizing: inherit;
     font-family: inherit;
 }
 
-.social-tabs .social-tabs-bottom-bar {
+.browser-tabs .browser-tabs-bottom-bar {
     -webkit-app-region: no-drag;
     position: absolute;
     bottom: 0;
@@ -30,7 +30,7 @@
     z-index: 20;
 }
 
-.social-tabs .social-tabs-content {
+.browser-tabs .browser-tabs-content {
     margin: 0px;
     position: relative;
     width: 90%;
@@ -40,7 +40,7 @@
     z-index: 1000;
 }
 
-.social-tabs .social-close {
+.browser-tabs .social-close {
     text-align: center;
     -webkit-app-region: no-drag;
     position: fixed;
@@ -56,16 +56,16 @@
     transition: all 0.2s ease;
 }
 
-.social-tabs .social-close:hover {
+.browser-tabs .social-close:hover {
     background: red;
 }
-.social-tabs .social-close i,
-.social-tabs .social-maxmize i,
-.social-tabs .social-minmize i {
+.browser-tabs .social-close i,
+.browser-tabs .social-maxmize i,
+.browser-tabs .social-minmize i {
     vertical-align: top;
 }
 
-.social-tabs .social-maxmize {
+.browser-tabs .social-maxmize {
     text-align: center;
     -webkit-app-region: no-drag;
     position: fixed;
@@ -81,11 +81,11 @@
     transition: all 0.2s ease;
 }
 
-.social-tabs .social-maxmize:hover {
+.browser-tabs .social-maxmize:hover {
     background: green;
 }
 
-.social-tabs .social-minmize {
+.browser-tabs .social-minmize {
     text-align: center;
     -webkit-app-region: no-drag;
     position: fixed;
@@ -101,11 +101,11 @@
     transition: all 0.2s ease;
 }
 
-.social-tabs .social-minmize:hover {
+.browser-tabs .social-minmize:hover {
     background: green;
 }
 
-.social-tabs .social-tab {
+.browser-tabs .social-tab {
     -webkit-app-region: no-drag;
     position: absolute;
     left: 0;
@@ -116,7 +116,7 @@
     z-index: 1000;
 }
 
-.social-tabs .social-tab.plus {
+.browser-tabs .social-tab.plus {
     width: 20px !important;
     height: 17px;
     bottom: 8px;
@@ -127,20 +127,20 @@
     cursor: pointer;
 }
 
-.social-tabs .social-tab.plus .social-tab-title {
+.browser-tabs .social-tab.plus .social-tab-title {
     max-width: none;
     margin-top: -1px;
     padding: 0 0.4em;
     color: #fff;
 }
 
-.social-tabs .social-tab,
-.social-tabs .social-tab * {
+.browser-tabs .social-tab,
+.browser-tabs .social-tab * {
     user-select: none;
     cursor: default;
 }
 
-.social-tabs .social-tab .social-tab-background {
+.browser-tabs .social-tab .social-tab-background {
     position: absolute;
     top: 0;
     left: 0;
@@ -150,36 +150,36 @@
     pointer-events: none;
 }
 
-.social-tabs .social-tab .social-tab-background > svg {
+.browser-tabs .social-tab .social-tab-background > svg {
     width: 100%;
     height: 100%;
 }
 
-.social-tabs .social-tab .social-tab-background > svg .social-tab-shadow {
+.browser-tabs .social-tab .social-tab-background > svg .social-tab-shadow {
     fill: none;
     stroke: rgba(0, 0, 0, 0.27);
     stroke-width: 0.5px;
 }
 
-.social-tabs .social-tab .social-tab-background > svg .social-tab-background {
+.browser-tabs .social-tab .social-tab-background > svg .social-tab-background {
     fill: #d0d0d0;
     transform: translateX(0.25px) translateY(0.25px);
 }
 
-.social-tabs .social-tab .social-tab-background > svg rect {
+.browser-tabs .social-tab .social-tab-background > svg rect {
     fill: var(--social-background-color);
     transform: translateX(0.25px) translateY(0.25px);
 }
 
-.social-tabs .social-tab.social-tab-current {
+.browser-tabs .social-tab.social-tab-current {
     z-index: 999;
 }
 
-.social-tabs .social-tab.social-tab-current .social-tab-background > svg .social-tab-background {
+.browser-tabs .social-tab.social-tab-current .social-tab-background > svg .social-tab-background {
     fill: #f2f2f2;
 }
 
-.social-tabs .social-tab.social-tab-just-added {
+.browser-tabs .social-tab.social-tab-just-added {
     top: 10px;
     animation: social-tab-just-added 120ms forwards ease-in-out;
 }
@@ -190,12 +190,12 @@
     }
 }
 
-.social-tabs.social-tabs-sorting .social-tab:not(.social-tab-currently-dragged),
-.social-tabs:not(.social-tabs-sorting) .social-tab.social-tab-just-dragged {
+.browser-tabs.browser-tabs-sorting .social-tab:not(.social-tab-currently-dragged),
+.browser-tabs:not(.browser-tabs-sorting) .social-tab.social-tab-just-dragged {
     transition: transform 120ms ease-in-out;
 }
 
-.social-tabs .social-tab-loading {
+.browser-tabs .social-tab-loading {
     position: relative;
     height: 1.6em;
     width: 1.6em;
@@ -208,7 +208,7 @@
     pointer-events: none;
 }
 
-.social-tabs .social-tab-favicon {
+.browser-tabs .social-tab-favicon {
     position: relative;
     height: 1.6em;
     width: 1.6em;
@@ -221,7 +221,7 @@
     pointer-events: none;
 }
 
-.social-tabs .social-tab-title {
+.browser-tabs .social-tab-title {
     position: relative;
     display: inline-block;
     vertical-align: top;
@@ -235,12 +235,12 @@
     max-width: calc(100% - 70px);
     pointer-events: none;
 }
-.social-tabs .social-tab-title p {
+.browser-tabs .social-tab-title p {
     margin: 0px;
     padding: 0px;
     width: 100%;
 }
-.social-tabs .social-tab-close {
+.browser-tabs .social-tab-close {
     position: absolute;
     width: 1.4em;
     height: 1.4em;
@@ -251,11 +251,11 @@
     background: #bbb;
 }
 
-.social-tabs .social-tab-current .social-tab-close {
+.browser-tabs .social-tab-current .social-tab-close {
     background: green;
 }
 
-.social-tabs .social-tab-close::before {
+.browser-tabs .social-tab-close::before {
     content: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'><path stroke='#5a5a5a' stroke-linecap='round' stroke-width='1.125' d='M4 4 L10 10 M10 4 L4 10'></path></svg>");
     position: absolute;
     display: block;
@@ -265,16 +265,16 @@
     left: 0;
 }
 
-.social-tabs .social-tab-close:hover::before,
-.social-tabs .social-tab-close:hover:active::before {
+.browser-tabs .social-tab-close:hover::before,
+.browser-tabs .social-tab-close:hover:active::before {
     content: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'><path stroke='#fff' stroke-linecap='round' stroke-width='1.2' d='M4 4 L10 10 M10 4 L4 10'></path></svg>");
 }
 
-.social-tabs .social-tab-close:hover {
+.browser-tabs .social-tab-close:hover {
     background: #e25c4b;
 }
 
-.social-tabs .social-tab-close:hover:active {
+.browser-tabs .social-tab-close:hover:active {
     background: #b74a3b;
 }
 

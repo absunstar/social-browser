@@ -21,6 +21,11 @@ app.controller('mainController', ($scope, $http, $interval, $timeout) => {
         if (p.name == 'session_list') {
             $scope.setting.session_list = [];
             SOCIALBROWSER.var.session_list.forEach((s) => {
+                if (s.name == SOCIALBROWSER.var.core.session.name) {
+                    s.$current = true;
+                } else {
+                    s.$current = false;
+                }
                 $scope.setting.session_list.push({ ...s });
             });
         } else if (p.name == 'core') {
