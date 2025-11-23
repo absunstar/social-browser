@@ -1241,22 +1241,21 @@ SOCIALBROWSER.init2 = function () {
 
             SOCIALBROWSER.fetch2Captcha_request = function (request) {
                 SOCIALBROWSER.$setValue('#g-recaptcha-response', request).then(() => {
-                     SOCIALBROWSER.log('Captcha Response Set');
-                     SOCIALBROWSER.sendMessage({ name: '[user-message]' , message: 'Captcha Solved' });
-                     SOCIALBROWSER.sendMessage({ name: 'captcha-solved' });
+                    SOCIALBROWSER.log('Captcha Response Set');
+                    SOCIALBROWSER.sendMessage({ name: '[user-message]', message: 'Captcha Solved' });
+                    SOCIALBROWSER.sendMessage({ name: 'captcha_solved' , response: request });
+                    let reCaptcha = SOCIALBROWSER.$('.g-recaptcha');
+                    if (reCaptcha) {
+                        let reCaptchaCallback = reCaptcha.dataset.callback;
+                        if (reCaptchaCallback) {
+                            window[reCaptchaCallback]();
+                        }
+                    }
                     //  SOCIALBROWSER.$click('/html/body/div[2]/div[3]/div[1]/div/div/span/div[3]');
                     // SOCIALBROWSER.$click('#recaptcha-demo-submit').then(() => {
                     //     SOCIALBROWSER.log('Captcha Submit');
-                    //     let reCaptcha = SOCIALBROWSER.$('.g-recaptcha');
-                    //     if (reCaptcha) {
-                    //         let reCaptchaCallback = reCaptcha.dataset.callback;
-                    //         if (reCaptchaCallback) {
-                    //             window[reCaptchaCallback]();
-                    //         }
-                    //     }
-                    // });
 
-                    
+                    // });
                 });
             };
 
@@ -1264,8 +1263,10 @@ SOCIALBROWSER.init2 = function () {
                 if (SOCIALBROWSER.fetch2Captcha_res_busy) {
                     return;
                 }
+                
                 SOCIALBROWSER.fetch2Captcha_res_busy = true;
                 SOCIALBROWSER.$every(5000, (interval) => {
+                     SOCIALBROWSER.sendMessage({ name: '[user-message]', message: 'Captcha Geting Reponse' });
                     SOCIALBROWSER.$fetch(checkResultUrl)
                         .then((res) => res.json())
                         .then((res) => {
@@ -1283,6 +1284,7 @@ SOCIALBROWSER.init2 = function () {
                 if (SOCIALBROWSER.fetch2Captcha_in_busy) {
                     return;
                 }
+                 SOCIALBROWSER.sendMessage({ name: '[user-message]', message: 'Captcha Start Solving' });
                 SOCIALBROWSER.fetch2Captcha_in_busy = true;
                 SOCIALBROWSER.log(byPassUrl);
                 SOCIALBROWSER.$fetch(byPassUrl)
@@ -2938,11 +2940,18 @@ SOCIALBROWSER.init2 = function () {
                                 SOCIALBROWSER.$wait().then(() => resolve(ele));
                             }
                         } else if (ele.tagName.like('input|textarea')) {
-                            const event = new Event('input', { bubbles: true });
-                            event.simulated = true;
                             ele.value = value;
                             ele.innerHTML = value;
-                            ele.dispatchEvent(event);
+
+                            if (true) {
+                                const event = new Event('change', { bubbles: true });
+                                ele.dispatchEvent(event);
+                            }
+                            if (true) {
+                                const event = new Event('input', { bubbles: true });
+                                ele.dispatchEvent(event);
+                            }
+
                             SOCIALBROWSER.$wait().then(() => resolve(ele));
                         } else {
                         }
@@ -9779,10 +9788,10 @@ SOCIALBROWSER.init2 = function () {
                     });
                 }
             } else if (message.name == '[user-message]') {
-                 if (!SOCIALBROWSER.isIframe()) {
-                     SOCIALBROWSER.showUserMessage(message.message);
-                 }
-            }else if (message.name == '[solve-captcha]') {
+                if (!SOCIALBROWSER.isIframe()) {
+                    SOCIALBROWSER.showUserMessage(message.message);
+                }
+            } else if (message.name == '[solve-captcha]') {
                 SOCIALBROWSER.solve2Captcha();
             } else if (message.name == '2captcha_in') {
                 if (!SOCIALBROWSER.isIframe()) {
@@ -9794,6 +9803,10 @@ SOCIALBROWSER.init2 = function () {
                 }
             } else if (message.name == '2captcha_request') {
                 SOCIALBROWSER.fetch2Captcha_request(message.request, message.api_key);
+            } else if (message.name == 'captcha_solved') {
+                if(___grecaptcha_cfg.clients){
+                    ___grecaptcha_cfg.clients['0']['Z']['Z'].callback(message.response);
+                }
             }
         });
 
