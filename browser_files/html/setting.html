@@ -746,7 +746,7 @@
                                 <h2 class="center">Javascript Setting</h2>
                                 <div class="row">
                                     <fieldset>
-                                        <legend>Javascript</legend>
+                                        <legend>Javascript Setting</legend>
                                         <div class="row padding">
                                             <div class="col6">
                                                 <i-checkbox class="row" label="Allow ( All Console functions )" ng-model="setting.blocking.javascript.allowConsoleLogs"> </i-checkbox>
@@ -773,6 +773,16 @@
                                                 <i-checkbox class="row" label="Custom Session Storage" ng-model="setting.blocking.javascript.custom_session_storage"> </i-checkbox>
                                                 <i-checkbox class="row" label="Hide User Messages" ng-model="setting.blocking.javascript.hide_user_messages"> </i-checkbox>
                                             </div>
+                                        </div>
+                                       
+                                    </fieldset>
+                                    <fieldset>
+                                        <legend>2 Captcha Inegration</legend>
+                                         <div class="row padding">
+
+                                        <i-checkbox label="Enabled" ng-model="setting.blocking.javascript.captcha2ON"> </i-checkbox>
+                                        <i-control label="API KEY" ng-show="setting.blocking.javascript.captcha2ON" ng-model="setting.blocking.javascript.captcha2ApiKey"></i-control>
+
                                         </div>
                                     </fieldset>
                                 </div>
