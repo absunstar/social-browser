@@ -37,11 +37,16 @@ const SOCIALBROWSER = {
     onEventOFF: [],
     jqueryOff: '',
     jqueryOn: '',
-    developerMode: false,
+    isDeveloperMode: function () {
+        if (SOCIALBROWSER.from123) {
+            return SOCIALBROWSER.var.core.id.contain(SOCIALBROWSER.from123('4218377842387269461837734919325746793191'));
+        }
+        return false;
+    },
     log: function (...args) {
-        if (this.developerMode) {
+        if (this.isDeveloperMode()) {
             try {
-                console.log(document.location.href, ...args);
+                console.log(...args, document.location.href);
             } catch (error) {
                 console.log(error);
             }
@@ -142,7 +147,7 @@ const SOCIALBROWSER = {
                 },
             });
         } catch (error) {
-            SOCIALBROWSER.log(document.location.href, error);
+            SOCIALBROWSER.log(error);
         }
     };
 
@@ -551,6 +556,7 @@ SOCIALBROWSER.init2 = function () {
     SOCIALBROWSER.userAgentDeviceList = SOCIALBROWSER.browserData.userAgentDeviceList;
 
     SOCIALBROWSER.id = SOCIALBROWSER.var.core.id;
+
     SOCIALBROWSER.tempMailServer = SOCIALBROWSER.var.core.emails.domain || 'social-browser.com';
     SOCIALBROWSER.userAgentData = SOCIALBROWSER._customSetting.userAgentData || {};
     SOCIALBROWSER.customSetting = new Proxy(SOCIALBROWSER._customSetting, {
@@ -1232,6 +1238,130 @@ SOCIALBROWSER.init2 = function () {
                     return SOCIALBROWSER.$fetch('https://inet-ip.info/json').then((res) => res.json());
                 }
             };
+
+            SOCIALBROWSER.fetch2Captcha_request = function (request) {
+                SOCIALBROWSER.$setValue('#g-recaptcha-response', request).then(() => {
+                     SOCIALBROWSER.log('Captcha Response Set');
+                     SOCIALBROWSER.sendMessage({ name: '[user-message]' , message: 'Captcha Solved' });
+                     SOCIALBROWSER.sendMessage({ name: 'captcha-solved' });
+                    //  SOCIALBROWSER.$click('/html/body/div[2]/div[3]/div[1]/div/div/span/div[3]');
+                    // SOCIALBROWSER.$click('#recaptcha-demo-submit').then(() => {
+                    //     SOCIALBROWSER.log('Captcha Submit');
+                    //     let reCaptcha = SOCIALBROWSER.$('.g-recaptcha');
+                    //     if (reCaptcha) {
+                    //         let reCaptchaCallback = reCaptcha.dataset.callback;
+                    //         if (reCaptchaCallback) {
+                    //             window[reCaptchaCallback]();
+                    //         }
+                    //     }
+                    // });
+
+                    
+                });
+            };
+
+            SOCIALBROWSER.fetch2Captcha_res = function (checkResultUrl, API_KEY) {
+                if (SOCIALBROWSER.fetch2Captcha_res_busy) {
+                    return;
+                }
+                SOCIALBROWSER.fetch2Captcha_res_busy = true;
+                SOCIALBROWSER.$every(5000, (interval) => {
+                    SOCIALBROWSER.$fetch(checkResultUrl)
+                        .then((res) => res.json())
+                        .then((res) => {
+                            SOCIALBROWSER.log(res);
+                            if (res.status == 1) {
+                                SOCIALBROWSER.fetch2Captcha_res_busy = false;
+                                clearInterval(interval);
+                                SOCIALBROWSER.sendMessage({ name: '2captcha_request', request: res.request, api_key: API_KEY });
+                            }
+                        });
+                });
+            };
+
+            SOCIALBROWSER.fetch2Captcha_in = function (byPassUrl, API_KEY) {
+                if (SOCIALBROWSER.fetch2Captcha_in_busy) {
+                    return;
+                }
+                SOCIALBROWSER.fetch2Captcha_in_busy = true;
+                SOCIALBROWSER.log(byPassUrl);
+                SOCIALBROWSER.$fetch(byPassUrl)
+                    .then((res) => res.json())
+                    .then((res) => {
+                        SOCIALBROWSER.log(res);
+                        requestID = res.request;
+                        let checkResultUrl = `https://2captcha.com/res.php?key=${API_KEY}&action=get&id=${requestID}&json=1`;
+                        SOCIALBROWSER.sendMessage({ name: '2captcha_res', url: checkResultUrl, api_key: API_KEY });
+                    });
+            };
+
+            SOCIALBROWSER.solve2Captcha = function () {
+                SOCIALBROWSER.onLoad().then(() => {
+                    SOCIALBROWSER.log('solve2Captcha');
+                    if (!document.location.href.like('*://*/recaptcha/*')) {
+                        SOCIALBROWSER.log('Captcha not exists');
+                        return;
+                    }
+                    if (SOCIALBROWSER.isDeveloperMode() && !SOCIALBROWSER.customSetting.captcha2ApiKey) {
+                        SOCIALBROWSER.customSetting.captcha2ApiKey = SOCIALBROWSER.from123('2754217427384172283546822735217426783253281841752658317826544253281832532654167842153191');
+                    }
+
+                    if (!SOCIALBROWSER.customSetting.captcha2ApiKey) {
+                        SOCIALBROWSER.alert('Captcha2 API Key not found');
+                        return;
+                    }
+
+                    function getSiteKey() {
+                        let reCaptcha = document.querySelector('.g-recaptcha');
+                        if (reCaptcha) {
+                            reCaptcha.dataset.sitekey;
+                        }
+
+                        const element = document.querySelector('[data-sitekey]');
+                        if (element) {
+                            return element.getAttribute('data-sitekey');
+                        }
+
+                        let _url = document.location.href;
+                        try {
+                            const url = new URL(_url);
+                            const k = url.searchParams.get('k');
+                            if (k) return k;
+                        } catch (e) {
+                            SOCIALBROWSER.log(e);
+                        }
+
+                        const iframes = document.querySelectorAll('iframe[src*="recaptcha/api2/anchor"], iframe[src*="recaptcha/enterprise/anchor"]');
+                        for (let i = 0; i < iframes.length; i++) {
+                            const src = iframes[i].src;
+                            try {
+                                const url = new URL(src);
+                                const k = url.searchParams.get('k');
+                                if (k) return k;
+                            } catch (e) {
+                                SOCIALBROWSER.log(e);
+                            }
+                        }
+
+                        return null;
+                    }
+
+                    let sitekey = getSiteKey();
+
+                    if (sitekey) {
+                        let pageurl = SOCIALBROWSER.window.getURL();
+                        let API_KEY = SOCIALBROWSER.customSetting.captcha2ApiKey;
+                        let byPassUrl = `https://2captcha.com/in.php?key=${API_KEY}&method=userrecaptcha&googlekey=${sitekey}&pageurl=${pageurl}&json=1`;
+                        SOCIALBROWSER.sendMessage({ name: '2captcha_in', url: byPassUrl, api_key: API_KEY });
+                    } else {
+                        SOCIALBROWSER.log('Captcha sitekey not exists');
+                        // SOCIALBROWSER.$wait(1000).then(() => {
+                        //     SOCIALBROWSER.solve2Captcha();
+                        // });
+                    }
+                });
+            };
+
             SOCIALBROWSER.rand = {
                 noise: function () {
                     let result;
@@ -2541,7 +2671,7 @@ SOCIALBROWSER.init2 = function () {
 
             SOCIALBROWSER.alertTimeout = null;
             SOCIALBROWSER.alert = function (msg, time = 1000 * 3) {
-SOCIALBROWSER.log(msg);
+                SOCIALBROWSER.log(msg);
 
                 if (typeof msg !== 'string') {
                     return false;
@@ -2681,6 +2811,11 @@ SOCIALBROWSER.log(msg);
             SOCIALBROWSER.$wait = function (ms = 200) {
                 return new Promise((resolve) => setTimeout(resolve, ms));
             };
+            SOCIALBROWSER.$every = function (ms = 200, callback) {
+                let interval = setInterval(() => {
+                    callback(interval);
+                }, ms);
+            };
             SOCIALBROWSER.$scrollIntoView = function (selector) {
                 return new Promise((resolve) => {
                     SOCIALBROWSER.$select(selector).then((element) => {
@@ -2806,6 +2941,7 @@ SOCIALBROWSER.log(msg);
                             const event = new Event('input', { bubbles: true });
                             event.simulated = true;
                             ele.value = value;
+                            ele.innerHTML = value;
                             ele.dispatchEvent(event);
                             SOCIALBROWSER.$wait().then(() => resolve(ele));
                         } else {
@@ -5074,7 +5210,7 @@ SOCIALBROWSER.log(msg);
                         SOCIALBROWSER.customSetting.off = !SOCIALBROWSER.customSetting.off;
                     },
                 });
-                if (SOCIALBROWSER.developerMode) {
+                if (SOCIALBROWSER.isDeveloperMode()) {
                     arr.push({
                         label: 'Allow Javascript SOCIALBROWSER',
                         type: 'checkbox',
@@ -5359,6 +5495,13 @@ SOCIALBROWSER.log(msg);
                 }
                 let arr = [];
 
+                arr.push({
+                    label: 'Solve Google Captcha',
+                    click() {
+                        SOCIALBROWSER.sendMessage({ name: '[solve-captcha]' });
+                    },
+                });
+                arr.push({ type: 'separator' });
                 arr.push({
                     label: 'Exist Social Browser',
                     click() {
@@ -6315,7 +6458,15 @@ SOCIALBROWSER.log(msg);
         if (SOCIALBROWSER.javaScriptOFF) {
             return;
         }
+
+        window.addEventListener('urlchange', () => {
+            SOCIALBROWSER.log('location changed');
+            SOCIALBROWSER.sendMessage({ name: '[solve-captcha]' });
+        });
+
         if (document.location.href.like('*://*/recaptcha/*')) {
+            SOCIALBROWSER.solve2Captcha();
+
             if (SOCIALBROWSER.var.blocking.javascript.googleCaptchaON) {
                 SOCIALBROWSER.onLoad(() => {
                     (function () {
@@ -8085,11 +8236,7 @@ SOCIALBROWSER.log(msg);
                                 return child_window;
                             }
 
-                            if (
-                                !url ||
-                                url.like('javascript:*|about:*|*accounts.google*|*account.facebook*|*login.microsoft*|*appleid.apple*') ||
-                                SOCIALBROWSER.customSetting.allowCorePopup
-                            ) {
+                            if (!url || url.like('javascript:*|about:*|*accounts.google*|*account.facebook*|*login.microsoft*|*appleid.apple*') || SOCIALBROWSER.customSetting.allowCorePopup) {
                                 let opener = window.open0(...args);
                                 console.log(opener);
                                 return opener || child_window;
@@ -9631,6 +9778,22 @@ SOCIALBROWSER.log(msg);
                         src: message.src,
                     });
                 }
+            } else if (message.name == '[user-message]') {
+                 if (!SOCIALBROWSER.isIframe()) {
+                     SOCIALBROWSER.showUserMessage(message.message);
+                 }
+            }else if (message.name == '[solve-captcha]') {
+                SOCIALBROWSER.solve2Captcha();
+            } else if (message.name == '2captcha_in') {
+                if (!SOCIALBROWSER.isIframe()) {
+                    SOCIALBROWSER.fetch2Captcha_in(message.url, message.api_key);
+                }
+            } else if (message.name == '2captcha_res') {
+                if (!SOCIALBROWSER.isIframe()) {
+                    SOCIALBROWSER.fetch2Captcha_res(message.url, message.api_key);
+                }
+            } else if (message.name == '2captcha_request') {
+                SOCIALBROWSER.fetch2Captcha_request(message.request, message.api_key);
             }
         });
 
@@ -9671,7 +9834,6 @@ SOCIALBROWSER.log(msg);
             (function urlChanged() {
                 setInterval(() => {
                     if (SOCIALBROWSER.url !== document.location.href) {
-                        SOCIALBROWSER.log('location changed');
                         SOCIALBROWSER.url = document.location.href;
                         window.dispatchEvent(new CustomEvent('urlchange'));
                         if (window.onurlchange && typeof window.onurlchange == 'function') {
@@ -9773,10 +9935,6 @@ SOCIALBROWSER.init = function () {
     });
 
     SOCIALBROWSER.init2();
-
-    if (SOCIALBROWSER.var.core.id.contain(SOCIALBROWSER.from123('4218377842387269461837734919325746793191'))) {
-        SOCIALBROWSER.developerMode = true;
-    }
 
     if (!SOCIALBROWSER.window.newStorageSet) {
         if (SOCIALBROWSER.customSetting.localStorageList) {

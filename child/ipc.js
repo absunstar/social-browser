@@ -24,42 +24,49 @@ module.exports = function init(child) {
     child.sendToWebContents = function (webContents, channel, data) {
         if (webContents && !webContents.isDestroyed()) {
             webContents.send(channel, data);
+            webContents.mainFrame.frames.forEach((f) => {
+                if (f && !f.isDestroyed()) {
+                    child.log('frame', f);
+                    f.send(channel, data);
+                    f.frames.forEach((f2) => {
+                        if (f2 && !f2.isDestroyed()) {
+                            child.log('frame2', f2);
+                            f2.send(channel, data);
+                            f2.frames.forEach((f3) => {
+                                if (f3 && !f3.isDestroyed()) {
+                                    child.log('frame3', f3);
+                                    f3.send(channel, data);
+                                    f3.frames.forEach((f4) => {
+                                        if (f4 && !f4.isDestroyed()) {
+                                            child.log('frame4', f4);
+                                            f4.send(channel, data);
+                                            f4.frames.forEach((f5) => {
+                                                if (f5 && !f5.isDestroyed()) {
+                                                    child.log('frame5', f5);
+                                                    f5.send(channel, data);
+                                                    f5.frames.forEach((f6) => {
+                                                        if (f6 && !f6.isDestroyed()) {
+                                                            child.log('frame6', f6);
+                                                            f6.send(channel, data);
+                                                            f6.frames.forEach((f7) => {
+                                                                if (f7 && !f7.isDestroyed()) {
+                                                                    child.log('frame7', f7);
+                                                                    f7.send(channel, data);
+                                                                }
+                                                            });
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+            });
         }
-        webContents.mainFrame.frames.forEach((f) => {
-            if (f && !f.isDestroyed()) {
-                f.send(channel, data);
-                f.frames.forEach((f2) => {
-                    if (f2 && !f2.isDestroyed()) {
-                        f2.send(channel, data);
-                        f2.frames.forEach((f3) => {
-                            if (f3 && !f3.isDestroyed()) {
-                                f3.send(channel, data);
-                                f3.frames.forEach((f4) => {
-                                    if (f4 && !f4.isDestroyed()) {
-                                        f4.send(channel, data);
-                                        f4.frames.forEach((f5) => {
-                                            if (f5 && !f5.isDestroyed()) {
-                                                f5.send(channel, data);
-                                                f5.frames.forEach((f6) => {
-                                                    if (f6 && !f6.isDestroyed()) {
-                                                        f6.send(channel, data);
-                                                        f6.frames.forEach((f7) => {
-                                                            if (f7 && !f7.isDestroyed()) {
-                                                                f7.send(channel, data);
-                                                            }
-                                                        });
-                                                    }
-                                                });
-                                            }
-                                        });
-                                    }
-                                });
-                            }
-                        });
-                    }
-                });
-            }
-        });
     };
 
     child.cloneObject = function (obj) {

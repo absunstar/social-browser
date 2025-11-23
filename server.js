@@ -197,20 +197,7 @@
             e.preventDefault();
         });
 
-        // browser.var.session_list.forEach((s1) => {
-        //   let s2 = '__cookies_' + s1.name.replace(':', '_list');
-        //   if (browser.var[s2].length === 0) {
-        //     browser.cookies[s1.name] = browser.cookies[s1.name] || [];
-        //     let ss = browser.electron.session.fromPartition(s1.name);
-        //     ss.cookies.get({}).then((cookies) => {
-        //       cookies.forEach((cookie) => {
-        //         browser.cookies[s1.name].push(cookie);
-        //       });
-        //       console.log('load cookies ' + s1.name + ' : ' + browser.cookies[s1.name].length);
-        //       browser.set_var('__cookies_' + s1.name.replace(':', '_list'), browser.cookies[s1.name]);
-        //     });
-        //   }
-        // });
+       
     });
 
     browser.electron.app.on('second-instance', (event, commandLine, workingDirectory) => {

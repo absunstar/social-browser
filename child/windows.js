@@ -969,7 +969,7 @@ module.exports = function (child) {
                 if (
                     url.like('javascript:*|*accounts.google*|*account.facebook*|*login.microsoft*|*appleid.apple*') &&
                     e.isMainFrame &&
-                    win.customSetting.iframe &&
+                   // win.customSetting.iframe &&
                     win.customSetting.windowType === 'view'
                 ) {
                     e.preventDefault();
@@ -1009,7 +1009,7 @@ module.exports = function (child) {
                             name: 'Opera PC MacIntel',
                         },
                         webPreferences: undefined,
-                        iframe: false, // Must , if not set will be unsafty browser
+                        iframe: true, // Must , if not set will be unsafty browser
                         skipTaskbar: false,
                         windowType: 'popup',
                         alwaysOnTop: true,
