@@ -728,10 +728,10 @@ module.exports = function init(child) {
             }
         }
     });
-    child.ipcMain.handle('message', (e, message) => {
+    child.ipcMain.handle('[child-message]', (e, message) => {
         let win = child.electron.BrowserWindow.fromId(message.windowID);
         if (win) {
-            child.sendToWebContents(win.webContents, 'message', message);
+            child.sendToWebContents(win.webContents, '[child-message]', message);
         }
     });
     child.ipcMain.handle('window.message', (e, message) => {

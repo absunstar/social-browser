@@ -55,7 +55,7 @@ const SOCIALBROWSER = {
 };
 
 (function loadCore() {
-    if ((coreLOADED = true)) {
+    if (true) {
         SOCIALBROWSER.escapeRegExp = function (s = '') {
             if (!s) {
                 return '';
@@ -583,7 +583,7 @@ SOCIALBROWSER.init2 = function () {
     }
 
     (function loadEvents() {
-        if ((eventLOADED = true)) {
+        if (true) {
             SOCIALBROWSER.events_list = [];
             SOCIALBROWSER.quee_list = [];
             SOCIALBROWSER.quee_busy_list = [];
@@ -711,7 +711,7 @@ SOCIALBROWSER.init2 = function () {
     })();
 
     (function loadFn() {
-        if ((fnLOADED = true)) {
+        if (true) {
             SOCIALBROWSER.ws = function (message) {
                 SOCIALBROWSER.ipc('ws', message);
             };
@@ -951,29 +951,26 @@ SOCIALBROWSER.init2 = function () {
                 return SOCIALBROWSER.newWorker(url, null, null, codeString);
             };
 
-            SOCIALBROWSER.sendMessage = SOCIALBROWSER.message = function (message) {
-                if (!message) {
-                    return false;
-                }
-                if (typeof message === 'string') {
-                    message = { message: message };
+            SOCIALBROWSER.sendMessage = function (message) {
+                if (typeof message !== 'object') {
+                    message = { name: message };
                 }
 
                 message.windowID = message.windowID || SOCIALBROWSER.window.id;
-                SOCIALBROWSER.ipc('message', message);
+                SOCIALBROWSER.ipc('[child-message]', message);
             };
             SOCIALBROWSER.onMessageFnList = [];
             SOCIALBROWSER.onMessage = function (fn) {
                 SOCIALBROWSER.onMessageFnList.push(fn);
             };
-            SOCIALBROWSER.on('message', (e, message) => {
-                if (typeof message === 'object' && message.eval) {
+            SOCIALBROWSER.on('[child-message]', (e, message) => {
+                if (message.eval) {
                     SOCIALBROWSER.eval(message.eval);
-                } else {
-                    SOCIALBROWSER.onMessageFnList.forEach((fn) => {
-                        fn(message);
-                    });
                 }
+
+                SOCIALBROWSER.onMessageFnList.forEach((fn) => {
+                    fn(message);
+                });
             });
 
             SOCIALBROWSER.on('[run-user-script]', (e, _script) => {
@@ -1287,20 +1284,18 @@ SOCIALBROWSER.init2 = function () {
 
             SOCIALBROWSER.solve2Captcha = function () {
                 SOCIALBROWSER.onLoad().then(() => {
+                    SOCIALBROWSER.log('solve2Captcha Check ...');
 
-                     SOCIALBROWSER.log('solve2Captcha Check ...');
-
-                    if(!SOCIALBROWSER.customSetting.captcha2ApiKey && (!SOCIALBROWSER.var.blocking.javascript.captcha2ON || !SOCIALBROWSER.var.blocking.javascript.captcha2ApiKey )){
+                    if (!SOCIALBROWSER.customSetting.captcha2ApiKey && (!SOCIALBROWSER.var.blocking.javascript.captcha2ON || !SOCIALBROWSER.var.blocking.javascript.captcha2ApiKey)) {
                         SOCIALBROWSER.log('2 Captcha not Enabled');
                         return;
                     }
-                   
+
                     if (!document.location.href.like('*://*/recaptcha/*')) {
                         SOCIALBROWSER.log('Captcha URL not Match');
                         return;
                     }
 
-                   
                     function getSiteKey() {
                         let reCaptcha = document.querySelector('.g-recaptcha');
                         if (reCaptcha) {
@@ -1345,7 +1340,6 @@ SOCIALBROWSER.init2 = function () {
                         SOCIALBROWSER.sendMessage({ name: '2captcha_in', url: byPassUrl, api_key: API_KEY });
                     } else {
                         SOCIALBROWSER.log('Captcha sitekey not exists');
-                       
                     }
                 });
             };
@@ -2682,7 +2676,7 @@ SOCIALBROWSER.init2 = function () {
             };
         }
 
-        if (($$$$ = true)) {
+        if (true) {
             SOCIALBROWSER.$ = function (selector) {
                 if (selector instanceof HTMLElement) {
                     return selector;
@@ -3128,6 +3122,10 @@ SOCIALBROWSER.init2 = function () {
                 });
             };
             SOCIALBROWSER.$hover = function (selector, realPerson = true, move = true) {
+                if (SOCIALBROWSER.isIframe()) {
+                    realPerson = false;
+                    move = false;
+                }
                 return new Promise((resolve, reject) => {
                     SOCIALBROWSER.$select(selector).then((element) => {
                         let offset = SOCIALBROWSER.$getOffset(element);
@@ -3154,6 +3152,10 @@ SOCIALBROWSER.init2 = function () {
                 });
             };
             SOCIALBROWSER.$click = function (selector, realPerson = true, move = true, view = true) {
+                if (SOCIALBROWSER.isIframe()) {
+                    realPerson = false;
+                    move = false;
+                }
                 return new Promise((resolve, reject) => {
                     SOCIALBROWSER.$select(selector).then((element) => {
                         if (view) {
@@ -3784,7 +3786,7 @@ SOCIALBROWSER.init2 = function () {
     })();
 
     (function loadMenu() {
-        if ((menuLOADED = true)) {
+        if (true) {
             SOCIALBROWSER.menuList = [];
 
             let changeEvent = new Event('change', {
@@ -6389,7 +6391,7 @@ SOCIALBROWSER.init2 = function () {
             SOCIALBROWSER.customSetting.$cloudFlare = true;
             if (SOCIALBROWSER.var.blocking.javascript.cloudflareON) {
                 if (document.location.href.like('*://challenges.cloudflare.com/*')) {
-                    SOCIALBROWSER.sendMessage('[cloudflare-detected]');
+                    SOCIALBROWSER.sendMessage({ name: '[cloudflare-detected]' });
 
                     SOCIALBROWSER.onLoad(() => {
                         async function ShadowFinder() {
@@ -7522,7 +7524,7 @@ SOCIALBROWSER.init2 = function () {
         if (SOCIALBROWSER.javaScriptOFF) {
             return;
         }
-        if ((keyboardLOADED = true)) {
+        if (true) {
             let mousemove = null;
 
             window.addEventListener('mousemove', (e) => {
@@ -7658,7 +7660,7 @@ SOCIALBROWSER.init2 = function () {
     })();
 
     (function loadDom() {
-        if ((domsLOADED = true)) {
+        if (true) {
             if (SOCIALBROWSER.javaScriptOFF || SOCIALBROWSER.customSetting.windowType === 'main' || document.location.href.like('*http://127.0.0.1*')) {
                 SOCIALBROWSER.log('.... [ DOM Blocking OFF] .... ' + document.location.href);
                 return;
@@ -7697,7 +7699,7 @@ SOCIALBROWSER.init2 = function () {
     })();
 
     (function loadNodes() {
-        if ((nodesLOADED = true)) {
+        if (true) {
             if (SOCIALBROWSER.javaScriptOFF) {
                 return false;
             }
@@ -7895,7 +7897,7 @@ SOCIALBROWSER.init2 = function () {
     })();
 
     (function loadSafty() {
-        if ((saftyLOADED = true)) {
+        if (true) {
             if (
                 SOCIALBROWSER.javaScriptOFF ||
                 !SOCIALBROWSER.var.blocking.allow_safty_mode ||
@@ -7972,7 +7974,7 @@ SOCIALBROWSER.init2 = function () {
     })();
 
     (function loadAdsManager() {
-        if ((adsManagerLOADED = true)) {
+        if (true) {
             if (
                 SOCIALBROWSER.isWhiteSite ||
                 SOCIALBROWSER.javaScriptOFF ||
@@ -8585,7 +8587,7 @@ SOCIALBROWSER.init2 = function () {
         SOCIALBROWSER.navigator.userAgent = SOCIALBROWSER.userAgentURL;
 
         (function loadFingerPrint() {
-            if ((fingerPrintLOADED = true)) {
+            if (true) {
                 let maskDate = false;
                 let timeZone = null;
                 if (SOCIALBROWSER.proxy && SOCIALBROWSER.proxy.vpc && SOCIALBROWSER.proxy.vpc.maskTimeZone && SOCIALBROWSER.proxy.vpc.timeZone) {
@@ -10120,8 +10122,11 @@ if (!SOCIALBROWSER.javaScriptOFF) {
                         ele.srcdoc = value;
                         ele.srcdoc0 = value;
                         if (ele.contentWindow) {
-                            ele.contentWindow.chrome = chrome;
-                            ele.contentWindow.navigator = ele.contentWindow.navigator || navigator;
+                            SOCIALBROWSER.__define(ele.contentWindow, 'chrome', chrome);
+                            SOCIALBROWSER.__define(ele.contentWindow, 'Date', Date);
+                            SOCIALBROWSER.__define(ele.contentWindow, 'screen', screen);
+                            SOCIALBROWSER.__define(ele.contentWindow, 'Intl', Intl);
+
                             SOCIALBROWSER.__define(
                                 ele.contentWindow,
                                 'navigator',
@@ -10173,8 +10178,10 @@ if (!SOCIALBROWSER.javaScriptOFF) {
             let ele = document.querySelector0(selector, ...args);
             if (ele && ele.tagName.like('iframe')) {
                 if (ele.contentWindow) {
-                    ele.contentWindow.chrome = chrome;
-                    ele.contentWindow.navigator = ele.contentWindow.navigator || navigator;
+                    SOCIALBROWSER.__define(ele.contentWindow, 'chrome', chrome);
+                    SOCIALBROWSER.__define(ele.contentWindow, 'Date', Date);
+                    SOCIALBROWSER.__define(ele.contentWindow, 'screen', screen);
+                    SOCIALBROWSER.__define(ele.contentWindow, 'Intl', Intl);
                     SOCIALBROWSER.__define(
                         ele.contentWindow,
                         'navigator',
