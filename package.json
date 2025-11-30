@@ -2,7 +2,7 @@
     "name": "social.browser",
     "productName": "Social Browser",
     "homepage": "https://social-browser.com",
-    "version": "2025.11.20",
+    "version": "2025.12.01",
     "description": "Browsing Social Platforms with Multiple Accounts without Ban",
     "author": {
         "name": "Social Teams",
@@ -115,7 +115,7 @@
         "puppeteer-core": "^24.22.0"
     },
     "devDependencies": {
-        "electron": "^39.2.2",
+        "electron": "^39.2.4",
         "electron-builder": "^26.0.12"
     }
 }
