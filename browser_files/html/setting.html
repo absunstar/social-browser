@@ -178,9 +178,15 @@
             }
             fieldset legend {
                 float: none;
-                font-weight: bold;
+                font-weight: 100;
                 font-size: 20px;
                 color: #ffffff;
+                padding: 0px 20px 0px 20px;
+                margin-left: 10px;
+                display: block;
+                background: #198754;
+                border: var(--fieldset-border);
+                border-radius: 50px;
             }
 
             i-checkbox .selector.selected {
@@ -475,7 +481,6 @@
                             <div id="blocking_tab" class="tab-content">
                                 <h2 class="center">Blocking Setting</h2>
                                 <div class="row">
-
                                     <fieldset>
                                         <legend>Popup window</legend>
 
@@ -487,7 +492,6 @@
                                         </div>
                                     </fieldset>
 
-                                    
                                     <fieldset>
                                         <legend>Site Contents / Resources</legend>
 
@@ -495,13 +499,12 @@
                                             <i-checkbox class="" label="Block Load Images" ng-model="setting.blocking.blockImages"></i-checkbox>
                                             <i-checkbox class="" label="Block Load Media / Videos" ng-model="setting.blocking.blockMedia"></i-checkbox>
                                             <i-checkbox class="" label="Block Load JavaScript Files ( Warning )" ng-model="setting.blocking.blockJS"></i-checkbox>
-                                            <i-checkbox class="" label="Block XHR / fetch / API( Warning )" ng-model="setting.blocking.blockXHR"></i-checkbox>
-                                            <i-checkbox class="" label="Block Sub Frame" ng-model="setting.blocking.blockSubFrame"></i-checkbox>
+                                            <i-checkbox class="" label="Block XMLHttpRequest / fetch / API ( Warning )" ng-model="setting.blocking.blockXHR"></i-checkbox>
+                                            <i-checkbox class="" label="Block Load Sub Frames" ng-model="setting.blocking.blockSubFrame"></i-checkbox>
                                             <i-checkbox class="" label="Block Load CSS Files" ng-model="setting.blocking.blockCSS"></i-checkbox>
                                             <i-checkbox class="" label="Block Load Fonts" ng-model="setting.blocking.blockFonts"></i-checkbox>
-                                            <i-checkbox class="" label="Block WebSocket" ng-model="setting.blocking.blockWebSocket"></i-checkbox>
-                                            <i-checkbox class="" label="Block Csp Report" ng-model="setting.blocking.blockCspReport"></i-checkbox>
-
+                                            <i-checkbox class="" label="Block WebSocket connection" ng-model="setting.blocking.blockWebSocket"></i-checkbox>
+                                            <i-checkbox class="" label="Block Content Security Policy violation report (CSP)" ng-model="setting.blocking.blockCspReport"></i-checkbox>
                                         </div>
                                     </fieldset>
 
@@ -512,6 +515,7 @@
                                             <i-checkbox class="row" label="Auto Skip Video Ads " ng-model="setting.blocking.core.skip_video_ads"> </i-checkbox>
                                             <i-checkbox class="row" label="Auto Remove External IFRAMES " ng-model="setting.blocking.core.remove_external_iframe"> </i-checkbox>
                                             <i-checkbox class="row" label="Auto Remove Empty IFRAMES " ng-model="setting.blocking.core.block_empty_iframe"> </i-checkbox>
+                                           <hr>
                                             <div class="row">
                                                 <i-checkbox class="col4" label="Block Public Ads Servers" ng-model="setting.blocking.core.block_ads_servers"></i-checkbox>
                                                 <i-checkbox class="col4" label="Block Ads Links" ng-model="setting.blocking.core.block_ads"></i-checkbox>
@@ -793,15 +797,12 @@
                                                 <i-checkbox class="row" label="Hide User Messages" ng-model="setting.blocking.javascript.hide_user_messages"> </i-checkbox>
                                             </div>
                                         </div>
-                                       
                                     </fieldset>
                                     <fieldset>
                                         <legend>2 Captcha Inegration</legend>
-                                         <div class="row padding">
-
-                                        <i-checkbox label="Enabled" ng-model="setting.blocking.javascript.captcha2ON"> </i-checkbox>
-                                        <i-control label="API KEY" ng-show="setting.blocking.javascript.captcha2ON" ng-model="setting.blocking.javascript.captcha2ApiKey"></i-control>
-
+                                        <div class="row padding">
+                                            <i-checkbox label="Enabled" ng-model="setting.blocking.javascript.captcha2ON"> </i-checkbox>
+                                            <i-control label="API KEY" ng-show="setting.blocking.javascript.captcha2ON" ng-model="setting.blocking.javascript.captcha2ApiKey"></i-control>
                                         </div>
                                     </fieldset>
                                 </div>
@@ -1119,10 +1120,10 @@
                                             </tr>
                                             <tr ng-repeat="_se in setting.session_list | filter:session track by $index">
                                                 <td class="bold">
-                                                    <div class="row ">
-                                                        <div >{{$index + 1}}</div>
-                                                        <div ><i-checkbox label="Hide" ng-model="_se.hide"></i-checkbox></div>
-                                                        <div ><i-checkbox label="select" ng-model="_se.$selected"></i-checkbox></div>
+                                                    <div class="row">
+                                                        <div>{{$index + 1}}</div>
+                                                        <div><i-checkbox label="Hide" ng-model="_se.hide"></i-checkbox></div>
+                                                        <div><i-checkbox label="select" ng-model="_se.$selected"></i-checkbox></div>
                                                     </div>
                                                 </td>
                                                 <td>
@@ -1641,9 +1642,9 @@
                                                 <td>
                                                     <div class="row center">
                                                         <i-checkbox label="select" ng-model="_se.$selected"></i-checkbox>
-                                                        <br>
+                                                        <br />
                                                         <p class="bold">( {{$index + 1}} )</p>
-                                                        <br>
+                                                        <br />
                                                         <i-button type="delete" ng-click="removeProxy(_se)"></i-button>
                                                     </div>
                                                 </td>

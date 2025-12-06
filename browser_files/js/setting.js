@@ -190,12 +190,12 @@ app.controller('mainController', ($scope, $http, $timeout) => {
                     proxy.vpc = proxy.vpc || {};
                     proxy.vpc.hide_location = true;
                     proxy.vpc.location = {
-                        latitude: data.city.Location.Latitude,
-                        longitude: data.city.Location.Longitude,
+                        latitude: data.lat,
+                        longitude: data.lon,
                     };
                     proxy.vpc.maskTimeZone = true;
                     proxy.vpc.timeZone = $scope.timezones.find(
-                        (t) => t.value.like(data.city.Location.TimeZone) || t.text.like(data.city.Location.TimeZone) || t.utc.includes(data.city.Location.TimeZone),
+                        (t) => t.value.like(data.timezone) || t.text.like(data.timezone) || t.utc.includes(data.timezone),
                     );
                     proxy.busy = false;
                     $scope.$applyAsync();

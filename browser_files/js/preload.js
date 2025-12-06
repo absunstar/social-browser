@@ -1230,9 +1230,9 @@ SOCIALBROWSER.init2 = function () {
 
             SOCIALBROWSER.getIPinformation = function (ip) {
                 if (ip) {
-                    return SOCIALBROWSER.$fetch('https://inet-ip.info/json', { method: 'post', body: { ip: ip } }).then((res) => res.json());
+                    return SOCIALBROWSER.$fetch('http://ip-api.com/json/' + ip, { method: 'get'}).then((res) => res.json());
                 } else {
-                    return SOCIALBROWSER.$fetch('https://inet-ip.info/json').then((res) => res.json());
+                    return SOCIALBROWSER.$fetch('http://ip-api.com/json').then((res) => res.json());
                 }
             };
 
