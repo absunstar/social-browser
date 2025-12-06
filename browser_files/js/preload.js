@@ -9995,7 +9995,6 @@ SOCIALBROWSER.init = function () {
                 SOCIALBROWSER.allowGoogleTranslate();
             }
             if (SOCIALBROWSER.href.like('chrome-error:*')) {
-                SOCIALBROWSER.alert('Navigation Error \n Please check your internet connection and try again.');
                 SOCIALBROWSER.addHTML('<iframe style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;" src="browser://error"></iframe>');
             }
         }

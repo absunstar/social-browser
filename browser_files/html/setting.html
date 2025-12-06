@@ -493,8 +493,14 @@
 
                                         <div class="row">
                                             <i-checkbox class="" label="Block Load Images" ng-model="setting.blocking.blockImages"></i-checkbox>
+                                            <i-checkbox class="" label="Block Load Media / Videos" ng-model="setting.blocking.blockMedia"></i-checkbox>
+                                            <i-checkbox class="" label="Block Load JavaScript Files ( Warning )" ng-model="setting.blocking.blockJS"></i-checkbox>
+                                            <i-checkbox class="" label="Block XHR / fetch / API( Warning )" ng-model="setting.blocking.blockXHR"></i-checkbox>
+                                            <i-checkbox class="" label="Block Sub Frame" ng-model="setting.blocking.blockSubFrame"></i-checkbox>
                                             <i-checkbox class="" label="Block Load CSS Files" ng-model="setting.blocking.blockCSS"></i-checkbox>
-                                            <i-checkbox class="" label="Block Load JavaScript Files" ng-model="setting.blocking.blockJS"></i-checkbox>
+                                            <i-checkbox class="" label="Block Load Fonts" ng-model="setting.blocking.blockFonts"></i-checkbox>
+                                            <i-checkbox class="" label="Block WebSocket" ng-model="setting.blocking.blockWebSocket"></i-checkbox>
+                                            <i-checkbox class="" label="Block Csp Report" ng-model="setting.blocking.blockCspReport"></i-checkbox>
 
                                         </div>
                                     </fieldset>

@@ -242,6 +242,10 @@ module.exports = function (child) {
                 let win = null;
                 let refererURL = '';
                 details.requestHeaders = details.requestHeaders || {};
+                let urlObject = child.url.parse(url);
+                let mainURLObject = child.url.parse(mainURL);
+                let domainName = urlObject.hostname.split('.');
+                domainName = domainName.slice(domainName.length - 2).join('.');
 
                 refererURL = details.requestHeaders['host'] || details.requestHeaders['origin'] || details['referrer'];
 
@@ -252,19 +256,105 @@ module.exports = function (child) {
                     refererURL = url;
                 }
 
-                if (child.parent.var.core.enginOFF) {
+                if (details.webContents) {
+                    win = child.electron.BrowserWindow.fromWebContents(details.webContents);
+                    if (win) {
+                        mainURL = win.getURL();
+                        mainURLObject = child.url.parse(mainURL);
+                        if (win.customSetting && (win.customSetting.allowRequests || win.customSetting.off)) {
+                            callback({
+                                cancel: false,
+                            });
+                            return;
+                        }
+                    }
+                }
+
+                if (
+                    child.parent.var.core.enginOFF ||
+                    urlObject.hostname?.like('*localhost*|127.0.0.1|social-browser.com') ||
+                    mainURLObject.hostname?.like('*localhost*|127.0.0.1|social-browser.com')
+                ) {
                     callback({
                         cancel: false,
                     });
                     return;
                 }
 
-                if (details.webContents) {
-                    win = child.electron.BrowserWindow.fromWebContents(details.webContents);
-                    if (win) {
-                        mainURL = win.getURL();
+                // Handle Block Resources
+                if ((blockResources = true)) {
+                    let url2 = url.split('?')[0];
+                    let query = '';
+                    if (url.split('?')[1]) {
+                        query += url.split('?')[1] + '&x-url=' + url.split('?')[0];
+                    } else {
+                        query += 'x-url=' + url;
+                    }
+
+                    if (child.parent.var.blocking.blockJS && (url2.like('*.js') || details.resourceType.like('script'))) {
+                        callback({
+                            cancel: false,
+                            redirectURL: 'browser://js/fake.js?' + query,
+                        });
+                        child.sendToWindow(win, '[show-user-message]', { message: 'Block Site Resource: ' + details.resourceType + ' <p><a>' + url + '</a></p>' });
+
+                        return;
+                    } else if (child.parent.var.blocking.blockCSS && (url2.like('*.css') || details.resourceType.like('stylesheet'))) {
+                        callback({
+                            cancel: false,
+                            redirectURL: 'browser://css/fake.css?' + query,
+                        });
+                        child.sendToWindow(win, '[show-user-message]', { message: 'Block Site Resource: ' + details.resourceType + ' <p><a>' + url + '</a></p>' });
+
+                        return;
+                    } else if (child.parent.var.blocking.blockImages && (url2.like('*.ico|*.jpg|*.png|*.webp') || details.resourceType.like('image'))) {
+                        child.log(child.parent.var.blocking.blockImages, details.resourceType, url2);
+                        callback({
+                            cancel: false,
+                            redirectURL: 'browser://images/fake.png?' + query,
+                        });
+                        child.sendToWindow(win, '[show-user-message]', { message: 'Block Site Resource: ' + details.resourceType + ' <p><a>' + url + '</a></p>' });
+
+                        return;
+                    } else if (child.parent.var.blocking.blockMedia && (url2.like('*.mp4|*.mp3|*.ts|*videoplayback') || details.resourceType.like('media'))) {
+                        callback({
+                            cancel: true,
+                        });
+                        child.sendToWindow(win, '[show-user-message]', { message: 'Block Site Resource: ' + details.resourceType + ' <p><a>' + url + '</a></p>' });
+                        return;
+                    } else if (child.parent.var.blocking.blockFonts && details.resourceType.like('font')) {
+                        callback({
+                            cancel: true,
+                        });
+                        child.sendToWindow(win, '[show-user-message]', { message: 'Block Site Resource: ' + details.resourceType + ' <p><a>' + url + '</a></p>' });
+                        return;
+                    } else if (child.parent.var.blocking.blockXHR && details.resourceType.like('xhr')) {
+                        callback({
+                            cancel: true,
+                        });
+                        child.sendToWindow(win, '[show-user-message]', { message: 'Block Site Resource: ' + details.resourceType + ' <p><a>' + url + '</a></p>' });
+                        return;
+                    } else if (child.parent.var.blocking.blockWebSocket && details.resourceType.like('webSocket')) {
+                        callback({
+                            cancel: true,
+                        });
+                        child.sendToWindow(win, '[show-user-message]', { message: 'Block Site Resource: ' + details.resourceType + ' <p><a>' + url + '</a></p>' });
+                        return;
+                    } else if (child.parent.var.blocking.blockWebSocket && details.resourceType.like('webSocket')) {
+                        callback({
+                            cancel: true,
+                        });
+                        child.sendToWindow(win, '[show-user-message]', { message: 'Block Site Resource: ' + details.resourceType + ' <p><a>' + url + '</a></p>' });
+                        return;
+                    } else if (child.parent.var.blocking.blockSubFrame && details.resourceType.like('subFrame')) {
+                        callback({
+                            cancel: true,
+                        });
+                        child.sendToWindow(win, '[show-user-message]', { message: 'Block Site Resource: ' + details.resourceType + ' <p><a>' + url + '</a></p>' });
+                        return;
                     }
                 }
+
                 let enginOFF = child.parent.var.blocking.vip_site_list.some((site) => site.url.length > 2 && mainURL.like(site.url));
                 let isWhiteSite = child.parent.var.blocking.white_list.some((site) => site.url.length > 2 && mainURL.like(site.url));
 
@@ -381,7 +471,7 @@ module.exports = function (child) {
                     } else if (url2.like('*.ico|*.jpg|*.png|*.webp') || details.resourceType.like('image')) {
                         callback({
                             cancel: false,
-                            redirectURL: 'browser://images/fake.jpg?' + query,
+                            redirectURL: 'browser://images/fake.png?' + query,
                         });
                     } else if (url2.like('*.json')) {
                         let query = '';
@@ -398,7 +488,6 @@ module.exports = function (child) {
                     } else {
                         callback({
                             cancel: true,
-                            redirectURL: 'browser://txt/fake.txt?' + query,
                         });
                     }
                     return;
@@ -411,12 +500,19 @@ module.exports = function (child) {
 
             ss.webRequest.onBeforeSendHeaders(filter, async function (details, callback) {
                 let url = details.url;
+                let mainURL = url;
+                let urlObject = child.url.parse(url);
+                let win = null;
+                let domainName = urlObject.hostname.split('.');
+                domainName = domainName.slice(domainName.length - 2).join('.');
 
-                if (!details.requestHeaders['X-Browser'] && url.contain('social-browser.com')) {
-                    details.requestHeaders['X-Browser'] = (child.parent.var.core.brand || 'social') + '.' + child.parent.var.core.id;
+                if (domainName == 'social-browser.com' || urlObject.hostname.like('*social-browser.com')) {
+                    if (!details.requestHeaders['X-Browser']) {
+                        details.requestHeaders['X-Browser'] = (child.parent.var.core.brand || 'social') + '.' + child.parent.var.core.id;
+                    }
                 }
 
-                if (child.parent.var.core.enginOFF) {
+                if (child.parent.var.core.enginOFF || urlObject.hostname.like('*localhost*|127.0.0.1')) {
                     callback({
                         cancel: false,
                         requestHeaders: details.requestHeaders,
@@ -429,13 +525,6 @@ module.exports = function (child) {
                 _ss.user.privacy.vpc = _ss.user.privacy.vpc || {};
                 details.requestHeaders['User-Agent'] = _ss.user.defaultUserAgent.url;
 
-                let exit = false;
-
-                let mainURL = url;
-                let urlObject = child.url.parse(url);
-                let win = null;
-                let domainName = urlObject.hostname.split('.');
-                domainName = domainName.slice(domainName.length - 2).join('.');
                 let domainCookie = details.requestHeaders['Cookie'] || '';
                 let domainCookieObject = child.cookieParse(domainCookie);
 
@@ -447,6 +536,7 @@ module.exports = function (child) {
                         customSetting = win.customSetting;
                     }
                 }
+
                 let enginOFF = child.parent.var.blocking.vip_site_list.some((site) => site.url.length > 2 && mainURL.like(site.url));
                 if (enginOFF) {
                     callback({

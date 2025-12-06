@@ -21,6 +21,11 @@ module.exports = function init(child) {
         });
     };
 
+    child.sendToWindow = function (win, channel, data){
+        if (win && !win.isDestroyed() && win.webContents && !win.webContents.isDestroyed()) {
+            win.webContents.send(channel, data);
+        }
+    }
     child.sendToWebContents = function (webContents, channel, data) {
         if (webContents && !webContents.isDestroyed()) {
             webContents.send(channel, data);
@@ -955,21 +960,21 @@ module.exports = function init(child) {
 
         data.list.forEach((m, i) => {
             m.click = function () {
-                child.sendToWebContents(win.webContents , '[run-menu]', { index: i });
+                child.sendToWebContents(win.webContents, '[run-menu]', { index: i });
             };
             m.icon = child.getNativeIcon(m.iconURL);
 
             if (m.submenu) {
                 m.submenu.forEach((m2, i2) => {
                     m2.click = function () {
-                        child.sendToWebContents(win.webContents , '[run-menu]', { index: i, index2: i2 });
+                        child.sendToWebContents(win.webContents, '[run-menu]', { index: i, index2: i2 });
                     };
                     m2.icon = child.getNativeIcon(m2.iconURL);
 
                     if (m2.submenu) {
                         m2.submenu.forEach((m3, i3) => {
                             m3.click = function () {
-                                child.sendToWebContents(win.webContents , '[run-menu]', { index: i, index2: i2, index3: i3 });
+                                child.sendToWebContents(win.webContents, '[run-menu]', { index: i, index2: i2, index3: i3 });
                             };
                             m3.icon = child.getNativeIcon(m3.iconURL);
                         });
