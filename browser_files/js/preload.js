@@ -3365,6 +3365,7 @@ SOCIALBROWSER.init2 = function () {
             obj.userDataDir = obj.userDataDir || SOCIALBROWSER.data_dir + '/sessionData/chrome/' + obj.partition.replace('persist:', '');
 
             if (obj.auto) {
+                obj.proxy = SOCIALBROWSER.proxy;
                 obj.navigator = SOCIALBROWSER.cloneObject(SOCIALBROWSER.navigator);
                 obj.customSetting = SOCIALBROWSER._customSetting;
                 obj.cookie = obj.cookie || SOCIALBROWSER.getHttpCookie({ domain: obj.domain });
@@ -3780,7 +3781,7 @@ SOCIALBROWSER.init2 = function () {
             SOCIALBROWSER.proxy = SOCIALBROWSER.customSetting.proxy;
         } else if (SOCIALBROWSER.session.proxy && SOCIALBROWSER.session.proxyEnabled) {
             SOCIALBROWSER.proxy = SOCIALBROWSER.session.proxy;
-        } else if (SOCIALBROWSER.var.proxy && SOCIALBROWSER.var.proxyEnabled) {
+        } else if (SOCIALBROWSER.var.proxy && SOCIALBROWSER.var.core.proxyEnabled) {
             SOCIALBROWSER.proxy = SOCIALBROWSER.var.proxy;
         }
     })();
@@ -4817,6 +4818,7 @@ SOCIALBROWSER.init2 = function () {
 
                 let m = {
                     label: 'Page',
+                    sublabel : decodeURI(document.location.href),
                     iconURL: 'http://127.0.0.1:60080/images/page.png',
                     type: 'submenu',
                     submenu: arr,
@@ -5716,6 +5718,7 @@ SOCIALBROWSER.init2 = function () {
                             }
                             arr.push({
                                 label: p.name || p.url,
+                                sublabel : 'open use Proxy ( new Window / Ghost Profile )',
                                 click() {
                                     SOCIALBROWSER.ipc('[open new popup]', {
                                         show: true,
@@ -5966,7 +5969,7 @@ SOCIALBROWSER.init2 = function () {
                     SOCIALBROWSER.contextmenuBusy = false;
                 }, 200);
 
-                if (!SOCIALBROWSER.rightClickPosition) {
+                if (!SOCIALBROWSER.rightClickPosition || !SOCIALBROWSER.rightClickPosition.x || !SOCIALBROWSER.rightClickPosition.y || !Number.isFinite(SOCIALBROWSER.rightClickPosition.x) || !Number.isFinite(SOCIALBROWSER.rightClickPosition.y)) {
                     return false;
                 }
                 try {
@@ -6356,6 +6359,9 @@ SOCIALBROWSER.init2 = function () {
             });
 
             SOCIALBROWSER.on('[run-menu]', (e, data) => {
+                if(SOCIALBROWSER.menuList.length == 0){
+                    return;
+                }
                 if (typeof data.index !== 'undefined' && typeof data.index2 !== 'undefined' && typeof data.index3 !== 'undefined') {
                     let m = SOCIALBROWSER.menuList[data.index];
                     if (m && m.submenu) {
@@ -6379,6 +6385,7 @@ SOCIALBROWSER.init2 = function () {
                         m.click();
                     }
                 }
+                SOCIALBROWSER.menuList = [];
             });
         }
     })();
@@ -9986,6 +9993,10 @@ SOCIALBROWSER.init = function () {
             SOCIALBROWSER.injectDefault();
             if (SOCIALBROWSER.customSetting.allowGoogleTranslate) {
                 SOCIALBROWSER.allowGoogleTranslate();
+            }
+            if (SOCIALBROWSER.href.like('chrome-error:*')) {
+                SOCIALBROWSER.alert('Navigation Error \n Please check your internet connection and try again.');
+                SOCIALBROWSER.addHTML('<iframe style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;" src="browser://error"></iframe>');
             }
         }
     });

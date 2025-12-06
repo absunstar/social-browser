@@ -115,7 +115,7 @@
         "puppeteer-core": "^24.22.0"
     },
     "devDependencies": {
-        "electron": "^39.2.4",
+        "electron": "^39.2.6",
         "electron-builder": "^26.0.12"
     }
 }

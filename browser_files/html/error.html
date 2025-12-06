@@ -1,46 +1,284 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="myApp">
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,social=1" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-    <title>Error</title>
-    <meta name="description" content="Error" />
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connection Error | Troubleshooting Guide</title>
+       <link rel="stylesheet" href="browser://x-css/all.css" />
 
-    <link rel="stylesheet" href="http://127.0.0.1:60080/x-css/all.css" />
     <style>
-      html {
-        user-select: none;
-      }
-      .btn {
-        font-size: 22px;
-        background: #2196f3;
-        padding: 10px 40px;
-      }
+       :root{
+            --body-margin-top: 20px;
+    --body-margin-bottom: 0px;
+       }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+        
+        .error-container {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 800px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        
+        .error-container:hover {
+            transform: translateY(-5px);
+        }
+        
+        .error-header {
+            background: linear-gradient(to right, #4361ee, #3a0ca3);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .error-header i {
+            font-size: 70px;
+            margin-bottom: 15px;
+            display: block;
+            opacity: 0.9;
+        }
+        
+        .error-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .error-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+        
+        .error-content {
+            padding: 40px;
+        }
+        
+        .error-code {
+            display: inline-block;
+            background-color: #f8f9fa;
+            color: #4361ee;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            border: 1px solid #eaeaea;
+        }
+        
+        .bold {
+            font-weight: 700;
+            color: #3a0ca3;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .bold i {
+            margin-right: 12px;
+            color: #4361ee;
+        }
+        
+        ul {
+            list-style-type: none;
+            margin-left: 10px;
+            margin-bottom: 30px;
+        }
+        
+        ul li {
+            padding: 15px 0 15px 45px;
+            position: relative;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+        
+        ul li:last-child {
+            border-bottom: none;
+        }
+        
+        ul li i {
+            position: absolute;
+            left: 0;
+            top: 15px;
+            color: #4361ee;
+            font-size: 1.3rem;
+            background-color: #f0f4ff;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .additional-tips {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 30px;
+            border-left: 5px solid #4361ee;
+        }
+        
+        .additional-tips h4 {
+            color: #3a0ca3;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .additional-tips p {
+            color: #555;
+            line-height: 1.6;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            border: none;
+        }
+        
+        .btn-primary {
+            background-color: #4361ee;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #3a0ca3;
+            transform: translateY(-3px);
+            box-shadow: 0 7px 14px rgba(58, 12, 163, 0.2);
+        }
+        
+        .btn-secondary {
+            background-color: #f8f9fa;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e9ecef;
+            transform: translateY(-3px);
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            margin-top: 25px;
+            color: #666;
+            font-size: 0.95rem;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #ff6b6b;
+            border-radius: 50%;
+            margin-right: 10px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
+        
+        @media (max-width: 768px) {
+            .error-header {
+                padding: 25px 20px;
+            }
+            
+            .error-header h1 {
+                font-size: 2rem;
+            }
+            
+            .error-content {
+                padding: 30px 25px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .error-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .error-header i {
+                font-size: 60px;
+            }
+            
+            ul li {
+                padding-left: 40px;
+                font-size: 1rem;
+            }
+        }
     </style>
-  </head>
-
-  <body class="padding" ng-controller="mainController">
-    <br /><br /><br />
-    <div class="row center">
-      <h2 class="center"><span class="red"> ##query.description## </span> <a href="##query.url##">##query.url##</a></h2>
-      <br /><br /><br />
-      <i-button onclick="document.location.href='##query.url##'" label="Reload Page"></i-button>
-      <div class="row">
-        <h3 class="bold">Please Check These Points</h3>
-        <br />
-        <ul>
-          <li>Check Network Caple or Wireless Connection</li>
-          <li>If You Use Proxy re-check Configration</li>
-          <li>May be Your Internet Provider Blocked or Closed Your Account</li>
-        </ul>
-      </div>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-header center">
+            <i class="fas fa-wifi"></i>
+            <h1>Connection Error</h1>
+            <p>Unable to establish a network connection</p>
+        </div>
+        
+        <div class="error-content">
+            <div class="error-code">Error Code: CONNECTION-ERROR</div>
+            
+            <h3 class="bold"><i class="fas fa-clipboard-check"></i> Please Check These Points</h3>
+            
+            <ul>
+                <li><i class="fas fa-ethernet"></i> Check Network Cable or Wireless Connection</li>
+                <li><i class="fas fa-server"></i> If You Use Proxy, Re-check Configuration \ or use system proxy</li>
+                <li><i class="fas fa-user-lock"></i> Try Open other site URL</li>
+            </ul>
+            
+            <div class="additional-tips">
+                <h4>Additional Troubleshooting Tips</h4>
+                <p>Restart your router and modem, then try connecting again. Ensure your firewall or antivirus software is not blocking the connection. If problems persist, contact your internet service provider for further assistance.</p>
+            </div>
+          
+            
+        </div>
     </div>
 
-    <script src="http://127.0.0.1:60080/x-js/all.js"></script>
-
-    <script>
-      app.controller('mainController', ($scope, $http, $timeout) => {});
-    </script>
-  </body>
+  
+</body>
 </html>
+

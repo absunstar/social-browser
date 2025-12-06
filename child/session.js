@@ -181,7 +181,7 @@ module.exports = function (child) {
             proxy = sessionOptions.proxy;
         } else if (user.proxy && user.proxyEnabled) {
             proxy = user.proxy;
-        } else if (child.parent.var.proxy && child.parent.var.proxyEnabled) {
+        } else if (child.parent.var.proxy && child.parent.var.core.proxyEnabled) {
             proxy = child.parent.var.proxy;
         }
         proxy = child.handleProxy(proxy);

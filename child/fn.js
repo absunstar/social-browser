@@ -1,7 +1,7 @@
 module.exports = function (child) {
-    child.isDeveloperMode = function(){
-        return child.parent?.var?.core?.id?.like(child.api.f1('245932574679316349146256423942574518867142392163'))
-    }
+    child.isDeveloperMode = function () {
+        return child.parent?.var?.core?.id?.like(child.api.f1('245932574679316349146256423942574518867142392163'));
+    };
     child.readLocalFile = function (name) {
         let path = child.path.join(child.userDataDir, name);
         let Content = name.like('*list*') ? [] : {};
@@ -704,7 +704,7 @@ module.exports = function (child) {
 
     child.openInChrome = async function (obj) {
         try {
-            child.log('child.openInChrome', obj.url);
+            child.log('child.openInChrome', obj);
 
             obj.browserPath = obj.browserPath || child.path.join('C:', 'Program Files', 'Google', 'Chrome', 'Application', 'chrome.exe');
 
@@ -712,7 +712,11 @@ module.exports = function (child) {
                 return child.openExternal(obj.url);
             }
 
-            obj.args = obj.args || ['--start-maximized', '--no-sandbox', '--disable-blink-features=AutomationControlled'];
+            obj.args = obj.args || ['--start-maximized', '--no-sandbox', '--disable-blink-features=AutomationControlled' , `--ignore-certificate-errors`,];
+            if (obj.proxy && obj.proxy.proxyRules) {
+                obj.args.push(`--proxy-server=${obj.proxy.proxyRules}`);
+            }
+
             if (child.puppeteerBrowser) {
                 child.puppeteerBrowser.$exists = true;
             }
@@ -724,6 +728,7 @@ module.exports = function (child) {
                     userDataDir: obj.userDataDir,
                     executablePath: obj.browserPath,
                     headless: obj.headless || false,
+                    ignoreHTTPSErrors: true,
                     pipe: true,
                     enableExtensions: true,
                     defaultViewport: null,
@@ -751,6 +756,13 @@ module.exports = function (child) {
                 page = await child.puppeteerBrowser.newPage();
             } else {
                 page = (await child.puppeteerBrowser.pages())[0];
+            }
+
+            if (obj.proxy && obj.proxy.proxyRules && obj.proxy.username && obj.proxy.password) {
+                await page.authenticate({
+                    username: obj.proxy.username,
+                    password: obj.proxy.password,
+                });
             }
 
             await page.setBypassCSP(true);

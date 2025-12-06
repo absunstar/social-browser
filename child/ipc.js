@@ -952,68 +952,24 @@ module.exports = function init(child) {
 
     child.ipcMain.handle('[show-menu]', (e, data) => {
         let win = child.electron.BrowserWindow.fromId(data.windowID);
-        let contents = null;
-        if (data.parentFrame) {
-            contents = child.electron.webFrameMain.fromFrameToken(data.parentFrame.processId, data.parentFrame.frameToken);
-        } else {
-            contents = win.webContents;
-        }
-        if (!contents) {
-            win.webContents.mainFrame.frames.forEach((f1) => {
-                if (f1.frameToken == data.frameToken) {
-                    contents = f1;
-                }
-                f1.frames.forEach((f2) => {
-                    if (f2.frameToken == data.frameToken) {
-                        contents = f2;
-                    }
-                    f2.frames.forEach((f3) => {
-                        if (f3.frameToken == data.frameToken) {
-                            contents = f3;
-                        }
-                        f3.frames.forEach((f4) => {
-                            if (f4.frameToken == data.frameToken) {
-                                contents = f4;
-                            }
-                            f4.frames.forEach((f5) => {
-                                if (f5.frameToken == data.frameToken) {
-                                    contents = f5;
-                                }
-                                f5.frames.forEach((f6) => {
-                                    if (f6.frameToken == data.frameToken) {
-                                        contents = f6;
-                                    }
-                                    f6.frames.forEach((f7) => {
-                                        if (f7.frameToken == data.frameToken) {
-                                            contents = f7;
-                                        }
-                                    });
-                                });
-                            });
-                        });
-                    });
-                });
-            });
-            contents = contents || win.webContents;
-        }
 
         data.list.forEach((m, i) => {
             m.click = function () {
-                contents.send('[run-menu]', { index: i });
+                child.sendToWebContents(win.webContents , '[run-menu]', { index: i });
             };
             m.icon = child.getNativeIcon(m.iconURL);
 
             if (m.submenu) {
                 m.submenu.forEach((m2, i2) => {
                     m2.click = function () {
-                        contents.send('[run-menu]', { index: i, index2: i2 });
+                        child.sendToWebContents(win.webContents , '[run-menu]', { index: i, index2: i2 });
                     };
                     m2.icon = child.getNativeIcon(m2.iconURL);
 
                     if (m2.submenu) {
                         m2.submenu.forEach((m3, i3) => {
                             m3.click = function () {
-                                contents.send('[run-menu]', { index: i, index2: i2, index3: i3 });
+                                child.sendToWebContents(win.webContents , '[run-menu]', { index: i, index2: i2, index3: i3 });
                             };
                             m3.icon = child.getNativeIcon(m3.iconURL);
                         });

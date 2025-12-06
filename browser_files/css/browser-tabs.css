@@ -292,7 +292,7 @@
 .window-actions a {
     color: #fff;
     border-radius: 20px;
-    padding: 6px 11px;
+    padding: 3px 8px;
     cursor: pointer;
     font-size: 18px;
 }
@@ -300,7 +300,7 @@
 .social-address-bar a {
     color: #fff;
     border-radius: 20px;
-    padding: 6px 11px;
+    padding: 3px 8px;
     cursor: pointer;
     font-size: 22px;
 }

@@ -54,7 +54,7 @@ module.exports = function (owner) {
                     proxy.port = 80;
                 }
 
-                if (!proxy.proxyRules) {
+                if (resetProxyRules = true) {
                     proxy.proxyRules = '';
                     let startline = '';
 
@@ -64,6 +64,9 @@ module.exports = function (owner) {
                     }
                     if (proxy.socks5) {
                         proxy.proxyRules += startline + 'socks5://' + proxy.ip + ':' + proxy.port;
+                       if(proxy.username && proxy.password && false){
+                        proxy.proxyRules += startline + 'socks5://' + proxy.username + ':' + proxy.password +'@' + proxy.ip + ':' + proxy.port;
+                       }
                         startline = ',';
                     }
                     if (proxy.ftp) {

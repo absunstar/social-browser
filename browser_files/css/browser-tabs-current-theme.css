@@ -36,7 +36,7 @@ body,
 .window-actions a {
     color: var(--icon-color);
     border-radius: 20px;
-    padding: 6px 11px;
+    padding: 3px 8px;
     cursor: pointer;
     font-size: 18px;
 }
