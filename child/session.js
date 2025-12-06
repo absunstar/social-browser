@@ -240,6 +240,7 @@ module.exports = function (child) {
                 let url = details.url;
                 let mainURL = url;
                 let win = null;
+                let customSetting = {};
                 let refererURL = '';
                 details.requestHeaders = details.requestHeaders || {};
                 let urlObject = child.url.parse(url);
@@ -261,6 +262,7 @@ module.exports = function (child) {
                     if (win) {
                         mainURL = win.getURL();
                         mainURLObject = child.url.parse(mainURL);
+                        customSetting = win.customSetting || {};
                         if (win.customSetting && (win.customSetting.allowRequests || win.customSetting.off)) {
                             callback({
                                 cancel: false,
@@ -291,7 +293,7 @@ module.exports = function (child) {
                         query += 'x-url=' + url;
                     }
 
-                    if (child.parent.var.blocking.blockJS && (url2.like('*.js') || details.resourceType.like('script'))) {
+                    if ((customSetting.blockJS || child.parent.var.blocking.blockJS) && (url2.like('*.js') || details.resourceType.like('script'))) {
                         callback({
                             cancel: false,
                             redirectURL: 'browser://js/fake.js?' + query,
@@ -299,7 +301,7 @@ module.exports = function (child) {
                         child.sendToWindow(win, '[show-user-message]', { message: 'Block Site Resource: ' + details.resourceType + ' <p><a>' + url + '</a></p>' });
 
                         return;
-                    } else if (child.parent.var.blocking.blockCSS && (url2.like('*.css') || details.resourceType.like('stylesheet'))) {
+                    } else if ((customSetting.blockCSS || child.parent.var.blocking.blockCSS) && (url2.like('*.css') || details.resourceType.like('stylesheet'))) {
                         callback({
                             cancel: false,
                             redirectURL: 'browser://css/fake.css?' + query,
@@ -307,8 +309,7 @@ module.exports = function (child) {
                         child.sendToWindow(win, '[show-user-message]', { message: 'Block Site Resource: ' + details.resourceType + ' <p><a>' + url + '</a></p>' });
 
                         return;
-                    } else if (child.parent.var.blocking.blockImages && (url2.like('*.ico|*.jpg|*.png|*.webp') || details.resourceType.like('image'))) {
-                        child.log(child.parent.var.blocking.blockImages, details.resourceType, url2);
+                    } else if ((customSetting.blockImages || child.parent.var.blocking.blockImages) && (url2.like('*.ico|*.jpg|*.png|*.webp') || details.resourceType.like('image'))) {
                         callback({
                             cancel: false,
                             redirectURL: 'browser://images/fake.png?' + query,
@@ -316,37 +317,31 @@ module.exports = function (child) {
                         child.sendToWindow(win, '[show-user-message]', { message: 'Block Site Resource: ' + details.resourceType + ' <p><a>' + url + '</a></p>' });
 
                         return;
-                    } else if (child.parent.var.blocking.blockMedia && (url2.like('*.mp4|*.mp3|*.ts|*videoplayback') || details.resourceType.like('media'))) {
+                    } else if ((customSetting.blockMedia || child.parent.var.blocking.blockMedia) && (url2.like('*.mp4|*.mp3|*.ts|*videoplayback') || details.resourceType.like('media'))) {
                         callback({
                             cancel: true,
                         });
                         child.sendToWindow(win, '[show-user-message]', { message: 'Block Site Resource: ' + details.resourceType + ' <p><a>' + url + '</a></p>' });
                         return;
-                    } else if (child.parent.var.blocking.blockFonts && details.resourceType.like('font')) {
+                    } else if ((customSetting.blockFonts || child.parent.var.blocking.blockFonts) && details.resourceType.like('font')) {
                         callback({
                             cancel: true,
                         });
                         child.sendToWindow(win, '[show-user-message]', { message: 'Block Site Resource: ' + details.resourceType + ' <p><a>' + url + '</a></p>' });
                         return;
-                    } else if (child.parent.var.blocking.blockXHR && details.resourceType.like('xhr')) {
+                    } else if ((customSetting.blockXHR || child.parent.var.blocking.blockXHR) && details.resourceType.like('xhr')) {
                         callback({
                             cancel: true,
                         });
                         child.sendToWindow(win, '[show-user-message]', { message: 'Block Site Resource: ' + details.resourceType + ' <p><a>' + url + '</a></p>' });
                         return;
-                    } else if (child.parent.var.blocking.blockWebSocket && details.resourceType.like('webSocket')) {
+                    } else if ((customSetting.blockWebSocket || child.parent.var.blocking.blockWebSocket) && details.resourceType.like('webSocket')) {
                         callback({
                             cancel: true,
                         });
                         child.sendToWindow(win, '[show-user-message]', { message: 'Block Site Resource: ' + details.resourceType + ' <p><a>' + url + '</a></p>' });
                         return;
-                    } else if (child.parent.var.blocking.blockWebSocket && details.resourceType.like('webSocket')) {
-                        callback({
-                            cancel: true,
-                        });
-                        child.sendToWindow(win, '[show-user-message]', { message: 'Block Site Resource: ' + details.resourceType + ' <p><a>' + url + '</a></p>' });
-                        return;
-                    } else if (child.parent.var.blocking.blockSubFrame && details.resourceType.like('subFrame')) {
+                    } else if ((customSetting.blockSubFrame || child.parent.var.blocking.blockSubFrame) && details.resourceType.like('subFrame')) {
                         callback({
                             cancel: true,
                         });

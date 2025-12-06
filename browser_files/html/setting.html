@@ -922,6 +922,7 @@
                                                                         label="Auto Detected Location"
                                                                         ng-click="autoUpdateProxyLocation(setting.proxy)"
                                                                     ></i-button>
+                                                                    <p class="padding margin" ng-show="setting.proxy.data.country">{{setting.proxy.data.country}} / {{setting.proxy.data.regionName}} / {{setting.proxy.data.city}}</p>
                                                                 </div>
                                                                 <div class="row padding v-center">
                                                                     <div class="col">
@@ -1211,6 +1212,8 @@
                                                                         label="Auto Detected Location"
                                                                         ng-click="autoUpdateProxyLocation(currentSession.proxy)"
                                                                     ></i-button>
+                                                                  <p class="padding margin" ng-show="currentSession.proxy.data.country">{{currentSession.proxy.data.country}} / {{currentSession.proxy.data.regionName}} / {{currentSession.proxy.data.city}}</p>
+
                                                                 </div>
                                                                 <div class="row padding v-center">
                                                                     <div class="col">
@@ -1592,6 +1595,8 @@
                                                         <div class="row padding" ng-show="$proxy.locationEnabled">
                                                             <div class="row">
                                                                 <i-button type="approve" loading="{{$proxy.busy}}" label="Auto Detected Location" ng-click="autoUpdateProxyLocation($proxy)"></i-button>
+                                                                 <p class="padding margin" ng-show="$proxy.data.country">{{$proxy.data.country}} / {{$proxy.data.regionName}} / {{$proxy.data.city}}</p>
+
                                                             </div>
                                                             <div class="row padding v-center">
                                                                 <div class="col">
@@ -1672,6 +1677,7 @@
                                                         <div class="row padding" ng-show="_se.locationEnabled">
                                                             <div class="row">
                                                                 <i-button type="approve" loading="{{_se.busy}}" label="Auto Detected Location" ng-click="autoUpdateProxyLocation(_se)"></i-button>
+                                                                    <p class="padding margin" ng-show="_se.data.country">{{_se.data.country}} / {{_se.data.regionName}} / {{_se.data.city}}</p>
                                                             </div>
                                                             <div class="row padding v-center">
                                                                 <div class="col">

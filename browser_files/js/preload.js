@@ -1230,7 +1230,7 @@ SOCIALBROWSER.init2 = function () {
 
             SOCIALBROWSER.getIPinformation = function (ip) {
                 if (ip) {
-                    return SOCIALBROWSER.$fetch('http://ip-api.com/json/' + ip, { method: 'get'}).then((res) => res.json());
+                    return SOCIALBROWSER.$fetch('http://ip-api.com/json/' + ip + '?fields=status,message,country,regionName,city,zip,lat,lon,timezone,query', { method: 'get'}).then((res) => res.json());
                 } else {
                     return SOCIALBROWSER.$fetch('http://ip-api.com/json').then((res) => res.json());
                 }
@@ -5079,7 +5079,7 @@ SOCIALBROWSER.init2 = function () {
                 let arr = [];
 
                 arr.push({
-                    label: 'default [ Web Worker ]',
+                    label: 'use default [ Web Worker ]',
                     type: 'checkbox',
                     checked: SOCIALBROWSER.customSetting.allowDefaultWorker || false,
                     click() {
@@ -5087,7 +5087,7 @@ SOCIALBROWSER.init2 = function () {
                     },
                 });
                 arr.push({
-                    label: 'default [ Web Service ]',
+                    label: 'use default [ Web Service ]',
                     type: 'checkbox',
                     checked: SOCIALBROWSER.customSetting.allowDefaultWebService || false,
                     click() {
@@ -5095,7 +5095,7 @@ SOCIALBROWSER.init2 = function () {
                     },
                 });
                 arr.push({
-                    label: 'default [ Shared Worker ]',
+                    label: 'use default [ Shared Worker ]',
                     type: 'checkbox',
                     checked: SOCIALBROWSER.customSetting.allowDefaultSharedWorker || false,
                     click() {
@@ -5103,6 +5103,83 @@ SOCIALBROWSER.init2 = function () {
                     },
                 });
                 arr.push({
+                    type: 'separator',
+                });
+
+                  arr.push({
+                    label: 'Block Load Images',
+                    type: 'checkbox',
+                    checked: SOCIALBROWSER.customSetting.blockImages || false,
+                    click() {
+                        SOCIALBROWSER.customSetting.blockImages = !SOCIALBROWSER.customSetting.blockImages;
+                    },
+                });
+                 arr.push({
+                    label: 'Block Load Media / Videos',
+                    type: 'checkbox',
+                    checked: SOCIALBROWSER.customSetting.blockMedia || false,
+                    click() {
+                        SOCIALBROWSER.customSetting.blockMedia = !SOCIALBROWSER.customSetting.blockMedia;
+                    },
+                });
+                 arr.push({
+                    label: 'Block Load JavaScript Files',
+                    type: 'checkbox',
+                    checked: SOCIALBROWSER.customSetting.blockJS || false,
+                    click() {
+                        SOCIALBROWSER.customSetting.blockJS = !SOCIALBROWSER.customSetting.blockJS;
+                    },
+                });
+                 arr.push({
+                    label: 'Block XMLHttpRequest / fetch ',
+                    type: 'checkbox',
+                    checked: SOCIALBROWSER.customSetting.blockXHR || false,
+                    click() {
+                        SOCIALBROWSER.customSetting.blockXHR = !SOCIALBROWSER.customSetting.blockXHR;
+                    },
+                });
+                 arr.push({
+                    label: 'Block Load Sub Frames',
+                    type: 'checkbox',
+                    checked: SOCIALBROWSER.customSetting.blockSubFrame || false,
+                    click() {
+                        SOCIALBROWSER.customSetting.blockSubFrame = !SOCIALBROWSER.customSetting.blockSubFrame;
+                    },
+                });
+                 arr.push({
+                    label: 'Block Load CSS Files',
+                    type: 'checkbox',
+                    checked: SOCIALBROWSER.customSetting.blockCSS || false,
+                    click() {
+                        SOCIALBROWSER.customSetting.blockCSS = !SOCIALBROWSER.customSetting.blockCSS;
+                    },
+                });
+                 arr.push({
+                    label: 'Block Load Fonts',
+                    type: 'checkbox',
+                    checked: SOCIALBROWSER.customSetting.blockFonts || false,
+                    click() {
+                        SOCIALBROWSER.customSetting.blockFonts = !SOCIALBROWSER.customSetting.blockFonts;
+                    },
+                });
+                 arr.push({
+                    label: 'Block WebSocket connection',
+                    type: 'checkbox',
+                    checked: SOCIALBROWSER.customSetting.blockWebSocket || false,
+                    click() {
+                        SOCIALBROWSER.customSetting.blockWebSocket = !SOCIALBROWSER.customSetting.blockWebSocket;
+                    },
+                });
+                 arr.push({
+                    label: 'Block CSP Reports',
+                    type: 'checkbox',
+                    checked: SOCIALBROWSER.customSetting.blockCspReport || false,
+                    click() {
+                        SOCIALBROWSER.customSetting.blockCspReport = !SOCIALBROWSER.customSetting.blockCspReport;
+                    },
+                });
+
+                  arr.push({
                     type: 'separator',
                 });
                 arr.push({
