@@ -78,6 +78,11 @@ app.controller('mainController', ($scope, $http, $timeout) => {
 
         $scope.$applyAsync();
     };
+    $scope.generateNewUserAgent = function (userAgent = {}) {
+        $scope.userAgent = SOCIALBROWSER.getRandomBrowser(userAgent.device?.name, userAgent.engine?.name);
+
+        $scope.$applyAsync();
+    };
     $scope.generateProxy = function (session) {
         let index = SOCIALBROWSER.randomNumber(0, $scope.setting.proxy_list.length - 1);
         if (typeof session == 'string' && session == '*') {
@@ -166,11 +171,11 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         for (let index = 0; index < 100; index++) {
             let browser = SOCIALBROWSER.getRandomBrowser('pc');
             let newBrowser = {
-                name: browser.name + ' ' + browser.device.name + ' ' + browser.platform,
+                name: browser.name,
                 url: browser.url,
                 device: browser.device,
-                engine: { name: browser.name },
                 platform: browser.platform,
+                engine: browser.engine,
             };
             if (!$scope.setting.userAgentList.some((u) => u.name == newBrowser.name)) {
                 $scope.setting.userAgentList.push(newBrowser);
@@ -194,9 +199,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
                         longitude: data.lon,
                     };
                     proxy.vpc.maskTimeZone = true;
-                    proxy.vpc.timeZone = $scope.timezones.find(
-                        (t) => t.value.like(data.timezone) || t.text.like(data.timezone) || t.utc.includes(data.timezone),
-                    );
+                    proxy.vpc.timeZone = $scope.timezones.find((t) => t.value.like(data.timezone) || t.text.like(data.timezone) || t.utc.includes(data.timezone));
                     proxy.busy = false;
                     $scope.$applyAsync();
                     resolve();

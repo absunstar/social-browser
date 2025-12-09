@@ -1229,6 +1229,7 @@ SOCIALBROWSER.init2 = function () {
             };
 
             SOCIALBROWSER.getIPinformation = function (ip) {
+                
                 if (ip) {
                     return SOCIALBROWSER.$fetch('http://ip-api.com/json/' + ip + '?fields=status,message,country,regionName,city,zip,lat,lon,timezone,query', { method: 'get'}).then((res) => res.json());
                 } else {
@@ -2731,7 +2732,12 @@ SOCIALBROWSER.init2 = function () {
             };
             SOCIALBROWSER.$json = function (str) {
                 return new Promise((resolve, reject) => {
-                    resolve(JSON.parse(str));
+                    try {
+                         resolve(JSON.parse(str));
+                    } catch (error) {
+                        reject(error);
+                    }
+                   
                 });
             };
             SOCIALBROWSER.$fetch = function (url, _options = {}) {

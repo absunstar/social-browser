@@ -13,6 +13,12 @@
                 --input-focus-border-color: #030303;
                 --btn-min-width: 50px;
                 --bs-body-color: #cddc39;
+                --label-color: #ffffff;
+                --modal-color: #ffeb3b;
+                --modal-background: #030303;
+                --modal-header-background-color: #1a2a32;
+                 --dropdown-background: #272727;
+                  --color: #3f9dff;
             }
             body {
                 font-size: 12px;
@@ -63,11 +69,90 @@
                 width: 28px;
                 height: 28px;
             }
+            i-button button {
+                max-height: max-content !important;
+            }
+            .v-center {
+                display: flex;
+                align-items: center;
+            }
             a.btn {
                 background-color: #4182e2 !important;
             }
             i-button button {
                 margin-top: 0px !important;
+            }
+            .form-control {
+                background-color: #6c757d !important;
+                color: #fff !important;
+                font-size: 1.2rem !important;
+            }
+            .form-control:disabled {
+                background-color: #000;
+                cursor: not-allowed;
+            }
+            .dropdown-item.center p {
+                text-align: left !important;
+            }
+             .dropdown-item .small {
+                color: #ffffff;
+            }
+            i-list .dropdown-item {
+                border-bottom: 1px solid #333 !important;
+            }
+
+            fieldset legend {
+                float: none;
+                font-weight: 100;
+                font-size: 20px;
+                color: #ffffff;
+                padding: 0px 20px 0px 20px;
+                margin-left: 10px;
+                display: block;
+                background: #198754;
+                border: var(--fieldset-border);
+                border-radius: 50px;
+            }
+
+            i-checkbox .selector.selected {
+                background: #4caf50;
+                color: #fff;
+                box-shadow: none;
+                border: none;
+                font-weight: bold;
+            }
+            i-checkbox .selector.un-selected {
+                background: #bbb;
+                border: none;
+                color: #6a6969;
+            }
+            i-checkbox label {
+                white-space: nowrap;
+            }
+            i-button:hover {
+                transform: scale(1.1);
+            }
+             .btn-light {
+                --bs-btn-color: #ffffff;
+                --bs-btn-bg: #212529;
+                --bs-btn-border-color: #6c757d;
+                --bs-btn-hover-color: #ffffff;
+                --bs-btn-hover-bg: #145e3c;
+                --bs-btn-hover-border-color: #000000;
+            }
+            .setting {
+                background: #607d8b;
+                border-radius: 20px;
+                margin-bottom: 30px;
+            }
+          
+            .modal-content {
+                width: 98%;
+                height: auto;
+                max-height: 100%;
+            }
+            .modal-footer {
+                background: var(--modal-header-background-color);
             }
         </style>
         <title>Document</title>
@@ -85,17 +170,22 @@
 
         <div class="row">
             <div ng-hide="_se.hide" class="row" ng-repeat="_se in setting.session_list | filter:session.display track by $index  ">
-                <div class="col-10">
-                    <div class="user-box" ng-click="selectSession(_se)" ng-class="{'bg-green' : _se.$current}">
-                        <img src="http://127.0.0.1:60080/images/user.png" />
-                        <p><span class="bold"> ( {{$index + 1}} / {{setting.session_list.length}} ) </span> {{_se.display}}</p>
+                <div class="row">
+                    <div class="col-9">
+                        <div class="user-box" ng-click="selectSession(_se)" ng-class="{'bg-green' : _se.$current}">
+                            <img src="http://127.0.0.1:60080/images/user.png" />
+                            <p><span class="bold"> ( {{$index + 1}} / {{setting.session_list.length}} ) </span> {{_se.display}}</p>
+                        </div>
                     </div>
-                </div>
-                <div class="col-1">
-                    <i-button class2="bg-orange" title="Hide User Profile" type="cancel" ng-click="hideSession(_se)"></i-button>
-                </div>
-                 <div class="col-1">
-                    <i-button title="Remove User Profile" type="delete" ng-click="removeSession(_se)"></i-button>
+                    <div class="col-1">
+                        <i-button title="User Profile Setting" type="edit" ng-click="showSetting(_se)"></i-button>
+                    </div>
+                    <div class="col-1">
+                        <i-button class2="bg-orange" title="Hide User Profile" type="cancel" ng-click="hideSession(_se)"></i-button>
+                    </div>
+                    <div class="col-1">
+                        <i-button title="Remove User Profile" type="delete" ng-click="removeSession(_se)"></i-button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -108,6 +198,289 @@
                     <i-button type="add" ng-click="addSession()" label="Create New Profile"></i-button>
                 </div>
             </fieldset>
+        </div>
+
+        <div id="usersOptionsModal" class="modal" fixed>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="close">&times;</span>
+                    <h2>Profile Setting <span class="bold yellow"> ( {{currentSession.display}} ) </span></h2>
+                </div>
+                <div class="modal-body">
+                    <form class="form">
+                        <i-control ng-model="currentSession.display" label="Name"></i-control>
+
+                        <div class="row padding border">
+                            <i-list ng-search="search.$userAgentURL" primary="name" items="setting.userAgentList" ng-model="currentSession.defaultUserAgent" label="Select User Agent"></i-list>
+                            <i-control disabled class="row" label="User Agent URL" ng-model="currentSession.defaultUserAgent.url"></i-control>
+                        </div>
+
+                        <fieldset>
+                            <legend>Proxy</legend>
+                            <div class="row">
+                                <i-checkbox class="col2" label="Enable" ng-model="currentSession.proxyEnabled"></i-checkbox>
+                                <div ng-show="currentSession.proxyEnabled">
+                                    <div class="row">
+                                        <div class="row padding border">
+                                            <i-list
+                                                class="col4"
+                                                ng-search="$selected_proxy"
+                                                items="setting.proxy_list"
+                                                display="ip"
+                                                display2="port"
+                                                label="Select Proxy"
+                                                ng-model="currentSession.proxy"
+                                            >
+                                            </i-list>
+                                            <div class="row border">
+                                                <div class="row border">
+                                                    <i-control label="Proxy URL (option)" ng-model="currentSession.proxy.url"></i-control>
+                                                </div>
+                                                <i-control class="col8" label="Proxy IP" type="text" ng-model="currentSession.proxy.ip"> </i-control>
+                                                <i-control class="col4" label="Proxy Port" type="text" ng-model="currentSession.proxy.port"> </i-control>
+                                                <i-control class="col6" label="User Name" type="text" ng-model="currentSession.proxy.username"> </i-control>
+                                                <i-control class="col6" label="Password" type="text" ng-model="currentSession.proxy.password"> </i-control>
+                                            </div>
+
+                                            <i-control class="row" label="No Proxy For URLs" type="text" ng-model="currentSession.proxy.ignore"> </i-control>
+                                        </div>
+                                        <div class="row padding">
+                                            <i-checkbox class="" label="Socks 5" ng-model="currentSession.proxy.socks5"></i-checkbox>
+                                            <i-checkbox class="" label="Socks 4" ng-model="currentSession.proxy.socks4"></i-checkbox>
+                                            <i-checkbox class="" label="FTP" ng-model="currentSession.proxy.ftp"></i-checkbox>
+                                            <i-checkbox class="" label="HTTP" ng-model="currentSession.proxy.http"></i-checkbox>
+                                            <i-checkbox class="" label="HTTPS" ng-model="currentSession.proxy.https"></i-checkbox>
+                                            <i-checkbox class="" label="ignore Proxy if not Working" ng-model="currentSession.proxy.direct"></i-checkbox>
+                                        </div>
+                                    </div>
+                                    <fieldset>
+                                        <legend>Proxy Location Setting</legend>
+                                        <i-checkbox class="" label="Enabled" ng-model="currentSession.proxy.locationEnabled"></i-checkbox>
+                                        <div class="row padding" ng-show="currentSession.proxy.locationEnabled">
+                                            <div class="row center">
+                                                <i-button
+                                                    type="approve"
+                                                    loading="{{currentSession.proxy.busy}}"
+                                                    label="Auto Detected Location"
+                                                    ng-click="autoUpdateProxyLocation(currentSession.proxy)"
+                                                ></i-button>
+                                                <p class="padding margin" ng-show="currentSession.proxy.data.country">
+                                                    {{currentSession.proxy.data.country}} / {{currentSession.proxy.data.regionName}} / {{currentSession.proxy.data.city}}
+                                                </p>
+                                            </div>
+                                            <div class="row padding v-center">
+                                                <div class="col">
+                                                    <i-checkbox label="Hide Date" ng-model="currentSession.proxy.vpc.maskTimeZone"></i-checkbox>
+                                                </div>
+                                                <div class="col" ng-show="currentSession.proxy.vpc.maskTimeZone">
+                                                    <i-list items="timezones" primary="value" display="text" label="Select Time Zone" ng-model="currentSession.proxy.vpc.timeZone"></i-list>
+                                                </div>
+                                            </div>
+                                            <div class="row padding v-center">
+                                                <div class="col">
+                                                    <i-checkbox label="Hide Location" ng-model="currentSession.proxy.vpc.hide_location"></i-checkbox>
+                                                </div>
+                                                <div class="col" ng-show="currentSession.proxy.vpc.hide_location">
+                                                    <i-control ng-model="currentSession.proxy.vpc.location.latitude" label="Latitude"></i-control>
+                                                    <i-control ng-model="currentSession.proxy.vpc.location.longitude" label="Longitude"></i-control>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <div class="row">
+                            <div class="col">
+                                <i-checkbox label="Enable Virtual PC" ng-model="currentSession.privacy.allowVPC"></i-checkbox>
+                            </div>
+                            <div class="col" ng-show="currentSession.privacy.allowVPC">
+                                <i-button type="reset" label="Generate Virual PC" ng-click="generateVPC(currentSession)"></i-button>
+                            </div>
+                        </div>
+
+                        <fieldset ng-show="currentSession.privacy.allowVPC">
+                            <legend>Hardware</legend>
+                            <div class="row">
+                                <div class="col"><i-checkbox label="Hide CPU Count" ng-model="currentSession.privacy.vpc.hide_cpu"></i-checkbox></div>
+                                <div class="col">
+                                    <i-control
+                                        type="number"
+                                        ng-disabled="currentSession.privacy.vpc.hide_cpu !== true"
+                                        ng-model="currentSession.privacy.vpc.cpu_count"
+                                        label="Custom CPU Count"
+                                    ></i-control>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col"><i-checkbox label="Hide Memory Count" ng-model="currentSession.privacy.vpc.hide_memory"></i-checkbox></div>
+                                <div class="col">
+                                    <i-control
+                                        type="number"
+                                        ng-disabled="currentSession.privacy.vpc.hide_memory !== true"
+                                        ng-model="currentSession.privacy.vpc.memory_count"
+                                        label="Custom Memory Count"
+                                    ></i-control>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <fieldset ng-show="currentSession.privacy.allowVPC">
+                            <legend>Location Setting</legend>
+                            <div class="row">
+                                <div ng-show="currentSession.privacy.allowVPC" class="row v-center">
+                                    <div class="col"><i-checkbox label="Hide Languages " ng-model="currentSession.privacy.vpc.hide_lang"></i-checkbox></div>
+                                    <div class="col">
+                                        <i-control ng-disabled="currentSession.privacy.vpc.hide_lang !== true" ng-model="currentSession.privacy.vpc.languages" label="Custom Languages"></i-control>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="row center">
+                                        <i-button
+                                            type="approve"
+                                            loading="{{currentSession.privacy.busy}}"
+                                            label="Auto Detected Location"
+                                            ng-click="autoUpdateProxyLocation(currentSession.privacy)"
+                                        ></i-button>
+                                        <p class="padding margin" ng-show="currentSession.privacy.data.country">
+                                            {{currentSession.privacy.data.country}} / {{currentSession.privacy.data.regionName}} / {{currentSession.privacy.data.city}}
+                                        </p>
+                                    </div>
+                                    <div class="row v-center">
+                                        <div class="col"><i-checkbox label="Hide Date " ng-model="currentSession.privacy.vpc.maskTimeZone"></i-checkbox></div>
+                                        <div class="col">
+                                            <i-list
+                                                ng-disabled="currentSession.privacy.vpc.maskTimeZone !== true"
+                                                items="timezones"
+                                                primary="value"
+                                                display="text"
+                                                label="Select Time Zone"
+                                                ng-model="currentSession.privacy.vpc.timeZone"
+                                            ></i-list>
+                                        </div>
+                                    </div>
+                                    <div class="row v-center">
+                                        <div class="col"><i-checkbox label="Hide Location" ng-model="currentSession.privacy.vpc.hide_location"></i-checkbox></div>
+                                        <div class="col">
+                                            <i-control
+                                                ng-disabled="currentSession.privacy.vpc.hide_location !== true"
+                                                ng-model="currentSession.privacy.vpc.location.latitude"
+                                                label="Latitude"
+                                            ></i-control>
+                                            <i-control
+                                                ng-disabled="currentSession.privacy.vpc.hide_location !== true"
+                                                ng-model="currentSession.privacy.vpc.location.longitude"
+                                                label="Longitude"
+                                            ></i-control>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <fieldset ng-show="currentSession.privacy.allowVPC">
+                            <legend>Screen</legend>
+                            <div class="row">
+                                <div class="col"><i-checkbox label="Hide Screen Size " ng-model="currentSession.privacy.vpc.hide_screen"></i-checkbox></div>
+                                <div class="col">
+                                    <i-control
+                                        type="number"
+                                        ng-disabled="currentSession.privacy.vpc.hide_screen !== true"
+                                        ng-model="currentSession.privacy.vpc.screen.width"
+                                        label="Screen Width"
+                                    ></i-control>
+                                    <i-control
+                                        type="number"
+                                        ng-disabled="currentSession.privacy.vpc.hide_screen !== true"
+                                        ng-model="currentSession.privacy.vpc.screen.height"
+                                        label="Screen Height"
+                                    ></i-control>
+                                    <i-control
+                                        type="number"
+                                        ng-disabled="currentSession.privacy.vpc.hide_screen !== true"
+                                        ng-model="currentSession.privacy.vpc.screen.availWidth"
+                                        label="Screen availbal Width"
+                                    ></i-control>
+                                    <i-control
+                                        type="number"
+                                        ng-disabled="currentSession.privacy.vpc.hide_screen !== true"
+                                        ng-model="currentSession.privacy.vpc.screen.availHeight"
+                                        label="Screen availbal Height"
+                                    ></i-control>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <fieldset ng-show="currentSession.privacy.allowVPC">
+                            <legend> Connection </legend>
+                              <div  class="row ">
+                            <div class="col"><i-checkbox label="Hide Connection Information" ng-model="currentSession.privacy.vpc.hide_connection"></i-checkbox></div>
+                            <div class="col">
+                                <i-control
+                                    ng-disabled="currentSession.privacy.vpc.hide_connection !== true"
+                                    ng-model="currentSession.privacy.vpc.connection.effectiveType"
+                                    label="Network Provider Type"
+                                ></i-control>
+                                <i-control
+                                    type="number"
+                                    ng-disabled="currentSession.privacy.vpc.hide_connection !== true"
+                                    ng-model="currentSession.privacy.vpc.connection.downlink"
+                                    label="Download Speed (Mbit)"
+                                ></i-control>
+                                <i-control
+                                    type="number"
+                                    ng-disabled="currentSession.privacy.vpc.hide_connection !== true"
+                                    ng-model="currentSession.privacy.vpc.connection.downlinkMax"
+                                    label="Download Max Speed (Mbit)"
+                                ></i-control>
+                                <i-control
+                                    type="number"
+                                    ng-disabled="currentSession.privacy.vpc.hide_connection !== true"
+                                    ng-model="currentSession.privacy.vpc.connection.rtt"
+                                    label="Ping (low is fast)"
+                                ></i-control>
+                                <i-control ng-disabled="currentSession.privacy.vpc.hide_connection !== true" ng-model="currentSession.privacy.vpc.connection.type" label="Network Source"></i-control>
+                            </div>
+                        </div>
+                        </fieldset>
+
+                      <fieldset>
+                        <legend>Configrations</legend>
+
+                        <div ng-show="currentSession.privacy.allowVPC" class="row border2">
+                            <i-checkbox class="col6" label="Set Window Alawys Active" ng-model="currentSession.privacy.vpc.set_window_active"></i-checkbox>
+                            <i-checkbox class="col6" label="Set Tab Alawys Active" ng-model="currentSession.privacy.vpc.set_tab_active"></i-checkbox>
+                            <i-checkbox class="col6" label="Block HTML Canvas" ng-model="currentSession.privacy.vpc.hide_canvas"></i-checkbox>
+
+                            <i-checkbox class="col6" label="Hide Audio" ng-model="currentSession.privacy.vpc.hide_audio"></i-checkbox>
+                            <i-checkbox class="col6" label="Hide WebGL" ng-model="currentSession.privacy.vpc.hide_webgl"></i-checkbox>
+                            <i-checkbox class="col6" label="Block RTC Connections" ng-model="currentSession.privacy.vpc.block_rtc"></i-checkbox>
+
+                            <i-checkbox class="col6" label="Hide MimeTypes" ng-model="currentSession.privacy.vpc.hide_mimetypes"></i-checkbox>
+                            <i-checkbox class="col6" label="Mask Battery informations (profile)" ng-model="currentSession.privacy.vpc.hide_battery"></i-checkbox>
+                            <i-checkbox class="col6" label="Block Media Devices [camera , mic , ...]" ng-model="currentSession.privacy.vpc.hide_media_devices"></i-checkbox>
+                            <i-checkbox class="col6" label="Hide Fonts [some Sites not work] " ng-model="currentSession.privacy.vpc.hide_fonts"></i-checkbox>
+                            <i-checkbox class="col6" label="Mask User Agent (profile + host) [some Sites not work] " ng-model="currentSession.privacy.vpc.maskUserAgentURL"></i-checkbox>
+
+                            <fieldset>
+                                <legend>Options</legend>
+                                <div class="row">
+                                    <i-checkbox class="col6" label="Remove X Frame Options (iframe)" ng-model="currentSession.privacy.vpc.removeXFrameOptions"></i-checkbox>
+                                    <i-checkbox class="col6" label="Hide Social Media Info" ng-model="currentSession.privacy.vpc.hide_social_media_info"></i-checkbox>
+                                    <i-checkbox class="col6" label="Send Don't Track Header" ng-model="currentSession.privacy.vpc.dnt"></i-checkbox>
+                                </div>
+                            </fieldset>
+                        </div>
+                      </fieldset>
+
+                    </form>
+                </div>
+                <div class="modal-footer center">
+                    <i-button type="close" onclick="site.hideModal('#usersOptionsModal')" label="Close"></i-button>
+                    <i-button type="save" ng-click="saveSetting()" label="Save All Changes"></i-button>
+                </div>
+            </div>
         </div>
 
         <script src="http://127.0.0.1:60080/x-js/bootstrap-5-support.js"></script>

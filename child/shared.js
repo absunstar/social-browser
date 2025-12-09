@@ -2077,6 +2077,8 @@ module.exports = function (owner) {
             let browser = owner.userAgentBrowserList.filter((d) => d.name.contains(browserName));
             browser = browser[owner.randomNumber(0, browser.length - 1)] || owner.userAgentBrowserList[owner.randomNumber(0, owner.userAgentBrowserList.length - 1)];
             browser = { ...browser };
+            browser.engine = {name : browser.name};
+           
 
             let devices = owner.userAgentDeviceList.filter((d) => d.name.contains(deviceName));
             browser.device = devices[owner.randomNumber(0, devices.length - 1)] || owner.userAgentDeviceList[owner.randomNumber(0, owner.userAgentDeviceList.length - 1)];
@@ -2104,7 +2106,9 @@ module.exports = function (owner) {
             delete browser.randomMajor;
             delete browser.randomMinor;
             delete browser.randomPatch;
-
+            
+             browser.name = browser.name + ' ' + browser.device.name + ' ' + browser.platform
+             
             if (browser.name.contains('Safari')) {
                 browser.url = `Mozilla/5.0 (${browser.platformInfo.name}) AppleWebKit/${browser.major}.${browser.minor} (KHTML, like Gecko) Version/${browser.patch}.0 Safari/${browser.major}.${browser.minor}`;
             }

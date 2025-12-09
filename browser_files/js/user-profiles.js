@@ -16,6 +16,63 @@ app.controller('mainController', ($scope, $http, $interval, $timeout) => {
         core: {},
         session_list: [],
     };
+    $scope.userAgentBrowserList = SOCIALBROWSER.userAgentBrowserList.map((b) => ({ name: b.name }));
+    $scope.userAgentDeviceList = SOCIALBROWSER.userAgentDeviceList;
+    $scope.timezones = [...SOCIALBROWSER.timeZones];
+
+    $scope.generateVPC = function (session) {
+        if (typeof session == 'string' && session == '*') {
+            $scope.setting.session_list
+                .filter((s) => s.$selected)
+                .forEach((s, i) => {
+                    $scope.setting.session_list[i].privacy.vpc = SOCIALBROWSER.generateVPC('pc');
+                    $scope.setting.session_list[i].privacy.allowVPC = true;
+                    $scope.setting.session_list[i].defaultUserAgent = SOCIALBROWSER.getRandomBrowser('pc');
+                    SOCIALBROWSER.showUserMessage('Generate Virual PC for Profile : ' + s.display);
+                });
+        } else {
+            if (session) {
+                session.privacy.vpc = SOCIALBROWSER.generateVPC('pc');
+                session.privacy.allowVPC = true;
+                session.defaultUserAgent = SOCIALBROWSER.getRandomBrowser('pc');
+                SOCIALBROWSER.showUserMessage('Generate Virual PC for Profile : ' + session.display);
+            } else {
+                SOCIALBROWSER.var.blocking.privacy.vpc = SOCIALBROWSER.generateVPC('pc');
+                $scope.setting.blocking.privacy.vpc = { ...SOCIALBROWSER.var.blocking.privacy.vpc };
+                SOCIALBROWSER.showUserMessage('Generate Virual PC for Default ');
+            }
+        }
+
+        $scope.$applyAsync();
+    };
+    $scope.autoUpdateProxyLocation = function (proxy) {
+        return new Promise((resolve, reject) => {
+            proxy.busy = true;
+
+            SOCIALBROWSER.getIPinformation(proxy.ip)
+                .then((data) => {
+                    proxy.data = data;
+                    proxy.locationEnabled = true;
+                    proxy.vpc = proxy.vpc || {};
+                    proxy.vpc.hide_location = true;
+                    proxy.vpc.location = {
+                        latitude: data.lat,
+                        longitude: data.lon,
+                    };
+                    proxy.vpc.maskTimeZone = true;
+                    proxy.vpc.timeZone = $scope.timezones.find((t) => t.value.like(data.timezone) || t.text.like(data.timezone) || t.utc.includes(data.timezone));
+                    proxy.busy = false;
+                    $scope.$applyAsync();
+                    resolve();
+                })
+                .catch((err) => {
+                    proxy.busy = false;
+                    $scope.$applyAsync();
+                    alert(err.message);
+                    reject();
+                });
+        });
+    };
 
     SOCIALBROWSER.onEvent('updated', (p) => {
         if (p.name == 'session_list') {
@@ -28,8 +85,8 @@ app.controller('mainController', ($scope, $http, $interval, $timeout) => {
                 }
                 $scope.setting.session_list.push({ ...s });
             });
-        } else if (p.name == 'core') {
-            $scope.setting.core = SOCIALBROWSER.var.core;
+        } else {
+            $scope.setting[p.name] = SOCIALBROWSER.var[p.name];
         }
 
         $scope.$applyAsync();
@@ -85,13 +142,18 @@ app.controller('mainController', ($scope, $http, $interval, $timeout) => {
             $scope.setting.session_list.push({ ...s });
         });
         $scope.setting.core = SOCIALBROWSER.var.core;
+        $scope.setting.userAgentList = SOCIALBROWSER.var.userAgentList;
+        $scope.setting.proxy_list = SOCIALBROWSER.var.proxy_list;
     };
 
-    $scope.saveSessions = function () {
-        $scope.saveSetting();
-    };
+    $scope.showSetting = function (_se) {
+        $scope.currentSession = _se;
+        site.showModal('#usersOptionsModal');
+    }
+   
 
     $scope.saveSetting = function () {
+        site.hideModal('#usersOptionsModal')
         SOCIALBROWSER.ipc('[update-browser-var]', {
             name: 'core',
             data: $scope.setting.core,

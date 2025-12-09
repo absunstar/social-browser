@@ -80,9 +80,9 @@ module.exports = function (child) {
                 vip: true,
                 allowMenu: child.isDeveloperMode(),
                 show: false,
-                width: 800,
-                height: 800,
-                x: win.getBounds().x + (win.getBounds().width - 800),
+                width: win.getBounds().width / 2,
+                height: win.getBounds().height - 30,
+                x: win.getBounds().x + (win.getBounds().width / 2),
                 y: (win.getBounds().y == -8 ? 0 : win.getBounds().y - 5) + 30,
                 alwaysOnTop: false,
                 resizable: false,
@@ -104,8 +104,10 @@ module.exports = function (child) {
         }
         if (show && child.profilesWindow && !child.profilesWindow.isDestroyed()) {
             child.profilesWindow.setBounds({
-                x: win.getBounds().x + (win.getBounds().width - 800),
-                y: (win.getBounds().y == -8 ? 0 : win.getBounds().y - 5) + 25,
+                 width: win.getBounds().width / 2,
+                height: win.getBounds().height - 30,
+                x: win.getBounds().x + (win.getBounds().width / 2),
+                y: (win.getBounds().y == -8 ? 0 : win.getBounds().y - 5) + 30,
             });
             child.profilesWindow.show();
         }
