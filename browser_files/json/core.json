@@ -1,8 +1,8 @@
 {
     "port": 60080,
     "enabled": true,
-    "version": "2025.12.08",
-    "prefix": "SB_12_08_",
+    "version": "2025.12.15",
+    "prefix": "SB_12_15_",
     "flags": "",
     "brand": "Social Browser",
     "pinCode": "ABCD",
