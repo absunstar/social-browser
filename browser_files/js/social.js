@@ -711,18 +711,35 @@ SOCIALBROWSER.showUserProxyMenu = function () {
     SOCIALBROWSER.menuList.push({
         type: 'separator',
     });
-    SOCIALBROWSER.var.proxy_list.forEach((proxy) => {
+
+    if (SOCIALBROWSER.var.proxy_list.length > 0) {
         SOCIALBROWSER.menuList.push({
-            label: proxy.url || proxy.ip + ':' + proxy.port,
+            label: 'Random Proxy',
             iconURL: 'http://127.0.0.1:60080/images/proxy.png',
             click: () => {
+                let proxy = SOCIALBROWSER.var.proxy_list[Math.floor(Math.random() * SOCIALBROWSER.var.proxy_list.length)] || SOCIALBROWSER.var.proxy_list[0];
                 SOCIALBROWSER.ws({ type: '[change-user-proxy]', partition: SOCIALBROWSER.getCurrentTabInfo().partition, proxy: proxy });
                 setTimeout(() => {
                     ipc('[window-reload]');
                 }, 1000 * 2);
             },
         });
-    });
+        SOCIALBROWSER.menuList.push({
+            type: 'separator',
+        });
+        SOCIALBROWSER.var.proxy_list.forEach((proxy) => {
+            SOCIALBROWSER.menuList.push({
+                label: proxy.url || proxy.ip + ':' + proxy.port,
+                iconURL: 'http://127.0.0.1:60080/images/proxy.png',
+                click: () => {
+                    SOCIALBROWSER.ws({ type: '[change-user-proxy]', partition: SOCIALBROWSER.getCurrentTabInfo().partition, proxy: proxy });
+                    setTimeout(() => {
+                        ipc('[window-reload]');
+                    }, 1000 * 2);
+                },
+            });
+        });
+    }
 
     ipc('[show-menu]', {
         windowID: SOCIALBROWSER.window.id,
@@ -846,7 +863,7 @@ SOCIALBROWSER.showWindowsMenu = function () {
     });
 
     SOCIALBROWSER.menuList.push({
-        label: 'Open URL in  [ New Gost Window ( Random - Mobile ) ]',
+        label: 'Open URL in  [ New Ghost Window ( Random - Mobile ) ]',
         sublabel: SOCIALBROWSER.getCurrentTabInfo().url,
         iconURL: 'http://127.0.0.1:60080/images/page.png',
         click: () => {
