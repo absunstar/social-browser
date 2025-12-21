@@ -4308,8 +4308,8 @@ SOCIALBROWSER.init2 = function () {
                             });
                         });
 
-                    return arr;
                 }
+                return arr;
             }
 
             function add_a_menu(node) {
