@@ -702,9 +702,10 @@ SOCIALBROWSER.showUserProxyMenu = function () {
         label: 'Stop Proxy',
         iconURL: 'http://127.0.0.1:60080/images/stop.png',
         click: () => {
+            let currentTab =  SOCIALBROWSER.SOCIALBROWSER.getCurrentTabInfo();
             SOCIALBROWSER.ws({ type: '[change-user-proxy]', partition: SOCIALBROWSER.getCurrentTabInfo().partition, proxy: null });
             setTimeout(() => {
-                ipc('[window-reload]');
+                ipc('[window-reload]' , currentTab);
             }, 1000 * 1);
         },
     });
@@ -717,10 +718,11 @@ SOCIALBROWSER.showUserProxyMenu = function () {
             label: 'Random Proxy',
             iconURL: 'http://127.0.0.1:60080/images/proxy.png',
             click: () => {
+                 let currentTab =  SOCIALBROWSER.SOCIALBROWSER.getCurrentTabInfo();
                 let proxy = SOCIALBROWSER.var.proxy_list[Math.floor(Math.random() * SOCIALBROWSER.var.proxy_list.length)] || SOCIALBROWSER.var.proxy_list[0];
                 SOCIALBROWSER.ws({ type: '[change-user-proxy]', partition: SOCIALBROWSER.getCurrentTabInfo().partition, proxy: proxy });
                 setTimeout(() => {
-                    ipc('[window-reload]');
+                    ipc('[window-reload]' , currentTab);
                 }, 1000 * 2);
             },
         });
@@ -732,9 +734,10 @@ SOCIALBROWSER.showUserProxyMenu = function () {
                 label: proxy.url || proxy.ip + ':' + proxy.port,
                 iconURL: 'http://127.0.0.1:60080/images/proxy.png',
                 click: () => {
+                     let currentTab =  SOCIALBROWSER.SOCIALBROWSER.getCurrentTabInfo();
                     SOCIALBROWSER.ws({ type: '[change-user-proxy]', partition: SOCIALBROWSER.getCurrentTabInfo().partition, proxy: proxy });
                     setTimeout(() => {
-                        ipc('[window-reload]');
+                        ipc('[window-reload]' , currentTab);
                     }, 1000 * 2);
                 },
             });

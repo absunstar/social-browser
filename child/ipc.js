@@ -21,11 +21,11 @@ module.exports = function init(child) {
         });
     };
 
-    child.sendToWindow = function (win, channel, data){
+    child.sendToWindow = function (win, channel, data) {
         if (win && !win.isDestroyed() && win.webContents && !win.webContents.isDestroyed()) {
             win.webContents.send(channel, data);
         }
-    }
+    };
     child.sendToWebContents = function (webContents, channel, data) {
         if (webContents && !webContents.isDestroyed()) {
             webContents.send(channel, data);
@@ -1180,6 +1180,9 @@ module.exports = function init(child) {
             child.sendMessage({ type: '[window-reload]', data: data });
         } else if (data.windowID) {
             let win = child.electron.BrowserWindow.fromId(data.windowID);
+            win.webContents.reload();
+        } else {
+            let win = child.electron.BrowserWindow.fromWebContents(event.sender);
             win.webContents.reload();
         }
     });
