@@ -78,6 +78,9 @@ app.controller('mainController', ($scope, $http, $interval, $timeout) => {
         if (p.name == 'session_list') {
             $scope.setting.session_list = [];
             SOCIALBROWSER.var.session_list.forEach((s) => {
+                if (s.user && typeof s.user.birthDate == 'string') {
+                    s.user.birthDate = new Date(s.user.birthDate);
+                }
                 if (s.name == SOCIALBROWSER.var.core.session.name) {
                     s.$current = true;
                 } else {
@@ -85,6 +88,7 @@ app.controller('mainController', ($scope, $http, $interval, $timeout) => {
                 }
                 $scope.setting.session_list.push({ ...s });
             });
+            $scope.showActiveUsers();
         } else {
             $scope.setting[p.name] = SOCIALBROWSER.var[p.name];
         }
@@ -134,6 +138,9 @@ app.controller('mainController', ($scope, $http, $interval, $timeout) => {
     $scope.loadSetting = function () {
         $scope.setting.session_list = [];
         SOCIALBROWSER.var.session_list.forEach((s) => {
+            if (s.user && typeof s.user.birthDate == 'string') {
+                s.user.birthDate = new Date(s.user.birthDate);
+            }
             if (s.name == SOCIALBROWSER.var.core.session.name) {
                 s.$current = true;
             } else {
@@ -141,6 +148,7 @@ app.controller('mainController', ($scope, $http, $interval, $timeout) => {
             }
             $scope.setting.session_list.push({ ...s });
         });
+        $scope.showActiveUsers();
         $scope.setting.core = SOCIALBROWSER.var.core;
         $scope.setting.userAgentList = SOCIALBROWSER.var.userAgentList;
         $scope.setting.proxy_list = SOCIALBROWSER.var.proxy_list;
@@ -149,11 +157,10 @@ app.controller('mainController', ($scope, $http, $interval, $timeout) => {
     $scope.showSetting = function (_se) {
         $scope.currentSession = _se;
         site.showModal('#usersOptionsModal');
-    }
-   
+    };
 
     $scope.saveSetting = function () {
-        site.hideModal('#usersOptionsModal')
+        site.hideModal('#usersOptionsModal');
         SOCIALBROWSER.ipc('[update-browser-var]', {
             name: 'core',
             data: $scope.setting.core,
@@ -162,6 +169,33 @@ app.controller('mainController', ($scope, $http, $interval, $timeout) => {
             name: 'session_list',
             data: $scope.setting.session_list,
         });
+    };
+
+    $scope.showHidenUsers = function () {
+        $scope.setting.session_list.forEach((se, i) => {
+            if (se.hide) {
+                se.$hide = false;
+            } else {
+                se.$hide = true;
+            }
+        });
+        $scope.$applyAsync();
+    };
+    $scope.showActiveUsers = function () {
+        $scope.setting.session_list.forEach((se, i) => {
+            if (!se.hide) {
+                se.$hide = false;
+            } else {
+                se.$hide = true;
+            }
+        });
+        $scope.$applyAsync();
+    };
+    $scope.showAllUsers = function () {
+        $scope.setting.session_list.forEach((se, i) => {
+            se.$hide = false;
+        });
+        $scope.$applyAsync();
     };
 
     $scope.loadSetting();

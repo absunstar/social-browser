@@ -25,7 +25,7 @@ module.exports = function (child) {
                 }),
                 windowType: 'addressbar',
                 vip: true,
-                allowMenu:  child.isDeveloperMode(),
+                allowMenu: child.isDeveloperMode(),
                 show: false,
                 width: win.getBounds().width - 200,
                 height: 500,
@@ -82,7 +82,7 @@ module.exports = function (child) {
                 show: false,
                 width: win.getBounds().width / 2,
                 height: win.getBounds().height - 30,
-                x: win.getBounds().x + (win.getBounds().width / 2),
+                x: win.getBounds().x + win.getBounds().width / 2,
                 y: (win.getBounds().y == -8 ? 0 : win.getBounds().y - 5) + 30,
                 alwaysOnTop: false,
                 resizable: false,
@@ -104,9 +104,9 @@ module.exports = function (child) {
         }
         if (show && child.profilesWindow && !child.profilesWindow.isDestroyed()) {
             child.profilesWindow.setBounds({
-                 width: win.getBounds().width / 2,
+                width: win.getBounds().width / 2,
                 height: win.getBounds().height - 30,
-                x: win.getBounds().x + (win.getBounds().width / 2),
+                x: win.getBounds().x + win.getBounds().width / 2,
                 y: (win.getBounds().y == -8 ? 0 : win.getBounds().y - 5) + 30,
             });
             child.profilesWindow.show();
@@ -925,13 +925,15 @@ module.exports = function (child) {
         win.on('unresponsive', async () => {
             child.log('window unresponsive');
             win.customSetting.unresponsive = true;
-            let timeout = win.customSetting.$cloudFlare ? 1000 : 1000 * 30;
-            setTimeout(() => {
-                if (win && !win.isDestroyed() && win.customSetting.unresponsive) {
-                    win.webContents.forcefullyCrashRenderer();
-                    win.webContents.reload();
-                }
-            }, timeout);
+            if (win.customSetting.windowType.like('*popup*')) {
+                let timeout = win.customSetting.$cloudFlare ? 1000 : 1000 * 30;
+                setTimeout(() => {
+                    if (win && !win.isDestroyed() && win.customSetting.unresponsive) {
+                        win.webContents.forcefullyCrashRenderer();
+                        win.webContents.reload();
+                    }
+                }, timeout);
+            }
         });
         win.on('responsive', async () => {
             win.customSetting.unresponsive = false;
@@ -971,7 +973,7 @@ module.exports = function (child) {
                 if (
                     url.like('javascript:*|*accounts.google*|*account.facebook*|*login.microsoft*|*appleid.apple*') &&
                     e.isMainFrame &&
-                   // win.customSetting.iframe &&
+                    // win.customSetting.iframe &&
                     win.customSetting.windowType === 'view'
                 ) {
                     e.preventDefault();
@@ -1367,10 +1369,16 @@ module.exports = function (child) {
 
         if (win.customSetting.url) {
             child.handleCustomSeting(win.customSetting.url, win, true);
-            win.loadURL(win.customSetting.url, {
-                httpReferrer: win.customSetting.referrer || win.customSetting.referer,
-                userAgent: win.customSetting.$userAgentURL,
-            });
+            if (child.parent.var.core.enginOFF || win.customSetting.off) {
+                win.loadURL(win.customSetting.url, {
+                    httpReferrer: win.customSetting.referrer || win.customSetting.referer,
+                });
+            } else {
+                win.loadURL(win.customSetting.url, {
+                    httpReferrer: win.customSetting.referrer || win.customSetting.referer,
+                    userAgent: win.customSetting.$userAgentURL,
+                });
+            }
         }
 
         return win;

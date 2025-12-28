@@ -2,7 +2,7 @@
     "name": "social.browser",
     "productName": "Social Browser",
     "homepage": "https://social-browser.com",
-    "version": "2025.12.20",
+    "version": "2026.01.01",
     "description": "Browsing Social Platforms with Multiple Accounts without Ban",
     "author": {
         "name": "Social Teams",
@@ -31,7 +31,7 @@
     "build": {
         "appId": "com.social.browser",
         "productName": "Social Browser",
-        "copyright": "Copyright©2025",
+        "copyright": "Copyright©2026",
         "target": "nsis",
         "asar": true,
         "files": [
@@ -111,11 +111,11 @@
         "appx": {}
     },
     "dependencies": {
-        "isite": "^2025.11.4",
+        "isite": "^2025.12.1",
         "puppeteer-core": "^24.22.0"
     },
     "devDependencies": {
-        "electron": "^39.2.6",
+        "electron": "^39.2.7",
         "electron-builder": "^26.0.12"
     }
 }

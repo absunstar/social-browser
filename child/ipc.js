@@ -512,8 +512,8 @@ module.exports = function init(child) {
         }
         event.returnValue = true;
     });
-    child.ipcMain.on('[read-file]', async (event, path) => {
-        event.returnValue = child.fs.readFileSync(path).toString();
+    child.ipcMain.on('[read-file]', async (event, path ) => {
+        event.returnValue = child.fs.readFileSync(path, { encoding: 'utf8', flag: 'r' });
     });
     child.ipcMain.on('[delete-file]', async (event, path) => {
         child.fs.unlinkSync(path);
@@ -870,13 +870,15 @@ module.exports = function init(child) {
             options.body = JSON.stringify(options.body);
         }
         options.return = options.return || 'json';
+        options.headers = options.headers || {}
         try {
             let data = await child.api.fetch(options.url, {
                 mode: 'cors',
                 method: options.method || 'get',
-                headers: options.headers || {
+                headers: {
                     'Content-Type': 'application/json',
                     'User-Agent': child.parent.var.core.defaultUserAgent.url,
+                    ...options.headers 
                 },
                 body: options.body,
                 redirect: options.redirect || 'follow',
@@ -1135,7 +1137,7 @@ module.exports = function init(child) {
     child.ipcMain.handle('[open new popup]', (event, data) => {
         data.partition = data.partition || data.session?.name || child.parent.var.core.session.name;
         data.user_name = data.user_name || data.session?.display || child.parent.var.session_list.find((s) => s.name == data.partition)?.display || data.partition;
-
+        data.user_name = data.user_name.split(':')[1] || data.user_name.split(':')[0];
         delete data.name;
         data.windowType = data.windowType || 'popup';
 

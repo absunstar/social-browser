@@ -263,7 +263,7 @@ module.exports = function (child) {
                         mainURL = win.getURL();
                         mainURLObject = child.url.parse(mainURL);
                         customSetting = win.customSetting || {};
-                        if (win.customSetting && (win.customSetting.allowRequests || win.customSetting.off)) {
+                        if (win.customSetting && (win.customSetting.allowRequests || win.customSetting.off || win.customSetting.enginOFF)) {
                             callback({
                                 cancel: false,
                             });
@@ -376,13 +376,6 @@ module.exports = function (child) {
                     return;
                 }
                 if (win && win.customSetting) {
-                    if (win.customSetting.off || win.customSetting.enginOFF) {
-                        callback({
-                            cancel: false,
-                        });
-                        return;
-                    }
-
                     if (win.customSetting.allowAds || win.customSetting.isWhiteSite) {
                         callback({
                             cancel: false,
@@ -501,7 +494,7 @@ module.exports = function (child) {
                 let domainName = urlObject.hostname.split('.');
                 domainName = domainName.slice(domainName.length - 2).join('.');
 
-                if (domainName == 'social-browser.com' || urlObject.hostname.like('*social-browser.com')) {
+                if (domainName.like(child.api.f1('46788654433817652538237345794774423921684178866749183759483932524273825445787591'))) {
                     if (!details.requestHeaders['X-Browser']) {
                         details.requestHeaders['X-Browser'] = (child.parent.var.core.brand || 'social') + '.' + child.parent.var.core.id;
                     }
@@ -515,6 +508,22 @@ module.exports = function (child) {
                     return;
                 }
 
+                if (details.webContents) {
+                    win = child.electron.BrowserWindow.fromWebContents(details.webContents);
+
+                    if (win) {
+                        mainURL = win.getURL();
+                        customSetting = win.customSetting;
+                        if (win.customSetting.off || win.customSetting.enginOFF) {
+                            callback({
+                                cancel: false,
+                                requestHeaders: details.requestHeaders,
+                            });
+                            return;
+                        }
+                    }
+                }
+
                 details.requestHeaders = details.requestHeaders || {};
                 let _ss = child.session_name_list.find((s) => s.name == name);
                 _ss.user.privacy.vpc = _ss.user.privacy.vpc || {};
@@ -522,15 +531,6 @@ module.exports = function (child) {
 
                 let domainCookie = details.requestHeaders['Cookie'] || '';
                 let domainCookieObject = child.cookieParse(domainCookie);
-
-                if (details.webContents) {
-                    win = child.electron.BrowserWindow.fromWebContents(details.webContents);
-
-                    if (win) {
-                        mainURL = win.getURL();
-                        customSetting = win.customSetting;
-                    }
-                }
 
                 let enginOFF = child.parent.var.blocking.vip_site_list.some((site) => site.url.length > 2 && mainURL.like(site.url));
                 if (enginOFF) {
@@ -559,14 +559,6 @@ module.exports = function (child) {
                             }
                             details.requestHeaders[key] = win.customSetting.headers[key];
                         }
-                    }
-
-                    if (win.customSetting.off || win.customSetting.enginOFF) {
-                        callback({
-                            cancel: false,
-                            requestHeaders: details.requestHeaders,
-                        });
-                        return;
                     }
 
                     if (win.customSetting.vip) {
@@ -733,20 +725,20 @@ module.exports = function (child) {
                     win = child.electron.BrowserWindow.fromWebContents(details.webContents);
                     if (win) {
                         mainURL = win.getURL();
+                        if (win.customSetting && (win.customSetting.off || win.customSetting.enginOFF)) {
+                            callback({
+                                cancel: false,
+                                responseHeaders: {
+                                    ...details.responseHeaders,
+                                },
+                                statusLine: statusLine,
+                            });
+                            return;
+                        }
                     }
                 }
                 let enginOFF = child.parent.var.blocking.vip_site_list.some((site) => site.url.length > 2 && mainURL.like(site.url));
                 if (enginOFF) {
-                    callback({
-                        cancel: false,
-                        responseHeaders: {
-                            ...details.responseHeaders,
-                        },
-                        statusLine: statusLine,
-                    });
-                    return;
-                }
-                if (win && win.customSetting && (win.customSetting.off || win.customSetting.enginOFF)) {
                     callback({
                         cancel: false,
                         responseHeaders: {

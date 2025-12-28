@@ -26,13 +26,14 @@
         }
     ],
     "javascript": {
-        "allowWorkerByVideo" : true,
+        "allowWorkerByVideo": true,
         "googleCaptchaON": false,
-        "allowConsoleLogs": false,
+        "allowConsoleLogs": true,
         "block_window_open": false,
         "block_eval": false,
         "allow_jquery": false,
-        "auto_remove_html": false
+        "removeTagONdblclick": false,
+        "hide_user_messages": false
     },
     "privacy": {
         "vpc": {
@@ -231,6 +232,9 @@
         },
         {
             "url": "*kick.com*|*discord.com*"
+        },
+        {
+            "url": "*mortakaz.com*|*qabilah.com*"
         }
     ],
     "vip_site_list": [

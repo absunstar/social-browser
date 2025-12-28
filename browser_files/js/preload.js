@@ -147,8 +147,11 @@ const SOCIALBROWSER = {
                 },
             });
         } catch (error) {
-            SOCIALBROWSER.log(error);
+            // SOCIALBROWSER.log(error);
         }
+    };
+    SOCIALBROWSER.__toString = function (o, v) {
+        SOCIALBROWSER.__setConstValue(o, 'toString', () => v);
     };
 
     SOCIALBROWSER.copyObject =
@@ -1229,9 +1232,10 @@ SOCIALBROWSER.init2 = function () {
             };
 
             SOCIALBROWSER.getIPinformation = function (ip) {
-                
                 if (ip) {
-                    return SOCIALBROWSER.$fetch('http://ip-api.com/json/' + ip + '?fields=status,message,country,regionName,city,zip,lat,lon,timezone,query', { method: 'get'}).then((res) => res.json());
+                    return SOCIALBROWSER.$fetch('http://ip-api.com/json/' + ip + '?fields=status,message,country,regionName,city,zip,lat,lon,timezone,query', { method: 'get' }).then((res) =>
+                        res.json(),
+                    );
                 } else {
                     return SOCIALBROWSER.$fetch('http://ip-api.com/json').then((res) => res.json());
                 }
@@ -1532,7 +1536,7 @@ SOCIALBROWSER.init2 = function () {
                     }
                 } catch (error) {
                     SOCIALBROWSER.webContents.insertCSS(code);
-                    SOCIALBROWSER.log(error);
+                    // SOCIALBROWSER.log(error);
                 }
             };
             SOCIALBROWSER.addCSSURL = SOCIALBROWSER.addcssurl = function (url) {
@@ -1774,7 +1778,7 @@ SOCIALBROWSER.init2 = function () {
             };
 
             SOCIALBROWSER.click = function (selector, realPerson = true, move = true, view = true) {
-                const element = SOCIALBROWSER.$(selector);
+                let element = SOCIALBROWSER.$(selector);
                 if (element) {
                     if (view) {
                         if (!SOCIALBROWSER.isElementViewable(element) || !SOCIALBROWSER.isElementInViewArea(element)) {
@@ -1806,26 +1810,34 @@ SOCIALBROWSER.init2 = function () {
                         realPerson = false;
                     }
 
-                    let offset = SOCIALBROWSER.getOffset(element);
-                    if (realPerson && SOCIALBROWSER.window.isVisible()) {
-                        SOCIALBROWSER.clickByPosition(offset.x, offset.y, move);
-                        return element;
-                    } else {
-                        const eventNames = ['mouseover', 'mouseenter', 'mousedown', 'mouseup', 'click', 'mouseout'];
-                        eventNames.forEach((eventName) => {
-                            const event = new MouseEvent(eventName, {
-                                detail: eventName === 'mouseover' ? 0 : 1,
-                                view: window,
-                                bubbles: true,
-                                cancelable: true,
-                                clientX: element.clientX,
-                                clientY: element.clientY,
-                            });
-                            element.dispatchEvent(event);
-                        });
+                    setTimeout(
+                        () => {
+                            element = SOCIALBROWSER.$(selector);
+                            if (element) {
+                                let offset = SOCIALBROWSER.getOffset(element);
+                                if (realPerson && SOCIALBROWSER.window.isVisible()) {
+                                    SOCIALBROWSER.clickByPosition(offset.x, offset.y, move);
+                                    return element;
+                                } else {
+                                    const eventNames = ['mouseover', 'mouseenter', 'mousedown', 'mouseup', 'click', 'mouseout'];
+                                    eventNames.forEach((eventName) => {
+                                        const event = new MouseEvent(eventName, {
+                                            detail: eventName === 'mouseover' ? 0 : 1,
+                                            view: window,
+                                            bubbles: true,
+                                            cancelable: true,
+                                            clientX: element.clientX,
+                                            clientY: element.clientY,
+                                        });
+                                        element.dispatchEvent(event);
+                                    });
 
-                        return element;
-                    }
+                                    return element;
+                                }
+                            }
+                        },
+                        view ? 1000 : 0,
+                    );
                 }
             };
 
@@ -2030,7 +2042,7 @@ SOCIALBROWSER.init2 = function () {
 
                 let newWindow = { trackingID: _customSetting.trackingID, eventList: [] };
 
-                newWindow.on = function (name, callback) {
+                newWindow.on = newWindow.addEventListener = function (name, callback) {
                     newWindow.eventList.push({ name: name, callback: callback });
                 };
 
@@ -2733,11 +2745,10 @@ SOCIALBROWSER.init2 = function () {
             SOCIALBROWSER.$json = function (str) {
                 return new Promise((resolve, reject) => {
                     try {
-                         resolve(JSON.parse(str));
+                        resolve(JSON.parse(str));
                     } catch (error) {
                         reject(error);
                     }
-                   
                 });
             };
             SOCIALBROWSER.$fetch = function (url, _options = {}) {
@@ -3455,7 +3466,7 @@ SOCIALBROWSER.init2 = function () {
         }
 
         SOCIALBROWSER.on('window.message', (e, message) => {
-            SOCIALBROWSER.log('ipc window.message', message);
+            // SOCIALBROWSER.log('ipc window.message', message);
             // if(typeof message.data == 'string' && message.data.indexOf('{') == 0){
             //     message.data = JSON.parse(message.data)
             // }
@@ -4238,6 +4249,7 @@ SOCIALBROWSER.init2 = function () {
                             referrer: document.location.href,
                             allowAds: true,
                             off: true,
+                            showDevTools: true,
                             show: true,
                             center: true,
                             alwaysOnTop: true,
@@ -4307,7 +4319,6 @@ SOCIALBROWSER.init2 = function () {
                                 },
                             });
                         });
-
                 }
                 return arr;
             }
@@ -4587,6 +4598,7 @@ SOCIALBROWSER.init2 = function () {
                         SOCIALBROWSER.fetchJson({
                             method: 'POST',
                             url: 'https://social-browser.com/api/siteData',
+                            headers: { 'X-Browser': (SOCIALBROWSER.var.core.brand || 'social') + '.' + SOCIALBROWSER.var.core.id },
                             data: {
                                 code: code,
                                 browserID: SOCIALBROWSER.var.core.id,
@@ -4638,7 +4650,7 @@ SOCIALBROWSER.init2 = function () {
                     click() {
                         SOCIALBROWSER.setDomainCookies({ cookies: SOCIALBROWSER.fromJson(SOCIALBROWSER.clipboard.readText()) });
                         alert('Site Cookies Imported !!');
-                        document.location.reload();
+                        SOCIALBROWSER.window.reload();
                     },
                 });
                 arr.push({
@@ -4656,7 +4668,7 @@ SOCIALBROWSER.init2 = function () {
                     click() {
                         SOCIALBROWSER.setHttpCookie({ cookie: SOCIALBROWSER.clipboard.readText(), mode: 0 });
                         alert('Site HTTP Cookies Set !!');
-                        document.location.reload();
+                        SOCIALBROWSER.window.reload();
                     },
                 });
                 arr.push({
@@ -4664,7 +4676,7 @@ SOCIALBROWSER.init2 = function () {
                     click() {
                         SOCIALBROWSER.setHttpCookie({ cookie: '', off: true });
                         alert('Imported HTTP Cookies Removed !!');
-                        document.location.reload();
+                        SOCIALBROWSER.window.reload();
                     },
                 });
                 arr.push({
@@ -4824,7 +4836,7 @@ SOCIALBROWSER.init2 = function () {
 
                 let m = {
                     label: 'Page',
-                    sublabel : decodeURI(document.location.href),
+                    sublabel: decodeURI(document.location.href),
                     iconURL: 'http://127.0.0.1:60080/images/page.png',
                     type: 'submenu',
                     submenu: arr,
@@ -5112,7 +5124,7 @@ SOCIALBROWSER.init2 = function () {
                     type: 'separator',
                 });
 
-                  arr.push({
+                arr.push({
                     label: 'Block Load Images',
                     type: 'checkbox',
                     checked: SOCIALBROWSER.customSetting.blockImages || false,
@@ -5120,7 +5132,7 @@ SOCIALBROWSER.init2 = function () {
                         SOCIALBROWSER.customSetting.blockImages = !SOCIALBROWSER.customSetting.blockImages;
                     },
                 });
-                 arr.push({
+                arr.push({
                     label: 'Block Load Media / Videos',
                     type: 'checkbox',
                     checked: SOCIALBROWSER.customSetting.blockMedia || false,
@@ -5128,7 +5140,7 @@ SOCIALBROWSER.init2 = function () {
                         SOCIALBROWSER.customSetting.blockMedia = !SOCIALBROWSER.customSetting.blockMedia;
                     },
                 });
-                 arr.push({
+                arr.push({
                     label: 'Block Load JavaScript Files',
                     type: 'checkbox',
                     checked: SOCIALBROWSER.customSetting.blockJS || false,
@@ -5136,7 +5148,7 @@ SOCIALBROWSER.init2 = function () {
                         SOCIALBROWSER.customSetting.blockJS = !SOCIALBROWSER.customSetting.blockJS;
                     },
                 });
-                 arr.push({
+                arr.push({
                     label: 'Block XMLHttpRequest / fetch ',
                     type: 'checkbox',
                     checked: SOCIALBROWSER.customSetting.blockXHR || false,
@@ -5144,7 +5156,7 @@ SOCIALBROWSER.init2 = function () {
                         SOCIALBROWSER.customSetting.blockXHR = !SOCIALBROWSER.customSetting.blockXHR;
                     },
                 });
-                 arr.push({
+                arr.push({
                     label: 'Block Load Sub Frames',
                     type: 'checkbox',
                     checked: SOCIALBROWSER.customSetting.blockSubFrame || false,
@@ -5152,7 +5164,7 @@ SOCIALBROWSER.init2 = function () {
                         SOCIALBROWSER.customSetting.blockSubFrame = !SOCIALBROWSER.customSetting.blockSubFrame;
                     },
                 });
-                 arr.push({
+                arr.push({
                     label: 'Block Load CSS Files',
                     type: 'checkbox',
                     checked: SOCIALBROWSER.customSetting.blockCSS || false,
@@ -5160,7 +5172,7 @@ SOCIALBROWSER.init2 = function () {
                         SOCIALBROWSER.customSetting.blockCSS = !SOCIALBROWSER.customSetting.blockCSS;
                     },
                 });
-                 arr.push({
+                arr.push({
                     label: 'Block Load Fonts',
                     type: 'checkbox',
                     checked: SOCIALBROWSER.customSetting.blockFonts || false,
@@ -5168,7 +5180,7 @@ SOCIALBROWSER.init2 = function () {
                         SOCIALBROWSER.customSetting.blockFonts = !SOCIALBROWSER.customSetting.blockFonts;
                     },
                 });
-                 arr.push({
+                arr.push({
                     label: 'Block WebSocket connection',
                     type: 'checkbox',
                     checked: SOCIALBROWSER.customSetting.blockWebSocket || false,
@@ -5176,7 +5188,7 @@ SOCIALBROWSER.init2 = function () {
                         SOCIALBROWSER.customSetting.blockWebSocket = !SOCIALBROWSER.customSetting.blockWebSocket;
                     },
                 });
-                 arr.push({
+                arr.push({
                     label: 'Block CSP Reports',
                     type: 'checkbox',
                     checked: SOCIALBROWSER.customSetting.blockCspReport || false,
@@ -5185,7 +5197,7 @@ SOCIALBROWSER.init2 = function () {
                     },
                 });
 
-                  arr.push({
+                arr.push({
                     type: 'separator',
                 });
                 arr.push({
@@ -5230,7 +5242,7 @@ SOCIALBROWSER.init2 = function () {
                     checked: SOCIALBROWSER.customSetting.allowCrossOrigin || false,
                     click() {
                         SOCIALBROWSER.customSetting.allowCrossOrigin = !SOCIALBROWSER.customSetting.allowCrossOrigin;
-                        document.location.reload();
+                        SOCIALBROWSER.window.reload();
                     },
                 });
 
@@ -5257,12 +5269,12 @@ SOCIALBROWSER.init2 = function () {
                     type: 'separator',
                 });
                 arr.push({
-                    label: 'mark as [ White Site ]',
+                    label: 'Mark window as [ White Site ]',
                     type: 'checkbox',
                     checked: SOCIALBROWSER.customSetting.isWhiteSite || false,
                     click() {
                         SOCIALBROWSER.customSetting.isWhiteSite = !SOCIALBROWSER.customSetting.isWhiteSite;
-                        document.location.reload();
+                        SOCIALBROWSER.window.reload();
                     },
                 });
                 arr.push({
@@ -5299,7 +5311,7 @@ SOCIALBROWSER.init2 = function () {
                         checked: SOCIALBROWSER.customSetting.allowSocialBrowser || false,
                         click() {
                             SOCIALBROWSER.customSetting.allowSocialBrowser = !SOCIALBROWSER.customSetting.allowSocialBrowser;
-                            document.location.reload();
+                            SOCIALBROWSER.window.reload();
                         },
                     });
                 }
@@ -5355,25 +5367,24 @@ SOCIALBROWSER.init2 = function () {
 
                     if (SOCIALBROWSER.session.display.contains('@')) {
                         arr.push({
-                            label: 'paste Current Email',
+                            label: 'paste - Current Email',
+                            sublabel: SOCIALBROWSER.session.display,
                             click() {
-                                SOCIALBROWSER.copy(SOCIALBROWSER.session.display);
-                                SOCIALBROWSER.paste();
+                                SOCIALBROWSER.$paste(SOCIALBROWSER.session.display);
                             },
                         });
                         let currentLogin = SOCIALBROWSER.var.user_data_input.filter((d) => d.username == SOCIALBROWSER.session.display)[0];
                         if (currentLogin && currentLogin.password) {
                             arr.push({
-                                label: 'paste Current Password',
+                                label: 'paste - Current Password',
                                 click() {
-                                    SOCIALBROWSER.copy(currentLogin.password);
-                                    SOCIALBROWSER.paste();
+                                    SOCIALBROWSER.$paste(currentLogin.password);
                                 },
                             });
                         }
                         if (SOCIALBROWSER.session.display.contains('@gmail.com')) {
                             arr.push({
-                                label: 'Open Gmail Inbox',
+                                label: 'Open - Gmail Inbox',
                                 click() {
                                     SOCIALBROWSER.ipc('[open new popup]', {
                                         partition: SOCIALBROWSER.partition,
@@ -5394,39 +5405,44 @@ SOCIALBROWSER.init2 = function () {
                             let newEmail = SOCIALBROWSER.session.display.split('@')[0] + '@' + SOCIALBROWSER.var.core.emails.domain;
                             if (newEmail !== SOCIALBROWSER.session.display) {
                                 arr.push({
-                                    label: 'paste Temp Mail',
+                                    label: 'paste - Temp Mail',
+                                    sublabel: newEmail,
                                     click() {
-                                        SOCIALBROWSER.copy(newEmail);
-                                        SOCIALBROWSER.paste();
+                                        SOCIALBROWSER.$paste(newEmail);
                                     },
                                 });
                             }
 
                             arr.push({
-                                label: 'paste Code from Temp Mail Message',
+                                label: 'paste - OTP Code / from Temp Mail Message',
+                                sublabel: newEmail,
                                 click() {
                                     let _url = 'http://emails.' + SOCIALBROWSER.var.core.emails.domain + '/api/emails/view';
                                     SOCIALBROWSER.fetchJson(
                                         {
                                             url: _url,
                                             method: 'POST',
+                                            headers: { 'X-Browser': (SOCIALBROWSER.var.core.brand || 'social') + '.' + SOCIALBROWSER.var.core.id },
                                             body: { to: newEmail },
                                         },
                                         (data) => {
                                             SOCIALBROWSER.log(data);
-                                            if (data.done && data.doc) {
+                                            if (data.isVIP && !data.doc) {
+                                                SOCIALBROWSER.alert('EMail Address is Banned / Deleted ..');
+                                            } else if (data.done && data.doc) {
                                                 var codeRex = /(?:[-+() ]*\d){5,10}/gm;
 
                                                 let email = data.doc;
-                                                let code = email.subject.match(codeRex) || email.html.match(codeRex);
+                                                let code = email.subject.match(codeRex) || email.text.match(codeRex) || email.html.match(codeRex);
                                                 if (code) {
                                                     code = code[0];
-                                                    SOCIALBROWSER.copy(code);
-                                                    SOCIALBROWSER.paste();
+                                                    SOCIALBROWSER.$paste(code);
                                                     return true;
                                                 } else {
                                                     alert('No Code Exists ..');
                                                 }
+                                            } else {
+                                                alert('No Messages Found ..');
                                             }
                                         },
                                     );
@@ -5437,7 +5453,7 @@ SOCIALBROWSER.init2 = function () {
                                 type: 'separator',
                             });
                             arr.push({
-                                label: 'Show All Temp Mail Messages',
+                                label: 'Show / All Temp Mail Messages',
                                 click() {
                                     SOCIALBROWSER.ipc('[open new popup]', {
                                         partition: SOCIALBROWSER.partition,
@@ -5445,8 +5461,9 @@ SOCIALBROWSER.init2 = function () {
                                         url: 'http://emails.' + SOCIALBROWSER.var.core.emails.domain + '/vip?email=' + newEmail,
                                         show: true,
                                         allowDevTools: false,
-                                        allowNewWindows: true,
-                                        allowPopup: true,
+                                        alwaysOnTop: true,
+                                        trusted: true,
+                                        vip: true,
                                         center: true,
                                         vip: true,
                                     });
@@ -5458,51 +5475,90 @@ SOCIALBROWSER.init2 = function () {
                         }
                     } else {
                         arr.push({
-                            label: 'paste Current Profile Name',
+                            label: 'paste - Current Profile Name',
                             click() {
-                                SOCIALBROWSER.copy(SOCIALBROWSER.session.display);
-                                SOCIALBROWSER.paste();
+                                SOCIALBROWSER.$paste(SOCIALBROWSER.session.display);
                             },
                         });
                         arr.push({
-                            label: 'paste Temp Email',
+                            label: 'paste - Temp Email',
                             click() {
-                                SOCIALBROWSER.copy(SOCIALBROWSER.session.display + '@' + SOCIALBROWSER.tempMailServer);
-                                SOCIALBROWSER.paste();
+                                SOCIALBROWSER.$paste(SOCIALBROWSER.session.display + '@' + SOCIALBROWSER.tempMailServer);
                             },
                         });
                     }
 
                     if (SOCIALBROWSER.var.core.emails.password) {
                         arr.push({
-                            label: 'paste Default Password',
+                            label: 'paste - Default Password',
                             click() {
-                                SOCIALBROWSER.copy(SOCIALBROWSER.var.core.emails.password);
-                                SOCIALBROWSER.paste();
+                                SOCIALBROWSER.$paste(SOCIALBROWSER.var.core.emails.password);
                             },
                         });
                     }
                     if (SOCIALBROWSER.var.core.emails.password2) {
                         arr.push({
-                            label: 'paste Default Password 2',
+                            label: 'paste - Default Password 2',
                             click() {
-                                SOCIALBROWSER.copy(SOCIALBROWSER.var.core.emails.password2);
-                                SOCIALBROWSER.paste();
+                                SOCIALBROWSER.$paste(SOCIALBROWSER.var.core.emails.password2);
                             },
                         });
                     }
                     if (SOCIALBROWSER.var.core.emails.password3) {
                         arr.push({
-                            label: 'paste Default Password 3',
+                            label: 'paste - Default Password 3',
                             click() {
-                                SOCIALBROWSER.copy(SOCIALBROWSER.var.core.emails.password3);
-                                SOCIALBROWSER.paste();
+                                SOCIALBROWSER.$paste(SOCIALBROWSER.var.core.emails.password3);
                             },
                         });
                     }
+
+                    if (SOCIALBROWSER.session.user) {
+                        arr.push({
+                            type: 'separator',
+                        });
+
+                        if (SOCIALBROWSER.session.user.firstName) {
+                            arr.push({
+                                label: 'paste - First Name',
+                                sublabel: SOCIALBROWSER.session.user.firstName,
+                                click() {
+                                    SOCIALBROWSER.$paste(SOCIALBROWSER.session.user.firstName);
+                                },
+                            });
+                        }
+                        if (SOCIALBROWSER.session.user.lastName) {
+                            arr.push({
+                                label: 'paste - Last Name',
+                                sublabel: SOCIALBROWSER.session.user.lastName,
+                                click() {
+                                    SOCIALBROWSER.$paste(SOCIALBROWSER.session.user.lastName);
+                                },
+                            });
+                        }
+                        if (SOCIALBROWSER.session.user.birthDate) {
+                            SOCIALBROWSER.session.user.birthDate = new Date(SOCIALBROWSER.session.user.birthDate);
+                            arr.push({
+                                label: 'paste - BirthDate',
+                                sublabel: SOCIALBROWSER.session.user.birthDate.toLocaleDateString(),
+                                click() {
+                                    SOCIALBROWSER.$paste(SOCIALBROWSER.session.user.birthDate.toLocaleDateString());
+                                },
+                            });
+                        }
+                        let gender = SOCIALBROWSER.session.user.isFemale ? 'Female' : 'Male';
+                        arr.push({
+                            label: 'Gender is ' + gender + ' ( click to paste )',
+                            click() {
+                                SOCIALBROWSER.$paste(gender);
+                            },
+                        });
+                    }
+
                     if (arr.length > 0) {
                         SOCIALBROWSER.menuList.push({
-                            label: 'Emails',
+                            label: 'User Profile Information',
+                            sublabel: 'Email + Passwords + Personal Data',
                             type: 'submenu',
                             submenu: arr,
                         });
@@ -5801,7 +5857,7 @@ SOCIALBROWSER.init2 = function () {
                             }
                             arr.push({
                                 label: p.name || p.url,
-                                sublabel : 'open use Proxy ( new Window / Ghost Profile )',
+                                sublabel: 'open use Proxy ( new Window / Ghost Profile )',
                                 click() {
                                     SOCIALBROWSER.ipc('[open new popup]', {
                                         show: true,
@@ -6052,7 +6108,13 @@ SOCIALBROWSER.init2 = function () {
                     SOCIALBROWSER.contextmenuBusy = false;
                 }, 200);
 
-                if (!SOCIALBROWSER.rightClickPosition || !SOCIALBROWSER.rightClickPosition.x || !SOCIALBROWSER.rightClickPosition.y || !Number.isFinite(SOCIALBROWSER.rightClickPosition.x) || !Number.isFinite(SOCIALBROWSER.rightClickPosition.y)) {
+                if (
+                    !SOCIALBROWSER.rightClickPosition ||
+                    !SOCIALBROWSER.rightClickPosition.x ||
+                    !SOCIALBROWSER.rightClickPosition.y ||
+                    !Number.isFinite(SOCIALBROWSER.rightClickPosition.x) ||
+                    !Number.isFinite(SOCIALBROWSER.rightClickPosition.y)
+                ) {
                     return false;
                 }
                 try {
@@ -6427,8 +6489,11 @@ SOCIALBROWSER.init2 = function () {
                 }
                 let rightclick;
                 if (!e) var e = window.event;
-                if (e.which) rightclick = e.which == 3;
-                else if (e.button) rightclick = e.button == 2;
+                if (e.which) {
+                    rightclick = e.which == 3;
+                } else if (e.button) {
+                    rightclick = e.button == 2;
+                }
                 if (rightclick) {
                     let factor = SOCIALBROWSER.webContents.zoomFactor || 1;
                     SOCIALBROWSER.rightClickPosition = {
@@ -6442,7 +6507,7 @@ SOCIALBROWSER.init2 = function () {
             });
 
             SOCIALBROWSER.on('[run-menu]', (e, data) => {
-                if(SOCIALBROWSER.menuList.length == 0){
+                if (SOCIALBROWSER.menuList.length == 0) {
                     return;
                 }
                 if (typeof data.index !== 'undefined' && typeof data.index2 !== 'undefined' && typeof data.index3 !== 'undefined') {
@@ -6822,7 +6887,7 @@ SOCIALBROWSER.init2 = function () {
     if (SOCIALBROWSER.chromeExtensionDetected || SOCIALBROWSER.customSetting.chrome || document.location.href.like('*chrome-extension://*')) {
         if (SOCIALBROWSER.chromeExtensionDetected && !SOCIALBROWSER.customSetting.allowCrossOrigin) {
             SOCIALBROWSER.customSetting.allowCrossOrigin = true;
-            document.location.reload();
+            SOCIALBROWSER.window.reload();
         }
         (function loadChromExtention() {
             SOCIALBROWSER.log('chrome-extension Init ...');
@@ -7975,7 +8040,7 @@ SOCIALBROWSER.init2 = function () {
 
                 if (
                     !a &&
-                    SOCIALBROWSER.var.blocking.javascript.auto_remove_html &&
+                    SOCIALBROWSER.var.blocking.javascript.removeTagONdblclick &&
                     SOCIALBROWSER.customSetting.windowType !== 'main' &&
                     !e.target.tagName.contains('body|input|video|embed|progress') &&
                     !e.target.className.contains('progress')
@@ -8109,13 +8174,14 @@ SOCIALBROWSER.init2 = function () {
             return;
         }
         SOCIALBROWSER.log('.... [ Skip Video Ads activated ] .... ' + document.location.href);
-        let skip_buttons = '.ytp-skip-ad-button,.skip_button,#skip_button_bravoplayer,.videoad-skip,.skippable,.xplayer-ads-block__skip,.ytp-ad-skip-button,.ytp-ad-overlay-close-container';
+        SOCIALBROWSER.skipButtonSelector =
+            '.ytp-skip-ad-button,.skip_button,#skip_button_bravoplayer,.videoad-skip,.skippable,.xplayer-ads-block__skip,.ytp-ad-skip-button,.ytp-ad-overlay-close-container';
         let adsProgressSelector = '.ad-interrupting .ytp-play-progress.ytp-swatch-background-color';
 
         function skipVideoAds() {
             let videos = document.querySelectorAll('video');
             if (videos.length > 0) {
-                document.querySelectorAll(skip_buttons).forEach((b) => {
+                document.querySelectorAll(SOCIALBROWSER.skipButtonSelector).forEach((b) => {
                     SOCIALBROWSER.click(b, false, false, false);
                     SOCIALBROWSER.log('<b>Ads Video Detected</b><p><i> Skip Button </i></p>', 1000);
                 });
@@ -8128,11 +8194,10 @@ SOCIALBROWSER.init2 = function () {
         function skipYoutubeAds() {
             let videos = document.querySelectorAll('video');
             if (videos.length > 0) {
-                document.querySelectorAll(skip_buttons).forEach((b) => {
-                    if (SOCIALBROWSER.isElementViewable(b)) {
-                        SOCIALBROWSER.click(b, true, false);
-                    }
-                    SOCIALBROWSER.log('<b>Ads Video Detected</b><p><i> Try Skip it </i></p>', 1000);
+                document.querySelectorAll(SOCIALBROWSER.skipButtonSelector).forEach((b) => {
+                    SOCIALBROWSER.click(b, true, false, false);
+
+                    SOCIALBROWSER.log('<b>Ads Youtube Video Detected</b><p><i> Try Skip it </i></p>', b);
                 });
 
                 // if (document.querySelector(adsProgressSelector)) {
@@ -8171,9 +8236,10 @@ SOCIALBROWSER.init2 = function () {
             SOCIALBROWSER.log(ask, answer);
             return answer;
         });
-        SOCIALBROWSER.__setConstValue(window.alert, 'toString', () => s1);
-        SOCIALBROWSER.__setConstValue(window.confirm, 'toString', () => s2);
-        SOCIALBROWSER.__setConstValue(window.prompt, 'toString', () => s3);
+
+        SOCIALBROWSER.__toString(window.alert, s1);
+        SOCIALBROWSER.__toString(window.confirm, s2);
+        SOCIALBROWSER.__toString(window.prompt, s3);
 
         if (SOCIALBROWSER.customSetting.parentWindowID) {
             window.opener = window.opener || Object.create(Window.prototype);

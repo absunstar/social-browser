@@ -104,14 +104,16 @@ var child = {
 // child.electron.app.commandLine.appendSwitch('in-process-gpu');
 // child.electron.app.commandLine.appendSwitch('no-sandbox');
 // child.electron.app.commandLine.appendSwitch('disable-setuid-sandbox');
-child.electron.app.commandLine.appendSwitch('disable-dev-mode');
-child.electron.app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
-child.electron.app.commandLine.appendSwitch('proxy-bypass-list', '<local>')
+// child.electron.app.commandLine.appendSwitch('disable-dev-mode');
+// child.electron.app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
+// child.electron.app.commandLine.appendSwitch('proxy-bypass-list', '<local>')
 
 
-
+// child.electron.app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
+// child.electron.app.commandLine.appendSwitch('disable-features', 'UserAgentClientHint');
 // child.electron.app.commandLine.appendSwitch('disable-debug-mode');
 // child.electron.app.disableHardwareAcceleration(); ## real human has this //
+
 if (child.uuid == 'x-ghost') {
     child.userDataDir = child.path.join(child.data_dir, 'sessionData', child.uuid);
 } else {

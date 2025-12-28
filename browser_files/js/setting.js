@@ -326,6 +326,17 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         }
     };
 
+    $scope.showHidenUsers = function(){
+        $scope.setting.session_list.forEach((se, i) => {
+            if(se.hide){
+                se.$hide = false;
+            }else{
+                se.$hide = true;
+            }
+        });
+        $scope.$applyAsync();
+    }
+
     $scope.sortSessionListByName = function () {
         $scope.setting.session_list.sort((a, b) => (a.display < b.display ? -1 : 1));
     };
@@ -418,7 +429,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
             ],
         });
         if (file) {
-            let data = SOCIALBROWSER.ipcSync('[read-file]', file);
+            let data = SOCIALBROWSER.readFile (file);
             let arr = SOCIALBROWSER.showObject(data);
             let profileIndex = 0;
 

@@ -49,6 +49,7 @@
                 --bs-body-bg: #fff;
                 --color: #3f9dff;
                 --dropdown-background: #272727;
+                --bs-border-width: .5px;
             }
             html,
             body,
@@ -646,6 +647,18 @@
                                                     </div>
                                                 </div>
 
+                                                  <div class="row center">
+                                                                    <i-button
+                                                                        type="approve"
+                                                                        loading="{{setting.blocking.privacy.busy}}"
+                                                                        label="Auto Detected Location"
+                                                                        ng-click="autoUpdateProxyLocation(setting.blocking.privacy)"
+                                                                    ></i-button>
+                                                                    <p class="padding margin" ng-show="setting.blocking.privacy.data.country">
+                                                                        {{setting.blocking.privacy.data.country}} / {{setting.blocking.privacy.data.regionName}} / {{setting.blocking.privacy.data.city}}
+                                                                    </p>
+                                                                </div>
+
                                                 <div class="row padding v-center">
                                                     <div class="col"><i-checkbox label="Hide Date ( problem in some sites )" ng-model="setting.blocking.privacy.vpc.maskTimeZone"></i-checkbox></div>
                                                     <div class="col">
@@ -783,7 +796,7 @@
                                                 <i-checkbox class="row" label="Block ( window.postMessage )" ng-model="setting.blocking.javascript.block_window_post_message"> </i-checkbox>
 
                                                 <i-checkbox class="row" label="Double Click [ Auto Paste ] " ng-model="setting.blocking.javascript.auto_paste"> </i-checkbox>
-                                                <i-checkbox class="row" label="Double Click [ Auto Remove HTML Element ] " ng-model="setting.blocking.javascript.auto_remove_html"> </i-checkbox>
+                                                <i-checkbox class="row" label="Double Click [ Auto Remove HTML Element ] " ng-model="setting.blocking.javascript.removeTagONdblclick"> </i-checkbox>
                                             </div>
                                             <div class="col6">
                                                 <i-checkbox class="row" label="Allow Google Captcha Auto Solve " ng-model="setting.blocking.javascript.googleCaptchaON"></i-checkbox>
@@ -798,7 +811,7 @@
                                         </div>
                                     </fieldset>
                                     <fieldset>
-                                        <legend>2 Captcha Inegration</legend>
+                                        <legend>2 Captcha Integration</legend>
                                         <div class="row padding">
                                             <i-checkbox label="Enabled" ng-model="setting.blocking.javascript.captcha2ON"> </i-checkbox>
                                             <i-control label="API KEY" ng-show="setting.blocking.javascript.captcha2ON" ng-model="setting.blocking.javascript.captcha2ApiKey"></i-control>
@@ -1295,6 +1308,17 @@
                                                             ></i-control>
                                                         </div>
                                                     </div>
+                                                     <div class="row center">
+                                                                    <i-button
+                                                                        type="approve"
+                                                                        loading="{{currentSession.privacy.busy}}"
+                                                                        label="Auto Detected Location"
+                                                                        ng-click="autoUpdateProxyLocation(currentSession.privacy)"
+                                                                    ></i-button>
+                                                                    <p class="padding margin" ng-show="currentSession.privacy.data.country">
+                                                                        {{currentSession.privacy.data.country}} / {{currentSession.privacy.data.regionName}} / {{currentSession.privacy.data.city}}
+                                                                    </p>
+                                                                </div>
                                                     <div class="row padding v-center">
                                                         <div class="col"><i-checkbox label="Hide Date ( problem in some sites )" ng-model="currentSession.privacy.vpc.maskTimeZone"></i-checkbox></div>
                                                         <div class="col">

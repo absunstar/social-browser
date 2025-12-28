@@ -362,23 +362,23 @@ module.exports = function (child) {
         }
 
         if (win.customSetting.windowType.like('view|popup')) {
-            if (url.like('browser*|http://localhost*|http://127.0.0.1*|chrome://*')) {
-                if (!win.customSetting.isWhiteSite) {
-                    win.customSetting.isWhiteSite0 = false;
-                    win.customSetting.isWhiteSite = true;
-                }
-                // if (!win.customSetting.allowGoogleTranslate) {
-                //     win.customSetting.allowGoogleTranslate0 = false;
-                //     win.customSetting.allowGoogleTranslate = true;
-                // }
-            } else {
-                if (win.customSetting.isWhiteSite0 === false) {
-                    win.customSetting.isWhiteSite = false;
-                }
-                // if (win.customSetting.allowGoogleTranslate0 === false) {
-                //     win.customSetting.allowGoogleTranslate = false;
-                // }
-            }
+            // if (url.like('browser*|http://localhost*|http://127.0.0.1*|chrome://*')) {
+            //     if (!win.customSetting.isWhiteSite) {
+            //         win.customSetting.isWhiteSite0 = false;
+            //         win.customSetting.isWhiteSite = true;
+            //     }
+            //     // if (!win.customSetting.allowGoogleTranslate) {
+            //     //     win.customSetting.allowGoogleTranslate0 = false;
+            //     //     win.customSetting.allowGoogleTranslate = true;
+            //     // }
+            // } else {
+            //     if (win.customSetting.isWhiteSite0 === false) {
+            //         win.customSetting.isWhiteSite = false;
+            //     }
+            //     // if (win.customSetting.allowGoogleTranslate0 === false) {
+            //     //     win.customSetting.allowGoogleTranslate = false;
+            //     // }
+            // }
         }
 
         win.customSetting.headers = {};
@@ -545,17 +545,20 @@ module.exports = function (child) {
                     win.customSetting.headers['Sec-Ch-Ua-Mobile'] = win.customSetting.$defaultUserAgent.platform == 'Mobile' ? '?1' : '?0';
                     win.customSetting.headers['Sec-Ch-Ua-Platform'] = win.customSetting.$defaultUserAgent.platform == 'Win32' ? '"Windows"' : win.customSetting.$defaultUserAgent.platform;
                 } else if (win.customSetting.$defaultUserAgent.name.like('*chrome*')) {
-                    win.customSetting.headers['Sec-Ch-Ua'] = `"Google Chrome";v="${win.customSetting.uaVersion}", "Not-A.Brand";v="8", "Chromium";v="${win.customSetting.uaVersion}"`;
+                    win.customSetting.headers['Sec-Ch-Ua'] = `"Google Chrome";v="${win.customSetting.uaVersion}", "Chromium";v="${win.customSetting.uaVersion}", "Not A(Brand";v="24"`;
                     win.customSetting.headers['Sec-Ch-Ua-Mobile'] = win.customSetting.$defaultUserAgent?.platform == 'Mobile' ? '?1' : '?0';
                     win.customSetting.headers['Sec-Ch-Ua-Platform'] = win.customSetting.$defaultUserAgent?.platform == 'Win32' ? '"Windows"' : win.customSetting.$defaultUserAgent?.platform;
                     win.customSetting.headers['Sec-Ch-Ua-Full-Version'] = `"${win.customSetting.uaFullVersion}"`;
                     win.customSetting.headers[
                         'Sec-Ch-Ua-Full-Version-List'
-                    ] = `"Google Chrome";v="${win.customSetting.uaFullVersion}", "Not-A.Brand";v="8.0.0.0", "Chromium";v="${win.customSetting.uaFullVersion}"`;
+                    ] = `"Google Chrome";v="${win.customSetting.uaFullVersion}", "Chromium";v="${win.customSetting.uaFullVersion}", "Not A(Brand";v="24.0.0.0"`;
                     win.customSetting.headers['Sec-Ch-Ua-Model'] = '""';
                     win.customSetting.headers['Sec-Ch-Ua-Arch'] = '"x86"';
                     win.customSetting.headers['Sec-Ch-Ua-Bitness'] = '"64"';
-                    win.customSetting.headers['Sec-Fetch-Site'] = 'none';
+                    win.customSetting.headers['Sec-Fetch-Site'] = win.customSetting.headers['Sec-Fetch-Site'] || 'same-origin';
+                    win.customSetting.headers['Sec-Fetch-Mode'] = win.customSetting.headers['Sec-Fetch-Mode'] || 'navigate';
+                    win.customSetting.headers['Sec-Fetch-Dest'] = win.customSetting.headers['Sec-Fetch-Dest'] || 'document';
+
                 }
             }
         }
