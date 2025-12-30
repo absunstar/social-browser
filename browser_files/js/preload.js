@@ -5414,7 +5414,7 @@ SOCIALBROWSER.init2 = function () {
                             }
 
                             arr.push({
-                                label: 'paste - OTP Code / from Temp Mail Message',
+                                label: 'paste - OTP Code',
                                 sublabel: newEmail,
                                 click() {
                                     let _url = 'http://emails.' + SOCIALBROWSER.var.core.emails.domain + '/api/emails/view';
@@ -5632,6 +5632,30 @@ SOCIALBROWSER.init2 = function () {
                     return;
                 }
                 let arr = [];
+
+                arr.push({
+                    label: 'Inspect Element',
+                    iconURL: 'http://127.0.0.1:60080/images/dev.png',
+                    click() {
+                        SOCIALBROWSER.webContents.inspectElement(SOCIALBROWSER.rightClickPosition.x2, SOCIALBROWSER.rightClickPosition.y2);
+                        if (SOCIALBROWSER.webContents.isDevToolsOpened()) {
+                            SOCIALBROWSER.webContents.devToolsWebContents.focus();
+                        }
+                    },
+                });
+
+                arr.push({
+                    label: 'Developer Tools',
+                    iconURL: 'http://127.0.0.1:60080/images/dev.png',
+                    accelerator: 'F12',
+                    click() {
+                        SOCIALBROWSER.webContents.openDevTools();
+                    },
+                });
+
+                SOCIALBROWSER.menuList.push({
+                    type: 'separator',
+                });
 
                 arr.push({
                     label: 'Solve Google Captcha',

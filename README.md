@@ -1,9 +1,10 @@
 # Social Browser
 
-Social Browser introduce New Way To Browser Sites Will Let You Love Browsing and Support many features like Multi User - Multi Proxy - Virtual PC - Ads Blocker and advanced options for Advanced Users
+Social Browser is automation virtual Web Browser support Multi Login , Virtual PC , Multi Proxies , Ads Blocker , Browser Fingerprinting Protection and can Share any Site Data without email or password
 
 - Run From Source Code
-     <ul>
+
+  <ul>
       <li>Download <a href="https://git-scm.com/" target="_blank">Git</a></li>
       <li>Download <a href="https://nodejs.org/" target="_blank">Node JS</a></li>
     </ul>
@@ -37,6 +38,7 @@ Social Browser introduce New Way To Browser Sites Will Let You Love Browsing and
 - Ad-Blocker (Block 100% of Ads) , Block (Trackers / Malware / Malicious / Spyware )
 - Popup-Blocker,redirect-Blocker,tab-Blocker (Self , External)
 - Safty Mode (Block Adult Content)
+- Script Manager (Tampermonkey , Violentmonkey , Greasemonkey)
 - Open Source , Cross Platform [Windows , Liunx , Mac]
 
 ## Top Options
@@ -44,6 +46,8 @@ Social Browser introduce New Way To Browser Sites Will Let You Love Browsing and
 - Multi-Profile [user-agent , proxy-setting , ...]
 - Auto Generate Virual PC To Users
 - Import & Export All Browser Data [ passwords , sessions , ...]
+- Google Chrome Integration ( puppeteer )
+- Custom Extentions ( Full API Access )
 - Setting Password Protected
 - Open Same-Site with Diffrent Users
 - Passwords Manager
@@ -55,21 +59,19 @@ Social Browser introduce New Way To Browser Sites Will Let You Love Browsing and
 - [ Translate / Google ] Selected Text
 - Zoom (+/-) , Page Sound (On/Off)
 - Save Page as PDF file / Print Page
-- Images (Save/Show/Hide)
-- IFrames (Deleting)
 - Page Edit Mode
 - PDF Reader
 - Proxy Setting
-- Auto Assign Proxy To Users
-- Remove Proxy From Users
-- Auto Assign UserAgent To Users
-- Remove UserAgent From Users
-- Bulitin Downloader
-- Download Manager
+- Proxy Manager / Multi / Auto Detected
+- User Agent Manager / Muti / Auto Detected
+- Download Manager / Internal / External
 - Internet Download Manager (Integrated)
 - bookmarks Manager [favorite Sites]
 - Inspect Elements
 - Developer Tools
+- Share Site Session [ cookies , storages ]
+- Run / Block System Programs
+- Block Sites Resources (JS , CSS , Videos , Websocket , API , ...)
 
 ## Coming soon
 
@@ -78,16 +80,12 @@ Social Browser introduce New Way To Browser Sites Will Let You Love Browsing and
 - PC Browsing [ File Manager / FTP ]
 - PC Applications Integrated [ Keyboard , Calc , Paint , ...]
 - Edit Websites Permissions
-- History Manager [ browsing timeline ]
 - RSS Reader
 - Json Reader
 - API Tester
 - Page Analyize [Contents , Doms , images , js , css , videos , links]
 - Site Notes
 - Torrents Manager
-- Share Site Session [ cookies , storages ]
-- custom script , css , html
-- run programs
 
 ### Download
 
