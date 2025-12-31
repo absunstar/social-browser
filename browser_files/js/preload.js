@@ -7346,7 +7346,12 @@ SOCIALBROWSER.init2 = function () {
                                             SOCIALBROWSER.log('chrome addEventListener', args);
                                             this.fnEventList.push(...args);
                                         },
+                                        removeEventListener: function (...args) {
+                                            SOCIALBROWSER.log('chrome removeEventListener', args);
+                                            this.fnEventList.push(...args);
+                                        },
                                     },
+
                                     sendMessage: function (...args) {
                                         SOCIALBROWSER.log('chrome sendMessage', args);
                                         args.forEach((arg) => {

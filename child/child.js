@@ -180,7 +180,6 @@ child.electron.protocol.registerSchemesAsPrivileged([
 child.electron.app.whenReady().then(() => {
     child.electron.globalShortcut.unregisterAll();
     child.electron.app.setAccessibilitySupportEnabled(false);
-    child.electron.powerSaveBlocker.start('prevent-app-suspension');
 
     child.electron.protocol.handle('browser', (req) => {
         let url = req.url.replace('browser://', 'http://127.0.0.1:60080/').replace('/?', '?');

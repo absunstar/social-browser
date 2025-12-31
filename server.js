@@ -159,7 +159,18 @@
 
     /* App Ready */
     browser.electron.app.whenReady().then(() => {
-        browser.electron.powerSaveBlocker.start('prevent-app-suspension')
+        browser.electron.powerSaveBlocker.start('prevent-app-suspension');
+        browser.electron.powerMonitor.on('suspend', () => {
+            console.log('System is about to go to sleep (suspend)');
+        });
+
+        browser.electron.powerMonitor.on('resume', () => {
+            console.log('System is resuming from sleep (resume)');
+        });
+        browser.electron.powerMonitor.on('lock-screen', () => {
+            console.log('System is (Lock Screen)');
+        });
+
         browser.handleSession();
 
         browser.electron.protocol.handle('browser', (req) => {
@@ -197,8 +208,6 @@
         browser.electron.app.on('window-all-closed', (e) => {
             e.preventDefault();
         });
-
-       
     });
 
     browser.electron.app.on('second-instance', (event, commandLine, workingDirectory) => {
