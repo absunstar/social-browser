@@ -143,7 +143,7 @@ module.exports = function (child) {
     child.createNewWindow = function (setting) {
         delete setting.name;
         delete setting.id;
-        delete setting.webPreferences;
+        setting.webPreferences = setting.webPreferences || {};
 
         let bounds = child.electron.screen.getPrimaryDisplay().bounds;
 
@@ -215,13 +215,13 @@ module.exports = function (child) {
             hasShadow: false,
             roundedCorners: false,
             webPreferences: {
+                backgroundThrottling: false, // play videos and timers in background windows
                 defaultEncoding: 'UTF8',
                 enableRemoteModule: true,
                 devTools: true,
                 spellcheck: false,
                 contextIsolation: false, // false -> can access preload window functions
-                partition: setting.partition,
-                preload: setting.preload,
+
                 javascript: true,
                 nativeWindowOpen: false,
                 nodeIntegration: false,
@@ -234,8 +234,13 @@ module.exports = function (child) {
                 webSecurity: true,
                 allowRunningInsecureContent: false,
                 plugins: true,
+                ...setting.webPreferences,
+                partition: setting.partition,
+                preload: setting.preload,
             },
         };
+
+        delete setting.webPreferences;
 
         if (setting.windowType === 'main') {
             defaultSetting.show = true;

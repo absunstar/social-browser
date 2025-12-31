@@ -159,6 +159,7 @@
 
     /* App Ready */
     browser.electron.app.whenReady().then(() => {
+        browser.electron.powerSaveBlocker.start('prevent-app-suspension')
         browser.handleSession();
 
         browser.electron.protocol.handle('browser', (req) => {
