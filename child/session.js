@@ -737,6 +737,9 @@ module.exports = function (child) {
                         }
                     }
                 }
+                if (details.frame) {
+                    mainURL = details.frame.url;
+                }
                 let enginOFF = child.parent.var.blocking.vip_site_list.some((site) => site.url.length > 2 && mainURL.like(site.url));
                 if (enginOFF) {
                     callback({
@@ -843,22 +846,22 @@ module.exports = function (child) {
                     details.responseHeaders['Access-Control-Allow-Private-Network'.toLowerCase()] = 'true';
                     details.responseHeaders['Access-Control-Allow-Credentials'.toLowerCase()] = 'true';
 
+                    let mainURLobject = child.url.parse(mainURL);
+                    details.responseHeaders['Access-Control-Allow-Methods'.toLowerCase()] =
+                        a_Methods || 'POST,GET,DELETE,PUT,OPTIONS,VIEW,HEAD,CONNECT,TRACE,PROPFIND,PATCH,PROPPATCH,COPY,LOCK,UNLOCK,MKCOL,SEARCH,REPORT,MOVE';
+
+                    details.responseHeaders['Access-Control-Allow-Headers'.toLowerCase()] =
+                        a_Headers ||
+                        'Upgrade-Insecure-Requests,Authorization ,Access-Control-Allow-Headers, Access-Control-Request-Method, Access-Control-Request-Headers,Origin, X-Requested-With, Content-Type, Accept, Content-Length, Accept-Encoding, X-CSRF-Token';
+
+                    details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = [a_orgin || mainURLobject.protocol + '//' + mainURLobject.hostname];
+
                     if (win && win.customSetting && win.customSetting.allowCrossOrigin) {
                         if (details.method.like('options')) {
                             statusLine = '200';
                         }
-                        details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = ['*'];
-                        details.responseHeaders['Access-Control-Allow-Methods'.toLowerCase()] = 'POST,GET,DELETE,PUT,OPTIONS,VIEW,HEAD,CONNECT,TRACE';
-                        details.responseHeaders['Access-Control-Allow-Headers'.toLowerCase()] =
-                            'Authorization ,Access-Control-Allow-Headers, Access-Control-Request-Method, Access-Control-Request-Headers,Origin, X-Requested-With, Content-Type, Accept, Content-Length, Accept-Encoding, X-CSRF-Token';
-                    } else {
-                        details.responseHeaders['Access-Control-Allow-Methods'.toLowerCase()] = a_Methods || 'POST,GET,DELETE,PUT,OPTIONS,VIEW,HEAD,CONNECT,TRACE';
-                        details.responseHeaders['Access-Control-Allow-Headers'.toLowerCase()] =
-                            a_Headers || 'Authorization ,Access-Control-Allow-Headers, Access-Control-Request-Method, Access-Control-Request-Headers,Origin, X-Requested-With, Content-Type, Accept';
 
-                        if (a_orgin) {
-                            details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = a_orgin;
-                        }
+                        details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = [mainURLobject.protocol + '//' + mainURLobject.hostname];
                     }
 
                     if (a_expose) {
@@ -945,7 +948,7 @@ module.exports = function (child) {
 
                 if ((info = child.getOverwriteInfo(url))) {
                     if (url.like(info.to) && info.rediect_from) {
-                        details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = ['*'];
+                        details.responseHeaders['Access-Control-Allow-Origin'.toLowerCase()] = [mainURLobject.protocol + '//' + mainURLobject.hostname];
                     }
                 }
 
