@@ -707,7 +707,6 @@ module.exports = function (child) {
 
     child.openInChrome = async function (obj) {
         try {
-            child.log('child.openInChrome', obj);
 
             obj.browserPath = obj.browserPath || child.path.join('C:', 'Program Files', 'Google', 'Chrome', 'Application', 'chrome.exe');
 
