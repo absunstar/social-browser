@@ -3055,23 +3055,27 @@ SOCIALBROWSER.init2 = function () {
                 SOCIALBROWSER.$pressKey('enter');
             };
             SOCIALBROWSER.$pressKeys = function (keys) {
-                return new Promise((resolve, reject) => {
+                return new Promise(async (resolve, reject) => {
                     let arr = keys.split('');
-                    arr.forEach((key, i) => {
-                        SOCIALBROWSER.$wait(100 * i).then(() => SOCIALBROWSER.$pressKey(key));
-                    });
-                    SOCIALBROWSER.$wait(100 * arr.length).then(() => resolve());
+                    for (let index = 0; index < arr.length; index++) {
+                        await SOCIALBROWSER.$wait(SOCIALBROWSER.randomNumber(50, 150));
+                        await SOCIALBROWSER.$pressKey(arr[index]);
+                    }
+
+                    SOCIALBROWSER.$wait(200).then(() => resolve());
                 });
             };
 
-            SOCIALBROWSER.$type = function (selector, text = '') {
+            SOCIALBROWSER.$type = function (selector, text = '' , move = false) {
                 return new Promise((resolve, reject) => {
-                    SOCIALBROWSER.$select(selector).then((ele) => {
-                        ele.focus();
+                    SOCIALBROWSER.$select(selector).then(async (ele) => {
+                       
+                       await SOCIALBROWSER.$click(ele , true , move , false);
+                        if(!move){
+                            ele.focus();
+                        }
                         SOCIALBROWSER.$pressKeys(text).then(() => {
-                            setTimeout(() => {
-                                resolve(ele);
-                            }, 200);
+                            SOCIALBROWSER.$wait(200).then(() => resolve(ele));
                         });
                     });
                 });
