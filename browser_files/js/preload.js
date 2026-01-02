@@ -1344,7 +1344,7 @@ SOCIALBROWSER.init2 = function () {
                                         if (!SOCIALBROWSER.tokenFrom2CaptchaV3) {
                                             let pageurl = SOCIALBROWSER.window.getURL();
                                             let API_KEY = SOCIALBROWSER.customSetting.captcha2ApiKey || SOCIALBROWSER.var.blocking.javascript.captcha2ApiKey;
-                                            let byPassUrl = `https://2captcha.com/in.php?key=${API_KEY}&method=userrecaptcha&version=v3&min_score=0.9&action=${options.action}&googlekey=${SOCIALBROWSER.sitekey}&pageurl=${pageurl}`;
+                                            let byPassUrl = `https://2captcha.com/in.php?key=${API_KEY}&method=userrecaptcha&version=v3&min_score=0.3&action=${options.action}&googlekey=${SOCIALBROWSER.sitekey}&pageurl=${pageurl}`;
                                             SOCIALBROWSER.sendMessage({ name: '2captcha_in', url: byPassUrl, api_key: API_KEY, version: '3' });
                                             SOCIALBROWSER.onMessage((message) => {
                                                 if (message.name == 'captcha_solved') {
