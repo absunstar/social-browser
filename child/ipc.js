@@ -512,7 +512,7 @@ module.exports = function init(child) {
         }
         event.returnValue = true;
     });
-    child.ipcMain.on('[read-file]', async (event, path ) => {
+    child.ipcMain.on('[read-file]', async (event, path) => {
         event.returnValue = child.fs.readFileSync(path, { encoding: 'utf8', flag: 'r' });
     });
     child.ipcMain.on('[delete-file]', async (event, path) => {
@@ -805,12 +805,29 @@ module.exports = function init(child) {
     child.ipcMain.handle('[fetch]', async (e, options) => {
         try {
             options.body = options.body || options.data || options.payload;
+            options.data = undefined;
+            options.payload = undefined;
 
-            if (options.body && typeof options.body != 'string') {
+            if (options.method && options.method.like('get')) {
+                if (typeof options.body == 'string' && options.body.length > 0) {
+                    if (options.url.indexOf('?') === 0) {
+                        options.url += options.body;
+                    } else {
+                        options.url += '?' + options.body;
+                    }
+                } else if (typeof options.body == 'object' && options.body != null) {
+                    let params = new URLSearchParams(options.body).toString();
+                    options.url += '?' + params;
+                }
+
+                options.body = undefined;
+            } else if (options.body && typeof options.body != 'string') {
                 options.body = JSON.stringify(options.body);
             }
+
             options.headers = options.headers || {};
             options.return = options.return || 'all';
+
             let request = {
                 mode: 'cors',
                 method: 'get',
@@ -870,7 +887,7 @@ module.exports = function init(child) {
             options.body = JSON.stringify(options.body);
         }
         options.return = options.return || 'json';
-        options.headers = options.headers || {}
+        options.headers = options.headers || {};
         try {
             let data = await child.api.fetch(options.url, {
                 mode: 'cors',
@@ -878,7 +895,7 @@ module.exports = function init(child) {
                 headers: {
                     'Content-Type': 'application/json',
                     'User-Agent': child.parent.var.core.defaultUserAgent.url,
-                    ...options.headers 
+                    ...options.headers,
                 },
                 body: options.body,
                 redirect: options.redirect || 'follow',

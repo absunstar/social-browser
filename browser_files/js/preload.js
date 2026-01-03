@@ -1241,21 +1241,22 @@ SOCIALBROWSER.init2 = function () {
                 }
             };
 
-            SOCIALBROWSER.fetch2Captcha_request = function (request, API_KEY, version) {
-                if (version == '2') {
-                    SOCIALBROWSER.$setValue('#g-recaptcha-response', request).then(() => {
+            SOCIALBROWSER.fetch2Captcha_request = function (options) {
+                if (options.version == '2') {
+                    SOCIALBROWSER.$setValue('#g-recaptcha-response', options.request).then(() => {
                         SOCIALBROWSER.log('Captcha Response Set');
                         SOCIALBROWSER.sendMessage({ name: '[user-message]', message: 'Captcha Solved' });
                         SOCIALBROWSER.sendMessage({ name: 'captcha_solved', response: request });
                     });
-                } else if (version == '3') {
-                    SOCIALBROWSER.$setValue('#g-recaptcha-response', request);
+                } else if (options.version == '3') {
+                    SOCIALBROWSER.$setValue('#g-recaptcha-response', options.request);
                     SOCIALBROWSER.sendMessage({ name: '[user-message]', message: 'Captcha Solved' });
-                    SOCIALBROWSER.sendMessage({ name: 'captcha_solved', response: request });
+                    SOCIALBROWSER.sendMessage({ name: 'captcha_solved', response: options.request });
                 }
             };
 
-            SOCIALBROWSER.fetch2Captcha_res = function (checkResultUrl, API_KEY, version) {
+            SOCIALBROWSER.fetch2Captcha_res = function (options) {
+SOCIALBROWSER.log(options);
                 if (SOCIALBROWSER.fetch2Captcha_res_busy) {
                     return;
                 }
@@ -1263,92 +1264,96 @@ SOCIALBROWSER.init2 = function () {
                 SOCIALBROWSER.fetch2Captcha_res_busy = true;
                 SOCIALBROWSER.$every(5000, (interval) => {
                     SOCIALBROWSER.sendMessage({ name: '[user-message]', message: 'Captcha Geting Reponse' });
-                    SOCIALBROWSER.$fetch(checkResultUrl)
-                        .then((res) => (version == '2' ? res.json() : res.text()))
+                    SOCIALBROWSER.$fetch(options.url, {
+                        method: 'GET',
+                        payload: options.payload,
+                    })
+                        .then((res) => res.json())
                         .then((res) => {
                             SOCIALBROWSER.log(res);
-                            if (version == '2') {
-                                if (res.status == 1) {
-                                    SOCIALBROWSER.fetch2Captcha_res_busy = false;
-                                    clearInterval(interval);
-                                    SOCIALBROWSER.sendMessage({ name: '2captcha_request', request: res.request, api_key: API_KEY, version: version });
-                                }
-                            } else if (version == '3') {
-                                let token = res.split('|')[1];
-                                SOCIALBROWSER.log('Captcha v3 Token : ' + token);
-                                if (token) {
-                                    SOCIALBROWSER.tokenFrom2CaptchaV3 = token;
-                                    clearInterval(interval);
-                                    SOCIALBROWSER.fetch2Captcha_res_busy = false;
-                                    SOCIALBROWSER.sendMessage({ name: '2captcha_request', request: token, api_key: API_KEY, version: version });
-                                }
-                            } else {
-                                SOCIALBROWSER.log('2Captcha unknown version response : ' + version);
-                                clearInterval(interval);
+
+                            if (res.status == 1) {
                                 SOCIALBROWSER.fetch2Captcha_res_busy = false;
+                                clearInterval(interval);
+                                SOCIALBROWSER.tokenFrom2Captcha = res.request;
+                                SOCIALBROWSER.sendMessage({ name: '2captcha_request', request: res.request, api_key: options.payload.key, version: options.version });
+                                setTimeout(() => {
+                                    let reportbadUrl = `https://2captcha.com/res.php?key=${options.payload.key}&action=reportbad&id=${options.payload.id}&json=1`;
+                                    SOCIALBROWSER.$fetch(reportbadUrl)
+                                        .then((res) => res.json())
+                                        .then((data) => SOCIALBROWSER.log(data));
+                                }, 1000 * 20);
                             }
                         });
                 });
             };
 
-            SOCIALBROWSER.fetch2Captcha_in = function (byPassUrl, API_KEY, version) {
+            SOCIALBROWSER.fetch2Captcha_in = function (options) {
                 if (SOCIALBROWSER.fetch2Captcha_in_busy) {
                     return;
                 }
-                SOCIALBROWSER.sendMessage({ name: '[user-message]', message: 'Captcha Start Solving <br> : ' + byPassUrl });
+                SOCIALBROWSER.sendMessage({ name: '[user-message]', message: 'Captcha Start Solving' });
 
                 SOCIALBROWSER.fetch2Captcha_in_busy = true;
 
-                SOCIALBROWSER.$fetch(byPassUrl)
-                    .then((res) => (version == '2' ? res.json() : res.text()))
+                SOCIALBROWSER.$fetch(options.url, {
+                    method: 'POST',
+                    payload: options.payload,
+                })
+                    .then((res) => res.json())
                     .then((res) => {
                         let requestID = '';
                         SOCIALBROWSER.log(res);
-                        if (version == '3') {
-                            requestID = res.split('|')[1];
-                        } else {
-                            requestID = res.request;
-                        }
-                        if (requestID) {
-                            if (version == '2') {
-                                let checkResultUrl = `https://2captcha.com/res.php?key=${API_KEY}&action=get&id=${requestID}&json=1`;
-                                SOCIALBROWSER.sendMessage({ name: '2captcha_res', url: checkResultUrl, api_key: API_KEY, version: version });
-                            }
+                        requestID = res.request;
 
-                            if (version == '3') {
-                                let checkResultUrl = `https://2captcha.com/res.php?key=${API_KEY}&action=get&id=${requestID}`;
-                                setTimeout(() => {
-                                    SOCIALBROWSER.sendMessage({ name: '2captcha_res', url: checkResultUrl, api_key: API_KEY, version: version });
-                                }, 1000 * 15);
-                            }
+                        if (requestID) {
+                            let checkResultUrl = 'https://2captcha.com/res.php';
+                            let payload = {
+                                key: options.payload.key,
+                                action: 'get',
+                                id: requestID,
+                                json: 1,
+                            };
+
+                            SOCIALBROWSER.sendMessage({ name: '2captcha_res', url: checkResultUrl, version: options.version , payload: payload });
                         }
                     });
             };
 
             SOCIALBROWSER.run2Captcha = function () {
                 if (!SOCIALBROWSER.customSetting.captcha2ApiKey && (!SOCIALBROWSER.var.blocking.javascript.captcha2ON || !SOCIALBROWSER.var.blocking.javascript.captcha2ApiKey)) {
-                    SOCIALBROWSER.log('2 Captcha not Enabled');
                     return;
                 }
+                SOCIALBROWSER.log('2 Captcha Enabled');
 
                 if (!SOCIALBROWSER.isIframe()) {
                     SOCIALBROWSER.$every(100, (interval) => {
                         if (typeof grecaptcha !== 'undefined' && grecaptcha.execute) {
-                            SOCIALBROWSER.log('grecaptcha.execute Detected, Stop 2Captcha Check');
+                            SOCIALBROWSER.showUserMessage('grecaptcha.execute Detected');
                             clearInterval(interval);
                             grecaptcha.execute0 = grecaptcha.execute;
                             grecaptcha.execute = function (sitekey, options = { action: '' }) {
-                                SOCIALBROWSER.log('grecaptcha.execute called', sitekey, options);
+                                SOCIALBROWSER.showUserMessage('grecaptcha.execute called');
                                 return new Promise((resolve, reject) => {
                                     if (SOCIALBROWSER.isRecaptchaV3) {
-                                        if (!SOCIALBROWSER.tokenFrom2CaptchaV3) {
+                                        if (!SOCIALBROWSER.tokenFrom2Captcha) {
                                             let pageurl = SOCIALBROWSER.window.getURL();
                                             let API_KEY = SOCIALBROWSER.customSetting.captcha2ApiKey || SOCIALBROWSER.var.blocking.javascript.captcha2ApiKey;
-                                            let byPassUrl = `https://2captcha.com/in.php?key=${API_KEY}&method=userrecaptcha&version=v3&min_score=0.3&action=${options.action}&googlekey=${SOCIALBROWSER.sitekey}&pageurl=${pageurl}`;
-                                            SOCIALBROWSER.sendMessage({ name: '2captcha_in', url: byPassUrl, api_key: API_KEY, version: '3' });
+                                            let byPassUrl = 'https://2captcha.com/in.php';
+                                            let payload = {
+                                                key: API_KEY,
+                                                method: 'userrecaptcha',
+                                                googlekey: sitekey,
+                                                pageurl: pageurl,
+                                                version: 'v3',
+                                                action: options.action,
+                                                min_score: 0.9,
+                                                json: 1,
+                                            };
+                                            SOCIALBROWSER.sendMessage({ name: '2captcha_in', url: byPassUrl, version: '3', payload: payload });
                                             SOCIALBROWSER.onMessage((message) => {
                                                 if (message.name == 'captcha_solved') {
-                                                    resolve(SOCIALBROWSER.tokenFrom2CaptchaV3);
+                                                    resolve(SOCIALBROWSER.tokenFrom2Captcha);
                                                 }
                                             });
                                         } else {
@@ -1424,13 +1429,16 @@ SOCIALBROWSER.init2 = function () {
                         if (SOCIALBROWSER.isRecaptchaV2 && SOCIALBROWSER.sitekey) {
                             let pageurl = SOCIALBROWSER.window.getURL();
                             let API_KEY = SOCIALBROWSER.customSetting.captcha2ApiKey || SOCIALBROWSER.var.blocking.javascript.captcha2ApiKey;
-                            let byPassUrl = `https://2captcha.com/in.php?key=${API_KEY}&method=userrecaptcha&googlekey=${SOCIALBROWSER.sitekey}&pageurl=${pageurl}&json=1`;
-                            SOCIALBROWSER.sendMessage({ name: '2captcha_in', url: byPassUrl, api_key: API_KEY, version: '2' });
+                            let byPassUrl = 'https://2captcha.com/in.php';
+                            let payload = {
+                                key: API_KEY,
+                                method: 'userrecaptcha',
+                                googlekey: SOCIALBROWSER.sitekey,
+                                pageurl: pageurl,
+                                json: 1,
+                            };
+                            SOCIALBROWSER.sendMessage({ name: '2captcha_in', byPassUrl: byPassUrl, version: '2', payload: payload });
                         } else if (SOCIALBROWSER.isRecaptchaV3 && SOCIALBROWSER.sitekey) {
-                            // let pageurl = SOCIALBROWSER.window.getURL();
-                            // let API_KEY = SOCIALBROWSER.customSetting.captcha2ApiKey || SOCIALBROWSER.var.blocking.javascript.captcha2ApiKey;
-                            // let byPassUrl = `https://2captcha.com/in.php?key=${API_KEY}&method=userrecaptcha&version=v3&min_score=0.9&action=login&googlekey=${SOCIALBROWSER.sitekey}&pageurl=${pageurl}`;
-                            // SOCIALBROWSER.sendMessage({ name: '2captcha_in', url: byPassUrl, api_key: API_KEY, version: '3' });
                         } else {
                             SOCIALBROWSER.log('Captcha sitekey not exists');
                         }
@@ -2415,9 +2423,11 @@ SOCIALBROWSER.init2 = function () {
             SOCIALBROWSER.showUserMessageTimeout = null;
             SOCIALBROWSER.showUserMessage = function (msg, time = 1000 * 3) {
                 SOCIALBROWSER.log(msg);
+
                 if (SOCIALBROWSER.var.blocking.javascript.hide_user_messages) {
                     return;
                 }
+
                 clearTimeout(SOCIALBROWSER.showUserMessageTimeout);
                 let div = document.querySelector('#__userMessageBox');
                 if (msg) {
@@ -3051,14 +3061,19 @@ SOCIALBROWSER.init2 = function () {
                 SOCIALBROWSER.webContents.sendInputEvent({ type: 'char', keyCode: key });
                 SOCIALBROWSER.webContents.sendInputEvent({ type: 'keyUp', keyCode: key });
             };
+
             SOCIALBROWSER.$enter = function () {
                 SOCIALBROWSER.$pressKey('enter');
             };
+            SOCIALBROWSER.$backspace = function () {
+                SOCIALBROWSER.$pressKey('backspace');
+            };
+
             SOCIALBROWSER.$pressKeys = function (keys) {
                 return new Promise(async (resolve, reject) => {
                     let arr = keys.split('');
                     for (let index = 0; index < arr.length; index++) {
-                        await SOCIALBROWSER.$wait(SOCIALBROWSER.randomNumber(50, 150));
+                        await SOCIALBROWSER.$wait(SOCIALBROWSER.randomNumber(50, 200));
                         await SOCIALBROWSER.$pressKey(arr[index]);
                     }
 
@@ -3066,12 +3081,11 @@ SOCIALBROWSER.init2 = function () {
                 });
             };
 
-            SOCIALBROWSER.$type = function (selector, text = '' , move = false) {
+            SOCIALBROWSER.$type = function (selector, text = '', move = false) {
                 return new Promise((resolve, reject) => {
                     SOCIALBROWSER.$select(selector).then(async (ele) => {
-                       
-                       await SOCIALBROWSER.$click(ele , true , move , false);
-                        if(!move){
+                        await SOCIALBROWSER.$click(ele, true, move, false);
+                        if (!move) {
                             ele.focus();
                         }
                         SOCIALBROWSER.$pressKeys(text).then(() => {
@@ -10058,14 +10072,14 @@ SOCIALBROWSER.init2 = function () {
                 SOCIALBROWSER.run2Captcha();
             } else if (message.name == '2captcha_in') {
                 if (!SOCIALBROWSER.isIframe()) {
-                    SOCIALBROWSER.fetch2Captcha_in(message.url, message.api_key, message.version);
+                    SOCIALBROWSER.fetch2Captcha_in(message);
                 }
             } else if (message.name == '2captcha_res') {
                 if (!SOCIALBROWSER.isIframe()) {
-                    SOCIALBROWSER.fetch2Captcha_res(message.url, message.api_key, message.version);
+                    SOCIALBROWSER.fetch2Captcha_res(message);
                 }
             } else if (message.name == '2captcha_request') {
-                SOCIALBROWSER.fetch2Captcha_request(message.request, message.api_key, message.version);
+                SOCIALBROWSER.fetch2Captcha_request(message);
             } else if (message.name == 'captcha_solved') {
                 function getRecaptchaCallback() {
                     for (let item_key in ___grecaptcha_cfg.clients[0]) {
