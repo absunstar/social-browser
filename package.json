@@ -112,7 +112,7 @@
     },
     "dependencies": {
         "isite": "^2025.12.1",
-        "puppeteer-core": "^24.22.0"
+        "puppeteer-core": "^24.34.0"
     },
     "devDependencies": {
         "electron": "^39.2.7",

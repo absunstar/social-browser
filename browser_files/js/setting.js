@@ -83,6 +83,32 @@ app.controller('mainController', ($scope, $http, $timeout) => {
 
         $scope.$applyAsync();
     };
+    $scope.updatingUserAgentList = async function () {
+        $scope.busy = true;
+        $scope.setting.userAgentList.forEach((ua, i) => {
+            SOCIALBROWSER.showUserMessage('Updating User Agent : ' + ua.name);
+            let arr =  ua.url.split(' ');
+            arr.forEach((word , i) => {
+                if (word.like('chrome/*')) {
+                    arr[i] = 'chrome/143.0.0.0';
+                }else if (word.like('edge/*')) {
+                    arr[i] = 'edge/143.0.0.0';
+                }else if (word.like('OPR/*')) {
+                    arr[i] = 'OPR/124.0.0.0';
+                }else if (word.like('Firefox/*')) {
+                    arr[i] = 'Firefox/146.0';
+                }else if (word.like('rv:*)')) {
+                    arr[i] = 'rv:146.0)';
+                }else if (word.like('rv:*)')) {
+                    arr[i] = 'rv:146.0)';
+                }
+            });
+            ua.url = arr.join(' ');
+        });
+        $scope.busy = false;
+        $scope.$applyAsync();
+
+    }
     $scope.generateProxy = function (session) {
         let index = SOCIALBROWSER.randomNumber(0, $scope.setting.proxy_list.length - 1);
         if (typeof session == 'string' && session == '*') {
