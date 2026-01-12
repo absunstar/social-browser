@@ -4676,12 +4676,14 @@ SOCIALBROWSER.log(options);
                 });
                 arr.push({
                     label: 'Copy Profile Name',
+                    sublabel: SOCIALBROWSER.session.display,
                     click() {
                         SOCIALBROWSER.copy(SOCIALBROWSER.session.display);
                     },
                 });
                 arr.push({
                     label: 'Copy Profile ID',
+                    sublabel: SOCIALBROWSER.session.name,
                     click() {
                         SOCIALBROWSER.copy(SOCIALBROWSER.session.name);
                     },

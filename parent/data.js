@@ -782,6 +782,9 @@ module.exports = function init(parent) {
                 return res.json();
             })
             .then((data) => {
+                
+                parent.log('Online Key Info : ' ,data);
+
                 parent.var.core.OnlineKey = obj.key || '';
 
                 parent.var.core.keyInfo = data;
