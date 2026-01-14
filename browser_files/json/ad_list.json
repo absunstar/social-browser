@@ -81,7 +81,7 @@
         "enabled": true
     },
     { "name": "redirect 6", "url": "*tr-boost.com*|*consciousnesshear.com*|*mcpuwpsh.com*|*jsmcrptjmp.com*|*s.orbsrv.com*|*twinrdack.com*|*t.pimiji.xyz*", "enabled": true },
-    { "url": "*/ads.js|https://ad.*|*pagead.js|*widget/ads.*|*pixeltrey.com*|*clicks2apk.com*|*floitcarites.com*|*geogenyveered.com*", "name": "ad-block", "enabled": true },
+    { "url": "*/ad/*|*/ads.js|https://ad.*|*pagead.js|*widget/ads.*|*pixeltrey.com*|*clicks2apk.com*|*floitcarites.com*|*geogenyveered.com*", "name": "ad-block", "enabled": true },
     {
         "url": "*shakingtacklingunpeeled.com*|*boodiecawquaw.top*|*zeecajichaiw.net*|*ileeckut.com*|*aiveemtomsaix.net*|*ewouwamsubsouvy.net*|*curiescores.com*|*goboksehee.net*|*safedragonapp.monster*|*specificallycries.com*|*peanutrefusesplit.com*|*zygoticroud.shop*",
         "name": "ad003",
