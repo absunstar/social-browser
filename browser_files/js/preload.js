@@ -1256,7 +1256,7 @@ SOCIALBROWSER.init2 = function () {
             };
 
             SOCIALBROWSER.fetch2Captcha_res = function (options) {
-SOCIALBROWSER.log(options);
+                SOCIALBROWSER.log(options);
                 if (SOCIALBROWSER.fetch2Captcha_res_busy) {
                     return;
                 }
@@ -1315,7 +1315,7 @@ SOCIALBROWSER.log(options);
                                 json: 1,
                             };
 
-                            SOCIALBROWSER.sendMessage({ name: '2captcha_res', url: checkResultUrl, version: options.version , payload: payload });
+                            SOCIALBROWSER.sendMessage({ name: '2captcha_res', url: checkResultUrl, version: options.version, payload: payload });
                         }
                     });
             };
@@ -1656,13 +1656,13 @@ SOCIALBROWSER.log(options);
                 });
             };
             SOCIALBROWSER.copy = function (text = '') {
-                SOCIALBROWSER.electron.clipboard.writeText(text.toString());
+                SOCIALBROWSER.clipboard.writeText(text.toString());
             };
             SOCIALBROWSER.paste = function () {
                 SOCIALBROWSER.webContents.paste();
             };
             SOCIALBROWSER.readCopy = function () {
-                return SOCIALBROWSER.electron.clipboard.readText();
+                return SOCIALBROWSER.clipboard.readText();
             };
 
             SOCIALBROWSER.triggerMouseEvent = function (node, eventType) {
@@ -1737,7 +1737,7 @@ SOCIALBROWSER.log(options);
                             return false;
                         }
 
-                        let momeryText = SOCIALBROWSER.electron.clipboard.readText() || '';
+                        let momeryText = SOCIALBROWSER.clipboard.readText() || '';
 
                         if (selector.tagName == 'INPUT' || selector.tagName == 'TEXTAREA') {
                             selector.value = text;
@@ -3111,7 +3111,7 @@ SOCIALBROWSER.log(options);
 
             SOCIALBROWSER.$paste = function (text) {
                 return new Promise((resolve, reject) => {
-                    SOCIALBROWSER.electron.clipboard.writeText(text.toString());
+                    SOCIALBROWSER.clipboard.writeText(text.toString());
                     SOCIALBROWSER.webContents.paste();
                     setTimeout(() => {
                         resolve();
@@ -3767,37 +3767,33 @@ SOCIALBROWSER.log(options);
             },
         });
 
-        if (!SOCIALBROWSER.electron.clipboard) {
-            SOCIALBROWSER._clipboard = SOCIALBROWSER.ipcSync('[clipboard]');
-            SOCIALBROWSER._clipboard.fnList.forEach((fn) => {
-                SOCIALBROWSER._clipboard[fn] = (...params) => SOCIALBROWSER.fn('clipboard.' + fn, ...params);
-            });
+        SOCIALBROWSER._clipboard = SOCIALBROWSER.ipcSync('[clipboard]');
+        SOCIALBROWSER._clipboard.fnList.forEach((fn) => {
+            SOCIALBROWSER._clipboard[fn] = (...params) => SOCIALBROWSER.fn('clipboard.' + fn, ...params);
+        });
 
-            SOCIALBROWSER.clipboard = new Proxy(SOCIALBROWSER._clipboard, {
-                get(target, name, receiver) {
-                    if (name == '_') {
-                        return target;
-                    } else {
-                        if (!Reflect.has(target, name)) {
-                            return SOCIALBROWSER.get('clipboard.' + name);
-                        }
-                        return Reflect.get(target, name, receiver);
-                    }
-                },
-                set(target, name, value, receiver) {
+        SOCIALBROWSER.clipboard = new Proxy(SOCIALBROWSER._clipboard, {
+            get(target, name, receiver) {
+                if (name == '_') {
+                    return target;
+                } else {
                     if (!Reflect.has(target, name)) {
-                        return SOCIALBROWSER.set('clipboard.' + name, value);
+                        return SOCIALBROWSER.get('clipboard.' + name);
                     }
-                    return Reflect.set(target, name, value, receiver);
-                },
-            });
-            SOCIALBROWSER.electron.clipboard = SOCIALBROWSER.clipboard;
-        } else {
-            SOCIALBROWSER.clipboard = SOCIALBROWSER.electron.clipboard;
-        }
+                    return Reflect.get(target, name, receiver);
+                }
+            },
+            set(target, name, value, receiver) {
+                if (!Reflect.has(target, name)) {
+                    return SOCIALBROWSER.set('clipboard.' + name, value);
+                }
+                return Reflect.set(target, name, value, receiver);
+            },
+        });
+        SOCIALBROWSER.electron.clipboard = SOCIALBROWSER.clipboard;
 
         SOCIALBROWSER.remote = {
-            clipboard: SOCIALBROWSER.electron.clipboard,
+            clipboard: SOCIALBROWSER.clipboard,
             BrowserWindow: function (_setting) {
                 return SOCIALBROWSER.openWindow(_setting);
             },
