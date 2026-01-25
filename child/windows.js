@@ -337,7 +337,7 @@ module.exports = function (child) {
         }
 
         if ((handleCookies = true)) {
-            let domainName = child.url.parse(setting.url.replace('blob:', '')).hostname?.split('.') || ['domainName', 'com'];
+            let domainName = child.newURL(setting.url.replace('blob:', '')).hostname?.split('.') || ['domainName', 'com'];
             domainName = domainName.slice(domainName.length - 2).join('.');
 
             if (Array.isArray(setting.cookieList) && setting.cookieList.length > 0) {
@@ -1047,7 +1047,7 @@ module.exports = function (child) {
                 win.webContents.send('[show-user-message]', { message: 'Blocked Redirect URL <p><a>' + url + '</a></p>' });
             }
 
-            if (win.customSetting.allowSelfRedirect && (win.getURL().contains(child.url.parse(url).hostname) || url.contains(child.url.parse(win.getURL()).hostname))) {
+            if (win.customSetting.allowSelfRedirect && (win.getURL().contains(child.newURL(url).hostname) || url.contains(child.newURL(win.getURL()).hostname))) {
                 return;
             }
 
@@ -1218,8 +1218,8 @@ module.exports = function (child) {
                     if (win.customSetting.allowPopup) {
                         allow = true;
                     } else {
-                        let url_parser = child.url.parse(url);
-                        let current_url_parser = child.url.parse(win.getURL());
+                        let url_parser = child.newURL(url);
+                        let current_url_parser = child.newURL(win.getURL());
 
                         if (!allow) {
                             allow = win.customSetting.isWhiteSite || child.parent.var.blocking.white_list.some((d) => url_parser.hostname.like(d.url) || current_url_parser.hostname.like(d.url));
@@ -1329,8 +1329,8 @@ module.exports = function (child) {
                 loadOptions.extraHeaders = `content-type: ${contentType}; boundary=${boundary}`;
             }
 
-            let url_parser = child.url.parse(real_url);
-            let current_url_parser = child.url.parse(win.getURL());
+            let url_parser = child.newURL(real_url);
+            let current_url_parser = child.newURL(win.getURL());
 
             let allow = false;
 

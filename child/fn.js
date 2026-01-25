@@ -2,6 +2,25 @@ module.exports = function (child) {
     child.isDeveloperMode = function () {
         return child.parent?.var?.core?.id?.like(child.api.f1('245932574679316349146256423942574518867142392163'));
     };
+    child.newURL = function (url) {
+        try {
+             return new URL(url);
+        } catch (error) {
+            child.log('newURL error : ', error, url);
+            return {
+                href: url,
+                protocol: '',
+                hostname: '',
+                port: '',
+                pathname: '',
+                search: '',
+                hash: '',
+                
+            };
+        }
+       
+    };
+
     child.readLocalFile = function (name) {
         let path = child.path.join(child.userDataDir, name);
         let Content = name.like('*list*') ? [] : {};
@@ -341,7 +360,7 @@ module.exports = function (child) {
         }
 
         if (allow && child.parent.var.blocking.core.block_ads_servers) {
-            allow = !child.adHostList.includes(child.url.parse(url).hostname);
+            allow = !child.adHostList.includes(child.newURL(url)?.hostname);
         }
 
         if (allow && child.parent.var.blocking.black_list) {
@@ -564,8 +583,8 @@ module.exports = function (child) {
         }
 
         let currentURL = win.getURL();
-        let currentHostname = child.url.parse(currentURL).hostname;
-        let newHostname = child.url.parse(url).hostname;
+        let currentHostname = child.newURL(currentURL)?.hostname;
+        let newHostname = child.newURL(url)?.hostname;
 
         let reload = false;
         if (child.cloudFlareURLs.some((f) => f.url === newHostname)) {
@@ -1118,7 +1137,7 @@ module.exports = function (child) {
                                 onmessage: function () {},
                             };
 
-                            let loc = new URL(globalThis[workerID].url);
+                            let loc = child.newURL(globalThis[workerID].url);
                             globalThis[workerID].location = loc;
                             globalThis.__define(globalThis[workerID], 'location', {
                                 protocol: loc.protocol,

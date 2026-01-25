@@ -2,7 +2,7 @@
     "name": "social.browser",
     "productName": "Social Browser",
     "homepage": "https://social-browser.com",
-    "version": "2026.01.15",
+    "version": "26.01.25",
     "description": "Browsing Social Platforms with Multiple Accounts without Ban",
     "author": {
         "name": "Social Teams",
@@ -57,9 +57,9 @@
             "output": "../build"
         },
         "win": {
-           
             "target": [
-                "nsis"
+                "nsis",
+                "msi"
             ],
             "legalTrademarks": "Social Browser",
             "icon": "browser_files/images/logo.ico",
@@ -88,6 +88,15 @@
             "allowToChangeInstallationDirectory": true,
             "oneClick": false
         },
+        "msi": {
+            "artifactName": "${productName} ${version} ${os} ${arch} Setup.${ext}",
+            "createDesktopShortcut": "always",
+            "createStartMenuShortcut": true,
+            "menuCategory": true,
+            "oneClick": false,
+            "perMachine": true,
+            "shortcutName": "${productName}"
+        },
         "squirrelWindows": {
             "msi": true
         },
@@ -114,7 +123,7 @@
         "appx": {}
     },
     "dependencies": {
-        "isite": "^2026.1.1",
+        "isite": "^2026.1.2",
         "puppeteer-core": "^24.35.0"
     },
     "devDependencies": {

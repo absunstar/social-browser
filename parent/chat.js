@@ -6,7 +6,7 @@ module.exports = function init(parent) {
 
   parent.api.servers.forEach((server) => {
     server.on('upgrade', function upgrade(request, socket, head) {
-      const pathname = parent.url.parse(request.url).pathname;
+      const pathname = new parent.url(request.url).pathname;
 
       if (pathname === '/x-chat') {
         parent._chat_.handleUpgrade(request, socket, head, function done(ws) {

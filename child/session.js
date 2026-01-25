@@ -243,8 +243,8 @@ module.exports = function (child) {
                 let customSetting = {};
                 let refererURL = '';
                 details.requestHeaders = details.requestHeaders || {};
-                let urlObject = child.url.parse(url);
-                let mainURLObject = child.url.parse(mainURL);
+                let urlObject = child.newURL(url);
+                let mainURLObject = child.newURL(mainURL);
                 let domainName = urlObject.hostname.split('.');
                 domainName = domainName.slice(domainName.length - 2).join('.');
 
@@ -261,7 +261,7 @@ module.exports = function (child) {
                     win = child.electron.BrowserWindow.fromWebContents(details.webContents);
                     if (win) {
                         mainURL = win.getURL();
-                        mainURLObject = child.url.parse(mainURL);
+                        mainURLObject = child.newURL(mainURL);
                         customSetting = win.customSetting || {};
                         if (win.customSetting && (win.customSetting.allowRequests || win.customSetting.off || win.customSetting.enginOFF)) {
                             callback({
@@ -361,7 +361,7 @@ module.exports = function (child) {
                     return;
                 }
                 if (mainURL) {
-                    if (new URL(mainURL).hostname.like(new URL(url).hostname)) {
+                    if (child.newURL(mainURL).hostname.like(child.newURL(url).hostname)) {
                         callback({
                             cancel: false,
                         });
@@ -489,7 +489,7 @@ module.exports = function (child) {
             ss.webRequest.onBeforeSendHeaders(filter, async function (details, callback) {
                 let url = details.url;
                 let mainURL = url;
-                let urlObject = child.url.parse(url);
+                let urlObject = child.newURL(url);
                 let win = null;
                 let domainName = urlObject.hostname.split('.');
                 domainName = domainName.slice(domainName.length - 2).join('.');
@@ -635,7 +635,7 @@ module.exports = function (child) {
 
                 let refererURL = details.requestHeaders['referrer'] || details.requestHeaders['Referer'] || details.requestHeaders['Host'] || details.requestHeaders['host'] || url;
                 refererURL = refererURL;
-                refererObject = child.url.parse(refererURL);
+                refererObject = child.newURL(refererURL);
 
                 if (_ss.user.privacy.allowVPC && _ss.user.privacy.vpc && _ss.user.privacy.vpc.maskUserAgentURL) {
                     if (!details.requestHeaders['User-Agent'].like('*[xx-*')) {
@@ -712,7 +712,7 @@ module.exports = function (child) {
 
                 let url = details.url;
                 let mainURL = url;
-                let urlObject = child.url.parse(url);
+                let urlObject = child.newURL(url);
                 let _ss = child.session_name_list.find((s) => s.name == name);
                 _ss.user.privacy.vpc = _ss.user.privacy.vpc || {};
                 let win = null;
@@ -724,7 +724,7 @@ module.exports = function (child) {
                 if (details.webContents) {
                     win = child.electron.BrowserWindow.fromWebContents(details.webContents);
                     if (win) {
-                        mainURL = win.getURL();
+                        mainURL = win.getURL() || mainURL;
                         if (win.customSetting && (win.customSetting.off || win.customSetting.enginOFF)) {
                             callback({
                                 cancel: false,
@@ -737,7 +737,7 @@ module.exports = function (child) {
                         }
                     }
                 }
-                if (details.frame) {
+                if (details.frame && details.frame.url) {
                     mainURL = details.frame.url;
                 }
                 let enginOFF = child.parent.var.blocking.vip_site_list.some((site) => site.url.length > 2 && mainURL.like(site.url));
@@ -846,7 +846,7 @@ module.exports = function (child) {
                     details.responseHeaders['Access-Control-Allow-Private-Network'.toLowerCase()] = 'true';
                     details.responseHeaders['Access-Control-Allow-Credentials'.toLowerCase()] = 'true';
 
-                    let mainURLobject = child.url.parse(mainURL);
+                    let mainURLobject = child.newURL(mainURL);
                     details.responseHeaders['Access-Control-Allow-Methods'.toLowerCase()] =
                         a_Methods || 'POST,GET,DELETE,PUT,OPTIONS,VIEW,HEAD,CONNECT,TRACE,PROPFIND,PATCH,PROPPATCH,COPY,LOCK,UNLOCK,MKCOL,SEARCH,REPORT,MOVE';
 
