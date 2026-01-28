@@ -4,9 +4,8 @@ module.exports = function (child) {
     };
     child.newURL = function (url) {
         try {
-             return new URL(url);
+            return new URL(url);
         } catch (error) {
-            child.log('newURL error : ', error, url);
             return {
                 href: url,
                 protocol: '',
@@ -15,10 +14,8 @@ module.exports = function (child) {
                 pathname: '',
                 search: '',
                 hash: '',
-                
             };
         }
-       
     };
 
     child.readLocalFile = function (name) {
@@ -542,9 +539,8 @@ module.exports = function (child) {
                     win.customSetting.headers['Sec-Ch-Ua-Bitness'] = '"64"';
                     win.customSetting.headers['Sec-Ch-Ua-Form-Factors'] = 'Desktop';
                     win.customSetting.headers['Sec-Ch-Ua-Full-Version'] = `"${win.customSetting.uaFullVersion}"`;
-                    win.customSetting.headers[
-                        'Sec-Ch-Ua-Full-Version-List'
-                    ] = `"Not(A:Brand";v="99.0.0.0", "Microsoft Edge";v="${win.customSetting.uaFullVersion}", "Chromium";v="${win.customSetting.uaFullVersion}"`;
+                    win.customSetting.headers['Sec-Ch-Ua-Full-Version-List'] =
+                        `"Not(A:Brand";v="99.0.0.0", "Microsoft Edge";v="${win.customSetting.uaFullVersion}", "Chromium";v="${win.customSetting.uaFullVersion}"`;
                     win.customSetting.headers['Sec-Ch-Ua-Platform-Version'] = '"19.0.0"';
                     win.customSetting.headers['X-Client-Data'] = child.api.toBase64('{"1":"0","2":"0","3":"0","4":"-2884885963868665766","6":"stable","9":"desktop"}');
                     win.customSetting.headers['X-Edge-Shopping-Flag'] = '1';
@@ -568,16 +564,14 @@ module.exports = function (child) {
                     win.customSetting.headers['Sec-Ch-Ua-Mobile'] = win.customSetting.$defaultUserAgent?.platform == 'Mobile' ? '?1' : '?0';
                     win.customSetting.headers['Sec-Ch-Ua-Platform'] = win.customSetting.$defaultUserAgent?.platform == 'Win32' ? '"Windows"' : win.customSetting.$defaultUserAgent?.platform;
                     win.customSetting.headers['Sec-Ch-Ua-Full-Version'] = `"${win.customSetting.uaFullVersion}"`;
-                    win.customSetting.headers[
-                        'Sec-Ch-Ua-Full-Version-List'
-                    ] = `"Google Chrome";v="${win.customSetting.uaFullVersion}", "Chromium";v="${win.customSetting.uaFullVersion}", "Not A(Brand";v="24.0.0.0"`;
+                    win.customSetting.headers['Sec-Ch-Ua-Full-Version-List'] =
+                        `"Google Chrome";v="${win.customSetting.uaFullVersion}", "Chromium";v="${win.customSetting.uaFullVersion}", "Not A(Brand";v="24.0.0.0"`;
                     win.customSetting.headers['Sec-Ch-Ua-Model'] = '""';
                     win.customSetting.headers['Sec-Ch-Ua-Arch'] = '"x86"';
                     win.customSetting.headers['Sec-Ch-Ua-Bitness'] = '"64"';
                     win.customSetting.headers['Sec-Fetch-Site'] = win.customSetting.headers['Sec-Fetch-Site'] || 'same-origin';
                     win.customSetting.headers['Sec-Fetch-Mode'] = win.customSetting.headers['Sec-Fetch-Mode'] || 'navigate';
                     win.customSetting.headers['Sec-Fetch-Dest'] = win.customSetting.headers['Sec-Fetch-Dest'] || 'document';
-
                 }
             }
         }
@@ -726,14 +720,13 @@ module.exports = function (child) {
 
     child.openInChrome = async function (obj) {
         try {
-
             obj.browserPath = obj.browserPath || child.path.join('C:', 'Program Files', 'Google', 'Chrome', 'Application', 'chrome.exe');
 
             if (!child.api.isFileExistsSync(obj.browserPath)) {
                 return child.openExternal(obj.url);
             }
 
-            obj.args = obj.args || ['--start-maximized', '--no-sandbox', '--disable-blink-features=AutomationControlled' , `--ignore-certificate-errors`,];
+            obj.args = obj.args || ['--start-maximized', '--no-sandbox', '--disable-blink-features=AutomationControlled', `--ignore-certificate-errors`];
             if (obj.proxy && obj.proxy.proxyRules) {
                 obj.args.push(`--proxy-server=${obj.proxy.proxyRules}`);
             }

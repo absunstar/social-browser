@@ -28,6 +28,7 @@ module.exports = function init(parent) {
         },
         session: {
             enabled: false,
+            save : false
         },
         security: {
             enabled: true,

@@ -235,6 +235,9 @@
         },
         {
             "url": "*mortakaz.com*|*qabilah.com*"
+        },
+        {
+            "url": "*linkedin.com*"
         }
     ],
     "vip_site_list": [

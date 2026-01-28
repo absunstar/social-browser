@@ -5899,21 +5899,24 @@ SOCIALBROWSER.init2 = function () {
                             click() {
                                 SOCIALBROWSER.startProxyIndex = SOCIALBROWSER.startProxyIndex || 0;
                                 SOCIALBROWSER.var.proxy_list.slice(SOCIALBROWSER.startProxyIndex, SOCIALBROWSER.startProxyIndex + 5).forEach((p, i) => {
-                                    setTimeout(() => {
-                                        SOCIALBROWSER.openNewPopup({
-                                            show: true,
-                                            url: document.location.href,
-                                            proxy: p,
-                                            partition: 'x-ghost_' + new Date().getTime(),
-                                            iframe: true,
-                                            center: true,
-                                            eval: () => {
-                                                SOCIALBROWSER.onLoad(() => {
-                                                    SOCIALBROWSER.$('title').innerHTML += ' , Prxoy : ' + SOCIALBROWSER.customSetting.proxy.url;
-                                                });
-                                            },
-                                        });
-                                    }, 1000 * 2 * i);
+                                    setTimeout(
+                                        () => {
+                                            SOCIALBROWSER.openNewPopup({
+                                                show: true,
+                                                url: document.location.href,
+                                                proxy: p,
+                                                partition: 'x-ghost_' + new Date().getTime(),
+                                                iframe: true,
+                                                center: true,
+                                                eval: () => {
+                                                    SOCIALBROWSER.onLoad(() => {
+                                                        SOCIALBROWSER.$('title').innerHTML += ' , Prxoy : ' + SOCIALBROWSER.customSetting.proxy.url;
+                                                    });
+                                                },
+                                            });
+                                        },
+                                        1000 * 2 * i,
+                                    );
                                 });
                                 SOCIALBROWSER.startProxyIndex += 5;
                                 if (SOCIALBROWSER.startProxyIndex > SOCIALBROWSER.var.proxy_list.length - 1) {
@@ -5926,21 +5929,24 @@ SOCIALBROWSER.init2 = function () {
                             click() {
                                 SOCIALBROWSER.startProxyIndex = SOCIALBROWSER.startProxyIndex || 0;
                                 SOCIALBROWSER.var.proxy_list.slice(SOCIALBROWSER.startProxyIndex, SOCIALBROWSER.startProxyIndex + 10).forEach((p, i) => {
-                                    setTimeout(() => {
-                                        SOCIALBROWSER.openNewPopup({
-                                            show: true,
-                                            url: document.location.href,
-                                            proxy: p,
-                                            partition: 'x-ghost_' + new Date().getTime(),
-                                            iframe: true,
-                                            center: true,
-                                            eval: () => {
-                                                SOCIALBROWSER.onLoad(() => {
-                                                    SOCIALBROWSER.$('title').innerHTML += ' , Prxoy : ' + SOCIALBROWSER.customSetting.proxy.url;
-                                                });
-                                            },
-                                        });
-                                    }, 1000 * 3 * i);
+                                    setTimeout(
+                                        () => {
+                                            SOCIALBROWSER.openNewPopup({
+                                                show: true,
+                                                url: document.location.href,
+                                                proxy: p,
+                                                partition: 'x-ghost_' + new Date().getTime(),
+                                                iframe: true,
+                                                center: true,
+                                                eval: () => {
+                                                    SOCIALBROWSER.onLoad(() => {
+                                                        SOCIALBROWSER.$('title').innerHTML += ' , Prxoy : ' + SOCIALBROWSER.customSetting.proxy.url;
+                                                    });
+                                                },
+                                            });
+                                        },
+                                        1000 * 3 * i,
+                                    );
                                 });
                                 SOCIALBROWSER.startProxyIndex += 10;
                                 if (SOCIALBROWSER.startProxyIndex > SOCIALBROWSER.var.proxy_list.length - 1) {
@@ -5953,21 +5959,24 @@ SOCIALBROWSER.init2 = function () {
                             click() {
                                 SOCIALBROWSER.startProxyIndex = SOCIALBROWSER.startProxyIndex || 0;
                                 SOCIALBROWSER.var.proxy_list.slice(SOCIALBROWSER.startProxyIndex, SOCIALBROWSER.startProxyIndex + 50).forEach((p, i) => {
-                                    setTimeout(() => {
-                                        SOCIALBROWSER.openNewPopup({
-                                            show: true,
-                                            url: document.location.href,
-                                            proxy: p,
-                                            partition: 'x-ghost_' + new Date().getTime(),
-                                            iframe: true,
-                                            center: true,
-                                            eval: () => {
-                                                SOCIALBROWSER.onLoad(() => {
-                                                    SOCIALBROWSER.$('title').innerHTML += ' , Prxoy : ' + SOCIALBROWSER.customSetting.proxy.url;
-                                                });
-                                            },
-                                        });
-                                    }, 1000 * 5 * i);
+                                    setTimeout(
+                                        () => {
+                                            SOCIALBROWSER.openNewPopup({
+                                                show: true,
+                                                url: document.location.href,
+                                                proxy: p,
+                                                partition: 'x-ghost_' + new Date().getTime(),
+                                                iframe: true,
+                                                center: true,
+                                                eval: () => {
+                                                    SOCIALBROWSER.onLoad(() => {
+                                                        SOCIALBROWSER.$('title').innerHTML += ' , Prxoy : ' + SOCIALBROWSER.customSetting.proxy.url;
+                                                    });
+                                                },
+                                            });
+                                        },
+                                        1000 * 5 * i,
+                                    );
                                 });
                                 SOCIALBROWSER.startProxyIndex += 50;
                                 if (SOCIALBROWSER.startProxyIndex > SOCIALBROWSER.var.proxy_list.length - 1) {
@@ -10472,37 +10481,41 @@ if (!SOCIALBROWSER.javaScriptOFF) {
                     SOCIALBROWSER.__define(ele.contentWindow, 'Date', Date);
                     SOCIALBROWSER.__define(ele.contentWindow, 'screen', screen);
                     SOCIALBROWSER.__define(ele.contentWindow, 'Intl', Intl);
-                    SOCIALBROWSER.__define(
-                        ele.contentWindow,
-                        'navigator',
-                        new Proxy(ele.contentWindow.navigator, {
-                            setProperty: function (target, key, value) {
-                                if (target.hasOwnProperty(key)) return target[key];
-                                return (target[key] = value);
-                            },
-                            get: function (target, key, receiver) {
-                                if (key === '_') {
-                                    return target;
-                                }
+                    let href = ele.src || ele.contentWindow.location.href || document.location.href;
+                    let isCrossOrigin = SOCIALBROWSER.var.blocking.white_list.some((site) => site.url.length > 2 && href.like(site.url));;
+                    if (!isCrossOrigin && !SOCIALBROWSER.isWhiteSite && !SOCIALBROWSER.javaScriptOFF) {
+                        SOCIALBROWSER.__define(
+                            ele.contentWindow,
+                            'navigator',
+                            new Proxy(ele.contentWindow.navigator, {
+                                setProperty: function (target, key, value) {
+                                    if (target.hasOwnProperty(key)) return target[key];
+                                    return (target[key] = value);
+                                },
+                                get: function (target, key, receiver) {
+                                    if (key === '_') {
+                                        return target;
+                                    }
 
-                                if (typeof target[key] === 'function') {
-                                    return function (...args) {
-                                        return target[key].apply(this === receiver ? target : this, args);
-                                    };
-                                }
-                                return Object.hasOwn(SOCIALBROWSER.navigator, key) ? SOCIALBROWSER.navigator[key] : target[key];
-                            },
-                            set: function (target, key, value) {
-                                return this.setProperty(target, key, value);
-                            },
-                            defineProperty: function (target, key, desc) {
-                                return this.setProperty(target, key, desc.value);
-                            },
-                            deleteProperty: function (target, key) {
-                                return false;
-                            },
-                        }),
-                    );
+                                    if (typeof target[key] === 'function') {
+                                        return function (...args) {
+                                            return target[key].apply(this === receiver ? target : this, args);
+                                        };
+                                    }
+                                    return Object.hasOwn(SOCIALBROWSER.navigator, key) ? SOCIALBROWSER.navigator[key] : target[key];
+                                },
+                                set: function (target, key, value) {
+                                    return this.setProperty(target, key, value);
+                                },
+                                defineProperty: function (target, key, desc) {
+                                    return this.setProperty(target, key, desc.value);
+                                },
+                                deleteProperty: function (target, key) {
+                                    return false;
+                                },
+                            }),
+                        );
+                    }
                 }
             }
             return ele;

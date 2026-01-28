@@ -5,9 +5,9 @@ Social Browser is automation virtual Web Browser support Multi Login , Virtual P
 - Run From Source Code
 
   <ul>
-      <li>Download <a href="https://git-scm.com/" target="_blank">Git</a></li>
-      <li>Download <a href="https://nodejs.org/" target="_blank">Node JS</a></li>
-    </ul>
+        <li>Download <a href="https://git-scm.com/" target="_blank">Git</a></li>
+        <li>Download <a href="https://nodejs.org/" target="_blank">Node JS</a></li>
+      </ul>
 
   ```bash
 
@@ -89,10 +89,10 @@ Social Browser is automation virtual Web Browser support Multi Login , Virtual P
 
 ### Download
 
-**Download Now** : [https://social-browser.com]()
+**Download Now** : [https://social-browser.com]([https://social-browser.com]())
 
-**Microsoft Store** : [https://aka.ms/AAzbme4]()
+**Microsoft Store** : [https://aka.ms/AAzbme4]([https://aka.ms/AAzbme4]())
 
-**sourceforge** : [https://sourceforge.net/projects/social-browser-app]()
+**sourceforge** : [https://sourceforge.net/projects/social-browser-app]([https://sourceforge.net/projects/social-browser-app]())
 
-**mortakaz** : [https://www.mortakaz.com/projects/691172dd0954c2682eb139d2]()
+**mortakaz** : [https://www.mortakaz.com/projects/691172dd0954c2682eb139d2]([https://www.mortakaz.com/projects/691172dd0954c2682eb139d2]())

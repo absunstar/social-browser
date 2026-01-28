@@ -70,6 +70,7 @@ var child = {
         },
         session: {
             enabled: false,
+            save : false
         },
         security: {
             enabled: true,
