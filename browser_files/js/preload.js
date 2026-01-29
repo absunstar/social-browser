@@ -763,9 +763,26 @@ SOCIALBROWSER.init2 = function () {
             SOCIALBROWSER.serviceWorker = navigator.serviceWorker;
 
             window.Worker0 = window.Worker;
+            SOCIALBROWSER.workerlist = [];
+            SOCIALBROWSER.newWorkerURLs = [];
             SOCIALBROWSER.newWorker = function (url, options, _worker, codeString = null) {
+                if (url && SOCIALBROWSER.newWorkerURLs.some((u) => u == url)) {
+                    let index = SOCIALBROWSER.workerlist.findIndex((w) => w.url == url);
+                    if (index !== -1) {
+                        SOCIALBROWSER.workerlist[index].terminate();
+                        SOCIALBROWSER.workerlist.splice(index, 1);
+                    }
+                    SOCIALBROWSER.showUserMessage('Dublicate Web Worker Detected <br>' + url);
+                    return new window.Worker0(url, options, _worker);
+                }
+                SOCIALBROWSER.newWorkerURLs.push(url);
+
                 if (!codeString && SOCIALBROWSER.var.blocking.javascript.allowWorkerByVideo && document.querySelector('video')) {
                     SOCIALBROWSER.showUserMessage('Web Worker video Detected <br>' + url);
+                    return new window.Worker0(url, options, _worker);
+                }
+
+                if (SOCIALBROWSER.allowDefaultWorker) {
                     return new window.Worker0(url, options, _worker);
                 }
 
@@ -786,13 +803,16 @@ SOCIALBROWSER.init2 = function () {
                     } else {
                         url = SOCIALBROWSER.handleURL(url.toString());
                     }
+
                     if (options && options.type == 'module') {
                         SOCIALBROWSER.showUserMessage('New Module Worker Running <p>' + url + '</p>');
                     }
-                    return SOCIALBROWSER.openWindow({
+
+                    let win = SOCIALBROWSER.openWindow({
                         isWorker: true,
                         url: url,
                         show: false,
+
                         eval: () => {
                             SOCIALBROWSER.onLoad(() => {
                                 let code = document.querySelector('body pre')?.textContent;
@@ -813,6 +833,16 @@ SOCIALBROWSER.init2 = function () {
                             });
                         },
                     });
+
+                    let newWorker = Object.create(Worker.prototype);
+                    newWorker.url = url;
+                    newWorker.postMessage = win.postMessage;
+                    newWorker.terminate = win.terminate;
+                    newWorker.on = newWorker.addEventListener = win.addEventListener;
+                    newWorker.removeEventListener = win.removeEventListener;
+                    win.defaultWorker = newWorker;
+                    SOCIALBROWSER.workerlist.push(newWorker);
+                    return newWorker;
                 }
 
                 let workerID = 'worker_' + SOCIALBROWSER.md5(url) + '_';
@@ -2205,19 +2235,14 @@ SOCIALBROWSER.init2 = function () {
                     });
                 };
 
-                newWindow.close = function () {
-                    SOCIALBROWSER.ipc('[browser-message]', { windowID: newWindow.id, name: 'close' });
-                };
-                newWindow.terminate = function () {
-                    let e = { windowID: newWindow.id, name: 'close' };
-                    console.log(e);
-                    if (!e.windowID) {
+                newWindow.terminate = newWindow.close = function () {
+                    if (!newWindow.id) {
                         setTimeout(() => {
                             newWindow.close();
-                        }, 100);
+                        }, 500);
                         return;
                     }
-                    SOCIALBROWSER.ipc('[browser-message]', e);
+                    SOCIALBROWSER.ipc('[browser-message]', { windowID: newWindow.id, name: 'close' });
                 };
 
                 SOCIALBROWSER.windowOpenList.push(newWindow);
@@ -3579,10 +3604,16 @@ SOCIALBROWSER.init2 = function () {
         }
 
         SOCIALBROWSER.on('window.message', (e, message) => {
+            //  console.log('ipc window.message', message);
             // SOCIALBROWSER.log('ipc window.message', message);
             // if(typeof message.data == 'string' && message.data.indexOf('{') == 0){
             //     message.data = JSON.parse(message.data)
             // }
+
+            if (message.data.name == '[allowDefaultWorker]') {
+                SOCIALBROWSER.allowDefaultWorker = true;
+            }
+
             if (SOCIALBROWSER.customSetting.isWorker) {
                 if (typeof onmessage == 'function') {
                     onmessage(message);
@@ -3593,8 +3624,13 @@ SOCIALBROWSER.init2 = function () {
                 if (message.trackingID) {
                     let winIndex = SOCIALBROWSER.windowOpenList.findIndex((w) => w.trackingID == message.trackingID);
                     if (winIndex !== -1) {
-                        if (SOCIALBROWSER.windowOpenList[winIndex] && SOCIALBROWSER.windowOpenList[winIndex].onmessage) {
-                            SOCIALBROWSER.windowOpenList[winIndex].onmessage(message);
+                        if (SOCIALBROWSER.windowOpenList[winIndex]) {
+                            if (SOCIALBROWSER.windowOpenList[winIndex].onmessage) {
+                                SOCIALBROWSER.windowOpenList[winIndex].onmessage(message);
+                            }
+                            if (SOCIALBROWSER.windowOpenList[winIndex].defaultWorker && typeof SOCIALBROWSER.windowOpenList[winIndex].defaultWorker.onmessage == 'function') {
+                                SOCIALBROWSER.windowOpenList[winIndex].defaultWorker.onmessage(message);
+                            }
                         }
                     }
                 } else {
@@ -3873,7 +3909,7 @@ SOCIALBROWSER.init2 = function () {
                     windowID: SOCIALBROWSER.customSetting.parentWindowID,
                     toParentFrame: SOCIALBROWSER.customSetting.parentFrame,
                     data: data,
-                    origin: origin,
+                    origin: origin || '*',
                     transfer: transfer,
                 });
             };
@@ -5207,29 +5243,15 @@ SOCIALBROWSER.init2 = function () {
                 let arr = [];
 
                 arr.push({
-                    label: 'use default [ Web Worker ]',
+                    label: 'allow Default / Web Worker ( Solve Captcha Problems )',
                     type: 'checkbox',
                     checked: SOCIALBROWSER.customSetting.allowDefaultWorker || false,
                     click() {
                         SOCIALBROWSER.customSetting.allowDefaultWorker = !SOCIALBROWSER.customSetting.allowDefaultWorker;
+                        SOCIALBROWSER.window.reload();
                     },
                 });
-                arr.push({
-                    label: 'use default [ Web Service ]',
-                    type: 'checkbox',
-                    checked: SOCIALBROWSER.customSetting.allowDefaultWebService || false,
-                    click() {
-                        SOCIALBROWSER.customSetting.allowDefaultWebService = !SOCIALBROWSER.customSetting.allowDefaultWebService;
-                    },
-                });
-                arr.push({
-                    label: 'use default [ Shared Worker ]',
-                    type: 'checkbox',
-                    checked: SOCIALBROWSER.customSetting.allowDefaultSharedWorker || false,
-                    click() {
-                        SOCIALBROWSER.customSetting.allowDefaultSharedWorker = !SOCIALBROWSER.customSetting.allowDefaultSharedWorker;
-                    },
-                });
+
                 arr.push({
                     type: 'separator',
                 });
@@ -6686,6 +6708,7 @@ SOCIALBROWSER.init2 = function () {
             return;
         }
         if (document.location.href.like('*://challenges.cloudflare.com/*')) {
+            SOCIALBROWSER.sendMessage({ name: '[captcha-detected]' });
             SOCIALBROWSER.customSetting.$cloudFlare = true;
             if (SOCIALBROWSER.var.blocking.javascript.cloudflareON) {
                 if (document.location.href.like('*://challenges.cloudflare.com/*')) {
@@ -8404,7 +8427,7 @@ SOCIALBROWSER.init2 = function () {
                             windowID: SOCIALBROWSER.customSetting.parentWindowID,
                             toParentFrame: SOCIALBROWSER.customSetting.parentFrame,
                             data: data,
-                            origin: origin,
+                            origin: origin || '*',
                             transfer: transfer,
                         },
                         true,
@@ -8667,7 +8690,7 @@ SOCIALBROWSER.init2 = function () {
                             });
                         }
 
-                        if (!SOCIALBROWSER.customSetting.allowDefaultWebService) {
+                        if (!SOCIALBROWSER.customSetting.allowDefaultWorker) {
                             SOCIALBROWSER.navigator.serviceWorker = Object.create(Object.getPrototypeOf(navigator.serviceWorker || {}));
                             SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.serviceWorker, 'controller', navigator.serviceWorker ? navigator.serviceWorker.controller : {});
                             SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.serviceWorker, 'ready', navigator.serviceWorker ? navigator.serviceWorker.ready : Promise.resolve());
@@ -8702,7 +8725,7 @@ SOCIALBROWSER.init2 = function () {
                             });
                             SOCIALBROWSER.__setConstValue(SOCIALBROWSER.navigator.serviceWorker, 'addEventListener', function () {});
                         }
-                        if (!SOCIALBROWSER.customSetting.allowDefaultSharedWorker) {
+                        if (!SOCIALBROWSER.customSetting.allowDefaultWorker) {
                             if (SOCIALBROWSER.var.blocking.javascript.block_window_shared_worker) {
                                 window.SharedWorker = function (...args) {
                                     SOCIALBROWSER.log('SharedWorker', ...args);
@@ -10078,14 +10101,19 @@ SOCIALBROWSER.init2 = function () {
                         src: message.src,
                     });
                 }
+            } else if (message.name == '[allowDefaultWorker]') {
+                SOCIALBROWSER.allowDefaultWorker = true;
             } else if (message.name == '[user-message]') {
                 if (!SOCIALBROWSER.isIframe()) {
                     SOCIALBROWSER.showUserMessage(message.message);
                 }
             } else if (message.name == '[recaptcha-detected]') {
-                SOCIALBROWSER.recaptchaDetected = true;
-                SOCIALBROWSER.log('recaptcha Detected');
+                SOCIALBROWSER.captchaDetected = true;
+                SOCIALBROWSER.showUserMessage('recaptcha Detected');
                 SOCIALBROWSER.run2Captcha();
+            } else if (message.name == '[captcha-detected]') {
+                SOCIALBROWSER.captchaDetected = true;
+                SOCIALBROWSER.showUserMessage('captcha Detected');
             } else if (message.name == '2captcha_in') {
                 if (!SOCIALBROWSER.isIframe()) {
                     SOCIALBROWSER.fetch2Captcha_in(message);
@@ -10270,6 +10298,22 @@ SOCIALBROWSER.init = function () {
         windowID: SOCIALBROWSER._window.id,
     });
 
+    if (SOCIALBROWSER.browserData.customSetting.isWorker && document.location.href.like('chrome-error:*')) {
+        SOCIALBROWSER.ipc(
+            'window.message',
+            {
+                windowID: SOCIALBROWSER.browserData.customSetting.parentWindowID,
+                toParentFrame: SOCIALBROWSER.browserData.customSetting.parentFrame,
+                data: { name: '[allowDefaultWorker]' },
+                origin: '*',
+            },
+            true,
+        );
+
+        window.close();
+        return;
+    }
+
     SOCIALBROWSER.init2();
 
     if (!SOCIALBROWSER.window.newStorageSet) {
@@ -10287,6 +10331,9 @@ SOCIALBROWSER.init = function () {
     }
 
     SOCIALBROWSER.onLoad(() => {
+        // if(document.location.href.like('*://*/recaptcha/*')) {
+        //     SOCIALBROWSER.sendMessage({ name: '[captcha-detected]' });
+        // }
         if (!SOCIALBROWSER.customSetting.isWorker) {
             SOCIALBROWSER.injectDefault();
             if (SOCIALBROWSER.customSetting.allowGoogleTranslate) {
