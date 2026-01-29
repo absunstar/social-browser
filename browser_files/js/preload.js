@@ -2082,7 +2082,7 @@ SOCIALBROWSER.init2 = function () {
                     }
                 }
                 u = u.trim();
-                if (u.indexOf('blob') === 0) {
+                if (u.like('blob:*|javascript:*|mailto:*|tel:*|sms:*')) {
                     u = u;
                 } else if (u.indexOf('//') === 0) {
                     u = window.location.protocol + u;
@@ -2141,6 +2141,12 @@ SOCIALBROWSER.init2 = function () {
 
                 newWindow.on = newWindow.addEventListener = function (name, callback) {
                     newWindow.eventList.push({ name: name, callback: callback });
+                };
+                newWindow.removeEventListener = function (name, callback) {
+                    let index = newWindow.eventList.findIndex((e) => e.name == name && e.callback == callback);
+                    if (index !== -1) {
+                        newWindow.eventList.splice(index, 1);
+                    }
                 };
 
                 SOCIALBROWSER.on('[tracking-info]', (e, data) => {
@@ -4442,6 +4448,7 @@ SOCIALBROWSER.init2 = function () {
                                 SOCIALBROWSER.copy(mail);
                             },
                         });
+                        return;
                     } else {
                         SOCIALBROWSER.selectedURL = u;
 
@@ -10076,6 +10083,8 @@ SOCIALBROWSER.init2 = function () {
                     SOCIALBROWSER.showUserMessage(message.message);
                 }
             } else if (message.name == '[recaptcha-detected]') {
+                SOCIALBROWSER.recaptchaDetected = true;
+                SOCIALBROWSER.log('recaptcha Detected');
                 SOCIALBROWSER.run2Captcha();
             } else if (message.name == '2captcha_in') {
                 if (!SOCIALBROWSER.isIframe()) {
@@ -10482,7 +10491,7 @@ if (!SOCIALBROWSER.javaScriptOFF) {
                     SOCIALBROWSER.__define(ele.contentWindow, 'screen', screen);
                     SOCIALBROWSER.__define(ele.contentWindow, 'Intl', Intl);
                     let href = ele.src || ele.contentWindow.location.href || document.location.href;
-                    let isCrossOrigin = SOCIALBROWSER.var.blocking.white_list.some((site) => site.url.length > 2 && href.like(site.url));;
+                    let isCrossOrigin = SOCIALBROWSER.var.blocking.white_list.some((site) => site.url.length > 2 && href.like(site.url));
                     if (!isCrossOrigin && !SOCIALBROWSER.isWhiteSite && !SOCIALBROWSER.javaScriptOFF) {
                         SOCIALBROWSER.__define(
                             ele.contentWindow,
