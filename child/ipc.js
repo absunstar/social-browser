@@ -509,6 +509,7 @@ module.exports = function init(child) {
             child.fs.writeFileSync(options.path, options.data);
         } catch (error) {
             child.log(error);
+            event.returnValue = false;
         }
         event.returnValue = true;
     });

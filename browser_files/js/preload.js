@@ -46,7 +46,7 @@ const SOCIALBROWSER = {
     log: function (...args) {
         if (this.isDeveloperMode()) {
             try {
-                console.log(...args, document.location.href);
+                console.log(...args);
             } catch (error) {
                 console.log(error);
             }
@@ -270,7 +270,7 @@ SOCIALBROWSER.eval = function (code, jsFile = false) {
             let name = SOCIALBROWSER.md5(SOCIALBROWSER.partition + new Date().getTime().toString() + Math.random().toString());
             let path = SOCIALBROWSER.data_dir + '\\sessionData\\' + name + '_tmp.js';
 
-            SOCIALBROWSER.ipcSync('[write-file]', { path: path, data: code });
+            SOCIALBROWSER.writeFile({ path: path, data: code });
             let result = SOCIALBROWSER.require(path);
             SOCIALBROWSER.ipcSync('[delete-file]', path);
 
