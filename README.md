@@ -89,12 +89,12 @@ Social Browser is automation virtual Web Browser support Multi Login , Virtual P
 
 ### Download
 
-**Download Now** : [https://social-browser.com]([https://social-browser.com]())
+**Download Now** : [https://social-browser.com](https://social-browser.com)
 
-**Microsoft Store** : [https://aka.ms/AAzbme4]([https://aka.ms/AAzbme4]())
+**Microsoft Store** : [https://aka.ms/AAzbme4](https://aka.ms/AAzbme4)
 
-**sourceforge** : [https://sourceforge.net/projects/social-browser-app]([https://sourceforge.net/projects/social-browser-app]())
+**sourceforge** : [https://sourceforge.net/projects/social-browser-app](https://sourceforge.net/projects/social-browser-app)
 
 **UpToDown** : [https://social-browser-388258.en.uptodown.com/windows](https://social-browser-388258.en.uptodown.com/windows)
 
-**mortakaz** : [https://www.mortakaz.com/projects/691172dd0954c2682eb139d2]([https://www.mortakaz.com/projects/691172dd0954c2682eb139d2]())
+**mortakaz** : [https://www.mortakaz.com/projects/691172dd0954c2682eb139d2](https://www.mortakaz.com/projects/691172dd0954c2682eb139d2)
