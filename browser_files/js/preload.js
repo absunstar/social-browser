@@ -2100,7 +2100,7 @@ SOCIALBROWSER.init2 = function () {
                     return false;
                 }
 
-                return url.protocol === 'http:' || url.protocol === 'https:' || url.protocol === 'browser:';
+                return url.protocol === 'http:' || url.protocol === 'https:' || url.protocol === 'browser:'|| url.protocol === 'file:';
             };
 
             SOCIALBROWSER.handleURL = function (u) {
