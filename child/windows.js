@@ -931,7 +931,7 @@ module.exports = function (child) {
             child.log('window unresponsive');
             win.customSetting.unresponsive = true;
             if (win.customSetting.windowType.like('*popup*')) {
-                let timeout = win.customSetting.$cloudFlare ? 1000 : 1000 * 30;
+                let timeout = win.customSetting.$cloudFlare ? 1000 : 1000 * 15;
                 setTimeout(() => {
                     if (win && !win.isDestroyed() && win.customSetting.unresponsive) {
                         win.webContents.forcefullyCrashRenderer();
@@ -1178,8 +1178,8 @@ module.exports = function (child) {
                         return {
                             action: 'allow',
                             overrideBrowserWindowOptions: {
-                                ...customSetting,
-                                customSetting: customSetting,
+                                ...win.customSetting,
+                                customSetting: win.customSetting,
                                 parentWindowID: win.id,
                                 parent: win,
                                 alwaysOnTop: true,
@@ -1199,7 +1199,7 @@ module.exports = function (child) {
                                     javascript: true,
                                     nativeWindowOpen: false,
                                     nodeIntegration: false,
-                                    nodeIntegrationInSubFrames: true, // google login error
+                                    nodeIntegrationInSubFrames: false, // google login error
                                     nodeIntegrationInWorker: false,
                                     experimentalFeatures: false,
                                     experimentalCanvasFeatures: false,
@@ -1207,7 +1207,6 @@ module.exports = function (child) {
                                     webSecurity: true,
                                     allowRunningInsecureContent: false,
                                     plugins: true,
-                                    preload: child.parent.files_dir + '/js/preload.js',
                                 },
                             },
                         };

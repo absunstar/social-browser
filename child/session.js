@@ -513,13 +513,14 @@ module.exports = function (child) {
 
                     if (win) {
                         mainURL = win.getURL();
-                        customSetting = win.customSetting;
-                        if (win.customSetting.off || win.customSetting.enginOFF) {
-                            callback({
-                                cancel: false,
-                                requestHeaders: details.requestHeaders,
-                            });
-                            return;
+                        if (win.customSetting) {
+                            if (win.customSetting.off || win.customSetting.enginOFF) {
+                                callback({
+                                    cancel: false,
+                                    requestHeaders: details.requestHeaders,
+                                });
+                                return;
+                            }
                         }
                     }
                 }
