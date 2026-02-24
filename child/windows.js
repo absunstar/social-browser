@@ -482,14 +482,6 @@ module.exports = function (child) {
             }, win.customSetting.timeout);
         }
 
-        if (win.customSetting.loadTimeout) {
-            win.customSetting.loadTimeoutID = setTimeout(() => {
-                if (win && !win.isDestroyed()) {
-                    win.close();
-                }
-            }, win.customSetting.loadTimeout);
-        }
-
         if (!child.window) {
             child.window = win;
         }
@@ -1109,6 +1101,16 @@ module.exports = function (child) {
                 win.webContents.send('[show-user-message]', { message: 'Blocked URL : <p><a>' + e.url + '</a></p>' });
                 child.log('Block-frame-navigate', e.url);
                 return;
+            }
+            if (e.isMainFrame) {
+                if (win.customSetting.loadTimeout) {
+                    win.customSetting.loadTimeoutID = setTimeout(() => {
+                        if (win && !win.isDestroyed()) {
+                             child.sendMessage({ type: '[tracking-info]', trackingID: win.customSetting.trackingID, windowID: win.id, loadingError: true });
+                            win.close();
+                        }
+                    }, win.customSetting.loadTimeout);
+                }
             }
         });
 
