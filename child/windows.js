@@ -481,6 +481,15 @@ module.exports = function (child) {
                 }
             }, win.customSetting.timeout);
         }
+
+        if (win.customSetting.loadTimeout) {
+            win.customSetting.loadTimeoutID = setTimeout(() => {
+                if (win && !win.isDestroyed()) {
+                    win.close();
+                }
+            }, win.customSetting.loadTimeout);
+        }
+
         if (!child.window) {
             child.window = win;
         }
@@ -909,6 +918,10 @@ module.exports = function (child) {
         });
 
         win.webContents.on('dom-ready', (e) => {
+            if (win.customSetting.loadTimeoutID) {
+                clearTimeout(win.customSetting.loadTimeoutID);
+                win.customSetting.loadTimeoutID = undefined;
+            }
             if (win.customSetting.trackingID) {
                 child.sendMessage({ type: '[tracking-info]', trackingID: win.customSetting.trackingID, windowID: win.id, loaded: true });
             }
