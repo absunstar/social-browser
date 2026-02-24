@@ -1106,7 +1106,7 @@ module.exports = function (child) {
                 if (win.customSetting.loadTimeout) {
                     win.customSetting.loadTimeoutID = setTimeout(() => {
                         if (win && !win.isDestroyed()) {
-                             child.sendMessage({ type: '[tracking-info]', trackingID: win.customSetting.trackingID, windowID: win.id, loadingError: true });
+                             child.sendMessage({ type: '[tracking-info]', trackingID: win.customSetting.trackingID, windowID: win.id, loadTimeoutError: true });
                             win.close();
                         }
                     }, win.customSetting.loadTimeout);
