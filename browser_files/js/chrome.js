@@ -20,7 +20,7 @@ function ipc(name, obj) {
     obj.icon = $('#' + obj.tabID).attr('icon');
     obj.windowID = $('#' + obj.tabID).attr('windowID');
     obj.childID = $('#' + obj.tabID).attr('childProcessID');
-    obj.mainWindowID = $('#' + obj.tabID).attr('main_window_id');
+    obj.mainWindowID = $('#' + obj.tabID).attr('mainWindowID');
     obj.windowID = obj.windowID || SOCIALBROWSER.window.id;
 
     SOCIALBROWSER.ipc(name, obj);
@@ -31,7 +31,7 @@ function sendToMain(obj) {
     obj.tabID = currentTabId;
     obj.windowID = $('#' + currentTabId).attr('windowID');
     obj.childID = $('#' + currentTabId).attr('childProcessID');
-    obj.mainWindowID = $('#' + currentTabId).attr('main_window_id');
+    obj.mainWindowID = $('#' + currentTabId).attr('mainWindowID');
     obj.windowID = obj.windowID || SOCIALBROWSER.window.id;
 
     SOCIALBROWSER.ipc('[send-render-message]', obj);
@@ -136,7 +136,7 @@ document.addEventListener(
         } else if (e.keyCode == 78 /*n*/ || e.keyCode == 84 /*t*/) {
             if (e.ctrlKey == true) {
                 ipc('[open new tab]', {
-                    main_window_id: SOCIALBROWSER.window.id,
+                    mainWindowID: SOCIALBROWSER.window.id,
                 });
             }
         } else if (e.keyCode == 116 /*f5*/) {
@@ -194,7 +194,7 @@ function showSettingMenu() {
         click: () =>
             ipc('[open new tab]', {
                 url: 'https://social-browser.com',
-                main_window_id: SOCIALBROWSER.window.id,
+                mainWindowID: SOCIALBROWSER.window.id,
             }),
     });
     SOCIALBROWSER.menuList.push({
@@ -205,7 +205,7 @@ function showSettingMenu() {
         click: () =>
             ipc('[open new tab]', {
                 url: 'http://127.0.0.1:60080/downloads',
-                main_window_id: SOCIALBROWSER.window.id,
+                mainWindowID: SOCIALBROWSER.window.id,
                 vip: true,
             }),
     });
@@ -274,7 +274,7 @@ function showSettingMenu() {
                 SOCIALBROWSER.var.bookmarks.forEach((b) => {
                     ipc('[open new tab]', {
                         url: b.url,
-                        main_window_id: SOCIALBROWSER.window.id,
+                        mainWindowID: SOCIALBROWSER.window.id,
                     });
                 });
             },
@@ -428,7 +428,7 @@ function showBookmarksMenu() {
                 SOCIALBROWSER.var.bookmarks.forEach((b) => {
                     ipc('[open new tab]', {
                         url: b.url,
-                        main_window_id: SOCIALBROWSER.window.id,
+                        mainWindowID: SOCIALBROWSER.window.id,
                     });
                 });
             },
@@ -533,7 +533,7 @@ browserTabsDom.addEventListener('activeTabChange', ({ detail }) => {
         width: document.width,
         height: document.height,
         tabID: currentTabId,
-        main_window_id: SOCIALBROWSER.window.id,
+        mainWindowID: SOCIALBROWSER.window.id,
     });
 
     $('#user_name').html($('#' + currentTabId).attr('user_name'));
@@ -648,7 +648,7 @@ browserTabsDom.addEventListener('tabAdd', ({ detail }) => {
             width: document.width,
             height: document.height,
             tabID: currentTabId,
-            main_window_id: SOCIALBROWSER.window.id,
+            mainWindowID: SOCIALBROWSER.window.id,
         });
 
         if (!$id.attr('url') || $id.attr('url').like('*newTab')) {
@@ -692,7 +692,7 @@ function render_new_tab(op) {
         title: op.title || op.url,
         user_name: op.user_name || op.partition,
         favicon: 'browser://images/loading.gif',
-        main_window_id: SOCIALBROWSER.window.id,
+        mainWindowID: SOCIALBROWSER.window.id,
     };
     browserTabs.addTab(tab);
     // console.log(tab);
@@ -723,8 +723,8 @@ SOCIALBROWSER.on('[update-tab-properties]', (event, data) => {
     if (data.childProcessID) {
         $('#' + data.tabID).attr('childProcessID', data.childProcessID);
     }
-    if (data.main_window_id) {
-        $('#' + data.tabID).attr('main_window_id', data.main_window_id);
+    if (data.mainWindowID) {
+        $('#' + data.tabID).attr('mainWindowID', data.mainWindowID);
     }
 
     if (data.forward) {

@@ -1032,6 +1032,7 @@ module.exports = function init(child) {
                 if (win.customSetting.windowType == 'view') {
                     if (win.customSetting.tabID == child.currentView.tabID) {
                         win.show();
+                        win.focus();
                     } else {
                         win.hide();
                     }
@@ -1060,6 +1061,18 @@ module.exports = function init(child) {
         }
     });
 
+    child.ipcMain.handle('[show-tab]', (e, options) => {
+        child.sendMessage({
+            type: '[show-tab]',
+            options: options,
+        });
+    });
+    child.ipcMain.handle('[close-tab]', (e, options) => {
+        child.sendMessage({
+            type: '[close-tab]',
+            options: options,
+        });
+    });
     child.ipcMain.handle('[update-view-url]', (e, data) => {
         child.sendMessage({
             type: '[update-view-url]',
@@ -1144,7 +1157,7 @@ module.exports = function init(child) {
                 }
             });
         } else {
-            data.main_window_id = child.parent.options.main_window_id;
+            data.mainWindowID = child.parent.options.mainWindowID;
             child.sendMessage({
                 type: '[open new tab]',
                 data: data,
@@ -1410,7 +1423,7 @@ module.exports = function init(child) {
                     }
                 });
             } else {
-                data.main_window_id = child.parent.options.main_window_id;
+                data.mainWindowID = child.parent.options.mainWindowID;
                 child.sendMessage({
                     type: '[open new tab]',
                     data: {

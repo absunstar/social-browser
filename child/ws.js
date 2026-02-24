@@ -528,11 +528,12 @@ module.exports = function (child) {
                         let customSetting = win.customSetting;
                         if (customSetting.windowType == 'view' && win && !win.isDestroyed()) {
                             if (win.customSetting.tabID == message.options.tabID) {
-                                if (message.is_current_view) {
+                                if (message.isCurrentView) {
                                     child.isCurrentView = true;
                                     win.show();
                                     win.setAlwaysOnTop(true);
                                     win.setAlwaysOnTop(false);
+                                    win.focus()
                                     // console.log(message , win.getURL());
                                 } else {
                                     win.hide();
@@ -542,7 +543,25 @@ module.exports = function (child) {
                             }
                         }
                     });
-                } else if (message.type == '[update-view-url]') {
+                }else if (message.type == '[show-tab]') {
+                    child.isCurrentView = false;
+
+                    child.getAllWindows().forEach((win) => {
+                        let customSetting = win.customSetting;
+                        if (customSetting.windowType == 'main' && win && !win.isDestroyed()) {
+                           win.webContents.send('[show-tab]', message.options);
+                        }
+                    });
+                } else if (message.type == '[close-tab]') {
+                    child.isCurrentView = false;
+
+                    child.getAllWindows().forEach((win) => {
+                        let customSetting = win.customSetting;
+                        if (customSetting.windowType == 'main' && win && !win.isDestroyed()) {
+                           win.webContents.send('[close-tab]', message.options);
+                        }
+                    });
+                }else if (message.type == '[update-view-url]') {
                     if ((win = child.getAllWindows().find((w) => w.customSetting.tabID == message.data.tabID && w.customSetting.windowType == 'view'))) {
                         if (win && !win.isDestroyed()) {
                             win.webContents.stop();

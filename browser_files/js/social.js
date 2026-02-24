@@ -1201,6 +1201,12 @@ function renderNewTabData(op) {
     // console.log(tab);
 }
 
+SOCIALBROWSER.on('[show-tab]', (event, data) => {
+    $('#' + data.tabID).click();
+});
+SOCIALBROWSER.on('[close-tab]', (event, data) => {
+  closeTab(data.tabID);
+});
 SOCIALBROWSER.on('[open new tab]', (event, data) => {
     renderNewTabData(data);
 });

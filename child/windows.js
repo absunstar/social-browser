@@ -230,7 +230,7 @@ module.exports = function (child) {
                 // experimentalCanvasFeatures: true,
                 // experimentalFeatures: true,
                 // enableBlinkFeatures: 'ExecutionContext',
-                // navigateOnDragDrop: true,
+                navigateOnDragDrop: setting.windowType.contains('view|popup') ? true : false,
                 webSecurity: true,
                 allowRunningInsecureContent: false,
                 plugins: true,

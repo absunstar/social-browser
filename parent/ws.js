@@ -30,7 +30,7 @@ module.exports = function init(parent) {
                             partition: parent.var.core.session.partition,
                             user_name: parent.var.core.session.user_name,
                             active: true,
-                            main_window_id: child.id,
+                            mainWindowID: child.id,
                         },
                         var: parent.var,
                         icon: parent.icons[process.platform],
@@ -59,7 +59,7 @@ module.exports = function init(parent) {
                             partition: parent.var.core.session.partition,
                             user_name: parent.var.core.session.user_name,
                             active: true,
-                            main_window_id: child2.id,
+                            mainWindowID: child2.id,
                         },
                     };
 
@@ -109,14 +109,32 @@ module.exports = function init(parent) {
                         }
                     });
                     break;
+                case '[show-tab]':
+                    parent.clientList.forEach((client) => {
+                        if (client.ws) {
+                            if (client.option_list.some((op) => op.windowType == 'main')) {
+                                client.ws.send(message);
+                            }
+                        }
+                    });
+                    break;
+                     case '[close-tab]':
+                    parent.clientList.forEach((client) => {
+                        if (client.ws) {
+                            if (client.option_list.some((op) => op.windowType == 'main')) {
+                                client.ws.send(message);
+                            }
+                        }
+                    });
+                    break;
                 case '[show-view]':
                     parent.clientList.forEach((client) => {
-                        if (client.uuid != message.uuid && client.ws) {
+                        if (client.ws) {
                             if (client.option_list.some((op) => op.tabID === message.options.tabID && op.windowType == 'view')) {
-                                message.is_current_view = true;
+                                message.isCurrentView = true;
                                 client.ws.send(message);
                             } else {
-                                message.is_current_view = false;
+                                message.isCurrentView = false;
                                 client.ws.send(message);
                             }
                         }

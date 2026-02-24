@@ -499,7 +499,7 @@ SOCIALBROWSER.openNewTab = function (options = {}) {
         url: document.location.href,
         partition: SOCIALBROWSER.partition,
         user_name: SOCIALBROWSER.session.display,
-        main_window_id: SOCIALBROWSER.window.id,
+        mainWindowID: SOCIALBROWSER.window.id,
         ...options,
     });
     return true;
@@ -516,7 +516,7 @@ SOCIALBROWSER.openNewPopup = function (options = {}) {
         referrer: document.location.href,
         partition: SOCIALBROWSER.partition,
         user_name: SOCIALBROWSER.session.display,
-        main_window_id: SOCIALBROWSER.window.id,
+        mainWindowID: SOCIALBROWSER.window.id,
         ...options,
     });
     return true;
@@ -1009,6 +1009,17 @@ SOCIALBROWSER.init2 = function () {
             SOCIALBROWSER.on('[run-user-script]', (e, _script) => {
                 SOCIALBROWSER.runUserScript(_script);
             });
+
+            SOCIALBROWSER.closeTab = function (tabID) {
+                SOCIALBROWSER.ipc('[close-tab]' , { tabID : tabID || SOCIALBROWSER.customSetting.tabID });
+            };
+            SOCIALBROWSER.showTab = function (tabID) {
+                SOCIALBROWSER.ipc('[show-tab]' , { tabID : tabID || SOCIALBROWSER.customSetting.tabID });
+            }
+
+            SOCIALBROWSER.showView = function (windowID) {
+                SOCIALBROWSER.ipc('[show-view]' , { windowID : windowID || SOCIALBROWSER.window.id });
+            }
 
             SOCIALBROWSER.toJson = (obj) => {
                 if (typeof obj === undefined || obj === null) {
@@ -6089,13 +6100,13 @@ SOCIALBROWSER.init2 = function () {
                         SOCIALBROWSER.menuList.push({
                             label: 'New tab',
                             click() {
-                                SOCIALBROWSER.ipc('[open new tab]', { main_window_id: SOCIALBROWSER.window.id });
+                                SOCIALBROWSER.ipc('[open new tab]', { mainWindowID: SOCIALBROWSER.window.id });
                             },
                         });
                         SOCIALBROWSER.menuList.push({
                             label: 'Duplicate tab',
                             click() {
-                                SOCIALBROWSER.ipc('[open new tab]', { url: url, partition: partition, user_name: user_name, main_window_id: SOCIALBROWSER.window.id });
+                                SOCIALBROWSER.ipc('[open new tab]', { url: url, partition: partition, user_name: user_name, mainWindowID: SOCIALBROWSER.window.id });
                             },
                         });
                         SOCIALBROWSER.menuList.push({
@@ -6136,14 +6147,14 @@ SOCIALBROWSER.init2 = function () {
                             label: 'New Ghost tab',
                             click() {
                                 let ghost = SOCIALBROWSER.md5((new Date().getTime().toString() + Math.random().toString()).replace('.', '')) + '@' + SOCIALBROWSER.tempMailServer;
-                                SOCIALBROWSER.ipc('[open new tab]', { partition: ghost, iframe: true, user_name: ghost, main_window_id: SOCIALBROWSER.window.id });
+                                SOCIALBROWSER.ipc('[open new tab]', { partition: ghost, iframe: true, user_name: ghost, mainWindowID: SOCIALBROWSER.window.id });
                             },
                         });
                         SOCIALBROWSER.menuList.push({
                             label: 'Duplicate tab in Ghost tab',
                             click() {
                                 let ghost = SOCIALBROWSER.md5((new Date().getTime().toString() + Math.random().toString()).replace('.', '')) + '@' + SOCIALBROWSER.tempMailServer;
-                                SOCIALBROWSER.ipc('[open new tab]', { url: url, partition: ghost, user_name: ghost, main_window_id: SOCIALBROWSER.window.id });
+                                SOCIALBROWSER.ipc('[open new tab]', { url: url, partition: ghost, user_name: ghost, mainWindowID: SOCIALBROWSER.window.id });
                             },
                         });
                         SOCIALBROWSER.menuList.push({
@@ -6160,7 +6171,7 @@ SOCIALBROWSER.init2 = function () {
                                     url: url,
                                     partition: partition,
                                     user_name: user_name,
-                                    main_window_id: SOCIALBROWSER.window.id,
+                                    mainWindowID: SOCIALBROWSER.window.id,
                                 });
                             },
                         });
@@ -6177,7 +6188,7 @@ SOCIALBROWSER.init2 = function () {
                                     user_name: ghost,
                                     defaultUserAgent: SOCIALBROWSER.getRandomBrowser('pc'),
                                     vpc: SOCIALBROWSER.generateVPC('pc'),
-                                    main_window_id: SOCIALBROWSER.window.id,
+                                    mainWindowID: SOCIALBROWSER.window.id,
                                 });
                             },
                         });
@@ -8159,7 +8170,7 @@ SOCIALBROWSER.init2 = function () {
                                     url: a.href,
                                     partition: SOCIALBROWSER.partition,
                                     user_name: SOCIALBROWSER.session.display,
-                                    main_window_id: SOCIALBROWSER.window.id,
+                                    mainWindowID: SOCIALBROWSER.window.id,
                                 });
                             } else {
                                 window.location.href = a.href;
