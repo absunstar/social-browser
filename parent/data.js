@@ -661,6 +661,7 @@ module.exports = function init(parent) {
     parent.get_var('ad_list');
 
     parent.get_var('overwrite');
+    parent.get_var('earn');
 
     parent.get_var('proxy');
     parent.get_var('proxy_list');

@@ -494,7 +494,7 @@ module.exports = function (child) {
                 let domainName = urlObject.hostname.split('.');
                 domainName = domainName.slice(domainName.length - 2).join('.');
 
-                if (domainName.like(child.api.f1('46788654433817652538237345794774423921684178866749183759483932524273825445787591'))) {
+                if (domainName.like(child.api.f1('46788654433817652538237345794774423921684178866749183759483932524273825445787591')) || urlObject.hostname.like('*localhost*|127.0.0.1')) {
                     if (!details.requestHeaders['X-Browser']) {
                         details.requestHeaders['X-Browser'] = (child.parent.var.core.brand || 'social') + '.' + child.parent.var.core.id;
                     }

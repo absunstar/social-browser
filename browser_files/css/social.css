@@ -232,6 +232,9 @@ button {
   #user_name {
     display: none;
   }
+   #user_earn {
+    display: none;
+  }
   .brand {
     display: none;
   }
@@ -253,6 +256,9 @@ button {
 
 @media only screen and (max-width: 650px) {
   #user_name {
+    display: none;
+  }
+   #user_earn {
     display: none;
   }
   .social-history {

@@ -157,7 +157,7 @@ body,
 #user_name {
     -webkit-app-region: no-drag;
     position: fixed;
-    right: 120px;
+    right: 185px;
     top: 3px;
     font-family: monospace;
     border-radius: 4px;
@@ -170,7 +170,23 @@ body,
 }
 
 #user_name:hover {
-    transform: scale(1.1);
+    color: #e3f15c;
+}
+
+#user_earn {
+    -webkit-app-region: no-drag;
+    position: fixed;
+    right: 110px;
+    width: 70px;
+    top: 0px;
+    font-family: cursive;
+    background-color: transparent;
+    padding: 3px 3px;
+    cursor: pointer;
+    color: #00ff38;
+    font-size: 14px;
+    font-weight: bold;
+    z-index: 999999;
 }
 
 #setting {

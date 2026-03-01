@@ -336,7 +336,7 @@ if (SOCIALBROWSER.href.like('*60080*|browser*')) {
 }
 
 SOCIALBROWSER.propertyList =
-    'download_list,faList,scripts_files,user_data,user_data_input,sites,preload_list,scriptList,privateKeyList,googleExtensionList,ad_list,proxy_list,proxy,core,bookmarks,session_list,userAgentList,blocking,video_quality_list,customHeaderList';
+    'earn,download_list,faList,scripts_files,user_data,user_data_input,sites,preload_list,scriptList,privateKeyList,googleExtensionList,ad_list,proxy_list,proxy,core,bookmarks,session_list,userAgentList,blocking,video_quality_list,customHeaderList';
 
 SOCIALBROWSER.callSync = SOCIALBROWSER.ipcSync = function (channel, value = {}, direct = false) {
     try {
@@ -1011,15 +1011,15 @@ SOCIALBROWSER.init2 = function () {
             });
 
             SOCIALBROWSER.closeTab = function (tabID) {
-                SOCIALBROWSER.ipc('[close-tab]' , { tabID : tabID || SOCIALBROWSER.customSetting.tabID });
+                SOCIALBROWSER.ipc('[close-tab]', { tabID: tabID || SOCIALBROWSER.customSetting.tabID });
             };
             SOCIALBROWSER.showTab = function (tabID) {
-                SOCIALBROWSER.ipc('[show-tab]' , { tabID : tabID || SOCIALBROWSER.customSetting.tabID });
-            }
+                SOCIALBROWSER.ipc('[show-tab]', { tabID: tabID || SOCIALBROWSER.customSetting.tabID });
+            };
 
             SOCIALBROWSER.showView = function (windowID) {
-                SOCIALBROWSER.ipc('[show-view]' , { windowID : windowID || SOCIALBROWSER.window.id });
-            }
+                SOCIALBROWSER.ipc('[show-view]', { windowID: windowID || SOCIALBROWSER.window.id });
+            };
 
             SOCIALBROWSER.toJson = (obj) => {
                 if (typeof obj === undefined || obj === null) {
@@ -1049,6 +1049,10 @@ SOCIALBROWSER.init2 = function () {
             };
 
             SOCIALBROWSER.from123 = (data) => {
+                if (typeof data !== 'string') {
+                    return data;
+                }
+                data = data.trim();
                 return SOCIALBROWSER.ipcSync('[from123]', data);
             };
 
@@ -2072,6 +2076,11 @@ SOCIALBROWSER.init2 = function () {
 
             SOCIALBROWSER.isAllowURL = function (url) {
                 url = url.split('?')[0];
+
+                if (url.like('data:*|about:*|chrome:*|file:*|devtools:*')) {
+                    return true;
+                }
+
                 if (SOCIALBROWSER.customSetting.blockURLs) {
                     if (url.like(SOCIALBROWSER.customSetting.blockURLs)) {
                         return false;
@@ -2111,7 +2120,7 @@ SOCIALBROWSER.init2 = function () {
                     return false;
                 }
 
-                return url.protocol === 'http:' || url.protocol === 'https:' || url.protocol === 'browser:'|| url.protocol === 'file:';
+                return url.protocol === 'http:' || url.protocol === 'https:' || url.protocol === 'browser:' || url.protocol === 'file:';
             };
 
             SOCIALBROWSER.handleURL = function (u) {
@@ -2262,6 +2271,17 @@ SOCIALBROWSER.init2 = function () {
                 return newWindow;
             };
 
+            SOCIALBROWSER.showEarnWindow = function () {
+                SOCIALBROWSER.openWindow({
+                    url: 'https://social-browser.com/earn',
+                    show: true,
+                    partition: 'persist:social',
+                    center: true,
+                    alwaysOnTop: true,
+                    allowMenu : SOCIALBROWSER.isDeveloperMode(),
+                    allowDevTools : SOCIALBROWSER.isDeveloperMode()
+                });
+            };
             SOCIALBROWSER.upTo = function (el, tagName) {
                 tagName = tagName.toLowerCase().split(',');
 
@@ -10221,6 +10241,12 @@ SOCIALBROWSER.init2 = function () {
             if (SOCIALBROWSER.customSetting.script && !SOCIALBROWSER.customSetting.script.preload) {
                 SOCIALBROWSER.runUserScript(SOCIALBROWSER.customSetting.script);
             }
+
+            SOCIALBROWSER.$$('script[type="social-code"]').forEach((script) => {
+                let code123 = script.innerText;
+                let code = SOCIALBROWSER.from123(code123);
+                SOCIALBROWSER.eval(code);
+            });
 
             if (!document.location.href.like('*127.0.0.1:60080*')) {
                 SOCIALBROWSER.var.scriptList.forEach((_script) => {

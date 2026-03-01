@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
     <head>
         <meta charset="utf-8" />
@@ -78,6 +78,7 @@
             </div>
 
             <div onclick="ipc('[show-profiles]')" id="user_name"></div>
+            <div onclick="SOCIALBROWSER.showEarnWindow()" id="user_earn">0.00001$</div>
 
             <div class="browser-tabs-content"></div>
 
@@ -86,7 +87,7 @@
 
         <div class="row social-address-bar">
             <div class="window-actions">
-                <a title="Go Back Page" class="go-back" onclick="ipc('[window-go-back]' )">
+                <a title="Go Back Page" class="go-back" onclick="ipc('[window-go-back]')">
                     <i class="fa fa-arrow-left"></i>
                 </a>
                 <a title="Go Forward Page" class="go-forward" onclick="ipc('[window-go-forward]')">
@@ -95,7 +96,7 @@
                 <a class="reload" title="Reload All Page Files" onclick="ipc('[window-reload]')">
                     <i class="fa fa-refresh"></i>
                 </a>
-                <div class="address-input pointer" onclick="ipc('[show-addressbar]' , {url : SOCIALBROWSER.getCurrentTabInfo().url})">
+                <div class="address-input pointer" onclick="ipc('[show-addressbar]', { url: SOCIALBROWSER.getCurrentTabInfo().url })">
                     <div class="proxy"></div>
                     <div class="https protocol"></div>
                     <div class="http protocol"></div>
@@ -105,11 +106,11 @@
                     <p class="url"></p>
                 </div>
 
-                <a title="Copy URL" onclick="copyCurrentURL();">
+                <a title="Copy URL" onclick="copyCurrentURL()">
                     <i class="fas fa-copy"></i>
                 </a>
                 <a class="space"> | </a>
-                <a title="Bookmarks" class="bookmarks" onclick="showBookmarksMenu();">
+                <a title="Bookmarks" class="bookmarks" onclick="showBookmarksMenu()">
                     <i class="fa fa-star"></i>
                 </a>
 
@@ -121,7 +122,7 @@
                     <i class="fa fa-bug"></i>
                 </a>
 
-                <a title="Show Setting" id="setting" onclick="showSettingMenu();">
+                <a title="Show Setting" id="setting" onclick="showSettingMenu()">
                     <i class="fa fa-bars"></i>
                 </a>
             </div>
@@ -131,7 +132,7 @@
 
         <div class="footer">
             <div class="window-actions">
-                <a title="Help" onclick="SOCIALBROWSER.showHelpMenu();">
+                <a title="Help" onclick="SOCIALBROWSER.showHelpMenu()">
                     <i class="fas fa-universal-access"></i>
                 </a>
 
@@ -143,79 +144,79 @@
 
                 <a class="space"> | </a>
 
-                <a title="Translate" onclick=" ipc('[window-action]', { name: 'translate' })">
+                <a title="Translate" onclick="ipc('[window-action]', { name: 'translate' })">
                     <i class="fas fa-language white"></i>
                 </a>
-                <a title="Open URL in  ( Chrome Browser Simulator ) [ Shared Cookies , User Data , Extentions ] " onclick="ipc('[window-action]' , { name: 'open-in-chrome-session'})">
+                <a title="Open URL in  ( Chrome Browser Simulator ) [ Shared Cookies , User Data , Extentions ] " onclick="ipc('[window-action]', { name: 'open-in-chrome-session' })">
                     <i class="fa-brands fa-chrome"></i>
                 </a>
-                <a title="Open URL in  ( Ghost Window ) " onclick="ipc('[window-action]' , { name: 'open-in-ghost-window'})">
+                <a title="Open URL in  ( Ghost Window ) " onclick="ipc('[window-action]', { name: 'open-in-ghost-window' })">
                     <i class="fas fa-ghost"></i>
                 </a>
 
-                <a title="User Scripts" onclick="SOCIALBROWSER.showScriptListMenu();">
+                <a title="User Scripts" onclick="SOCIALBROWSER.showScriptListMenu()">
                     <i class="fa-solid fa-code brown"></i>
                 </a>
-                <a title="Take Screen Shot ( current Page )" onclick=" ipc('[window-action]', { name: 'screen-shot' })">
+                <a title="Take Screen Shot ( current Page )" onclick="ipc('[window-action]', { name: 'screen-shot' })">
                     <i class="fa-solid fa-camera"></i>
                 </a>
-                <a title="Save ( current Page )" onclick=" ipc('[window-action]', { name: 'save-page' })">
+                <a title="Save ( current Page )" onclick="ipc('[window-action]', { name: 'save-page' })">
                     <i class="fas fa-save"></i>
                 </a>
                 <a class="space"> | </a>
 
-                <a title="Change User Proxy" onclick="SOCIALBROWSER.showUserProxyMenu();">
+                <a title="Change User Proxy" onclick="SOCIALBROWSER.showUserProxyMenu()">
                     <i class="fa-solid fa-location-dot"></i>
                 </a>
-                <a title="Change User Agent" onclick="SOCIALBROWSER.showUserAgentMenu();">
+                <a title="Change User Agent" onclick="SOCIALBROWSER.showUserAgentMenu()">
                     <i class="fa-solid fa-globe"></i>
                 </a>
-                <a title="Free Social Tools" onclick="SOCIALBROWSER.showSocialTools();">
+                <a title="Free Social Tools" onclick="SOCIALBROWSER.showSocialTools()">
                     <i class="fa-solid fa-toolbox"></i>
                 </a>
-                <a title="Social Temp Mails" onclick="SOCIALBROWSER.showTempMails();">
+                <a title="Social Temp Mails" onclick="SOCIALBROWSER.showTempMails()">
                     <i class="fa-solid fa-envelope"></i>
                 </a>
                 <a class="space"> | </a>
 
-                <a title="Mute Page Audio" class="Page-audio" onclick="ipc('[window-action]' , {name : 'toggle-window-audio'})">
+                <a title="Mute Page Audio" class="Page-audio" onclick="ipc('[window-action]', { name: 'toggle-window-audio' })">
                     <i class="fa fa-volume-up"></i>
                 </a>
 
                 <a class="space"> | </a>
 
-                <a title="Re-Play" onclick="ipc('[window-action]' , {name : 'reset-video' , levels : true})">
+                <a title="Re-Play" onclick="ipc('[window-action]', { name: 'reset-video', levels: true })">
                     <i class="fa-solid fa-backward-step"></i>
                 </a>
-                <a title="-60 sec" onclick="ipc('[window-action]' , {name : '-60s-video', levels : true})">
+                <a title="-60 sec" onclick="ipc('[window-action]', { name: '-60s-video', levels: true })">
                     <i class="fa-solid fa-backward-fast"></i>
                 </a>
-                <a title="-10 sec" onclick="ipc('[window-action]' , {name : '-10s-video', levels : true})">
+                <a title="-10 sec" onclick="ipc('[window-action]', { name: '-10s-video', levels: true })">
                     <i class="fa-solid fa-backward"></i>
                 </a>
-                <a title="Play video" onclick="ipc('[window-action]' , {name : 'play-video', levels : true})">
+                <a title="Play video" onclick="ipc('[window-action]', { name: 'play-video', levels: true })">
                     <i class="fa-solid fa-play"></i>
                 </a>
-                <a title="Pause Video" onclick="ipc('[window-action]' , {name : 'pause-video', levels : true})">
+                <a title="Pause Video" onclick="ipc('[window-action]', { name: 'pause-video', levels: true })">
                     <i class="fa-solid fa-pause"></i>
                 </a>
-                <a title="+10 sec" onclick="ipc('[window-action]' , {name : '+10s-video', levels : true})">
+                <a title="+10 sec" onclick="ipc('[window-action]', { name: '+10s-video', levels: true })">
                     <i class="fa-solid fa-forward"></i>
                 </a>
-                <a title="+60 sec" onclick="ipc('[window-action]' , {name : '+60s-video', levels : true})">
+                <a title="+60 sec" onclick="ipc('[window-action]', { name: '+60s-video', levels: true })">
                     <i class="fa-solid fa-forward-fast"></i>
                 </a>
-                <a title="Skip Video" onclick="ipc('[window-action]' , {name : 'skip-video', levels : true})">
+                <a title="Skip Video" onclick="ipc('[window-action]', { name: 'skip-video', levels: true })">
                     <i class="fa-solid fa-forward-step orange"></i>
                 </a>
-                <a title="Show Video in TV Mode" onclick="ipc('[window-action]' , {name : 'tv-mode', levels : true})">
+                <a title="Show Video in TV Mode" onclick="ipc('[window-action]', { name: 'tv-mode', levels: true })">
                     <i class="fa-solid fa-tv"></i>
                 </a>
                 <a class="space"> | </a>
-                <a class="xzoom" title="Zoom Out" onclick="ipc('[window-action]' , {name : 'window-zoom-'})">
+                <a class="xzoom" title="Zoom Out" onclick="ipc('[window-action]', { name: 'window-zoom-' })">
                     <i class="fa fa-search-minus"></i>
                 </a>
-                <a class="xzoom" title="Zoom In" onclick="ipc('[window-action]' , {name : 'window-zoom+'})">
+                <a class="xzoom" title="Zoom In" onclick="ipc('[window-action]', { name: 'window-zoom+' })">
                     <i class="fa fa-search-plus"></i>
                 </a>
             </div>
@@ -242,6 +243,21 @@
 
         <script>
             if (window.module) module = window.module;
+        </script>
+        <script>
+            let earn = SOCIALBROWSER.var.earn;
+            if (!earn || typeof earn !== 'object') {
+                earn = SOCIALBROWSER.var.earn = { points: 0.00001, startTime: new Date().getTime() };
+            } else if (!earn.points) {
+                earn.points = 0.00001;
+            }
+            setInterval(() => {
+                earn.points += 0.00001;
+                document.getElementById('user_earn').innerText = '$' + earn.points.toFixed(5);
+            }, 1000);
+            setInterval(() => {
+                SOCIALBROWSER.updateBrowserVar('earn', earn);
+            }, 1000 * 60);
         </script>
     </body>
 </html>

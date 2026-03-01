@@ -352,6 +352,10 @@ module.exports = function (child) {
 
         let allow = true;
 
+        if (url.like('data:*|about:*|chrome:*|file:*|devtools:*')) {
+            return true;
+        }
+
         if (child.parent.var.blocking.core.block_ads) {
             allow = !child.parent.var.ad_list.some((ad) => url.like(ad.url));
         }

@@ -13,6 +13,9 @@ module.exports = function init(parent) {
     parent.eval = require('eval');
 
     parent.isAllowURL = function (url) {
+        if (url.like('data:*|about:*|chrome:*|file:*|devtools:*')) {
+            return true;
+        }
         if (parent.var.blocking.white_list.some((item) => url.like(item.url))) {
             return true;
         }
