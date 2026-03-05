@@ -245,6 +245,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         SOCIALBROWSER.alert('Auto Update Proxies Location : ' + arr.length);
         for (let index = 0; index < arr.length; index++) {
             const proxy = arr[index];
+            await SOCIALBROWSER.$wait(1000 * 2);
             await $scope.autoUpdateProxyLocation(proxy);
             SOCIALBROWSER.alert('Auto Updated Proxy : ' + proxy.ip + ' ( ' + index + ' / ' + arr.length + ' ) ');
         }

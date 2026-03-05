@@ -97,6 +97,8 @@ Social Browser is automation virtual Web Browser support Multi Login , Virtual P
 
 **UpToDown** : [https://social-browser-388258.en.uptodown.com/windows](https://social-browser-388258.en.uptodown.com/windows)
 
+**AlternativeTo** : [https://alternativeto.net/software/social-browser/about/](https://alternativeto.net/software/social-browser/about/)
+
 **Archive** : [https://archive.org/details/social-browser](https://archive.org/details/social-browser)
 
 **Mortakaz** : [https://www.mortakaz.com/projects/691172dd0954c2682eb139d2](https://www.mortakaz.com/projects/691172dd0954c2682eb139d2)
