@@ -101,6 +101,8 @@ Social Browser is automation virtual Web Browser support Multi Login , Virtual P
 
 **Archive** : [https://archive.org/details/social-browser](https://archive.org/details/social-browser)
 
+**Software Informer** : [https://social-browser1.software.informer.com/](https://social-browser1.software.informer.com/)
+
 **Mortakaz** : [https://www.mortakaz.com/projects/691172dd0954c2682eb139d2](https://www.mortakaz.com/projects/691172dd0954c2682eb139d2)
 
 
