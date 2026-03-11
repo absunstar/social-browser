@@ -54,6 +54,13 @@ module.exports = function (owner) {
                     proxy.port = 80;
                 }
 
+                if(!proxy.protocal && proxy.protocols && Array.isArray(proxy.protocols)){
+                    proxy.protocal = proxy.protocols[0];
+                    proxy.protocols.forEach((p) => {
+                        proxy[p] = true;
+                    });
+                }
+
                 if (resetProxyRules = true) {
                     proxy.proxyRules = '';
                     let startline = '';

@@ -320,7 +320,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
                 try {
                     arr = [JSON.parse(text)];
                 } catch (error) {
-                    alert('Invalid Proxy List Format ...');
+                    alert('Invalid Proxy Format ...');
                 }
             }
             if (arr.length == 0) {
