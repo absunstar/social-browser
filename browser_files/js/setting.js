@@ -292,6 +292,19 @@ app.controller('mainController', ($scope, $http, $timeout) => {
                     });
                     $scope.$applyAsync();
                     text = null;
+                }else if (path.like('*.json')) {
+                    let arr = JSON.parse(text);
+                    arr.forEach((line) => {
+                        let proxy = SOCIALBROWSER.handleProxy(line);
+                        if (proxy && proxy.url) {
+                            if (!$scope.setting.proxy_list.some((p) => p.ip == proxy.ip && p.port == proxy.port)) {
+                                SOCIALBROWSER.showUserMessage('New Proxy Added : ' + proxy.url);
+                                $scope.setting.proxy_list.push(proxy);
+                            }
+                        }
+                    });
+                    $scope.$applyAsync();
+                    text = null;
                 }
             }
         }
