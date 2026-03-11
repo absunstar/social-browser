@@ -310,9 +310,15 @@ app.controller('mainController', ($scope, $http, $timeout) => {
 
         if (text) {
             let arr = [];
-            if (text.like('{*') || text.like('[*')) {
+            if (text.like('{*')) {
                 try {
                     arr = JSON.parse(text);
+                } catch (error) {
+                    alert('Invalid Proxy List Format ...');
+                }
+            } else if (text.like('{*')) {
+                try {
+                    arr = [JSON.parse(text)];
                 } catch (error) {
                     alert('Invalid Proxy List Format ...');
                 }
