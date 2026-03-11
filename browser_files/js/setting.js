@@ -87,19 +87,19 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         $scope.busy = true;
         $scope.setting.userAgentList.forEach((ua, i) => {
             SOCIALBROWSER.showUserMessage('Updating User Agent : ' + ua.name);
-            let arr =  ua.url.split(' ');
-            arr.forEach((word , i) => {
+            let arr = ua.url.split(' ');
+            arr.forEach((word, i) => {
                 if (word.like('chrome/*')) {
                     arr[i] = 'chrome/143.0.0.0';
-                }else if (word.like('edge/*')) {
+                } else if (word.like('edge/*')) {
                     arr[i] = 'edge/143.0.0.0';
-                }else if (word.like('OPR/*')) {
+                } else if (word.like('OPR/*')) {
                     arr[i] = 'OPR/124.0.0.0';
-                }else if (word.like('Firefox/*')) {
+                } else if (word.like('Firefox/*')) {
                     arr[i] = 'Firefox/146.0';
-                }else if (word.like('rv:*)')) {
+                } else if (word.like('rv:*)')) {
                     arr[i] = 'rv:146.0)';
-                }else if (word.like('rv:*)')) {
+                } else if (word.like('rv:*)')) {
                     arr[i] = 'rv:146.0)';
                 }
             });
@@ -107,8 +107,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         });
         $scope.busy = false;
         $scope.$applyAsync();
-
-    }
+    };
     $scope.generateProxy = function (session) {
         let index = SOCIALBROWSER.randomNumber(0, $scope.setting.proxy_list.length - 1);
         if (typeof session == 'string' && session == '*') {
@@ -292,7 +291,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
                     });
                     $scope.$applyAsync();
                     text = null;
-                }else if (path.like('*.json')) {
+                } else if (path.like('*.json')) {
                     let arr = JSON.parse(text);
                     arr.forEach((line) => {
                         let proxy = SOCIALBROWSER.handleProxy(line);
@@ -310,7 +309,18 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         }
 
         if (text) {
-            let arr = text.split('\n');
+            let arr = [];
+            if (text.like('{*') || text.like('[*')) {
+                try {
+                    arr = JSON.parse(text);
+                } catch (error) {
+                    alert('Invalid Proxy List Format ...');
+                }
+            }
+            if (arr.length == 0) {
+                arr = text.split('\n');
+            }
+
             arr.forEach((line) => {
                 let proxy = SOCIALBROWSER.handleProxy(line);
                 if (proxy) {
@@ -366,16 +376,16 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         }
     };
 
-    $scope.showHidenUsers = function(){
+    $scope.showHidenUsers = function () {
         $scope.setting.session_list.forEach((se, i) => {
-            if(se.hide){
+            if (se.hide) {
                 se.$hide = false;
-            }else{
+            } else {
                 se.$hide = true;
             }
         });
         $scope.$applyAsync();
-    }
+    };
 
     $scope.sortSessionListByName = function () {
         $scope.setting.session_list.sort((a, b) => (a.display < b.display ? -1 : 1));
@@ -469,7 +479,7 @@ app.controller('mainController', ($scope, $http, $timeout) => {
             ],
         });
         if (file) {
-            let data = SOCIALBROWSER.readFile (file);
+            let data = SOCIALBROWSER.readFile(file);
             let arr = SOCIALBROWSER.showObject(data);
             let profileIndex = 0;
 
@@ -515,24 +525,30 @@ app.controller('mainController', ($scope, $http, $timeout) => {
                     profile.cookies.length > 0
                 ) {
                     profileIndex++;
-                    $timeout(() => {
-                        let msg = 'Setting Profile Data <br> ' + profile.display;
-                        SOCIALBROWSER.showUserMessage(msg);
-                        SOCIALBROWSER.alert(msg);
+                    $timeout(
+                        () => {
+                            let msg = 'Setting Profile Data <br> ' + profile.display;
+                            SOCIALBROWSER.showUserMessage(msg);
+                            SOCIALBROWSER.alert(msg);
 
-                        SOCIALBROWSER.ipc('[open new popup]', {
-                            partition: profile.name,
-                            cookies: profile.cookies,
-                            timeout: 1000 * 30,
-                        });
-                    }, 1000 * 5 * profileIndex);
+                            SOCIALBROWSER.ipc('[open new popup]', {
+                                partition: profile.name,
+                                cookies: profile.cookies,
+                                timeout: 1000 * 30,
+                            });
+                        },
+                        1000 * 5 * profileIndex,
+                    );
                 }
             });
 
-            $timeout(() => {
-                $scope.busy = false;
-                $scope.$applyAsync();
-            }, 1000 * 5 * arr.length);
+            $timeout(
+                () => {
+                    $scope.busy = false;
+                    $scope.$applyAsync();
+                },
+                1000 * 5 * arr.length,
+            );
         }
     };
 
