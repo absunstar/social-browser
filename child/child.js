@@ -70,7 +70,7 @@ var child = {
         },
         session: {
             enabled: false,
-            save : false
+            save: false,
         },
         security: {
             enabled: true,
@@ -239,32 +239,51 @@ child.electron.app.whenReady().then(() => {
     });
 
     child.electron.app.on('login', (event, webContents, details, authInfo, callback) => {
-        console.log(authInfo);
+
+        if (details.responseHeaders) {
+                let connectionStatus = details.responseHeaders['connection'] || '';
+                if (Array.isArray(connectionStatus)) {
+                    connectionStatus = connectionStatus[0] || '';
+                }
+                if (connectionStatus.like('*close*')) {
+                    if (webContents) {
+                        webContents.send('[show-user-message]', {
+                            message: 'Proxy Authentication Failed. Connection closed by proxy server.',
+                        });
+                    }
+                }
+            }
+
+            
         if (authInfo.isProxy) {
             event.preventDefault();
+
+            
             let proxy = null;
-            let win = child.electron.BrowserWindow.fromWebContents(webContents);
 
-            proxy = win.customSetting.proxy;
-            if (proxy) {
-                callback(proxy.username, proxy.password);
-                child.log(proxy);
-                return;
+            if (webContents) {
+                let win = child.electron.BrowserWindow.fromWebContents(webContents);
+
+                if (win && win.customSetting) {
+                    proxy = win.customSetting.proxy;
+                    if (proxy) {
+                        callback(proxy.username, proxy.password);
+                        return;
+                    }
+                }
+
+                let index2 = child.parent.var.session_list.findIndex((s) => s.name == webContents.session.name && s.proxy && s.proxyEnabled);
+                if (index2 !== -1) {
+                    proxy = child.parent.var.session_list[index2].proxy;
+                    callback(proxy.username, proxy.password);
+                    return;
+                }
             }
 
-            let index2 = child.parent.var.session_list.findIndex((s) => s.name == webContents.session.name && s.proxy && s.proxyEnabled);
-            if (index2 !== -1) {
-                proxy = child.parent.var.session_list[index2].proxy;
-                callback(proxy.username, proxy.password);
-                child.log(proxy);
-                return;
-            }
-
-            let index3 = child.parent.var.proxy_list.findIndex((p) => p.ip == authInfo.host);
+            let index3 = child.parent.var.proxy_list.findIndex((p) => p.ip == authInfo.host && p.port == authInfo.port);
             if (index3 !== -1) {
                 proxy = child.parent.var.proxy_list[index3];
                 callback(proxy.username, proxy.password);
-                child.log(proxy);
                 return;
             }
         } else {
