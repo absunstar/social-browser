@@ -1079,6 +1079,7 @@ module.exports = function (child) {
                                     params[i] = params[i].replace('$url', decodeURIComponent(dl.url)).replace('$file_name', dl.name);
                                 }
                                 child.exe(app_name, params);
+                                child.electron.clipboard.writeText(dl.url);
                                 return;
                             }
                         });
