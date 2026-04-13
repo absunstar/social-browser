@@ -71,6 +71,11 @@
                 align-items: center;
                 border-top: 2px solid var(--social-current-tab-fill);
             }
+            .bottom-bar p {
+                display: inline;
+                color: #ffeb3b;
+                font-family: monospace;
+            }
             a.space,
             a.space:hover {
                 color: #435259;
@@ -146,7 +151,6 @@
 
         <div class="top-bar">
             <div class="window-actions">
-               
                 <a title="Show Window Menu List " onclick="SOCIALBROWSER.showWindowsMenu()">
                     <i class="fa-solid fa-window-restore"></i>
                 </a>
@@ -159,8 +163,11 @@
                 <a title="Open URL in  ( Chrome Browser Simulator ) [ Shared Cookies , User Data , Extentions ] " onclick="ipc('[window-action]', { name: 'open-in-chrome-session' })">
                     <i class="fa-brands fa-chrome"></i>
                 </a>
-                <a title="Open URL in  ( Ghost Window ) " onclick="ipc('[window-action]', { name: 'open-in-ghost-window' })">
+                <a title="Open URL in  ( PC Ghost Window ) " onclick="ipc('[window-action]', { name: 'open-in-ghost-window' })">
                     <i class="fas fa-ghost"></i>
+                </a>
+                <a title="Open URL in  ( Mobile Ghost Window ) " onclick="ipc('[window-action]', { name: 'new-ghost-mobile-window' })">
+                    <i class="fa-solid fa-ghost fa-xs"></i>
                 </a>
 
                 <a title="User Scripts" onclick="SOCIALBROWSER.showScriptListMenu()">
@@ -235,15 +242,24 @@
 
         <div class="bottom-bar">
             <div class="window-actions">
-                
-              
-                
                 <a title="Window Custom Settings" onclick="SOCIALBROWSER.showWindowCustomSetting()">
-                  <i class="fa-solid fa-gear"></i>
+                    <i class="fa-solid fa-gear"></i>
                 </a>
 
-                  <a class="space"> | </a>
+                <a class="space"> | </a>
 
+                <a title="Integrated URLs" onclick="SOCIALBROWSER.showIntegratedURLsMenu()">
+                    <i class="fa-solid fa-link"></i>
+                </a>
+
+                <a class="space"> | </a>
+
+                <a title="AI Tools" onclick="SOCIALBROWSER.showAIMenu()">
+                    <i class="fa-solid fa-robot"></i>
+                </a>
+
+                <a class="space"> | </a>
+                <p id="ipInfo" title="click to Reload IP Information" onclick="IPhandle()">...........</p>
             </div>
         </div>
 
@@ -257,6 +273,22 @@
             function showMessage(msg) {
                 SOCIALBROWSER.ipc('[alert]', { message: msg, windowID: SOCIALBROWSER.window.id });
             }
+
+            function IPhandle() {
+                clearTimeout(SOCIALBROWSER.IPhandleTimeout);
+                document.querySelector('#ipInfo').innerText = '.........';
+                SOCIALBROWSER.getIPinformation()
+                    .then((d) => {
+                        document.querySelector('#ipInfo').innerText = `${d.query} - ${d.country} - ${d.city}`;
+                    })
+                    .catch((e) => {
+                        SOCIALBROWSER.IPhandleTimeout = setTimeout(() => {
+                            IPhandle();
+                        }, 1000 * 60);
+                    });
+            }
+
+            IPhandle();
         </script>
 
         <script src="http://127.0.0.1:60080/js/client.js"></script>

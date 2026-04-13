@@ -274,7 +274,8 @@ module.exports = function (child) {
             defaultSetting.show = false;
             defaultSetting.skipTaskbar = true;
             defaultSetting.frame = false;
-            defaultSetting.transparent = true;
+            defaultSetting.transparent = false;
+            defaultSetting.hasShadow = true;
             defaultSetting.resizable = false;
         } else if (setting.windowType === 'addressbar') {
             defaultSetting.show = false;
@@ -294,7 +295,7 @@ module.exports = function (child) {
             defaultSetting.allowAudio = false;
         } else if (setting.windowType === 'updates') {
             defaultSetting.sandbox = false;
-              setting.transparent = false;
+            setting.transparent = false;
             setting.sandbox = false;
             defaultSetting.show = false;
             defaultSetting.alwaysOnTop = false;
@@ -304,7 +305,7 @@ module.exports = function (child) {
             defaultSetting.allowAudio = false;
             defaultSetting.center = true;
         } else if (setting.windowType === 'none') {
-           setting.frame = true;
+            setting.frame = true;
             setting.transparent = false;
             defaultSetting.show = false;
             defaultSetting.alwaysOnTop = false;
@@ -312,8 +313,8 @@ module.exports = function (child) {
             defaultSetting.resizable = true;
             defaultSetting.allowAudio = false;
             defaultSetting.center = true;
-        }else{
-             setting.frame = true;
+        } else {
+            setting.frame = true;
             setting.transparent = false;
         }
 
