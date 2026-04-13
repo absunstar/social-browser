@@ -40,7 +40,7 @@
                 width: 100%;
                 opacity: 0.1;
             }
-            .footer {
+            .top-bar {
                 top: 70px;
                 left: 0px;
                 right: 0px;
@@ -54,6 +54,22 @@
                 align-content: center;
                 justify-content: flex-start;
                 align-items: center;
+            }
+            .bottom-bar {
+                bottom: 0px;
+                left: 0px;
+                right: 0px;
+                height: 40px;
+                position: fixed;
+                opacity: 1;
+                background: var(--social-background-color);
+                display: flex;
+                flex-direction: row;
+                flex-wrap: nowrap;
+                align-content: center;
+                justify-content: flex-start;
+                align-items: center;
+                border-top: 2px solid var(--social-current-tab-fill);
             }
             a.space,
             a.space:hover {
@@ -128,16 +144,9 @@
             </div>
         </div>
 
-        <div id="body"></div>
-
-        <div class="footer">
+        <div class="top-bar">
             <div class="window-actions">
-                <a title="Help" onclick="SOCIALBROWSER.showHelpMenu()">
-                    <i class="fas fa-universal-access"></i>
-                </a>
-
-                <a class="space"> | </a>
-
+               
                 <a title="Show Window Menu List " onclick="SOCIALBROWSER.showWindowsMenu()">
                     <i class="fa-solid fa-window-restore"></i>
                 </a>
@@ -219,6 +228,22 @@
                 <a class="xzoom" title="Zoom In" onclick="ipc('[window-action]', { name: 'window-zoom+' })">
                     <i class="fa fa-search-plus"></i>
                 </a>
+            </div>
+        </div>
+
+        <div id="body"></div>
+
+        <div class="bottom-bar">
+            <div class="window-actions">
+                
+              
+                
+                <a title="Window Custom Settings" onclick="SOCIALBROWSER.showWindowCustomSetting()">
+                  <i class="fa-solid fa-gear"></i>
+                </a>
+
+                  <a class="space"> | </a>
+
             </div>
         </div>
 

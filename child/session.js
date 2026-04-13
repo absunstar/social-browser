@@ -347,6 +347,30 @@ module.exports = function (child) {
                         });
                         child.sendToWindow(win, '[show-user-message]', { message: 'Block Site Resource: ' + details.resourceType + ' <p><a>' + url + '</a></p>' });
                         return;
+                    } else if ((customSetting.blockCspReport || child.parent.var.blocking.blockCspReport) && details.resourceType.like('cspReport')) {
+                        callback({
+                            cancel: true,
+                        });
+                        child.sendToWindow(win, '[show-user-message]', { message: 'Block Site Resource: ' + details.resourceType + ' <p><a>' + url + '</a></p>' });
+                        return;
+                    }else if ((customSetting.blockObject || child.parent.var.blocking.blockObject) && details.resourceType.like('object')) {
+                        callback({
+                            cancel: true,
+                        });
+                        child.sendToWindow(win, '[show-user-message]', { message: 'Block Site Resource: ' + details.resourceType + ' <p><a>' + url + '</a></p>' });
+                        return;
+                    }else if ((customSetting.blockOther || child.parent.var.blocking.blockOther) && details.resourceType.like('other')) {
+                        callback({
+                            cancel: true,
+                        });
+                        child.sendToWindow(win, '[show-user-message]', { message: 'Block Site Resource: ' + details.resourceType + ' <p><a>' + url + '</a></p>' });
+                        return;
+                    }else if ((customSetting.blockPing || child.parent.var.blocking.blockPing) && details.resourceType.like('ping')) {
+                        callback({
+                            cancel: true,
+                        });
+                        child.sendToWindow(win, '[show-user-message]', { message: 'Block Site Resource: ' + details.resourceType + ' <p><a>' + url + '</a></p>' });
+                        return;
                     }
                 }
 
@@ -1043,12 +1067,12 @@ module.exports = function (child) {
                     status: 'waiting',
                     Partition: name,
                     item: item,
-                    url: item.getURL(),
+                    url: item.getURL() || '',
                     canResume: item.canResume(),
                     urlChain: item.getURLChain(),
                     path: item.getSavePath(),
-                    name: item.getFilename(),
-                    mimeType: item.getMimeType(),
+                    name: item.getFilename() || '',
+                    mimeType: item.getMimeType() || '',
                     length: item.getTotalBytes(),
                     eTag: item.getETag(),
                     startTime: item.getStartTime(),
@@ -1056,16 +1080,20 @@ module.exports = function (child) {
                 };
 
                 if (child.parent.var.blocking.downloader.defaultDownloadPath && !item.setingdefaultSavePath) {
-                    item.setSavePath(child.path.join(child.parent.var.blocking.downloader.defaultDownloadPath, item.getFilename()));
+                    item.setSavePath(child.path.join(child.parent.var.blocking.downloader.defaultDownloadPath, dl.name));
                 }
 
-                if (dl.url.like('data*')) {
+                if (
+                    dl.name.like('*.html|*.htm|*.js|*.css|*.json') ||
+                    dl.mimeType.like('text/html|application/javascript|text/css|application/json') ||
+                    dl.url.like('data*|blob*|browser*|http://127.0.0.1*|http://localhost*')
+                ) {
                     item.allowExternalDownloader = false;
                 }
 
                 if (item.allowExternalDownloader) {
                     let ok = false;
-                    if (child.parent.var.blocking.downloader.enabled && !dl.url.contains('browser://|http://127.0.0.1|http://localhost') && dl.url.indexOf('blob') !== 0) {
+                    if (child.parent.var.blocking.downloader.enabled) {
                         child.parent.var.blocking.downloader.apps.forEach((app) => {
                             if (ok) {
                                 return;
@@ -1076,10 +1104,10 @@ module.exports = function (child) {
                                 ok = true;
                                 let params = app.params.split(' ');
                                 for (const i in params) {
-                                    params[i] = params[i].replace('$url', decodeURIComponent(dl.url)).replace('$file_name', dl.name);
+                                    params[i] = params[i].replace('$url', decodeURI(dl.url)).replace('$file_name', dl.name);
                                 }
                                 child.exe(app_name, params);
-                                child.electron.clipboard.writeText(dl.url);
+                                child.electron.clipboard.writeText(decodeURI(dl.url));
                                 return;
                             }
                         });

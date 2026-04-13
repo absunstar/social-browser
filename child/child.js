@@ -175,7 +175,7 @@ child.mkdirSync(child.userDataDir);
 child.electron.app.setName('Social Browser - ' + child.partition);
 child.electron.app.setPath('userData', child.userDataDir);
 child.electron.protocol.registerSchemesAsPrivileged([
-    { scheme: 'browser', privileges: { bypassCSP: true, standard: true, secure: true, supportFetchAPI: true, allowServiceWorkers: true, corsEnabled: true, stream: true } },
+    { scheme: 'browser', privileges: { bypassCSP: true, standard: true, secure: true, supportFetchAPI: true, allowServiceWorkers: true, corsEnabled: true, stream: true, allowExtensions: true } },
 ]);
 
 child.electron.app.whenReady().then(() => {
@@ -239,26 +239,23 @@ child.electron.app.whenReady().then(() => {
     });
 
     child.electron.app.on('login', (event, webContents, details, authInfo, callback) => {
-
         if (details.responseHeaders) {
-                let connectionStatus = details.responseHeaders['connection'] || '';
-                if (Array.isArray(connectionStatus)) {
-                    connectionStatus = connectionStatus[0] || '';
-                }
-                if (connectionStatus.like('*close*')) {
-                    if (webContents) {
-                        webContents.send('[show-user-message]', {
-                            message: 'Proxy Authentication Failed. Connection closed by proxy server.',
-                        });
-                    }
+            let connectionStatus = details.responseHeaders['connection'] || '';
+            if (Array.isArray(connectionStatus)) {
+                connectionStatus = connectionStatus[0] || '';
+            }
+            if (connectionStatus.like('*close*')) {
+                if (webContents) {
+                    webContents.send('[show-user-message]', {
+                        message: 'Proxy Authentication Failed. Connection closed by proxy server.',
+                    });
                 }
             }
+        }
 
-            
         if (authInfo.isProxy) {
             event.preventDefault();
 
-            
             let proxy = null;
 
             if (webContents) {

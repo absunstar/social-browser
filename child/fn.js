@@ -335,6 +335,26 @@ module.exports = function (child) {
         setting.userAgentURL = win.customSetting.$userAgentURL;
         setting.mainWindowID = win.customSetting.mainWindowID;
         setting.proxy = win.customSetting.proxy?.ip || win.webContents?.session?.proxy?.ip || '';
+        setting.allowAds = win.customSetting.allowAds || false;
+        setting.off = win.customSetting.off || false;
+        setting.allowDefaultWorker = win.customSetting.allowDefaultWorker || false;
+        setting.allowPopup = win.customSetting.allowPopup || false;
+        setting.blockImages = win.customSetting.blockImages || false;
+        setting.blockMedia = win.customSetting.blockMedia || false;
+        setting.blockJS = win.customSetting.blockJS || false;
+        setting.blockXHR = win.customSetting.blockXHR || false;
+        setting.blockSubFrame = win.customSetting.blockSubFrame || false;
+        setting.blockCSS = win.customSetting.blockCSS || false;
+        setting.blockFonts = win.customSetting.blockFonts || false;
+        setting.blockWebSocket = win.customSetting.blockWebSocket || false;
+        setting.blockCspReport = win.customSetting.blockCspReport || false;
+        setting.blockOther = win.customSetting.blockOther || false;
+        setting.blockObject = win.customSetting.blockObject || false;
+        setting.blockPing = win.customSetting.blockPing || false;
+        setting.isWhiteSite = win.customSetting.isWhiteSite || false;
+        setting.javaScriptOFF = win.customSetting.javaScriptOFF || false;
+        setting.enginOFF = win.customSetting.enginOFF || false;
+        setting.off = win.customSetting.off || false;
 
         child.sendMessage({
             type: '[update-tab-properties]',
@@ -730,7 +750,18 @@ module.exports = function (child) {
                 return child.openExternal(obj.url);
             }
 
-            obj.args = obj.args || ['--start-maximized', '--no-sandbox', '--disable-blink-features=AutomationControlled', `--ignore-certificate-errors`];
+            obj.args = obj.args || [
+                '--disable-infobars',
+                '--start-maximized',
+                '--disable-blink-features=AutomationControlled',
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--safebrowsing-disable-extension-blacklist',
+                '--safebrowsing-disable-download-protection',
+                '--disable-web-security',
+                '--disable-features=IsolateOrigins,site-per-process',
+            ];
+
             if (obj.proxy && obj.proxy.proxyRules) {
                 obj.args.push(`--proxy-server=${obj.proxy.proxyRules}`);
             }
@@ -740,9 +771,11 @@ module.exports = function (child) {
             }
 
             child.puppeteer = child.puppeteer || require('puppeteer-core');
+
             child.puppeteerBrowser =
                 child.puppeteerBrowser ||
                 (await child.puppeteer.launch({
+                    //  ignoreDefaultArgs: ['--enable-automation'],
                     userDataDir: obj.userDataDir,
                     executablePath: obj.browserPath,
                     headless: obj.headless || false,
@@ -754,11 +787,10 @@ module.exports = function (child) {
                 }));
 
             if (child.puppeteerBrowser && child.puppeteerBrowser.setMaxListeners) {
-                child.puppeteerBrowser.setMaxListeners(30);
+                child.puppeteerBrowser.setMaxListeners(0);
             }
 
-            if (Array.isArray(obj.cookies) && obj.cookies.length > 0) {
-                console.log('set New Chrome Cookie Count : ' + obj.cookies.length);
+            if (obj.allowStorage && Array.isArray(obj.cookies) && obj.cookies.length > 0) {
                 await child.puppeteerBrowser.setCookie(...obj.cookies);
             }
             if (!child.puppeteerBrowser.$exists) {
@@ -791,453 +823,425 @@ module.exports = function (child) {
                 });
             }
 
-            await page.evaluateOnNewDocument((obj) => {
-                globalThis.__define = function (o, p, v, op = {}) {
-                    try {
-                        o[p] = v;
-                        if (o.prototype) {
-                            o.prototype[p] = v;
-                        }
-                        Object.defineProperty(o, p, {
-                            enumerable: !0,
-                            get: function () {
-                                return v;
-                            },
-                            ...op,
-                        });
-                    } catch (error) {
-                        console.log(error);
-                    }
-                };
-
-                const originalQuery = window.navigator.permissions.query;
-                window.navigator.permissions.query = (parameters) => {
-                    return parameters.name === 'notifications' ? Promise.resolve({ state: Notification.permission }) : originalQuery(parameters);
-                };
-
-                if (obj.localStorageList) {
-                    obj.localStorageList.forEach((s) => {
-                        localStorage.setItem(s.key, s.value);
-                    });
-                }
-                if (obj.sessionStorageList) {
-                    obj.sessionStorageList.forEach((s) => {
-                        sessionStorage.setItem(s.key, s.value);
-                    });
-                }
-                globalThis.navigator2 = obj.navigator || {};
-                globalThis.navigator2.webdriver = false;
-
-                if (!navigator.languages || navigator.languages.length === 0) {
-                    globalThis.navigator2.languages = globalThis.navigator2.languages || ['en-US', 'en'];
-                }
-
-                if (obj.customSetting) {
-                    if (
-                        obj.customSetting.session.privacy &&
-                        obj.customSetting.session.privacy.vpc &&
-                        obj.customSetting.session.privacy.vpc.maskTimeZone &&
-                        obj.customSetting.session.privacy.vpc.timeZone &&
-                        obj.customSetting.session.privacy.vpc.timeZone.text
-                    ) {
-                        (function (o, acOffset) {
-                            const gmtNeg = function (n) {
-                                const _format = function (v) {
-                                    return (v < 10 ? '0' : '') + v;
-                                };
-                                return (n <= 0 ? '+' : '-') + _format((Math.abs(n) / 60) | 0) + _format(Math.abs(n) % 60);
-                            };
-
-                            const GMT = function (n) {
-                                const _format = function (v) {
-                                    return (v < 10 ? '0' : '') + v;
-                                };
-                                return (n <= 0 ? '-' : '+') + _format((Math.abs(n) / 60) | 0) + _format(Math.abs(n) % 60);
-                            };
-
-                            const resolvedOptions = Intl.DateTimeFormat().resolvedOptions();
-                            const {
-                                getDay,
-                                getDate,
-                                getYear,
-                                getMonth,
-                                getHours,
-                                toString,
-                                getMinutes,
-                                getSeconds,
-                                getFullYear,
-                                toLocaleString,
-                                getMilliseconds,
-                                getTimezoneOffset,
-                                toLocaleTimeString,
-                                toLocaleDateString,
-                            } = Date.prototype;
-
-                            Object.defineProperty(Date.prototype, '_offset', {
-                                configurable: true,
-                                get() {
-                                    return getTimezoneOffset.call(this);
-                                },
-                            });
-
-                            Object.defineProperty(Date.prototype, '_date', {
-                                configurable: true,
-                                get() {
-                                    return this._nd === undefined ? new Date(this.getTime() + (this._offset + o.offset * 60) * 60 * 1000) : this._nd;
-                                },
-                            });
-
-                            Object.defineProperty(Date.prototype, 'getDay', {
-                                value: function () {
-                                    return getDay.call(this._date);
-                                },
-                            });
-
-                            Object.defineProperty(Date.prototype, 'getDate', {
-                                value: function () {
-                                    return getDate.call(this._date);
-                                },
-                            });
-                            Object.defineProperty(Date.prototype, 'getYear', {
-                                value: function () {
-                                    return getYear.call(this._date);
-                                },
-                            });
-                            Object.defineProperty(Date.prototype, 'getTimezoneOffset', {
-                                value: function () {
-                                    return Number(o.offset * 60);
-                                },
-                            });
-                            Object.defineProperty(Date.prototype, 'getMonth', {
-                                value: function () {
-                                    return getMonth.call(this._date);
-                                },
-                            });
-                            Object.defineProperty(Date.prototype, 'getHours', {
-                                value: function () {
-                                    return getHours.call(this._date);
-                                },
-                            });
-                            Object.defineProperty(Date.prototype, 'getMinutes', {
-                                value: function () {
-                                    return getMinutes.call(this._date);
-                                },
-                            });
-                            Object.defineProperty(Date.prototype, 'getSeconds', {
-                                value: function () {
-                                    return getSeconds.call(this._date);
-                                },
-                            });
-                            Object.defineProperty(Date.prototype, 'getFullYear', {
-                                value: function () {
-                                    return getFullYear.call(this._date);
-                                },
-                            });
-
-                            Object.defineProperty(Date.prototype, 'getMilliseconds', {
-                                value: function () {
-                                    return getMilliseconds.call(this._date);
-                                },
-                            });
-                            Object.defineProperty(Date.prototype, 'toLocaleString', {
-                                value: function () {
-                                    return toLocaleString.call(this._date);
-                                },
-                            });
-                            Object.defineProperty(Date.prototype, 'toLocaleTimeString', {
-                                value: function () {
-                                    return toLocaleTimeString.call(this._date);
-                                },
-                            });
-                            Object.defineProperty(Date.prototype, 'toLocaleDateString', {
-                                value: function () {
-                                    return toLocaleDateString.call(this._date);
-                                },
-                            });
-
-                            Object.defineProperty(Intl.DateTimeFormat.prototype, 'resolvedOptions', {
-                                value: function () {
-                                    return Object.assign(resolvedOptions, { timeZone: o.text, locale: navigator.language });
-                                },
-                            });
-                            Object.defineProperty(Date.prototype, 'toString', {
-                                value: function () {
-                                    return toString
-                                        .call(this._date)
-                                        .replace(gmtNeg(acOffset), GMT(o.offset * 60))
-                                        .replace(/\(.*\)/, '(' + o.value + ')');
-                                },
-                            });
-                        })(obj.customSetting.session.privacy.vpc.timeZone, new Date().getTimezoneOffset());
-                    }
-
-                    if (obj.customSetting.session.privacy.vpc.block_rtc) {
-                        let RTCPeerConnection = function () {
-                            return {
-                                createDataChannel: function () {},
-                                createOffer: function () {
-                                    return new Promise((resolve, reject) => {
-                                        resolve({});
-                                    });
-                                },
-                                setLocalDescription: function () {
-                                    return new Promise((resolve, reject) => {
-                                        resolve({});
-                                    });
-                                },
-                            };
-                        };
-
-                        window.MediaStreamTrack = undefined;
-                        window.RTCPeerConnection = RTCPeerConnection;
-                        window.RTCSessionDescription = undefined;
-
-                        window.mozMediaStreamTrack = undefined;
-                        window.mozRTCPeerConnection = RTCPeerConnection;
-                        window.mozRTCSessionDescription = undefined;
-
-                        window.webkitMediaStreamTrack = undefined;
-                        window.webkitRTCPeerConnection = RTCPeerConnection;
-                        window.webkitRTCSessionDescription = undefined;
-                    }
-                }
-
-                globalThis.__define(
-                    globalThis,
-                    'navigator',
-                    new Proxy(navigator, {
-                        setProperty: function (target, key, value) {
-                            if (target.hasOwnProperty(key)) return target[key];
-                            return (target[key] = value);
-                        },
-                        get: function (target, key, receiver) {
-                            if (key === '_') {
-                                return target;
-                            }
-                            if (typeof target[key] === 'function') {
-                                return function (...args) {
-                                    return target[key].apply(this === receiver ? target : this, args);
-                                };
-                            }
-                            return globalThis.navigator2[key] ?? target[key];
-                        },
-                        set: function (target, key, value) {
-                            return this.setProperty(target, key, value);
-                        },
-                        defineProperty: function (target, key, desc) {
-                            return this.setProperty(target, key, desc.value);
-                        },
-                        deleteProperty: function (target, key) {
-                            return false;
-                        },
-                    }),
-                );
-
-                globalThis.privatePolicy = window.trustedTypes.createPolicy('social', {
-                    createHTML: (string) => string,
-                    createScriptURL: (string) => string,
-                    createScript: (string) => string,
-                });
-
-                globalThis.handleURL = function (u) {
-                    if (typeof u !== 'string') {
-                        if (u) {
-                            u = u.toString();
-                        } else {
-                            return u;
-                        }
-                    }
-                    u = u.trim();
-                    if (u.indexOf('blob') === 0) {
-                        u = u;
-                    } else if (u.indexOf('//') === 0) {
-                        u = document.location.protocol + u;
-                    } else if (u.indexOf('/') === 0) {
-                        u = document.location.origin + u;
-                    } else if (u.indexOf('http') !== 0) {
-                        u = document.location.href + u;
-                    }
-
-                    try {
-                        u = decodeURI(u);
-                    } catch (error) {
-                        u = u;
-                    }
-
-                    return u;
-                };
-                globalThis.addJS = function (code) {
-                    try {
-                        let body = document.body || document.head || document.documentElement;
-                        if (body && code) {
-                            let _script = document.createElement('script');
-                            _script.id = '_script_' + Math.random().toString().replace('.', '');
-                            _script.textContent = globalThis.privatePolicy.createScript(code);
-                            _script.nonce = 'social';
-                            if (!document.querySelector('#' + _script.id)) {
-                                body.appendChild(_script);
-                                _script.remove();
-                            }
-                        }
-                    } catch (error) {
-                        console.log(error, code);
-                    }
-                };
-
-                if ((worker = true)) {
-                    globalThis.Worker2 = globalThis.Worker;
-                    globalThis.Worker = function (url, options, _worker) {
-                        url = globalThis.handleURL(url);
-
-                        if (!url || url.indexOf('blob:') === 0) {
-                            return new globalThis.Worker2(url, options, _worker);
-                        }
-
-                        console.log('New Worker : ' + url);
-
-                        let workerID = 'worker_' + Math.random().toString().replace('.', '') + '_';
-
-                        fetch(url)
-                            .then((response) => response.text())
-                            .then((code) => {
-                                let _id = _worker ? _worker.id : workerID;
-                                _id = 'globalThis.' + _id;
-                                code = code.replaceAll('window.location', 'location');
-                                code = code.replaceAll('document.location', 'location');
-                                code = code.replaceAll('self.trustedTypes', _id + '.trustedTypes');
-                                code = code.replaceAll('self', _id + '');
-                                code = code.replaceAll('location', _id + '.location');
-                                // if (!_worker) {
-                                //     code = code.replaceAll('this', _id);
-                                // }
-                                code = code.replaceAll(_id + '.' + _id, _id);
-
-                                globalThis.addJS('(()=>{ try { ' + code + ' } catch (err) {console.log(err)} })();');
-                            });
-
-                        if (_worker) {
-                            return _worker;
-                        } else {
-                            globalThis[workerID] = {
-                                id: workerID,
-                                url: url,
-                                addEventListener: function () {},
-                                importScripts: function (...args2) {
-                                    args2.forEach((arg) => {
-                                        new Worker(arg, null, globalThis[workerID]);
-                                    });
-                                },
-                                terminate: function () {},
-                                postMessage: function (data) {
-                                    globalThis[workerID].onmessage({ data: data });
-                                },
-                                onmessage: function () {},
-                            };
-
-                            let loc = child.newURL(globalThis[workerID].url);
-                            globalThis[workerID].location = loc;
-                            globalThis.__define(globalThis[workerID], 'location', {
-                                protocol: loc.protocol,
-                                host: loc.host,
-                                hostname: loc.hostname,
-                                origin: loc.origin,
-                                port: loc.port,
-                                pathname: loc.pathname,
-                                hash: loc.hash,
-                                search: loc.search,
-                                href: globalThis[workerID].url,
-                                toString: function () {
-                                    return globalThis[workerID].url;
-                                },
-                            });
-                            globalThis.__define(globalThis[workerID], 'window', {});
-                            globalThis.__define(globalThis[workerID], 'document', {});
-                            globalThis.__define(globalThis[workerID], 'trustedTypes', window.trustedTypes);
-
-                            globalThis.importScripts = globalThis[workerID].importScripts;
-                            return globalThis[workerID];
-                        }
-                    };
-
-                    globalThis.__define(globalThis.Worker, 'toString', function () {
-                        return 'Worker() { [native code] }';
-                    });
-                    globalThis.serviceWorker = {
-                        register: navigator.serviceWorker ? navigator.serviceWorker.register : {},
-                    };
-
-                    if (navigator.serviceWorker) {
-                        navigator.serviceWorker.register = function (...args) {
-                            return new Promise((resolve, reject) => {
-                                let worker = new globalThis.Worker(...args);
-                                resolve(worker);
-                            });
-                        };
-                    }
-                }
-
-                globalThis.defineProperty2 = Object.defineProperty;
-                Object.defineProperty = function (o, p, d) {
-                    try {
-                        if (o === navigator) {
-                            if (p == 'platform') {
-                                return o;
-                            }
-                            if (p == 'webdriver') {
-                                globalThis.defineProperty2(navigator, p, d);
-                                return o;
-                            }
-                            globalThis.defineProperty2(navigator._, p, d);
-                            return o;
-                        } else {
-                            // if (p == 'stack') {
-                            //     return o;
-                            // }
-                        }
-                        return globalThis.defineProperty2(o, p, d);
-                    } catch (error) {
-                        console.log(error);
-                        return o;
-                    }
-                }.bind(Object.defineProperty);
-            }, obj);
-
-            // await page.evaluateOnNewDocument(() => {
-
-            //     // (function () {
-            //     //     try {
-            //     //         let originalError = Error;
-
-            //     //         // Proxy the Error constructor to prevent any instance-specific stack modifications
-            //     //         window.Error = new Proxy(originalError, {
-            //     //             construct(target, args) {
-            //     //                 let instance = new target(...args);
-            //     //                 return Object.freeze(instance);
-            //     //             },
-            //     //         });
-
-            //     //         // Lock down the stack property on Error.prototype to prevent modification
-            //     //         globalThis.__define(Error.prototype, 'stack2', {
-            //     //             configurable: false,
-            //     //             enumerable: true,
-            //     //             writable: false,
-            //     //             value: (function () {
-            //     //                 try {
-            //     //                     throw new originalError();
-            //     //                 } catch (e) {
-            //     //                     return e.stack;
-            //     //                 }
-            //     //             })(),
-            //     //         });
-            //     //     } catch (error) {
-            //     //         console.log(error);
-            //     //     }
-            //     // })();
-            // });
-
             if (obj.screen) {
                 await page.setViewport({ width: obj.screen.width, height: obj.screen.height });
             }
+
+            await page.evaluateOnNewDocument((obj) => {
+                if (obj.allowStorage) {
+                    if (obj.localStorageList) {
+                        obj.localStorageList.forEach((s) => {
+                            localStorage.setItem(s.key, s.value);
+                        });
+                    }
+                    if (obj.sessionStorageList) {
+                        obj.sessionStorageList.forEach((s) => {
+                            sessionStorage.setItem(s.key, s.value);
+                        });
+                    }
+                }
+
+                if (obj.auto) {
+                    globalThis.__define = function (o, p, v, op = {}) {
+                        try {
+                            o[p] = v;
+                            if (o.prototype) {
+                                o.prototype[p] = v;
+                            }
+                            Object.defineProperty(o, p, {
+                                enumerable: !0,
+                                get: function () {
+                                    return v;
+                                },
+                                ...op,
+                            });
+                        } catch (error) {
+                            console.log(error);
+                        }
+                    };
+
+                    const originalQuery = window.navigator.permissions.query;
+                    window.navigator.permissions.query = (parameters) => {
+                        return parameters.name === 'notifications' ? Promise.resolve({ state: Notification.permission }) : originalQuery(parameters);
+                    };
+
+                    globalThis.navigator2 = obj.navigator || {};
+                    globalThis.navigator2.webdriver = false;
+
+                    if (!navigator.languages || navigator.languages.length === 0) {
+                        globalThis.navigator2.languages = globalThis.navigator2.languages || ['en-US', 'en'];
+                    }
+
+                    if (obj.customSetting) {
+                        if (
+                            obj.customSetting.session.privacy &&
+                            obj.customSetting.session.privacy.vpc &&
+                            obj.customSetting.session.privacy.vpc.maskTimeZone &&
+                            obj.customSetting.session.privacy.vpc.timeZone &&
+                            obj.customSetting.session.privacy.vpc.timeZone.text
+                        ) {
+                            (function (o, acOffset) {
+                                const gmtNeg = function (n) {
+                                    const _format = function (v) {
+                                        return (v < 10 ? '0' : '') + v;
+                                    };
+                                    return (n <= 0 ? '+' : '-') + _format((Math.abs(n) / 60) | 0) + _format(Math.abs(n) % 60);
+                                };
+
+                                const GMT = function (n) {
+                                    const _format = function (v) {
+                                        return (v < 10 ? '0' : '') + v;
+                                    };
+                                    return (n <= 0 ? '-' : '+') + _format((Math.abs(n) / 60) | 0) + _format(Math.abs(n) % 60);
+                                };
+
+                                const resolvedOptions = Intl.DateTimeFormat().resolvedOptions();
+                                const {
+                                    getDay,
+                                    getDate,
+                                    getYear,
+                                    getMonth,
+                                    getHours,
+                                    toString,
+                                    getMinutes,
+                                    getSeconds,
+                                    getFullYear,
+                                    toLocaleString,
+                                    getMilliseconds,
+                                    getTimezoneOffset,
+                                    toLocaleTimeString,
+                                    toLocaleDateString,
+                                } = Date.prototype;
+
+                                Object.defineProperty(Date.prototype, '_offset', {
+                                    configurable: true,
+                                    get() {
+                                        return getTimezoneOffset.call(this);
+                                    },
+                                });
+
+                                Object.defineProperty(Date.prototype, '_date', {
+                                    configurable: true,
+                                    get() {
+                                        return this._nd === undefined ? new Date(this.getTime() + (this._offset + o.offset * 60) * 60 * 1000) : this._nd;
+                                    },
+                                });
+
+                                Object.defineProperty(Date.prototype, 'getDay', {
+                                    value: function () {
+                                        return getDay.call(this._date);
+                                    },
+                                });
+
+                                Object.defineProperty(Date.prototype, 'getDate', {
+                                    value: function () {
+                                        return getDate.call(this._date);
+                                    },
+                                });
+                                Object.defineProperty(Date.prototype, 'getYear', {
+                                    value: function () {
+                                        return getYear.call(this._date);
+                                    },
+                                });
+                                Object.defineProperty(Date.prototype, 'getTimezoneOffset', {
+                                    value: function () {
+                                        return Number(o.offset * 60);
+                                    },
+                                });
+                                Object.defineProperty(Date.prototype, 'getMonth', {
+                                    value: function () {
+                                        return getMonth.call(this._date);
+                                    },
+                                });
+                                Object.defineProperty(Date.prototype, 'getHours', {
+                                    value: function () {
+                                        return getHours.call(this._date);
+                                    },
+                                });
+                                Object.defineProperty(Date.prototype, 'getMinutes', {
+                                    value: function () {
+                                        return getMinutes.call(this._date);
+                                    },
+                                });
+                                Object.defineProperty(Date.prototype, 'getSeconds', {
+                                    value: function () {
+                                        return getSeconds.call(this._date);
+                                    },
+                                });
+                                Object.defineProperty(Date.prototype, 'getFullYear', {
+                                    value: function () {
+                                        return getFullYear.call(this._date);
+                                    },
+                                });
+
+                                Object.defineProperty(Date.prototype, 'getMilliseconds', {
+                                    value: function () {
+                                        return getMilliseconds.call(this._date);
+                                    },
+                                });
+                                Object.defineProperty(Date.prototype, 'toLocaleString', {
+                                    value: function () {
+                                        return toLocaleString.call(this._date);
+                                    },
+                                });
+                                Object.defineProperty(Date.prototype, 'toLocaleTimeString', {
+                                    value: function () {
+                                        return toLocaleTimeString.call(this._date);
+                                    },
+                                });
+                                Object.defineProperty(Date.prototype, 'toLocaleDateString', {
+                                    value: function () {
+                                        return toLocaleDateString.call(this._date);
+                                    },
+                                });
+
+                                Object.defineProperty(Intl.DateTimeFormat.prototype, 'resolvedOptions', {
+                                    value: function () {
+                                        return Object.assign(resolvedOptions, { timeZone: o.text, locale: navigator.language });
+                                    },
+                                });
+                                Object.defineProperty(Date.prototype, 'toString', {
+                                    value: function () {
+                                        return toString
+                                            .call(this._date)
+                                            .replace(gmtNeg(acOffset), GMT(o.offset * 60))
+                                            .replace(/\(.*\)/, '(' + o.value + ')');
+                                    },
+                                });
+                            })(obj.customSetting.session.privacy.vpc.timeZone, new Date().getTimezoneOffset());
+                        }
+
+                        if (obj.customSetting.session.privacy.vpc.block_rtc) {
+                            let RTCPeerConnection = function () {
+                                return {
+                                    createDataChannel: function () {},
+                                    createOffer: function () {
+                                        return new Promise((resolve, reject) => {
+                                            resolve({});
+                                        });
+                                    },
+                                    setLocalDescription: function () {
+                                        return new Promise((resolve, reject) => {
+                                            resolve({});
+                                        });
+                                    },
+                                };
+                            };
+
+                            window.MediaStreamTrack = undefined;
+                            window.RTCPeerConnection = RTCPeerConnection;
+                            window.RTCSessionDescription = undefined;
+
+                            window.mozMediaStreamTrack = undefined;
+                            window.mozRTCPeerConnection = RTCPeerConnection;
+                            window.mozRTCSessionDescription = undefined;
+
+                            window.webkitMediaStreamTrack = undefined;
+                            window.webkitRTCPeerConnection = RTCPeerConnection;
+                            window.webkitRTCSessionDescription = undefined;
+                        }
+                    }
+
+                    globalThis.__define(
+                        globalThis,
+                        'navigator',
+                        new Proxy(navigator, {
+                            setProperty: function (target, key, value) {
+                                if (target.hasOwnProperty(key)) return target[key];
+                                return (target[key] = value);
+                            },
+                            get: function (target, key, receiver) {
+                                if (key === '_') {
+                                    return target;
+                                }
+                                if (typeof target[key] === 'function') {
+                                    return function (...args) {
+                                        return target[key].apply(this === receiver ? target : this, args);
+                                    };
+                                }
+                                return globalThis.navigator2[key] ?? target[key];
+                            },
+                            set: function (target, key, value) {
+                                return this.setProperty(target, key, value);
+                            },
+                            defineProperty: function (target, key, desc) {
+                                return this.setProperty(target, key, desc.value);
+                            },
+                            deleteProperty: function (target, key) {
+                                return false;
+                            },
+                        }),
+                    );
+
+                    globalThis.privatePolicy = window.trustedTypes.createPolicy('social', {
+                        createHTML: (string) => string,
+                        createScriptURL: (string) => string,
+                        createScript: (string) => string,
+                    });
+
+                    globalThis.handleURL = function (u) {
+                        if (typeof u !== 'string') {
+                            if (u) {
+                                u = u.toString();
+                            } else {
+                                return u;
+                            }
+                        }
+                        u = u.trim();
+                        if (u.indexOf('blob') === 0) {
+                            u = u;
+                        } else if (u.indexOf('//') === 0) {
+                            u = document.location.protocol + u;
+                        } else if (u.indexOf('/') === 0) {
+                            u = document.location.origin + u;
+                        } else if (u.indexOf('http') !== 0) {
+                            u = document.location.href + u;
+                        }
+
+                        try {
+                            u = decodeURI(u);
+                        } catch (error) {
+                            u = u;
+                        }
+
+                        return u;
+                    };
+                    globalThis.addJS = function (code) {
+                        try {
+                            let body = document.body || document.head || document.documentElement;
+                            if (body && code) {
+                                let _script = document.createElement('script');
+                                _script.id = '_script_' + Math.random().toString().replace('.', '');
+                                _script.textContent = globalThis.privatePolicy.createScript(code);
+                                _script.nonce = 'social';
+                                if (!document.querySelector('#' + _script.id)) {
+                                    body.appendChild(_script);
+                                    _script.remove();
+                                }
+                            }
+                        } catch (error) {
+                            console.log(error, code);
+                        }
+                    };
+
+                    if ((worker = true)) {
+                        globalThis.Worker2 = globalThis.Worker;
+                        globalThis.Worker = function (url, options, _worker) {
+                            url = globalThis.handleURL(url);
+
+                            if (!url || url.indexOf('blob:') === 0) {
+                                return new globalThis.Worker2(url, options, _worker);
+                            }
+
+                            console.log('New Worker : ' + url);
+
+                            let workerID = 'worker_' + Math.random().toString().replace('.', '') + '_';
+
+                            fetch(url)
+                                .then((response) => response.text())
+                                .then((code) => {
+                                    let _id = _worker ? _worker.id : workerID;
+                                    _id = 'globalThis.' + _id;
+                                    code = code.replaceAll('window.location', 'location');
+                                    code = code.replaceAll('document.location', 'location');
+                                    code = code.replaceAll('self.trustedTypes', _id + '.trustedTypes');
+                                    code = code.replaceAll('self', _id + '');
+                                    code = code.replaceAll('location', _id + '.location');
+                                    // if (!_worker) {
+                                    //     code = code.replaceAll('this', _id);
+                                    // }
+                                    code = code.replaceAll(_id + '.' + _id, _id);
+
+                                    globalThis.addJS('(()=>{ try { ' + code + ' } catch (err) {console.log(err)} })();');
+                                });
+
+                            if (_worker) {
+                                return _worker;
+                            } else {
+                                globalThis[workerID] = {
+                                    id: workerID,
+                                    url: url,
+                                    addEventListener: function () {},
+                                    importScripts: function (...args2) {
+                                        args2.forEach((arg) => {
+                                            new Worker(arg, null, globalThis[workerID]);
+                                        });
+                                    },
+                                    terminate: function () {},
+                                    postMessage: function (data) {
+                                        globalThis[workerID].onmessage({ data: data });
+                                    },
+                                    onmessage: function () {},
+                                };
+
+                                let loc = child.newURL(globalThis[workerID].url);
+                                globalThis[workerID].location = loc;
+                                globalThis.__define(globalThis[workerID], 'location', {
+                                    protocol: loc.protocol,
+                                    host: loc.host,
+                                    hostname: loc.hostname,
+                                    origin: loc.origin,
+                                    port: loc.port,
+                                    pathname: loc.pathname,
+                                    hash: loc.hash,
+                                    search: loc.search,
+                                    href: globalThis[workerID].url,
+                                    toString: function () {
+                                        return globalThis[workerID].url;
+                                    },
+                                });
+                                globalThis.__define(globalThis[workerID], 'window', {});
+                                globalThis.__define(globalThis[workerID], 'document', {});
+                                globalThis.__define(globalThis[workerID], 'trustedTypes', window.trustedTypes);
+
+                                globalThis.importScripts = globalThis[workerID].importScripts;
+                                return globalThis[workerID];
+                            }
+                        };
+
+                        globalThis.__define(globalThis.Worker, 'toString', function () {
+                            return 'Worker() { [native code] }';
+                        });
+                        globalThis.serviceWorker = {
+                            register: navigator.serviceWorker ? navigator.serviceWorker.register : {},
+                        };
+
+                        if (navigator.serviceWorker) {
+                            navigator.serviceWorker.register = function (...args) {
+                                return new Promise((resolve, reject) => {
+                                    let worker = new globalThis.Worker(...args);
+                                    resolve(worker);
+                                });
+                            };
+                        }
+                    }
+
+                    globalThis.defineProperty2 = Object.defineProperty;
+                    Object.defineProperty = function (o, p, d) {
+                        try {
+                            if (o === navigator) {
+                                if (p == 'platform') {
+                                    return o;
+                                }
+                                if (p == 'webdriver') {
+                                    globalThis.defineProperty2(navigator, p, d);
+                                    return o;
+                                }
+                                globalThis.defineProperty2(navigator._, p, d);
+                                return o;
+                            } else {
+                                // if (p == 'stack') {
+                                //     return o;
+                                // }
+                            }
+                            return globalThis.defineProperty2(o, p, d);
+                        } catch (error) {
+                            console.log(error);
+                            return o;
+                        }
+                    }.bind(Object.defineProperty);
+                }
+            }, obj);
 
             if (obj.url) {
                 await page.goto(obj.url);
@@ -1275,23 +1279,5 @@ module.exports = function (child) {
                 reject(error);
             });
         }
-
-        //  const page = await child.puppeteerBrowser.newPage();
-        // page.on('console', (msg) => console.log('PAGE LOG:', msg.text()));
-
-        // await child.puppeteerBrowser.installExtension(pathToExtension);
-
-        // Type into search box.
-        //  await page.locator('.devsite-search-field').fill('automate beyond recorder');
-
-        // Wait and click on first result.
-        //  await page.locator('.devsite-result-item-link').click();
-
-        // Locate the full title with a unique string.
-        // const textSelector = await page.locator('text/Customize and automate').waitHandle();
-        //  const fullTitle = await textSelector?.evaluate((el) => el.textContent);
-
-        // Print the full title.
-        //  console.log('The title of this blog post is "%s".', fullTitle);
     };
 };

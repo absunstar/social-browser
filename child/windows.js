@@ -5,8 +5,8 @@ module.exports = function (child) {
         y2: 70 + 30,
         width: 15,
         width2: 2,
-        height: 84 + 30,
-        height2: 72 + 30,
+        height: 84 + 30 + 45,
+        height2: 72 + 30 + 40,
     };
 
     child.showAddressbarWindow = function (op, show = true) {
@@ -210,6 +210,7 @@ module.exports = function (child) {
             title: 'New Window',
             backgroundColor: setting.backgroundColor || (child.theme == 'light' ? '#ffffff' : '#607d8b'),
             icon: child.parent.icon,
+            frame: true,
             autoHideMenuBar: true,
             enableLargerThanScreen: true,
             hasShadow: false,
@@ -243,8 +244,9 @@ module.exports = function (child) {
         delete setting.webPreferences;
 
         if (setting.windowType === 'main') {
-            defaultSetting.show = true;
-            defaultSetting.frame = false;
+            setting.show = true;
+            setting.frame = false;
+            setting.transparent = false;
             defaultSetting.webPreferences.nodeIntegration = true;
             defaultSetting.webPreferences.nodeIntegrationInWorker = true;
             defaultSetting.webPreferences.webSecurity = false;
@@ -263,13 +265,16 @@ module.exports = function (child) {
             // setting.sandbox = false;
             // defaultSetting.webPreferences.allowRunningInsecureContent = true;
             // defaultSetting.webPreferences.webSecurity = false;
-        } else if (setting.windowType.contains('popup')) {
-            defaultSetting.alwaysOnTop = false;
+        } else if (setting.windowType.like('*popup*')) {
             setting.frame = true;
+            setting.transparent = false;
+            defaultSetting.alwaysOnTop = false;
+            defaultSetting.transparent = false;
         } else if (setting.windowType === 'view') {
             defaultSetting.show = false;
             defaultSetting.skipTaskbar = true;
             defaultSetting.frame = false;
+            defaultSetting.transparent = true;
             defaultSetting.resizable = false;
         } else if (setting.windowType === 'addressbar') {
             defaultSetting.show = false;
@@ -289,6 +294,7 @@ module.exports = function (child) {
             defaultSetting.allowAudio = false;
         } else if (setting.windowType === 'updates') {
             defaultSetting.sandbox = false;
+              setting.transparent = false;
             setting.sandbox = false;
             defaultSetting.show = false;
             defaultSetting.alwaysOnTop = false;
@@ -298,13 +304,17 @@ module.exports = function (child) {
             defaultSetting.allowAudio = false;
             defaultSetting.center = true;
         } else if (setting.windowType === 'none') {
+           setting.frame = true;
+            setting.transparent = false;
             defaultSetting.show = false;
             defaultSetting.alwaysOnTop = false;
             defaultSetting.skipTaskbar = true;
             defaultSetting.resizable = true;
-            defaultSetting.frame = true;
             defaultSetting.allowAudio = false;
             defaultSetting.center = true;
+        }else{
+             setting.frame = true;
+            setting.transparent = false;
         }
 
         if (setting.show === false) {
@@ -1106,7 +1116,7 @@ module.exports = function (child) {
                 if (win.customSetting.loadTimeout) {
                     win.customSetting.loadTimeoutID = setTimeout(() => {
                         if (win && !win.isDestroyed()) {
-                             child.sendMessage({ type: '[tracking-info]', trackingID: win.customSetting.trackingID, windowID: win.id, loadTimeoutError: true });
+                            child.sendMessage({ type: '[tracking-info]', trackingID: win.customSetting.trackingID, windowID: win.id, loadTimeoutError: true });
                             win.close();
                         }
                     }, win.customSetting.loadTimeout);
@@ -1269,6 +1279,7 @@ module.exports = function (child) {
                         child.createNewWindow({
                             ...win.customSetting,
                             windowType: 'popup',
+                            center: true,
                             show: true,
                             modal: true,
                             parentWindowID: win.id,

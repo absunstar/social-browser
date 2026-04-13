@@ -414,12 +414,14 @@ module.exports = function (child) {
                                 win.show();
                             } else if (message.data.name == 'open-external' && message.data.url) {
                                 child.openExternal(message.data.url);
-                            } else if (message.data.name == 'allow-ads') {
-                                win.customSetting.allowAds = !win.customSetting.allowAds;
-                                win.webContents.reload();
-                            } else if (message.data.name == 'off') {
+                            }  else if (message.data.name == 'off') {
                                 win.customSetting.off = !win.customSetting.off;
                                 win.webContents.reload();
+                            } else if (message.data.name.like('customSetting*')) {
+                                console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
+                                let settingName = message.data.name.replace('customSetting.', '');
+                                win.customSetting[settingName] = message.data.value;
+                               child.updateTab(win);
                             } else {
                                 if (message.data.levels) {
                                     child.sendToWebContents(win.webContents, '[window-action]', message.data);

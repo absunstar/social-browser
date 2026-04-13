@@ -497,14 +497,18 @@
 
                                         <div class="row">
                                             <i-checkbox class="" label="Block Load Images" ng-model="setting.blocking.blockImages"></i-checkbox>
-                                            <i-checkbox class="" label="Block Load Media / Videos" ng-model="setting.blocking.blockMedia"></i-checkbox>
                                             <i-checkbox class="" label="Block Load JavaScript Files ( Warning )" ng-model="setting.blocking.blockJS"></i-checkbox>
+                                            <i-checkbox class="" label="Block Load CSS Files" ng-model="setting.blocking.blockCSS"></i-checkbox>
+                                            <i-checkbox class="" label="Block Load Media / Videos" ng-model="setting.blocking.blockMedia"></i-checkbox>
                                             <i-checkbox class="" label="Block XMLHttpRequest / fetch / API ( Warning )" ng-model="setting.blocking.blockXHR"></i-checkbox>
                                             <i-checkbox class="" label="Block Load Sub Frames" ng-model="setting.blocking.blockSubFrame"></i-checkbox>
-                                            <i-checkbox class="" label="Block Load CSS Files" ng-model="setting.blocking.blockCSS"></i-checkbox>
                                             <i-checkbox class="" label="Block Load Fonts" ng-model="setting.blocking.blockFonts"></i-checkbox>
                                             <i-checkbox class="" label="Block WebSocket connection" ng-model="setting.blocking.blockWebSocket"></i-checkbox>
-                                            <i-checkbox class="" label="Block Content Security Policy violation report (CSP)" ng-model="setting.blocking.blockCspReport"></i-checkbox>
+                                            <i-checkbox class="" label="Block Ping Requests" ng-model="setting.blocking.blockPing"></i-checkbox>
+                                            <i-checkbox class="" label="Block CSP Reports" ng-model="setting.blocking.blockCspReport"></i-checkbox>
+                                            <i-checkbox class="" label="Block Object Resources'" ng-model="setting.blocking.blockObject"></i-checkbox>
+                                            <i-checkbox class="" label="Block Other Resources'" ng-model="setting.blocking.blockOther"></i-checkbox>
+
                                         </div>
                                     </fieldset>
 

@@ -200,7 +200,13 @@ module.exports = function init(child) {
             } else if (arr[0] == 'window') {
                 obj = child.electron.BrowserWindow.fromWebContents(event.sender) || child.window;
             } else if (arr[0] == 'customSetting') {
-                obj = child.electron.BrowserWindow.fromWebContents(event.sender)?.customSetting || child.window?.customSetting;
+                let win = child.electron.BrowserWindow.fromWebContents(event.sender);
+                if (win) {
+                    obj = win.customSetting;
+                    setTimeout(() => {
+                        child.updateTab(win);
+                    }, 200);
+                }
             } else if (arr[0] == 'session') {
                 obj = event.sender.session;
             } else if (arr[0] == 'shared') {

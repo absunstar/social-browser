@@ -145,7 +145,7 @@
     }
 
     browser.electron.protocol.registerSchemesAsPrivileged([
-        { scheme: 'browser', privileges: { bypassCSP: true, standard: true, secure: true, supportFetchAPI: true, allowServiceWorkers: true, corsEnabled: true, stream: true } },
+        { scheme: 'browser', privileges: { bypassCSP: true, standard: true, secure: true, supportFetchAPI: true, allowServiceWorkers: true, corsEnabled: true, stream: true, allowExtensions: true } },
     ]);
 
     browser.electron.app.on('open-url', function (event, url) {

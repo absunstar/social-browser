@@ -15,7 +15,7 @@ function ipc(name, message) {
     SOCIALBROWSER.currentTabInfo = SOCIALBROWSER.getCurrentTabInfo();
     message = message || {};
     message.tabInfo = SOCIALBROWSER.currentTabInfo;
-    message.tabID = message.tabID || SOCIALBROWSER.currentTabInfo.id;
+    message.tabID = message.tabID || SOCIALBROWSER.currentTabInfo.tabID;
     message.url = message.url || SOCIALBROWSER.currentTabInfo.url;
     message.title = message.title || '';
     message.iconURL = message.iconURL || SOCIALBROWSER.currentTabInfo.iconURL;
@@ -643,7 +643,7 @@ SOCIALBROWSER.showHelpMenu = function () {
         label: 'Click Here if you want to run Page Ads',
         sublabel: 'toggle [ on / off ]',
         click: () => {
-            ipc('[window-action]', { name: 'allow-ads' });
+            ipc('[window-action]', { name: 'customSetting.allowAds', value: !currentTab.allowAds });
         },
     });
     SOCIALBROWSER.menuList.push({
@@ -653,7 +653,7 @@ SOCIALBROWSER.showHelpMenu = function () {
         label: 'Click Here to run Page Content Any Way',
         sublabel: 'toggle [ on / off ]',
         click: () => {
-            ipc('[window-action]', { name: 'off' });
+            ipc('[window-action]', { name: 'customSetting.off', value: !currentTab.off });
         },
     });
 
@@ -672,6 +672,206 @@ SOCIALBROWSER.showHelpMenu = function () {
                 visible: m2.visible,
                 iconURL: m2.iconURL,
                 submenu: m2.submenu?.map((m3) => ({ label: m3.label, type: m3.type, sublabel: m3.sublabel, visible: m3.visible, iconURL: m3.iconURL })),
+            })),
+        })),
+    });
+};
+
+SOCIALBROWSER.showWindowCustomSetting = function () {
+    SOCIALBROWSER.window.show();
+    SOCIALBROWSER.menuList = [];
+    let currentTab = SOCIALBROWSER.getCurrentTabInfo();
+
+    SOCIALBROWSER.menuList.push({
+        label: 'Allow Default Web Worker ( Solve Captcha Problems )',
+        type: 'checkbox',
+        checked: currentTab.allowDefaultWorker || false,
+        click() {
+            ipc('[window-action]', { name: 'customSetting.allowDefaultWorker', value: !currentTab.allowDefaultWorker });
+        },
+    });
+
+    SOCIALBROWSER.menuList.push({
+        type: 'separator',
+    });
+    SOCIALBROWSER.menuList.push({
+        label: 'Allow Ads',
+        type: 'checkbox',
+        checked: currentTab.allowAds,
+        click: () => {
+            ipc('[window-action]', { name: 'customSetting.allowAds', value: !currentTab.allowAds });
+        },
+    });
+
+    SOCIALBROWSER.menuList.push({
+        label: 'Allow Popups',
+        type: 'checkbox',
+        checked: currentTab.allowPopup,
+        click: () => {
+            ipc('[window-action]', { name: 'customSetting.allowPopup', value: !currentTab.allowPopup });
+        },
+    });
+    SOCIALBROWSER.menuList.push({
+        type: 'separator',
+    });
+
+    SOCIALBROWSER.menuList.push({
+        label: 'Block Load Images',
+        type: 'checkbox',
+        checked: currentTab.blockImages || false,
+        click() {
+            ipc('[window-action]', { name: 'customSetting.blockImages', value: !currentTab.blockImages });
+        },
+    });
+    SOCIALBROWSER.menuList.push({
+        label: 'Block Load JavaScript Files',
+        type: 'checkbox',
+        checked: currentTab.blockJS || false,
+        click() {
+            ipc('[window-action]', { name: 'customSetting.blockJS', value: !currentTab.blockJS });
+        },
+    });
+    SOCIALBROWSER.menuList.push({
+        label: 'Block Load CSS Files',
+        type: 'checkbox',
+        checked: currentTab.blockCSS || false,
+        click() {
+            ipc('[window-action]', { name: 'customSetting.blockCSS', value: !currentTab.blockCSS });
+        },
+    });
+
+    SOCIALBROWSER.menuList.push({
+        label: 'Block Load Media / Videos',
+        type: 'checkbox',
+        checked: currentTab.blockMedia || false,
+        click() {
+            ipc('[window-action]', { name: 'customSetting.blockMedia', value: !currentTab.blockMedia });
+        },
+    });
+
+    SOCIALBROWSER.menuList.push({
+        label: 'Block XMLHttpRequest / fetch ',
+        type: 'checkbox',
+        checked: currentTab.blockXHR || false,
+        click() {
+            ipc('[window-action]', { name: 'customSetting.blockXHR', value: !currentTab.blockXHR });
+        },
+    });
+    SOCIALBROWSER.menuList.push({
+        label: 'Block Load Sub Frames',
+        type: 'checkbox',
+        checked: currentTab.blockSubFrame || false,
+        click() {
+            ipc('[window-action]', { name: 'customSetting.blockSubFrame', value: !currentTab.blockSubFrame });
+        },
+    });
+
+    SOCIALBROWSER.menuList.push({
+        label: 'Block Load Fonts',
+        type: 'checkbox',
+        checked: currentTab.blockFonts || false,
+        click() {
+            ipc('[window-action]', { name: 'customSetting.blockFonts', value: !currentTab.blockFonts });
+        },
+    });
+    SOCIALBROWSER.menuList.push({
+        label: 'Block WebSocket connection',
+        type: 'checkbox',
+        checked: currentTab.blockWebSocket || false,
+        click() {
+            ipc('[window-action]', { name: 'customSetting.blockWebSocket', value: !currentTab.blockWebSocket });
+        },
+    });
+    SOCIALBROWSER.menuList.push({
+        label: 'Block Ping Requests',
+        type: 'checkbox',
+        checked: currentTab.blockPing || false,
+        click() {
+            ipc('[window-action]', { name: 'customSetting.blockPing', value: !currentTab.blockPing });
+        },
+    });
+    SOCIALBROWSER.menuList.push({
+        label: 'Block CSP Reports',
+        type: 'checkbox',
+        checked: currentTab.blockCspReport || false,
+        click() {
+            ipc('[window-action]', { name: 'customSetting.blockCspReport', value: !currentTab.blockCspReport });
+        },
+    });
+
+    SOCIALBROWSER.menuList.push({
+        label: 'Block Object Resources',
+        type: 'checkbox',
+        checked: currentTab.blockObject || false,
+        click() {
+            ipc('[window-action]', { name: 'customSetting.blockObject', value: !currentTab.blockObject });
+        },
+    });
+
+    SOCIALBROWSER.menuList.push({
+        label: 'Block Other Resources',
+        type: 'checkbox',
+        checked: currentTab.blockOther || false,
+        click() {
+            ipc('[window-action]', { name: 'customSetting.blockOther', value: !currentTab.blockOther });
+        },
+    });
+    SOCIALBROWSER.menuList.push({
+        type: 'separator',
+    });
+    SOCIALBROWSER.menuList.push({
+        label: 'Mark Window as ( White Site )',
+        type: 'checkbox',
+        checked: currentTab.isWhiteSite || false,
+        click() {
+            ipc('[window-action]', { name: 'customSetting.isWhiteSite', value: !currentTab.isWhiteSite });
+        },
+    });
+    SOCIALBROWSER.menuList.push({
+        type: 'separator',
+    });
+    SOCIALBROWSER.menuList.push({
+        label: 'Block Javascript Engine ',
+        type: 'checkbox',
+        checked: currentTab.javaScriptOFF || false,
+        click() {
+            ipc('[window-action]', { name: 'customSetting.javaScriptOFF', value: !currentTab.javaScriptOFF });
+        },
+    });
+    SOCIALBROWSER.menuList.push({
+        label: 'Block Browser Engine ',
+        type: 'checkbox',
+        checked: currentTab.enginOFF || false,
+        click() {
+            ipc('[window-action]', { name: 'customSetting.enginOFF', value: !currentTab.enginOFF });
+        },
+    });
+    SOCIALBROWSER.menuList.push({
+        label: 'Block ALL Engine ',
+        type: 'checkbox',
+        checked: currentTab.off || false,
+        click() {
+            ipc('[window-action]', { name: 'customSetting.off', value: !currentTab.off });
+        },
+    });
+
+    ipc('[show-menu]', {
+        windowID: SOCIALBROWSER.window.id,
+        list: SOCIALBROWSER.menuList.map((m) => ({
+            label: m.label,
+            type: m.type,
+            checked: m.checked,
+            sublabel: m.sublabel,
+            visible: m.visible,
+            iconURL: m.iconURL,
+            submenu: m.submenu?.map((m2) => ({
+                label: m2.label,
+                type: m2.type,
+                checked: m2.checked,
+                sublabel: m2.sublabel,
+                visible: m2.visible,
+                iconURL: m2.iconURL,
+                submenu: m2.submenu?.map((m3) => ({ label: m3.label, type: m3.type, sublabel: m3.sublabel, visible: m3.visible, iconURL: m3.iconURL, checked: m3.checked })),
             })),
         })),
     });
@@ -1212,8 +1412,11 @@ SOCIALBROWSER.on('[open new tab]', (event, data) => {
 SOCIALBROWSER.on('[send-render-message]', (event, data) => {
     renderMessage(data);
 });
+SOCIALBROWSER.tabPropertyList = [];
+
 SOCIALBROWSER.on('[update-tab-properties]', (event, data) => {
     if (data.tabID) {
+        SOCIALBROWSER.tabPropertyList[data.tabID] = data;
         let tab1 = document.querySelector('#' + data.tabID);
         if (tab1) {
             tab1.setAttribute('iconURL', data.iconURL);
@@ -1227,6 +1430,7 @@ SOCIALBROWSER.on('[update-tab-properties]', (event, data) => {
             tab1.setAttribute('proxy', data.proxy);
             tab1.setAttribute('url', data.url);
             tab1.setAttribute('userAgentURL', data.userAgentURL);
+            tab1.setAttribute('allowAds', data.allowAds);
         }
 
         if (data.title) {
@@ -1388,19 +1592,20 @@ function renderMessage(cm) {
 
 SOCIALBROWSER.getCurrentTabInfo = function () {
     let tab = document.querySelector('.social-tab-current');
-    let info = {};
-    if (tab) {
-        info.id = tab.getAttribute('id');
-        info.url = tab.getAttribute('url');
-        info.title = tab.getAttribute('title');
-        info.iconURL = tab.getAttribute('iconURL');
-        info.windowID = tab.getAttribute('windowID');
-        info.partition = tab.getAttribute('partition');
-        info.user_name = tab.getAttribute('user_name');
-        info.proxy = tab.getAttribute('proxy');
-        info.childProcessID = tab.getAttribute('childProcessID');
-        info.mainWindowID = tab.getAttribute('mainWindowID');
-    }
+    let info = SOCIALBROWSER.tabPropertyList[tab ? tab.getAttribute('id') : ''] || {};
+    // if (tab) {
+    //     info.id = tab.getAttribute('id');
+    //     info.url = tab.getAttribute('url');
+    //     info.title = tab.getAttribute('title');
+    //     info.iconURL = tab.getAttribute('iconURL');
+    //     info.windowID = tab.getAttribute('windowID');
+    //     info.partition = tab.getAttribute('partition');
+    //     info.user_name = tab.getAttribute('user_name');
+    //     info.proxy = tab.getAttribute('proxy');
+    //     info.childProcessID = tab.getAttribute('childProcessID');
+    //     info.mainWindowID = tab.getAttribute('mainWindowID');
+    //     info.allowAds = tab.getAttribute('allowAds');
+    // }
     return info;
 };
 
