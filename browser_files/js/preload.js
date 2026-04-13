@@ -4779,6 +4779,7 @@ SOCIALBROWSER.init2 = function () {
                     label: '( Social Session ) Import from Clipboard to ==> current profile ',
                     click() {
                         let txt = SOCIALBROWSER.clipboard.readText();
+                         alert('Social Session Imported !!');
                         SOCIALBROWSER.importSiteData(txt, 0);
                     },
                 });
@@ -4786,6 +4787,7 @@ SOCIALBROWSER.init2 = function () {
                     label: '( Social Session ) Import from Clipboard to ==> Copied profile ',
                     click() {
                         let txt = SOCIALBROWSER.clipboard.readText();
+                         alert('Social Session Imported !!');
                         SOCIALBROWSER.importSiteData(txt, 1);
                     },
                 });
@@ -4793,6 +4795,7 @@ SOCIALBROWSER.init2 = function () {
                     label: '( Social Session ) Import from Clipboard to ==> Ghost profile ',
                     click() {
                         let txt = SOCIALBROWSER.clipboard.readText();
+                         alert('Social Session Imported !!');
                         SOCIALBROWSER.importSiteData(txt, 2);
                     },
                 });
@@ -4804,14 +4807,14 @@ SOCIALBROWSER.init2 = function () {
                     label: '( Json Cookies ) ==> Copy to Clipboard',
                     click() {
                         SOCIALBROWSER.copy(SOCIALBROWSER.toJson(SOCIALBROWSER.getDomainCookies().cookies));
-                        alert('Site Cookies JSON Text Copied !!');
+                        alert('Json Cookies Copied !!');
                     },
                 });
                 arr.push({
                     label: '( Json Cookies ) ==> Import from Clipboard',
                     click() {
                         SOCIALBROWSER.setDomainCookies({ cookies: SOCIALBROWSER.fromJson(SOCIALBROWSER.clipboard.readText()) });
-                        alert('Site Cookies Imported !!');
+                        alert('Json Cookies Imported !!');
                         SOCIALBROWSER.window.reload();
                     },
                 });
@@ -4822,14 +4825,14 @@ SOCIALBROWSER.init2 = function () {
                     label: '( HTTP Cookies ) ==> Copy to Clipboard',
                     click() {
                         SOCIALBROWSER.copy(SOCIALBROWSER.getHttpCookie());
-                        alert('Site HTTP Cookies Text Copied !!');
+                        alert('HTTP Cookies Text Copied !!');
                     },
                 });
                 arr.push({
                     label: '( HTTP Cookies ) ==> Import from Clipboard',
                     click() {
                         SOCIALBROWSER.setHttpCookie({ cookie: SOCIALBROWSER.clipboard.readText(), mode: 0 });
-                        alert('Site HTTP Cookies Set !!');
+                        alert('HTTP Cookies Set !!');
                         SOCIALBROWSER.window.reload();
                     },
                 });
