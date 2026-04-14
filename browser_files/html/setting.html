@@ -200,6 +200,7 @@
             }
             i-checkbox label {
                 white-space: nowrap;
+                 overflow: hidden;
             }
             i-button:hover {
                 transform: scale(1.1);
@@ -225,6 +226,7 @@
             i-list .dropdown-item {
                 border-bottom: 1px solid #333 !important;
             }
+           
         </style>
         <script src="http://127.0.0.1:60080/x-js/bootstrap-5-support.js"></script>
         <script src="http://127.0.0.1:60080/js/setting.js"></script>
@@ -506,8 +508,8 @@
                                             <i-checkbox class="" label="Block WebSocket connection" ng-model="setting.blocking.blockWebSocket"></i-checkbox>
                                             <i-checkbox class="" label="Block Ping Requests" ng-model="setting.blocking.blockPing"></i-checkbox>
                                             <i-checkbox class="" label="Block CSP Reports" ng-model="setting.blocking.blockCspReport"></i-checkbox>
-                                            <i-checkbox class="" label="Block Object Resources'" ng-model="setting.blocking.blockObject"></i-checkbox>
-                                            <i-checkbox class="" label="Block Other Resources'" ng-model="setting.blocking.blockOther"></i-checkbox>
+                                            <i-checkbox class="" label="Block Object Resources" ng-model="setting.blocking.blockObject"></i-checkbox>
+                                            <i-checkbox class="" label="Block Other Resources" ng-model="setting.blocking.blockOther"></i-checkbox>
 
                                         </div>
                                     </fieldset>
@@ -1773,7 +1775,7 @@
                                                         <p class="white">{{_ex.description}}</p>
                                                     </td>
                                                     <td>
-                                                        <i-button type="play" class2="" ng-show="_ex.isEnabled === false" ng-click="enableExtension(_ex)" label="Play"></i-button>
+                                                        <i-button type="play" class2="" ng-show="_ex.isEnabled === false" ng-click="enableExtension(_ex)" label="Start"></i-button>
                                                         <i-button type="stop" class2="btn-stop" ng-show="_ex.isEnabled === true" ng-click="disableExtension(_ex)" label="Stop"></i-button>
                                                         <i-button type="delete" ng-show="_ex.canDelete === true" ng-click="removeExtension(_ex)" label="Remove"></i-button>
                                                     </td>

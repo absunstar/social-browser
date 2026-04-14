@@ -355,6 +355,8 @@ module.exports = function (child) {
         setting.javaScriptOFF = win.customSetting.javaScriptOFF || false;
         setting.enginOFF = win.customSetting.enginOFF || false;
         setting.off = win.customSetting.off || false;
+        setting.partition = win.customSetting.session.name || '';
+        setting.user_name = win.customSetting.session.display || '';
 
         child.sendMessage({
             type: '[update-tab-properties]',

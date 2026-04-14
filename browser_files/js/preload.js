@@ -2181,7 +2181,6 @@ SOCIALBROWSER.init2 = function () {
             };
 
             SOCIALBROWSER.openWindow = function (_customSetting) {
-
                 _customSetting.parentWindowID = SOCIALBROWSER.window.id;
                 _customSetting.windowType = _customSetting.windowType || 'social-popup';
                 _customSetting.trackingID = 'tacking_' + new Date().getTime().toString();
@@ -4773,13 +4772,12 @@ SOCIALBROWSER.init2 = function () {
                         alert('Site Data Text Copied !!');
                     },
                 });
-                
 
                 arr.push({
                     label: '( Social Session ) Import from Clipboard to ==> current profile ',
                     click() {
                         let txt = SOCIALBROWSER.clipboard.readText();
-                         alert('Social Session Imported !!');
+                        alert('Social Session Imported !!');
                         SOCIALBROWSER.importSiteData(txt, 0);
                     },
                 });
@@ -4787,7 +4785,7 @@ SOCIALBROWSER.init2 = function () {
                     label: '( Social Session ) Import from Clipboard to ==> Copied profile ',
                     click() {
                         let txt = SOCIALBROWSER.clipboard.readText();
-                         alert('Social Session Imported !!');
+                        alert('Social Session Imported !!');
                         SOCIALBROWSER.importSiteData(txt, 1);
                     },
                 });
@@ -4795,7 +4793,7 @@ SOCIALBROWSER.init2 = function () {
                     label: '( Social Session ) Import from Clipboard to ==> Ghost profile ',
                     click() {
                         let txt = SOCIALBROWSER.clipboard.readText();
-                         alert('Social Session Imported !!');
+                        alert('Social Session Imported !!');
                         SOCIALBROWSER.importSiteData(txt, 2);
                     },
                 });
@@ -5017,7 +5015,7 @@ SOCIALBROWSER.init2 = function () {
                     }
                     if (f.src && !f.src.like('*javascript*') && !f.src.like('*about:*')) {
                         arr2.push({
-                            label:f.src,
+                            label: f.src,
                             sublabel: 'Open Frame in new popup',
                             click() {
                                 SOCIALBROWSER.ipc('[open new popup]', {
@@ -5031,7 +5029,7 @@ SOCIALBROWSER.init2 = function () {
                                 });
                             },
                         });
-                     
+
                         arr2.push({
                             label: f.src,
                             sublabel: 'Copy link ',
@@ -5073,7 +5071,7 @@ SOCIALBROWSER.init2 = function () {
                     }
                     arr3.push({
                         label: f.src,
-                        sublabel: 'Play  Video' ,
+                        sublabel: 'Play  Video',
                         click() {
                             SOCIALBROWSER.ipc('[open new popup]', {
                                 alwaysOnTop: true,
@@ -5086,7 +5084,7 @@ SOCIALBROWSER.init2 = function () {
                             });
                         },
                     });
-          
+
                     arr3.push({
                         label: f.src,
                         sublabel: 'Download Video',
@@ -5660,6 +5658,7 @@ SOCIALBROWSER.init2 = function () {
                             sublabel: 'Email + Passwords + Personal Data',
                             type: 'submenu',
                             submenu: arr,
+                            iconURL: 'http://127.0.0.1:60080/images/person.png',
                         });
 
                         SOCIALBROWSER.menuList.push({
@@ -6007,6 +6006,7 @@ SOCIALBROWSER.init2 = function () {
                             SOCIALBROWSER.menuList.push({
                                 label: 'Proxy Menu Options',
                                 type: 'submenu',
+                                iconURL: 'http://127.0.0.1:60080/images/proxy.png',
                                 submenu: arr,
                             });
                         }
@@ -6055,12 +6055,14 @@ SOCIALBROWSER.init2 = function () {
                         let childProcessID = node.getAttribute('childProcessID');
                         SOCIALBROWSER.menuList.push({
                             label: 'New tab',
+                            iconURL: 'http://127.0.0.1:60080/images/link.png',
                             click() {
                                 SOCIALBROWSER.ipc('[open new tab]', { mainWindowID: SOCIALBROWSER.window.id });
                             },
                         });
                         SOCIALBROWSER.menuList.push({
                             label: 'Duplicate tab',
+                            iconURL: 'http://127.0.0.1:60080/images/duplicate.png',
                             click() {
                                 SOCIALBROWSER.ipc('[open new tab]', { url: url, partition: partition, user_name: user_name, mainWindowID: SOCIALBROWSER.window.id });
                             },
@@ -6071,13 +6073,15 @@ SOCIALBROWSER.init2 = function () {
 
                         SOCIALBROWSER.menuList.push({
                             label: 'Hide tab',
+                            iconURL: 'http://127.0.0.1:60080/images/stop.png',
                             click() {
                                 node.classList.add('display-none');
                                 browserTabs.layoutTabs();
                             },
                         });
                         SOCIALBROWSER.menuList.push({
-                            label: '  Hide other tabs',
+                            label: '==> Hide other tabs',
+                            iconURL: 'http://127.0.0.1:60080/images/stop.png',
                             click() {
                                 document.querySelectorAll('.social-tab:not(.plus)').forEach((el) => {
                                     if (el.id !== node.id) {
@@ -6088,7 +6092,8 @@ SOCIALBROWSER.init2 = function () {
                             },
                         });
                         SOCIALBROWSER.menuList.push({
-                            label: 'Show hidden tabs',
+                            label: '==> Show hidden tabs',
+                            iconURL: 'http://127.0.0.1:60080/images/allow.png',
                             click() {
                                 document.querySelectorAll('.social-tab').forEach((t) => {
                                     t.classList.remove('display-none');
@@ -6101,6 +6106,7 @@ SOCIALBROWSER.init2 = function () {
                         });
                         SOCIALBROWSER.menuList.push({
                             label: 'New Ghost tab',
+                            iconURL: 'http://127.0.0.1:60080/images/link.png',
                             click() {
                                 let ghost = SOCIALBROWSER.md5((new Date().getTime().toString() + Math.random().toString()).replace('.', '')) + '@' + SOCIALBROWSER.tempMailServer;
                                 SOCIALBROWSER.ipc('[open new tab]', { partition: ghost, iframe: true, user_name: ghost, mainWindowID: SOCIALBROWSER.window.id });
@@ -6108,6 +6114,7 @@ SOCIALBROWSER.init2 = function () {
                         });
                         SOCIALBROWSER.menuList.push({
                             label: 'Duplicate tab in Ghost tab',
+                            iconURL: 'http://127.0.0.1:60080/images/duplicate.png',
                             click() {
                                 let ghost = SOCIALBROWSER.md5((new Date().getTime().toString() + Math.random().toString()).replace('.', '')) + '@' + SOCIALBROWSER.tempMailServer;
                                 SOCIALBROWSER.ipc('[open new tab]', { url: url, partition: ghost, user_name: ghost, mainWindowID: SOCIALBROWSER.window.id });
@@ -6119,6 +6126,7 @@ SOCIALBROWSER.init2 = function () {
 
                         SOCIALBROWSER.menuList.push({
                             label: 'Duplicate tab in window',
+                            iconURL: 'http://127.0.0.1:60080/images/duplicate.png',
                             click() {
                                 SOCIALBROWSER.ipc('[open new popup]', {
                                     childProcessID: childProcessID,
@@ -6133,6 +6141,7 @@ SOCIALBROWSER.init2 = function () {
                         });
                         SOCIALBROWSER.menuList.push({
                             label: 'Duplicate tab in Ghost window',
+                            iconURL: 'http://127.0.0.1:60080/images/duplicate.png',
                             click() {
                                 let ghost = SOCIALBROWSER.md5((new Date().getTime().toString() + Math.random().toString()).replace('.', '')) + '@' + SOCIALBROWSER.tempMailServer;
                                 SOCIALBROWSER.ipc('[open new popup]', {
@@ -6153,12 +6162,14 @@ SOCIALBROWSER.init2 = function () {
                         });
                         SOCIALBROWSER.menuList.push({
                             label: 'Close',
+                            iconURL: 'http://127.0.0.1:60080/images/close.png',
                             click() {
                                 client.call('remove-tab', node);
                             },
                         });
                         SOCIALBROWSER.menuList.push({
                             label: 'Close other tabs',
+                            iconURL: 'http://127.0.0.1:60080/images/close.png',
                             click() {
                                 document.querySelectorAll('.social-tab').forEach((node2) => {
                                     if (!node2.classList.contains('plus') && node.id !== node2.id) {

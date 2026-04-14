@@ -59,32 +59,34 @@ module.exports = function init(parent) {
         parser: 'js',
     });
 
-    parent.api.onALL({
-        name: '/js',
-        path: parent.files_dir + '/js',
-        parser: 'js',
-    });
-    parent.api.onALL({
-        name: '/css',
-        path: parent.files_dir + '/css',
-        parser: 'css',
-    });
-    parent.api.onALL({
-        name: '/images',
-        path: parent.files_dir + '/images',
-    });
-    parent.api.onGET({
-        name: '/txt',
-        path: parent.files_dir + '/txt',
-    });
-    parent.api.onALL({
-        name: '/html',
-        path: parent.files_dir + '/html',
-    });
+    // parent.api.onALL({
+    //     name: '/js',
+    //     path: parent.files_dir + '/js',
+    //     parser: 'js',
+    // });
+    // parent.api.onALL({
+    //     name: '/css',
+    //     path: parent.files_dir + '/css',
+    //     parser: 'css',
+    // });
+    // parent.api.onALL({
+    //     name: '/images',
+    //     path: parent.files_dir + '/images',
+    //     overwrite: true,
+    // });
+    // parent.api.onALL({
+    //     name: '/txt',
+    //     path: parent.files_dir + '/txt',
+    // });
+    // parent.api.onALL({
+    //     name: '/html',
+    //     path: parent.files_dir + '/html',
+    // });
 
     parent.api.onALL({
         name: '/',
         path: parent.files_dir,
+        overwrite: true,
     });
 
     parent.api.onGET({

@@ -212,7 +212,6 @@ class BrowserTabs {
             if (tabEl.classList.contains('social-tab-current')) {
                 bottomBarEl.style.zIndex = length + 1;
                 zIndex = length + 2;
-                currentTabId = tabEl.id;
             }
             tabEl.style.zIndex = zIndex;
         });

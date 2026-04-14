@@ -814,6 +814,8 @@ module.exports = function init(child) {
             options.body = options.body || options.data || options.payload;
             options.data = undefined;
             options.payload = undefined;
+            delete options.data;
+            delete options.payload;
 
             if (options.method && options.method.like('get')) {
                 if (typeof options.body == 'string' && options.body.length > 0) {

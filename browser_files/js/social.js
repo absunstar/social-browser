@@ -1,6 +1,5 @@
 var browserTabsDom = document.querySelector('.browser-tabs');
 var browserTabs = new BrowserTabs();
-var currentTabId = null;
 var opendTabList = [];
 let $addressbar = $('.address-input .url');
 
@@ -39,6 +38,14 @@ document.querySelectorAll('#body').forEach((el) => {
         SOCIALBROWSER.clickCurrentTab();
     });
 });
+
+function showAddressbar() {
+    let url = SOCIALBROWSER.getCurrentTabInfo().url || '';
+    if (url.like('browser*|*127.0.0.1:60080*')) {
+        return;
+    }
+    ipc('[show-addressbar]', { url: SOCIALBROWSER.getCurrentTabInfo().url });
+}
 
 function goURL(e) {
     if (e.keyCode == 13) {
@@ -207,7 +214,7 @@ document.addEventListener(
         } else if (e.keyCode == 116 /*f5*/) {
             if (e.ctrlKey === true) {
                 ipc('[window-reload-hard]', {
-                    origin: new URL($('#' + currentTabId).attr('url')).origin,
+                    origin: new URL(SOCIALBROWSER.getCurrentTabInfo().url).origin,
                 });
             } else {
                 ipc('[window-reload]', {
@@ -378,7 +385,7 @@ function showSettingMenu() {
         accelerator: 'CommandOrControl+F5',
         click: () =>
             ipc('[window-reload-hard]', {
-                origin: new URL($('#' + currentTabId).attr('url')).origin,
+                origin: new URL(SOCIALBROWSER.getCurrentTabInfo().url).origin,
             }),
     });
 
@@ -686,6 +693,7 @@ SOCIALBROWSER.showWindowCustomSetting = function () {
         label: 'Allow Default Web Worker ( Solve Captcha Problems )',
         type: 'checkbox',
         checked: currentTab.allowDefaultWorker || false,
+        iconURL: 'http://127.0.0.1:60080/images/allow.png',
         click() {
             ipc('[window-action]', { name: 'customSetting.allowDefaultWorker', value: !currentTab.allowDefaultWorker });
         },
@@ -698,6 +706,7 @@ SOCIALBROWSER.showWindowCustomSetting = function () {
         label: 'Allow Ads',
         type: 'checkbox',
         checked: currentTab.allowAds,
+        iconURL: 'http://127.0.0.1:60080/images/allow.png',
         click: () => {
             ipc('[window-action]', { name: 'customSetting.allowAds', value: !currentTab.allowAds });
         },
@@ -707,6 +716,7 @@ SOCIALBROWSER.showWindowCustomSetting = function () {
         label: 'Allow Popups',
         type: 'checkbox',
         checked: currentTab.allowPopup,
+        iconURL: 'http://127.0.0.1:60080/images/allow.png',
         click: () => {
             ipc('[window-action]', { name: 'customSetting.allowPopup', value: !currentTab.allowPopup });
         },
@@ -714,10 +724,11 @@ SOCIALBROWSER.showWindowCustomSetting = function () {
     SOCIALBROWSER.menuList.push({
         type: 'separator',
     });
-  SOCIALBROWSER.menuList.push({
+    SOCIALBROWSER.menuList.push({
         label: 'Mark Window as ( White Site )',
         type: 'checkbox',
         checked: currentTab.isWhiteSite || false,
+        iconURL: 'http://127.0.0.1:60080/images/allow.png',
         click() {
             ipc('[window-action]', { name: 'customSetting.isWhiteSite', value: !currentTab.isWhiteSite });
         },
@@ -729,7 +740,7 @@ SOCIALBROWSER.showWindowCustomSetting = function () {
         label: 'Block Load Images',
         type: 'checkbox',
         checked: currentTab.blockImages || false,
-           iconURL: 'http://127.0.0.1:60080/images/stop.png',
+        iconURL: 'http://127.0.0.1:60080/images/stop.png',
         click() {
             ipc('[window-action]', { name: 'customSetting.blockImages', value: !currentTab.blockImages });
         },
@@ -738,7 +749,7 @@ SOCIALBROWSER.showWindowCustomSetting = function () {
         label: 'Block Load JavaScript Files',
         type: 'checkbox',
         checked: currentTab.blockJS || false,
-         iconURL: 'http://127.0.0.1:60080/images/stop.png',
+        iconURL: 'http://127.0.0.1:60080/images/stop.png',
         click() {
             ipc('[window-action]', { name: 'customSetting.blockJS', value: !currentTab.blockJS });
         },
@@ -747,7 +758,7 @@ SOCIALBROWSER.showWindowCustomSetting = function () {
         label: 'Block Load CSS Files',
         type: 'checkbox',
         checked: currentTab.blockCSS || false,
-         iconURL: 'http://127.0.0.1:60080/images/stop.png',
+        iconURL: 'http://127.0.0.1:60080/images/stop.png',
         click() {
             ipc('[window-action]', { name: 'customSetting.blockCSS', value: !currentTab.blockCSS });
         },
@@ -757,7 +768,7 @@ SOCIALBROWSER.showWindowCustomSetting = function () {
         label: 'Block Load Media / Videos',
         type: 'checkbox',
         checked: currentTab.blockMedia || false,
-         iconURL: 'http://127.0.0.1:60080/images/stop.png',
+        iconURL: 'http://127.0.0.1:60080/images/stop.png',
         click() {
             ipc('[window-action]', { name: 'customSetting.blockMedia', value: !currentTab.blockMedia });
         },
@@ -767,7 +778,7 @@ SOCIALBROWSER.showWindowCustomSetting = function () {
         label: 'Block XMLHttpRequest / fetch ',
         type: 'checkbox',
         checked: currentTab.blockXHR || false,
-         iconURL: 'http://127.0.0.1:60080/images/stop.png',
+        iconURL: 'http://127.0.0.1:60080/images/stop.png',
         click() {
             ipc('[window-action]', { name: 'customSetting.blockXHR', value: !currentTab.blockXHR });
         },
@@ -776,7 +787,7 @@ SOCIALBROWSER.showWindowCustomSetting = function () {
         label: 'Block Load Sub Frames',
         type: 'checkbox',
         checked: currentTab.blockSubFrame || false,
-         iconURL: 'http://127.0.0.1:60080/images/stop.png',
+        iconURL: 'http://127.0.0.1:60080/images/stop.png',
         click() {
             ipc('[window-action]', { name: 'customSetting.blockSubFrame', value: !currentTab.blockSubFrame });
         },
@@ -786,7 +797,7 @@ SOCIALBROWSER.showWindowCustomSetting = function () {
         label: 'Block Load Fonts',
         type: 'checkbox',
         checked: currentTab.blockFonts || false,
-         iconURL: 'http://127.0.0.1:60080/images/stop.png',
+        iconURL: 'http://127.0.0.1:60080/images/stop.png',
         click() {
             ipc('[window-action]', { name: 'customSetting.blockFonts', value: !currentTab.blockFonts });
         },
@@ -795,7 +806,7 @@ SOCIALBROWSER.showWindowCustomSetting = function () {
         label: 'Block WebSocket connection',
         type: 'checkbox',
         checked: currentTab.blockWebSocket || false,
-         iconURL: 'http://127.0.0.1:60080/images/stop.png',
+        iconURL: 'http://127.0.0.1:60080/images/stop.png',
         click() {
             ipc('[window-action]', { name: 'customSetting.blockWebSocket', value: !currentTab.blockWebSocket });
         },
@@ -804,7 +815,7 @@ SOCIALBROWSER.showWindowCustomSetting = function () {
         label: 'Block Ping Requests',
         type: 'checkbox',
         checked: currentTab.blockPing || false,
-         iconURL: 'http://127.0.0.1:60080/images/stop.png',
+        iconURL: 'http://127.0.0.1:60080/images/stop.png',
         click() {
             ipc('[window-action]', { name: 'customSetting.blockPing', value: !currentTab.blockPing });
         },
@@ -813,7 +824,7 @@ SOCIALBROWSER.showWindowCustomSetting = function () {
         label: 'Block CSP Reports',
         type: 'checkbox',
         checked: currentTab.blockCspReport || false,
-         iconURL: 'http://127.0.0.1:60080/images/stop.png',
+        iconURL: 'http://127.0.0.1:60080/images/stop.png',
         click() {
             ipc('[window-action]', { name: 'customSetting.blockCspReport', value: !currentTab.blockCspReport });
         },
@@ -823,7 +834,7 @@ SOCIALBROWSER.showWindowCustomSetting = function () {
         label: 'Block Object Resources',
         type: 'checkbox',
         checked: currentTab.blockObject || false,
-         iconURL: 'http://127.0.0.1:60080/images/stop.png',
+        iconURL: 'http://127.0.0.1:60080/images/stop.png',
         click() {
             ipc('[window-action]', { name: 'customSetting.blockObject', value: !currentTab.blockObject });
         },
@@ -833,7 +844,7 @@ SOCIALBROWSER.showWindowCustomSetting = function () {
         label: 'Block Other Resources',
         type: 'checkbox',
         checked: currentTab.blockOther || false,
-         iconURL: 'http://127.0.0.1:60080/images/stop.png',
+        iconURL: 'http://127.0.0.1:60080/images/stop.png',
         click() {
             ipc('[window-action]', { name: 'customSetting.blockOther', value: !currentTab.blockOther });
         },
@@ -841,12 +852,12 @@ SOCIALBROWSER.showWindowCustomSetting = function () {
     SOCIALBROWSER.menuList.push({
         type: 'separator',
     });
-  
+
     SOCIALBROWSER.menuList.push({
         label: 'Block Javascript Engine ',
         type: 'checkbox',
         checked: currentTab.javaScriptOFF || false,
-         iconURL: 'http://127.0.0.1:60080/images/stop.png',
+        iconURL: 'http://127.0.0.1:60080/images/stop.png',
         click() {
             ipc('[window-action]', { name: 'customSetting.javaScriptOFF', value: !currentTab.javaScriptOFF });
         },
@@ -855,7 +866,7 @@ SOCIALBROWSER.showWindowCustomSetting = function () {
         label: 'Block Browser Engine ',
         type: 'checkbox',
         checked: currentTab.enginOFF || false,
-         iconURL: 'http://127.0.0.1:60080/images/stop.png',
+        iconURL: 'http://127.0.0.1:60080/images/stop.png',
         click() {
             ipc('[window-action]', { name: 'customSetting.enginOFF', value: !currentTab.enginOFF });
         },
@@ -864,7 +875,7 @@ SOCIALBROWSER.showWindowCustomSetting = function () {
         label: 'Block ALL Engine ',
         type: 'checkbox',
         checked: currentTab.off || false,
-         iconURL: 'http://127.0.0.1:60080/images/stop.png',
+        iconURL: 'http://127.0.0.1:60080/images/stop.png',
         click() {
             ipc('[window-action]', { name: 'customSetting.off', value: !currentTab.off });
         },
@@ -1367,15 +1378,14 @@ browserTabs.init(browserTabsDom, {
 
 function setURL(url, url2) {
     $addressbar.text('');
-    $addressbar.attr('title', '');
     if (url) {
+        url = url.replace('127.0.0.1:60080/', '');
         try {
             url = decodeURI(url);
         } catch (error) {
             console.log(error, url);
         }
         $addressbar.text(url.replace('http://', '').replace('https://', ''));
-        $addressbar.attr('title', url2);
     }
 }
 
@@ -1418,7 +1428,7 @@ function handleURL(u) {
 }
 
 function showURL(u) {
-    u = u || $('#' + currentTabId).attr('url');
+    u = u || SOCIALBROWSER.getCurrentTabInfo().url;
     ipc('[show-addressbar]', {
         url: u,
     });
@@ -1435,19 +1445,19 @@ $('.social-minmize').click(() => {
 });
 
 browserTabsDom.addEventListener('activeTabChange', ({ detail }) => {
-    currentTabId = detail.tabEl.id;
-    SOCIALBROWSER.currentTabInfo = SOCIALBROWSER.getCurrentTabInfo();
+    let id = detail.tabEl.id;
+    SOCIALBROWSER.currentTabInfo = SOCIALBROWSER.getCurrentTabInfo(id);
 
     ipc('[show-view]', {
         x: 0,
         y: 0,
         width: document.width,
         height: document.height,
-        tabID: currentTabId,
+        tabID: id,
         mainWindowID: SOCIALBROWSER.window.id,
     });
 
-    $('#user_name').html($('#' + currentTabId).attr('user_name'));
+    $('#user_name').html(SOCIALBROWSER.currentTabInfo.user_name);
 
     if (!SOCIALBROWSER.currentTabInfo.forward) {
         $('.go-forward i').css('color', '#9E9E9E');
@@ -1490,43 +1500,23 @@ browserTabsDom.addEventListener('activeTabChange', ({ detail }) => {
         } else {
             let protocol = '';
             let url = '';
-            if (
-                $('#' + currentTabId)
-                    .attr('url')
-                    .like('https*')
-            ) {
+            if (SOCIALBROWSER.currentTabInfo.url.like('https*')) {
                 protocol = 'HTTPS';
                 $('.address-input .https').html(protocol);
                 $('.address-input .https').css('display', 'inline-block');
-            } else if (
-                $('#' + currentTabId)
-                    .attr('url')
-                    .like('http*')
-            ) {
+            } else if (SOCIALBROWSER.currentTabInfo.url.like('http*')) {
                 protocol = 'http';
                 $('.address-input .http').html(protocol);
                 $('.address-input .http').css('display', 'inline-block');
-            } else if (
-                $('#' + currentTabId)
-                    .attr('url')
-                    .like('ftp*')
-            ) {
+            } else if (SOCIALBROWSER.currentTabInfo.url.like('ftp*')) {
                 protocol = 'ftp';
                 $('.address-input .ftp').html(protocol);
                 $('.address-input .ftp').css('display', 'inline-block');
-            } else if (
-                $('#' + currentTabId)
-                    .attr('url')
-                    .like('file*')
-            ) {
+            } else if (SOCIALBROWSER.currentTabInfo.url.like('file*')) {
                 protocol = 'file';
                 $('.address-input .file').html(protocol);
                 $('.address-input .file').css('display', 'inline-block');
-            } else if (
-                $('#' + currentTabId)
-                    .attr('url')
-                    .like('browser*')
-            ) {
+            } else if (SOCIALBROWSER.currentTabInfo.url.like('browser*')) {
                 protocol = 'browser';
                 $('.address-input .browser').html(protocol);
                 $('.address-input .browser').css('display', 'inline-block');
@@ -1551,32 +1541,28 @@ browserTabsDom.addEventListener('activeTabChange', ({ detail }) => {
 });
 
 browserTabsDom.addEventListener('tabAdd', ({ detail }) => {
-    currentTabId = detail.tabEl.id;
-    if (currentTabId && currentTabId != null && currentTabId.length > 0) {
+    let id = detail.tabEl.id;
+    if (id && id != null && id.length > 0) {
         opendTabList.push({
-            id: currentTabId,
+            id: id,
         });
-        const $id = $('#' + currentTabId);
         ipc('[create-new-view]', {
             ...detail.tabProperties,
             x: window.screenLeft,
             y: window.screenTop + 70,
             width: document.width,
             height: document.height,
-            tabID: currentTabId,
+            tabID: id,
             mainWindowID: SOCIALBROWSER.window.id,
         });
-
-        if (!$id.attr('url') || $id.attr('url').like('*newTab')) {
-        }
     }
 });
 
 browserTabsDom.addEventListener('tabRemove', ({ detail }) => {
-    currentTabId = detail.id;
+    let id = detail.id;
 
     ipc('[close-view]', {
-        tabID: detail.id,
+        tabID: id,
     });
 });
 
@@ -1633,23 +1619,11 @@ SOCIALBROWSER.on('[update-tab-properties]', (event, data) => {
         SOCIALBROWSER.tabPropertyList[data.tabID] = data;
         let tab1 = document.querySelector('#' + data.tabID);
         if (tab1) {
-            tab1.setAttribute('iconURL', data.iconURL);
             $('#' + data.tabID + ' .social-tab-favicon').css('background-image', 'url(' + data.iconURL + ')');
-            tab1.setAttribute('windowID', data.windowID);
-            tab1.setAttribute('childProcessID', data.childProcessID);
-            tab1.setAttribute('mainWindowID', data.mainWindowID);
-            tab1.setAttribute('forward', data.forward);
-            tab1.setAttribute('back', data.back);
-            tab1.setAttribute('webaudio', data.webaudio);
-            tab1.setAttribute('proxy', data.proxy);
-            tab1.setAttribute('url', data.url);
-            tab1.setAttribute('userAgentURL', data.userAgentURL);
-            tab1.setAttribute('allowAds', data.allowAds);
         }
 
         if (data.title) {
             $('#' + data.tabID + ' .social-tab-title p').text(data.title);
-            $('#' + data.tabID).attr('title', data.title);
             let p = document.querySelector('#' + data.tabID + ' .social-tab-title p');
             if (p) {
                 if (data.title.test(/^[a-zA-Z\-\u0590-\u05FF\0-9\^@_:\?\[\]~<>\{\}\|\\ ]+$/)) {
@@ -1669,7 +1643,7 @@ SOCIALBROWSER.on('[update-tab-properties]', (event, data) => {
             y: 0,
             width: document.width,
             height: document.height,
-            tabID: currentTabId,
+            tabID: data.tabID,
             mainWindowID: SOCIALBROWSER.window.id,
         });
         SOCIALBROWSER.showViewDone = true;
@@ -1678,7 +1652,7 @@ SOCIALBROWSER.on('[update-tab-properties]', (event, data) => {
         SOCIALBROWSER.window.setAlwaysOnTop(false);
     }
 
-    if (data.tabID && data.tabID == currentTabId && data.url) {
+    if (data.tabID && data.tabID == SOCIALBROWSER.getCurrentTabInfo(data.tabID).tabID && data.url) {
         if (!data.forward) {
             $('.go-forward i').css('color', '#9E9E9E');
         } else {
@@ -1718,7 +1692,7 @@ SOCIALBROWSER.on('[update-tab-properties]', (event, data) => {
         if (data.url.like('http://127.0.0.1:60080*|browser*')) {
             $('.address-input .browser').html('browser');
             $('.address-input .browser').css('display', 'inline-block');
-            url = $('#' + currentTabId).attr('url');
+            url = data.url;
             let arr = url.split('//');
             setURL(arr[arr.length - 1], url);
         } else {
@@ -1731,8 +1705,6 @@ SOCIALBROWSER.on('[update-tab-properties]', (event, data) => {
             }
             if (data.url.like('https*')) {
                 protocol = 'HTTPS';
-                // var parser = document.createElement('a')
-                // parser.href = data.url;
                 $('.address-input .https').html(protocol);
                 $('.address-input .https').css('display', 'inline-block');
             } else if (data.url.like('http*')) {
@@ -1804,23 +1776,14 @@ function renderMessage(cm) {
     }
 }
 
-SOCIALBROWSER.getCurrentTabInfo = function () {
+SOCIALBROWSER.getCurrentTabInfo = function (id) {
+    if (id) {
+        let info = SOCIALBROWSER.tabPropertyList[id];
+        return info || {};
+    }
     let tab = document.querySelector('.social-tab-current');
-    let info = SOCIALBROWSER.tabPropertyList[tab ? tab.getAttribute('id') : ''] || {};
-    // if (tab) {
-    //     info.id = tab.getAttribute('id');
-    //     info.url = tab.getAttribute('url');
-    //     info.title = tab.getAttribute('title');
-    //     info.iconURL = tab.getAttribute('iconURL');
-    //     info.windowID = tab.getAttribute('windowID');
-    //     info.partition = tab.getAttribute('partition');
-    //     info.user_name = tab.getAttribute('user_name');
-    //     info.proxy = tab.getAttribute('proxy');
-    //     info.childProcessID = tab.getAttribute('childProcessID');
-    //     info.mainWindowID = tab.getAttribute('mainWindowID');
-    //     info.allowAds = tab.getAttribute('allowAds');
-    // }
-    return info;
+    let info = tab ? SOCIALBROWSER.tabPropertyList[tab.getAttribute('id')] : {};
+    return info || {};
 };
 
 function playMiniVideo(cm) {
@@ -1890,7 +1853,7 @@ function init_tab() {
 }
 
 function handleUrlText() {
-    let url = $('#' + currentTabId).attr('url') || '';
+    let url = SOCIALBROWSER.getCurrentTabInfo().url || '';
     try {
         url = decodeURI(url);
     } catch (error) {
@@ -1910,7 +1873,7 @@ window.addEventListener('resize', () => {
 
 SOCIALBROWSER.on('show-tab-view', (data) => {
     if (data.windowID == SOCIALBROWSER.window.id) {
-        $('#' + currentTabId).click();
+        $('#' + data.tabID).click();
     }
 });
 
@@ -1921,7 +1884,7 @@ SOCIALBROWSER.tabBusy = false;
 SOCIALBROWSER.clickCurrentTab = function () {
     if (!SOCIALBROWSER.tabBusy) {
         SOCIALBROWSER.tabBusy = true;
-        $('#' + currentTabId).click();
+        $('#' + SOCIALBROWSER.getCurrentTabInfo().tabID).click();
         setTimeout(() => {
             SOCIALBROWSER.tabBusy = false;
         }, 500);
@@ -1951,5 +1914,5 @@ if (SOCIALBROWSER.var.core.id.like('*developer*')) {
         },
     });
 }
-
+$('#user_name').html(SOCIALBROWSER.var.core.session.display);
 init_tab();

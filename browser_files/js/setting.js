@@ -1365,10 +1365,10 @@ app.controller('mainController', ($scope, $http, $timeout) => {
 
         $scope.url = url;
 
-        const $id = $('#' + currentTabId);
+        const $id = $(SOCIALBROWSER.getCurrentTabInfo().tabID);
         $id.attr('url', $scope.url);
         SOCIALBROWSER.ipc('update-view', {
-            _id: currentTabId,
+            _id: SOCIALBROWSER.getCurrentTabInfo().tabID,
             url: $id.attr('url'),
             partition: $id.attr('partition'),
             user_name: $id.attr('user_name'),
