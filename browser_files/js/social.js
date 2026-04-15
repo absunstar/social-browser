@@ -1534,8 +1534,8 @@ browserTabsDom.addEventListener('activeTabChange', ({ detail }) => {
 
     handleUrlText();
 
-    if (SOCIALBROWSER.currentTabInfo.proxy && SOCIALBROWSER.currentTabInfo.proxy != 'undefined') {
-        $('.address-input .proxy').html(SOCIALBROWSER.currentTabInfo.proxy.url || SOCIALBROWSER.currentTabInfo.proxy.ip + ':' + SOCIALBROWSER.currentTabInfo.proxy.port);
+    if (SOCIALBROWSER.currentTabInfo.proxy) {
+        $('.address-input .proxy').html(SOCIALBROWSER.currentTabInfo.proxy);
         $('.address-input .proxy').css('display', 'inline-block');
     }
 });
