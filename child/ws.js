@@ -414,14 +414,14 @@ module.exports = function (child) {
                                 win.show();
                             } else if (message.data.name == 'open-external' && message.data.url) {
                                 child.openExternal(message.data.url);
-                            }  else if (message.data.name == 'off') {
+                            } else if (message.data.name == 'off') {
                                 win.customSetting.off = !win.customSetting.off;
                                 win.webContents.reload();
                             } else if (message.data.name.like('customSetting*')) {
-                                console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
+                                console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
                                 let settingName = message.data.name.replace('customSetting.', '');
                                 win.customSetting[settingName] = message.data.value;
-                               child.updateTab(win);
+                                child.updateTab(win);
                             } else {
                                 if (message.data.levels) {
                                     child.sendToWebContents(win.webContents, '[window-action]', message.data);
@@ -566,8 +566,18 @@ module.exports = function (child) {
                 } else if (message.type == '[update-view-url]') {
                     if ((win = child.getAllWindows().find((w) => w.customSetting.tabID == message.data.tabID && w.customSetting.windowType == 'view'))) {
                         if (win && !win.isDestroyed()) {
-                            win.webContents.stop();
                             win.loadURL(message.data.url);
+                        }
+                    }
+                } else if (message.type == '[update-view]') {
+                    if ((win = child.getAllWindows().find((w) => w.customSetting.tabID == message.data.tabID && w.customSetting.windowType == 'view'))) {
+                        if (win && !win.isDestroyed()) {
+                            if (message.data.customSetting) {
+                                win.customSetting = { ...win.customSetting, ...message.data.customSetting };
+                            }
+                            if (message.data.url) {
+                                win.loadURL(message.data.url);
+                            }
                         }
                     }
                 } else if (message.type == '[remove-tab]') {

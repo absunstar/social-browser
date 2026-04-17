@@ -998,114 +998,86 @@ SOCIALBROWSER.showAIMenu = function () {
 
     let currentTab = SOCIALBROWSER.getCurrentTabInfo();
 
-    SOCIALBROWSER.menuList.push({
-        label: 'Google Gemini',
-        iconURL: 'http://127.0.0.1:60080/images/bot.png',
-        click: () => {
-            SOCIALBROWSER.openNewPopup({
-                url: 'https://gemini.google.com/app',
-                partition: currentTab.partition,
-                show: true,
-                isWhiteSite: true,
-            });
-        },
-    });
+    SOCIALBROWSER.var.blocking.ai_site_list.forEach((ai) => {
+        if (ai.multi) {
+            let arr = [];
+            SOCIALBROWSER.var.session_list.forEach((s , i) => {
+                arr.push({
+                    label: `As ( ${i+1} ) [ ${s.display} ]`,
+                    iconURL: 'http://127.0.0.1:60080/images/person.png',
+                    click: () => {
+                        ai.view_type = ai.view_type || { id: 'New Window' };
 
-    SOCIALBROWSER.menuList.push({
-        label: 'ChatGPT',
-        iconURL: 'http://127.0.0.1:60080/images/bot.png',
-        click: () => {
-            SOCIALBROWSER.openNewPopup({
-                url: 'https://chatgpt.com/',
-                partition: currentTab.partition,
-                show: true,
-                isWhiteSite: true,
+                        if (ai.view_type.id == 'New Window') {
+                            SOCIALBROWSER.openNewPopup({
+                                url: ai.url,
+                                partition: s.name,
+                                show: true,
+                                isWhiteSite: true,
+                            });
+                        } else {
+                            SOCIALBROWSER.openNewTab({
+                                url: ai.url,
+                                partition: s.name,
+                                isWhiteSite: true,
+                            });
+                        }
+                    },
+                });
             });
-        },
-    });
-
-    SOCIALBROWSER.menuList.push({
-        label: 'Microsoft Copilot',
-        iconURL: 'http://127.0.0.1:60080/images/bot.png',
-        click: () => {
-            SOCIALBROWSER.openNewPopup({
-                url: 'https://copilot.microsoft.com/',
-                partition: currentTab.partition,
-                show: true,
-                isWhiteSite: true,
+            SOCIALBROWSER.menuList.push({
+                label: 'Open ' + ai.name,
+                iconURL: 'http://127.0.0.1:60080/images/bot.png',
+                type: 'submenu',
+                submenu: arr,
             });
-        },
-    });
+        } else {
+            SOCIALBROWSER.menuList.push({
+                label: ai.name,
+                iconURL: 'http://127.0.0.1:60080/images/bot.png',
+                click: () => {
+                    ai.view_type = ai.view_type || { id: 'New Window' };
 
-    SOCIALBROWSER.menuList.push({
-        label: 'DeepSeek',
-        iconURL: 'http://127.0.0.1:60080/images/bot.png',
-        click: () => {
-            SOCIALBROWSER.openNewPopup({
-                url: 'https://chat.deepseek.com/',
-                partition: currentTab.partition,
-                show: true,
-                isWhiteSite: true,
+                    if (ai.view_type.id == 'New Window') {
+                        SOCIALBROWSER.openNewPopup({
+                            url: ai.url,
+                            partition: currentTab.partition,
+                            show: true,
+                            isWhiteSite: true,
+                        });
+                    } else if (ai.view_type.id == 'New Tab') {
+                        SOCIALBROWSER.openNewTab({
+                            url: ai.url,
+                            partition: currentTab.partition,
+                            isWhiteSite: true,
+                        });
+                    } else if (ai.view_type.id == 'Current Tab') {
+                        ipc('[update-view]', {
+                            url: ai.url,
+                            customSetting: {
+                                isWhiteSite: true,
+                            },
+                        });
+                    }
+                },
             });
-        },
+        }
     });
-
-    SOCIALBROWSER.menuList.push({
-        label: 'Perplexity.ai',
-        iconURL: 'http://127.0.0.1:60080/images/bot.png',
-        click: () => {
-            SOCIALBROWSER.openNewPopup({
-                url: 'https://www.perplexity.ai/',
-                partition: currentTab.partition,
-                show: true,
-                isWhiteSite: true,
-            });
-        },
-    });
-
-    SOCIALBROWSER.menuList.push({
-        label: 'Meta.ai',
-        iconURL: 'http://127.0.0.1:60080/images/bot.png',
-        click: () => {
-            SOCIALBROWSER.openNewPopup({
-                url: 'https://www.meta.ai/',
-                partition: currentTab.partition,
-                show: true,
-                isWhiteSite: true,
-            });
-        },
-    });
-
-    SOCIALBROWSER.menuList.push({
-        label: 'Grok',
-        iconURL: 'http://127.0.0.1:60080/images/bot.png',
-        click: () => {
-            SOCIALBROWSER.openNewPopup({
-                url: 'https://grok.com/',
-                partition: currentTab.partition,
-                show: true,
-                isWhiteSite: true,
-            });
-        },
-    });
-
-    SOCIALBROWSER.menuList.push({
-        label: 'Claude.ai',
-        iconURL: 'http://127.0.0.1:60080/images/bot.png',
-        click: () => {
-            SOCIALBROWSER.openNewPopup({
-                url: 'https://claude.ai',
-                partition: currentTab.partition,
-                show: true,
-                isWhiteSite: true,
-            });
-        },
-    });
-
-    SOCIALBROWSER.menuList.push({
+  SOCIALBROWSER.menuList.push({
         type: 'separator',
     });
-
+      SOCIALBROWSER.menuList.push({
+      label: 'AI Site Setting',
+        iconURL: 'http://127.0.0.1:60080/images/setting.png',
+        click: () => {
+            ipc('[open new tab]', {
+                url: 'http://127.0.0.1:60080/setting#contextMenu',
+                session: { name: 'setting', display: 'setting' },
+                windowType: 'view',
+                vip: true,
+            });
+        },
+    });
     ipc('[show-menu]', {
         windowID: SOCIALBROWSER.window.id,
         list: SOCIALBROWSER.menuList.map((m) => ({
@@ -1344,7 +1316,7 @@ SOCIALBROWSER.showWindowsMenu = function () {
     SOCIALBROWSER.menuList.push({
         label: 'Open URL in  [ External Browser ] ',
         sublabel: SOCIALBROWSER.getCurrentTabInfo().url,
-        iconURL: 'http://127.0.0.1:60080/images/html.png',
+        iconURL: 'http://127.0.0.1:60080/images/browser.png',
         click: () => {
             ipc('[window-action]', { name: 'open-external', url: SOCIALBROWSER.getCurrentTabInfo().url });
         },

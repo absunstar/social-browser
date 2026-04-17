@@ -553,6 +553,7 @@ module.exports = function (child) {
         win.customSetting.title = win.customSetting.title || win.customSetting.url;
 
         win.once('ready-to-show', function () {
+            child.updateTab(win);
             if (win.customSetting.showDevTools) {
                 win.openDevTools();
             }
@@ -904,10 +905,9 @@ module.exports = function (child) {
                     }
                 } else {
                     win.customSetting.iconURL = win.customSetting.iconErrorURL;
-                    child.updateTab(win);
                 }
             }
-
+            child.updateTab(win);
             // win.loadURL('browser://error?url=' + win.getURL() + '&description=Error While Loading');
         });
 
@@ -921,6 +921,7 @@ module.exports = function (child) {
         });
 
         win.webContents.on('dom-ready', (e) => {
+            child.updateTab(win);
             if (win.customSetting.loadTimeoutID) {
                 clearTimeout(win.customSetting.loadTimeoutID);
                 win.customSetting.loadTimeoutID = undefined;
@@ -1078,10 +1079,9 @@ module.exports = function (child) {
         });
         win.webContents.on('will-navigate', (e) => {
             child.log('will-navigate : ' + e.url);
-            child.handleCustomSeting(e.url, win, e.isMainFrame);
             win.customSetting.title = e.url;
             win.customSetting.iconURL = win.customSetting.loading_icon;
-            child.updateTab(win);
+            child.handleCustomSeting(e.url, win, e.isMainFrame);
         });
 
         win.webContents.on('will-frame-navigate', (e) => {

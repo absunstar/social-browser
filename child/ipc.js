@@ -1087,6 +1087,12 @@ module.exports = function init(child) {
             data: data,
         });
     });
+     child.ipcMain.handle('[update-view]', (e, data) => {
+        child.sendMessage({
+            type: '[update-view]',
+            data: data,
+        });
+    });
 
     child.ipcMain.handle('[import-proxy-list]', (e, file) => {
         child.importProxyList(file);

@@ -155,6 +155,13 @@ module.exports = function init(parent) {
                         }
                     });
                     break;
+                      case '[update-view]':
+                    parent.clientList.forEach((client) => {
+                        if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tabID === message.data.tabID && op.windowType == 'view')) {
+                            client.ws.send(message);
+                        }
+                    });
+                    break;
                 case '[edit-window]':
                     parent.clientList.forEach((client) => {
                         if (client.uuid !== message.uuid && client.ws && client.option_list.some((op) => op.tabID === message.data.tabID && op.windowType == 'view')) {

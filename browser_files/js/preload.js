@@ -4369,6 +4369,7 @@ SOCIALBROWSER.init2 = function () {
                 }
                 arr.push({
                     label: ' in ( New tab )',
+                    iconURL: 'http://127.0.0.1:60080/images/link.png',
                     click() {
                         SOCIALBROWSER.ipc('[open new tab]', {
                             url: url,
@@ -4381,6 +4382,7 @@ SOCIALBROWSER.init2 = function () {
                 });
                 arr.push({
                     label: ' in ( New Ghost tab )',
+                     iconURL: 'http://127.0.0.1:60080/images/link.png',
                     click() {
                         let ghost = SOCIALBROWSER.md5((new Date().getTime().toString() + Math.random().toString()).replace('.', '')) + '@' + SOCIALBROWSER.tempMailServer;
                         SOCIALBROWSER.ipc('[open new tab]', { url: url, referrer: document.location.href, partition: ghost, user_name: ghost, windowID: SOCIALBROWSER.window.id });
@@ -4388,12 +4390,14 @@ SOCIALBROWSER.init2 = function () {
                 });
                 arr.push({
                     label: ' in ( Current window )',
+                     iconURL: 'http://127.0.0.1:60080/images/page.png',
                     click() {
                         document.location.href = url;
                     },
                 });
                 arr.push({
                     label: ' in ( New window )',
+                     iconURL: 'http://127.0.0.1:60080/images/page.png',
                     click() {
                         SOCIALBROWSER.ipc('[open new popup]', {
                             url: url,
@@ -4408,6 +4412,7 @@ SOCIALBROWSER.init2 = function () {
                 });
                 arr.push({
                     label: ' in ( Ads window )',
+                     iconURL: 'http://127.0.0.1:60080/images/page.png',
                     click() {
                         SOCIALBROWSER.ipc('[open new popup]', {
                             partition: SOCIALBROWSER.partition,
@@ -4422,6 +4427,7 @@ SOCIALBROWSER.init2 = function () {
                 });
                 arr.push({
                     label: ' in ( OFF Window )',
+                     iconURL: 'http://127.0.0.1:60080/images/page.png',
                     click() {
                         SOCIALBROWSER.ipc('[open new popup]', {
                             partition: SOCIALBROWSER.partition,
@@ -4437,6 +4443,7 @@ SOCIALBROWSER.init2 = function () {
                 });
                 arr.push({
                     label: ' in ( Ghost window )',
+                     iconURL: 'http://127.0.0.1:60080/images/page.png',
                     click() {
                         let ghost = SOCIALBROWSER.md5((new Date().getTime().toString() + Math.random().toString()).replace('.', '')) + '@' + SOCIALBROWSER.tempMailServer;
 
@@ -4458,19 +4465,22 @@ SOCIALBROWSER.init2 = function () {
                     type: 'separator',
                 });
                 arr.push({
-                    label: ' in ( External Browser)',
+                    label: ' in ( External Browser - Default System Browser )',
+                    iconURL: 'http://127.0.0.1:60080/images/browser.png',
                     click() {
                         SOCIALBROWSER.openExternal(document.location.href);
                     },
                 });
                 arr.push({
                     label: ' in ( Chrome Browser Simulator ) ',
+                    iconURL: 'http://127.0.0.1:60080/images/chrome.png',
                     click() {
                         SOCIALBROWSER.openInChrome({ allowStorage: false, url: url });
                     },
                 });
                 arr.push({
                     label: ' in ( Chrome Browser Simulator ) [ Shared Cookies , User Data , Extentions ]',
+                    iconURL: 'http://127.0.0.1:60080/images/chrome.png',
                     click() {
                         SOCIALBROWSER.openInChrome({ allowStorage: true, url: url });
                     },
@@ -4486,6 +4496,7 @@ SOCIALBROWSER.init2 = function () {
                         .forEach((ss, i) => {
                             arr.push({
                                 label: ` As ( ${i + 1} ) [ ${ss.display} ] `,
+                                  iconURL: 'http://127.0.0.1:60080/images/person.png',
                                 click() {
                                     SOCIALBROWSER.ipc('[open new tab]', {
                                         referrer: document.location.href,
@@ -5705,6 +5716,7 @@ SOCIALBROWSER.init2 = function () {
                         let userID = s.name.replace('persist:', '');
                         arr.push({
                             label: ` As ( ${i + 1} ) [ ${s.display} ] `,
+                              iconURL: 'http://127.0.0.1:60080/images/person.png',
                             click() {
                                 SOCIALBROWSER.openInChrome({
                                     userDataDir: SOCIALBROWSER.userDataDir.replace(currentID, userID) + '/chrome',

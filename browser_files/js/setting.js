@@ -1,4 +1,19 @@
 app.controller('mainController', ($scope, $http, $timeout) => {
+    $scope.openViewTypeList = [
+        {
+            id: 'New Window',
+            name: 'New Window',
+        },
+        {
+            id: 'New Tab',
+            name: 'New Tab',
+        },
+        {
+            id: 'Current Tab',
+            name: 'Current Tab',
+        },
+    ];
+
     $scope.userAgentBrowserList = SOCIALBROWSER.userAgentBrowserList.map((b) => ({ name: b.name }));
     $scope.userAgentDeviceList = SOCIALBROWSER.userAgentDeviceList;
     if (SOCIALBROWSER.var.core.flags.like('*v2*')) {
@@ -596,6 +611,28 @@ app.controller('mainController', ($scope, $http, $timeout) => {
 
     $scope.showOpenListModal = function () {
         site.showModal('#openListModal');
+    };
+    $scope.showAISiteListModal = function () {
+        $scope.aiSite = { enabled: true, view_type: $scope.openViewTypeList[0] };
+        site.showModal('#aiSiteListModal');
+    };
+
+    $scope.hideAISiteListModal = function () {
+        site.hideModal('#aiSiteListModal');
+    };
+
+    $scope.addAISite = function (aiSite) {
+        $scope.setting.blocking.ai_site_list = $scope.setting.blocking.ai_site_list || [];
+        $scope.setting.blocking.ai_site_list.push(aiSite);
+        aiSite = {};
+        $scope.aiSite = {};
+    };
+    $scope.removeAISite = function (_ai_site) {
+        $scope.setting.blocking.ai_site_list.forEach((ai_site, i) => {
+            if (ai_site.url === _ai_site.url) {
+                $scope.setting.blocking.ai_site_list.splice(i, 1);
+            }
+        });
     };
 
     $scope.hideOpenListModal = function () {
@@ -1368,10 +1405,8 @@ app.controller('mainController', ($scope, $http, $timeout) => {
         const $id = $(SOCIALBROWSER.getCurrentTabInfo().tabID);
         $id.attr('url', $scope.url);
         SOCIALBROWSER.ipc('update-view', {
-            _id: SOCIALBROWSER.getCurrentTabInfo().tabID,
+            tabID: SOCIALBROWSER.getCurrentTabInfo().tabID,
             url: $id.attr('url'),
-            partition: $id.attr('partition'),
-            user_name: $id.attr('user_name'),
         });
         $scope.show_urls = false;
     };

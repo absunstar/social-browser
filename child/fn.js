@@ -316,6 +316,7 @@ module.exports = function (child) {
     };
 
     child.updateTab = function (win) {
+        
         let setting = {};
 
         if (win.customSetting.windowType !== 'view') {
@@ -634,7 +635,7 @@ module.exports = function (child) {
         }
 
         child.electron.app.userAgentFallback = win.customSetting.$userAgentURL;
-
+        child.updateTab(win);
         if (reload) {
             setTimeout(() => {
                 win.webContents.reload();

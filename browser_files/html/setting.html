@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" ng-app="myApp">
     <head>
         <meta charset="UTF-8" />
@@ -49,7 +49,7 @@
                 --bs-body-bg: #fff;
                 --color: #3f9dff;
                 --dropdown-background: #272727;
-                --bs-border-width: .5px;
+                --bs-border-width: 0.5px;
             }
             html,
             body,
@@ -200,7 +200,7 @@
             }
             i-checkbox label {
                 white-space: nowrap;
-                 overflow: hidden;
+                overflow: hidden;
             }
             i-button:hover {
                 transform: scale(1.1);
@@ -226,7 +226,6 @@
             i-list .dropdown-item {
                 border-bottom: 1px solid #333 !important;
             }
-           
         </style>
         <script src="http://127.0.0.1:60080/x-js/bootstrap-5-support.js"></script>
         <script src="http://127.0.0.1:60080/js/setting.js"></script>
@@ -257,71 +256,235 @@
                 <div ng-show="knowPassword === true">
                     <div class="tabs">
                         <div class="tabs-header">
-                            <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#basic_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                            <a
+                                id="basic"
+                                class="tab-link"
+                                onclick="
+                                    site.showTabContent(event, '#basic_tab');
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                "
+                            >
                                 <i class="fa fa-info-circle"></i> Basic
                             </a>
 
-                            <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#users_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                            <a
+                                id="basic"
+                                class="tab-link"
+                                onclick="
+                                    site.showTabContent(event, '#users_tab');
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                "
+                            >
                                 <i class="fa fa-users"></i> Users Profile
                             </a>
-                            <a id="scripts" class="tab-link" onclick="site.showTabContent(event, '#scripts_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                            <a
+                                id="scripts"
+                                class="tab-link"
+                                onclick="
+                                    site.showTabContent(event, '#scripts_tab');
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                "
+                            >
                                 <i class="fa fa-code"></i> User Scripts
                             </a>
-                            <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#passwords_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                            <a
+                                id="basic"
+                                class="tab-link"
+                                onclick="
+                                    site.showTabContent(event, '#passwords_tab');
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                "
+                            >
                                 <i class="fa fa-key"></i> Passwords
                             </a>
-                            <a id="facodes" class="tab-link" onclick="site.showTabContent(event, '#fa_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-key"></i> 2FA Codes </a>
-                            <a id="emails" class="tab-link" onclick="site.showTabContent(event, '#emails_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                            <a
+                                id="facodes"
+                                class="tab-link"
+                                onclick="
+                                    site.showTabContent(event, '#fa_tab');
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                "
+                            >
+                                <i class="fa fa-key"></i> 2FA Codes
+                            </a>
+                            <a
+                                id="emails"
+                                class="tab-link"
+                                onclick="
+                                    site.showTabContent(event, '#emails_tab');
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                "
+                            >
                                 <i class="fas fa-envelope"></i> Temp Emails
                             </a>
-                            <a id="basic" ng-show="keysEnabled" class="tab-link" onclick="site.showTabContent(event, '#keys_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                            <a
+                                id="basic"
+                                ng-show="keysEnabled"
+                                class="tab-link"
+                                onclick="
+                                    site.showTabContent(event, '#keys_tab');
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                "
+                            >
                                 <i class="fa fa-key"></i> Private Keys
                             </a>
 
-                            <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#extension_list_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                            <a
+                                id="basic"
+                                class="tab-link"
+                                onclick="
+                                    site.showTabContent(event, '#extension_list_tab');
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                "
+                            >
                                 <i class="fa fa-list"></i> Extensions
                             </a>
 
-                            <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#javascript_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                            <a
+                                id="basic"
+                                class="tab-link"
+                                onclick="
+                                    site.showTabContent(event, '#javascript_tab');
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                "
+                            >
                                 <i class="fas fa-scroll"></i> Java Script
                             </a>
 
-                            <a id="basic" class="tab-link" id="safty_btn" onclick="site.showTabContent(event, '#safty_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                            <a
+                                id="basic"
+                                class="tab-link"
+                                id="safty_btn"
+                                onclick="
+                                    site.showTabContent(event, '#safty_tab');
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                "
+                            >
                                 <i class="fa fa-lock"></i> Children Safty Mode
                             </a>
-                            <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#blocking_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                            <a
+                                id="basic"
+                                class="tab-link"
+                                onclick="
+                                    site.showTabContent(event, '#blocking_tab');
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                "
+                            >
                                 <i class="fa fa-ban"></i> Blocking Engine
                             </a>
-                            <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#privacy_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                            <a
+                                id="basic"
+                                class="tab-link"
+                                onclick="
+                                    site.showTabContent(event, '#privacy_tab');
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                "
+                            >
                                 <i class="fa fa-laptop"></i> Virtual PC [Browser FingerPrint]
                             </a>
 
-                            <a id="basic" class="tab-link hidden" onclick="site.showTabContent(event, '#youtube_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                            <a
+                                id="basic"
+                                class="tab-link hidden"
+                                onclick="
+                                    site.showTabContent(event, '#youtube_tab');
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                "
+                            >
                                 <i class="fab fa-youtube"></i> Youtube
                             </a>
-                            <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#user_data_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                            <a
+                                id="basic"
+                                class="tab-link"
+                                onclick="
+                                    site.showTabContent(event, '#user_data_tab');
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                "
+                            >
                                 <i class="fa fa-file"></i> User Data
                             </a>
 
-                            <a id="bookmark" class="tab-link" id="bookmarks_btn" onclick="site.showTabContent(event, '#bookmarks_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                            <a
+                                id="bookmark"
+                                class="tab-link"
+                                id="bookmarks_btn"
+                                onclick="
+                                    site.showTabContent(event, '#bookmarks_tab');
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                "
+                            >
                                 <i class="fa fa-bookmark"></i> Bookmarks
                             </a>
-                            <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#urls_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-sitemap"></i> URLs </a>
-                            <a id="basic" ng-hide="true" class="tab-link" onclick="site.showTabContent(event, '#internet_speed_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                            <a
+                                id="basic"
+                                class="tab-link"
+                                onclick="
+                                    site.showTabContent(event, '#urls_tab');
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                "
+                            >
+                                <i class="fa fa-sitemap"></i> URLs
+                            </a>
+                            <a
+                                id="basic"
+                                ng-hide="true"
+                                class="tab-link"
+                                onclick="
+                                    site.showTabContent(event, '#internet_speed_tab');
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                "
+                            >
                                 <i class="fa fa-cloud-download"></i> Internet Speed
                             </a>
-                            <a id="proxy" class="tab-link" onclick="site.showTabContent(event, '#proxy_tab');window.scrollTo({ top: 0, behavior: 'smooth' });"> <i class="fa fa-desktop"></i> Proxy </a>
-                            <a id="proxyList" class="tab-link" onclick="site.showTabContent(event, '#proxy_list_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                            <a
+                                id="proxy"
+                                class="tab-link"
+                                onclick="
+                                    site.showTabContent(event, '#proxy_tab');
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                "
+                            >
+                                <i class="fa fa-desktop"></i> Proxy
+                            </a>
+                            <a
+                                id="proxyList"
+                                class="tab-link"
+                                onclick="
+                                    site.showTabContent(event, '#proxy_list_tab');
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                "
+                            >
                                 <i class="fa fa-list"></i> Proxy List
                             </a>
-                            <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#menu_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                            <a
+                                id="contextMenu"
+                                class="tab-link"
+                                onclick="
+                                    site.showTabContent(event, '#menu_tab');
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                "
+                            >
                                 <i class="fa fa-bars"></i> Context Menu
                             </a>
-                            <a id="basic" class="tab-link" onclick="site.showTabContent(event, '#downloader_tab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                            <a
+                                id="basic"
+                                class="tab-link"
+                                onclick="
+                                    site.showTabContent(event, '#downloader_tab');
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                "
+                            >
                                 <i class="fa fa-download"></i> Downloader
                             </a>
 
-                            <a id="userAgntList" class="tab-link" onclick="site.showTabContent(event, '#userAgentTab');window.scrollTo({ top: 0, behavior: 'smooth' });">
+                            <a
+                                id="userAgntList"
+                                class="tab-link"
+                                onclick="
+                                    site.showTabContent(event, '#userAgentTab');
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                "
+                            >
                                 <i class="fa fa-list"></i> User Agent List
                             </a>
                         </div>
@@ -510,7 +673,6 @@
                                             <i-checkbox class="" label="Block CSP Reports" ng-model="setting.blocking.blockCspReport"></i-checkbox>
                                             <i-checkbox class="" label="Block Object Resources" ng-model="setting.blocking.blockObject"></i-checkbox>
                                             <i-checkbox class="" label="Block Other Resources" ng-model="setting.blocking.blockOther"></i-checkbox>
-
                                         </div>
                                     </fieldset>
 
@@ -653,17 +815,17 @@
                                                     </div>
                                                 </div>
 
-                                                  <div class="row center">
-                                                                    <i-button
-                                                                        type="approve"
-                                                                        loading="{{setting.blocking.privacy.busy}}"
-                                                                        label="Auto Detected Location"
-                                                                        ng-click="autoUpdateProxyLocation(setting.blocking.privacy)"
-                                                                    ></i-button>
-                                                                    <p class="padding margin" ng-show="setting.blocking.privacy.data.country">
-                                                                        {{setting.blocking.privacy.data.country}} / {{setting.blocking.privacy.data.regionName}} / {{setting.blocking.privacy.data.city}}
-                                                                    </p>
-                                                                </div>
+                                                <div class="row center">
+                                                    <i-button
+                                                        type="approve"
+                                                        loading="{{setting.blocking.privacy.busy}}"
+                                                        label="Auto Detected Location"
+                                                        ng-click="autoUpdateProxyLocation(setting.blocking.privacy)"
+                                                    ></i-button>
+                                                    <p class="padding margin" ng-show="setting.blocking.privacy.data.country">
+                                                        {{setting.blocking.privacy.data.country}} / {{setting.blocking.privacy.data.regionName}} / {{setting.blocking.privacy.data.city}}
+                                                    </p>
+                                                </div>
 
                                                 <div class="row padding v-center">
                                                     <div class="col"><i-checkbox label="Hide Date ( problem in some sites )" ng-model="setting.blocking.privacy.vpc.maskTimeZone"></i-checkbox></div>
@@ -976,13 +1138,17 @@
                                     </fieldset>
                                 </div>
                             </div>
+
                             <div id="menu_tab" class="tab-content">
                                 <h2 class="center">Context Menu Setting</h2>
                                 <div class="row">
                                     <fieldset>
                                         <legend>Fast Open Menu</legend>
 
-                                        <i-button type="list" ng-click="showOpenListModal()" label="Manage List"></i-button>
+                                        <i-button type="list" ng-click="showOpenListModal()" label="Context Menu List"></i-button>
+                                        <i-button type="list" ng-click="showOpenListModal()" label="Integrated Site List"></i-button>
+                                        <i-button type="list" ng-click="showOpenListModal()" label="Social Site List"></i-button>
+                                        <i-button type="list" ng-click="showAISiteListModal()" label="AI Site List"></i-button>
                                     </fieldset>
                                 </div>
 
@@ -997,6 +1163,7 @@
                                     </fieldset>
                                 </div>
                             </div>
+
                             <div id="downloader_tab" class="tab-content">
                                 <h2 class="center">Downloader Setting</h2>
                                 <div class="row">
@@ -1314,17 +1481,17 @@
                                                             ></i-control>
                                                         </div>
                                                     </div>
-                                                     <div class="row center">
-                                                                    <i-button
-                                                                        type="approve"
-                                                                        loading="{{currentSession.privacy.busy}}"
-                                                                        label="Auto Detected Location"
-                                                                        ng-click="autoUpdateProxyLocation(currentSession.privacy)"
-                                                                    ></i-button>
-                                                                    <p class="padding margin" ng-show="currentSession.privacy.data.country">
-                                                                        {{currentSession.privacy.data.country}} / {{currentSession.privacy.data.regionName}} / {{currentSession.privacy.data.city}}
-                                                                    </p>
-                                                                </div>
+                                                    <div class="row center">
+                                                        <i-button
+                                                            type="approve"
+                                                            loading="{{currentSession.privacy.busy}}"
+                                                            label="Auto Detected Location"
+                                                            ng-click="autoUpdateProxyLocation(currentSession.privacy)"
+                                                        ></i-button>
+                                                        <p class="padding margin" ng-show="currentSession.privacy.data.country">
+                                                            {{currentSession.privacy.data.country}} / {{currentSession.privacy.data.regionName}} / {{currentSession.privacy.data.city}}
+                                                        </p>
+                                                    </div>
                                                     <div class="row padding v-center">
                                                         <div class="col"><i-checkbox label="Hide Date ( problem in some sites )" ng-model="currentSession.privacy.vpc.maskTimeZone"></i-checkbox></div>
                                                         <div class="col">
@@ -2072,6 +2239,65 @@
 
                         <div class="modal-footer center">
                             <i-button type="close" ng-click="hideOpenListModal()" label="Close"></i-button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="aiSiteListModal" class="modal" fixed>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <span class="close">&times;</span>
+                            <h2>AI Site List</h2>
+                        </div>
+                        <div class="modal-body">
+                            <h2 class="padding margin center">Custom Your AI Site List</h2>
+                            <div class="row padding">
+                                <fieldset>
+                                    <legend>New AI Site</legend>
+                                    <div class="row">
+                                        <i-control label="Site Name" ng-model="aiSite.name"></i-control>
+                                        <i-control label="Site URL" ng-model="aiSite.url"></i-control>
+                                        <i-list items="openViewTypeList" label="View Type" ng-model="aiSite.view_type"></i-list>
+                                        <i-checkbox label="Enabled" ng-model="aiSite.enabled"></i-checkbox>
+                                        <i-checkbox label="Multi User" ng-model="aiSite.multi"></i-checkbox>
+                                        <i-button type="push" ng-click="addAISite(aiSite)" label="Add to AI List"></i-button>
+                                    </div>
+                                </fieldset>
+                            </div>
+
+                            <table class="table hove">
+                                <tr>
+                                    <th>Index</th>
+                                    <th>Name</th>
+                                    <th>URL</th>
+                                    <th>Options</th>
+                                    <th>Actions</th>
+                                </tr>
+                                <tr ng-repeat="_ai_site in setting.blocking.ai_site_list track by $index">
+                                    <td>
+                                        <span class="bold center"> ( {{$index + 1}} )</span>
+                                    </td>
+
+                                    <td>
+                                        <i-control ng-model="_ai_site.name"></i-control>
+                                    </td>
+                                    <td>
+                                        <i-control ng-model="_ai_site.url"></i-control>
+                                        <i-list items="openViewTypeList" label="View Type" ng-model="_ai_site.view_type"></i-list>
+                                    </td>
+                                    <td class="center">
+                                        <i-checkbox label="Enabled" ng-model="_ai_site.enabled"></i-checkbox>
+                                        <i-checkbox label="Multi User" ng-model="_ai_site.multi"></i-checkbox>
+                                    </td>
+                                    <td class="center">
+                                        <i-button ng-click="removeAISite(_ai_site)" type="delete" label="Remove"></i-button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="modal-footer center">
+                            <i-button type="close" ng-click="hideAISiteListModal()" label="Close"></i-button>
                         </div>
                     </div>
                 </div>

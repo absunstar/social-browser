@@ -53,6 +53,13 @@ module.exports = function init(parent) {
         res.end();
     });
 
+
+      parent.api.onALL({
+        name: '/favicon.ico',
+        path: parent.files_dir + '/images/logo.ico',
+        parser: 'js',
+    });
+
     parent.api.onALL({
         name: '/js',
         path: parent.files_dir + '/js2',

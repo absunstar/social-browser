@@ -265,6 +265,24 @@
             "multi": true
         }
     ],
+    "ai_site_list": [
+        {
+            "enabled": true,
+            "url": "https://chat.openai.com/",
+            "name": "ChatGPT",
+            "view_type": {
+                "name": "New Window"
+            }
+        },
+        {
+            "enabled": true,
+            "url": "https://gemini.google.com/",
+            "name": "Gemini",
+            "view_type": {
+                "name": "New Window"
+            }
+        }
+    ],
     "context_menu": {
         "inspect": true,
         "dev_tools": true,
