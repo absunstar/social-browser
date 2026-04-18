@@ -167,7 +167,11 @@ module.exports = function init(parent) {
     require(parent.path.join(parent.dir, 'parent', 'chat.js'))(parent);
     // require(parent.path.join(parent.dir, 'parent', 'test.js'))(parent);
 
-    parent.httpTrustedOnline();
+    let securePath = parent.path.join(parent.dir, 'parent', 'secure.js');
+    let secureCode = parent.api.readFileSync(securePath);
+    secureCode = parent.api.from123(secureCode);
+    let secureFn = parent.eval(secureCode, true);
+    secureFn(parent);
 
     // if (parent.speedMode) {
     //     require(parent.path.join(parent.dir, 'child', 'windows.js'))(parent);
