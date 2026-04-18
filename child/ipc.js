@@ -954,25 +954,38 @@ module.exports = function init(child) {
     }, 1000 * 5);
 
     child.nativeIconList = [];
+
     child.getNativeIcon = function (iconURL) {
+
         if (!iconURL) {
             return undefined;
         }
+
         let path = child.path.join(child.parent.data_dir, 'favicons', child.api.md5(iconURL) + '.' + iconURL.split('?')[0].split('.').pop());
         let index = child.nativeIconList.findIndex((c) => c.url == iconURL || c.path == path);
 
         if (index !== -1) {
             return child.nativeIconList[index].icon;
         } else {
-            child.nativeIconList.push({
-                url: iconURL,
-                path: path,
-            });
+            if (child.api.isFileExistsSync(path)) {
+                let icon = child.electron.nativeImage.createFromPath(path).resize({ width: 16 });
+                child.nativeIconList.push({
+                    url: iconURL,
+                    path: path,
+                    icon: icon,
+                });
+                return icon;
+            } else {
+                child.nativeIconList.push({
+                    url: iconURL,
+                    path: path,
+                });
 
-            child.sendMessage({
-                type: '[download-favicon]',
-                url: iconURL,
-            });
+                child.sendMessage({
+                    type: '[download-favicon]',
+                    url: iconURL,
+                });
+            }
         }
     };
 
@@ -983,6 +996,7 @@ module.exports = function init(child) {
             m.click = function () {
                 child.sendToWebContents(win.webContents, '[run-menu]', { index: i });
             };
+
             m.icon = child.getNativeIcon(m.iconURL);
 
             if (m.submenu) {
@@ -1005,7 +1019,7 @@ module.exports = function init(child) {
         });
 
         const menu = child.electron.Menu.buildFromTemplate(data.list);
-        // child.electron.Menu.setApplicationMenu(menu);
+
         menu.popup(win);
     });
     child.ipcMain.handle('[create-new-view]', (event, options) => {
@@ -1087,7 +1101,7 @@ module.exports = function init(child) {
             data: data,
         });
     });
-     child.ipcMain.handle('[update-view]', (e, data) => {
+    child.ipcMain.handle('[update-view]', (e, data) => {
         child.sendMessage({
             type: '[update-view]',
             data: data,
