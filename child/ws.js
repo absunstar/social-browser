@@ -73,23 +73,8 @@ module.exports = function (child) {
                         } else {
                             child.createNewWindow({ ...child.parent.options, ...message.options });
                         }
-                        if (true) {
-                            let dir = child.path.join(child.parent.data_dir, 'favicons');
-                            const fileList = child.fs.readdirSync(dir);
-                            for (const file of fileList) {
-                                const path = child.path.join(dir, file);
-                                try {
-                                    if (child.fs.statSync(path).isFile()) {
-                                        child.nativeIconList.push({
-                                            path: path,
-                                            icon: child.electron.nativeImage.createFromPath(path).resize({ width: 16 }),
-                                        });
-                                    }
-                                } catch (error) {
-                                    child.log(error);
-                                }
-                            }
-                        }
+
+                      
                     } else {
                         if (!child.partition.like('*setting*|*social*|*file*')) {
                             child.parent.var['googleExtensionList']?.forEach((extensionInfo) => {
