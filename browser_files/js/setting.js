@@ -624,13 +624,36 @@ app.controller('mainController', ($scope, $http, $timeout) => {
     $scope.addAISite = function (aiSite) {
         $scope.setting.blocking.ai_site_list = $scope.setting.blocking.ai_site_list || [];
         $scope.setting.blocking.ai_site_list.push(aiSite);
-        aiSite = {};
-        $scope.aiSite = {};
+        aiSite = {enabled: true, view_type: $scope.openViewTypeList[0] };
+        $scope.aiSite = {enabled: true, view_type: $scope.openViewTypeList[0] };
     };
     $scope.removeAISite = function (_ai_site) {
         $scope.setting.blocking.ai_site_list.forEach((ai_site, i) => {
             if (ai_site.url === _ai_site.url) {
                 $scope.setting.blocking.ai_site_list.splice(i, 1);
+            }
+        });
+    };
+
+    $scope.showIntegratedSiteListModal = function () {
+        $scope.integratedSite = { enabled: true, view_type: $scope.openViewTypeList[0] };
+        site.showModal('#integratedSiteListModal');
+    };
+
+    $scope.hideIntegratedSiteListModal = function () {
+        site.hideModal('#integratedSiteListModal');
+    };
+
+    $scope.addIntegratedSite = function (integratedSite) {
+        $scope.setting.blocking.integrated_site_list = $scope.setting.blocking.integrated_site_list || [];
+        $scope.setting.blocking.integrated_site_list.push(integratedSite);
+        integratedSite = {enabled: true, view_type: $scope.openViewTypeList[0] };
+        $scope.integratedSite = {enabled: true, view_type: $scope.openViewTypeList[0] };
+    };
+    $scope.removeIntegratedSite = function (integratedSite) {
+        $scope.setting.blocking.integrated_site_list.forEach((ai_site, i) => {
+            if (ai_site.url === integratedSite.url) {
+                $scope.setting.blocking.integrated_site_list.splice(i, 1);
             }
         });
     };

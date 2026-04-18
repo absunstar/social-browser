@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta http-equiv="X-UA-Compatible" content="ie=edge" />
         <link rel="stylesheet" href="http://127.0.0.1:60080/x-css/bootstrap-5-support.css" />
+        <link rel="stylesheet" href="http://127.0.0.1:60080/css/font-awesome-6.css" />
         <title>Setting</title>
         <style>
             :root {
@@ -444,7 +445,7 @@
                                     window.scrollTo({ top: 0, behavior: 'smooth' });
                                 "
                             >
-                                <i class="fa fa-desktop"></i> Proxy
+                           <i class="fa-solid fa-desktop"></i> Proxy
                             </a>
                             <a
                                 id="proxyList"
@@ -1146,9 +1147,9 @@
                                         <legend>Fast Open Menu</legend>
 
                                         <i-button type="list" ng-click="showOpenListModal()" label="Context Menu List"></i-button>
-                                        <i-button type="list" ng-click="showOpenListModal()" label="Integrated Site List"></i-button>
                                         <i-button type="list" ng-click="showOpenListModal()" label="Social Site List"></i-button>
-                                        <i-button type="list" ng-click="showAISiteListModal()" label="AI Site List"></i-button>
+                                        <i-button fa="fa-solid fa-link" type="list" ng-click="showIntegratedSiteListModal()" label="Integrated Site List"></i-button>
+                                        <i-button fa="fa-solid fa-robot" type="list" ng-click="showAISiteListModal()" label="AI Tools List"></i-button>
                                     </fieldset>
                                 </div>
 
@@ -2221,7 +2222,7 @@
                                 </tr>
                                 <tr ng-repeat="_open_menu in setting.blocking.open_list track by $index">
                                     <td>
-                                        <i-control label="Menu URL" ng-model="_open_menu.name"></i-control>
+                                        <i-control label="Menu Name" ng-model="_open_menu.name"></i-control>
                                     </td>
                                     <td>
                                         <i-control label="Menu URL" ng-model="_open_menu.url"></i-control>
@@ -2298,6 +2299,66 @@
 
                         <div class="modal-footer center">
                             <i-button type="close" ng-click="hideAISiteListModal()" label="Close"></i-button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="integratedSiteListModal" class="modal" fixed>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <span class="close">&times;</span>
+                            <h2>Integrated Site List</h2>
+                        </div>
+                        <div class="modal-body">
+                            <h2 class="padding margin center">Custom Your Integrated Site List</h2>
+                            <div class="row padding">
+                                <fieldset>
+                                    <legend>New Integrated Site</legend>
+                                    <div class="row">
+                                        <p class="bold center orange">{domain} and {url} are available placeholders</p>
+                                        <i-control label="Site Name" ng-model="integratedSite.name"></i-control>
+                                        <i-control label="Site URL" ng-model="integratedSite.url"></i-control>
+                                        <i-list items="openViewTypeList" label="View Type" ng-model="integratedSite.view_type"></i-list>
+                                        <i-checkbox label="Enabled" ng-model="integratedSite.enabled"></i-checkbox>
+                                        <i-checkbox label="Multi User" ng-model="integratedSite.multi"></i-checkbox>
+                                        <i-button type="push" ng-click="addIntegratedSite(integratedSite)" label="Add to Integrated List"></i-button>
+                                    </div>
+                                </fieldset>
+                            </div>
+
+                            <table class="table hove">
+                                <tr>
+                                    <th>Index</th>
+                                    <th>Name</th>
+                                    <th>URL</th>
+                                    <th>Options</th>
+                                    <th>Actions</th>
+                                </tr>
+                                <tr ng-repeat="_integrated_site in setting.blocking.integrated_site_list track by $index">
+                                    <td>
+                                        <span class="bold center"> ( {{$index + 1}} )</span>
+                                    </td>
+
+                                    <td>
+                                        <i-control ng-model="_integrated_site.name"></i-control>
+                                    </td>
+                                    <td>
+                                        <i-control ng-model="_integrated_site.url"></i-control>
+                                        <i-list items="openViewTypeList" label="View Type" ng-model="_integrated_site.view_type"></i-list>
+                                    </td>
+                                    <td class="center">
+                                        <i-checkbox label="Enabled" ng-model="_integrated_site.enabled"></i-checkbox>
+                                        <i-checkbox label="Multi User" ng-model="_integrated_site.multi"></i-checkbox>
+                                    </td>
+                                    <td class="center">
+                                        <i-button ng-click="removeIntegratedSite(_integrated_site)" type="delete" label="Remove"></i-button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="modal-footer center">
+                            <i-button type="close" ng-click="hideIntegratedSiteListModal()" label="Close"></i-button>
                         </div>
                     </div>
                 </div>

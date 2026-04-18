@@ -903,171 +903,84 @@ SOCIALBROWSER.showWindowCustomSetting = function () {
     });
 };
 
-SOCIALBROWSER.showIntegratedURLsMenu = function () {
-    SOCIALBROWSER.window.show();
-    SOCIALBROWSER.menuList = [];
-
-    let currentTab = SOCIALBROWSER.getCurrentTabInfo();
-    let doman = new URL(currentTab.url).hostname;
-    doman = encodeURIComponent(doman);
-
-    let url = encodeURIComponent(currentTab.url);
-
-    SOCIALBROWSER.menuList.push({
-        label: 'Google PageSpeed Insights',
-        sublabel: currentTab.url,
-        iconURL: 'http://127.0.0.1:60080/images/link.png',
-        click: () => {
-            SOCIALBROWSER.openNewPopup({
-                url: 'https://pagespeed.web.dev/analysis?url=' + url,
-                partition: currentTab.partition,
-                show: true,
-                isWhiteSite: true,
-            });
-        },
-    });
-    SOCIALBROWSER.menuList.push({
-        label: 'Domain Lookup - Whois',
-        sublabel: doman,
-        iconURL: 'http://127.0.0.1:60080/images/link.png',
-        click: () => {
-            SOCIALBROWSER.openNewPopup({
-                url: 'https://who.is/whois/' + doman,
-                partition: currentTab.partition,
-                show: true,
-                isWhiteSite: true,
-            });
-        },
-    });
-    SOCIALBROWSER.menuList.push({
-        label: 'Site Safety - Virus Total',
-        sublabel: doman,
-        iconURL: 'http://127.0.0.1:60080/images/link.png',
-        click: () => {
-            SOCIALBROWSER.openNewPopup({
-                url: 'https://www.virustotal.com/gui/search?query=' + doman,
-                partition: currentTab.partition,
-                show: true,
-                isWhiteSite: true,
-            });
-        },
-    });
-
-    SOCIALBROWSER.menuList.push({
-        type: 'separator',
-    });
-
-    SOCIALBROWSER.menuList.push({
-        label: 'SEO Checkup - seobility',
-        sublabel: currentTab.url,
-        iconURL: 'http://127.0.0.1:60080/images/link.png',
-        click: () => {
-            SOCIALBROWSER.openNewPopup({
-                url: 'https://www.seobility.net/en/seocheck/check/?url=' + url,
-                partition: currentTab.partition,
-                show: true,
-                isWhiteSite: true,
-            });
-        },
-    });
-
-    ipc('[show-menu]', {
-        windowID: SOCIALBROWSER.window.id,
-        list: SOCIALBROWSER.menuList.map((m) => ({
-            label: m.label,
-            type: m.type,
-            checked: m.checked,
-            sublabel: m.sublabel,
-            visible: m.visible,
-            iconURL: m.iconURL,
-            submenu: m.submenu?.map((m2) => ({
-                label: m2.label,
-                type: m2.type,
-                checked: m2.checked,
-                sublabel: m2.sublabel,
-                visible: m2.visible,
-                iconURL: m2.iconURL,
-                submenu: m2.submenu?.map((m3) => ({ label: m3.label, type: m3.type, sublabel: m3.sublabel, visible: m3.visible, iconURL: m3.iconURL, checked: m3.checked })),
-            })),
-        })),
-    });
-};
 SOCIALBROWSER.showAIMenu = function () {
     SOCIALBROWSER.window.show();
     SOCIALBROWSER.menuList = [];
 
     let currentTab = SOCIALBROWSER.getCurrentTabInfo();
 
-    SOCIALBROWSER.var.blocking.ai_site_list.forEach((ai) => {
-        if (ai.multi) {
-            let arr = [];
-            SOCIALBROWSER.var.session_list.forEach((s , i) => {
-                arr.push({
-                    label: `As ( ${i+1} ) [ ${s.display} ]`,
-                    iconURL: 'http://127.0.0.1:60080/images/person.png',
+    SOCIALBROWSER.var.blocking.ai_site_list
+        .filter((ai) => ai.enabled)
+        .forEach((ai) => {
+            if (ai.multi) {
+                let arr = [];
+                SOCIALBROWSER.var.session_list.forEach((s, i) => {
+                    arr.push({
+                        label: `As ( ${i + 1} ) [ ${s.display} ]`,
+                        iconURL: 'http://127.0.0.1:60080/images/person.png',
+                        click: () => {
+                            ai.view_type = ai.view_type || { id: 'New Window' };
+
+                            if (ai.view_type.id == 'New Window') {
+                                SOCIALBROWSER.openNewPopup({
+                                    url: ai.url,
+                                    partition: s.name,
+                                    show: true,
+                                    isWhiteSite: true,
+                                });
+                            } else {
+                                SOCIALBROWSER.openNewTab({
+                                    url: ai.url,
+                                    partition: s.name,
+                                    isWhiteSite: true,
+                                });
+                            }
+                        },
+                    });
+                });
+                SOCIALBROWSER.menuList.push({
+                    label: 'Open ' + ai.name,
+                    iconURL: 'http://127.0.0.1:60080/images/bot.png',
+                    type: 'submenu',
+                    submenu: arr,
+                });
+            } else {
+                SOCIALBROWSER.menuList.push({
+                    label: ai.name,
+                    iconURL: 'http://127.0.0.1:60080/images/bot.png',
                     click: () => {
                         ai.view_type = ai.view_type || { id: 'New Window' };
 
                         if (ai.view_type.id == 'New Window') {
                             SOCIALBROWSER.openNewPopup({
                                 url: ai.url,
-                                partition: s.name,
+                                partition: currentTab.partition,
                                 show: true,
                                 isWhiteSite: true,
                             });
-                        } else {
+                        } else if (ai.view_type.id == 'New Tab') {
                             SOCIALBROWSER.openNewTab({
                                 url: ai.url,
-                                partition: s.name,
+                                partition: currentTab.partition,
                                 isWhiteSite: true,
+                            });
+                        } else if (ai.view_type.id == 'Current Tab') {
+                            ipc('[update-view]', {
+                                url: ai.url,
+                                customSetting: {
+                                    isWhiteSite: true,
+                                },
                             });
                         }
                     },
                 });
-            });
-            SOCIALBROWSER.menuList.push({
-                label: 'Open ' + ai.name,
-                iconURL: 'http://127.0.0.1:60080/images/bot.png',
-                type: 'submenu',
-                submenu: arr,
-            });
-        } else {
-            SOCIALBROWSER.menuList.push({
-                label: ai.name,
-                iconURL: 'http://127.0.0.1:60080/images/bot.png',
-                click: () => {
-                    ai.view_type = ai.view_type || { id: 'New Window' };
-
-                    if (ai.view_type.id == 'New Window') {
-                        SOCIALBROWSER.openNewPopup({
-                            url: ai.url,
-                            partition: currentTab.partition,
-                            show: true,
-                            isWhiteSite: true,
-                        });
-                    } else if (ai.view_type.id == 'New Tab') {
-                        SOCIALBROWSER.openNewTab({
-                            url: ai.url,
-                            partition: currentTab.partition,
-                            isWhiteSite: true,
-                        });
-                    } else if (ai.view_type.id == 'Current Tab') {
-                        ipc('[update-view]', {
-                            url: ai.url,
-                            customSetting: {
-                                isWhiteSite: true,
-                            },
-                        });
-                    }
-                },
-            });
-        }
-    });
-  SOCIALBROWSER.menuList.push({
+            }
+        });
+    SOCIALBROWSER.menuList.push({
         type: 'separator',
     });
-      SOCIALBROWSER.menuList.push({
-      label: 'AI Site Setting',
+    SOCIALBROWSER.menuList.push({
+        label: 'AI Tools Setting',
         iconURL: 'http://127.0.0.1:60080/images/setting.png',
         click: () => {
             ipc('[open new tab]', {
@@ -1099,6 +1012,124 @@ SOCIALBROWSER.showAIMenu = function () {
         })),
     });
 };
+
+SOCIALBROWSER.showIntegratedSiteMenu = function () {
+    SOCIALBROWSER.window.show();
+    SOCIALBROWSER.menuList = [];
+
+    let currentTab = SOCIALBROWSER.getCurrentTabInfo();
+    let doman = new URL(currentTab.url).hostname;
+    doman = encodeURIComponent(doman);
+
+    let url = encodeURIComponent(currentTab.url);
+
+    SOCIALBROWSER.var.blocking.integrated_site_list
+        .filter((_integrated) => _integrated.enabled)
+        .forEach((_integrated) => {
+            let targetURL = _integrated.url.replaceAll('{domain}', doman).replaceAll('{url}', url);
+            if (_integrated.multi) {
+                let arr = [];
+                SOCIALBROWSER.var.session_list.forEach((s, i) => {
+                    arr.push({
+                        label: `As ( ${i + 1} ) [ ${s.display} ]`,
+                        iconURL: 'http://127.0.0.1:60080/images/person.png',
+                        click: () => {
+                            _integrated.view_type = _integrated.view_type || { id: 'New Window' };
+
+                            if (_integrated.view_type.id == 'New Window') {
+                                SOCIALBROWSER.openNewPopup({
+                                    url: targetURL,
+                                    partition: s.name,
+                                    show: true,
+                                    isWhiteSite: true,
+                                });
+                            } else {
+                                SOCIALBROWSER.openNewTab({
+                                    url: targetURL,
+                                    partition: s.name,
+                                    isWhiteSite: true,
+                                });
+                            }
+                        },
+                    });
+                });
+                SOCIALBROWSER.menuList.push({
+                    label: 'Open ' + _integrated.name,
+                    sublabel: doman,
+                    iconURL: 'http://127.0.0.1:60080/images/link.png',
+                    type: 'submenu',
+                    submenu: arr,
+                });
+            } else {
+                SOCIALBROWSER.menuList.push({
+                    label: _integrated.name,
+                    sublabel: doman,
+                    iconURL: 'http://127.0.0.1:60080/images/link.png',
+                    click: () => {
+                        _integrated.view_type = _integrated.view_type || { id: 'New Window' };
+
+                        if (_integrated.view_type.id == 'New Window') {
+                            SOCIALBROWSER.openNewPopup({
+                                url: targetURL,
+                                partition: currentTab.partition,
+                                show: true,
+                                isWhiteSite: true,
+                            });
+                        } else if (_integrated.view_type.id == 'New Tab') {
+                            SOCIALBROWSER.openNewTab({
+                                url: targetURL,
+                                partition: currentTab.partition,
+                                isWhiteSite: true,
+                            });
+                        } else if (_integrated.view_type.id == 'Current Tab') {
+                            ipc('[update-view]', {
+                                url: targetURL,
+                                customSetting: {
+                                    isWhiteSite: true,
+                                },
+                            });
+                        }
+                    },
+                });
+            }
+        });
+    SOCIALBROWSER.menuList.push({
+        type: 'separator',
+    });
+    SOCIALBROWSER.menuList.push({
+        label: 'Integrated Site Setting',
+        iconURL: 'http://127.0.0.1:60080/images/setting.png',
+        click: () => {
+            ipc('[open new tab]', {
+                url: 'http://127.0.0.1:60080/setting#contextMenu',
+                session: { name: 'setting', display: 'setting' },
+                windowType: 'view',
+                vip: true,
+            });
+        },
+    });
+    ipc('[show-menu]', {
+        windowID: SOCIALBROWSER.window.id,
+        list: SOCIALBROWSER.menuList.map((m) => ({
+            label: m.label,
+            type: m.type,
+            checked: m.checked,
+            sublabel: m.sublabel,
+            visible: m.visible,
+            iconURL: m.iconURL,
+            submenu: m.submenu?.map((m2) => ({
+                label: m2.label,
+                type: m2.type,
+                checked: m2.checked,
+                sublabel: m2.sublabel,
+                visible: m2.visible,
+                iconURL: m2.iconURL,
+                submenu: m2.submenu?.map((m3) => ({ label: m3.label, type: m3.type, sublabel: m3.sublabel, visible: m3.visible, iconURL: m3.iconURL, checked: m3.checked })),
+            })),
+        })),
+    });
+};
+
 SOCIALBROWSER.showUserProxyMenu = function () {
     SOCIALBROWSER.window.show();
     SOCIALBROWSER.menuList = [];
