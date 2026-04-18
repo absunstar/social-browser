@@ -121,9 +121,7 @@
     browser.electron.app.setPath('userData', browser.path.join(browser.data_dir, 'default'));
     require(browser.path.join(browser.dir, '/parent/parent.js'))(browser);
 
-  
-        browser.electron.app.setAppUserModelId('social.browser');
-    
+    browser.electron.app.setAppUserModelId('social.browser');
 
     browser.electron.Menu.setApplicationMenu(null);
     browser.electron.app.setAsDefaultProtocolClient('browser');
@@ -239,26 +237,22 @@
             active: true,
         };
 
-     
-            browser.createChildProcess({
-                url: 'http://127.0.0.1:60080/home',
-                vip: true,
-                windowType: 'main',
-                partition: 'persist:social',
-            });
-        
+        browser.createChildProcess({
+            url: 'http://127.0.0.1:60080/home',
+            vip: true,
+            windowType: 'main',
+            partition: 'persist:social',
+        });
     });
 
     if (browser.isAutoStartup) {
     } else {
-   
-            browser.createChildProcess({
-                url: 'http://127.0.0.1:60080/home',
-                vip: true,
-                windowType: 'main',
-                partition: 'persist:social',
-            });
-        
+        browser.createChildProcess({
+            url: 'http://127.0.0.1:60080/home',
+            vip: true,
+            windowType: 'main',
+            partition: 'persist:social',
+        });
     }
 
     setTimeout(() => {
