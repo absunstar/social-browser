@@ -80,7 +80,7 @@ module.exports = function (child) {
                 vip: true,
                 allowMenu: child.isDeveloperMode(),
                 show: false,
-                width: win.getBounds().width / 2,
+                width: win.getBounds().width / 2 - 10,
                 height: win.getBounds().height - 30,
                 x: win.getBounds().x + win.getBounds().width / 2,
                 y: (win.getBounds().y == -8 ? 0 : win.getBounds().y - 5) + 30,
@@ -104,7 +104,7 @@ module.exports = function (child) {
         }
         if (show && child.profilesWindow && !child.profilesWindow.isDestroyed()) {
             child.profilesWindow.setBounds({
-                width: win.getBounds().width / 2,
+                width: win.getBounds().width / 2 - 10,
                 height: win.getBounds().height - 30,
                 x: win.getBounds().x + win.getBounds().width / 2,
                 y: (win.getBounds().y == -8 ? 0 : win.getBounds().y - 5) + 30,

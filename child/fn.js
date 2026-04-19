@@ -648,8 +648,8 @@ module.exports = function (child) {
 
         if (file.path && child.api.isFileExistsSync(file.path)) {
             if (file.path.like('*.xlsx') || file.path.like('*.xls')) {
-                let workbook = child.api.XLSX.readFile(file.path);
-                docs = child.api.XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+                let workbook = child.XLSX.readFile(file.path);
+                docs = child.XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
             } else if (file.path.like('*.csv')) {
                 let file = child.api.readFileSync(file.path);
                 file = file.split('\n');

@@ -1,4 +1,5 @@
 module.exports = function (owner) {
+    owner.XLSX = require('xlsx');
     if ((fn = true)) {
         owner.wait = function (resolve, reject) {
             return new Promise((resolve, reject) => {});
@@ -54,14 +55,14 @@ module.exports = function (owner) {
                     proxy.port = 80;
                 }
 
-                if(!proxy.protocal && proxy.protocols && Array.isArray(proxy.protocols)){
+                if (!proxy.protocal && proxy.protocols && Array.isArray(proxy.protocols)) {
                     proxy.protocal = proxy.protocols[0];
                     proxy.protocols.forEach((p) => {
                         proxy[p] = true;
                     });
                 }
 
-                if (resetProxyRules = true) {
+                if ((resetProxyRules = true)) {
                     proxy.proxyRules = '';
                     let startline = '';
 
@@ -71,9 +72,9 @@ module.exports = function (owner) {
                     }
                     if (proxy.socks5) {
                         proxy.proxyRules += startline + 'socks5://' + proxy.ip + ':' + proxy.port;
-                       if(proxy.username && proxy.password && false){
-                        proxy.proxyRules += startline + 'socks5://' + proxy.username + ':' + proxy.password +'@' + proxy.ip + ':' + proxy.port;
-                       }
+                        if (proxy.username && proxy.password && false) {
+                            proxy.proxyRules += startline + 'socks5://' + proxy.username + ':' + proxy.password + '@' + proxy.ip + ':' + proxy.port;
+                        }
                         startline = ',';
                     }
                     if (proxy.ftp) {
@@ -2042,7 +2043,7 @@ module.exports = function (owner) {
                 name: 'Chrome',
                 vendor: 'Google Inc.',
                 prefix: '',
-                randomMajor: () => owner.randomNumber(144 , 146),
+                randomMajor: () => owner.randomNumber(144, 146),
                 randomMinor: () => owner.randomNumber(0, 5735),
                 randomPatch: () => owner.randomNumber(0, 199),
             },
@@ -2050,7 +2051,7 @@ module.exports = function (owner) {
                 name: 'Edge',
                 vendor: '',
                 prefix: '',
-                      randomMajor: () => owner.randomNumber(144 , 146),
+                randomMajor: () => owner.randomNumber(144, 146),
                 randomMinor: () => owner.randomNumber(0, 5735),
                 randomPatch: () => owner.randomNumber(0, 199),
             },
@@ -2074,7 +2075,7 @@ module.exports = function (owner) {
                 name: 'Opera',
                 vendor: '',
                 prefix: '',
-                randomMajor: () => owner.randomNumber(144 , 146),
+                randomMajor: () => owner.randomNumber(144, 146),
                 randomMinor: () => owner.randomNumber(0, 5735),
                 randomPatch: () => owner.randomNumber(0, 199),
             },
@@ -2084,8 +2085,7 @@ module.exports = function (owner) {
             let browser = owner.userAgentBrowserList.filter((d) => d.name.contains(browserName));
             browser = browser[owner.randomNumber(0, browser.length - 1)] || owner.userAgentBrowserList[owner.randomNumber(0, owner.userAgentBrowserList.length - 1)];
             browser = { ...browser };
-            browser.engine = {name : browser.name};
-           
+            browser.engine = { name: browser.name };
 
             let devices = owner.userAgentDeviceList.filter((d) => d.name.contains(deviceName));
             browser.device = devices[owner.randomNumber(0, devices.length - 1)] || owner.userAgentDeviceList[owner.randomNumber(0, owner.userAgentDeviceList.length - 1)];
@@ -2113,9 +2113,9 @@ module.exports = function (owner) {
             delete browser.randomMajor;
             delete browser.randomMinor;
             delete browser.randomPatch;
-            
-             browser.name = browser.name + ' ' + browser.device.name + ' ' + browser.platform
-             
+
+            browser.name = browser.name + ' ' + browser.device.name + ' ' + browser.platform;
+
             if (browser.name.contains('Safari')) {
                 browser.url = `Mozilla/5.0 (${browser.platformInfo.name}) AppleWebKit/${browser.major}.${browser.minor} (KHTML, like Gecko) Version/${browser.patch}.0 Safari/${browser.major}.${browser.minor}`;
             }

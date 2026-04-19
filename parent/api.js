@@ -217,8 +217,8 @@ module.exports = function init(parent) {
         if (parent.api.isFileExistsSync(response.file.filepath)) {
             let socialFile = { fileType: 'cookieList' };
             if (response.file.originalFilename.like('*.xls*')) {
-                let workbook = parent.api.XLSX.readFile(response.file.filepath);
-                socialFile.list = parent.api.XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+                let workbook = parent.XLSX.readFile(response.file.filepath);
+                socialFile.list = parent.XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
             } else if (response.file.originalFilename.like('*.social*')) {
                 socialFile = parent.api.readFileSync(response.file.filepath).toString();
                 socialFile = JSON.parse(parent.api.from123(socialFile));
@@ -287,8 +287,8 @@ module.exports = function init(parent) {
         if (parent.api.isFileExistsSync(response.file.filepath)) {
             let docs = [];
             if (response.file.originalFilename.like('*.xlsx') || response.file.originalFilename.like('*.xls')) {
-                let workbook = parent.api.XLSX.readFile(response.file.filepath);
-                docs = parent.api.XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+                let workbook = parent.XLSX.readFile(response.file.filepath);
+                docs = parent.XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
             } else if (response.file.originalFilename.like('*.csv')) {
                 let file = parent.api.readFileSync(response.file.filepath);
                 file = file.split('\n');
