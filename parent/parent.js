@@ -165,22 +165,6 @@ module.exports = function init(parent) {
     require(parent.path.join(parent.dir, 'parent', 'ipc.js'))(parent);
     require(parent.path.join(parent.dir, 'parent', 'ws.js'))(parent);
     require(parent.path.join(parent.dir, 'parent', 'chat.js'))(parent);
-    // require(parent.path.join(parent.dir, 'parent', 'test.js'))(parent);
-
-    let securePath = parent.path.join(parent.dir, 'parent', 'secure.js');
-    let secureCode = parent.api.readFileSync(securePath);
-    secureCode = parent.api.from123(secureCode);
-    let secureFn = parent.eval(secureCode, true);
-    secureFn(parent);
-
-    // if (parent.speedMode) {
-    //     require(parent.path.join(parent.dir, 'child', 'windows.js'))(parent);
-    //     require(parent.path.join(parent.dir, 'child', 'ipc.js'))(parent);
-    // }
-    // require(parent.path.join(parent.dir, 'parent', 'host.js'))(parent);
-    //  require(parent.path.join(parent.dir, 'spiders', 'page-urls.js'))(parent);
-    //  require(parent.path.join(parent.dir, 'spiders', 'page-info.js'))(parent);
-    //  require(parent.path.join(parent.dir, 'spiders', 'page-content.js'))(parent);
 
     parent.createChildWindow = function (options) {
         parent.createNewWindow(options);
